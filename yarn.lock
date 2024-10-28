@@ -703,7 +703,7 @@ __metadata:
     nx: "npm:^20.0.3"
     nx-cloud: "npm:^19.1.0"
     tiktoken: "npm:^1.0.15"
-    tinybench: "npm:^2.8.0"
+    tinybench: "npm:^3.0.0"
     yjs: "patch:yjs@npm%3A13.6.18#~/.yarn/patches/yjs-npm-13.6.18-ad0d5f7c43.patch"
   languageName: unknown
   linkType: soft
@@ -31943,10 +31943,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinybench@npm:^2.8.0, tinybench@npm:^2.9.0":
+"tinybench@npm:^2.9.0":
   version: 2.9.0
   resolution: "tinybench@npm:2.9.0"
   checksum: 10/cfa1e1418e91289219501703c4693c70708c91ffb7f040fd318d24aef419fb5a43e0c0160df9471499191968b2451d8da7f8087b08c3133c251c40d24aced06c
+  languageName: node
+  linkType: hard
+
+"tinybench@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "tinybench@npm:3.0.0"
+  checksum: 10/3d1f660c7566f8500371270256ad5ec6fb9cf35fae00dff7d910e769915c949a12ff4ac6fa084553677e2b74dfd7a3370df945ceb351abc73eba993bf6145299
   languageName: node
   linkType: hard
 
