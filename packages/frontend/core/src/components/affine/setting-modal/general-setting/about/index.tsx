@@ -5,20 +5,22 @@ import {
   SettingWrapper,
 } from '@affine/component/setting-components';
 import { useAppUpdater } from '@affine/core/components/hooks/use-app-updater';
+import { UrlService } from '@affine/core/modules/url';
 import { useI18n } from '@affine/i18n';
 import { mixpanel } from '@affine/track';
 import { ArrowRightSmallIcon, OpenInNewIcon } from '@blocksuite/icons/rc';
+import { useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
 import { useAppSettingHelper } from '../../../../../components/hooks/affine/use-app-setting-helper';
 import { appIconMap, appNames } from '../../../../../desktop/pages/open-app';
-import { popupWindow } from '../../../../../utils';
 import { relatedLinks } from './config';
 import * as styles from './style.css';
 import { UpdateCheckSection } from './update-check-section';
 
 export const AboutAffine = () => {
   const t = useI18n();
+  const urlService = useService(UrlService);
   const { appSettings, updateSettings } = useAppSettingHelper();
   const { toggleAutoCheck, toggleAutoDownload } = useAppUpdater();
   const channel = BUILD_CONFIG.appBuildType;
@@ -100,7 +102,7 @@ export const AboutAffine = () => {
               desc={t['com.affine.aboutAFFiNE.changelog.description']()}
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                popupWindow(BUILD_CONFIG.changelogUrl);
+                urlService.openPopupWindow(BUILD_CONFIG.changelogUrl);
               }}
             >
               <ArrowRightSmallIcon />
@@ -144,7 +146,7 @@ export const AboutAffine = () => {
               <div
                 className={styles.communityItem}
                 onClick={() => {
-                  popupWindow(link);
+                  urlService.openPopupWindow(link);
                 }}
                 key={title}
               >

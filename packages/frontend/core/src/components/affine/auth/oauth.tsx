@@ -1,7 +1,6 @@
 import { Skeleton } from '@affine/component';
 import { Button } from '@affine/component/ui/button';
-import { popupWindow } from '@affine/core/utils';
-import { appInfo } from '@affine/electron-api';
+import { UrlService } from '@affine/core/modules/url';
 import { OAuthProviderType } from '@affine/graphql';
 import { GithubIcon, GoogleDuotoneIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
@@ -31,10 +30,12 @@ const OAuthProviderMap: Record<
 
 export function OAuth({ redirectUrl }: { redirectUrl?: string }) {
   const serverConfig = useService(ServerConfigService).serverConfig;
+  const urlService = useService(UrlService);
   const oauth = useLiveData(serverConfig.features$.map(r => r?.oauth));
   const oauthProviders = useLiveData(
     serverConfig.config$.map(r => r?.oauthProviders)
   );
+  const schema = urlService.getClientSchema();
 
   if (!oauth) {
     return <Skeleton height={50} />;
@@ -45,6 +46,10 @@ export function OAuth({ redirectUrl }: { redirectUrl?: string }) {
       key={provider}
       provider={provider}
       redirectUrl={redirectUrl}
+      schema={schema}
+      popupWindow={url => {
+        urlService.openPopupWindow(url);
+      }}
     />
   ));
 }
@@ -52,9 +57,13 @@ export function OAuth({ redirectUrl }: { redirectUrl?: string }) {
 function OAuthProvider({
   provider,
   redirectUrl,
+  schema,
+  popupWindow,
 }: {
   provider: OAuthProviderType;
   redirectUrl?: string;
+  schema?: string;
+  popupWindow: (url: string) => void;
 }) {
   const { icon } = OAuthProviderMap[provider];
 
@@ -67,17 +76,18 @@ function OAuthProvider({
       params.set('redirect_uri', redirectUrl);
     }
 
-    if (BUILD_CONFIG.isElectron && appInfo) {
-      params.set('client', appInfo.schema);
+    if (schema) {
+      params.set('client', schema);
     }
 
+    // TODO: Android app scheme not implemented
+    // if (BUILD_CONFIG.isAndroid) {}
+
     const oauthUrl =
-      (BUILD_CONFIG.isElectron || BUILD_CONFIG.isIOS || BUILD_CONFIG.isAndroid
-        ? BUILD_CONFIG.serverUrlPrefix
-        : '') + `/oauth/login?${params.toString()}`;
+      BUILD_CONFIG.serverUrlPrefix + `/oauth/login?${params.toString()}`;
 
     popupWindow(oauthUrl);
-  }, [provider, redirectUrl]);
+  }, [popupWindow, provider, redirectUrl, schema]);
 
   return (
     <Button

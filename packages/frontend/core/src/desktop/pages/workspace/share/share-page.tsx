@@ -7,7 +7,7 @@ import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-he
 import { PageDetailEditor } from '@affine/core/components/page-detail-editor';
 import { SharePageNotFoundError } from '@affine/core/components/share-page-not-found-error';
 import { AppContainer, MainContainer } from '@affine/core/components/workspace';
-import { AuthService } from '@affine/core/modules/cloud';
+import { AuthService, FetchService } from '@affine/core/modules/cloud';
 import {
   type Editor,
   type EditorSelector,
@@ -147,6 +147,7 @@ const SharePageInner = ({
   templateSnapshotUrl?: string;
 }) => {
   const workspacesService = useService(WorkspacesService);
+  const fetchService = useService(FetchService);
 
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [page, setPage] = useState<Doc | null>(null);
@@ -181,7 +182,7 @@ const SharePageInner = ({
           return EmptyBlobStorage;
         },
         getRemoteBlobStorages() {
-          return [new CloudBlobStorage(workspaceId)];
+          return [new CloudBlobStorage(workspaceId, fetchService)];
         },
       }
     );
@@ -220,6 +221,7 @@ const SharePageInner = ({
     selector,
     workspaceBinary,
     docBinary,
+    fetchService,
   ]);
 
   const pageTitle = useLiveData(page?.title$);

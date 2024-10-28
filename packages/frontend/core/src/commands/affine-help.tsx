@@ -4,15 +4,17 @@ import { ContactWithUsIcon, NewIcon } from '@blocksuite/icons/rc';
 import type { createStore } from 'jotai';
 
 import { openSettingModalAtom } from '../components/atoms';
-import { popupWindow } from '../utils';
+import type { UrlService } from '../modules/url';
 import { registerAffineCommand } from './registry';
 
 export function registerAffineHelpCommands({
   t,
   store,
+  urlService,
 }: {
   t: ReturnType<typeof useI18n>;
   store: ReturnType<typeof createStore>;
+  urlService: UrlService;
 }) {
   const unsubs: Array<() => void> = [];
   unsubs.push(
@@ -23,7 +25,7 @@ export function registerAffineHelpCommands({
       label: t['com.affine.cmdk.affine.whats-new'](),
       run() {
         track.$.cmdk.help.openChangelog();
-        popupWindow(BUILD_CONFIG.changelogUrl);
+        urlService.openPopupWindow(BUILD_CONFIG.changelogUrl);
       },
     })
   );

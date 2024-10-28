@@ -1,5 +1,5 @@
 import { Tooltip } from '@affine/component/ui/tooltip';
-import { popupWindow } from '@affine/core/utils';
+import { UrlService } from '@affine/core/modules/url';
 import { useI18n } from '@affine/i18n';
 import { CloseIcon, NewIcon } from '@blocksuite/icons/rc';
 import {
@@ -34,8 +34,9 @@ const showList = BUILD_CONFIG.isElectron
   : DEFAULT_SHOW_LIST;
 
 export const HelpIsland = () => {
-  const { globalContextService } = useServices({
+  const { globalContextService, urlService } = useServices({
     GlobalContextService,
+    UrlService,
   });
   const docId = useLiveData(globalContextService.globalContext.docId.$);
   const docMode = useLiveData(globalContextService.globalContext.docMode.$);
@@ -79,7 +80,7 @@ export const HelpIsland = () => {
             <StyledIconWrapper
               data-testid="right-bottom-change-log-icon"
               onClick={() => {
-                popupWindow(BUILD_CONFIG.changelogUrl);
+                urlService.openPopupWindow(BUILD_CONFIG.changelogUrl);
               }}
             >
               <NewIcon />

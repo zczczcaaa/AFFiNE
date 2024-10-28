@@ -1,7 +1,7 @@
+import type { FetchService } from '@affine/core/modules/cloud';
 import {
   deleteBlobMutation,
   fetcher,
-  getBaseUrl,
   listBlobsQuery,
   setBlobMutation,
   UserFriendlyError,
@@ -12,7 +12,10 @@ import { BlobStorageOverCapacity } from '@toeverything/infra';
 import { bufferToBlob } from '../../utils/buffer-to-blob';
 
 export class CloudBlobStorage implements BlobStorage {
-  constructor(private readonly workspaceId: string) {}
+  constructor(
+    private readonly workspaceId: string,
+    private readonly fetchService: FetchService
+  ) {}
 
   name = 'cloud';
   readonly = false;
@@ -22,15 +25,23 @@ export class CloudBlobStorage implements BlobStorage {
       ? key
       : `/api/workspaces/${this.workspaceId}/blobs/${key}`;
 
-    return fetch(getBaseUrl() + suffix, { cache: 'default' }).then(
-      async res => {
+    return this.fetchService
+      .fetch(suffix, {
+        cache: 'default',
+        headers: {
+          Accept: 'application/octet-stream', // this is necessary for ios native fetch to return arraybuffer
+        },
+      })
+      .then(async res => {
         if (!res.ok) {
           // status not in the range 200-299
           return null;
         }
         return bufferToBlob(await res.arrayBuffer());
-      }
-    );
+      })
+      .catch(() => {
+        return null;
+      });
   }
 
   async set(key: string, value: Blob) {

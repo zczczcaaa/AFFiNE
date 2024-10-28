@@ -1,6 +1,6 @@
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { SubscriptionService } from '@affine/core/modules/cloud';
-import { popupWindow } from '@affine/core/utils';
+import { UrlService } from '@affine/core/modules/url';
 import type { CreateCheckoutSessionInput } from '@affine/graphql';
 import { useService } from '@toeverything/infra';
 import { nanoid } from 'nanoid';
@@ -32,6 +32,7 @@ export const CheckoutSlot = ({
   const [idempotencyKey, setIdempotencyKey] = useState(nanoid());
   const [isMutating, setMutating] = useState(false);
   const [isOpenedExternalWindow, setOpenedExternalWindow] = useState(false);
+  const urlService = useService(UrlService);
 
   const subscriptionService = useService(SubscriptionService);
 
@@ -63,7 +64,7 @@ export const CheckoutSlot = ({
         idempotencyKey,
         ...checkoutOptions,
       });
-      popupWindow(session);
+      urlService.openPopupWindow(session);
       setOpenedExternalWindow(true);
       setIdempotencyKey(nanoid());
       onCheckoutSuccess?.();
@@ -79,6 +80,7 @@ export const CheckoutSlot = ({
     onCheckoutError,
     onCheckoutSuccess,
     subscriptionService,
+    urlService,
   ]);
 
   return <Renderer onClick={subscribe} loading={isMutating} />;

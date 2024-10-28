@@ -1,12 +1,13 @@
 import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import { useDocCollectionPage } from '@affine/core/components/hooks/use-block-suite-workspace-page';
+import { FetchService } from '@affine/core/modules/cloud';
 import { DebugLogger } from '@affine/debug';
 import type { ListHistoryQuery } from '@affine/graphql';
 import { listHistoryQuery, recoverDocMutation } from '@affine/graphql';
 import { i18nTime } from '@affine/i18n';
 import { assertEquals } from '@blocksuite/affine/global/utils';
 import { DocCollection } from '@blocksuite/affine/store';
-import { getAFFiNEWorkspaceSchema } from '@toeverything/infra';
+import { getAFFiNEWorkspaceSchema, useService } from '@toeverything/infra';
 import { useEffect, useMemo } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import {
@@ -99,10 +100,13 @@ const snapshotFetcher = async (
 const docCollectionMap = new Map<string, DocCollection>();
 
 // assume the workspace is a cloud workspace since the history feature is only enabled for cloud workspace
-const getOrCreateShellWorkspace = (workspaceId: string) => {
+const getOrCreateShellWorkspace = (
+  workspaceId: string,
+  fetchService: FetchService
+) => {
   let docCollection = docCollectionMap.get(workspaceId);
   if (!docCollection) {
-    const blobStorage = new CloudBlobStorage(workspaceId);
+    const blobStorage = new CloudBlobStorage(workspaceId, fetchService);
     docCollection = new DocCollection({
       id: workspaceId,
       blobSources: {
@@ -139,13 +143,17 @@ export const useSnapshotPage = (
   pageDocId: string,
   ts?: string
 ) => {
+  const fetchService = useService(FetchService);
   const snapshot = usePageHistory(docCollection.id, pageDocId, ts);
   const page = useMemo(() => {
     if (!ts) {
       return;
     }
     const pageId = pageDocId + '-' + ts;
-    const historyShellWorkspace = getOrCreateShellWorkspace(docCollection.id);
+    const historyShellWorkspace = getOrCreateShellWorkspace(
+      docCollection.id,
+      fetchService
+    );
     let page = historyShellWorkspace.getDoc(pageId);
     if (!page && snapshot) {
       page = historyShellWorkspace.createDoc({
@@ -159,15 +167,18 @@ export const useSnapshotPage = (
       }); // must load before applyUpdate
     }
     return page ?? undefined;
-  }, [pageDocId, snapshot, ts, docCollection]);
+  }, [ts, pageDocId, docCollection.id, fetchService, snapshot]);
 
   useEffect(() => {
-    const historyShellWorkspace = getOrCreateShellWorkspace(docCollection.id);
+    const historyShellWorkspace = getOrCreateShellWorkspace(
+      docCollection.id,
+      fetchService
+    );
     // apply the rootdoc's update to the current workspace
     // this makes sure the page reference links are not deleted ones in the preview
     const update = encodeStateAsUpdate(docCollection.doc);
     applyUpdate(historyShellWorkspace.doc, update);
-  }, [docCollection]);
+  }, [docCollection, fetchService]);
 
   return page;
 };

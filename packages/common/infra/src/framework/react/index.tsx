@@ -23,7 +23,7 @@ export function useService<T extends Service>(
 ): T {
   const stack = useContext(FrameworkStackContext);
 
-  let service: T | null = null;
+  let service: T | undefined = undefined;
 
   for (let i = stack.length - 1; i >= 0; i--) {
     service = stack[i].getOptional(identifier, {
@@ -87,10 +87,10 @@ export function useServices<
 
 export function useServiceOptional<T extends Service>(
   identifier: Type<T>
-): T | null {
+): T | undefined {
   const stack = useContext(FrameworkStackContext);
 
-  let service: T | null = null;
+  let service: T | undefined = undefined;
 
   for (let i = stack.length - 1; i >= 0; i--) {
     service = stack[i].getOptional(identifier, {

@@ -121,9 +121,7 @@ const useSendEmail = (emailType: AuthPanelProps<'sendEmail'>['emailType']) => {
         // TODO(@eyhn): add error handler
         return trigger({
           email,
-          callbackUrl: `/auth/${callbackUrl}?isClient=${
-            BUILD_CONFIG.isElectron ? 'true' : 'false'
-          }`,
+          callbackUrl: `/auth/${callbackUrl}`,
         });
       },
       [

@@ -1,4 +1,3 @@
-import { popupWindow } from '@affine/core/utils';
 import { apis } from '@affine/electron-api';
 import { createIdentifier } from '@toeverything/infra';
 import { parsePath, type To } from 'history';
@@ -20,7 +19,7 @@ export const BrowserWorkbenchNewTabHandler: WorkbenchNewTabHandler = ({
   const link =
     basename +
     (typeof to === 'string' ? to : `${to.pathname}${to.search}${to.hash}`);
-  popupWindow(link);
+  window.open(link, '_blank');
 };
 
 export const DesktopWorkbenchNewTabHandler: WorkbenchNewTabHandler = ({

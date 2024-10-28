@@ -1,5 +1,6 @@
 import { AppSidebarService } from '@affine/core/modules/app-sidebar';
 import { I18nService } from '@affine/core/modules/i18n';
+import { UrlService } from '@affine/core/modules/url';
 import { useI18n } from '@affine/i18n';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import { useService, WorkspaceService } from '@toeverything/infra';
@@ -66,6 +67,7 @@ export function useRegisterWorkspaceCommands() {
   const t = useI18n();
   const theme = useTheme();
   const currentWorkspace = useService(WorkspaceService).workspace;
+  const urlService = useService(UrlService);
   const pageHelper = usePageHelper(currentWorkspace.docCollection);
   const navigationHelper = useNavigateHelper();
   const [editor] = useActiveBlocksuiteEditor();
@@ -162,10 +164,11 @@ export function useRegisterWorkspaceCommands() {
     const unsub = registerAffineHelpCommands({
       store,
       t,
+      urlService,
     });
 
     return () => {
       unsub();
     };
-  }, [store, t]);
+  }, [store, t, urlService]);
 }

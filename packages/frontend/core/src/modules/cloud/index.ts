@@ -6,6 +6,7 @@ export {
   isNetworkError,
   NetworkError,
 } from './error';
+export { WebSocketAuthProvider } from './provider/websocket-auth';
 export { AccountChanged, AuthService } from './services/auth';
 export { FetchService } from './services/fetch';
 export { GraphQLService } from './services/graphql';
@@ -26,6 +27,7 @@ import {
   WorkspaceScope,
 } from '@toeverything/infra';
 
+import { UrlService } from '../url';
 import { CloudDocMeta } from './entities/cloud-doc-meta';
 import { Invoices } from './entities/invoices';
 import { ServerConfig } from './entities/server-config';
@@ -35,6 +37,8 @@ import { SubscriptionPrices } from './entities/subscription-prices';
 import { UserCopilotQuota } from './entities/user-copilot-quota';
 import { UserFeature } from './entities/user-feature';
 import { UserQuota } from './entities/user-quota';
+import { DefaultFetchProvider, FetchProvider } from './provider/fetch';
+import { WebSocketAuthProvider } from './provider/websocket-auth';
 import { AuthService } from './services/auth';
 import { CloudDocMetaService } from './services/cloud-doc-meta';
 import { FetchService } from './services/fetch';
@@ -57,17 +61,25 @@ import { UserQuotaStore } from './stores/user-quota';
 
 export function configureCloudModule(framework: Framework) {
   framework
-    .service(FetchService)
+    .service(FetchService, [FetchProvider])
+    .impl(FetchProvider, DefaultFetchProvider)
     .service(GraphQLService, [FetchService])
-    .service(WebSocketService, [AuthService])
+    .service(
+      WebSocketService,
+      f =>
+        new WebSocketService(
+          f.get(AuthService),
+          f.getOptional(WebSocketAuthProvider)
+        )
+    )
     .service(ServerConfigService)
     .entity(ServerConfig, [ServerConfigStore])
     .store(ServerConfigStore, [GraphQLService])
-    .service(AuthService, [FetchService, AuthStore])
+    .service(AuthService, [FetchService, AuthStore, UrlService])
     .store(AuthStore, [FetchService, GraphQLService, GlobalState])
     .entity(AuthSession, [AuthStore])
     .service(SubscriptionService, [SubscriptionStore])
-    .store(SubscriptionStore, [GraphQLService, GlobalCache])
+    .store(SubscriptionStore, [GraphQLService, GlobalCache, UrlService])
     .entity(Subscription, [AuthService, ServerConfigService, SubscriptionStore])
     .entity(SubscriptionPrices, [ServerConfigService, SubscriptionStore])
     .service(UserQuotaService)

@@ -1,6 +1,6 @@
 import { notify } from '@affine/component';
 import { AIProvider } from '@affine/core/blocksuite/presets/ai';
-import { apis, appInfo, events } from '@affine/electron-api';
+import { apis, events } from '@affine/electron-api';
 import type { OAuthProviderType } from '@affine/graphql';
 import { I18n } from '@affine/i18n';
 import { track } from '@affine/track';
@@ -13,6 +13,7 @@ import {
 } from '@toeverything/infra';
 import { distinctUntilChanged, map, skip } from 'rxjs';
 
+import type { UrlService } from '../../url';
 import { type AuthAccountInfo, AuthSession } from '../entities/session';
 import type { AuthStore } from '../stores/auth';
 import type { FetchService } from './fetch';
@@ -44,7 +45,8 @@ export class AuthService extends Service {
 
   constructor(
     private readonly fetchService: FetchService,
-    private readonly store: AuthStore
+    private readonly store: AuthStore,
+    private readonly urlService: UrlService
   ) {
     super();
 
@@ -117,14 +119,14 @@ export class AuthService extends Service {
   ) {
     track.$.$.auth.signIn({ method: 'magic-link' });
     try {
+      const scheme = this.urlService.getClientSchema();
       const magicLinkUrlParams = new URLSearchParams();
       if (redirectUrl) {
         magicLinkUrlParams.set('redirect_uri', redirectUrl);
       }
-      magicLinkUrlParams.set(
-        'client',
-        BUILD_CONFIG.isElectron && appInfo ? appInfo.schema : 'web'
-      );
+      if (scheme) {
+        magicLinkUrlParams.set('client', scheme);
+      }
       await this.fetchService.fetch('/api/auth/sign-in', {
         method: 'POST',
         body: JSON.stringify({

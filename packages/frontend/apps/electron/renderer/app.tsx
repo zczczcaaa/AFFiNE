@@ -9,6 +9,10 @@ import { configureAppTabsHeaderModule } from '@affine/core/modules/app-tabs-head
 import { I18nProvider } from '@affine/core/modules/i18n';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
 import { CustomThemeModifier } from '@affine/core/modules/theme-editor';
+import {
+  ClientSchemaProvider,
+  PopupWindowProvider,
+} from '@affine/core/modules/url';
 import { configureSqliteUserspaceStorageProvider } from '@affine/core/modules/userspace';
 import { configureDesktopWorkbenchModule } from '@affine/core/modules/workbench';
 import {
@@ -16,6 +20,7 @@ import {
   configureSqliteWorkspaceEngineStorageProvider,
 } from '@affine/core/modules/workspace-engine';
 import createEmotionCache from '@affine/core/utils/create-emotion-cache';
+import { apis, appInfo } from '@affine/electron-api';
 import { CacheProvider } from '@emotion/react';
 import {
   Framework,
@@ -58,6 +63,18 @@ configureSqliteWorkspaceEngineStorageProvider(framework);
 configureSqliteUserspaceStorageProvider(framework);
 configureDesktopWorkbenchModule(framework);
 configureAppTabsHeaderModule(framework);
+framework.impl(PopupWindowProvider, {
+  open: (url: string) => {
+    apis?.ui.openExternal(url).catch(e => {
+      console.error('Failed to open external URL', e);
+    });
+  },
+});
+framework.impl(ClientSchemaProvider, {
+  getClientSchema() {
+    return appInfo?.schema;
+  },
+});
 const frameworkProvider = framework.provider();
 
 // setup application lifecycle events, and emit application start event

@@ -14,6 +14,7 @@ import {
   InvoicesService,
   SubscriptionService,
 } from '@affine/core/modules/cloud';
+import { UrlService } from '@affine/core/modules/url';
 import type { InvoicesQuery } from '@affine/graphql';
 import {
   createCustomerPortalMutation,
@@ -32,7 +33,6 @@ import { useSetAtom } from 'jotai';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useMutation } from '../../../../../components/hooks/use-mutation';
-import { popupWindow } from '../../../../../utils';
 import {
   openSettingModalAtom,
   type PlansScrollAnchor,
@@ -456,15 +456,16 @@ const PaymentMethodUpdater = () => {
   const { isMutating, trigger } = useMutation({
     mutation: createCustomerPortalMutation,
   });
+  const urlService = useService(UrlService);
   const t = useI18n();
 
   const update = useAsyncCallback(async () => {
     await trigger(null, {
       onSuccess: data => {
-        popupWindow(data.createCustomerPortal);
+        urlService.openPopupWindow(data.createCustomerPortal);
       },
     });
-  }, [trigger]);
+  }, [trigger, urlService]);
 
   return (
     <Button onClick={update} loading={isMutating} disabled={isMutating}>
@@ -575,12 +576,13 @@ const InvoiceLine = ({
   invoice: NonNullable<InvoicesQuery['currentUser']>['invoices'][0];
 }) => {
   const t = useI18n();
+  const urlService = useService(UrlService);
 
   const open = useCallback(() => {
     if (invoice.link) {
-      popupWindow(invoice.link);
+      urlService.openPopupWindow(invoice.link);
     }
-  }, [invoice.link]);
+  }, [invoice.link, urlService]);
 
   const planText =
     invoice.plan === SubscriptionPlan.AI
