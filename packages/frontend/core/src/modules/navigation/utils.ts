@@ -129,7 +129,14 @@ export const preprocessParams = (
     result.elementIds = result.elementIds.filter(v => v.length);
   }
 
-  return pick(result, ['mode', 'blockIds', 'elementIds', 'refreshKey']);
+  return pick(result, [
+    'mode',
+    'blockIds',
+    'elementIds',
+    'databaseId',
+    'databaseRowId',
+    'refreshKey',
+  ]);
 };
 
 export const paramsParseOptions: ParseOptions = {
@@ -142,6 +149,8 @@ export const paramsParseOptions: ParseOptions = {
       value.length ? value.split(',').filter(v => v.length) : [],
     elementIds: value =>
       value.length ? value.split(',').filter(v => v.length) : [],
+    databaseId: 'string',
+    databaseRowId: 'string',
     refreshKey: 'string',
   },
 };

@@ -39,7 +39,10 @@ import {
   AffinePageReference,
   AffineSharedPageReference,
 } from '../../affine/reference-link';
-import { DocPropertiesTable } from '../../doc-properties';
+import {
+  type DefaultOpenProperty,
+  DocPropertiesTable,
+} from '../../doc-properties';
 import { BiDirectionalLinkPanel } from './bi-directional-link-panel';
 import { BlocksuiteEditorJournalDocTitle } from './journal-doc-title';
 import {
@@ -76,6 +79,7 @@ const adapted = {
 interface BlocksuiteEditorProps {
   page: Doc;
   shared?: boolean;
+  defaultOpenProperty?: DefaultOpenProperty;
 }
 
 const usePatchSpecs = (shared: boolean, mode: DocMode) => {
@@ -191,7 +195,13 @@ export const BlocksuiteDocEditor = forwardRef<
     titleRef?: React.Ref<DocTitle>;
   }
 >(function BlocksuiteDocEditor(
-  { page, shared, onClickBlank, titleRef: externalTitleRef },
+  {
+    page,
+    shared,
+    onClickBlank,
+    titleRef: externalTitleRef,
+    defaultOpenProperty,
+  },
   ref
 ) {
   const titleRef = useRef<DocTitle | null>(null);
@@ -245,7 +255,9 @@ export const BlocksuiteDocEditor = forwardRef<
         ) : (
           <BlocksuiteEditorJournalDocTitle page={page} />
         )}
-        {!shared ? <DocPropertiesTable /> : null}
+        {!shared ? (
+          <DocPropertiesTable defaultOpenProperty={defaultOpenProperty} />
+        ) : null}
         <adapted.DocEditor
           className={styles.docContainer}
           ref={onDocRef}

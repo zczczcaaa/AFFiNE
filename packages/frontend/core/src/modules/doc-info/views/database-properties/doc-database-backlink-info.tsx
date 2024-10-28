@@ -95,6 +95,14 @@ const DatabaseBacklinkRow = ({
   }, [row?.cells]);
   const t = useI18n();
 
+  const pageRefParams = useMemo(() => {
+    const params = new URLSearchParams();
+    if (row?.id) {
+      params.set('blockIds', row.databaseId);
+    }
+    return params;
+  }, [row]);
+
   if (!row || !sortedCells) {
     return null;
   }
@@ -105,7 +113,11 @@ const DatabaseBacklinkRow = ({
       defaultCollapsed={!defaultOpen}
       icon={<DatabaseTableViewIcon />}
       suffix={
-        <AffinePageReference className={styles.docRefLink} pageId={row.docId} />
+        <AffinePageReference
+          className={styles.docRefLink}
+          pageId={row.docId}
+          params={pageRefParams}
+        />
       }
     >
       <PropertyCollapsibleContent
@@ -131,8 +143,8 @@ export const DocDatabaseBacklinkInfo = ({
   defaultOpen = [],
 }: {
   defaultOpen?: {
-    docId: string;
-    blockId: string;
+    databaseId: string;
+    rowId: string;
   }[];
 }) => {
   const doc = useService(DocService).doc;
@@ -151,11 +163,13 @@ export const DocDatabaseBacklinkInfo = ({
 
   return (
     <div className={styles.root}>
-      {rows.map(({ docId, rowId, row$ }) => (
+      {rows.map(({ docId, databaseBlockId, rowId, row$ }) => (
         <Fragment key={`${docId}-${rowId}`}>
           <DatabaseBacklinkRow
             defaultOpen={defaultOpen?.some(
-              backlink => backlink.docId === docId && backlink.blockId === rowId
+              backlink =>
+                backlink.databaseId === databaseBlockId &&
+                backlink.rowId === rowId
             )}
             row$={row$}
           />

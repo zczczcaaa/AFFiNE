@@ -20,6 +20,7 @@ import {
 
 import { DocInfoService } from '../../doc-info';
 import { WorkbenchService } from '../../workbench';
+import type { DocReferenceInfo } from '../entities/peek-view';
 import { PeekViewService } from '../services/peek-view';
 import * as styles from './peek-view-controls.css';
 
@@ -60,10 +61,8 @@ export const ControlButton = ({
 };
 
 type DocPeekViewControlsProps = HTMLAttributes<HTMLDivElement> & {
-  docId: string;
   mode?: DocMode;
-  blockIds?: string[];
-  elementIds?: string[];
+  docRef: DocReferenceInfo;
 };
 
 export const DefaultPeekViewControls = ({
@@ -92,10 +91,7 @@ export const DefaultPeekViewControls = ({
 };
 
 export const DocPeekViewControls = ({
-  docId,
-  mode,
-  blockIds,
-  elementIds,
+  docRef,
   className,
   ...rest
 }: DocPeekViewControlsProps) => {
@@ -116,7 +112,7 @@ export const DocPeekViewControls = ({
         name: t['com.affine.peek-view-controls.open-doc'](),
         nameKey: 'open',
         onClick: () => {
-          workbench.openDoc({ docId, mode, blockIds, elementIds });
+          workbench.openDoc(docRef);
           peekView.close('none');
         },
       },
@@ -125,10 +121,7 @@ export const DocPeekViewControls = ({
         nameKey: 'new-tab',
         name: t['com.affine.peek-view-controls.open-doc-in-new-tab'](),
         onClick: () => {
-          workbench.openDoc(
-            { docId, mode, blockIds, elementIds },
-            { at: 'new-tab' }
-          );
+          workbench.openDoc(docRef, { at: 'new-tab' });
           peekView.close('none');
         },
       },
@@ -137,7 +130,7 @@ export const DocPeekViewControls = ({
         nameKey: 'split-view',
         name: t['com.affine.peek-view-controls.open-doc-in-split-view'](),
         onClick: () => {
-          workbench.openDoc({ docId, mode }, { at: 'beside' });
+          workbench.openDoc(docRef, { at: 'beside' });
           peekView.close('none');
         },
       },
@@ -146,20 +139,13 @@ export const DocPeekViewControls = ({
         nameKey: 'info',
         name: t['com.affine.peek-view-controls.open-info'](),
         onClick: () => {
-          docInfoService.modal.open(docId);
+          docInfoService.modal.open(
+            typeof docRef === 'string' ? docRef : docRef.docId
+          );
         },
       },
     ].filter((opt): opt is ControlButtonProps => Boolean(opt));
-  }, [
-    t,
-    peekView,
-    workbench,
-    docId,
-    mode,
-    blockIds,
-    elementIds,
-    docInfoService.modal,
-  ]);
+  }, [t, peekView, workbench, docRef, docInfoService.modal]);
   return (
     <div {...rest} className={clsx(styles.root, className)}>
       {controls.map(option => (

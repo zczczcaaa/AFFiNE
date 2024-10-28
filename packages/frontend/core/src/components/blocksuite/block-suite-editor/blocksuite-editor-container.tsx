@@ -21,6 +21,7 @@ import {
   useRef,
 } from 'react';
 
+import type { DefaultOpenProperty } from '../../doc-properties';
 import { BlocksuiteDocEditor, BlocksuiteEdgelessEditor } from './lit-adaper';
 import * as styles from './styles.css';
 
@@ -29,6 +30,7 @@ interface BlocksuiteEditorContainerProps {
   mode: DocMode;
   shared?: boolean;
   className?: string;
+  defaultOpenProperty?: DefaultOpenProperty;
   style?: React.CSSProperties;
 }
 
@@ -43,7 +45,7 @@ export const BlocksuiteEditorContainer = forwardRef<
   AffineEditorContainer,
   BlocksuiteEditorContainerProps
 >(function AffineEditorContainer(
-  { page, mode, className, style, shared },
+  { page, mode, className, style, shared, defaultOpenProperty },
   ref
 ) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -171,6 +173,7 @@ export const BlocksuiteEditorContainer = forwardRef<
           ref={docRef}
           titleRef={docTitleRef}
           onClickBlank={handleClickPageModeBlank}
+          defaultOpenProperty={defaultOpenProperty}
         />
       ) : (
         <BlocksuiteEdgelessEditor

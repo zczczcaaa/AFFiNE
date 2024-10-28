@@ -41,6 +41,20 @@ type DocBacklinksPopupProps = PropsWithChildren<{
   backlinks: { docId: string; blockId: string; title: string }[];
 }>;
 
+export type DefaultOpenProperty =
+  | {
+      type: 'workspace';
+    }
+  | {
+      type: 'database';
+      databaseId: string;
+      databaseRowId: string;
+    };
+
+export interface DocPropertiesTableProps {
+  defaultOpenProperty?: DefaultOpenProperty;
+}
+
 export const DocBacklinksPopup = ({
   backlinks,
   children,
@@ -231,18 +245,19 @@ export const DocPropertyRow = ({
   );
 };
 
-interface DocPropertiesTableBodyProps {
+interface DocWorkspacePropertiesTableBodyProps {
   className?: string;
   style?: React.CSSProperties;
+  defaultOpen?: boolean;
 }
 
 // 🏷️ Tags     (⋅ xxx) (⋅ yyy)
 // #️⃣ Number   123456
 // +  Add a property
-export const DocPropertiesTableBody = forwardRef<
+const DocWorkspacePropertiesTableBody = forwardRef<
   HTMLDivElement,
-  DocPropertiesTableBodyProps & HTMLProps<HTMLDivElement>
->(({ className, style, ...props }, ref) => {
+  DocWorkspacePropertiesTableBodyProps & HTMLProps<HTMLDivElement>
+>(({ className, style, defaultOpen, ...props }, ref) => {
   const t = useI18n();
   const docsService = useService(DocsService);
   const workbenchService = useService(WorkbenchService);
@@ -258,6 +273,7 @@ export const DocPropertiesTableBody = forwardRef<
       className={clsx(styles.tableBodyRoot, className)}
       style={style}
       title={t.t('com.affine.workspace.properties')}
+      defaultCollapsed={!defaultOpen}
       {...props}
     >
       <PropertyCollapsibleContent
@@ -334,10 +350,12 @@ export const DocPropertiesTableBody = forwardRef<
     </PropertyCollapsibleSection>
   );
 });
-DocPropertiesTableBody.displayName = 'PagePropertiesTableBody';
+DocWorkspacePropertiesTableBody.displayName = 'PagePropertiesTableBody';
 
-const DocPropertiesTableInner = () => {
-  const [expanded, setExpanded] = useState(false);
+const DocPropertiesTableInner = ({
+  defaultOpenProperty,
+}: DocPropertiesTableProps) => {
+  const [expanded, setExpanded] = useState(!!defaultOpenProperty);
   return (
     <div className={styles.root}>
       <Collapsible.Root
@@ -347,9 +365,24 @@ const DocPropertiesTableInner = () => {
       >
         <DocPropertiesTableHeader open={expanded} onOpenChange={setExpanded} />
         <Collapsible.Content>
-          <DocPropertiesTableBody />
+          <DocWorkspacePropertiesTableBody
+            defaultOpen={
+              !defaultOpenProperty || defaultOpenProperty.type === 'workspace'
+            }
+          />
           <div className={styles.tableHeaderDivider} />
-          <DocDatabaseBacklinkInfo />
+          <DocDatabaseBacklinkInfo
+            defaultOpen={
+              defaultOpenProperty?.type === 'database'
+                ? [
+                    {
+                      databaseId: defaultOpenProperty.databaseId,
+                      rowId: defaultOpenProperty.databaseRowId,
+                    },
+                  ]
+                : []
+            }
+          />
         </Collapsible.Content>
       </Collapsible.Root>
     </div>
@@ -358,6 +391,8 @@ const DocPropertiesTableInner = () => {
 
 // this is the main component that renders the page properties table at the top of the page below
 // the page title
-export const DocPropertiesTable = () => {
-  return <DocPropertiesTableInner />;
+export const DocPropertiesTable = ({
+  defaultOpenProperty,
+}: DocPropertiesTableProps) => {
+  return <DocPropertiesTableInner defaultOpenProperty={defaultOpenProperty} />;
 };
