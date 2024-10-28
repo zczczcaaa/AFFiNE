@@ -534,7 +534,7 @@ __metadata:
     semver: "npm:^7.6.0"
     tree-kill: "npm:^1.2.2"
     ts-node: "npm:^10.9.2"
-    uuid: "npm:^10.0.0"
+    uuid: "npm:^11.0.0"
     vitest: "npm:2.1.1"
     yjs: "patch:yjs@npm%3A13.6.18#~/.yarn/patches/yjs-npm-13.6.18-ad0d5f7c43.patch"
     zod: "npm:^3.22.4"
@@ -33042,12 +33042,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:10.0.0, uuid@npm:^10.0.0":
+"uuid@npm:10.0.0":
   version: 10.0.0
   resolution: "uuid@npm:10.0.0"
   bin:
     uuid: dist/bin/uuid
   checksum: 10/35aa60614811a201ff90f8ca5e9ecb7076a75c3821e17f0f5ff72d44e36c2d35fcbc2ceee9c4ac7317f4cc41895da30e74f3885e30313bee48fda6338f250538
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "uuid@npm:11.0.0"
+  bin:
+    uuid: dist/esm/bin/uuid
+  checksum: 10/ce68ce5031aa385efc4a7d8bf7d32904aeec778d4b3fa4164d09f5de64d91c42a3d36a27f82859b7a320875b8b88fdd48aa2e7746be2ace749f3461e528b1325
   languageName: node
   linkType: hard
 
