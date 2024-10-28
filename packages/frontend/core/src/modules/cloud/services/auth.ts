@@ -113,7 +113,7 @@ export class AuthService extends Service {
 
   async sendEmailMagicLink(
     email: string,
-    verifyToken: string,
+    verifyToken?: string,
     challenge?: string,
     redirectUrl?: string // url to redirect to after signed-in
   ) {
@@ -137,7 +137,7 @@ export class AuthService extends Service {
         }),
         headers: {
           'content-type': 'application/json',
-          ...this.captchaHeaders(verifyToken, challenge),
+          ...(verifyToken ? this.captchaHeaders(verifyToken, challenge) : {}),
         },
       });
     } catch (e) {
@@ -224,7 +224,7 @@ export class AuthService extends Service {
   async signInPassword(credential: {
     email: string;
     password: string;
-    verifyToken: string;
+    verifyToken?: string;
     challenge?: string;
   }) {
     track.$.$.auth.signIn({ method: 'password' });
@@ -234,7 +234,9 @@ export class AuthService extends Service {
         body: JSON.stringify(credential),
         headers: {
           'content-type': 'application/json',
-          ...this.captchaHeaders(credential.verifyToken, credential.challenge),
+          ...(credential.verifyToken
+            ? this.captchaHeaders(credential.verifyToken, credential.challenge)
+            : {}),
         },
       });
       this.session.revalidate();

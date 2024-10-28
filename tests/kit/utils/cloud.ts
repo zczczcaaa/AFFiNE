@@ -189,7 +189,7 @@ export async function loginUser(
   }
   await page.waitForTimeout(200);
   await page.getByTestId('sign-in-button').click();
-  await page.waitForTimeout(200);
+  await page.waitForTimeout(500);
   if (config?.afterLogin) {
     await config.afterLogin();
   }

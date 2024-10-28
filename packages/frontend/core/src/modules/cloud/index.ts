@@ -6,8 +6,10 @@ export {
   isNetworkError,
   NetworkError,
 } from './error';
+export { ValidatorProvider } from './provider/validator';
 export { WebSocketAuthProvider } from './provider/websocket-auth';
 export { AccountChanged, AuthService } from './services/auth';
+export { CaptchaService } from './services/captcha';
 export { FetchService } from './services/fetch';
 export { GraphQLService } from './services/graphql';
 export { InvoicesService } from './services/invoices';
@@ -38,8 +40,10 @@ import { UserCopilotQuota } from './entities/user-copilot-quota';
 import { UserFeature } from './entities/user-feature';
 import { UserQuota } from './entities/user-quota';
 import { DefaultFetchProvider, FetchProvider } from './provider/fetch';
+import { ValidatorProvider } from './provider/validator';
 import { WebSocketAuthProvider } from './provider/websocket-auth';
 import { AuthService } from './services/auth';
+import { CaptchaService } from './services/captcha';
 import { CloudDocMetaService } from './services/cloud-doc-meta';
 import { FetchService } from './services/fetch';
 import { GraphQLService } from './services/graphql';
@@ -75,6 +79,13 @@ export function configureCloudModule(framework: Framework) {
     .service(ServerConfigService)
     .entity(ServerConfig, [ServerConfigStore])
     .store(ServerConfigStore, [GraphQLService])
+    .service(CaptchaService, f => {
+      return new CaptchaService(
+        f.get(ServerConfigService),
+        f.get(FetchService),
+        f.getOptional(ValidatorProvider)
+      );
+    })
     .service(AuthService, [FetchService, AuthStore, UrlService])
     .store(AuthStore, [FetchService, GraphQLService, GlobalState])
     .entity(AuthSession, [AuthStore])

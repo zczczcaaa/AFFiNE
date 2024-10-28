@@ -6,6 +6,7 @@ import { Telemetry } from '@affine/core/components/telemetry';
 import { router } from '@affine/core/desktop/router';
 import { configureCommonModules } from '@affine/core/modules';
 import { configureAppTabsHeaderModule } from '@affine/core/modules/app-tabs-header';
+import { ValidatorProvider } from '@affine/core/modules/cloud';
 import { I18nProvider } from '@affine/core/modules/i18n';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
 import { CustomThemeModifier } from '@affine/core/modules/theme-editor';
@@ -73,6 +74,15 @@ framework.impl(PopupWindowProvider, {
 framework.impl(ClientSchemaProvider, {
   getClientSchema() {
     return appInfo?.schema;
+  },
+});
+framework.impl(ValidatorProvider, {
+  async validate(_challenge, resource) {
+    const token = await apis?.ui?.getChallengeResponse(resource);
+    if (!token) {
+      throw new Error('Challenge failed');
+    }
+    return token;
   },
 });
 const frameworkProvider = framework.provider();

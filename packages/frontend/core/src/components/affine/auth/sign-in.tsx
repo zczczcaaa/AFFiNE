@@ -2,9 +2,10 @@ import { notify } from '@affine/component';
 import { AuthInput, ModalHeader } from '@affine/component/auth-components';
 import { Button } from '@affine/component/ui/button';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
+import { CaptchaService } from '@affine/core/modules/cloud';
 import { Trans, useI18n } from '@affine/i18n';
 import { ArrowRightBigIcon } from '@blocksuite/icons/rc';
-import { useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import type { FC } from 'react';
 import { useState } from 'react';
@@ -15,7 +16,7 @@ import { emailRegex } from '../../../utils/email-regex';
 import type { AuthPanelProps } from './index';
 import { OAuth } from './oauth';
 import * as style from './style.css';
-import { Captcha, useCaptcha } from './use-captcha';
+import { Captcha } from './use-captcha';
 
 function validateEmail(email: string) {
   return emailRegex.test(email);
@@ -30,7 +31,11 @@ export const SignIn: FC<AuthPanelProps<'signIn'>> = ({
   const authService = useService(AuthService);
   const [searchParams] = useSearchParams();
   const [isMutating, setIsMutating] = useState(false);
-  const [verifyToken, challenge, refreshChallenge] = useCaptcha();
+  const captchaService = useService(CaptchaService);
+
+  const verifyToken = useLiveData(captchaService.verifyToken$);
+  const needCaptcha = useLiveData(captchaService.needCaptcha$);
+  const challenge = useLiveData(captchaService.challenge$);
   const [email, setEmail] = useState('');
 
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -49,29 +54,16 @@ export const SignIn: FC<AuthPanelProps<'signIn'>> = ({
       const { hasPassword, registered } =
         await authService.checkUserByEmail(email);
 
-      if (verifyToken) {
-        if (registered) {
-          // provider password sign-in if user has by default
-          //  If with payment, onl support email sign in to avoid redirect to affine app
-          if (hasPassword) {
-            refreshChallenge?.();
-            setAuthState({
-              state: 'signInWithPassword',
-              email,
-            });
-          } else {
-            await authService.sendEmailMagicLink(
-              email,
-              verifyToken,
-              challenge,
-              redirectUrl
-            );
-            setAuthState({
-              state: 'afterSignInSendEmail',
-              email,
-            });
-          }
+      if (registered) {
+        // provider password sign-in if user has by default
+        //  If with payment, onl support email sign in to avoid redirect to affine app
+        if (hasPassword) {
+          setAuthState({
+            state: 'signInWithPassword',
+            email,
+          });
         } else {
+          captchaService.revalidate();
           await authService.sendEmailMagicLink(
             email,
             verifyToken,
@@ -79,10 +71,22 @@ export const SignIn: FC<AuthPanelProps<'signIn'>> = ({
             redirectUrl
           );
           setAuthState({
-            state: 'afterSignUpSendEmail',
+            state: 'afterSignInSendEmail',
             email,
           });
         }
+      } else {
+        captchaService.revalidate();
+        await authService.sendEmailMagicLink(
+          email,
+          verifyToken,
+          challenge,
+          redirectUrl
+        );
+        setAuthState({
+          state: 'afterSignUpSendEmail',
+          email,
+        });
       }
     } catch (err) {
       console.error(err);
@@ -96,10 +100,10 @@ export const SignIn: FC<AuthPanelProps<'signIn'>> = ({
     setIsMutating(false);
   }, [
     authService,
+    captchaService,
     challenge,
     email,
     redirectUrl,
-    refreshChallenge,
     setAuthState,
     verifyToken,
   ]);
@@ -125,7 +129,7 @@ export const SignIn: FC<AuthPanelProps<'signIn'>> = ({
           onEnter={onContinue}
         />
 
-        {verifyToken ? (
+        {verifyToken || !needCaptcha ? (
           <Button
             style={{ width: '100%' }}
             size="extraLarge"
