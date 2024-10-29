@@ -43,6 +43,7 @@ export class MockCopilotTestProvider
   override readonly availableModels = [
     'test',
     'gpt-4o',
+    'gpt-4o-2024-08-06',
     'fast-sdxl/image-to-image',
     'lcm-sd15-i2i',
     'clarity-upscaler',
