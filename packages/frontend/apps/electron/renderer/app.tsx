@@ -11,7 +11,7 @@ import { I18nProvider } from '@affine/core/modules/i18n';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
 import { CustomThemeModifier } from '@affine/core/modules/theme-editor';
 import {
-  ClientSchemaProvider,
+  ClientSchemeProvider,
   PopupWindowProvider,
 } from '@affine/core/modules/url';
 import { configureSqliteUserspaceStorageProvider } from '@affine/core/modules/userspace';
@@ -71,9 +71,9 @@ framework.impl(PopupWindowProvider, {
     });
   },
 });
-framework.impl(ClientSchemaProvider, {
-  getClientSchema() {
-    return appInfo?.schema;
+framework.impl(ClientSchemeProvider, {
+  getClientScheme() {
+    return appInfo?.scheme;
   },
 });
 framework.impl(ValidatorProvider, {
