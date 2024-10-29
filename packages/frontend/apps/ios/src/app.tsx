@@ -4,7 +4,11 @@ import { Telemetry } from '@affine/core/components/telemetry';
 import { configureMobileModules } from '@affine/core/mobile/modules';
 import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
-import { AuthService, WebSocketAuthProvider } from '@affine/core/modules/cloud';
+import {
+  AuthService,
+  ValidatorProvider,
+  WebSocketAuthProvider,
+} from '@affine/core/modules/cloud';
 import { I18nProvider } from '@affine/core/modules/i18n';
 import { configureLocalStorageStateStorageImpls } from '@affine/core/modules/storage';
 import { PopupWindowProvider } from '@affine/core/modules/url';
@@ -28,6 +32,7 @@ import { RouterProvider } from 'react-router-dom';
 
 import { configureFetchProvider } from './fetch';
 import { Cookie } from './plugins/cookie';
+import { Hashcash } from './plugins/hashcash';
 
 const future = {
   v7_startTransition: true,
@@ -64,6 +69,12 @@ framework.impl(WebSocketAuthProvider, {
       userId: cookies['affine_user_id'],
       token: cookies['affine_session'],
     };
+  },
+});
+framework.impl(ValidatorProvider, {
+  async validate(_challenge, resource) {
+    const res = await Hashcash.hash({ challenge: resource });
+    return res.value;
   },
 });
 const frameworkProvider = framework.provider();

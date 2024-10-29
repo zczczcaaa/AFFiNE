@@ -7,7 +7,7 @@ import {
   onStart,
   Service,
 } from '@toeverything/infra';
-import { EMPTY, mergeMap, switchMap } from 'rxjs';
+import { EMPTY, exhaustMap, mergeMap } from 'rxjs';
 
 import type { ValidatorProvider } from '../provider/validator';
 import type { FetchService } from './fetch';
@@ -31,7 +31,7 @@ export class CaptchaService extends Service {
   }
 
   revalidate = effect(
-    switchMap(() => {
+    exhaustMap(() => {
       return fromPromise(async signal => {
         if (!this.needCaptcha$.value) {
           return {};

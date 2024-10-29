@@ -10,6 +10,6 @@ class AFFiNEViewController: CAPBridgeViewController {
   
   override func capacitorDidLoad() {
     bridge?.registerPluginInstance(CookiePlugin())
+    bridge?.registerPluginInstance(HashcashPlugin())
   }
-  
 }

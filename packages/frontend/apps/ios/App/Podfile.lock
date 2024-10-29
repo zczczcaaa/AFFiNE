@@ -6,12 +6,18 @@ PODS:
   - CapacitorBrowser (6.0.3):
     - Capacitor
   - CapacitorCordova (6.1.2)
+  - CryptoSwift (1.8.3)
 
 DEPENDENCIES:
   - "Capacitor (from `../../../../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../../../../node_modules/@capacitor/app`)"
   - "CapacitorBrowser (from `../../../../../node_modules/@capacitor/browser`)"
   - "CapacitorCordova (from `../../../../../node_modules/@capacitor/ios`)"
+  - CryptoSwift (~> 1.8.3)
+
+SPEC REPOS:
+  trunk:
+    - CryptoSwift
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -28,7 +34,8 @@ SPEC CHECKSUMS:
   CapacitorApp: 0bc633b4eae40a1f32cd2834788fad3bc42da6a1
   CapacitorBrowser: aab1ed943b01c0365c4810538a8b3477e2d9f72e
   CapacitorCordova: f48c89f96c319101cd2f0ce8a2b7449b5fb8b3dd
+  CryptoSwift: 967f37cea5a3294d9cce358f78861652155be483
 
-PODFILE CHECKSUM: 0f32d90fb8184cf478f85b78b1c00db1059ac3aa
+PODFILE CHECKSUM: 763e3dac392c17bcf42dab97a9225ea234e8416a
 
 COCOAPODS: 1.15.2

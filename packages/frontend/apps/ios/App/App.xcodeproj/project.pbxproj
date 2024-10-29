@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9D6A85332CCF6DA700DAB35F /* HashcashPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6A85322CCF6DA700DAB35F /* HashcashPlugin.swift */; };
 		9D90BE252CCB9876006677DB /* CookieManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D90BE172CCB9876006677DB /* CookieManager.swift */; };
 		9D90BE262CCB9876006677DB /* CookiePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D90BE182CCB9876006677DB /* CookiePlugin.swift */; };
 		9D90BE272CCB9876006677DB /* AFFiNEViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D90BE1B2CCB9876006677DB /* AFFiNEViewController.swift */; };
@@ -21,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D6A85322CCF6DA700DAB35F /* HashcashPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashcashPlugin.swift; sourceTree = "<group>"; };
 		9D90BE172CCB9876006677DB /* CookieManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookieManager.swift; sourceTree = "<group>"; };
 		9D90BE182CCB9876006677DB /* CookiePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookiePlugin.swift; sourceTree = "<group>"; };
 		9D90BE1B2CCB9876006677DB /* AFFiNEViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFFiNEViewController.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 				504EC3051FED79650016851F /* Products */,
 				7F8756D8B27F46E3366F6CEA /* Pods */,
 				27E2DDA53C4D2A4D1A88CE4A /* Frameworks */,
+				9D6A85312CCF6D6B00DAB35F /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -90,6 +93,7 @@
 			children = (
 				9D90BE172CCB9876006677DB /* CookieManager.swift */,
 				9D90BE182CCB9876006677DB /* CookiePlugin.swift */,
+				9D6A85322CCF6DA700DAB35F /* HashcashPlugin.swift */,
 			);
 			path = Cookie;
 			sourceTree = "<group>";
@@ -232,6 +236,7 @@
 			files = (
 				9D90BE252CCB9876006677DB /* CookieManager.swift in Sources */,
 				9D90BE262CCB9876006677DB /* CookiePlugin.swift in Sources */,
+				9D6A85332CCF6DA700DAB35F /* HashcashPlugin.swift in Sources */,
 				9D90BE272CCB9876006677DB /* AFFiNEViewController.swift in Sources */,
 				9D90BE282CCB9876006677DB /* AppDelegate.swift in Sources */,
 			);

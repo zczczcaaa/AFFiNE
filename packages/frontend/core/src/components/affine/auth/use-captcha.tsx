@@ -11,10 +11,8 @@ export const Captcha = () => {
   const isLoading = useLiveData(captchaService.isLoading$);
   const verifyToken = useLiveData(captchaService.verifyToken$);
   useEffect(() => {
-    if (hasCaptchaFeature) {
-      captchaService.revalidate();
-    }
-  }, [captchaService, hasCaptchaFeature]);
+    captchaService.revalidate();
+  }, [captchaService]);
 
   const handleTurnstileSuccess = useCallback(
     (token: string) => {
