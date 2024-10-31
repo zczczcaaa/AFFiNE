@@ -16,7 +16,11 @@ import { useEnableCloud } from '@affine/core/components/hooks/affine/use-enable-
 import { useExportPage } from '@affine/core/components/hooks/affine/use-export-page';
 import { useTrashModalHelper } from '@affine/core/components/hooks/affine/use-trash-modal-helper';
 import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
-import { Export, MoveToTrash } from '@affine/core/components/page-list';
+import {
+  Export,
+  MoveToTrash,
+  Snapshot,
+} from '@affine/core/components/page-list';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
 import { useDetailPageHeaderResponsive } from '@affine/core/desktop/pages/workspace/detail-page/use-header-responsive';
 import { DocInfoService } from '@affine/core/modules/doc-info';
@@ -44,7 +48,12 @@ import {
   SplitViewIcon,
   TocIcon,
 } from '@blocksuite/icons/rc';
-import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
+import {
+  FeatureFlagService,
+  useLiveData,
+  useService,
+  WorkspaceService,
+} from '@toeverything/infra';
 import { useSetAtom } from 'jotai';
 import { useCallback, useState } from 'react';
 
@@ -79,6 +88,10 @@ export const PageHeaderMenuButton = ({
   const primaryMode = useLiveData(editorService.editor.doc.primaryMode$);
 
   const workbench = useService(WorkbenchService).workbench;
+  const featureFlagService = useService(FeatureFlagService);
+  const enableSnapshotImportExport = useLiveData(
+    featureFlagService.flags.enable_snapshot_import_export.$
+  );
 
   const { favorite, toggleFavorite } = useFavorite(pageId);
 
@@ -357,6 +370,7 @@ export const PageHeaderMenuButton = ({
         {t['Import']()}
       </MenuItem>
       <Export exportHandler={exportHandler} pageMode={currentMode} />
+      {enableSnapshotImportExport && <Snapshot />}
       <MenuSeparator />
       <MoveToTrash
         data-testid="editor-option-menu-delete"

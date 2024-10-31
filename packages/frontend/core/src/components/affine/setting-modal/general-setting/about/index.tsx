@@ -13,7 +13,11 @@ import { UrlService } from '@affine/core/modules/url';
 import { useI18n } from '@affine/i18n';
 import { mixpanel } from '@affine/track';
 import { ArrowRightSmallIcon, OpenInNewIcon } from '@blocksuite/icons/rc';
-import { useService } from '@toeverything/infra';
+import {
+  FeatureFlagService,
+  useLiveData,
+  useServices,
+} from '@toeverything/infra';
 import { useCallback } from 'react';
 
 import { useAppSettingHelper } from '../../../../../components/hooks/affine/use-app-setting-helper';
@@ -23,9 +27,15 @@ import { UpdateCheckSection } from './update-check-section';
 
 export const AboutAffine = () => {
   const t = useI18n();
-  const urlService = useService(UrlService);
+  const { urlService, featureFlagService } = useServices({
+    UrlService,
+    FeatureFlagService,
+  });
   const { appSettings, updateSettings } = useAppSettingHelper();
   const { toggleAutoCheck, toggleAutoDownload } = useAppUpdater();
+  const enableSnapshotImportExport = useLiveData(
+    featureFlagService.flags.enable_snapshot_import_export.$
+  );
   const channel = BUILD_CONFIG.appBuildType;
   const appIcon = appIconMap[channel];
   const appName = appNames[channel];
@@ -56,6 +66,13 @@ export const AboutAffine = () => {
       updateSettings('enableTelemetry', checked);
     },
     [updateSettings]
+  );
+
+  const onSwitchSnapshotImportExport = useCallback(
+    (checked: boolean) => {
+      featureFlagService.flags.enable_snapshot_import_export.set(checked);
+    },
+    [featureFlagService]
   );
 
   return (
@@ -141,6 +158,16 @@ export const AboutAffine = () => {
           {t['com.affine.aboutAFFiNE.contact.community']()}
           <OpenInNewIcon className="icon" />
         </a>
+        <SettingRow
+          name={t['com.affine.snapshot.import-export.enable']()}
+          desc={t['com.affine.snapshot.import-export.enable.desc']()}
+          className={styles.snapshotImportExportRow}
+        >
+          <Switch
+            checked={enableSnapshotImportExport}
+            onChange={onSwitchSnapshotImportExport}
+          />
+        </SettingRow>
       </SettingWrapper>
       <SettingWrapper title={t['com.affine.aboutAFFiNE.community.title']()}>
         <div className={styles.communityWrapper}>

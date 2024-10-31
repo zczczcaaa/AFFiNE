@@ -162,6 +162,14 @@ export const AFFINE_FLAGS = {
     configurable: false,
     defaultState: isMobile,
   },
+  enable_snapshot_import_export: {
+    category: 'affine',
+    displayName: 'Enable Snapshot Import Export',
+    description:
+      'Once enabled, users can import and export blocksuite snapshots',
+    configurable: true,
+    defaultState: false,
+  },
 } satisfies { [key in string]: FlagInfo };
 
 export type AFFINE_FLAGS = typeof AFFINE_FLAGS;
