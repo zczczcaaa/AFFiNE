@@ -1,5 +1,4 @@
 import { Button, Checkbox } from '@affine/component';
-import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import {
   OpenInAppService,
   OpenLinkMode,
@@ -16,17 +15,16 @@ import * as styles from './open-in-app-card.css';
 export const OpenInAppCard = ({ className }: { className?: string }) => {
   const openInAppService = useService(OpenInAppService);
   const show = useLiveData(openInAppService.showOpenInAppBanner$);
-  const navigateHelper = useNavigateHelper();
   const t = useI18n();
 
   const [remember, setRemember] = useState(false);
 
   const onOpen = useCallback(() => {
-    navigateHelper.jumpToOpenInApp(window.location.href, true);
+    openInAppService.showOpenInAppPage();
     if (remember) {
       openInAppService.setOpenLinkMode(OpenLinkMode.OPEN_IN_DESKTOP_APP);
     }
-  }, [openInAppService, remember, navigateHelper]);
+  }, [openInAppService, remember]);
 
   const onDismiss = useCallback(() => {
     openInAppService.dismissBanner(

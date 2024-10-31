@@ -3,7 +3,7 @@ export { UserspaceService as UserDBService } from './services/userspace';
 import type { Framework } from '@toeverything/infra';
 
 import { AuthService, WebSocketService } from '../cloud';
-import { DesktopApiService } from '../desktop-api';
+import { DesktopApiService } from '../desktop-api/service/desktop-api';
 import { CurrentUserDB } from './entities/current-user-db';
 import { UserDB } from './entities/user-db';
 import { UserDBEngine } from './entities/user-db-engine';

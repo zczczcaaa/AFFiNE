@@ -4,7 +4,7 @@ import {
   WorkspaceScope,
 } from '@toeverything/infra';
 
-import { WorkbenchService } from '../workbench';
+import { WorkbenchService } from '../workbench/services/workbench';
 import { DesktopApi } from './entities/electron-api';
 import { ElectronApiImpl } from './impl';
 import { DesktopApiProvider } from './provider';
