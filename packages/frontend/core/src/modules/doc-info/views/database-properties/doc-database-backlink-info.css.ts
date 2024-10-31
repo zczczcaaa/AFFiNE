@@ -15,7 +15,6 @@ export const section = style({
 
 export const cell = style({
   display: 'flex',
-  gap: 4,
 });
 
 export const divider = style({
