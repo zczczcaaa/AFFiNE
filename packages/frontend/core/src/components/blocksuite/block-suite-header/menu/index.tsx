@@ -7,12 +7,14 @@ import {
 } from '@affine/component/ui/menu';
 import { PageHistoryModal } from '@affine/core/components/affine/page-history-modal';
 import { ShareMenuContent } from '@affine/core/components/affine/share-page-modal/share-menu';
-import { openHistoryTipsModalAtom } from '@affine/core/components/atoms';
+import {
+  openHistoryTipsModalAtom,
+  openImportModalAtom,
+} from '@affine/core/components/atoms';
 import { useBlockSuiteMetaHelper } from '@affine/core/components/hooks/affine/use-block-suite-meta-helper';
 import { useEnableCloud } from '@affine/core/components/hooks/affine/use-enable-cloud';
 import { useExportPage } from '@affine/core/components/hooks/affine/use-export-page';
 import { useTrashModalHelper } from '@affine/core/components/hooks/affine/use-trash-modal-helper';
-import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import { Export, MoveToTrash } from '@affine/core/components/page-list';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
@@ -47,7 +49,6 @@ import { useSetAtom } from 'jotai';
 import { useCallback, useState } from 'react';
 
 import { HeaderDropDownButton } from '../../../pure/header-drop-down-button';
-import { usePageHelper } from '../../block-suite-page-list/utils';
 import { useFavorite } from '../favorite';
 
 type PageMenuProps = {
@@ -69,7 +70,6 @@ export const PageHeaderMenuButton = ({
   const confirmEnableCloud = useEnableCloud();
 
   const workspace = useService(WorkspaceService).workspace;
-  const docCollection = workspace.docCollection;
 
   const editorService = useService(EditorService);
   const isInTrash = useLiveData(
@@ -83,7 +83,6 @@ export const PageHeaderMenuButton = ({
   const { favorite, toggleFavorite } = useFavorite(pageId);
 
   const { duplicate } = useBlockSuiteMetaHelper();
-  const { importFile } = usePageHelper(docCollection);
   const { setTrashModal } = useTrashModalHelper();
 
   const [isEditing, setEditing] = useState(!page.readonly);
@@ -109,6 +108,7 @@ export const PageHeaderMenuButton = ({
 
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const setOpenHistoryTipsModal = useSetAtom(openHistoryTipsModalAtom);
+  const setOpenImportModalAtom = useSetAtom(openImportModalAtom);
 
   const openHistoryModal = useCallback(() => {
     track.$.header.history.open();
@@ -184,19 +184,10 @@ export const PageHeaderMenuButton = ({
     });
   }, [duplicate, pageId]);
 
-  const onImportFile = useAsyncCallback(async () => {
-    const options = await importFile();
+  const handleOpenImportModal = useCallback(() => {
     track.$.header.docOptions.import();
-    if (options.isWorkspaceFile) {
-      track.$.header.actions.createWorkspace({
-        control: 'import',
-      });
-    } else {
-      track.$.header.actions.createDoc({
-        control: 'import',
-      });
-    }
-  }, [importFile]);
+    setOpenImportModalAtom(true);
+  }, [setOpenImportModalAtom]);
 
   const handleShareMenuOpenChange = useCallback((open: boolean) => {
     if (open) {
@@ -361,7 +352,7 @@ export const PageHeaderMenuButton = ({
       <MenuItem
         prefixIcon={<ImportIcon />}
         data-testid="editor-option-menu-import"
-        onSelect={onImportFile}
+        onSelect={handleOpenImportModal}
       >
         {t['Import']()}
       </MenuItem>
