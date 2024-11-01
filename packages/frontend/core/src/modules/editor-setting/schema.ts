@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const BSEditorSettingSchema = NodePropsSchema;
 
 export type FontFamily = 'Sans' | 'Serif' | 'Mono' | 'Custom';
+export type EdgelessDefaultTheme = 'auto' | 'dark' | 'light' | 'specified';
 
 export const fontStyleOptions = [
   { key: 'Sans', value: 'var(--affine-font-sans-family)' },
@@ -23,6 +24,9 @@ const AffineEditorSettingSchema = z.object({
   fullWidthLayout: z.boolean().default(false),
   displayDocInfo: z.boolean().default(true),
   displayBiDirectionalLink: z.boolean().default(true),
+  edgelessDefaultTheme: z
+    .enum(['specified', 'dark', 'light', 'auto'])
+    .default('specified'),
 });
 
 export const EditorSettingSchema = BSEditorSettingSchema.merge(

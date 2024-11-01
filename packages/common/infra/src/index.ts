@@ -10,6 +10,7 @@ export * from './modules/feature-flag';
 export * from './modules/global-context';
 export * from './modules/lifecycle';
 export * from './modules/storage';
+export * from './modules/theme';
 export * from './modules/workspace';
 export * from './orm';
 export * from './storage';
@@ -26,6 +27,7 @@ import {
   configureGlobalStorageModule,
   configureTestingGlobalStorage,
 } from './modules/storage';
+import { configureAppThemeModule } from './modules/theme';
 import {
   configureTestingWorkspaceProvider,
   configureWorkspaceModule,
@@ -39,6 +41,7 @@ export function configureInfraModules(framework: Framework) {
   configureGlobalContextModule(framework);
   configureLifecycleModule(framework);
   configureFeatureFlagModule(framework);
+  configureAppThemeModule(framework);
 }
 
 export function configureTestingInfraModules(framework: Framework) {

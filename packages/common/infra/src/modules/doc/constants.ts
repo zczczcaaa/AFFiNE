@@ -39,4 +39,10 @@ export const BUILT_IN_CUSTOM_PROPERTY_TYPE = [
     show: 'always-hide',
     index: 'a0000006',
   },
+  {
+    id: 'edgelessTheme',
+    type: 'edgelessTheme',
+    show: 'always-hide',
+    index: 'a0000007',
+  },
 ] as DocCustomPropertyInfo[];
