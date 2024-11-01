@@ -10,6 +10,7 @@ export const root = style({
   width: '100%',
   justifyContent: 'center',
   fontFamily: cssVar('fontSansFamily'),
+  paddingBottom: '18px',
   vars: {
     [propertyNameCellWidth]: '160px',
     [fontSize]: cssVar('fontSm'),
@@ -41,6 +42,7 @@ export const tableHeader = style({
   display: 'flex',
   height: 30,
   padding: 4,
+  marginBottom: '8px',
   justifyContent: 'space-between',
   alignItems: 'center',
   color: cssVarV2('text/secondary'),

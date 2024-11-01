@@ -247,6 +247,10 @@ export const BlocksuiteDocEditor = forwardRef<
     )
   );
 
+  const displayDocInfo = useLiveData(
+    editorSettingService.editorSetting.settings$.selector(s => s.displayDocInfo)
+  );
+
   return (
     <>
       <div className={styles.affineDocViewport} style={{ height: '100%' }}>
@@ -255,7 +259,7 @@ export const BlocksuiteDocEditor = forwardRef<
         ) : (
           <BlocksuiteEditorJournalDocTitle page={page} />
         )}
-        {!shared ? (
+        {!shared && displayDocInfo ? (
           <DocPropertiesTable defaultOpenProperty={defaultOpenProperty} />
         ) : null}
         <adapted.DocEditor
