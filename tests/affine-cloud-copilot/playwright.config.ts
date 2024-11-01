@@ -22,8 +22,8 @@ const config: PlaywrightTestConfig = {
     video: 'on',
   },
   forbidOnly: !!process.env.CI,
-  workers: process.env.CI && !process.env.COPILOT ? 1 : 4,
-  retries: process.env.COPILOT ? 1 : 3,
+  workers: 4,
+  retries: 3,
   reporter: process.env.CI ? 'github' : 'list',
   webServer: [
     {

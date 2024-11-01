@@ -67,6 +67,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@affine-test/affine-cloud-copilot@workspace:tests/affine-cloud-copilot":
+  version: 0.0.0-use.local
+  resolution: "@affine-test/affine-cloud-copilot@workspace:tests/affine-cloud-copilot"
+  dependencies:
+    "@affine-test/kit": "workspace:*"
+    "@playwright/test": "npm:=1.47.2"
+  languageName: unknown
+  linkType: soft
+
 "@affine-test/affine-cloud@workspace:tests/affine-cloud":
   version: 0.0.0-use.local
   resolution: "@affine-test/affine-cloud@workspace:tests/affine-cloud"
@@ -374,6 +383,17 @@ __metadata:
   peerDependencies:
     "@blocksuite/affine": "*"
     "@blocksuite/icons": 2.1.67
+  languageName: unknown
+  linkType: soft
+
+"@affine/copilot-result@workspace:tools/copilot-result":
+  version: 0.0.0-use.local
+  resolution: "@affine/copilot-result@workspace:tools/copilot-result"
+  dependencies:
+    "@slack/web-api": "npm:^7.3.4"
+    "@types/node": "npm:^20.14.12"
+    jsx-slack: "npm:^6.1.1"
+    marked: "npm:^14.0.0"
   languageName: unknown
   linkType: soft
 
