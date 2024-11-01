@@ -57,6 +57,18 @@ export function setupDeepLink(app: App) {
       })
       .catch(e => console.error('Failed to restore or create window:', e));
   });
+
+  app.on('ready', () => {
+    // app may be brought up without having a running instance
+    // need to read the url from the command line
+    const url = process.argv.at(-1);
+    logger.log('url from argv', process.argv, url);
+    if (url?.startsWith(`${protocol}://`)) {
+      handleAffineUrl(url).catch(e => {
+        logger.error('failed to handle affine url', e);
+      });
+    }
+  });
 }
 
 async function handleAffineUrl(url: string) {
