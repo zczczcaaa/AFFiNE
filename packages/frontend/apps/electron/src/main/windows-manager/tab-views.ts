@@ -842,6 +842,10 @@ export class WebContentViewsManager {
   };
 }
 
+export function getCookies() {
+  return WebContentViewsManager.instance.cookies;
+}
+
 // there is no proper way to listen to webContents resize event
 // we will rely on window.resize event in renderer instead
 export async function handleWebContentsResize(webContents?: WebContents) {
