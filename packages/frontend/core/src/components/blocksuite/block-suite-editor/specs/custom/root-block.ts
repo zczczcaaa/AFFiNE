@@ -107,7 +107,9 @@ function createThemeExtension(framework: FrameworkProvider) {
       if (cache) return cache;
 
       const appTheme$ = framework.get(AppThemeService).appTheme.theme$;
-      const docTheme$ = doc.properties$.map(props => props.edgelessColorTheme);
+      const docTheme$ = doc.properties$.map(
+        props => props.edgelessColorTheme || 'system'
+      );
       const theme$: Observable<ColorScheme> = combineLatest([
         appTheme$,
         docTheme$,
