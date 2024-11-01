@@ -109,7 +109,7 @@ const DatabaseBacklinkRow = ({
 
   return (
     <PropertyCollapsibleSection
-      title={row.databaseName + ' ' + t['properties']()}
+      title={(row.databaseName || t['unnamed']()) + ' ' + t['properties']()}
       defaultCollapsed={!defaultOpen}
       icon={<DatabaseTableViewIcon />}
       suffix={
