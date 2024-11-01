@@ -220,9 +220,12 @@ test('check if added property is also in workspace settings', async ({
 }) => {
   await addCustomProperty(page, page, 'text');
   await openWorkspaceProperties(page);
-  await expect(
-    page.locator('[data-testid=doc-property-manager-item]:has-text("Text")')
-  ).toBeVisible();
+  const settingModal = page.locator('[data-testid=setting-modal-content]');
+  const item = settingModal.locator(
+    '[data-testid=doc-property-manager-item]:has-text("Text")'
+  );
+  await item.waitFor({ state: 'attached' });
+  await expect(item).toBeVisible();
 });
 
 test('edit property name', async ({ page }) => {
@@ -243,9 +246,12 @@ test('edit property name', async ({ page }) => {
 
   // check if the property name is also updated in workspace settings
   await openWorkspaceProperties(page);
-  await expect(
-    page.locator('[data-testid=doc-property-manager-item]:has-text("New Text")')
-  ).toBeVisible();
+  const settingModal = page.locator('[data-testid=setting-modal-content]');
+  const item = settingModal.locator(
+    '[data-testid=doc-property-manager-item]:has-text("New Text")'
+  );
+  await item.waitFor({ state: 'attached' });
+  await expect(item).toBeVisible();
 });
 
 test('delete property via property popup', async ({ page }) => {
