@@ -11,6 +11,7 @@ import { configureI18nModule, I18nProvider } from '@affine/core/modules/i18n';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
 import { SplitViewFallback } from '@affine/core/modules/workbench/view/split-view/split-view';
 import {
+  configureAppThemeModule,
   configureGlobalStorageModule,
   Framework,
   FrameworkRoot,
@@ -25,6 +26,7 @@ configureAppTabsHeaderModule(framework);
 configureAppSidebarModule(framework);
 configureI18nModule(framework);
 configureDesktopApiModule(framework);
+configureAppThemeModule(framework);
 const frameworkProvider = framework.provider();
 
 export function App() {
