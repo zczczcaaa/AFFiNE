@@ -1,18 +1,17 @@
-import { Button, Checkbox } from '@affine/component';
+import { Button, Checkbox, IconButton } from '@affine/component';
 import {
   OpenInAppService,
   OpenLinkMode,
 } from '@affine/core/modules/open-in-app';
-import { useI18n } from '@affine/i18n';
-import { track } from '@affine/track';
-import { DownloadIcon, LocalWorkspaceIcon } from '@blocksuite/icons/rc';
+import { appIconMap } from '@affine/core/utils';
+import { Trans, useI18n } from '@affine/i18n';
+import { CloseIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
-import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 
 import * as styles from './open-in-app-card.css';
 
-export const OpenInAppCard = ({ className }: { className?: string }) => {
+export const OpenInAppCard = () => {
   const openInAppService = useService(OpenInAppService);
   const show = useLiveData(openInAppService.showOpenInAppBanner$);
   const t = useI18n();
@@ -22,7 +21,7 @@ export const OpenInAppCard = ({ className }: { className?: string }) => {
   const onOpen = useCallback(() => {
     openInAppService.showOpenInAppPage();
     if (remember) {
-      openInAppService.setOpenLinkMode(OpenLinkMode.OPEN_IN_DESKTOP_APP);
+      openInAppService.dismissBanner(OpenLinkMode.OPEN_IN_DESKTOP_APP);
     }
   }, [openInAppService, remember]);
 
@@ -36,34 +35,48 @@ export const OpenInAppCard = ({ className }: { className?: string }) => {
     setRemember(v => !v);
   }, []);
 
-  const handleDownload = useCallback(() => {
-    track.$.navigationPanel.bottomButtons.downloadApp();
-    const url = `https://affine.pro/download?channel=stable`;
-    open(url, '_blank');
-  }, []);
-
-  if (!show) {
-    return null;
-  }
+  const appIcon = appIconMap[BUILD_CONFIG.appBuildType];
 
   return (
-    <div className={clsx(styles.root, className)}>
-      <div className={styles.pane}>
-        <div className={styles.primaryRow}>
-          <LocalWorkspaceIcon className={styles.icon} />
-          <div>{t.t('com.affine.open-in-app.card.title')}</div>
+    <div className={styles.root} data-hidden={!show}>
+      <div className={styles.appIconCol}>
+        <img src={appIcon} alt="app icon" width={48} height={48} />
+      </div>
+      <div className={styles.contentCol}>
+        <div className={styles.titleRow}>
+          {t.t('com.affine.open-in-app.card.title')}
+          <div className={styles.spacer} />
+          <IconButton
+            className={styles.closeButton}
+            icon={<CloseIcon />}
+            onClick={onDismiss}
+          />
         </div>
-        <div className={styles.row}>
-          <div className={styles.icon}>{/* placeholder */}</div>
-          <div className={styles.buttonGroup}>
-            <Button
-              variant="primary"
-              size="custom"
-              className={styles.button}
-              onClick={onOpen}
+        <div className={styles.subtitleRow}>
+          <Trans i18nKey="com.affine.open-in-app.card.subtitle">
+            No desktop app?
+            <a
+              href="https://affine.pro/download"
+              target="_blank"
+              rel="noreferrer"
+              className={styles.link}
             >
-              {t.t('com.affine.open-in-app.card.button.open')}
-            </Button>
+              Click to download
+            </a>
+            .
+          </Trans>
+        </div>
+        <div className={styles.controlsRow}>
+          <label className={styles.rememberLabel}>
+            <Checkbox
+              className={styles.rememberCheckbox}
+              checked={remember}
+              onChange={onToggleRemember}
+            />
+            {t.t('com.affine.open-in-app.card.remember')}
+          </label>
+          <div className={styles.spacer} />
+          <div className={styles.buttonGroup}>
             <Button
               variant="secondary"
               size="custom"
@@ -72,21 +85,15 @@ export const OpenInAppCard = ({ className }: { className?: string }) => {
             >
               {t.t('com.affine.open-in-app.card.button.dismiss')}
             </Button>
+            <Button
+              variant="primary"
+              size="custom"
+              className={styles.button}
+              onClick={onOpen}
+            >
+              {t.t('com.affine.open-in-app.card.button.open')}
+            </Button>
           </div>
-        </div>
-      </div>
-
-      <div className={styles.pane}>
-        <div className={styles.clickableRow} onClick={onToggleRemember}>
-          <Checkbox className={styles.icon} checked={remember} />
-          <div>{t.t('com.affine.open-in-app.card.remember')}</div>
-        </div>
-      </div>
-
-      <div className={styles.pane}>
-        <div className={styles.clickableRow} onClick={handleDownload}>
-          <DownloadIcon className={styles.icon} />
-          <div>{t.t('com.affine.open-in-app.card.download')}</div>
         </div>
       </div>
     </div>

@@ -44,10 +44,7 @@ export const OpenInAppLinksMenu = () => {
         align: 'end',
       }}
     >
-      <MenuTrigger
-        style={{ textTransform: 'capitalize', fontWeight: 600, width: '250px' }}
-        block={true}
-      >
+      <MenuTrigger style={{ fontWeight: 600, width: '250px' }} block={true}>
         {options.find(option => option.value === currentOpenInAppMode)?.label}
       </MenuTrigger>
     </Menu>

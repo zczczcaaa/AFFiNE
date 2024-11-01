@@ -57,9 +57,3 @@ export const linkText = style({
   fontWeight: 700,
   whiteSpace: 'nowrap',
 });
-
-export const shareCard = style({
-  position: 'fixed',
-  bottom: '16px',
-  left: '16px',
-});

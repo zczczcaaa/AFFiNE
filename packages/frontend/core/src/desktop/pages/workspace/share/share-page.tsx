@@ -167,7 +167,7 @@ const SharePageWebContainer = ({
           {children}
           <SharePageFooter />
         </div>
-        <OpenInAppCard className={styles.shareCard} />
+        <OpenInAppCard />
       </div>
     </MainContainer>
   );

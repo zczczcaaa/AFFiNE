@@ -3,7 +3,10 @@ import {
   pushGlobalLoadingEventAtom,
   resolveGlobalLoadingEventAtom,
 } from '@affine/component/global-loading';
-import { SidebarSwitch } from '@affine/core/modules/app-sidebar/views';
+import {
+  OpenInAppCard,
+  SidebarSwitch,
+} from '@affine/core/modules/app-sidebar/views';
 import { WorkspaceDesktopApiService } from '@affine/core/modules/desktop-api/service';
 import { useI18n } from '@affine/i18n';
 import { type DocMode, ZipTransformer } from '@blocksuite/affine/blocks';
@@ -205,6 +208,7 @@ const DesktopLayout = ({ children }: PropsWithChildren) => {
 const BrowserLayout = ({ children }: PropsWithChildren) => {
   return (
     <div className={styles.browserAppViewContainer}>
+      <OpenInAppCard />
       <RootAppSidebar />
       <MainContainer>{children}</MainContainer>
     </div>
