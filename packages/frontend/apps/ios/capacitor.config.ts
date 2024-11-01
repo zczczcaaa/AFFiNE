@@ -1,4 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli';
+import { KeyboardResize } from '@capacitor/keyboard';
 
 const config: CapacitorConfig = {
   appId: 'app.affine.pro',
@@ -16,6 +17,9 @@ const config: CapacitorConfig = {
     },
     CapacitorHttp: {
       enabled: true,
+    },
+    Keyboard: {
+      resize: KeyboardResize.Native,
     },
   },
 };

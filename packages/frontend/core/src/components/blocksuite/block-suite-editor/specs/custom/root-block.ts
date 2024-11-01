@@ -10,6 +10,11 @@ import {
   LifeCycleWatcher,
   StdIdentifier,
 } from '@blocksuite/affine/block-std';
+import type {
+  RootBlockConfig,
+  TelemetryEventMap,
+  ThemeExtension,
+} from '@blocksuite/affine/blocks';
 import {
   ColorScheme,
   EdgelessBuiltInManager,
@@ -18,9 +23,7 @@ import {
   EditorSettingExtension,
   FontLoaderService,
   PageRootBlockSpec,
-  type TelemetryEventMap,
   TelemetryProvider,
-  type ThemeExtension,
   ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
 import {
@@ -39,6 +42,7 @@ import { combineLatest, map } from 'rxjs';
 
 import { getFontConfigExtension } from '../font-extension';
 import { createDatabaseOptionsConfig } from './database-block';
+import { createKeyboardToolbarConfig } from './widgets/keyboard-toolbar';
 import { createLinkedWidgetConfig } from './widgets/linked';
 import { createToolbarMoreMenuConfig } from './widgets/toolbar';
 
@@ -144,7 +148,8 @@ function getEditorConfigExtension(
       linkedWidget: createLinkedWidgetConfig(framework),
       toolbarMoreMenu: createToolbarMoreMenuConfig(framework),
       databaseOptions: createDatabaseOptionsConfig(framework),
-    }),
+      keyboardToolbar: createKeyboardToolbarConfig(),
+    } satisfies RootBlockConfig),
   ];
 }
 
