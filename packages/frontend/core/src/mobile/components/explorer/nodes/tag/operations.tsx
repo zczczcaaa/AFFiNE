@@ -7,7 +7,12 @@ import { TagService } from '@affine/core/modules/tag';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import { DeleteIcon, PlusIcon, SplitViewIcon } from '@blocksuite/icons/rc';
+import {
+  DeleteIcon,
+  FolderIcon,
+  PlusIcon,
+  SplitViewIcon,
+} from '@blocksuite/icons/rc';
 import {
   DocsService,
   FeatureFlagService,
@@ -18,6 +23,7 @@ import {
 } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
+import { useSelectDoc } from '../../../selector';
 import { TagRenameSubMenu } from './dialog';
 
 export const useExplorerTagNodeOperations = (
@@ -29,6 +35,7 @@ export const useExplorerTagNodeOperations = (
   }
 ) => {
   const t = useI18n();
+  const openDocSelector = useSelectDoc();
   const { workbenchService, workspaceService, tagService, favoriteService } =
     useServices({
       WorkbenchService,
@@ -113,6 +120,17 @@ export const useExplorerTagNodeOperations = (
     },
     [handleChangeColor, handleRename]
   );
+  const handleOpenDocSelector = useCallback(() => {
+    const initialIds = tagRecord?.pageIds$.value;
+    openDocSelector(initialIds, { where: 'tag', type: 'doc' })
+      .then(selectedIds => {
+        const newIds = selectedIds.filter(id => !initialIds?.includes(id));
+        const removedIds = initialIds?.filter(id => !selectedIds.includes(id));
+        newIds.forEach(id => tagRecord?.tag(id));
+        removedIds?.forEach(id => tagRecord?.untag(id));
+      })
+      .catch(console.error);
+  }, [openDocSelector, tagRecord]);
 
   return useMemo(
     () => ({
@@ -125,6 +143,7 @@ export const useExplorerTagNodeOperations = (
       handleRename,
       handleChangeColor,
       handleChangeNameOrColor,
+      handleOpenDocSelector,
     }),
     [
       favorite,
@@ -136,6 +155,7 @@ export const useExplorerTagNodeOperations = (
       handleOpenInSplitView,
       handleRename,
       handleToggleFavoriteTag,
+      handleOpenDocSelector,
     ]
   );
 };
@@ -157,6 +177,7 @@ export const useExplorerTagNodeOperationsMenu = (
     handleOpenInSplitView,
     handleToggleFavoriteTag,
     handleChangeNameOrColor,
+    handleOpenDocSelector,
   } = useExplorerTagNodeOperations(tagId, option);
 
   return useMemo(
@@ -178,6 +199,18 @@ export const useExplorerTagNodeOperationsMenu = (
             tagId={tagId}
             menuProps={{ triggerOptions: { 'data-testid': 'rename-tag' } }}
           />
+        ),
+      },
+      {
+        index: 11,
+        view: <MenuSeparator />,
+      },
+      {
+        index: 12,
+        view: (
+          <MenuItem prefixIcon={<FolderIcon />} onClick={handleOpenDocSelector}>
+            {t['com.affine.m.explorer.tag.manage-docs']()}
+          </MenuItem>
         ),
       },
       ...(BUILD_CONFIG.isElectron && enableMultiView
@@ -231,6 +264,7 @@ export const useExplorerTagNodeOperationsMenu = (
       handleChangeNameOrColor,
       handleMoveToTrash,
       handleNewDoc,
+      handleOpenDocSelector,
       handleOpenInSplitView,
       handleToggleFavoriteTag,
       t,
