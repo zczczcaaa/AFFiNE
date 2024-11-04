@@ -113,15 +113,22 @@ const focusToEditor = async (page: Page) => {
 };
 
 const getEditorContent = async (page: Page) => {
-  const lines = await page.$$('page-editor .inline-editor');
-  const contents = await Promise.all(lines.map(el => el.innerText()));
-  return (
-    contents
+  let content = '';
+  let retry = 3;
+  while (!content && retry > 0) {
+    const lines = await page.$$('page-editor .inline-editor');
+    const contents = await Promise.all(lines.map(el => el.innerText()));
+    content = contents
       // cleanup zero width space
       .map(c => c.replace(/\u200B/g, '').trim())
       .filter(c => !!c)
-      .join('\n')
-  );
+      .join('\n');
+    if (!content) {
+      await page.waitForTimeout(500);
+      retry -= 1;
+    }
+  }
+  return content;
 };
 
 const switchToEdgelessMode = async (page: Page) => {

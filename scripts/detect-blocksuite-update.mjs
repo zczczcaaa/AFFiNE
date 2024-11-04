@@ -65,13 +65,13 @@ async function findPackageJson(root) {
 }
 
 async function main() {
-  if (process.argv.length < 3) {
-    console.error('Usage: node script.js <commit-hash>');
+  const commitHash = process.argv[2] || process.env.GITHUB_BASE_REF;
+  const currentHead = process.argv[3] || 'HEAD';
+  if (!commitHash) {
+    console.error('Missing base ref commit hash, skipping check.');
     process.exit(1);
   }
 
-  const commitHash = process.argv[2];
-  const currentHead = process.argv[3] || 'HEAD';
   const changedPackages = new Set();
   const folders = await findPackageJson(
     join(fileURLToPath(import.meta.url), '..', '..')

@@ -473,12 +473,8 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: |
-          if [ -n "$BASE_REF" ]; then
-            if node ./scripts/detect-blocksuite-update.mjs "$BASE_REF"; then
-              echo "skip=false" >> $GITHUB_OUTPUT
-            else
-              echo "skip=true" >> $GITHUB_OUTPUT
-            fi
+          if node ./scripts/detect-blocksuite-update.mjs "$BASE_REF"; then
+            echo "skip=false" >> $GITHUB_OUTPUT
           else
             echo "skip=true" >> $GITHUB_OUTPUT
           fi
