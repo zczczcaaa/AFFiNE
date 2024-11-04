@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { globalStyle, style } from '@vanilla-extract/css';
 export const editor = style({
   flex: 1,
   selectors: {
@@ -20,5 +20,12 @@ export const editor = style({
         },
       },
     },
+  },
+});
+
+globalStyle(`${editor}.full-screen .page-editor-container`, {
+  vars: {
+    '--affine-editor-width': '100%',
+    '--affine-editor-side-padding': '72px',
   },
 });
