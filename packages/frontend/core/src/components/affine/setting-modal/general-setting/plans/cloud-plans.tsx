@@ -279,28 +279,18 @@ export const CloudPlans = () => {
   const cloudToggle = (
     <div className={styles.recurringToggleWrapper}>
       <div>
-        {recurring === SubscriptionRecurring.Yearly ? (
-          <div className={styles.recurringToggleRecurring}>
-            {t['com.affine.payment.cloud.pricing-plan.toggle-yearly']()}
+        <div className={styles.recurringToggleRecurring}>
+          <span>
+            {t['com.affine.payment.cloud.pricing-plan.toggle-billed-yearly']()}
+          </span>
+        </div>
+        {yearlyDiscount ? (
+          <div className={styles.recurringToggleDiscount}>
+            {t['com.affine.payment.cloud.pricing-plan.toggle-discount']({
+              discount: yearlyDiscount,
+            })}
           </div>
-        ) : (
-          <>
-            <div className={styles.recurringToggleRecurring}>
-              <span>
-                {t[
-                  'com.affine.payment.cloud.pricing-plan.toggle-billed-yearly'
-                ]()}
-              </span>
-            </div>
-            {yearlyDiscount ? (
-              <div className={styles.recurringToggleDiscount}>
-                {t['com.affine.payment.cloud.pricing-plan.toggle-discount']({
-                  discount: yearlyDiscount,
-                })}
-              </div>
-            ) : null}
-          </>
-        )}
+        ) : null}
       </div>
       <Switch
         checked={recurring === SubscriptionRecurring.Yearly}
