@@ -72,12 +72,14 @@ export const DocPropertyTypes = {
     icon: DateTimeIcon,
     value: UpdatedDateValue,
     name: 'com.affine.page-properties.property.updatedAt',
+    description: 'com.affine.page-properties.property.updatedAt.tooltips',
     renameable: false,
   },
   createdAt: {
     icon: HistoryIcon,
     value: CreateDateValue,
     name: 'com.affine.page-properties.property.createdAt',
+    description: 'com.affine.page-properties.property.createdAt.tooltips',
     renameable: false,
   },
   docPrimaryMode: {
