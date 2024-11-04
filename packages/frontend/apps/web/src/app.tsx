@@ -5,8 +5,10 @@ import { Telemetry } from '@affine/core/components/telemetry';
 import { router } from '@affine/core/desktop/router';
 import { configureCommonModules } from '@affine/core/modules';
 import { I18nProvider } from '@affine/core/modules/i18n';
-import { configureOpenInApp } from '@affine/core/modules/open-in-app';
-import { WebOpenInAppGuard } from '@affine/core/modules/open-in-app/views/open-in-app-guard';
+import {
+  configureOpenInApp,
+  OpenInAppGuard,
+} from '@affine/core/modules/open-in-app';
 import { configureLocalStorageStateStorageImpls } from '@affine/core/modules/storage';
 import { CustomThemeModifier } from '@affine/core/modules/theme-editor';
 import { PopupWindowProvider } from '@affine/core/modules/url';
@@ -78,13 +80,13 @@ export function App() {
               <Telemetry />
               <CustomThemeModifier />
               <GlobalLoading />
-              <WebOpenInAppGuard>
+              <OpenInAppGuard>
                 <RouterProvider
                   fallbackElement={<AppFallback key="RouterFallback" />}
                   router={router}
                   future={future}
                 />
-              </WebOpenInAppGuard>
+              </OpenInAppGuard>
             </AffineContext>
           </I18nProvider>
         </CacheProvider>

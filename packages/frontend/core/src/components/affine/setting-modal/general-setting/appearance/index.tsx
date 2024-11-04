@@ -107,7 +107,7 @@ export const AppearanceSettings = () => {
         {enableThemeEditor ? <ThemeEditorSetting /> : null}
       </SettingWrapper>
 
-      {BUILD_CONFIG.isWeb ? (
+      {BUILD_CONFIG.isWeb && !environment.isMobile ? (
         <SettingWrapper title={t['com.affine.setting.appearance.links']()}>
           <SettingRow
             name={t['com.affine.setting.appearance.open-in-app']()}

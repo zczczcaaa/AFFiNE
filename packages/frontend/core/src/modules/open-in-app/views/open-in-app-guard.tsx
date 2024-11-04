@@ -1,6 +1,6 @@
 import { assertExists } from '@blocksuite/affine/global/utils';
 import { useLiveData, useService } from '@toeverything/infra';
-import { useCallback, useEffect } from 'react';
+import { Fragment, useCallback, useEffect } from 'react';
 
 import { OpenInAppService } from '../services';
 import { OpenInAppPage } from './open-in-app-page';
@@ -8,11 +8,7 @@ import { OpenInAppPage } from './open-in-app-page';
 /**
  * Web only guard to open the URL in desktop app for different conditions
  */
-export const WebOpenInAppGuard = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const WebOpenInAppGuard = ({ children }: { children: React.ReactNode }) => {
   assertExists(
     BUILD_CONFIG.isWeb,
     'WebOpenInAppGuard should only be used in web'
@@ -36,9 +32,13 @@ export const WebOpenInAppGuard = ({
     return null;
   }
 
-  return shouldOpenInApp ? (
+  return shouldOpenInApp && !environment.isMobile ? (
     <OpenInAppPage openHereClicked={onOpenHere} />
   ) : (
     children
   );
 };
+
+export const OpenInAppGuard = environment.isMobile
+  ? Fragment
+  : WebOpenInAppGuard;
