@@ -213,7 +213,7 @@ export const Snapshot = ({ className }: SnapshotProps) => {
       triggerOptions={{
         className: transitionStyle,
         prefixIcon: <ToneIcon />,
-        ['data-testid' as string]: 'snapshot-menu',
+        'data-testid': 'snapshot-menu',
       }}
       subOptions={{}}
     >

@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/prefer-dom-node-dataset */
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export async function expandCollapsibleSection(page: Page, name: string) {
   const divider = page.locator(`[data-collapsible]:has-text("${name}")`);
@@ -19,4 +19,25 @@ export async function expandCollapsibleSection(page: Page, name: string) {
  */
 export async function pageBack(page: Page) {
   await page.getByTestId('page-header-back').tap();
+}
+
+export async function getAttrOfActiveElement(
+  page: Page,
+  attrName = 'data-testid'
+) {
+  return await page.evaluate(name => {
+    const el = document.activeElement;
+    return el ? el.getAttribute(name) : '';
+  }, attrName);
+}
+
+/**
+ * Open the context menu of an explorer node
+ * @returns Menu Locator
+ */
+export async function openExplorerNodeMenu(page: Page, node: Locator) {
+  await node.getByTestId('menu-trigger').tap();
+  const menu = page.getByRole('dialog');
+  await expect(menu).toBeVisible();
+  return menu;
 }
