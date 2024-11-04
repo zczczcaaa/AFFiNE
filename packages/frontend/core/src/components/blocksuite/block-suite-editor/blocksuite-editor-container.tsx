@@ -98,6 +98,9 @@ export const BlocksuiteEditorContainer = forwardRef<
       get origin() {
         return rootRef.current;
       },
+      get std() {
+        return mode === 'page' ? docRef.current?.std : edgelessRef.current?.std;
+      },
     };
 
     const proxy = new Proxy(api, {
