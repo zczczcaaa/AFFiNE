@@ -1,4 +1,5 @@
-import { Service } from '../../../framework';
+import { Service } from '@toeverything/infra';
+
 import { AppTheme } from '../entities/theme';
 
 export class AppThemeService extends Service {

@@ -3,6 +3,7 @@ import {
   AIPageRootBlockSpec,
 } from '@affine/core/blocksuite/presets/ai';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
+import { AppThemeService } from '@affine/core/modules/theme';
 import { mixpanel } from '@affine/track';
 import {
   ConfigExtension,
@@ -32,7 +33,6 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import type { Container } from '@blocksuite/global/di';
 import {
-  AppThemeService,
   DocService,
   DocsService,
   type FrameworkProvider,

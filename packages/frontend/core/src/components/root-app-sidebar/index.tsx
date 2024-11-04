@@ -149,9 +149,7 @@ export const RootAppSidebar = (): ReactElement => {
             {t['com.affine.workspaceSubPath.all']()}
           </span>
         </MenuLinkItem>
-        <AppSidebarJournalButton
-          docCollection={currentWorkspace.docCollection}
-        />
+        <AppSidebarJournalButton />
         <MenuItem
           data-testid="slider-bar-workspace-setting-button"
           icon={<SettingsIcon />}

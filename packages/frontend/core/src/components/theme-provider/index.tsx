@@ -1,11 +1,12 @@
-import { AppThemeService, useService } from '@toeverything/infra';
+import { AppThemeService } from '@affine/core/modules/theme';
+import { useService } from '@toeverything/infra';
 import { ThemeProvider as NextThemeProvider, useTheme } from 'next-themes';
 import type { PropsWithChildren } from 'react';
 import { useEffect } from 'react';
 
 const themes = ['dark', 'light'];
 
-export function ThemeObserver() {
+function ThemeObserver() {
   const { resolvedTheme } = useTheme();
   const service = useService(AppThemeService);
 

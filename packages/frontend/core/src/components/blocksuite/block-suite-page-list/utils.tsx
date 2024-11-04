@@ -5,10 +5,7 @@ import { WorkbenchService } from '@affine/core/modules/workbench';
 import { type DocMode } from '@blocksuite/affine/blocks';
 import type { DocCollection } from '@blocksuite/affine/store';
 import { type DocProps, DocsService, useServices } from '@toeverything/infra';
-import { useTheme } from 'next-themes';
 import { useCallback, useMemo } from 'react';
-
-import { getValueByDefaultTheme } from '../../hooks/use-journal';
 
 export const usePageHelper = (docCollection: DocCollection) => {
   const {
@@ -25,7 +22,6 @@ export const usePageHelper = (docCollection: DocCollection) => {
   const workbench = workbenchService.workbench;
   const docRecordList = docsService.list;
   const appSidebar = appSidebarService.sidebar;
-  const { resolvedTheme } = useTheme();
 
   const createPageAndOpen = useCallback(
     (mode?: DocMode, open?: boolean | 'new-tab') => {
@@ -34,14 +30,6 @@ export const usePageHelper = (docCollection: DocCollection) => {
         note: editorSettingService.editorSetting.get('affine:note'),
       };
       const page = docsService.createDoc({ docProps });
-
-      const value = getValueByDefaultTheme(
-        editorSettingService.editorSetting.settings$.value.edgelessDefaultTheme,
-        resolvedTheme || 'light'
-      );
-      docRecordList
-        .doc$(page.id)
-        .value?.setProperty('edgelessColorTheme', value);
 
       if (mode) {
         docRecordList.doc$(page.id).value?.setPrimaryMode(mode);
@@ -58,7 +46,6 @@ export const usePageHelper = (docCollection: DocCollection) => {
       docRecordList,
       docsService,
       editorSettingService.editorSetting,
-      resolvedTheme,
       workbench,
     ]
   );

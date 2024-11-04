@@ -1,11 +1,10 @@
+import { ConfirmModalProvider } from '@affine/component';
 import { ProviderComposer } from '@affine/component/provider-composer';
-import { ThemeProvider } from '@affine/component/theme-provider';
+import { ThemeProvider } from '@affine/core/components/theme-provider';
 import type { createStore } from 'jotai';
 import { Provider } from 'jotai';
 import type { PropsWithChildren } from 'react';
 import { useMemo } from 'react';
-
-import { ConfirmModalProvider } from '../../ui/modal';
 
 export type AffineContextProps = PropsWithChildren<{
   store?: ReturnType<typeof createStore>;

@@ -1,9 +1,8 @@
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
-import type { EdgelessDefaultTheme } from '@affine/core/modules/editor-setting/schema';
 import { JournalService } from '@affine/core/modules/journal';
 import { i18nTime } from '@affine/i18n';
 import { track } from '@affine/track';
-import { type DocCollection, Text } from '@blocksuite/affine/store';
+import { Text } from '@blocksuite/affine/store';
 import {
   type DocProps,
   DocsService,
@@ -12,29 +11,9 @@ import {
   useServices,
 } from '@toeverything/infra';
 import dayjs from 'dayjs';
-import { useTheme } from 'next-themes';
 import { useCallback, useMemo } from 'react';
 
 import { WorkbenchService } from '../../modules/workbench';
-import { useDocCollectionHelper } from './use-block-suite-workspace-helper';
-
-export const getValueByDefaultTheme = (
-  defaultTheme: EdgelessDefaultTheme,
-  currentAppTheme: string
-) => {
-  switch (defaultTheme) {
-    case 'dark':
-      return 'dark';
-    case 'light':
-      return 'light';
-    case 'specified':
-      return currentAppTheme === 'dark' ? 'dark' : 'light';
-    case 'auto':
-      return 'system';
-    default:
-      return 'system';
-  }
-};
 
 type MaybeDate = Date | string | number;
 export const JOURNAL_DATE_FORMAT = 'YYYY-MM-DD';
@@ -53,9 +32,7 @@ function toDayjs(j?: string | false) {
 /**
  * @deprecated use `JournalService` directly
  */
-export const useJournalHelper = (docCollection: DocCollection) => {
-  const bsWorkspaceHelper = useDocCollectionHelper(docCollection);
-  const { resolvedTheme } = useTheme();
+export const useJournalHelper = () => {
   const { docsService, editorSettingService, journalService } = useServices({
     DocsService,
     EditorSettingService,
@@ -69,17 +46,11 @@ export const useJournalHelper = (docCollection: DocCollection) => {
     (maybeDate: MaybeDate) => {
       const day = dayjs(maybeDate);
       const title = day.format(JOURNAL_DATE_FORMAT);
-      const page = bsWorkspaceHelper.createDoc();
-      const value = getValueByDefaultTheme(
-        editorSettingService.editorSetting.settings$.value.edgelessDefaultTheme,
-        resolvedTheme || 'light'
-      );
-      docsService.list
-        .doc$(page.id)
-        .value?.setProperty('edgelessColorTheme', value);
-      docsService.list.setPrimaryMode(page.id, 'page');
+      const docRecord = docsService.createDoc();
+      const { doc, release } = docsService.open(docRecord.id);
+      docsService.list.setPrimaryMode(docRecord.id, 'page');
       // set created date to match the journal date
-      page.collection.setDocMeta(page.id, {
+      docRecord.setMeta({
         createDate: dayjs()
           .set('year', day.year())
           .set('month', day.month())
@@ -91,17 +62,12 @@ export const useJournalHelper = (docCollection: DocCollection) => {
         page: { title: new Text(title) },
         note: editorSettingService.editorSetting.get('affine:note'),
       };
-      initDocFromProps(page, docProps);
-      journalService.setJournalDate(page.id, title);
-      return page;
+      initDocFromProps(doc.blockSuiteDoc, docProps);
+      release();
+      journalService.setJournalDate(docRecord.id, title);
+      return docRecord;
     },
-    [
-      bsWorkspaceHelper,
-      editorSettingService.editorSetting,
-      resolvedTheme,
-      docsService.list,
-      journalService,
-    ]
+    [docsService, editorSettingService.editorSetting, journalService]
   );
 
   /**
@@ -138,8 +104,8 @@ export const useJournalHelper = (docCollection: DocCollection) => {
 };
 
 // split useJournalRouteHelper since it requires a <Route /> context, which may not work in lit
-export const useJournalRouteHelper = (docCollection: DocCollection) => {
-  const { getJournalByDate } = useJournalHelper(docCollection);
+export const useJournalRouteHelper = () => {
+  const { getJournalByDate } = useJournalHelper();
   const workbench = useService(WorkbenchService).workbench;
   /**
    * open journal by date, create one if not exist

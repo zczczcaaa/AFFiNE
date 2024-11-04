@@ -1,6 +1,6 @@
-import { ThemeProvider } from '@affine/component/theme-provider';
 import { ShellAppFallback } from '@affine/core/components/affine/app-container';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
+import { ThemeProvider } from '@affine/core/components/theme-provider';
 import { configureAppSidebarModule } from '@affine/core/modules/app-sidebar';
 import {
   AppTabsHeader,
@@ -9,9 +9,9 @@ import {
 import { configureDesktopApiModule } from '@affine/core/modules/desktop-api';
 import { configureI18nModule, I18nProvider } from '@affine/core/modules/i18n';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
+import { configureAppThemeModule } from '@affine/core/modules/theme';
 import { SplitViewFallback } from '@affine/core/modules/workbench/view/split-view/split-view';
 import {
-  configureAppThemeModule,
   configureGlobalStorageModule,
   Framework,
   FrameworkRoot,

@@ -21,7 +21,6 @@ import {
   DocsService,
   useLiveData,
   useService,
-  WorkspaceService,
 } from '@toeverything/infra';
 import { assignInlineVars } from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
@@ -100,12 +99,11 @@ const mobile = environment.isMobile;
 export const EditorJournalPanel = () => {
   const t = useI18n();
   const doc = useService(DocService).doc;
-  const workspace = useService(WorkspaceService).workspace;
   const journalService = useService(JournalService);
   const journalDateStr = useLiveData(journalService.journalDate$(doc.id));
   const journalDate = journalDateStr ? dayjs(journalDateStr) : null;
   const isJournal = !!journalDate;
-  const { openJournal } = useJournalRouteHelper(workspace.docCollection);
+  const { openJournal } = useJournalRouteHelper();
 
   const onDateSelect = useCallback(
     (date: string) => {

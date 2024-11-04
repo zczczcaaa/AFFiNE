@@ -1,6 +1,6 @@
-import { AffineContext } from '@affine/component/context';
 import { GlobalLoading } from '@affine/component/global-loading';
 import { AppFallback } from '@affine/core/components/affine/app-container';
+import { AffineContext } from '@affine/core/components/context';
 import { Telemetry } from '@affine/core/components/telemetry';
 import { router } from '@affine/core/desktop/router';
 import { configureCommonModules } from '@affine/core/modules';

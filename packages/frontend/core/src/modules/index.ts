@@ -26,6 +26,7 @@ import { configureShareSettingModule } from './share-setting';
 import { configureSystemFontFamilyModule } from './system-font-family';
 import { configureTagModule } from './tag';
 import { configureTelemetryModule } from './telemetry';
+import { configureAppThemeModule } from './theme';
 import { configureThemeEditorModule } from './theme-editor';
 import { configureUrlModule } from './url';
 import { configureUserspaceModule } from './userspace';
@@ -61,4 +62,5 @@ export function configureCommonModules(framework: Framework) {
   configureAppSidebarModule(framework);
   configureJournalModule(framework);
   configureUrlModule(framework);
+  configureAppThemeModule(framework);
 }
