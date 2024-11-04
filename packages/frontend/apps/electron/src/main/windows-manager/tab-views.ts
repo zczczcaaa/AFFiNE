@@ -734,6 +734,33 @@ export class WebContentViewsManager {
     app.on('before-quit', () => {
       disposables.forEach(d => d.unsubscribe());
     });
+
+    const focusActiveView = () => {
+      if (
+        !this.activeWorkbenchView ||
+        this.activeWorkbenchView.webContents.isFocused()
+      ) {
+        return;
+      }
+      this.activeWorkbenchView?.webContents.focus();
+      setTimeout(() => {
+        focusActiveView();
+      }, 100);
+    };
+
+    app.on('browser-window-focus', () => {
+      focusActiveView();
+    });
+
+    combineLatest([
+      this.activeWorkbenchId$,
+      this.mainWindowManager.mainWindow$,
+    ]).subscribe(([_, window]) => {
+      // makes sure the active view is always focused
+      if (window?.isFocused()) {
+        focusActiveView();
+      }
+    });
   };
 
   getViewById = (id: string) => {
