@@ -1,3 +1,7 @@
+import {
+  bodyRegular,
+  subHeadlineRegular,
+} from '@toeverything/theme/typography';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
@@ -29,21 +33,12 @@ const ellipsis = style({
   whiteSpace: 'nowrap',
 });
 
-export const title = style({
-  fontSize: 17,
-  lineHeight: '22px',
-  fontWeight: 400,
-  letterSpacing: -0.43,
-  color: cssVarV2('text/primary'),
-});
+export const title = style([bodyRegular, { color: cssVarV2('text/primary') }]);
 
-export const caption = style({
-  fontSize: 15,
-  lineHeight: '20px',
-  fontWeight: 400,
-  letterSpacing: -0.23,
-  color: cssVarV2('text/secondary'),
-});
+export const caption = style([
+  subHeadlineRegular,
+  { color: cssVarV2('text/secondary') },
+]);
 
 export const suffixIcon = style({
   fontSize: 30,

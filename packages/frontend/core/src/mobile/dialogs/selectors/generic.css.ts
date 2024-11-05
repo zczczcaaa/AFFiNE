@@ -1,3 +1,9 @@
+import {
+  bodyEmphasized,
+  bodyRegular,
+  footnoteRegular,
+  subHeadlineRegular,
+} from '@toeverything/theme/typography';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
@@ -15,13 +21,12 @@ export const root = style({
 });
 
 // header
-export const headerTitle = style({
-  fontSize: 17,
-  fontWeight: 600,
-  letterSpacing: -0.43,
-  lineHeight: '22px',
-  color: cssVarV2('text/primary'),
-});
+export const headerTitle = style([
+  bodyEmphasized,
+  {
+    color: cssVarV2('text/primary'),
+  },
+]);
 export const scrollArea = style({
   height: 0,
   flex: 1,
@@ -64,18 +69,17 @@ export const listItemIcon = style([
     color: cssVarV2('icon/primary'),
   },
 ]);
-export const listItemLabel = style({
-  fontWeight: 400,
-  fontSize: 17,
-  lineHeight: '22px',
-  letterSpacing: -0.43,
-  color: cssVarV2('text/primary'),
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  width: 0,
-  flex: 1,
-});
+export const listItemLabel = style([
+  bodyRegular,
+  {
+    color: cssVarV2('text/primary'),
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    width: 0,
+    flex: 1,
+  },
+]);
 export const listItemArrow = style({
   fontSize: 16,
   color: cssVarV2('icon/disable'),
@@ -100,22 +104,20 @@ export const actionButton = style({
   letterSpacing: -0.43,
 });
 
-export const changedInfo = style({
-  fontSize: 15,
-  fontWeight: 400,
-  letterSpacing: -0.23,
-  lineHeight: '20px',
-  color: cssVarV2('text/primary'),
-  height: 20,
-});
-export const totalInfo = style({
-  fontSize: 13,
-  fontWeight: 400,
-  letterSpacing: -0.08,
-  lineHeight: '18px',
-  color: cssVarV2('text/tertiary'),
-  height: 18,
-});
+export const changedInfo = style([
+  subHeadlineRegular,
+  {
+    color: cssVarV2('text/primary'),
+    height: 20,
+  },
+]);
+export const totalInfo = style([
+  footnoteRegular,
+  {
+    color: cssVarV2('text/tertiary'),
+    height: 18,
+  },
+]);
 export const info = style({
   display: 'flex',
   flexDirection: 'column',

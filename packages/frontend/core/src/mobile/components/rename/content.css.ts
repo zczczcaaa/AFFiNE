@@ -1,3 +1,4 @@
+import { bodyRegular } from '@toeverything/theme/typography';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
@@ -14,22 +15,21 @@ export const input = style({
   borderRadius: 8,
   padding: '0 4px',
 });
-export const desc = style({
-  padding: '11px 16px',
-  fontSize: 17,
-  fontWeight: 400,
-  lineHeight: '22px',
-  letterSpacing: -0.43,
-  color: cssVarV2('text/secondary'),
-});
+export const desc = style([
+  bodyRegular,
+  {
+    padding: '11px 16px',
+    color: cssVarV2('text/secondary'),
+  },
+]);
 export const doneWrapper = style({
   width: '100%',
   padding: '8px 16px',
 });
-export const done = style({
-  width: '100%',
-  height: 44,
-  borderRadius: 8,
-  fontSize: 17,
-  fontWeight: 400,
-});
+export const done = style([
+  bodyRegular,
+  {
+    width: '100%',
+    borderRadius: 8,
+  },
+]);

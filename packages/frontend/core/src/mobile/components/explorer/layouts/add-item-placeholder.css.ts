@@ -1,3 +1,4 @@
+import { bodyRegular } from '@toeverything/theme/typography';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
@@ -21,9 +22,4 @@ export const iconWrapper = style([
   },
 ]);
 
-export const label = style({
-  fontSize: 17,
-  fontWeight: 400,
-  lineHeight: '22px',
-  letterSpacing: -0.43,
-});
+export const label = style([bodyRegular]);

@@ -1,3 +1,4 @@
+import { footnoteRegular } from '@toeverything/theme/typography';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
@@ -8,14 +9,13 @@ export const group = style({
   width: '100%',
 });
 
-export const title = style({
-  padding: '0px 8px',
-  color: cssVarV2('text/tertiary'),
-  fontSize: 13,
-  lineHeight: '18px',
-  letterSpacing: -0.08,
-  fontWeight: 400,
-});
+export const title = style([
+  footnoteRegular,
+  {
+    padding: '0px 8px',
+    color: cssVarV2('text/tertiary'),
+  },
+]);
 
 export const content = style({
   background: cssVarV2('layer/background/primary'),

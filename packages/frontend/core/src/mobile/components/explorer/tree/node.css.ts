@@ -1,4 +1,5 @@
 import { cssVar } from '@toeverything/theme';
+import { bodyRegular } from '@toeverything/theme/typography';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { createVar, style } from '@vanilla-extract/css';
 
@@ -90,19 +91,17 @@ export const iconContainer = style({
   fontSize: 24,
 });
 
-export const itemContent = style({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  alignItems: 'center',
-  flex: 1,
-  color: cssVarV2('text/primary'),
-
-  fontSize: 17,
-  lineHeight: '22px',
-  letterSpacing: -0.43,
-  fontWeight: 400,
-});
+export const itemContent = style([
+  bodyRegular,
+  {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    alignItems: 'center',
+    flex: 1,
+    color: cssVarV2('text/primary'),
+  },
+]);
 
 export const itemRenameAnchor = style({
   pointerEvents: 'none',
