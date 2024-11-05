@@ -95,10 +95,10 @@ async function main() {
 
   if (changedPackages.size > 0) {
     console.log('Blocksuite packages have been updated.', changedPackages);
-    process.exit(1);
+    process.exit(0);
   } else {
     console.log('No changes to Blocksuite packages.');
-    process.exit(0);
+    process.exit(1);
   }
 }
 
