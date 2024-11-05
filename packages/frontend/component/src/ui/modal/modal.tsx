@@ -229,6 +229,7 @@ export const ModalInner = forwardRef<HTMLDivElement, ModalProps>(
                 styles.modalContentWrapper,
                 contentWrapperClassName
               )}
+              data-mobile={BUILD_CONFIG.isMobileEdition ? '' : undefined}
               style={contentWrapperStyle}
             >
               <Dialog.Content

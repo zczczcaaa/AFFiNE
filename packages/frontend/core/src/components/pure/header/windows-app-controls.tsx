@@ -1,4 +1,4 @@
-import { DesktopApiService } from '@affine/core/modules/desktop-api/service';
+import { DesktopApiService } from '@affine/core/modules/desktop-api';
 import { useService } from '@toeverything/infra';
 import { useCallback, useEffect, useState } from 'react';
 

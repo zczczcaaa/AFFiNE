@@ -152,7 +152,7 @@ export const openWorkspaceProperties = async (page: Page) => {
   await page
     .locator('[data-testid="workspace-list-item"] .setting-name')
     .click();
-  await page.getByTestId('workspace-list-item-properties').click();
+  await page.getByTestId('workspace-list-item-workspace:properties').click();
 };
 
 export const selectVisibilitySelector = async (

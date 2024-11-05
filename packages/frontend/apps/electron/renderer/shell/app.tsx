@@ -1,7 +1,7 @@
-import { ShellAppFallback } from '@affine/core/components/affine/app-container';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
 import { ThemeProvider } from '@affine/core/components/theme-provider';
 import { configureAppSidebarModule } from '@affine/core/modules/app-sidebar';
+import { ShellAppSidebarFallback } from '@affine/core/modules/app-sidebar/views';
 import {
   AppTabsHeader,
   configureAppTabsHeaderModule,
@@ -10,7 +10,6 @@ import { configureDesktopApiModule } from '@affine/core/modules/desktop-api';
 import { configureI18nModule, I18nProvider } from '@affine/core/modules/i18n';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
 import { configureAppThemeModule } from '@affine/core/modules/theme';
-import { SplitViewFallback } from '@affine/core/modules/workbench/view/split-view/split-view';
 import {
   configureGlobalStorageModule,
   Framework,
@@ -41,9 +40,9 @@ export function App() {
         <I18nProvider>
           <div className={styles.root} data-translucent={translucent}>
             <AppTabsHeader mode="shell" className={styles.appTabsHeader} />
-            <ShellAppFallback className={styles.fallbackRoot}>
-              <SplitViewFallback className={styles.splitViewFallback} />
-            </ShellAppFallback>
+            <div className={styles.body}>
+              <ShellAppSidebarFallback />
+            </div>
           </div>
         </I18nProvider>
       </ThemeProvider>

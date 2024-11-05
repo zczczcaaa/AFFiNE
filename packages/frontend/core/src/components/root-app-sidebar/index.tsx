@@ -1,7 +1,3 @@
-import {
-  openImportModalAtom,
-  openSettingModalAtom,
-} from '@affine/core/components/atoms';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import {
   AddPageButton,
@@ -15,6 +11,7 @@ import {
   SidebarScrollableContainer,
 } from '@affine/core/modules/app-sidebar/views';
 import { ExternalMenuLinkItem } from '@affine/core/modules/app-sidebar/views/menu-item/external-menu-link-item';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import {
   ExplorerCollections,
   ExplorerFavorites,
@@ -37,10 +34,10 @@ import {
 import type { Workspace } from '@toeverything/infra';
 import {
   useLiveData,
+  useService,
   useServices,
   WorkspaceService,
 } from '@toeverything/infra';
-import { useSetAtom } from 'jotai';
 import type { MouseEvent, ReactElement } from 'react';
 import { useCallback } from 'react';
 
@@ -86,6 +83,7 @@ export const RootAppSidebar = (): ReactElement => {
     });
   const currentWorkspace = workspaceService.workspace;
   const t = useI18n();
+  const globalDialogService = useService(GlobalDialogService);
   const workbench = workbenchService.workbench;
   const currentPath = useLiveData(
     workbench.location$.map(location => location.pathname)
@@ -106,21 +104,17 @@ export const RootAppSidebar = (): ReactElement => {
     [pageHelper]
   );
 
-  const setOpenSettingModalAtom = useSetAtom(openSettingModalAtom);
-  const setOpenImportModalAtom = useSetAtom(openImportModalAtom);
-
   const onOpenSettingModal = useCallback(() => {
-    setOpenSettingModalAtom({
+    globalDialogService.open('setting', {
       activeTab: 'appearance',
-      open: true,
     });
     track.$.navigationPanel.$.openSettings();
-  }, [setOpenSettingModalAtom]);
+  }, [globalDialogService]);
 
   const onOpenImportModal = useCallback(() => {
     track.$.navigationPanel.importModal.open();
-    setOpenImportModalAtom(true);
-  }, [setOpenImportModalAtom]);
+    globalDialogService.open('import', undefined);
+  }, [globalDialogService]);
 
   return (
     <AppSidebar>

@@ -1,13 +1,13 @@
 import { Button } from '@affine/component/ui/button';
-import { openSettingModalAtom } from '@affine/core/components/atoms';
 import { resolveLinkToDoc } from '@affine/core/modules/navigation';
-import { appIconMap, appNames } from '@affine/core/utils';
+import { appIconMap, appNames } from '@affine/core/utils/channel';
 import { Trans, useI18n } from '@affine/i18n';
 import { Logo1Icon } from '@blocksuite/icons/rc';
-import { useSetAtom } from 'jotai';
+import { useService } from '@toeverything/infra';
 import type { MouseEvent } from 'react';
 import { useCallback } from 'react';
 
+import { GlobalDialogService } from '../../dialogs';
 import { getOpenUrlInDesktopAppLink } from '../utils';
 import * as styles from './open-in-app-page.css';
 
@@ -21,6 +21,7 @@ interface OpenAppProps {
 export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
   // default to open the current page in desktop app
   urlToOpen ??= getOpenUrlInDesktopAppLink(window.location.href, true);
+  const globalDialogService = useService(GlobalDialogService);
   const t = useI18n();
   const channel = BUILD_CONFIG.appBuildType;
   const openDownloadLink = useCallback(() => {
@@ -45,17 +46,14 @@ export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
     [maybeDocLink, openHereClicked]
   );
 
-  const setSettingModalAtom = useSetAtom(openSettingModalAtom);
-
   const goToAppearanceSetting = useCallback(
     (e: MouseEvent) => {
       openHereClicked?.(e);
-      setSettingModalAtom({
-        open: true,
+      globalDialogService.open('setting', {
         activeTab: 'appearance',
       });
     },
-    [openHereClicked, setSettingModalAtom]
+    [globalDialogService, openHereClicked]
   );
 
   if (urlToOpen && lastOpened !== urlToOpen) {

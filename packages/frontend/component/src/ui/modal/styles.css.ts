@@ -79,15 +79,12 @@ export const modalContentWrapper = style({
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: cssVar('zIndexModal'),
-  '@media': {
-    'screen and (width <= 640px)': {
-      // todo: adjust animation
+
+  selectors: {
+    '&[data-mobile]': {
       alignItems: 'flex-end',
       paddingBottom: 'env(safe-area-inset-bottom, 20px)',
     },
-  },
-
-  selectors: {
     '&[data-full-screen="true"]': {
       padding: '0 !important',
     },

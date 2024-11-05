@@ -396,9 +396,9 @@ test('create a collection and delete it', async ({ page }) => {
 
   // create a collection
   await page.getByTestId('all-collection-new-button').click();
-  await expect(page.getByTestId('edit-collection-modal')).toBeVisible();
-  await page.getByTestId('input-collection-title').fill('test collection');
-  await page.getByTestId('save-collection').click();
+  await expect(page.getByTestId('prompt-modal-input')).toBeVisible();
+  await page.getByTestId('prompt-modal-input').fill('test collection');
+  await page.getByTestId('prompt-modal-confirm').click();
 
   // check the collection is created
   await clickSideBarAllPageButton(page);

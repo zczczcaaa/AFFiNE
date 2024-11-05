@@ -6,7 +6,7 @@ import {
 
 import { OpenInAppService } from './services';
 
-export * from './services';
+export { OpenInAppService, OpenLinkMode } from './services';
 export * from './utils';
 export * from './views/open-in-app-guard';
 

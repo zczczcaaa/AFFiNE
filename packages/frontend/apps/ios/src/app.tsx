@@ -1,5 +1,4 @@
 import { AffineContext } from '@affine/core/components/context';
-import { Telemetry } from '@affine/core/components/telemetry';
 import { AppFallback } from '@affine/core/mobile/components';
 import { configureMobileModules } from '@affine/core/mobile/modules';
 import { router } from '@affine/core/mobile/router';
@@ -123,7 +122,6 @@ export function App() {
       <FrameworkRoot framework={frameworkProvider}>
         <I18nProvider>
           <AffineContext store={getCurrentStore()}>
-            <Telemetry />
             <RouterProvider
               fallbackElement={<AppFallback />}
               router={router}

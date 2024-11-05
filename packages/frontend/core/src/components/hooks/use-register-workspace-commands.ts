@@ -1,5 +1,6 @@
 import { AppSidebarService } from '@affine/core/modules/app-sidebar';
-import { DesktopApiService } from '@affine/core/modules/desktop-api/service';
+import { DesktopApiService } from '@affine/core/modules/desktop-api';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { I18nService } from '@affine/core/modules/i18n';
 import { UrlService } from '@affine/core/modules/url';
 import { useI18n } from '@affine/i18n';
@@ -25,7 +26,6 @@ import {
   registerAffineUpdatesCommands,
 } from '../../commands';
 import { usePageHelper } from '../../components/blocksuite/block-suite-page-list/utils';
-import { CreateWorkspaceDialogService } from '../../modules/create-workspace';
 import { EditorSettingService } from '../../modules/editor-setting';
 import { CMDKQuickSearchService } from '../../modules/quicksearch/services/cmdk';
 import { useActiveBlocksuiteEditor } from './use-block-suite-editor';
@@ -78,7 +78,7 @@ export function useRegisterWorkspaceCommands() {
   const [editor] = useActiveBlocksuiteEditor();
   const cmdkQuickSearchService = useService(CMDKQuickSearchService);
   const editorSettingService = useService(EditorSettingService);
-  const createWorkspaceDialogService = useService(CreateWorkspaceDialogService);
+  const globalDialogService = useService(GlobalDialogService);
   const appSidebarService = useService(AppSidebarService);
   const i18n = useService(I18nService).i18n;
 
@@ -117,12 +117,19 @@ export function useRegisterWorkspaceCommands() {
       t,
       docCollection: currentWorkspace.docCollection,
       navigationHelper,
+      globalDialogService,
     });
 
     return () => {
       unsub();
     };
-  }, [store, t, currentWorkspace.docCollection, navigationHelper]);
+  }, [
+    store,
+    t,
+    currentWorkspace.docCollection,
+    navigationHelper,
+    globalDialogService,
+  ]);
 
   // register AffineSettingsCommands
   useEffect(() => {
@@ -162,7 +169,7 @@ export function useRegisterWorkspaceCommands() {
   // register AffineCreationCommands
   useEffect(() => {
     const unsub = registerAffineCreationCommands({
-      createWorkspaceDialogService,
+      globalDialogService,
       pageHelper: pageHelper,
       t,
     });
@@ -170,18 +177,18 @@ export function useRegisterWorkspaceCommands() {
     return () => {
       unsub();
     };
-  }, [store, pageHelper, t, createWorkspaceDialogService]);
+  }, [store, pageHelper, t, globalDialogService]);
 
   // register AffineHelpCommands
   useEffect(() => {
     const unsub = registerAffineHelpCommands({
-      store,
       t,
       urlService,
+      globalDialogService,
     });
 
     return () => {
       unsub();
     };
-  }, [store, t, urlService]);
+  }, [t, globalDialogService, urlService]);
 }

@@ -1,16 +1,10 @@
-import { GlobalLoading } from '@affine/component/global-loading';
-import { AppFallback } from '@affine/core/components/affine/app-container';
 import { AffineContext } from '@affine/core/components/context';
-import { Telemetry } from '@affine/core/components/telemetry';
+import { AppContainer } from '@affine/core/desktop/components/app-container';
 import { router } from '@affine/core/desktop/router';
 import { configureCommonModules } from '@affine/core/modules';
 import { I18nProvider } from '@affine/core/modules/i18n';
-import {
-  configureOpenInApp,
-  OpenInAppGuard,
-} from '@affine/core/modules/open-in-app';
+import { OpenInAppGuard } from '@affine/core/modules/open-in-app';
 import { configureLocalStorageStateStorageImpls } from '@affine/core/modules/storage';
-import { CustomThemeModifier } from '@affine/core/modules/theme-editor';
 import { PopupWindowProvider } from '@affine/core/modules/url';
 import { configureIndexedDBUserspaceStorageProvider } from '@affine/core/modules/userspace';
 import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench';
@@ -42,7 +36,6 @@ configureLocalStorageStateStorageImpls(framework);
 configureBrowserWorkspaceFlavours(framework);
 configureIndexedDBWorkspaceEngineStorageProvider(framework);
 configureIndexedDBUserspaceStorageProvider(framework);
-configureOpenInApp(framework);
 framework.impl(PopupWindowProvider, {
   open: (target: string) => {
     const targetUrl = new URL(target);
@@ -77,12 +70,9 @@ export function App() {
         <CacheProvider value={cache}>
           <I18nProvider>
             <AffineContext store={getCurrentStore()}>
-              <Telemetry />
-              <CustomThemeModifier />
-              <GlobalLoading />
               <OpenInAppGuard>
                 <RouterProvider
-                  fallbackElement={<AppFallback key="RouterFallback" />}
+                  fallbackElement={<AppContainer fallback />}
                   router={router}
                   future={future}
                 />

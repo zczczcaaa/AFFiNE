@@ -1,6 +1,13 @@
-import { IconButton, MenuItem, MenuSeparator, toast } from '@affine/component';
+import {
+  IconButton,
+  MenuItem,
+  MenuSeparator,
+  toast,
+  useConfirmModal,
+} from '@affine/component';
 import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import type { NodeOperation } from '@affine/core/modules/explorer';
 import { FavoriteService } from '@affine/core/modules/favorite';
 import { TagService } from '@affine/core/modules/tag';
@@ -16,6 +23,7 @@ import {
 import {
   DocsService,
   FeatureFlagService,
+  GlobalCacheService,
   useLiveData,
   useService,
   useServices,
@@ -23,7 +31,6 @@ import {
 } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
-import { useSelectDoc } from '../../../selector';
 import { TagRenameSubMenu } from './dialog';
 
 export const useExplorerTagNodeOperations = (
@@ -35,15 +42,23 @@ export const useExplorerTagNodeOperations = (
   }
 ) => {
   const t = useI18n();
-  const openDocSelector = useSelectDoc();
-  const { workbenchService, workspaceService, tagService, favoriteService } =
-    useServices({
-      WorkbenchService,
-      WorkspaceService,
-      TagService,
-      DocsService,
-      FavoriteService,
-    });
+  const {
+    workbenchService,
+    workspaceService,
+    tagService,
+    favoriteService,
+    workspaceDialogService,
+    globalCacheService,
+  } = useServices({
+    WorkbenchService,
+    WorkspaceService,
+    TagService,
+    DocsService,
+    FavoriteService,
+    WorkspaceDialogService,
+    GlobalCacheService,
+  });
+  const { openConfirmModal } = useConfirmModal();
 
   const favorite = useLiveData(
     favoriteService.favoriteList.favorite$('tag', tagId)
@@ -122,15 +137,57 @@ export const useExplorerTagNodeOperations = (
   );
   const handleOpenDocSelector = useCallback(() => {
     const initialIds = tagRecord?.pageIds$.value;
-    openDocSelector(initialIds, { where: 'tag', type: 'doc' })
-      .then(selectedIds => {
+    workspaceDialogService.open(
+      'doc-selector',
+      {
+        init: initialIds ?? [],
+        onBeforeConfirm(ids, cb) {
+          const hasRemoved = initialIds?.some(id => !ids?.includes(id));
+          if (
+            hasRemoved &&
+            globalCacheService.globalCache.get(
+              'mobile:tags:will-be-removed-warning-read'
+            ) !== true
+          ) {
+            openConfirmModal({
+              title: t['com.affine.m.selector.remove-warning.title'](),
+              description: t['com.affine.m.selector.remove-warning.message']({
+                type: t['com.affine.m.selector.type-doc'](),
+                where: t['com.affine.m.selector.where-tag'](),
+              }),
+              cancelText: t['com.affine.m.selector.remove-warning.cancel'](),
+              confirmText: t['com.affine.m.selector.remove-warning.confirm'](),
+              reverseFooter: true,
+              onConfirm: () => {
+                globalCacheService.globalCache.set(
+                  'mobile:tags:will-be-removed-warning-read',
+                  true
+                );
+                cb();
+              },
+            });
+          } else {
+            cb();
+          }
+        },
+      },
+      selectedIds => {
+        if (selectedIds === undefined) {
+          return;
+        }
         const newIds = selectedIds.filter(id => !initialIds?.includes(id));
         const removedIds = initialIds?.filter(id => !selectedIds.includes(id));
         newIds.forEach(id => tagRecord?.tag(id));
         removedIds?.forEach(id => tagRecord?.untag(id));
-      })
-      .catch(console.error);
-  }, [openDocSelector, tagRecord]);
+      }
+    );
+  }, [
+    tagRecord,
+    workspaceDialogService,
+    globalCacheService.globalCache,
+    openConfirmModal,
+    t,
+  ]);
 
   return useMemo(
     () => ({

@@ -10,11 +10,7 @@ import {
   notify,
 } from '@affine/component';
 import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
-import {
-  useSelectCollection,
-  useSelectDoc,
-  useSelectTag,
-} from '@affine/core/components/page-list/selector';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
 import {
   type FolderNode,
@@ -186,14 +182,13 @@ const ExplorerFolderNodeFolder = ({
   node: FolderNode;
 } & GenericExplorerNode) => {
   const t = useI18n();
-  const { workspaceService, featureFlagService } = useServices({
-    WorkspaceService,
-    CompatibleFavoriteItemsAdapter,
-    FeatureFlagService,
-  });
-  const openDocsSelector = useSelectDoc();
-  const openTagsSelector = useSelectTag();
-  const openCollectionsSelector = useSelectCollection();
+  const { workspaceService, featureFlagService, workspaceDialogService } =
+    useServices({
+      WorkspaceService,
+      CompatibleFavoriteItemsAdapter,
+      FeatureFlagService,
+      WorkspaceDialogService,
+    });
   const name = useLiveData(node.name$);
   const enableEmojiIcon = useLiveData(
     featureFlagService.flags.enable_emoji_folder_icon.$
@@ -575,12 +570,19 @@ const ExplorerFolderNodeFolder = ({
         .filter(Boolean) as string[];
       const selector =
         type === 'doc'
-          ? openDocsSelector
+          ? 'doc-selector'
           : type === 'collection'
-            ? openCollectionsSelector
-            : openTagsSelector;
-      selector(initialIds)
-        .then(selectedIds => {
+            ? 'collection-selector'
+            : 'tag-selector';
+      workspaceDialogService.open(
+        selector,
+        {
+          init: initialIds,
+        },
+        selectedIds => {
+          if (selectedIds === undefined) {
+            return;
+          }
           const newItemIds = difference(selectedIds, initialIds);
           const removedItemIds = difference(initialIds, selectedIds);
           const removedItems = children.filter(
@@ -594,22 +596,14 @@ const ExplorerFolderNodeFolder = ({
           removedItems.forEach(node => node.delete());
           const updated = newItemIds.length + removedItems.length;
           updated && setCollapsed(false);
-        })
-        .catch(err => {
-          console.error(`Unexpected error while selecting ${type}`, err);
-        });
+        }
+      );
       track.$.navigationPanel.organize.createOrganizeItem({
         type: 'link',
         target: type,
       });
     },
-    [
-      children,
-      node,
-      openCollectionsSelector,
-      openDocsSelector,
-      openTagsSelector,
-    ]
+    [children, node, workspaceDialogService]
   );
 
   const folderOperations = useMemo(() => {

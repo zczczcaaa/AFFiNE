@@ -1,4 +1,4 @@
-import { ConfirmModalProvider } from '@affine/component';
+import { ConfirmModalProvider, PromptModalProvider } from '@affine/component';
 import { ProviderComposer } from '@affine/component/provider-composer';
 import { ThemeProvider } from '@affine/core/components/theme-provider';
 import type { createStore } from 'jotai';
@@ -19,6 +19,7 @@ export function AffineContext(props: AffineContextProps) {
             <Provider key="JotaiProvider" store={props.store} />,
             <ThemeProvider key="ThemeProvider" />,
             <ConfirmModalProvider key="ConfirmModalProvider" />,
+            <PromptModalProvider key="PromptModalProvider" />,
           ].filter(Boolean),
         [props.store]
       )}
