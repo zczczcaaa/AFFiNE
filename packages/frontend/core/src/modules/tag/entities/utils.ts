@@ -1,25 +1,60 @@
+import { cssVar } from '@toeverything/theme';
+import { cssVarV2 } from '@toeverything/theme/v2';
+
 const tagToPaletteLineMap: Record<string, string> = {
-  'var(--affine-tag-red)': 'var(--affine-palette-line-red)',
-  'var(--affine-tag-teal)': 'var(--affine-palette-line-green)',
-  'var(--affine-tag-blue)': 'var(--affine-palette-line-blue)',
-  'var(--affine-tag-yellow)': 'var(--affine-palette-line-yellow)',
-  'var(--affine-tag-pink)': 'var(--affine-palette-line-magenta)',
-  'var(--affine-tag-white)': 'var(--affine-palette-line-grey)',
-  'var(--affine-tag-gray)': 'var(--affine-palette-line-grey)',
-  'var(--affine-tag-orange)': 'var(--affine-palette-line-orange)',
-  'var(--affine-tag-purple)': 'var(--affine-palette-line-purple)',
-  'var(--affine-tag-green)': 'var(--affine-palette-line-green)',
+  [cssVar('tagRed')]: cssVar('paletteLineRed'),
+  [cssVar('tagTeal')]: cssVar('paletteLineTeal'),
+  [cssVar('tagBlue')]: cssVar('paletteLineBlue'),
+  [cssVar('tagYellow')]: cssVar('paletteLineYellow'),
+  [cssVar('tagPink')]: cssVar('paletteLineMagenta'),
+  [cssVar('tagWhite')]: cssVar('paletteLineWhite'),
+  [cssVar('tagGray')]: cssVar('paletteLineGrey'),
+  [cssVar('tagOrange')]: cssVar('paletteLineOrange'),
+  [cssVar('tagPurple')]: cssVar('paletteLinePurple'),
+  [cssVar('tagGreen')]: cssVar('paletteLineGreen'),
 };
 
-const paletteLineToTagMap: Record<string, string> = Object.fromEntries(
-  Object.entries(tagToPaletteLineMap).map(([key, value]) => [value, key])
+// map var(--affine-tag-xxx) colors to var(--affine-chip-label-xxx)
+const tagToChipColorMap: Record<string, string> = {
+  [cssVar('tagRed')]: cssVarV2('chip/label/red'),
+  [cssVar('tagTeal')]: cssVarV2('chip/label/teal'),
+  [cssVar('tagBlue')]: cssVarV2('chip/label/blue'),
+  [cssVar('tagYellow')]: cssVarV2('chip/label/yellow'),
+  [cssVar('tagPink')]: cssVarV2('chip/label/magenta'),
+  [cssVar('tagWhite')]: cssVarV2('chip/label/white'),
+  [cssVar('tagGray')]: cssVarV2('chip/label/grey'),
+  [cssVar('tagOrange')]: cssVarV2('chip/label/orange'),
+  [cssVar('tagPurple')]: cssVarV2('chip/label/purple'),
+  [cssVar('tagGreen')]: cssVarV2('chip/label/green'),
+};
+
+const chipToTagColorMap: Record<string, string> = Object.fromEntries(
+  Object.entries(tagToChipColorMap).map(([key, value]) => [value, key])
 );
 
-// hack: map var(--affine-tag-xxx) colors to var(--affine-palette-line-xxx)
-export const tagToPaletteLine = (color: string) => {
-  return tagToPaletteLineMap[color] || color;
+const chipToPaletteLineMap: Record<string, string> = Object.fromEntries(
+  Object.entries(chipToTagColorMap).map(([chip, tag]) => [
+    chip,
+    tagToPaletteLineMap[tag],
+  ])
+);
+
+const paletteLineToChipMap: Record<string, string> = Object.fromEntries(
+  Object.entries(chipToPaletteLineMap).map(([chip, paletteLine]) => [
+    paletteLine,
+    chip,
+  ])
+);
+
+// hack: map var(--affine-tag-xxx)/var(--affine-chip-label-xxx) colors to var(--affine-palette-line-xxx)
+export const databaseTagColorToAffineLabel = (color: string) => {
+  return chipToPaletteLineMap[color] || tagToPaletteLineMap[color] || color;
 };
 
-export const paletteLineToTag = (color: string) => {
-  return paletteLineToTagMap[color] || color;
+export const databaseTagColorToV2 = (color: string) => {
+  return tagToChipColorMap[color] || color;
+};
+
+export const affineLabelToDatabaseTagColor = (color: string) => {
+  return paletteLineToChipMap[color] || color;
 };

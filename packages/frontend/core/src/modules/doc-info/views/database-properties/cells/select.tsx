@@ -2,7 +2,11 @@
 
 import { PropertyValue } from '@affine/component';
 import { type TagLike, TagsInlineEditor } from '@affine/component/ui/tags';
-import { paletteLineToTag, TagService } from '@affine/core/modules/tag';
+import { TagService } from '@affine/core/modules/tag';
+import {
+  affineLabelToDatabaseTagColor,
+  databaseTagColorToV2,
+} from '@affine/core/modules/tag/entities/utils';
 import type { DatabaseBlockDataSource } from '@blocksuite/affine/blocks';
 import type { SelectTag } from '@blocksuite/data-view';
 import { LiveData, useLiveData, useService } from '@toeverything/infra';
@@ -147,7 +151,15 @@ const BlocksuiteDatabaseSelector = ({
   const tagService = useService(TagService);
   const selectCell = cell as any as SingleSelectCell | MultiSelectCell;
   const selectedIds = useLiveData(adapter.getSelectedIds$(selectCell));
-  const tagOptions = useLiveData(adapter.getTagOptions$(selectCell));
+  let tagOptions = useLiveData(adapter.getTagOptions$(selectCell));
+
+  // adapt bs database old tag color to new tag color
+  tagOptions = useMemo(() => {
+    return tagOptions.map(tag => ({
+      ...tag,
+      color: databaseTagColorToV2(tag.color),
+    }));
+  }, [tagOptions]);
 
   const onCreateTag = useCallback(
     (name: string, color: string) => {
@@ -185,7 +197,7 @@ const BlocksuiteDatabaseSelector = ({
   const tagColors = useMemo(() => {
     return tagService.tagColors.map(([name, color]) => ({
       id: name,
-      value: paletteLineToTag(color), // map from palette line to tag color
+      value: affineLabelToDatabaseTagColor(color),
       name,
     }));
   }, [tagService.tagColors]);
@@ -193,6 +205,9 @@ const BlocksuiteDatabaseSelector = ({
   const onTagChange = useCallback(
     (tagId: string, property: string, value: string) => {
       adapter.updateTag(selectCell, dataSource, tagId, old => {
+        if (property === 'color') {
+          value = affineLabelToDatabaseTagColor(value);
+        }
         return {
           ...old,
           [property]: value,
