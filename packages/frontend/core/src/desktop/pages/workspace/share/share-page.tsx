@@ -234,11 +234,7 @@ const SharePageInner = ({
       if (!editor) {
         return;
       }
-      editor.setEditorContainer(editorContainer);
-      const unbind = editor.bindEditorContainer(
-        editorContainer,
-        (editorContainer as any).docTitle
-      );
+      const unbind = editor.bindEditorContainer(editorContainer);
 
       const disposable = new DisposableGroup();
       const refNodeSlots =
@@ -263,7 +259,6 @@ const SharePageInner = ({
 
       return () => {
         unbind();
-        editor.setEditorContainer(null);
       };
     },
     [editor, setActiveBlocksuiteEditor, jumpToPageBlock, openPage, workspaceId]

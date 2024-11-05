@@ -108,7 +108,6 @@ function DocPeekPreviewEditor({
         })
       );
 
-      editor.setEditorContainer(editorContainer);
       const unbind = editor.bindEditorContainer(
         editorContainer,
         (editorContainer as any).title
@@ -120,7 +119,6 @@ function DocPeekPreviewEditor({
 
       return () => {
         unbind();
-        editor.setEditorContainer(null);
         disposableGroup.dispose();
       };
     },

@@ -32,7 +32,7 @@ import {
   WorkspaceService,
 } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { PageHeader } from '../../../components';
@@ -67,6 +67,8 @@ const DetailPageImpl = () => {
 
   const isInTrash = useLiveData(doc.meta$.map(meta => meta.trash));
   const { openPage, jumpToPageBlock } = useNavigateHelper();
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+
   const editorContainer = useLiveData(editor.editorContainer$);
 
   const enableKeyboardToolbar =
@@ -157,7 +159,11 @@ const DetailPageImpl = () => {
         );
       }
 
-      editor.setEditorContainer(editorContainer);
+      editor.bindEditorContainer(
+        editorContainer,
+        null,
+        scrollViewportRef.current
+      );
 
       return () => {
         disposable.dispose();
@@ -171,6 +177,7 @@ const DetailPageImpl = () => {
       <div className={styles.mainContainer}>
         <div
           data-mode={mode}
+          ref={scrollViewportRef}
           className={clsx(
             'affine-page-viewport',
             styles.affineDocViewport,
