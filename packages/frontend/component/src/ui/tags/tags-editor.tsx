@@ -302,6 +302,7 @@ export const TagsInlineEditor = ({
   }, [props.selectedTags, props.tags]);
   return (
     <Menu
+      noPortal
       contentOptions={{
         side: 'bottom',
         align: 'start',

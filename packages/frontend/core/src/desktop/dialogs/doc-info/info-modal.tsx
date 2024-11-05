@@ -125,6 +125,7 @@ export const InfoTable = ({
             />
           ))}
           <Menu
+            noPortal
             items={<CreatePropertyMenuItems onCreated={onPropertyAdded} />}
             contentOptions={{
               onClick(e) {

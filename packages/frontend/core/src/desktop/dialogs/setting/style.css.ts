@@ -1,22 +1,22 @@
 import { cssVar } from '@toeverything/theme';
 import { style } from '@vanilla-extract/css';
 export const wrapper = style({
-  flexGrow: '1',
   height: '100%',
-  // margin: '0 auto',
   padding: '40px 15px 20px 15px',
   display: 'flex',
-  justifyContent: 'center',
 });
 export const centerContainer = style({
   width: '100%',
-  maxWidth: '560px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
 });
 export const content = style({
   position: 'relative',
   width: '100%',
   marginBottom: '24px',
   minHeight: 'calc(100% - 48px)',
+  maxWidth: '560px',
 });
 export const suggestionLink = style({
   fontSize: cssVar('fontSm'),
@@ -40,6 +40,7 @@ export const footer = style({
   gap: '4px',
   fontSize: cssVar('fontXs'),
   flexWrap: 'wrap',
+  maxWidth: '560px',
 });
 
 export const link = style({
