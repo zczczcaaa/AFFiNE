@@ -38,7 +38,11 @@ export const OpenInAppCard = () => {
   const appIcon = appIconMap[BUILD_CONFIG.appBuildType];
 
   return (
-    <div className={styles.root} data-hidden={!show}>
+    <div
+      data-testid="open-in-app-card"
+      className={styles.root}
+      data-hidden={!show}
+    >
       <div className={styles.appIconCol}>
         <img src={appIcon} alt="app icon" width={48} height={48} />
       </div>
