@@ -1,7 +1,6 @@
-import type { FetchService } from '@affine/core/modules/cloud';
+import type { FetchService, GraphQLService } from '@affine/core/modules/cloud';
 import {
   deleteBlobMutation,
-  fetcher,
   listBlobsQuery,
   setBlobMutation,
   UserFriendlyError,
@@ -14,7 +13,8 @@ import { bufferToBlob } from '../../utils/buffer-to-blob';
 export class CloudBlobStorage implements BlobStorage {
   constructor(
     private readonly workspaceId: string,
-    private readonly fetchService: FetchService
+    private readonly fetchService: FetchService,
+    private readonly gqlService: GraphQLService
   ) {}
 
   name = 'cloud';
@@ -46,13 +46,14 @@ export class CloudBlobStorage implements BlobStorage {
 
   async set(key: string, value: Blob) {
     // set blob will check blob size & quota
-    return await fetcher({
-      query: setBlobMutation,
-      variables: {
-        workspaceId: this.workspaceId,
-        blob: new File([value], key),
-      },
-    })
+    return await this.gqlService
+      .gql({
+        query: setBlobMutation,
+        variables: {
+          workspaceId: this.workspaceId,
+          blob: new File([value], key),
+        },
+      })
       .then(res => res.setBlob)
       .catch(err => {
         const error = UserFriendlyError.fromAnyError(err);
@@ -65,7 +66,7 @@ export class CloudBlobStorage implements BlobStorage {
   }
 
   async delete(key: string) {
-    await fetcher({
+    await this.gqlService.gql({
       query: deleteBlobMutation,
       variables: {
         workspaceId: key,
@@ -75,7 +76,7 @@ export class CloudBlobStorage implements BlobStorage {
   }
 
   async list() {
-    const result = await fetcher({
+    const result = await this.gqlService.gql({
       query: listBlobsQuery,
       variables: {
         workspaceId: this.workspaceId,

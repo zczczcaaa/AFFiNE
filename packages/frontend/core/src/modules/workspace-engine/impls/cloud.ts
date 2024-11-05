@@ -237,7 +237,11 @@ export class CloudWorkspaceFlavourProviderService
       return localBlob;
     }
 
-    const cloudBlob = new CloudBlobStorage(id, this.fetchService);
+    const cloudBlob = new CloudBlobStorage(
+      id,
+      this.fetchService,
+      this.graphqlService
+    );
     return await cloudBlob.get(blob);
   }
   getEngineProvider(workspaceId: string): WorkspaceEngineProvider {
@@ -259,7 +263,11 @@ export class CloudWorkspaceFlavourProviderService
       },
       getRemoteBlobStorages: () => {
         return [
-          new CloudBlobStorage(workspaceId, this.fetchService),
+          new CloudBlobStorage(
+            workspaceId,
+            this.fetchService,
+            this.graphqlService
+          ),
           new StaticBlobStorage(),
         ];
       },

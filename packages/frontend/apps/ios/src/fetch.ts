@@ -141,37 +141,36 @@ export function configureFetchProvider(framework: Framework) {
             undefined,
           optionHeaders['Content-Type'] || optionHeaders['content-type']
         );
+        const accept = optionHeaders['Accept'] || optionHeaders['accept'];
         const nativeResponse = await CapacitorHttp.request({
           url: request.url,
           method: method,
           data: requestData,
           dataType: type as any,
           responseType:
-            (optionHeaders['Accept'] || optionHeaders['accept']) ===
-            'application/octet-stream'
-              ? 'arraybuffer'
-              : undefined,
+            accept === 'application/octet-stream' ? 'arraybuffer' : undefined,
           headers: Object.assign(Object.assign({}, headers), optionHeaders),
         });
         const contentType =
           nativeResponse.headers['Content-Type'] ||
           nativeResponse.headers['content-type'];
-        let data = (
-          contentType === null || contentType === void 0
-            ? void 0
-            : contentType.startsWith('application/json')
-        )
-          ? JSON.stringify(nativeResponse.data)
-          : contentType === 'application/octet-stream'
+        let data =
+          accept === 'application/octet-stream'
             ? base64ToUint8Array(nativeResponse.data)
-            : nativeResponse.data;
+            : contentType === null || contentType === void 0
+              ? void 0
+              : contentType.startsWith('application/json')
+                ? JSON.stringify(nativeResponse.data)
+                : contentType === 'application/octet-stream'
+                  ? base64ToUint8Array(nativeResponse.data)
+                  : nativeResponse.data;
 
         // use null data for 204 No Content HTTP response
         if (nativeResponse.status === 204) {
           data = null;
         }
         // intercept & parse response before returning
-        const response = new Response(data, {
+        const response = new Response(new Blob([data], { type: contentType }), {
           headers: nativeResponse.headers,
           status: nativeResponse.status,
         });
