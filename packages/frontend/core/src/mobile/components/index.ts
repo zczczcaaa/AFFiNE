@@ -5,5 +5,6 @@ export * from './rename';
 export * from './search-input';
 export * from './search-result';
 export * from './selector';
+export * from './skeletons';
 export * from './user-plan-tag';
 export * from './workspace-selector';

@@ -1,5 +1,4 @@
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
-import { AppFallback } from '@affine/core/components/affine/app-container';
 import { WorkspaceLayoutProviders } from '@affine/core/components/layouts/workspace-layout';
 import { SWRConfigProvider } from '@affine/core/components/providers/swr-config-provider';
 import type { Workspace, WorkspaceMetadata } from '@toeverything/infra';
@@ -17,6 +16,7 @@ import {
   useState,
 } from 'react';
 
+import { AppFallback } from '../../components';
 import { MobileCurrentWorkspaceModals } from '../../provider/model-provider';
 
 // TODO(@forehalo): reuse the global context with [core/electron]

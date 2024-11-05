@@ -1,6 +1,6 @@
-import { AppFallback } from '@affine/core/components/affine/app-container';
 import { AffineContext } from '@affine/core/components/context';
 import { Telemetry } from '@affine/core/components/telemetry';
+import { AppFallback } from '@affine/core/mobile/components';
 import { configureMobileModules } from '@affine/core/mobile/modules';
 import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
