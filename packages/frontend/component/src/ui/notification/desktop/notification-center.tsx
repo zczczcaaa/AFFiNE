@@ -4,6 +4,14 @@ import { type CSSProperties, useMemo } from 'react';
 import { Toaster } from 'sonner';
 
 import type { NotificationCenterProps } from '../types';
+import { cardWrapper } from './styles.css';
+
+const toastOptions = {
+  style: {
+    width: '100%',
+  },
+  className: cardWrapper,
+};
 
 export function DesktopNotificationCenter({
   width = 380,
@@ -20,15 +28,6 @@ export function DesktopNotificationCenter({
       pointerEvents: 'auto',
     } satisfies CSSProperties;
   }, [width]);
-
-  const toastOptions = useMemo(
-    () => ({
-      style: {
-        width: '100%',
-      },
-    }),
-    []
-  );
 
   return (
     <Toaster
