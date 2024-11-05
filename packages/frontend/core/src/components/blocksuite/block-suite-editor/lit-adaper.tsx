@@ -3,7 +3,6 @@ import {
   useConfirmModal,
   useLitPortalFactory,
 } from '@affine/component';
-import { ServerConfigService } from '@affine/core/modules/cloud';
 import { EditorService } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { JournalService } from '@affine/core/modules/journal';
@@ -91,7 +90,6 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     editorService,
     workspaceService,
     featureFlagService,
-    serverConfigService,
   } = useServices({
     PeekViewService,
     DocService,
@@ -99,12 +97,8 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     WorkspaceService,
     EditorService,
     FeatureFlagService,
-    ServerConfigService,
   });
   const framework = useFramework();
-  const serverFeatures = useLiveData(
-    serverConfigService.serverConfig.features$
-  );
   const referenceRenderer: ReferenceReactRenderer = useMemo(() => {
     return function customReference(reference) {
       const data = reference.delta.attributes?.reference;
@@ -130,17 +124,11 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
   }, [workspaceService]);
 
   const specs = useMemo(() => {
-    const enableAI =
-      serverFeatures?.copilot && featureFlagService.flags.enable_ai.value;
+    const enableAI = featureFlagService.flags.enable_ai.value;
     return mode === 'edgeless'
       ? createEdgelessModeSpecs(framework, !!enableAI)
       : createPageModeSpecs(framework, !!enableAI);
-  }, [
-    serverFeatures?.copilot,
-    featureFlagService.flags.enable_ai.value,
-    mode,
-    framework,
-  ]);
+  }, [featureFlagService.flags.enable_ai.value, mode, framework]);
 
   const confirmModal = useConfirmModal();
   const patchedSpecs = useMemo(() => {

@@ -7,7 +7,6 @@ import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-
 import { DocPropertySidebar } from '@affine/core/components/doc-properties/sidebar';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
 import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
-import { ServerConfigService } from '@affine/core/modules/cloud';
 import { EditorService } from '@affine/core/modules/editor';
 import { RecentDocsService } from '@affine/core/modules/quicksearch';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
@@ -70,7 +69,6 @@ const DetailPageImpl = memo(function DetailPageImpl() {
     workspaceService,
     globalContextService,
     featureFlagService,
-    serverConfigService,
   } = useServices({
     WorkbenchService,
     ViewService,
@@ -79,7 +77,6 @@ const DetailPageImpl = memo(function DetailPageImpl() {
     WorkspaceService,
     GlobalContextService,
     FeatureFlagService,
-    ServerConfigService,
   });
   const workbench = workbenchService.workbench;
   const editor = editorService.editor;
@@ -106,12 +103,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
   const [_, setActiveBlockSuiteEditor] = useActiveBlocksuiteEditor();
 
   const t = useI18n();
-
-  const serverFeatures = useLiveData(
-    serverConfigService.serverConfig.features$
-  );
-  const enableAI =
-    serverFeatures?.copilot && featureFlagService.flags.enable_ai.value;
+  const enableAI = featureFlagService.flags.enable_ai.value;
 
   useEffect(() => {
     if (isActiveView) {
