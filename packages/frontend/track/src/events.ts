@@ -46,7 +46,9 @@ type DocEvents =
   | 'openDocOptionsMenu'
   | 'openDocInfo'
   | 'copyBlockToLink'
-  | 'bookmark';
+  | 'bookmark'
+  | 'editProperty'
+  | 'addProperty';
 type EditorEvents = 'bold' | 'italic' | 'underline' | 'strikeThrough';
 // END SECTION
 
@@ -148,10 +150,12 @@ const PageEvents = {
     },
     docInfoPanel: {
       $: ['open'],
+      property: ['editProperty', 'addProperty'],
+      databaseProperty: ['editProperty'],
     },
     settingsPanel: {
       menu: ['openSettings'],
-      workspace: ['viewPlans', 'export'],
+      workspace: ['viewPlans', 'export', 'addProperty'],
       profileAndBadge: ['viewPlans'],
       accountUsage: ['viewPlans'],
       accountSettings: ['uploadAvatar', 'removeAvatar', 'updateUserName'],
@@ -277,6 +281,11 @@ const PageEvents = {
     },
     inlineDocInfo: {
       $: ['toggle'],
+      property: ['editProperty', 'addProperty'],
+      databaseProperty: ['editProperty'],
+    },
+    sidepanel: {
+      property: ['addProperty'],
     },
   },
   // remove when type added
@@ -413,6 +422,8 @@ export type EventArgs = {
   copyBlockToLink: {
     type: string;
   };
+  editProperty: { type: string };
+  addProperty: { type: string; control: 'at menu' | 'property list' };
 };
 
 // for type checking

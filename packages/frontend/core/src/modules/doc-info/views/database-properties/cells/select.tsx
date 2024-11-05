@@ -147,6 +147,7 @@ const BlocksuiteDatabaseSelector = ({
   dataSource,
   rowId,
   multiple,
+  onChange,
 }: DatabaseCellRendererProps & { multiple: boolean }) => {
   const tagService = useService(TagService);
   const selectCell = cell as any as SingleSelectCell | MultiSelectCell;
@@ -177,21 +178,24 @@ const BlocksuiteDatabaseSelector = ({
   const onDeleteTag = useCallback(
     (tagId: string) => {
       adapter.deleteTag(selectCell, dataSource, tagId);
+      onChange?.(selectCell.value$.value);
     },
-    [dataSource, selectCell]
+    [dataSource, selectCell, onChange]
   );
   const onDeselectTag = useCallback(
     (tagId: string) => {
       adapter.deselectTag(rowId, selectCell, dataSource, tagId, multiple);
+      onChange?.(selectCell.value$.value);
     },
-    [selectCell, dataSource, rowId, multiple]
+    [rowId, selectCell, dataSource, multiple, onChange]
   );
 
   const onSelectTag = useCallback(
     (tagId: string) => {
       adapter.selectTag(rowId, selectCell, dataSource, tagId, multiple);
+      onChange?.(selectCell.value$.value);
     },
-    [rowId, selectCell, dataSource, multiple]
+    [rowId, selectCell, dataSource, multiple, onChange]
   );
 
   const tagColors = useMemo(() => {
@@ -237,6 +241,7 @@ export const SelectCell = ({
   cell,
   dataSource,
   rowId,
+  onChange,
 }: DatabaseCellRendererProps) => {
   const isEmpty = useLiveData(
     cell.value$.map(value => Array.isArray(value) && value.length === 0)
@@ -248,6 +253,7 @@ export const SelectCell = ({
         dataSource={dataSource}
         rowId={rowId}
         multiple={false}
+        onChange={onChange}
       />
     </PropertyValue>
   );
@@ -257,6 +263,7 @@ export const MultiSelectCell = ({
   cell,
   dataSource,
   rowId,
+  onChange,
 }: DatabaseCellRendererProps) => {
   const isEmpty = useLiveData(
     cell.value$.map(value => Array.isArray(value) && value.length === 0)
@@ -268,6 +275,7 @@ export const MultiSelectCell = ({
         dataSource={dataSource}
         rowId={rowId}
         multiple={true}
+        onChange={onChange}
       />
     </PropertyValue>
   );
