@@ -116,9 +116,15 @@ export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
         <img src={appIcon} alt={appName} width={120} height={120} />
 
         <div className={styles.prompt}>
-          <Trans i18nKey="com.affine.auth.open.affine.prompt">
-            Open {appName} app now
-          </Trans>
+          {openHereClicked ? (
+            <Trans i18nKey="com.affine.auth.open.affine.open-doc-prompt">
+              This doc is now opened in {appName}
+            </Trans>
+          ) : (
+            <Trans i18nKey="com.affine.auth.open.affine.prompt">
+              Open {appName} app now
+            </Trans>
+          )}
         </div>
 
         <div className={styles.promptLinks}>
