@@ -1,4 +1,5 @@
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
+import { WindowsAppControls } from '@affine/core/components/pure/header/windows-app-controls';
 import { ThemeProvider } from '@affine/core/components/theme-provider';
 import { configureAppSidebarModule } from '@affine/core/modules/app-sidebar';
 import { ShellAppSidebarFallback } from '@affine/core/modules/app-sidebar/views';
@@ -43,6 +44,11 @@ export function App() {
             <div className={styles.body}>
               <ShellAppSidebarFallback />
             </div>
+            {environment.isWindows && (
+              <div style={{ position: 'fixed', right: 0, top: 0, zIndex: 5 }}>
+                <WindowsAppControls />
+              </div>
+            )}
           </div>
         </I18nProvider>
       </ThemeProvider>

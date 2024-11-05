@@ -19,6 +19,7 @@ import {
 } from '@affine/core/modules/editor';
 import { PeekViewManagerModal } from '@affine/core/modules/peek-view';
 import { ShareReaderService } from '@affine/core/modules/share-doc';
+import { ViewIcon, ViewTitle } from '@affine/core/modules/workbench';
 import { CloudBlobStorage } from '@affine/core/modules/workspace-engine';
 import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
@@ -42,7 +43,13 @@ import {
   WorkspacesService,
 } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { PageNotFound } from '../../404';
@@ -100,17 +107,12 @@ export const SharePage = ({
     shareReaderService.reader.loadShare({ workspaceId, docId });
   }, [shareReaderService, docId, workspaceId]);
 
+  let element: ReactNode = null;
+
   if (isLoading) {
-    return <AppContainer fallback />;
-  }
-
-  if (error) {
-    // TODO(@eyhn): show error details
-    return <SharePageNotFoundError />;
-  }
-
-  if (data) {
-    return (
+    element = null;
+  } else if (data) {
+    element = (
       <SharePageInner
         workspaceId={data.workspaceId}
         docId={data.docId}
@@ -123,9 +125,13 @@ export const SharePage = ({
         templateSnapshotUrl={templateSnapshotUrl}
       />
     );
+  } else if (error) {
+    element = <SharePageNotFoundError />;
   } else {
-    return <PageNotFound noPermission />;
+    element = <PageNotFound noPermission />;
   }
+
+  return <AppContainer fallback={!element}>{element}</AppContainer>;
 };
 
 const SharePageInner = ({
@@ -230,7 +236,8 @@ const SharePageInner = ({
     graphQLService,
   ]);
 
-  const pageTitle = useLiveData(page?.title$);
+  const t = useI18n();
+  const pageTitle = useLiveData(page?.title$) ?? t['unnamed']();
   const { jumpToPageBlock, openPage } = useNavigateHelper();
 
   usePageDocumentTitle(pageTitle);
@@ -276,43 +283,45 @@ const SharePageInner = ({
   }
 
   return (
-    <AppContainer>
-      <FrameworkScope scope={workspace.scope}>
-        <FrameworkScope scope={page.scope}>
-          <FrameworkScope scope={editor.scope}>
-            <div className={styles.root}>
-              <div className={styles.mainContainer}>
-                <ShareHeader
-                  pageId={page.id}
-                  publishMode={publishMode}
-                  isTemplate={isTemplate}
-                  templateName={templateName}
-                  snapshotUrl={templateSnapshotUrl}
-                />
-                <Scrollable.Root>
-                  <Scrollable.Viewport
-                    className={clsx(
-                      'affine-page-viewport',
-                      styles.editorContainer
-                    )}
-                  >
-                    <PageDetailEditor onLoad={onEditorLoad} />
-                    {publishMode === 'page' ? <ShareFooter /> : null}
-                  </Scrollable.Viewport>
-                  <Scrollable.Scrollbar />
-                </Scrollable.Root>
-                <EditorOutlineViewer
-                  editor={editorContainer}
-                  show={publishMode === 'page'}
-                />
-                <SharePageFooter />
-              </div>
+    <FrameworkScope scope={workspace.scope}>
+      <FrameworkScope scope={page.scope}>
+        <FrameworkScope scope={editor.scope}>
+          <ViewIcon icon={publishMode === 'page' ? 'doc' : 'edgeless'} />
+          <ViewTitle title={pageTitle} />
+          <div className={styles.root}>
+            <div className={styles.mainContainer}>
+              <ShareHeader
+                pageId={page.id}
+                publishMode={publishMode}
+                isTemplate={isTemplate}
+                templateName={templateName}
+                snapshotUrl={templateSnapshotUrl}
+              />
+              <Scrollable.Root>
+                <Scrollable.Viewport
+                  className={clsx(
+                    'affine-page-viewport',
+                    styles.editorContainer
+                  )}
+                >
+                  <PageDetailEditor onLoad={onEditorLoad} />
+                  {publishMode === 'page' && !BUILD_CONFIG.isElectron ? (
+                    <ShareFooter />
+                  ) : null}
+                </Scrollable.Viewport>
+                <Scrollable.Scrollbar />
+              </Scrollable.Root>
+              <EditorOutlineViewer
+                editor={editorContainer}
+                show={publishMode === 'page'}
+              />
+              {!BUILD_CONFIG.isElectron && <SharePageFooter />}
             </div>
-            <PeekViewManagerModal />
-          </FrameworkScope>
+          </div>
+          <PeekViewManagerModal />
         </FrameworkScope>
       </FrameworkScope>
-    </AppContainer>
+    </FrameworkScope>
   );
 };
 

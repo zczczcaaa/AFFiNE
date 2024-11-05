@@ -270,7 +270,14 @@ export class WebContentViewsManager {
     }
   };
 
-  getViewIdFromWebContentsId = (id: number) => {
+  setTabUIUnready = (tabId: string) => {
+    this.appTabsUIReady$.next(
+      new Set([...this.appTabsUIReady$.value].filter(key => key !== tabId))
+    );
+    this.reorderViews();
+  };
+
+  getWorkbenchIdFromWebContentsId = (id: number) => {
     return Array.from(this.tabViewsMap.entries()).find(
       ([, view]) => view.webContents.id === id
     )?.[0];
@@ -303,7 +310,7 @@ export class WebContentViewsManager {
 
   updateWorkbenchViewMeta = (
     workbenchId: string,
-    viewId: string,
+    viewId: string | number,
     patch: Partial<WorkbenchViewMeta>
   ) => {
     const workbench = this.tabViewsMeta.workbenches.find(
@@ -313,7 +320,10 @@ export class WebContentViewsManager {
       return;
     }
     const views = workbench.views;
-    const viewIndex = views.findIndex(v => v.id === viewId);
+    const viewIndex =
+      typeof viewId === 'string'
+        ? views.findIndex(v => v.id === viewId)
+        : viewId;
     if (viewIndex === -1) {
       return;
     }
@@ -821,12 +831,6 @@ export class WebContentViewsManager {
       view.webContents.on('did-finish-load', () => {
         unsub = helperProcessManager.connectRenderer(view.webContents);
       });
-      view.webContents.on('will-navigate', () => {
-        // means the view is reloaded
-        this.appTabsUIReady$.next(
-          new Set([...this.appTabsUIReady$.value].filter(key => key !== viewId))
-        );
-      });
     } else {
       view.webContents.on('focus', () => {
         globalThis.setTimeout(() => {
@@ -943,7 +947,7 @@ export const updateWorkbenchMeta = (
 
 export const updateWorkbenchViewMeta = (
   workbenchId: string,
-  viewId: string,
+  viewId: string | number,
   meta: Partial<WorkbenchViewMeta>
 ) => {
   WebContentViewsManager.instance.updateWorkbenchViewMeta(
@@ -956,6 +960,24 @@ export const updateWorkbenchViewMeta = (
 export const getWorkbenchMeta = (id: string) => {
   return TabViewsMetaState.value.workbenches.find(w => w.id === id);
 };
+
+export const updateActiveViewMeta = (
+  wc: WebContents,
+  meta: Partial<WorkbenchViewMeta>
+) => {
+  const workbenchId =
+    WebContentViewsManager.instance.getWorkbenchIdFromWebContentsId(wc.id);
+  const workbench = workbenchId ? getWorkbenchMeta(workbenchId) : undefined;
+
+  if (workbench && workbenchId) {
+    return WebContentViewsManager.instance.updateWorkbenchViewMeta(
+      workbenchId,
+      workbench.activeViewIndex,
+      meta
+    );
+  }
+};
+
 export const getTabViewsMeta = () => TabViewsMetaState.value;
 export const isActiveTab = (wc: WebContents) => {
   return (
@@ -1042,12 +1064,15 @@ export const showDevTools = (id?: string) => {
     .catch(console.error);
 };
 
-export const pingAppLayoutReady = (wc: WebContents) => {
-  const viewId = WebContentViewsManager.instance.getViewIdFromWebContentsId(
-    wc.id
-  );
+export const pingAppLayoutReady = (wc: WebContents, ready: boolean) => {
+  const viewId =
+    WebContentViewsManager.instance.getWorkbenchIdFromWebContentsId(wc.id);
   if (viewId) {
-    WebContentViewsManager.instance.setTabUIReady(viewId);
+    if (ready) {
+      WebContentViewsManager.instance.setTabUIReady(viewId);
+    } else {
+      WebContentViewsManager.instance.setTabUIUnready(viewId);
+    }
   }
 };
 

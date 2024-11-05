@@ -116,6 +116,12 @@ window.addEventListener('focus', () => {
   frameworkProvider.get(LifecycleService).applicationFocus();
 });
 frameworkProvider.get(LifecycleService).applicationStart();
+window.addEventListener('unload', () => {
+  frameworkProvider
+    .get(DesktopApiService)
+    .api.handler.ui.pingAppLayoutReady(false)
+    .catch(console.error);
+});
 
 events?.applicationMenu.openAboutPageInSettingModal(() =>
   frameworkProvider.get(GlobalDialogService).open('setting', {
