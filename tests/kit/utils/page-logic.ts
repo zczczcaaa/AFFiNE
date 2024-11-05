@@ -162,10 +162,14 @@ export const addDatabase = async (page: Page, title?: string) => {
   if (title) {
     await page.locator('affine-database-title').click();
     await page
-      .locator('affine-database-title rich-text [contenteditable]')
+      .locator(
+        'affine-database-title textarea[data-block-is-database-title="true"]'
+      )
       .fill(title);
     await page
-      .locator('affine-database-title rich-text [contenteditable]')
+      .locator(
+        'affine-database-title textarea[data-block-is-database-title="true"]'
+      )
       .blur();
   }
 };
