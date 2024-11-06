@@ -30,15 +30,21 @@ export const modalContentContainer = style({
   alignItems: 'center',
   justifyContent: 'center',
   borderRadius: 12,
-  selectors: {
-    [`${modalContentWrapper}:is([data-mode="max"], [data-mode="fit"], [data-mobile]) &`]:
-      {
-        height: '60%',
-        width: 'calc(100% - 32px)',
-        paddingRight: 0,
-        paddingBottom: 32,
-        alignSelf: 'flex-end',
+  '@media': {
+    // for small screen
+    'screen and (width <= 640px)': {
+      selectors: {
+        [`${modalContentWrapper}:is([data-mode="max"], [data-mode="fit"]) &`]: {
+          height: '60%',
+          width: 'calc(100% - 32px)',
+          paddingRight: 0,
+          paddingBottom: 32,
+          alignSelf: 'flex-end',
+        },
       },
+    },
+  },
+  selectors: {
     [`${modalContentWrapper}[data-mode="max"] &`]: {
       width: 'calc(100% - 64px)',
       height: 'calc(100% - 64px)',
