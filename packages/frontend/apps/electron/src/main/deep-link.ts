@@ -30,11 +30,15 @@ export function setupDeepLink(app: App) {
   }
 
   app.on('open-url', (event, url) => {
+    logger.log('open-url', url);
     if (url.startsWith(`${protocol}://`)) {
       event.preventDefault();
-      handleAffineUrl(url).catch(e => {
-        logger.error('failed to handle affine url', e);
-      });
+      app
+        .whenReady()
+        .then(() => handleAffineUrl(url))
+        .catch(e => {
+          logger.error('failed to handle affine url', e);
+        });
     }
   });
 
