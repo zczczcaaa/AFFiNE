@@ -3,6 +3,7 @@ import { ResizePanel } from '@affine/component/resize-panel';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
 import { NavigateContext } from '@affine/core/components/hooks/use-navigate-helper';
 import { WorkspaceNavigator } from '@affine/core/components/workspace-selector';
+import { useI18n } from '@affine/i18n';
 import {
   useLiveData,
   useService,
@@ -23,6 +24,7 @@ import {
   navHeaderStyle,
   navStyle,
   navWrapperStyle,
+  resizeHandleShortcutStyle,
   sidebarFloatMaskStyle,
 } from './index.css';
 import { SidebarHeader } from './sidebar-header';
@@ -170,6 +172,13 @@ export function AppSidebar({ children }: PropsWithChildren) {
         })}
         resizeHandleOffset={0}
         resizeHandleVerticalPadding={clientBorder ? 16 : 0}
+        resizeHandleTooltip={<ResizeHandleTooltipContent />}
+        resizeHandleTooltipOptions={{
+          side: 'right',
+          align: 'center',
+        }}
+        resizeHandleTooltipShortcut={['$mod', '/']}
+        resizeHandleTooltipShortcutClassName={resizeHandleShortcutStyle}
         data-transparent
         data-open={sidebarState !== 'close'}
         data-has-border={hasRightBorder}
@@ -197,6 +206,16 @@ export function AppSidebar({ children }: PropsWithChildren) {
     </>
   );
 }
+
+const ResizeHandleTooltipContent = () => {
+  const t = useI18n();
+  return (
+    <div>
+      <div>{t['com.affine.rootAppSidebar.resize-handle.tooltip.drag']()}</div>
+      <div>{t['com.affine.rootAppSidebar.resize-handle.tooltip.click']()}</div>
+    </div>
+  );
+};
 
 export function FallbackHeader() {
   return (

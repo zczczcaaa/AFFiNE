@@ -1,5 +1,4 @@
 import { IconButton } from '@affine/component';
-import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { SidebarIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
@@ -45,11 +44,6 @@ export const SidebarSwitch = ({
     appSidebarService.toggleSidebar();
   }, [appSidebarService, open]);
 
-  const t = useI18n();
-  const tooltipContent = open
-    ? t['com.affine.sidebarSwitch.collapse']()
-    : t['com.affine.sidebarSwitch.expand']();
-
   return (
     <div
       ref={switchRef}
@@ -59,12 +53,6 @@ export const SidebarSwitch = ({
       onMouseEnter={handleMouseEnter}
     >
       <IconButton
-        tooltip={tooltipContent}
-        tooltipShortcut={['$mod', '/']}
-        tooltipOptions={{
-          side: open ? 'bottom' : 'right',
-          rootOptions: { delayDuration: 700 },
-        }}
         className={className}
         size="24"
         style={{

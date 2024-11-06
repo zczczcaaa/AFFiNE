@@ -999,6 +999,8 @@
   "com.affine.rootAppSidebar.tags.empty.new-tag-button": "New tag",
   "com.affine.rootAppSidebar.tags.new-tag": "New tag",
   "com.affine.rootAppSidebar.tags.no-doc": "No docs",
+  "com.affine.rootAppSidebar.resize-handle.tooltip.drag": "Drag to resize",
+  "com.affine.rootAppSidebar.resize-handle.tooltip.click": "Click to collapse",
   "com.affine.search-tags.placeholder": "Type here ...",
   "com.affine.selectPage.empty": "Empty",
   "com.affine.selectPage.empty.tips": "No doc titles contain <1>{{search}}</1>",

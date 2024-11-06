@@ -977,6 +977,8 @@
   "com.affine.rootAppSidebar.tags.empty.new-tag-button": "新建标签",
   "com.affine.rootAppSidebar.tags.new-tag": "新建标签",
   "com.affine.rootAppSidebar.tags.no-doc": "没有文档",
+  "com.affine.rootAppSidebar.resize-handle.tooltip.drag": "拖动调整宽度",
+  "com.affine.rootAppSidebar.resize-handle.tooltip.click": "点击收起侧栏",
   "com.affine.search-tags.placeholder": "在这输入...",
   "com.affine.selectPage.empty": "选择页面为空",
   "com.affine.selectPage.empty.tips": "没有文档标题包含 <1>{{search}}</1>",

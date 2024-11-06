@@ -105,3 +105,8 @@ export const sidebarFloatMaskStyle = style({
     },
   },
 });
+
+export const resizeHandleShortcutStyle = style({
+  alignItems: 'flex-end',
+  marginBottom: '2px',
+});
