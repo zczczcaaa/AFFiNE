@@ -382,7 +382,7 @@ export type EventArgs = {
   createWorkspace: { flavour: string };
   signIn: AuthArgs;
   signedIn: AuthArgs;
-  signInFail: AuthArgs;
+  signInFail: AuthArgs & { reason: string };
   viewPlans: PaymentEventArgs;
   checkout: PaymentEventArgs;
   subscribe: PaymentEventArgs;
