@@ -19,7 +19,7 @@ export const AFFINE_FLAGS = {
     bsFlag: 'enable_database_full_width',
     displayName: 'Database Full Width',
     description: 'The database will be displayed in full-width mode.',
-    configurable: isNotStableBuild,
+    configurable: isCanaryBuild,
   },
   enable_database_attachment_note: {
     category: 'blocksuite',
@@ -33,7 +33,7 @@ export const AFFINE_FLAGS = {
     bsFlag: 'enable_block_query',
     displayName: 'Todo Block Query',
     description: 'Enables querying of todo blocks.',
-    configurable: isNotStableBuild,
+    configurable: isCanaryBuild,
   },
   enable_synced_doc_block: {
     category: 'blocksuite',
