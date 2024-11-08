@@ -273,7 +273,7 @@ const PageEvents = {
   doc: {
     editor: {
       slashMenu: ['linkDoc', 'createDoc', 'bookmark'],
-      atMenu: ['linkDoc'],
+      atMenu: ['linkDoc', 'import'],
       quickSearch: ['createDoc'],
       formatToolbar: ['bold'],
       pageRef: ['navigate'],

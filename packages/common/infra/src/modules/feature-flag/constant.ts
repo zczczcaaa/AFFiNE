@@ -167,6 +167,7 @@ export const AFFINE_FLAGS = {
     displayName: 'Enable Snapshot Import Export',
     description:
       'Once enabled, users can import and export blocksuite snapshots',
+    hide: true,
     configurable: true,
     defaultState: false,
   },
