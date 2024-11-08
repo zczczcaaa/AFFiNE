@@ -4,7 +4,10 @@ import { JournalService } from '@affine/core/modules/journal';
 import { I18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import type { AffineInlineEditor } from '@blocksuite/affine/blocks';
+import type {
+  AffineInlineEditor,
+  LinkedWidgetConfig,
+} from '@blocksuite/affine/blocks';
 import { LinkedWidgetUtils } from '@blocksuite/affine/blocks';
 import type { DocMeta } from '@blocksuite/affine/store';
 import { type FrameworkProvider, WorkspaceService } from '@toeverything/infra';
@@ -74,7 +77,7 @@ function createNewDocMenuGroup(
 // TODO: fix the type
 export function createLinkedWidgetConfig(
   framework: FrameworkProvider
-): Partial<Record<string, unknown>> {
+): Partial<LinkedWidgetConfig> {
   return {
     getMenus: (
       query: string,
@@ -141,6 +144,17 @@ export function createLinkedWidgetConfig(
           inlineEditor
         ),
       ]);
+    },
+    mobile: {
+      useScreenHeight: BUILD_CONFIG.isIOS,
+      scrollContainer: window,
+      scrollTopOffset: () => {
+        const header = document.querySelector('header');
+        if (!header) return 0;
+
+        const { y, height } = header.getBoundingClientRect();
+        return y + height;
+      },
     },
   };
 }

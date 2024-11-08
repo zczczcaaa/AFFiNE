@@ -162,6 +162,14 @@ export const AFFINE_FLAGS = {
     configurable: false,
     defaultState: isMobile,
   },
+  enable_mobile_linked_doc_menu: {
+    category: 'blocksuite',
+    bsFlag: 'enable_mobile_linked_doc_menu',
+    displayName: 'Mobile Linked Doc Widget',
+    description: 'Enables the mobile linked doc menu.',
+    configurable: false,
+    defaultState: isMobile,
+  },
   enable_snapshot_import_export: {
     category: 'affine',
     displayName: 'Enable Snapshot Import Export',
