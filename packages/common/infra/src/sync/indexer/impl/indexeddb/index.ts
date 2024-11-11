@@ -1,6 +1,8 @@
+import { DebugLogger } from '@affine/debug';
 import type { Observable } from 'rxjs';
-import { from, merge, of, Subject, throttleTime } from 'rxjs';
+import { merge, of, Subject, throttleTime } from 'rxjs';
 
+import { backoffRetry, fromPromise } from '../../../../livedata';
 import { exhaustMapWithTrailing } from '../../../../utils/';
 import {
   type AggregateOptions,
@@ -15,6 +17,8 @@ import {
   type SearchResult,
 } from '../../';
 import { DataStruct, type DataStructRWTransaction } from './data-struct';
+
+const logger = new DebugLogger('IndexedDBIndex');
 
 export class IndexedDBIndex<S extends Schema> implements Index<S> {
   data: DataStruct = new DataStruct(this.databaseName, this.schema);
@@ -63,12 +67,15 @@ export class IndexedDBIndex<S extends Schema> implements Index<S> {
     return merge(of(1), this.broadcast$).pipe(
       throttleTime(3000, undefined, { leading: true, trailing: true }),
       exhaustMapWithTrailing(() => {
-        return from(
-          (async () => {
+        return fromPromise(async () => {
+          try {
             const trx = await this.data.readonly();
             return this.data.search(trx, query, options);
-          })()
-        );
+          } catch (error) {
+            logger.error('search error', error);
+            throw error;
+          }
+        }).pipe(backoffRetry());
       })
     );
   }
@@ -90,12 +97,15 @@ export class IndexedDBIndex<S extends Schema> implements Index<S> {
     return merge(of(1), this.broadcast$).pipe(
       throttleTime(3000, undefined, { leading: true, trailing: true }),
       exhaustMapWithTrailing(() => {
-        return from(
-          (async () => {
+        return fromPromise(async () => {
+          try {
             const trx = await this.data.readonly();
             return this.data.aggregate(trx, query, field, options);
-          })()
-        );
+          } catch (error) {
+            logger.error('aggregate error', error);
+            throw error;
+          }
+        }).pipe(backoffRetry());
       })
     );
   }
