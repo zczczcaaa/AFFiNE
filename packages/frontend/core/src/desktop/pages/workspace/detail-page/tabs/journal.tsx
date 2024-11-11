@@ -168,7 +168,7 @@ export const EditorJournalPanel = () => {
   );
 };
 
-const sortPagesByDate = (
+export const sortPagesByDate = (
   docs: DocRecord[],
   field: 'updatedDate' | 'createDate',
   order: 'asc' | 'desc' = 'desc'

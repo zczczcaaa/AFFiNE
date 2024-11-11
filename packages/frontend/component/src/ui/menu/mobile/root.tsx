@@ -7,6 +7,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { observeResize } from '../../../utils';
 import { Button } from '../../button';
 import { Modal } from '../../modal';
+import { Scrollable } from '../../scrollbar';
 import type { MenuProps } from '../menu.types';
 import type { SubMenuContent } from './context';
 import { MobileMenuContext } from './context';
@@ -138,8 +139,12 @@ export const MobileMenu = ({
                 >
                   {sub.title || t['com.affine.backButton']()}
                 </Button>
-
-                {sub.items}
+                <Scrollable.Root>
+                  <Scrollable.Viewport className={styles.scrollArea}>
+                    {sub.items}
+                  </Scrollable.Viewport>
+                  <Scrollable.Scrollbar />
+                </Scrollable.Root>
               </div>
             ))}
           </div>

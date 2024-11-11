@@ -1391,5 +1391,7 @@
   "com.affine.m.selector.remove-warning.confirm": "Do not ask again",
   "com.affine.m.selector.remove-warning.cancel": "Cancel",
   "com.affine.m.selector.remove-warning.where-tag": "tag",
-  "com.affine.m.selector.remove-warning.where-folder": "folder"
+  "com.affine.m.selector.remove-warning.where-folder": "folder",
+  "com.affine.m.selector.journal-menu.today-activity": "Today's activity",
+  "com.affine.m.selector.journal-menu.conflicts": "Duplicate Entries in Today's Journal"
 }

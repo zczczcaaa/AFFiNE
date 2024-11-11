@@ -22,6 +22,8 @@ import {
 import { DocService, useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useEffect, useState } from 'react';
 
+import { JournalConflictsMenuItem } from './menu/journal-conflicts';
+import { JournalTodayActivityMenuItem } from './menu/journal-today-activity';
 import * as styles from './page-header-more-button.css';
 import { DocInfoSheet } from './sheets/doc-info';
 
@@ -82,6 +84,7 @@ export const PageHeaderMenuButton = () => {
 
   const EditMenu = (
     <>
+      <JournalTodayActivityMenuItem suffix={<MenuSeparator />} />
       <MobileMenuItem
         prefixIcon={primaryMode === 'page' ? <EdgelessIcon /> : <PageIcon />}
         data-testid="editor-option-menu-mode-switch"
@@ -120,6 +123,7 @@ export const PageHeaderMenuButton = () => {
           <span>{t['com.affine.header.option.view-toc']()}</span>
         </MobileMenuItem>
       </MobileMenu>
+      <JournalConflictsMenuItem />
     </>
   );
   if (isInTrash) {

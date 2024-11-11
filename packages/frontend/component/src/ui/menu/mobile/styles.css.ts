@@ -3,7 +3,7 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 import { modalContent } from '../../modal/styles.css';
-import { bgColor } from '../styles.css';
+import { bgColor, iconColor, labelColor } from '../styles.css';
 
 // To override desktop menu style defined in '../styles.css.ts'
 
@@ -55,6 +55,12 @@ export const mobileMenuItem = style({
     },
   },
   selectors: {
+    '&.danger': {
+      vars: {
+        [labelColor]: cssVarV2('button/error'),
+        [iconColor]: cssVarV2('button/error'),
+      },
+    },
     '&.danger:hover': {
       vars: { [bgColor]: 'transparent' },
     },
@@ -96,4 +102,8 @@ export const backButton = style({
   fontSize: 17,
   paddingLeft: 0,
   marginLeft: 20,
+});
+
+export const scrollArea = style({
+  maxHeight: '80dvh',
 });
