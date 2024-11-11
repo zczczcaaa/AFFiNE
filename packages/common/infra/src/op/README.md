@@ -124,10 +124,10 @@ const client = new OpClient(channel);
 client.listen();
 ```
 
-### MessagePort
+### MessageChannel
 
 ```ts
-const { port1, port2 } = new MessagePort();
+const { port1, port2 } = new MessageChannel();
 
 const client = new OpClient(port1);
 const consumer = new OpConsumer(port2);
