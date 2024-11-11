@@ -154,3 +154,12 @@ export const notFound = style({
   fontSize: cssVar('fontXs'),
   padding: '4px',
 });
+
+export const spellCheckSettingDescription = style({
+  color: cssVarV2('toast/iconState/error'),
+});
+
+export const spellCheckSettingDescriptionButton = style({
+  color: cssVarV2('text/link'),
+  fontSize: 'inherit',
+});

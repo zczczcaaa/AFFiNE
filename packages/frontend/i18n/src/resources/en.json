@@ -1123,6 +1123,7 @@
   "com.affine.settings.editorSettings.general.font-family.title": "Font family",
   "com.affine.settings.editorSettings.general.spell-check.description": "Automatically detect and correct spelling errors.",
   "com.affine.settings.editorSettings.general.spell-check.title": "Spell check",
+  "com.affine.settings.editorSettings.general.spell-check.restart-hint": "Settings changed; please restart the app. <1>Restart</1>",
   "com.affine.settings.editorSettings.page": "Page",
   "com.affine.settings.editorSettings.page.display-bi-link.description": "Display bi-directional links on the doc.",
   "com.affine.settings.editorSettings.page.display-bi-link.title": "Display bi-directional links",

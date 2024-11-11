@@ -2,6 +2,8 @@ import { join } from 'node:path';
 
 import {
   app,
+  Menu,
+  MenuItem,
   session,
   type View,
   type WebContents,
@@ -26,16 +28,18 @@ import { CLOUD_BASE_URL, isDev } from '../config';
 import { mainWindowOrigin, shellViewUrl } from '../constants';
 import { ensureHelperProcess } from '../helper-process';
 import { logger } from '../logger';
-import { globalStateStorage } from '../shared-storage/storage';
-import { getCustomThemeWindow } from './custom-theme-window';
-import { getMainWindow, MainWindowManager } from './main-window';
 import {
+  SpellCheckStateKey,
+  SpellCheckStateSchema,
   TabViewsMetaKey,
   type TabViewsMetaSchema,
   tabViewsMetaSchema,
   type WorkbenchMeta,
   type WorkbenchViewMeta,
-} from './tab-views-meta-schema';
+} from '../shared-state-schema';
+import { globalStateStorage } from '../shared-storage/storage';
+import { getCustomThemeWindow } from './custom-theme-window';
+import { getMainWindow, MainWindowManager } from './main-window';
 
 async function getAdditionalArguments() {
   const { getExposedMeta } = await import('../exposed');
@@ -73,6 +77,10 @@ const TabViewsMetaState = {
     };
   },
 };
+
+const spellCheckSettings = SpellCheckStateSchema.parse(
+  globalStateStorage.get(SpellCheckStateKey) ?? {}
+);
 
 type AddTabAction = {
   type: 'add-tab';
@@ -816,12 +824,43 @@ export class WebContentViewsManager {
         transparent: true,
         contextIsolation: true,
         sandbox: false,
-        spellcheck: false, // TODO(@pengx17): enable?
+        spellcheck: spellCheckSettings.enabled,
         preload: join(__dirname, './preload.js'), // this points to the bundled preload module
         // serialize exposed meta that to be used in preload
         additionalArguments: additionalArguments,
       },
     });
+
+    if (spellCheckSettings.enabled) {
+      view.webContents.on('context-menu', (_event, params) => {
+        const menu = new Menu();
+
+        // Add each spelling suggestion
+        for (const suggestion of params.dictionarySuggestions) {
+          menu.append(
+            new MenuItem({
+              label: suggestion,
+              click: () => view.webContents.replaceMisspelling(suggestion),
+            })
+          );
+        }
+
+        // Allow users to add the misspelled word to the dictionary
+        if (params.misspelledWord) {
+          menu.append(
+            new MenuItem({
+              label: 'Add to dictionary', // TODO: i18n
+              click: () =>
+                view.webContents.session.addWordToSpellCheckerDictionary(
+                  params.misspelledWord
+                ),
+            })
+          );
+        }
+
+        menu.popup();
+      });
+    }
 
     this.webViewsMap$.next(this.tabViewsMap.set(viewId, view));
     let unsub = () => {};

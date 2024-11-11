@@ -43,3 +43,11 @@ export type TabViewsMetaSchema = z.infer<typeof tabViewsMetaSchema>;
 export type WorkbenchMeta = z.infer<typeof workbenchMetaSchema>;
 export type WorkbenchViewMeta = z.infer<typeof workbenchViewMetaSchema>;
 export type WorkbenchViewModule = z.infer<typeof workbenchViewIconNameSchema>;
+
+export const SpellCheckStateSchema = z.object({
+  enabled: z.boolean().optional(),
+});
+
+export const SpellCheckStateKey = 'spellCheckState';
+export type SpellCheckStateKey = typeof SpellCheckStateKey;
+export type SpellCheckStateSchema = z.infer<typeof SpellCheckStateSchema>;

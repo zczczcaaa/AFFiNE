@@ -41,10 +41,11 @@ export const sharedStorage = (globalThis as any).__sharedStorage as
 
 export type { SharedStorage };
 
-export type { UpdateMeta } from '@affine/electron/main/updater/event';
 export {
+  type SpellCheckStateSchema,
   type TabViewsMetaSchema,
   type WorkbenchMeta,
   type WorkbenchViewMeta,
   type WorkbenchViewModule,
-} from '@affine/electron/main/windows-manager/tab-views-meta-schema';
+} from '@affine/electron/main/shared-state-schema';
+export type { UpdateMeta } from '@affine/electron/main/updater/event';

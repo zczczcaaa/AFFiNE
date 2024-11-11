@@ -3,6 +3,7 @@ import { getLinkPreview } from 'link-preview-js';
 
 import { persistentConfig } from '../config-storage/persist';
 import { logger } from '../logger';
+import type { WorkbenchViewMeta } from '../shared-state-schema';
 import type { NamespaceHandlers } from '../type';
 import {
   activateView,
@@ -27,7 +28,6 @@ import {
 } from '../windows-manager';
 import { showTabContextMenu } from '../windows-manager/context-menu';
 import { getOrCreateCustomThemeWindow } from '../windows-manager/custom-theme-window';
-import type { WorkbenchViewMeta } from '../windows-manager/tab-views-meta-schema';
 import { getChallengeResponse } from './challenge';
 import { uiSubjects } from './subject';
 
@@ -215,5 +215,9 @@ export const uiHandlers = {
     const win = await getOrCreateCustomThemeWindow();
     win.show();
     win.focus();
+  },
+  restartApp: async () => {
+    app.relaunch();
+    app.quit();
   },
 } satisfies NamespaceHandlers;

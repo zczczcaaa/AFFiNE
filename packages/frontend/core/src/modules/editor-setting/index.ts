@@ -1,10 +1,15 @@
-import { type Framework, GlobalState } from '@toeverything/infra';
+import {
+  type Framework,
+  GlobalState,
+  GlobalStateService,
+} from '@toeverything/infra';
 
 import { UserDBService } from '../userspace';
 import { EditorSetting } from './entities/editor-setting';
 import { CurrentUserDBEditorSettingProvider } from './impls/user-db';
 import { EditorSettingProvider } from './provider/editor-setting-provider';
 import { EditorSettingService } from './services/editor-setting';
+import { SpellCheckSettingService } from './services/spell-check-setting';
 export type { FontFamily } from './schema';
 export { EditorSettingSchema, fontStyleOptions } from './schema';
 export { EditorSettingService } from './services/editor-setting';
@@ -17,4 +22,8 @@ export function configureEditorSettingModule(framework: Framework) {
       UserDBService,
       GlobalState,
     ]);
+}
+
+export function configureSpellCheckSettingModule(framework: Framework) {
+  framework.service(SpellCheckSettingService, [GlobalStateService]);
 }

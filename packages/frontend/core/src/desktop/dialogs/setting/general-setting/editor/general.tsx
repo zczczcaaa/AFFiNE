@@ -15,22 +15,26 @@ import {
   SettingRow,
   SettingWrapper,
 } from '@affine/component/setting-components';
+import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { ServerConfigService } from '@affine/core/modules/cloud';
+import { DesktopApiService } from '@affine/core/modules/desktop-api';
 import {
   EditorSettingService,
   type FontFamily,
   fontStyleOptions,
 } from '@affine/core/modules/editor-setting';
+import { SpellCheckSettingService } from '@affine/core/modules/editor-setting/services/spell-check-setting';
 import {
   type FontData,
   SystemFontFamilyService,
 } from '@affine/core/modules/system-font-family';
-import { useI18n } from '@affine/i18n';
+import { Trans, useI18n } from '@affine/i18n';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import { DoneIcon, SearchIcon } from '@blocksuite/icons/rc';
 import {
   FeatureFlagService,
   useLiveData,
+  useService,
   useServices,
 } from '@toeverything/infra';
 import clsx from 'clsx';
@@ -41,10 +45,10 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useState,
 } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { DropdownMenu } from './menu';
 import * as styles from './style.css';
 
 const getLabel = (fontKey: FontFamily, t: ReturnType<typeof useI18n>) => {
@@ -351,55 +355,6 @@ const NewDocDefaultModeSettings = () => {
   );
 };
 
-export const DeFaultCodeBlockSettings = () => {
-  const t = useI18n();
-  return (
-    <>
-      <SettingRow
-        name={t[
-          'com.affine.settings.editorSettings.general.default-code-block.language.title'
-        ]()}
-        desc={t[
-          'com.affine.settings.editorSettings.general.default-code-block.language.description'
-        ]()}
-      >
-        <DropdownMenu
-          items={<MenuItem>Plain Text</MenuItem>}
-          trigger={
-            <MenuTrigger className={styles.menuTrigger} disabled>
-              Plain Text
-            </MenuTrigger>
-          }
-        />
-      </SettingRow>
-      <SettingRow
-        name={t[
-          'com.affine.settings.editorSettings.general.default-code-block.wrap.title'
-        ]()}
-        desc={t[
-          'com.affine.settings.editorSettings.general.default-code-block.wrap.description'
-        ]()}
-      >
-        <Switch />
-      </SettingRow>
-    </>
-  );
-};
-
-export const SpellCheckSettings = () => {
-  const t = useI18n();
-  return (
-    <SettingRow
-      name={t['com.affine.settings.editorSettings.general.spell-check.title']()}
-      desc={t[
-        'com.affine.settings.editorSettings.general.spell-check.description'
-      ]()}
-    >
-      <Switch />
-    </SettingRow>
-  );
-};
-
 const AISettings = () => {
   const t = useI18n();
   const { openConfirmModal } = useConfirmModal();
@@ -460,6 +415,56 @@ const AISettings = () => {
   );
 };
 
+const SpellCheckSettings = () => {
+  const t = useI18n();
+  const spellCheckSetting = useService(SpellCheckSettingService);
+
+  const desktopApiService = useService(DesktopApiService);
+
+  const enabled = useLiveData(spellCheckSetting.enabled$)?.enabled;
+
+  const [requireRestart, setRequireRestart] = useState(false);
+
+  const onToggleSpellCheck = useCallback(
+    (checked: boolean) => {
+      spellCheckSetting.setEnabled(checked);
+      setRequireRestart(true);
+    },
+    [spellCheckSetting]
+  );
+
+  const onRestart = useAsyncCallback(async () => {
+    await desktopApiService.handler.ui.restartApp();
+  }, [desktopApiService]);
+
+  return (
+    <SettingRow
+      name={t['com.affine.settings.editorSettings.general.spell-check.title']()}
+      desc={
+        requireRestart ? (
+          <div className={styles.spellCheckSettingDescription}>
+            <Trans i18nKey="com.affine.settings.editorSettings.general.spell-check.restart-hint">
+              Settings changed; please restart the app.
+              <button
+                onClick={onRestart}
+                className={styles.spellCheckSettingDescriptionButton}
+              >
+                Restart
+              </button>
+            </Trans>
+          </div>
+        ) : (
+          t[
+            'com.affine.settings.editorSettings.general.spell-check.description'
+          ]()
+        )
+      }
+    >
+      <Switch checked={enabled} onChange={onToggleSpellCheck} />
+    </SettingRow>
+  );
+};
+
 export const General = () => {
   const t = useI18n();
 
@@ -469,9 +474,10 @@ export const General = () => {
       <FontFamilySettings />
       <CustomFontFamilySettings />
       <NewDocDefaultModeSettings />
+      {BUILD_CONFIG.isElectron && <SpellCheckSettings />}
       {/* // TODO(@akumatus): implement these settings
-      <DeFaultCodeBlockSettings />
-      <SpellCheckSettings /> */}
+        <DeFaultCodeBlockSettings />
+       */}
     </SettingWrapper>
   );
 };

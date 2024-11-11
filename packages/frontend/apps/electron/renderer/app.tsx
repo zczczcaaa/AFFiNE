@@ -10,7 +10,10 @@ import {
   DesktopApiService,
 } from '@affine/core/modules/desktop-api';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
-import { EditorSettingService } from '@affine/core/modules/editor-setting';
+import {
+  configureSpellCheckSettingModule,
+  EditorSettingService,
+} from '@affine/core/modules/editor-setting';
 import { configureFindInPageModule } from '@affine/core/modules/find-in-page';
 import { I18nProvider } from '@affine/core/modules/i18n';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
@@ -78,6 +81,7 @@ configureDesktopWorkbenchModule(framework);
 configureAppTabsHeaderModule(framework);
 configureFindInPageModule(framework);
 configureDesktopApiModule(framework);
+configureSpellCheckSettingModule(framework);
 
 framework.impl(PopupWindowProvider, p => {
   const apis = p.get(DesktopApiService).api;

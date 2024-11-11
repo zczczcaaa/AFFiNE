@@ -15,7 +15,7 @@ type SettingItem<T> = {
   readonly value: T;
   set: (value: T) => void;
   // eslint-disable-next-line rxjs/finnish
-  $: T;
+  $: LiveData<T>;
 };
 
 export class EditorSetting extends Entity {
