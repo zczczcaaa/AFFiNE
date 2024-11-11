@@ -5,6 +5,7 @@ import { useRegisterBlocksuiteEditorCommands } from '@affine/core/components/hoo
 import { useActiveBlocksuiteEditor } from '@affine/core/components/hooks/use-block-suite-editor';
 import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import { usePageDocumentTitle } from '@affine/core/components/hooks/use-global-state';
+import { useJournalRouteHelper } from '@affine/core/components/hooks/use-journal';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { PageDetailEditor } from '@affine/core/components/page-detail-editor';
 import { DetailPageWrapper } from '@affine/core/desktop/pages/workspace/detail-page/detail-page-wrapper';
@@ -42,7 +43,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { AppTabs, PageHeader } from '../../../components';
-import { JournalIconButton } from './journal-icon-button';
+import { JournalDatePicker } from './journal-date-picker';
 import * as styles from './mobile-detail-page.css';
 import { PageHeaderMenuButton } from './page-header-more-button';
 import { PageHeaderShareButton } from './page-header-share-button';
@@ -192,12 +193,6 @@ const DetailPageImpl = () => {
         >
           {/* Add a key to force rerender when page changed, to avoid error boundary persisting. */}
           <AffineErrorBoundary key={doc.id}>
-            {mode === 'page' && (
-              <JournalIconButton
-                docId={doc.id}
-                className={styles.journalIconButton}
-              />
-            )}
             <PageDetailEditor onLoad={onLoad} />
           </AffineErrorBoundary>
         </div>
@@ -227,6 +222,17 @@ const JournalDetailPage = ({
   pageId: string;
   date: string;
 }) => {
+  const journalService = useService(JournalService);
+  const { openJournal } = useJournalRouteHelper();
+
+  const allJournalDates = useLiveData(journalService.allJournalDates$);
+
+  const handleDateChange = useCallback(
+    (date: string) => {
+      openJournal(date);
+    },
+    [openJournal]
+  );
   return (
     <div className={styles.root}>
       <DetailPageWrapper
@@ -248,7 +254,11 @@ const JournalDetailPage = ({
             {i18nTime(dayjs(date), { absolute: { accuracy: 'month' } })}
           </span>
         </PageHeader>
-        {/* TODO(@CatsJuice): <JournalDatePicker /> */}
+        <JournalDatePicker
+          date={date}
+          onChange={handleDateChange}
+          withDotDates={allJournalDates}
+        />
         <DetailPageImpl />
         <AppTabs background={cssVarV2('layer/background/primary')} />
       </DetailPageWrapper>
