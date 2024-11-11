@@ -42,7 +42,6 @@ import { combineLatest, map } from 'rxjs';
 
 import { getFontConfigExtension } from '../font-extension';
 import { createDatabaseOptionsConfig } from './database-block';
-import { createKeyboardToolbarConfig } from './widgets/keyboard-toolbar';
 import { createLinkedWidgetConfig } from './widgets/linked';
 import { createToolbarMoreMenuConfig } from './widgets/toolbar';
 
@@ -150,7 +149,6 @@ function getEditorConfigExtension(
       linkedWidget: createLinkedWidgetConfig(framework),
       toolbarMoreMenu: createToolbarMoreMenuConfig(framework),
       databaseOptions: createDatabaseOptionsConfig(framework),
-      keyboardToolbar: createKeyboardToolbarConfig(),
     } satisfies RootBlockConfig),
   ];
 }

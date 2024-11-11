@@ -54,6 +54,7 @@ import {
   patchDocModeService,
   patchEdgelessClipboard,
   patchEmbedLinkedDocBlockConfig,
+  patchForMobile,
   patchForSharedPage,
   patchNotificationService,
   patchParseDocUrlExtension,
@@ -149,6 +150,9 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     patched = patched.concat(patchEmbedLinkedDocBlockConfig(framework));
     if (shared) {
       patched = patched.concat(patchForSharedPage());
+    }
+    if (BUILD_CONFIG.isMobileEdition) {
+      patched = patched.concat(patchForMobile());
     }
     patched = patched.concat(
       patchDocModeService(docService, docsService, editorService)

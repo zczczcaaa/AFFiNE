@@ -26,8 +26,11 @@ import { track } from '@affine/track';
 import {
   type BlockService,
   BlockViewIdentifier,
+  ConfigIdentifier,
   type ExtensionType,
   type WidgetComponent,
+  WidgetViewMapIdentifier,
+  type WidgetViewMapType,
 } from '@blocksuite/affine/block-std';
 import { BlockServiceWatcher } from '@blocksuite/affine/block-std';
 import type {
@@ -37,15 +40,19 @@ import type {
   PeekOptions,
   PeekViewService as BSPeekViewService,
   QuickSearchResult,
+  RootBlockConfig,
   RootService,
 } from '@blocksuite/affine/blocks';
 import {
+  AFFINE_EMBED_CARD_TOOLBAR_WIDGET,
+  AFFINE_FORMAT_BAR_WIDGET,
   AffineSlashMenuWidget,
   DocModeExtension,
   EdgelessRootBlockComponent,
   EmbedLinkedDocBlockComponent,
   EmbedLinkedDocBlockConfigExtension,
   NotificationExtension,
+  pageRootWidgetViewMap,
   ParseDocUrlExtension,
   PeekViewExtension,
   QuickSearchExtension,
@@ -64,6 +71,8 @@ import { type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { literal } from 'lit/static-html.js';
 import { pick } from 'lodash-es';
+
+import { createKeyboardToolbarConfig } from './widgets/keyboard-toolbar';
 
 export type ReferenceReactRenderer = (
   reference: AffineReference
@@ -537,6 +546,63 @@ export function patchForSharedPage() {
         BlockViewIdentifier('affine:embed-synced-doc'),
         () => literal`affine-linked-doc-ref-block`
       );
+    },
+  };
+  return extension;
+}
+
+export function patchForMobile() {
+  const extension: ExtensionType = {
+    setup: di => {
+      // page configs
+      {
+        const pageConfigIdentifier = ConfigIdentifier('affine:page');
+        const prev = di.getFactory(ConfigIdentifier);
+
+        di.override(pageConfigIdentifier, provider => {
+          return {
+            ...prev?.(provider),
+            keyboardToolbar: createKeyboardToolbarConfig(),
+          } satisfies RootBlockConfig;
+        });
+      }
+
+      // Disable some toolbar widgets for mobile.
+      {
+        di.override(WidgetViewMapIdentifier('affine:page'), () => {
+          const ignoreWidgets = [
+            AFFINE_FORMAT_BAR_WIDGET,
+            AFFINE_EMBED_CARD_TOOLBAR_WIDGET,
+          ];
+
+          type pageRootWidgetViewMapKey = keyof typeof pageRootWidgetViewMap;
+          return (
+            Object.keys(pageRootWidgetViewMap) as pageRootWidgetViewMapKey[]
+          ).reduce(
+            (acc, key) => {
+              if (ignoreWidgets.includes(key)) return acc;
+              acc[key] = pageRootWidgetViewMap[key];
+              return acc;
+            },
+            {} as typeof pageRootWidgetViewMap
+          );
+        });
+
+        di.override(
+          WidgetViewMapIdentifier('affine:code'),
+          (): WidgetViewMapType => ({})
+        );
+
+        di.override(
+          WidgetViewMapIdentifier('affine:image'),
+          (): WidgetViewMapType => ({})
+        );
+
+        di.override(
+          WidgetViewMapIdentifier('affine:surface-ref'),
+          (): WidgetViewMapType => ({})
+        );
+      }
     },
   };
   return extension;
