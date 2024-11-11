@@ -47,6 +47,7 @@ export const DocPropertySidebar = () => {
         name,
         type: option.type,
         index: propertyList.indexAt('after'),
+        isDeleted: false,
       });
       setNewPropertyId(newProperty.id);
       track.doc.sidepanel.property.addProperty({

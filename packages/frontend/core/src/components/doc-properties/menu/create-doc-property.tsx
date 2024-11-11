@@ -46,6 +46,7 @@ export const CreatePropertyMenuItems = ({
         name,
         type: option.type,
         index: propertyList.indexAt(at),
+        isDeleted: false,
       });
       onCreated?.(newProperty);
     },
