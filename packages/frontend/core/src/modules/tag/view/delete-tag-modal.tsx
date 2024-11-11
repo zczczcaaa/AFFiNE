@@ -62,7 +62,7 @@ export const useDeleteTagConfirmModal = () => {
           handleClose(true);
         },
         onCancel: () => {
-          handleClose(true);
+          handleClose(false);
         },
         onOpenChange: state => {
           handleClose(state);
