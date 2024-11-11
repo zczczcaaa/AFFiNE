@@ -186,13 +186,12 @@ export const EditDocPropertyMenuItems = ({
             description: (
               <Trans
                 values={{
-                  name: propertyInfo.name,
+                  name: name,
                 }}
                 i18nKey="com.affine.settings.workspace.properties.delete-property-desc"
               >
-                The <strong>{{ name: propertyInfo.name } as any}</strong>{' '}
-                property will be removed from count doc(s). This action cannot
-                be undone.
+                The <strong>{{ name: name } as any}</strong> property will be
+                removed from count doc(s). This action cannot be undone.
               </Trans>
             ),
             confirmText: t['Confirm'](),
