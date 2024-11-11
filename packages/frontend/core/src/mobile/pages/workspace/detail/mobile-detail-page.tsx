@@ -9,8 +9,10 @@ import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-he
 import { PageDetailEditor } from '@affine/core/components/page-detail-editor';
 import { DetailPageWrapper } from '@affine/core/desktop/pages/workspace/detail-page/detail-page-wrapper';
 import { EditorService } from '@affine/core/modules/editor';
+import { JournalService } from '@affine/core/modules/journal';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
+import { i18nTime } from '@affine/i18n';
 import {
   BookmarkBlockService,
   customImageProxyMiddleware,
@@ -28,14 +30,18 @@ import {
   FrameworkScope,
   GlobalContextService,
   useLiveData,
+  useService,
   useServices,
   WorkspaceService,
 } from '@toeverything/infra';
+import { bodyEmphasized } from '@toeverything/theme/typography';
+import { cssVarV2 } from '@toeverything/theme/v2';
 import clsx from 'clsx';
+import dayjs from 'dayjs';
 import { useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { PageHeader } from '../../../components';
+import { AppTabs, PageHeader } from '../../../components';
 import { JournalIconButton } from './journal-icon-button';
 import * as styles from './mobile-detail-page.css';
 import { PageHeaderMenuButton } from './page-header-more-button';
@@ -214,15 +220,42 @@ const notFound = (
   </>
 );
 
-export const Component = () => {
-  useThemeColorV2('layer/background/primary');
-  const params = useParams();
-  const pageId = params.pageId;
-
-  if (!pageId) {
-    return null;
-  }
-
+const JournalDetailPage = ({
+  pageId,
+  date,
+}: {
+  pageId: string;
+  date: string;
+}) => {
+  return (
+    <div className={styles.root}>
+      <DetailPageWrapper
+        skeleton={skeleton}
+        notFound={notFound}
+        pageId={pageId}
+      >
+        <PageHeader
+          back
+          className={styles.header}
+          suffix={
+            <>
+              <PageHeaderShareButton />
+              <PageHeaderMenuButton />
+            </>
+          }
+        >
+          <span className={bodyEmphasized}>
+            {i18nTime(dayjs(date), { absolute: { accuracy: 'month' } })}
+          </span>
+        </PageHeader>
+        {/* TODO(@CatsJuice): <JournalDatePicker /> */}
+        <DetailPageImpl />
+        <AppTabs background={cssVarV2('layer/background/primary')} />
+      </DetailPageWrapper>
+    </div>
+  );
+};
+const NormalDetailPage = ({ pageId }: { pageId: string }) => {
   return (
     <div className={styles.root}>
       <DetailPageWrapper
@@ -243,5 +276,23 @@ export const Component = () => {
         <DetailPageImpl />
       </DetailPageWrapper>
     </div>
+  );
+};
+
+export const Component = () => {
+  useThemeColorV2('layer/background/primary');
+  const journalService = useService(JournalService);
+  const params = useParams();
+  const pageId = params.pageId;
+  const journalDate = useLiveData(journalService.journalDate$(pageId ?? ''));
+
+  if (!pageId) {
+    return null;
+  }
+
+  return journalDate ? (
+    <JournalDetailPage pageId={pageId} date={journalDate} />
+  ) : (
+    <NormalDetailPage pageId={pageId} />
   );
 };

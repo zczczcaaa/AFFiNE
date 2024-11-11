@@ -1,10 +1,15 @@
 import { cssVarV2 } from '@toeverything/theme/v2';
-import { style } from '@vanilla-extract/css';
+import { createVar, style } from '@vanilla-extract/css';
 
 import { globalVars } from '../../styles/mobile.css';
 
+export const appTabsBackground = createVar('appTabsBackground');
+
 export const appTabs = style({
-  backgroundColor: cssVarV2('layer/background/secondary'),
+  vars: {
+    [appTabsBackground]: cssVarV2('layer/background/secondary'),
+  },
+  backgroundColor: appTabsBackground,
   borderTop: `1px solid ${cssVarV2('layer/insideBorder/border')}`,
 
   width: '100dvw',
