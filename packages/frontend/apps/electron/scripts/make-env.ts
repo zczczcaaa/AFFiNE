@@ -1,7 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 
+import debug from 'debug';
 import { z } from 'zod';
+
+const log = debug('affine:make-env');
 
 const ReleaseTypeSchema = z.enum(['stable', 'beta', 'canary', 'internal']);
 
@@ -36,15 +40,27 @@ const icnsPath = path.join(
 const iconPngPath = path.join(ROOT, './resources/icons/icon.png');
 
 const iconUrl = `https://cdn.affine.pro/app-icons/icon_${buildType}.ico`;
-const arch =
-  process.argv.indexOf('--arch') > 0
-    ? process.argv[process.argv.indexOf('--arch') + 1]
-    : process.arch;
 
-const platform =
-  process.argv.indexOf('--platform') > 0
-    ? process.argv[process.argv.indexOf('--platform') + 1]
-    : process.platform;
+log(`buildType=${buildType}, productName=${productName}, icoPath=${icoPath}`);
+
+const {
+  values: { arch, platform },
+} = parseArgs({
+  options: {
+    arch: {
+      type: 'string',
+      description: 'The architecture to build for',
+      default: process.arch,
+    },
+    platform: {
+      type: 'string',
+      description: 'The platform to build for',
+      default: process.platform,
+    },
+  },
+});
+
+log(`parsed args: arch=${arch}, platform=${platform}`);
 
 const appIdMap = {
   internal: 'pro.affine.internal',

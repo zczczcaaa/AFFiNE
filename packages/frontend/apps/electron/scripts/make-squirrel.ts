@@ -15,7 +15,7 @@ import {
   ROOT,
 } from './make-env.js';
 
-const log = debug('make-squirrel');
+const log = debug('affine:make-squirrel');
 
 // taking from https://github.com/electron/forge/blob/main/packages/maker/squirrel/src/MakerSquirrel.ts
 // it was for forge's maker, but can be used standalone as well
@@ -29,6 +29,7 @@ async function make() {
     buildType,
     `${appName}-${platform}-${arch}`
   );
+  log('making squirrel.windows: appDirectory', appDirectory);
   await fs.ensureDir(outPath);
 
   const packageJSON = await fs.readJson(path.resolve(ROOT, 'package.json'));
@@ -40,7 +41,7 @@ async function make() {
     exe: `${appName}.exe`,
     setupExe: `${appName}-${packageJSON.version} Setup.exe`,
     version: packageJSON.version,
-    appDirectory: appDirectory,
+    appDirectory,
     outputDirectory: outPath,
     iconUrl: iconUrl,
     setupIcon: icoPath,
