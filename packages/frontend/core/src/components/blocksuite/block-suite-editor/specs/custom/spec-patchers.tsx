@@ -557,7 +557,7 @@ export function patchForMobile() {
       // page configs
       {
         const pageConfigIdentifier = ConfigIdentifier('affine:page');
-        const prev = di.getFactory(ConfigIdentifier);
+        const prev = di.getFactory(pageConfigIdentifier);
 
         di.override(pageConfigIdentifier, provider => {
           return {
