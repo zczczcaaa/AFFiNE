@@ -1041,7 +1041,7 @@
   "com.affine.setting.appearance.open-in-app.open-in-web": "Open links in browser",
   "com.affine.setting.appearance.open-in-app.title": "Open AFFiNE links",
   "com.affine.open-in-app.card.title": "Open this doc in AFFiNE app",
-  "com.affine.open-in-app.card.subtitle": "No desktop app? <1>Click to download</1>.",
+  "com.affine.open-in-app.card.subtitle": "Don't have the app? <1>Click to download</1>.",
   "com.affine.open-in-app.card.button.open": "Open in app",
   "com.affine.open-in-app.card.button.dismiss": "Dismiss",
   "com.affine.open-in-app.card.remember": "Remember choice",

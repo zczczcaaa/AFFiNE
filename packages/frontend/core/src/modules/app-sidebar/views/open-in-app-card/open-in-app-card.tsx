@@ -58,7 +58,7 @@ export const OpenInAppCard = () => {
         </div>
         <div className={styles.subtitleRow}>
           <Trans i18nKey="com.affine.open-in-app.card.subtitle">
-            No desktop app?
+            Don&apos;t have the app?
             <a
               href="https://affine.pro/download"
               target="_blank"
