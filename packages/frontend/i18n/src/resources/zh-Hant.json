@@ -514,6 +514,7 @@
   "com.affine.import.markdown-with-media-files": "Markdown 文件（帶媒體文件） (.zip)",
   "com.affine.import.modal.tip": "如果您希望請求支持其他文件類型，請隨時告訴我們",
   "com.affine.import.notion": "Notion",
+  "com.affine.import.snapshot": "快照",
   "com.affine.import.notion.tooltip": "導入您的 Notion 數據。支持導入格式：HTML 帶子頁面。",
   "com.affine.import.status.failed.message": "導入失敗，請重試。",
   "com.affine.import.status.failed.message.no-file-selected": "未選擇文件",

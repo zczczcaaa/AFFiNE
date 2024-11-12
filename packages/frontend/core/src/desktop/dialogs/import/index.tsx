@@ -11,6 +11,7 @@ import {
   MarkdownTransformer,
   NotionHtmlTransformer,
   openFileOrFiles,
+  ZipTransformer,
 } from '@blocksuite/affine/blocks';
 import type { DocCollection } from '@blocksuite/affine/store';
 import {
@@ -18,14 +19,19 @@ import {
   HelpIcon,
   NotionIcon,
 } from '@blocksuite/icons/rc';
-import { useService, WorkspaceService } from '@toeverything/infra';
+import {
+  FeatureFlagService,
+  useLiveData,
+  useService,
+  WorkspaceService,
+} from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { type ReactElement, useCallback, useState } from 'react';
 
 import * as style from './styles.css';
 
-type ImportType = 'markdown' | 'markdownZip' | 'notion';
+type ImportType = 'markdown' | 'markdownZip' | 'notion' | 'snapshot';
 type AcceptType = 'Markdown' | 'Zip';
 type Status = 'idle' | 'importing' | 'success' | 'error';
 type ImportResult = {
@@ -46,6 +52,7 @@ const DISCORD_URL = 'https://discord.gg/whd5mjYqVw';
 
 const importOptions = [
   {
+    key: 'markdown',
     label: 'com.affine.import.markdown-files',
     prefixIcon: (
       <ExportToMarkdownIcon
@@ -58,6 +65,7 @@ const importOptions = [
     type: 'markdown' as ImportType,
   },
   {
+    key: 'markdownZip',
     label: 'com.affine.import.markdown-with-media-files',
     prefixIcon: (
       <ExportToMarkdownIcon
@@ -70,6 +78,7 @@ const importOptions = [
     type: 'markdownZip' as ImportType,
   },
   {
+    key: 'notion',
     label: 'com.affine.import.notion',
     prefixIcon: <NotionIcon color={cssVar('black')} width={20} height={20} />,
     suffixIcon: (
@@ -137,6 +146,21 @@ const importConfigs: Record<ImportType, ImportConfig> = {
       };
     },
   },
+  snapshot: {
+    fileOptions: { acceptType: 'Zip', multiple: false },
+    importFunction: async (docCollection, file) => {
+      if (Array.isArray(file)) {
+        throw new Error('Expected a single zip file for snapshot import');
+      }
+      const docIds = (await ZipTransformer.importDocs(docCollection, file))
+        .filter(doc => doc !== undefined)
+        .map(doc => doc.id);
+
+      return {
+        docIds,
+      };
+    },
+  },
 };
 
 const ImportOptionItem = ({
@@ -176,14 +200,27 @@ const ImportOptions = ({
   onImport: (type: ImportType) => void;
 }) => {
   const t = useI18n();
+  const featureFlagService = useService(FeatureFlagService);
+  const enableSnapshotImportExport = useLiveData(
+    featureFlagService.flags.enable_snapshot_import_export.$
+  );
+
   return (
     <>
       <div className={style.importModalTitle}>{t['Import']()}</div>
       <div className={style.importModalContent}>
         {importOptions.map(
-          ({ label, prefixIcon, suffixIcon, suffixTooltip, testId, type }) => (
+          ({
+            key,
+            label,
+            prefixIcon,
+            suffixIcon,
+            suffixTooltip,
+            testId,
+            type,
+          }) => (
             <ImportOptionItem
-              key={testId}
+              key={key}
               prefixIcon={prefixIcon}
               suffixIcon={suffixIcon}
               suffixTooltip={suffixTooltip}
@@ -195,6 +232,14 @@ const ImportOptions = ({
           )
         )}
       </div>
+      {enableSnapshotImportExport && (
+        <div className={style.importModalTip}>
+          {t['Import']()}{' '}
+          <span className={style.link} onClick={() => onImport('snapshot')}>
+            {t['Snapshot']()}.
+          </span>
+        </div>
+      )}
       <div className={style.importModalTip}>
         {t['com.affine.import.modal.tip']()}{' '}
         <a
@@ -204,7 +249,7 @@ const ImportOptions = ({
           rel="noreferrer"
         >
           Discord
-        </a>{' '}
+        </a>
         .
       </div>
     </>
