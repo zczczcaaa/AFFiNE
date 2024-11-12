@@ -26,21 +26,20 @@ export const CallMetric = (
       return desc;
     }
 
-    desc.value = async function (...args: any[]) {
-      const timer = metrics[scope].histogram(name, {
-        description: `function call time costs of ${name}`,
-        unit: 'ms',
-      });
-      const count = metrics[scope].counter(`${name}_calls`, {
-        description: `function call counter of ${name}`,
-      });
-      const errorCount = metrics[scope].counter(`${name}_errors`, {
-        description: `function call error counter of ${name}`,
-      });
+    const timer = metrics[scope].histogram('function_timer', {
+      description: 'function call time costs',
+      unit: 'ms',
+    });
+    const count = metrics[scope].counter('function_calls', {
+      description: 'function call counter',
+    });
 
+    desc.value = async function (...args: any[]) {
       const start = Date.now();
+      let error = false;
+
       const end = () => {
-        timer?.record(Date.now() - start, attrs);
+        timer?.record(Date.now() - start, { ...attrs, name, error });
       };
 
       try {
@@ -50,10 +49,11 @@ export const CallMetric = (
         return await originalMethod.apply(this, args);
       } catch (err) {
         if (!record || !!record.error) {
-          errorCount.add(1, attrs);
+          error = true;
         }
         throw err;
       } finally {
+        count.add(1, { ...attrs, name, error });
         if (!record || !!record.timer) {
           end();
         }
