@@ -48,7 +48,6 @@ export const modalContentContainer = style({
     [`${modalContentWrapper}[data-mode="max"] &`]: {
       width: 'calc(100% - 64px)',
       height: 'calc(100% - 64px)',
-      paddingRight: 48,
     },
     [`${modalContentWrapper}[data-mode="full"] &`]: {
       width: '100%',
@@ -57,7 +56,6 @@ export const modalContentContainer = style({
     [`${modalContentWrapper}[data-mode="fit"] &`]: {
       width: '90%',
       height: '90%',
-      paddingRight: 48,
       maxWidth: 1248,
     },
     '&[data-anime-state="animating"]': {
@@ -96,7 +94,7 @@ export const modalContent = style({
 
 export const modalControls = style({
   position: 'absolute',
-  right: 0,
+  right: -48,
   top: 0,
   zIndex: -1,
   minWidth: '48px',
