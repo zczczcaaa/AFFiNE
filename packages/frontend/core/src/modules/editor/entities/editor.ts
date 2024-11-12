@@ -30,20 +30,22 @@ export class Editor extends Entity {
   readonly doc = this.docService.doc;
   readonly isSharedMode =
     this.workspaceService.workspace.openOptions.isSharedMode;
-
   readonly editorContainer$ = new LiveData<AffineEditorContainer | null>(null);
   readonly defaultOpenProperty$ = new LiveData<DefaultOpenProperty | undefined>(
     undefined
   );
   workbenchView: WorkbenchView | null = null;
-  defaultScrollPosition:
-    | number
-    | {
-        centerX: number;
-        centerY: number;
-        zoom: number;
-      }
-    | null = null;
+  scrollPosition: {
+    page: number | null;
+    edgeless: {
+      centerX: number;
+      centerY: number;
+      zoom: number;
+    } | null;
+  } = {
+    page: null,
+    edgeless: null,
+  };
 
   private readonly focusAt$ = LiveData.computed(get => {
     const selector = get(this.selector$);
@@ -96,13 +98,22 @@ export class Editor extends Entity {
 
   /**
    * sync editor params with view query string
+   *
+   * this function will be called when editor is initialized with in a workbench view
+   *
+   * this won't be called in shared page.
    */
   bindWorkbenchView(view: WorkbenchView) {
     if (this.workbenchView) {
       throw new Error('already bound');
     }
     this.workbenchView = view;
-    this.defaultScrollPosition = view.getScrollPosition() ?? null;
+    const savedScrollPosition = view.getScrollPosition() ?? null;
+    if (typeof savedScrollPosition === 'number') {
+      this.scrollPosition.page = savedScrollPosition;
+    } else if (typeof savedScrollPosition === 'object') {
+      this.scrollPosition.edgeless = savedScrollPosition;
+    }
 
     const stablePrimaryMode = this.doc.getPrimaryMode();
 
@@ -198,26 +209,20 @@ export class Editor extends Entity {
     const rootService = editorContainer.host?.std.getService('affine:page');
 
     // ----- Scroll Position and Selection -----
-    if (this.defaultScrollPosition) {
-      // if we have default scroll position, we should restore it
-      if (
-        this.mode$.value === 'page' &&
-        typeof this.defaultScrollPosition === 'number'
-      ) {
-        scrollViewport?.scrollTo(0, this.defaultScrollPosition || 0);
-      } else if (
-        this.mode$.value === 'edgeless' &&
-        typeof this.defaultScrollPosition === 'object' &&
-        rootService instanceof EdgelessRootService
-      ) {
-        rootService.viewport.setViewport(this.defaultScrollPosition.zoom, [
-          this.defaultScrollPosition.centerX,
-          this.defaultScrollPosition.centerY,
-        ]);
-      }
-
-      this.defaultScrollPosition = null; // reset default scroll position
+    // if we have default scroll position, we should restore it
+    if (this.mode$.value === 'page' && this.scrollPosition.page !== null) {
+      scrollViewport?.scrollTo(0, this.scrollPosition.page);
+    } else if (
+      this.mode$.value === 'edgeless' &&
+      this.scrollPosition.edgeless &&
+      rootService instanceof EdgelessRootService
+    ) {
+      rootService.viewport.setViewport(this.scrollPosition.edgeless.zoom, [
+        this.scrollPosition.edgeless.centerX,
+        this.scrollPosition.edgeless.centerY,
+      ]);
     } else {
+      // if we don't have default scroll position, we should focus on the title
       const initialFocusAt = this.focusAt$.value;
 
       if (initialFocusAt === null) {
@@ -244,16 +249,19 @@ export class Editor extends Entity {
     // update scroll position when scrollViewport scroll
     const saveScrollPosition = () => {
       if (this.mode$.value === 'page' && scrollViewport) {
+        this.scrollPosition.page = scrollViewport.scrollTop;
         this.workbenchView?.setScrollPosition(scrollViewport.scrollTop);
       } else if (
         this.mode$.value === 'edgeless' &&
         rootService instanceof EdgelessRootService
       ) {
-        this.workbenchView?.setScrollPosition({
+        const pos = {
           centerX: rootService.viewport.centerX,
           centerY: rootService.viewport.centerY,
           zoom: rootService.viewport.zoom,
-        });
+        };
+        this.scrollPosition.edgeless = pos;
+        this.workbenchView?.setScrollPosition(pos);
       }
     };
     scrollViewport?.addEventListener('scroll', saveScrollPosition);
