@@ -8,8 +8,10 @@ const isMobile = BUILD_CONFIG.isMobileEdition;
 export const AFFINE_FLAGS = {
   enable_ai: {
     category: 'affine',
-    displayName: 'Enable AI',
-    description: 'Enable or disable ALL AI features.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-ai.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-ai.description',
     hide: true,
     configurable: true,
     defaultState: true,
@@ -17,77 +19,96 @@ export const AFFINE_FLAGS = {
   enable_database_full_width: {
     category: 'blocksuite',
     bsFlag: 'enable_database_full_width',
-    displayName: 'Database Full Width',
-    description: 'The database will be displayed in full-width mode.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-database-full-width.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-database-full-width.description',
     configurable: isCanaryBuild,
   },
   enable_database_attachment_note: {
     category: 'blocksuite',
     bsFlag: 'enable_database_attachment_note',
-    displayName: 'Database Attachment Note',
-    description: 'Allows adding notes to database attachments.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-database-attachment-note.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-database-attachment-note.description',
     configurable: isNotStableBuild,
   },
   enable_block_query: {
     category: 'blocksuite',
     bsFlag: 'enable_block_query',
-    displayName: 'Todo Block Query',
-    description: 'Enables querying of todo blocks.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-block-query.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-block-query.description',
     configurable: isCanaryBuild,
   },
   enable_synced_doc_block: {
     category: 'blocksuite',
     bsFlag: 'enable_synced_doc_block',
-    displayName: 'Synced Doc Block',
-    description: 'Enables syncing of doc blocks.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-synced-doc-block.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-synced-doc-block.description',
     configurable: false,
     defaultState: true,
   },
   enable_edgeless_text: {
     category: 'blocksuite',
     bsFlag: 'enable_edgeless_text',
-    displayName: 'Edgeless Text',
-    description: 'Enables edgeless text blocks.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-edgeless-text.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-edgeless-text.description',
     configurable: false,
     defaultState: true,
   },
   enable_color_picker: {
     category: 'blocksuite',
     bsFlag: 'enable_color_picker',
-    displayName: 'Color Picker',
-    description: 'Enables color picker blocks.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-color-picker.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-color-picker.description',
     configurable: false,
     defaultState: true,
   },
   enable_ai_chat_block: {
     category: 'blocksuite',
     bsFlag: 'enable_ai_chat_block',
-    displayName: 'AI Chat Block',
-    description: 'Enables AI chat blocks.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-ai-chat-block.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-ai-chat-block.description',
     configurable: false,
     defaultState: true,
   },
   enable_ai_onboarding: {
     category: 'blocksuite',
     bsFlag: 'enable_ai_onboarding',
-    displayName: 'AI Onboarding',
-    description: 'Enables AI onboarding.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-ai-onboarding.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-ai-onboarding.description',
     configurable: false,
     defaultState: true,
   },
   enable_mind_map_import: {
     category: 'blocksuite',
     bsFlag: 'enable_mind_map_import',
-    displayName: 'Mind Map Import',
-    description: 'Enables mind map import.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-mind-map-import.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-mind-map-import.description',
     configurable: false,
     defaultState: true,
   },
   enable_multi_view: {
     category: 'affine',
-    displayName: 'Split View',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-multi-view.name',
     description:
-      'The Split View feature enables you to divide your tab into multiple sections for simultaneous viewing and editing of different documents.',
+      'com.affine.settings.workspace.experimental-features.enable-multi-view.description',
     feedbackType: 'discord',
     feedbackLink:
       'https://discord.com/channels/959027316334407691/1280009690004324405',
@@ -96,9 +117,11 @@ export const AFFINE_FLAGS = {
   },
   enable_emoji_folder_icon: {
     category: 'affine',
-    displayName: 'Emoji Folder Icon',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-emoji-folder-icon.name',
     description:
-      'Once enabled, you can use an emoji as the folder icon. When the first character of the folder name is an emoji, it will be extracted and used as its icon.',
+      'com.affine.settings.workspace.experimental-features.enable-emoji-folder-icon.description',
+
     feedbackType: 'discord',
     feedbackLink:
       'https://discord.com/channels/959027316334407691/1280014319865696351/1280014319865696351',
@@ -107,9 +130,10 @@ export const AFFINE_FLAGS = {
   },
   enable_emoji_doc_icon: {
     category: 'affine',
-    displayName: 'Emoji Doc Icon',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.name',
     description:
-      'Once enabled, you can use an emoji as the page icon. When the first character of the folder name is an emoji, it will be extracted and used as its icon.',
+      'com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description',
     feedbackType: 'discord',
     feedbackLink:
       'https://discord.com/channels/959027316334407691/1280014319865696351',
@@ -118,63 +142,76 @@ export const AFFINE_FLAGS = {
   },
   enable_editor_settings: {
     category: 'affine',
-    displayName: 'Editor Settings',
-    description: 'Enables editor settings.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-editor-settings.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-editor-settings.description',
     configurable: false,
     defaultState: true,
   },
   enable_offline_mode: {
     category: 'affine',
-    displayName: 'Offline Mode',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-offline-mode.name',
     description:
-      'Stop Connecting to the Internet. Even with AFFiNE Cloud, enabling this toggle stops internet connection and keeps everything local, but syncing will be disabled.',
+      'com.affine.settings.workspace.experimental-features.enable-offline-mode.description',
     configurable: isDesktopEnvironment,
     defaultState: false,
   },
   enable_theme_editor: {
     category: 'affine',
-    displayName: 'Theme Editor',
-    description: 'Enables theme editor.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-theme-editor.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-theme-editor.description',
     configurable: isCanaryBuild,
     defaultState: isCanaryBuild,
   },
   enable_local_workspace: {
     category: 'affine',
-    displayName: 'Allow create local workspace',
-    description: 'Allow create local workspace.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-local-workspace.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-local-workspace.description',
     configurable: isCanaryBuild,
     defaultState: isDesktopEnvironment || isCanaryBuild,
   },
   enable_advanced_block_visibility: {
     category: 'blocksuite',
     bsFlag: 'enable_advanced_block_visibility',
-    displayName: 'Advanced block visibility control',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-advanced-block-visibility.name',
     description:
-      'To provide detailed control over which edgeless blocks are visible in page mode.',
+      'com.affine.settings.workspace.experimental-features.enable-advanced-block-visibility.description',
     configurable: true,
     defaultState: false,
   },
   enable_mobile_keyboard_toolbar: {
     category: 'blocksuite',
     bsFlag: 'enable_mobile_keyboard_toolbar',
-    displayName: 'Mobile Keyboard Toolbar',
-    description: 'Enables the mobile keyboard toolbar.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-mobile-keyboard-toolbar.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-mobile-keyboard-toolbar.description',
     configurable: false,
     defaultState: isMobile,
   },
   enable_mobile_linked_doc_menu: {
     category: 'blocksuite',
     bsFlag: 'enable_mobile_linked_doc_menu',
-    displayName: 'Mobile Linked Doc Widget',
-    description: 'Enables the mobile linked doc menu.',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-mobile-linked-doc-menu.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-mobile-linked-doc-menu.description',
     configurable: false,
     defaultState: isMobile,
   },
   enable_snapshot_import_export: {
     category: 'affine',
-    displayName: 'Enable Snapshot Import Export',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-snapshot-import-export.name',
     description:
-      'Once enabled, users can import and export blocksuite snapshots',
+      'com.affine.settings.workspace.experimental-features.enable-snapshot-import-export.description',
     hide: true,
     configurable: true,
     defaultState: false,

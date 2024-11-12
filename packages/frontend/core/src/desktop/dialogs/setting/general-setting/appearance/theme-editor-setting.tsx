@@ -3,6 +3,7 @@ import { SettingRow } from '@affine/component/setting-components';
 import { DesktopApiService } from '@affine/core/modules/desktop-api';
 import { ThemeEditorService } from '@affine/core/modules/theme-editor';
 import { UrlService } from '@affine/core/modules/url';
+import { useI18n } from '@affine/i18n';
 import { DeleteIcon } from '@blocksuite/icons/rc';
 import {
   useLiveData,
@@ -26,10 +27,12 @@ export const ThemeEditorSetting = () => {
     }
   }, [desktopApi, urlService]);
 
+  const t = useI18n();
+
   return (
     <SettingRow
-      name="Customize Theme"
-      desc="Edit all AFFiNE theme variables here"
+      name={t['com.affine.appearanceSettings.customize-theme.title']()}
+      desc={t['com.affine.appearanceSettings.customize-theme.description']()}
     >
       <div style={{ display: 'flex', gap: 16 }}>
         {modified ? (
@@ -45,10 +48,12 @@ export const ThemeEditorSetting = () => {
             variant="secondary"
             prefix={<DeleteIcon />}
           >
-            Reset all
+            {t['com.affine.appearanceSettings.customize-theme.reset']()}
           </Button>
         ) : null}
-        <Button onClick={open}>Open Theme Editor</Button>
+        <Button onClick={open}>
+          {t['com.affine.appearanceSettings.customize-theme.open']()}
+        </Button>
       </div>
     </SettingRow>
   );

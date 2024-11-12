@@ -1,4 +1,6 @@
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
+import { useI18n } from '@affine/i18n';
+import type { Workspace } from '@toeverything/infra';
 import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
 import { useEffect, useMemo } from 'react';
 
@@ -34,47 +36,12 @@ const Label = ({ value, background }: LabelProps) => {
     </div>
   );
 };
-export const LabelsPanel = () => {
-  const workspace = useService(WorkspaceService).workspace;
-  const permissionService = useService(WorkspacePermissionService);
-  const isOwner = useLiveData(permissionService.permission.isOwner$);
-  useEffect(() => {
-    permissionService.permission.revalidate();
-  }, [permissionService]);
-  const labelMap: LabelMap = useMemo(
-    () => ({
-      local: {
-        value: 'Local',
-        background: 'var(--affine-tag-orange)',
-      },
-      syncCloud: {
-        value: 'Sync with AFFiNE Cloud',
-        background: 'var(--affine-tag-blue)',
-      },
-      syncDocker: {
-        value: 'Sync with AFFiNE Docker',
-        background: 'var(--affine-tag-green)',
-      },
-      selfHosted: {
-        value: 'Self-Hosted Server',
-        background: 'var(--affine-tag-purple)',
-      },
-      joinedWorkspace: {
-        value: 'Joined Workspace',
-        background: 'var(--affine-tag-yellow)',
-      },
-      availableOffline: {
-        value: 'Available Offline',
-        background: 'var(--affine-tag-green)',
-      },
-      publishedToWeb: {
-        value: 'Published to Web',
-        background: 'var(--affine-tag-blue)',
-      },
-    }),
-    []
-  );
-  const labelConditions: labelConditionsProps[] = [
+
+const getConditions = (
+  isOwner: boolean | null,
+  workspace: Workspace
+): labelConditionsProps[] => {
+  return [
     { condition: !isOwner, label: 'joinedWorkspace' },
     { condition: workspace.flavour === 'local', label: 'local' },
     {
@@ -82,6 +49,55 @@ export const LabelsPanel = () => {
       label: 'syncCloud',
     },
   ];
+};
+
+const getLabelMap = (t: ReturnType<typeof useI18n>): LabelMap => ({
+  local: {
+    value: t['com.affine.settings.workspace.state.local'](),
+    background: 'var(--affine-tag-orange)',
+  },
+  syncCloud: {
+    value: t['com.affine.settings.workspace.state.sync-affine-cloud'](),
+    background: 'var(--affine-tag-blue)',
+  },
+  syncDocker: {
+    value: t['com.affine.settings.workspace.state.sync-affine-docker'](),
+    background: 'var(--affine-tag-green)',
+  },
+  selfHosted: {
+    value: t['com.affine.settings.workspace.state.self-hosted'](),
+    background: 'var(--affine-tag-purple)',
+  },
+  joinedWorkspace: {
+    value: t['com.affine.settings.workspace.state.joined'](),
+    background: 'var(--affine-tag-yellow)',
+  },
+  availableOffline: {
+    value: t['com.affine.settings.workspace.state.available-offline'](),
+    background: 'var(--affine-tag-green)',
+  },
+  publishedToWeb: {
+    value: t['com.affine.settings.workspace.state.published'](),
+    background: 'var(--affine-tag-blue)',
+  },
+});
+
+export const LabelsPanel = () => {
+  const workspace = useService(WorkspaceService).workspace;
+  const permissionService = useService(WorkspacePermissionService);
+  const isOwner = useLiveData(permissionService.permission.isOwner$);
+  const t = useI18n();
+
+  useEffect(() => {
+    permissionService.permission.revalidate();
+  }, [permissionService]);
+
+  const labelMap = useMemo(() => getLabelMap(t), [t]);
+
+  const labelConditions = useMemo(
+    () => getConditions(isOwner, workspace),
+    [isOwner, workspace]
+  );
 
   return (
     <div className={style.labelWrapper}>

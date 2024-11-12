@@ -108,6 +108,7 @@ const feedbackLink: Record<NonNullable<Flag['feedbackType']>, string> = {
 
 const ExperimentalFeaturesItem = ({ flag }: { flag: Flag }) => {
   const value = useLiveData(flag.$);
+  const t = useI18n();
   const onChange = useCallback(
     (checked: boolean) => {
       flag.set(checked);
@@ -127,12 +128,12 @@ const ExperimentalFeaturesItem = ({ flag }: { flag: Flag }) => {
   return (
     <div className={styles.rowContainer}>
       <div className={styles.switchRow}>
-        {flag.displayName}
+        {t[flag.displayName]()}
         <Switch checked={value} onChange={onChange} />
       </div>
       {!!flag.description && (
-        <Tooltip content={flag.description}>
-          <div className={styles.description}>{flag.description}</div>
+        <Tooltip content={t[flag.description]()}>
+          <div className={styles.description}>{t[flag.description]()}</div>
         </Tooltip>
       )}
       {!!flag.feedbackType && (
