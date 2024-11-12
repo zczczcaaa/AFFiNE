@@ -9,7 +9,7 @@ export const root = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  width: 240,
+  width: '100%',
   gap: 12,
   vars: {
     [progressHeight]: '10px',

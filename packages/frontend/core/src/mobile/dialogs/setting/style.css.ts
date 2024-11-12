@@ -5,7 +5,6 @@ import { style } from '@vanilla-extract/css';
 export const pageTitle = style([bodyEmphasized]);
 
 export const root = style({
-  padding: '24px 16px',
   display: 'flex',
   flexDirection: 'column',
   gap: 16,
@@ -16,8 +15,9 @@ export const baseSettingItem = style({
   justifyContent: 'space-between',
   alignItems: 'center',
   gap: 32,
-  padding: '8px 0',
+  padding: 8,
 });
+
 export const baseSettingItemName = style([
   bodyRegular,
   {
@@ -26,6 +26,7 @@ export const baseSettingItemName = style([
     whiteSpace: 'nowrap',
   },
 ]);
+
 export const baseSettingItemAction = style([
   baseSettingItemName,
   {

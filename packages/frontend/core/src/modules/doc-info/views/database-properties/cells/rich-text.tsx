@@ -1,12 +1,14 @@
 import { PropertyValue } from '@affine/component';
+import { ConfigModal } from '@affine/core/components/mobile';
 import type { BlockStdScope } from '@blocksuite/affine/block-std';
 import {
   DefaultInlineManagerExtension,
   RichText,
 } from '@blocksuite/affine/blocks';
 import type { Doc } from '@blocksuite/affine/store';
+import { TextIcon } from '@blocksuite/icons/rc';
 import { type LiveData, useLiveData } from '@toeverything/infra';
-import { useEffect, useRef } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import type * as Y from 'yjs';
 
 import type { DatabaseCellRendererProps } from '../../../types';
@@ -37,11 +39,12 @@ const renderRichText = ({
   return richText;
 };
 
-export const RichTextCell = ({
+const RichTextInput = ({
   cell,
   dataSource,
   onChange,
-}: DatabaseCellRendererProps) => {
+  style,
+}: DatabaseCellRendererProps & { style?: CSSProperties }) => {
   const std = useBlockStdScope(dataSource.doc);
   const text = useLiveData(cell.value$ as LiveData<Y.Text>);
   const ref = useRef<HTMLDivElement>(null);
@@ -64,5 +67,68 @@ export const RichTextCell = ({
     }
     return () => {};
   }, [dataSource.doc, onChange, std, text]);
-  return <PropertyValue ref={ref}></PropertyValue>;
+  return <div ref={ref} style={style} />;
 };
+
+const DesktopRichTextCell = ({
+  cell,
+  dataSource,
+  onChange,
+  rowId,
+}: DatabaseCellRendererProps) => {
+  return (
+    <PropertyValue>
+      <RichTextInput
+        cell={cell}
+        dataSource={dataSource}
+        onChange={onChange}
+        rowId={rowId}
+      />
+    </PropertyValue>
+  );
+};
+
+const MobileRichTextCell = ({
+  cell,
+  dataSource,
+  onChange,
+  rowId,
+}: DatabaseCellRendererProps) => {
+  const [open, setOpen] = useState(false);
+  const name = useLiveData(cell.property.name$);
+  return (
+    <PropertyValue onClick={() => setOpen(true)}>
+      <ConfigModal
+        onBack={() => setOpen(false)}
+        open={open}
+        onOpenChange={setOpen}
+        title={
+          <>
+            <TextIcon />
+            {name}
+          </>
+        }
+      >
+        <ConfigModal.RowGroup>
+          <RichTextInput
+            cell={cell}
+            dataSource={dataSource}
+            onChange={onChange}
+            rowId={rowId}
+            style={{ padding: 12 }}
+          />
+        </ConfigModal.RowGroup>
+      </ConfigModal>
+      <RichTextInput
+        cell={cell}
+        dataSource={dataSource}
+        onChange={onChange}
+        rowId={rowId}
+      />
+    </PropertyValue>
+  );
+};
+
+export const RichTextCell = BUILD_CONFIG.isMobileEdition
+  ? MobileRichTextCell
+  : DesktopRichTextCell;

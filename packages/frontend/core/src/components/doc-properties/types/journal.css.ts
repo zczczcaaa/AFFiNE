@@ -24,6 +24,7 @@ export const date = style({
   lineHeight: '22px',
   padding: '0 4px',
   borderRadius: 4,
+  whiteSpace: 'nowrap',
   ':hover': {
     background: cssVarV2('layer/background/hoverOverlay'),
   },

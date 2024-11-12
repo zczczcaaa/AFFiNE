@@ -10,7 +10,7 @@ import {
   useServiceOptional,
 } from '@toeverything/infra';
 import dayjs from 'dayjs';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import * as styles from './journal.css';
 
@@ -58,6 +58,7 @@ export const JournalValue = () => {
     (_: unknown, v: boolean) => {
       if (!v) {
         journalService.removeJournalDate(doc.id);
+        setShowDatePicker(false);
       } else {
         handleDateSelect(selectedDate);
       }
@@ -71,6 +72,10 @@ export const JournalValue = () => {
 
   const handleOpenDuplicate = useCallback(
     (e: React.MouseEvent) => {
+      // todo: open duplicate dialog for mobile
+      if (BUILD_CONFIG.isMobileEdition) {
+        return;
+      }
       e.stopPropagation();
       workbench.openSidebar();
       view.activeSidebarTab('journal');
@@ -78,12 +83,23 @@ export const JournalValue = () => {
     [view, workbench]
   );
 
-  const toggle = useCallback(() => {
-    handleCheck(null, !checked);
-  }, [checked, handleCheck]);
+  const propertyRef = useRef<HTMLDivElement>(null);
+
+  const toggle = useCallback(
+    (e: React.MouseEvent) => {
+      if (propertyRef.current?.contains(e.target as Node)) {
+        handleCheck(null, !checked);
+      }
+    },
+    [checked, handleCheck]
+  );
 
   return (
-    <PropertyValue className={styles.property} onClick={toggle}>
+    <PropertyValue
+      ref={propertyRef}
+      className={styles.property}
+      onClick={toggle}
+    >
       <div className={styles.root}>
         <Checkbox
           className={styles.checkbox}
@@ -113,7 +129,13 @@ export const JournalValue = () => {
               />
             }
           >
-            <div data-testid="date-selector" className={styles.date}>
+            <div
+              data-testid="date-selector"
+              className={styles.date}
+              onClick={e => {
+                e.stopPropagation();
+              }}
+            >
               {displayDate}
             </div>
           </Menu>

@@ -1,4 +1,5 @@
 import { cssVar } from '@toeverything/theme';
+import { cssVarV2 } from '@toeverything/theme/v2';
 import { globalStyle, style } from '@vanilla-extract/css';
 
 export const tagsInlineEditor = style({
@@ -15,6 +16,13 @@ export const tagsEditorRoot = style({
   width: '100%',
   gap: '12px',
 });
+
+export const tagsEditorRootMobile = style([
+  tagsEditorRoot,
+  {
+    gap: 20,
+  },
+]);
 
 export const inlineTagsContainer = style({
   display: 'flex',
@@ -39,6 +47,12 @@ export const tagsEditorSelectedTags = style({
   padding: '10px 12px',
   backgroundColor: cssVar('hoverColor'),
   minHeight: 42,
+  selectors: {
+    [`${tagsEditorRootMobile} &`]: {
+      borderRadius: 12,
+      backgroundColor: cssVarV2('layer/background/primary'),
+    },
+  },
 });
 
 export const searchInput = style({
@@ -63,6 +77,11 @@ export const tagsEditorTagsSelector = style({
   padding: '0 8px 8px 8px',
   maxHeight: '400px',
   overflow: 'auto',
+  selectors: {
+    [`${tagsEditorRootMobile} &`]: {
+      padding: 0,
+    },
+  },
 });
 
 export const tagsEditorTagsSelectorHeader = style({
@@ -73,6 +92,11 @@ export const tagsEditorTagsSelectorHeader = style({
   fontSize: cssVar('fontXs'),
   fontWeight: 500,
   color: cssVar('textSecondaryColor'),
+  selectors: {
+    [`${tagsEditorRootMobile} &`]: {
+      fontSize: cssVar('fontSm'),
+    },
+  },
 });
 
 export const tagSelectorTagsScrollContainer = style({
@@ -80,6 +104,14 @@ export const tagSelectorTagsScrollContainer = style({
   position: 'relative',
   maxHeight: '200px',
   gap: '8px',
+  selectors: {
+    [`${tagsEditorRootMobile} &`]: {
+      borderRadius: 12,
+      backgroundColor: cssVarV2('layer/background/primary'),
+      gap: 0,
+      padding: 4,
+    },
+  },
 });
 
 export const tagSelectorItem = style({
@@ -95,13 +127,20 @@ export const tagSelectorItem = style({
     '&[data-focused=true]': {
       backgroundColor: cssVar('hoverColor'),
     },
+    [`${tagsEditorRootMobile} &`]: {
+      height: 44,
+    },
+    [`${tagsEditorRootMobile} &[data-focused="true"]`]: {
+      height: 44,
+      backgroundColor: 'transparent',
+    },
   },
 });
 
 export const tagEditIcon = style({
   opacity: 0,
   selectors: {
-    [`${tagSelectorItem}:hover &`]: {
+    [`:is(${tagSelectorItem}:hover, ${tagsEditorRootMobile}) &`]: {
       opacity: 1,
     },
   },
@@ -113,6 +152,18 @@ globalStyle(`${tagEditIcon}[data-state=open]`, {
 
 export const spacer = style({
   flexGrow: 1,
+});
+
+export const tagSelectorEmpty = style({
+  padding: '10px 8px',
+  fontSize: cssVar('fontSm'),
+  color: cssVar('textSecondaryColor'),
+  height: '34px',
+  selectors: {
+    [`${tagsEditorRootMobile} &`]: {
+      height: 44,
+    },
+  },
 });
 
 export const menuItemListScrollable = style({});

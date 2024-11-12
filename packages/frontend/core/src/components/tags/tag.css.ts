@@ -108,7 +108,7 @@ export const tagInlineMode = style([
 export const tagListItemMode = style([
   tag,
   {
-    fontSize: cssVar('fontSm'),
+    fontSize: 'inherit',
     padding: '4px 12px',
     columnGap: '8px',
     textOverflow: 'ellipsis',

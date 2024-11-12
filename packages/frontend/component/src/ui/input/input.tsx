@@ -9,7 +9,7 @@ import type {
 import { forwardRef } from 'react';
 
 import { RowInput } from './row-input';
-import { input, inputWrapper } from './style.css';
+import { input, inputWrapper, mobileInputWrapper } from './style.css';
 
 export type InputProps = {
   disabled?: boolean;
@@ -50,19 +50,23 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 ) {
   return (
     <div
-      className={clsx(inputWrapper, className, {
-        // status
-        disabled: disabled,
-        'no-border': noBorder,
-        // color
-        error: status === 'error',
-        success: status === 'success',
-        warning: status === 'warning',
-        default: status === 'default',
-        // size
-        large: size === 'large',
-        'extra-large': size === 'extraLarge',
-      })}
+      className={clsx(
+        BUILD_CONFIG.isMobileEdition ? mobileInputWrapper : inputWrapper,
+        className,
+        {
+          // status
+          disabled: disabled,
+          'no-border': noBorder,
+          // color
+          error: status === 'error',
+          success: status === 'success',
+          warning: status === 'warning',
+          default: status === 'default',
+          // size
+          large: size === 'large',
+          'extra-large': size === 'extraLarge',
+        }
+      )}
       style={{
         ...style,
       }}

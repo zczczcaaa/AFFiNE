@@ -60,3 +60,23 @@ export const pageReferenceIcon = style({
   fontSize: '1.1em',
   transform: 'translate(2px, -1px)',
 });
+
+export const docPropertiesTableContainer = style({
+  display: 'flex',
+  width: '100%',
+  justifyContent: 'center',
+});
+
+export const docPropertiesTable = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 8,
+  width: '100%',
+  maxWidth: cssVar('editorWidth'),
+  padding: `0 ${cssVar('editorSidePadding', '24px')}`,
+  '@container': {
+    [`viewport (width <= 640px)`]: {
+      padding: '0 16px',
+    },
+  },
+});

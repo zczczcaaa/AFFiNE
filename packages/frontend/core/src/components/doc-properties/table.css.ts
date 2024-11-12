@@ -6,9 +6,7 @@ const propertyNameCellWidth = createVar();
 export const fontSize = createVar();
 
 export const root = style({
-  display: 'flex',
   width: '100%',
-  justifyContent: 'center',
   fontFamily: cssVar('fontSansFamily'),
   paddingBottom: '18px',
   vars: {
@@ -20,20 +18,6 @@ export const root = style({
       vars: {
         [fontSize]: cssVar('fontXs'),
       },
-    },
-  },
-});
-
-export const rootCentered = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-  width: '100%',
-  maxWidth: cssVar('editorWidth'),
-  padding: `0 ${cssVar('editorSidePadding', '24px')}`,
-  '@container': {
-    [`viewport (width <= 640px)`]: {
-      padding: '0 16px',
     },
   },
 });

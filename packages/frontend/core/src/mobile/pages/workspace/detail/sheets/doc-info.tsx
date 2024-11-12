@@ -1,25 +1,43 @@
-import { Divider, Scrollable } from '@affine/component';
+import {
+  Button,
+  Divider,
+  Menu,
+  PropertyCollapsibleContent,
+  PropertyCollapsibleSection,
+  Scrollable,
+} from '@affine/component';
 import {
   type DefaultOpenProperty,
-  DocPropertiesTable,
+  DocPropertyRow,
 } from '@affine/core/components/doc-properties';
+import { CreatePropertyMenuItems } from '@affine/core/components/doc-properties/menu/create-doc-property';
 import { LinksRow } from '@affine/core/desktop/dialogs/doc-info/links-row';
 import { TimeRow } from '@affine/core/desktop/dialogs/doc-info/time-row';
+import { DocDatabaseBacklinkInfo } from '@affine/core/modules/doc-info';
 import { DocsSearchService } from '@affine/core/modules/docs-search';
 import { useI18n } from '@affine/i18n';
-import { LiveData, useLiveData, useService } from '@toeverything/infra';
-import { Suspense, useMemo } from 'react';
+import { PlusIcon } from '@blocksuite/icons/rc';
+import {
+  type DocCustomPropertyInfo,
+  DocsService,
+  LiveData,
+  useLiveData,
+  useServices,
+} from '@toeverything/infra';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 
 import * as styles from './doc-info.css';
 
 export const DocInfoSheet = ({
   docId,
-  defaultOpenProperty,
 }: {
   docId: string;
   defaultOpenProperty?: DefaultOpenProperty;
 }) => {
-  const docsSearchService = useService(DocsSearchService);
+  const { docsSearchService, docsService } = useServices({
+    DocsSearchService,
+    DocsService,
+  });
   const t = useI18n();
 
   const links = useLiveData(
@@ -35,8 +53,16 @@ export const DocInfoSheet = ({
     )
   );
 
+  const [newPropertyId, setNewPropertyId] = useState<string | null>(null);
+
+  const onPropertyAdded = useCallback((property: DocCustomPropertyInfo) => {
+    setNewPropertyId(property.id);
+  }, []);
+
+  const properties = useLiveData(docsService.propertyList.sortedProperties$);
+
   return (
-    <Scrollable.Root>
+    <Scrollable.Root className={styles.scrollableRoot}>
       <Scrollable.Viewport data-testid="doc-info-menu">
         <Suspense>
           <TimeRow docId={docId} className={styles.timeRow} />
@@ -61,7 +87,58 @@ export const DocInfoSheet = ({
               <Divider size="thinner" />
             </>
           ) : null}
-          <DocPropertiesTable defaultOpenProperty={defaultOpenProperty} />
+
+          <PropertyCollapsibleSection
+            title={t.t('com.affine.workspace.properties')}
+          >
+            <PropertyCollapsibleContent
+              className={styles.tableBodyRoot}
+              collapseButtonText={({ hide, isCollapsed }) =>
+                isCollapsed
+                  ? hide === 1
+                    ? t['com.affine.page-properties.more-property.one']({
+                        count: hide.toString(),
+                      })
+                    : t['com.affine.page-properties.more-property.more']({
+                        count: hide.toString(),
+                      })
+                  : hide === 1
+                    ? t['com.affine.page-properties.hide-property.one']({
+                        count: hide.toString(),
+                      })
+                    : t['com.affine.page-properties.hide-property.more']({
+                        count: hide.toString(),
+                      })
+              }
+            >
+              {properties.map(property => (
+                <DocPropertyRow
+                  key={property.id}
+                  propertyInfo={property}
+                  defaultOpenEditMenu={newPropertyId === property.id}
+                />
+              ))}
+              <Menu
+                items={<CreatePropertyMenuItems onCreated={onPropertyAdded} />}
+                contentOptions={{
+                  onClick(e) {
+                    e.stopPropagation();
+                  },
+                }}
+              >
+                <Button
+                  variant="plain"
+                  prefix={<PlusIcon />}
+                  className={styles.addPropertyButton}
+                >
+                  {t['com.affine.page-properties.add-property']()}
+                </Button>
+              </Menu>
+            </PropertyCollapsibleContent>
+          </PropertyCollapsibleSection>
+          <Divider size="thinner" />
+
+          <DocDatabaseBacklinkInfo />
         </Suspense>
       </Scrollable.Viewport>
       <Scrollable.Scrollbar className={styles.scrollBar} />

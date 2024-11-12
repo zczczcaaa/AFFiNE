@@ -1,10 +1,10 @@
 import { IconButton, MobileMenu } from '@affine/component';
 import { EmptyCollectionDetail } from '@affine/core/components/affine/empty';
+import { PageHeader } from '@affine/core/components/mobile';
 import { isEmptyCollection } from '@affine/core/desktop/pages/workspace/collection';
 import type { Collection } from '@affine/env/filter';
 import { MoreHorizontalIcon, ViewLayersIcon } from '@blocksuite/icons/rc';
 
-import { PageHeader } from '../../../components';
 import { AllDocList } from '../doc/list';
 import { AllDocsMenu } from '../doc/menu';
 import * as styles from './detail.css';

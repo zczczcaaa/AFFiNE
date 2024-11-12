@@ -1,14 +1,12 @@
+import { IconButton, Menu, RowInput, Scrollable } from '@affine/component';
 import { useI18n } from '@affine/i18n';
 import { MoreHorizontalIcon } from '@blocksuite/icons/rc';
 import clsx from 'clsx';
 import { clamp } from 'lodash-es';
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import { useCallback, useMemo, useReducer, useRef, useState } from 'react';
 
-import { IconButton } from '../button';
-import { RowInput } from '../input';
-import { Menu } from '../menu';
-import { Scrollable } from '../scrollbar';
+import { ConfigModal } from '../mobile';
 import { InlineTagList } from './inline-tag-list';
 import * as styles from './styles.css';
 import { TagItem } from './tag';
@@ -32,6 +30,7 @@ export interface TagsInlineEditorProps extends TagsEditorProps {
   placeholder?: string;
   className?: string;
   readonly?: boolean;
+  title?: ReactNode; // only used for mobile
 }
 
 type TagOption = TagLike | { readonly create: true; readonly value: string };
@@ -201,7 +200,14 @@ export const TagsEditor = ({
   );
 
   return (
-    <div data-testid="tags-editor-popup" className={styles.tagsEditorRoot}>
+    <div
+      data-testid="tags-editor-popup"
+      className={
+        BUILD_CONFIG.isMobileEdition
+          ? styles.tagsEditorRootMobile
+          : styles.tagsEditorRoot
+      }
+    >
       <div className={styles.tagsEditorSelectedTags}>
         <InlineTagList
           tagMode={tagMode}
@@ -230,6 +236,10 @@ export const TagsEditor = ({
             ref={scrollContainerRef}
             className={styles.tagSelectorTagsScrollContainer}
           >
+            {tagOptions.length === 0 && (
+              <div className={styles.tagSelectorEmpty}>Nothing here yet</div>
+            )}
+
             {tagOptions.map((tag, idx) => {
               const commonProps = {
                 ...(safeFocusedIndex === idx ? { focused: 'true' } : {}),
@@ -288,7 +298,48 @@ export const TagsEditor = ({
   );
 };
 
-export const TagsInlineEditor = ({
+const MobileInlineEditor = ({
+  readonly,
+  placeholder,
+  className,
+  title,
+  ...props
+}: TagsInlineEditorProps) => {
+  const [editing, setEditing] = useState(false);
+
+  const empty = !props.selectedTags || props.selectedTags.length === 0;
+  const selectedTags = useMemo(() => {
+    return props.selectedTags
+      .map(id => props.tags.find(tag => tag.id === id))
+      .filter(tag => tag !== undefined);
+  }, [props.selectedTags, props.tags]);
+  return (
+    <>
+      <ConfigModal
+        title={title}
+        open={editing}
+        onOpenChange={setEditing}
+        onBack={() => setEditing(false)}
+      >
+        <TagsEditor {...props} />
+      </ConfigModal>
+      <div
+        className={clsx(styles.tagsInlineEditor, className)}
+        data-empty={empty}
+        data-readonly={readonly}
+        onClick={() => setEditing(true)}
+      >
+        {empty ? (
+          placeholder
+        ) : (
+          <InlineTagList {...props} tags={selectedTags} onRemoved={undefined} />
+        )}
+      </div>
+    </>
+  );
+};
+
+const DesktopTagsInlineEditor = ({
   readonly,
   placeholder,
   className,
@@ -322,9 +373,18 @@ export const TagsInlineEditor = ({
         {empty ? (
           placeholder
         ) : (
-          <InlineTagList {...props} tags={selectedTags} onRemoved={undefined} />
+          <InlineTagList
+            {...props}
+            title=""
+            tags={selectedTags}
+            onRemoved={undefined}
+          />
         )}
       </div>
     </Menu>
   );
 };
+
+export const TagsInlineEditor = BUILD_CONFIG.isMobileEdition
+  ? MobileInlineEditor
+  : DesktopTagsInlineEditor;

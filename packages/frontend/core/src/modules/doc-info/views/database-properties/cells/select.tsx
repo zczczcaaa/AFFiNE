@@ -1,7 +1,7 @@
 /* eslint-disable rxjs/finnish */
 
 import { PropertyValue } from '@affine/component';
-import { type TagLike, TagsInlineEditor } from '@affine/component/ui/tags';
+import { type TagLike, TagsInlineEditor } from '@affine/core/components/tags';
 import { TagService } from '@affine/core/modules/tag';
 import {
   affineLabelToDatabaseTagColor,
@@ -9,6 +9,7 @@ import {
 } from '@affine/core/modules/tag/entities/utils';
 import type { DatabaseBlockDataSource } from '@blocksuite/affine/blocks';
 import type { SelectTag } from '@blocksuite/data-view';
+import { MultiSelectIcon, SingleSelectIcon } from '@blocksuite/icons/rc';
 import { LiveData, useLiveData, useService } from '@toeverything/infra';
 import { nanoid } from 'nanoid';
 import { useCallback, useMemo } from 'react';
@@ -221,6 +222,8 @@ const BlocksuiteDatabaseSelector = ({
     [dataSource, selectCell]
   );
 
+  const propertyName = useLiveData(cell.property.name$);
+
   return (
     <TagsInlineEditor
       tagMode="db-label"
@@ -233,6 +236,12 @@ const BlocksuiteDatabaseSelector = ({
       onSelectTag={onSelectTag}
       tagColors={tagColors}
       onTagChange={onTagChange}
+      title={
+        <>
+          {multiple ? <MultiSelectIcon /> : <SingleSelectIcon />}
+          {propertyName}
+        </>
+      }
     />
   );
 };

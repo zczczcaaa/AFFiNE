@@ -1,7 +1,9 @@
 import { PropertyValue } from '@affine/component';
 import { AffinePageReference } from '@affine/core/components/affine/reference-link';
+import { ConfigModal } from '@affine/core/components/mobile';
 import { resolveLinkToDoc } from '@affine/core/modules/navigation';
 import { useI18n } from '@affine/i18n';
+import { LinkIcon } from '@blocksuite/icons/rc';
 import type { LiveData } from '@toeverything/infra';
 import { useLiveData } from '@toeverything/infra';
 import {
@@ -99,49 +101,84 @@ export const LinkCell = ({
 
   const t = useI18n();
 
+  const editingElement = (
+    <>
+      <textarea
+        ref={ref}
+        onKeyDown={onKeydown}
+        className={
+          !BUILD_CONFIG.isMobileEdition
+            ? styles.textarea
+            : styles.mobileTextarea
+        }
+        onBlur={commitChange}
+        value={tempValue || ''}
+        onChange={handleOnChange}
+        data-empty={!tempValue}
+        placeholder={t[
+          'com.affine.page-properties.property-value-placeholder'
+        ]()}
+      />
+      <div
+        className={
+          !BUILD_CONFIG.isMobileEdition
+            ? styles.textInvisible
+            : styles.mobileTextInvisible
+        }
+      >
+        {tempValue}
+        {tempValue?.endsWith('\n') || !tempValue ? <br /> : null}
+      </div>
+    </>
+  );
+
+  const name = useLiveData(cell.property.name$);
+
   return (
-    <PropertyValue
-      className={styles.container}
-      isEmpty={isEmpty}
-      onClick={onClick}
-    >
-      {!editing ? (
-        resolvedDocLink ? (
-          <AffinePageReference
-            pageId={resolvedDocLink.docId}
-            params={resolvedDocLink.params}
-          />
-        ) : (
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={onLinkClick}
-            className={styles.link}
-          >
-            {link?.replace(/^https?:\/\//, '').trim()}
-          </a>
-        )
-      ) : (
-        <>
-          <textarea
-            ref={ref}
-            onKeyDown={onKeydown}
-            className={styles.textarea}
-            onBlur={commitChange}
-            value={tempValue || ''}
-            onChange={handleOnChange}
-            data-empty={!tempValue}
-            placeholder={t[
-              'com.affine.page-properties.property-value-placeholder'
-            ]()}
-          />
-          <div className={styles.textInvisible}>
-            {tempValue}
-            {tempValue?.endsWith('\n') || !tempValue ? <br /> : null}
-          </div>
-        </>
-      )}
-    </PropertyValue>
+    <>
+      <PropertyValue
+        className={styles.container}
+        isEmpty={isEmpty}
+        onClick={onClick}
+      >
+        {!editing ? (
+          resolvedDocLink ? (
+            <AffinePageReference
+              pageId={resolvedDocLink.docId}
+              params={resolvedDocLink.params}
+            />
+          ) : (
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onLinkClick}
+              className={styles.link}
+            >
+              {link?.replace(/^https?:\/\//, '').trim()}
+            </a>
+          )
+        ) : !BUILD_CONFIG.isMobileEdition ? (
+          editingElement
+        ) : null}
+      </PropertyValue>
+      {BUILD_CONFIG.isMobileEdition ? (
+        <ConfigModal
+          open={editing}
+          onOpenChange={setEditing}
+          onBack={() => {
+            setEditing(false);
+          }}
+          title={
+            <>
+              <LinkIcon />
+              {name}
+            </>
+          }
+        >
+          <div className={styles.mobileTextareaWrapper}>{editingElement}</div>
+        </ConfigModal>
+      ) : null}
+    </>
   );
 };

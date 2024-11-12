@@ -1,7 +1,7 @@
-import type { TagLike } from '@affine/component/ui/tags';
-import { TagsInlineEditor as TagsInlineEditorComponent } from '@affine/component/ui/tags';
 import { TagService, useDeleteTagConfirmModal } from '@affine/core/modules/tag';
+import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
+import { TagsIcon } from '@blocksuite/icons/rc';
 import {
   LiveData,
   useLiveData,
@@ -12,6 +12,10 @@ import { useCallback, useMemo } from 'react';
 
 import { useAsyncCallback } from '../hooks/affine-async-hooks';
 import { useNavigateHelper } from '../hooks/use-navigate-helper';
+import {
+  type TagLike,
+  TagsInlineEditor as TagsInlineEditorComponent,
+} from '../tags';
 
 interface TagsEditorProps {
   pageId: string;
@@ -126,6 +130,8 @@ export const TagsInlineEditor = ({
     [navigator, workspace.workspace.id]
   );
 
+  const t = useI18n();
+
   return (
     <TagsInlineEditorComponent
       tagMode="inline-tag"
@@ -141,6 +147,12 @@ export const TagsInlineEditor = ({
       tagColors={adaptedTagColors}
       onTagChange={onTagChange}
       onDeleteTag={onTagDelete}
+      title={
+        <>
+          <TagsIcon />
+          {t['Tags']()}
+        </>
+      }
     />
   );
 };

@@ -1,3 +1,4 @@
+import { ConfigModal } from '@affine/core/components/mobile';
 import { DualLinkIcon } from '@blocksuite/icons/rc';
 import type { PropsWithChildren, ReactNode } from 'react';
 
@@ -9,13 +10,13 @@ export const RowLayout = ({
   href,
 }: PropsWithChildren<{ label: ReactNode; href?: string }>) => {
   const content = (
-    <div className={styles.baseSettingItem}>
+    <ConfigModal.Row className={styles.baseSettingItem}>
       <div className={styles.baseSettingItemName}>{label}</div>
       <div className={styles.baseSettingItemAction}>
         {children ||
           (href ? <DualLinkIcon className={styles.linkIcon} /> : null)}
       </div>
-    </div>
+    </ConfigModal.Row>
   );
 
   return href ? (

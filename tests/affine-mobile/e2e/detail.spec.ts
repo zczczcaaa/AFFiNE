@@ -27,7 +27,7 @@ test('doc info', async ({ page }) => {
   await expect(page.getByRole('dialog')).toBeVisible();
 
   await page.getByRole('menuitem', { name: 'view info' }).click();
-  await expect(page.getByRole('button', { name: 'Back' })).toBeVisible();
+  await expect(page.getByTestId('mobile-menu-back-button')).toBeVisible();
 
   await expect(page.getByRole('dialog')).toContainText('Created');
   await expect(page.getByRole('dialog')).toContainText('Updated');

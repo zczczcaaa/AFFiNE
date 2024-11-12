@@ -280,12 +280,15 @@ export const BlocksuiteDocEditor = forwardRef<
           <BlocksuiteEditorJournalDocTitle page={page} />
         )}
         {!shared && displayDocInfo ? (
-          <DocPropertiesTable
-            onDatabasePropertyChange={onDatabasePropertyChange}
-            onPropertyChange={onPropertyChange}
-            onPropertyAdded={onPropertyAdded}
-            defaultOpenProperty={defaultOpenProperty}
-          />
+          <div className={styles.docPropertiesTableContainer}>
+            <DocPropertiesTable
+              className={styles.docPropertiesTable}
+              onDatabasePropertyChange={onDatabasePropertyChange}
+              onPropertyChange={onPropertyChange}
+              onPropertyAdded={onPropertyAdded}
+              defaultOpenProperty={defaultOpenProperty}
+            />
+          </div>
         ) : null}
         <adapted.DocEditor
           className={styles.docContainer}

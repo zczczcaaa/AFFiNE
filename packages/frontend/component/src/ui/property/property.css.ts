@@ -7,6 +7,7 @@ export const propertyRoot = style({
   minHeight: 32,
   position: 'relative',
   padding: '2px 0px 2px 2px',
+  flexWrap: 'wrap',
   selectors: {
     '&[draggable="true"]': {
       cursor: 'grab',
@@ -170,7 +171,7 @@ export const section = style({
 export const sectionHeader = style({
   display: 'flex',
   alignItems: 'center',
-  gap: 4,
+  gap: 20,
   padding: '4px 6px',
   minHeight: 30,
 });
@@ -180,6 +181,7 @@ export const sectionHeaderTrigger = style({
   alignItems: 'center',
   gap: 4,
   flex: 1,
+  overflow: 'hidden',
 });
 
 export const sectionHeaderIcon = style({
@@ -195,6 +197,7 @@ export const sectionHeaderName = style({
   fontSize: cssVar('fontSm'),
   fontWeight: 500,
   whiteSpace: 'nowrap',
+  overflow: 'hidden',
   selectors: {
     '&[data-collapsed="true"]': {
       color: cssVarV2('text/secondary'),

@@ -51,6 +51,15 @@ export const inputWrapper = style({
     },
   },
 });
+
+export const mobileInputWrapper = style([
+  inputWrapper,
+  {
+    height: 30,
+    borderRadius: 4,
+  },
+]);
+
 export const input = style({
   height: '100%',
   width: '0',

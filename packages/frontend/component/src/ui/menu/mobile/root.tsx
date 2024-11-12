@@ -131,6 +131,7 @@ export const MobileMenu = ({
                 className={styles.menuContent}
               >
                 <Button
+                  data-testid="mobile-menu-back-button"
                   variant="plain"
                   className={styles.backButton}
                   prefix={<ArrowLeftSmallIcon />}

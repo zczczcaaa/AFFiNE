@@ -122,12 +122,24 @@ const DatabaseBacklinkRow = ({
 
   return (
     <PropertyCollapsibleSection
-      title={(row.databaseName || t['unnamed']()) + ' ' + t['properties']()}
+      // @ts-expect-error fix type
+      title={
+        <span className={styles.databaseNameWrapper}>
+          <span className={styles.databaseName}>
+            {row.databaseName || t['unnamed']()}
+          </span>
+          {t['properties']()}
+        </span>
+      }
       defaultCollapsed={!defaultOpen}
       icon={<DatabaseTableViewIcon />}
       suffix={
         <AffinePageReference
-          className={styles.docRefLink}
+          className={
+            BUILD_CONFIG.isMobileEdition
+              ? styles.mobileDocRefLink
+              : styles.docRefLink
+          }
           pageId={row.docId}
           params={pageRefParams}
           Icon={PageIcon}

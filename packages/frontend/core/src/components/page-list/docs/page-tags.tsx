@@ -1,5 +1,5 @@
 import { Menu } from '@affine/component';
-import { TagItem as TagItemComponent } from '@affine/component/ui/tags';
+import { TagItem as TagItemComponent } from '@affine/core/components/tags';
 import type { Tag } from '@affine/core/modules/tag';
 import { stopPropagation } from '@affine/core/utils';
 import { MoreHorizontalIcon } from '@blocksuite/icons/rc';

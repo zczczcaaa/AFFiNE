@@ -7,6 +7,7 @@ import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-
 import { usePageDocumentTitle } from '@affine/core/components/hooks/use-global-state';
 import { useJournalRouteHelper } from '@affine/core/components/hooks/use-journal';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
+import { PageHeader } from '@affine/core/components/mobile';
 import { PageDetailEditor } from '@affine/core/components/page-detail-editor';
 import { DetailPageWrapper } from '@affine/core/desktop/pages/workspace/detail-page/detail-page-wrapper';
 import { EditorService } from '@affine/core/modules/editor';
@@ -42,7 +43,7 @@ import dayjs from 'dayjs';
 import { useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { AppTabs, PageHeader } from '../../../components';
+import { AppTabs } from '../../../components';
 import { JournalDatePicker } from './journal-date-picker';
 import * as styles from './mobile-detail-page.css';
 import { PageHeaderMenuButton } from './page-header-more-button';
@@ -215,12 +216,12 @@ const notFound = (
   </>
 );
 
-const JournalDetailPage = ({
+const MobileDetailPage = ({
   pageId,
   date,
 }: {
   pageId: string;
-  date: string;
+  date?: string;
 }) => {
   const journalService = useService(JournalService);
   const { openJournal } = useJournalRouteHelper();
@@ -250,40 +251,23 @@ const JournalDetailPage = ({
             </>
           }
         >
-          <span className={bodyEmphasized}>
-            {i18nTime(dayjs(date), { absolute: { accuracy: 'month' } })}
-          </span>
+          {date ? (
+            <span className={bodyEmphasized}>
+              {i18nTime(dayjs(date), { absolute: { accuracy: 'month' } })}
+            </span>
+          ) : null}
         </PageHeader>
-        <JournalDatePicker
-          date={date}
-          onChange={handleDateChange}
-          withDotDates={allJournalDates}
-        />
+        {date ? (
+          <JournalDatePicker
+            date={date}
+            onChange={handleDateChange}
+            withDotDates={allJournalDates}
+          />
+        ) : null}
         <DetailPageImpl />
-        <AppTabs background={cssVarV2('layer/background/primary')} />
-      </DetailPageWrapper>
-    </div>
-  );
-};
-const NormalDetailPage = ({ pageId }: { pageId: string }) => {
-  return (
-    <div className={styles.root}>
-      <DetailPageWrapper
-        skeleton={skeleton}
-        notFound={notFound}
-        pageId={pageId}
-      >
-        <PageHeader
-          back
-          className={styles.header}
-          suffix={
-            <>
-              <PageHeaderShareButton />
-              <PageHeaderMenuButton />
-            </>
-          }
-        />
-        <DetailPageImpl />
+        {date ? (
+          <AppTabs background={cssVarV2('layer/background/primary')} />
+        ) : null}
       </DetailPageWrapper>
     </div>
   );
@@ -300,9 +284,5 @@ export const Component = () => {
     return null;
   }
 
-  return journalDate ? (
-    <JournalDetailPage pageId={pageId} date={journalDate} />
-  ) : (
-    <NormalDetailPage pageId={pageId} />
-  );
+  return <MobileDetailPage pageId={pageId} date={journalDate} />;
 };

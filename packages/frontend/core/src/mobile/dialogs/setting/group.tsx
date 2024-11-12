@@ -1,3 +1,4 @@
+import { ConfigModal } from '@affine/core/components/mobile';
 import clsx from 'clsx';
 import {
   type CSSProperties,
@@ -21,15 +22,16 @@ export const SettingGroup = forwardRef<HTMLDivElement, SettingGroupProps>(
     ref
   ) {
     return (
-      <div className={clsx(styles.group, className)} ref={ref} {...attrs}>
-        {title ? <h6 className={styles.title}>{title}</h6> : null}
-        <div
-          className={clsx(styles.content, contentClassName)}
-          style={contentStyle}
-        >
-          {children}
-        </div>
-      </div>
+      <ConfigModal.RowGroup
+        {...attrs}
+        ref={ref}
+        title={title}
+        className={clsx(styles.group, className)}
+        contentClassName={contentClassName}
+        contentStyle={contentStyle}
+      >
+        {children}
+      </ConfigModal.RowGroup>
     );
   }
 );

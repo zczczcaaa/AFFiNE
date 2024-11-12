@@ -1,9 +1,9 @@
 import { IconButton, MobileMenu } from '@affine/component';
+import { PageHeader } from '@affine/core/components/mobile';
 import type { Tag } from '@affine/core/modules/tag';
 import { MoreHorizontalIcon } from '@blocksuite/icons/rc';
 import { useLiveData } from '@toeverything/infra';
 
-import { PageHeader } from '../../../components';
 import { AllDocsMenu } from '../doc';
 import * as styles from './detail.css';
 

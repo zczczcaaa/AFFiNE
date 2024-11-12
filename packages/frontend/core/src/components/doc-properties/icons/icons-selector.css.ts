@@ -16,6 +16,7 @@ export const iconsRow = style({
   fontWeight: 500,
   padding: '0 6px',
   gap: '8px',
+  justifyContent: 'space-between',
 });
 
 export const iconButton = style({

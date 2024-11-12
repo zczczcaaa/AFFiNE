@@ -19,6 +19,7 @@
   "Create": "Create",
   "Created": "Created",
   "Customize": "Customise",
+  "Colors": "Colors",
   "DB_FILE_ALREADY_LOADED": "Database file already loaded",
   "DB_FILE_INVALID": "Invalid database file",
   "DB_FILE_MIGRATION_FAILED": "Database file migration failed",

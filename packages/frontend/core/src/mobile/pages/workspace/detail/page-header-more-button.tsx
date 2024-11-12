@@ -1,6 +1,7 @@
 import { IconButton, notify } from '@affine/component';
 import {
   MenuSeparator,
+  MenuSub,
   MobileMenu,
   MobileMenuItem,
 } from '@affine/component/ui/menu';
@@ -42,6 +43,7 @@ export const PageHeaderMenuButton = () => {
     editorService.editor.doc.meta$.map(meta => meta.trash)
   );
   const primaryMode = useLiveData(editorService.editor.doc.primaryMode$);
+  const title = useLiveData(editorService.editor.doc.title$);
 
   const { favorite, toggleFavorite } = useFavorite(docId);
 
@@ -104,14 +106,16 @@ export const PageHeaderMenuButton = () => {
           : t['com.affine.favoritePageOperation.add']()}
       </MobileMenuItem>
       <MenuSeparator />
-      <MobileMenu items={<DocInfoSheet docId={docId} />}>
-        <MobileMenuItem
-          prefixIcon={<InformationIcon />}
-          onClick={preventDefault}
-        >
-          <span>{t['com.affine.page-properties.page-info.view']()}</span>
-        </MobileMenuItem>
-      </MobileMenu>
+      <MenuSub
+        triggerOptions={{
+          prefixIcon: <InformationIcon />,
+          onClick: preventDefault,
+        }}
+        title={title ?? t['unnamed']()}
+        items={<DocInfoSheet docId={docId} />}
+      >
+        <span>{t['com.affine.page-properties.page-info.view']()}</span>
+      </MenuSub>
       <MobileMenu
         items={
           <div className={styles.outlinePanel}>

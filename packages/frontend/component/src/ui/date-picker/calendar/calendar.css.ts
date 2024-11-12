@@ -162,6 +162,7 @@ export const headerNavToday = style([
     padding: '0 4px',
     borderRadius: 4,
     color: cssVar('iconColor'),
+    textTransform: 'uppercase',
   },
 ]);
 
@@ -192,6 +193,7 @@ export const monthViewBodyCell = style([
     height: '28px',
   },
 ]);
+
 export const monthViewBodyCellInner = style([
   interactive,
   {

@@ -121,7 +121,11 @@ export const EditDocPropertyMenuItems = ({
   return (
     <>
       <div
-        className={styles.propertyRowNamePopupRow}
+        className={
+          BUILD_CONFIG.isMobileEdition
+            ? styles.mobilePropertyRowNamePopupRow
+            : styles.propertyRowNamePopupRow
+        }
         data-testid="edit-property-menu-item"
       >
         <DocPropertyIconSelector
@@ -140,7 +144,13 @@ export const EditDocPropertyMenuItems = ({
           />
         )}
       </div>
-      <div className={styles.propertyRowTypeItem}>
+      <div
+        className={
+          BUILD_CONFIG.isMobileEdition
+            ? styles.mobilePropertyRowTypeItem
+            : styles.propertyRowTypeItem
+        }
+      >
         {t['com.affine.page-properties.create-property.menu.header']()}
         <div className={styles.propertyTypeName}>
           <DocPropertyIcon propertyInfo={propertyInfo} />

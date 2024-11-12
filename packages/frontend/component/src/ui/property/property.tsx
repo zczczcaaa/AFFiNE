@@ -364,7 +364,9 @@ export const PropertyValue = forwardRef<
         className={clsx(styles.propertyValueContainer, className)}
         data-readonly={readonly ? 'true' : 'false'}
         data-empty={isEmpty ? 'true' : 'false'}
-        data-hoverable={hoverable ? 'true' : 'false'}
+        data-hoverable={
+          hoverable && !BUILD_CONFIG.isMobileEdition ? 'true' : 'false'
+        }
         data-property-value
         {...props}
       >

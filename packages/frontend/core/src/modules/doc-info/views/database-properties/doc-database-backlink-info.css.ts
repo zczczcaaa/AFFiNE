@@ -34,9 +34,31 @@ export const docRefLink = style({
   color: cssVarV2('text/tertiary'),
 });
 
+export const mobileDocRefLink = style([
+  docRefLink,
+  {
+    maxWidth: '110px',
+    minWidth: '60px',
+  },
+]);
+
 export const cellList = style({
   padding: '0 2px',
   display: 'flex',
   flexDirection: 'column',
   gap: 4,
+});
+
+export const databaseNameWrapper = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4,
+  overflow: 'hidden',
+});
+
+export const databaseName = style({
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  display: 'inline-block',
 });

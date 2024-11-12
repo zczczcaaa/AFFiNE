@@ -14,6 +14,13 @@ export const propertyRowNamePopupRow = style({
   minWidth: 260,
 });
 
+export const mobilePropertyRowNamePopupRow = style([
+  propertyRowNamePopupRow,
+  {
+    padding: '8px 20px',
+  },
+]);
+
 export const propertyRowTypeItem = style({
   display: 'flex',
   flexDirection: 'row',
@@ -24,6 +31,13 @@ export const propertyRowTypeItem = style({
   padding: '8px 4px',
   minWidth: 260,
 });
+
+export const mobilePropertyRowTypeItem = style([
+  propertyRowTypeItem,
+  {
+    padding: '8px 20px',
+  },
+]);
 
 export const propertyTypeName = style({
   color: cssVarV2('text/secondary'),
@@ -39,4 +53,8 @@ export const propertyName = style({
   padding: '0 8px',
   display: 'flex',
   alignItems: 'center',
+});
+
+export const mobileRootWrapper = style({
+  padding: '10px 16px',
 });

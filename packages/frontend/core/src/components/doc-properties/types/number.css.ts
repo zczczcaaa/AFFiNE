@@ -1,4 +1,5 @@
 import { cssVar } from '@toeverything/theme';
+import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 export const numberPropertyValueInput = style({
@@ -23,3 +24,18 @@ export const numberPropertyValueInput = style({
 export const numberPropertyValueContainer = style({
   padding: '0px',
 });
+
+export const numberIcon = style({
+  color: cssVarV2('icon/primary'),
+});
+
+export const mobileNumberPropertyValueInput = style([
+  numberPropertyValueInput,
+  {
+    selectors: {
+      'input&': {
+        border: `1px solid ${cssVar('blue700')}`,
+      },
+    },
+  },
+]);

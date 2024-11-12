@@ -49,6 +49,7 @@ export type DefaultOpenProperty =
     };
 
 export interface DocPropertiesTableProps {
+  className?: string;
   defaultOpenProperty?: DefaultOpenProperty;
   onPropertyAdded?: (property: DocCustomPropertyInfo) => void;
   onPropertyChange?: (property: DocCustomPropertyInfo, value: unknown) => void;
@@ -351,16 +352,17 @@ const DocPropertiesTableInner = ({
   onPropertyAdded,
   onPropertyChange,
   onDatabasePropertyChange,
+  className,
 }: DocPropertiesTableProps) => {
   const [expanded, setExpanded] = useState(!!defaultOpenProperty);
   return (
-    <div className={styles.root}>
-      <Collapsible.Root
-        open={expanded}
-        onOpenChange={setExpanded}
-        className={styles.rootCentered}
-      >
-        <DocPropertiesTableHeader open={expanded} onOpenChange={setExpanded} />
+    <div className={clsx(styles.root, className)}>
+      <Collapsible.Root open={expanded} onOpenChange={setExpanded}>
+        <DocPropertiesTableHeader
+          style={{ width: '100%' }}
+          open={expanded}
+          onOpenChange={setExpanded}
+        />
         <Collapsible.Content>
           <DocWorkspacePropertiesTableBody
             defaultOpen={

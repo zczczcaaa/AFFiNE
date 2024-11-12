@@ -77,7 +77,7 @@ const UsagePanel = () => {
   );
 
   return (
-    <SettingGroup title="Storage">
+    <SettingGroup title="Storage" contentStyle={{ padding: '10px 16px' }}>
       <CloudUsage />
       {serverFeatures?.copilot ? <AiUsage /> : null}
     </SettingGroup>

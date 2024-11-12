@@ -30,7 +30,7 @@ export const MobileMenuSub = ({
       subContentOptions={contentOptions}
       title={title}
     >
-      <div className={className} {...otherTriggerOptions}>
+      <div role="menuitem" className={className} {...otherTriggerOptions}>
         {children}
       </div>
     </MobileMenuSubRaw>

@@ -5,6 +5,7 @@ import {
   Scrollable,
   useThemeColorMeta,
 } from '@affine/component';
+import { PageHeader } from '@affine/core/components/mobile';
 import { useI18n } from '@affine/i18n';
 import { ArrowRightSmallIcon } from '@blocksuite/icons/rc';
 import { cssVarV2 } from '@toeverything/theme/v2';
@@ -18,7 +19,6 @@ import {
   useState,
 } from 'react';
 
-import { PageHeader } from '../../components/page-header';
 import * as styles from './generic.css';
 
 export interface GenericSelectorProps {
