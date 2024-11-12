@@ -30,11 +30,13 @@ import {
 import {
   createSignalFromObservable,
   type Signal,
+  SpecProvider,
 } from '@blocksuite/affine-shared/utils';
 import type { Container } from '@blocksuite/global/di';
 import {
   DocService,
   DocsService,
+  FeatureFlagService,
   type FrameworkProvider,
 } from '@toeverything/infra';
 import type { Observable } from 'rxjs';
@@ -60,7 +62,7 @@ function getTelemetryExtension(): ExtensionType {
   };
 }
 
-function createThemeExtension(framework: FrameworkProvider) {
+function getThemeExtension(framework: FrameworkProvider) {
   class AffineThemeExtension
     extends LifeCycleWatcher
     implements ThemeExtension
@@ -153,14 +155,32 @@ function getEditorConfigExtension(
   ];
 }
 
+export const extendEdgelessPreviewSpec = (function () {
+  let _extension: ExtensionType;
+  let _framework: FrameworkProvider;
+  return function (framework: FrameworkProvider) {
+    if (framework === _framework && _extension) {
+      return _extension;
+    } else {
+      _extension &&
+        SpecProvider.getInstance().omitSpec('edgeless:preview', _extension);
+      _extension = getThemeExtension(framework);
+      _framework = framework;
+      SpecProvider.getInstance().extendSpec('edgeless:preview', [_extension]);
+      return _extension;
+    }
+  };
+})();
+
 export function createPageRootBlockSpec(
-  framework: FrameworkProvider,
-  enableAI: boolean
+  framework: FrameworkProvider
 ): ExtensionType[] {
+  const featureFlagService = framework.get(FeatureFlagService);
+  const enableAI = featureFlagService.flags.enable_ai.value;
   return [
     enableAI ? AIPageRootBlockSpec : PageRootBlockSpec,
     FontLoaderService,
-    createThemeExtension(framework),
+    getThemeExtension(framework),
     getFontConfigExtension(),
     getTelemetryExtension(),
     getEditorConfigExtension(framework),
@@ -168,13 +188,14 @@ export function createPageRootBlockSpec(
 }
 
 export function createEdgelessRootBlockSpec(
-  framework: FrameworkProvider,
-  enableAI: boolean
+  framework: FrameworkProvider
 ): ExtensionType[] {
+  const featureFlagService = framework.get(FeatureFlagService);
+  const enableAI = featureFlagService.flags.enable_ai.value;
   return [
     enableAI ? AIEdgelessRootBlockSpec : EdgelessRootBlockSpec,
     FontLoaderService,
-    createThemeExtension(framework),
+    getThemeExtension(framework),
     EdgelessToolExtension,
     EdgelessBuiltInManager,
     getFontConfigExtension(),

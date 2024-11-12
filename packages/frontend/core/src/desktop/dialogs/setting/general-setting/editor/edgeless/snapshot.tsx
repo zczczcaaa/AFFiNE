@@ -1,16 +1,33 @@
 import { Skeleton } from '@affine/component';
 import type { EditorSettingSchema } from '@affine/core/modules/editor-setting';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
+import { AppThemeService } from '@affine/core/modules/theme';
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import { BlockStdScope } from '@blocksuite/affine/block-std';
+import {
+  BlockStdScope,
+  LifeCycleWatcher,
+  StdIdentifier,
+} from '@blocksuite/affine/block-std';
 import type { GfxPrimitiveElementModel } from '@blocksuite/affine/block-std/gfx';
-import type { EdgelessRootService } from '@blocksuite/affine/blocks';
-import { SpecProvider } from '@blocksuite/affine/blocks';
+import type {
+  EdgelessRootService,
+  ThemeExtension,
+} from '@blocksuite/affine/blocks';
+import {
+  ColorScheme,
+  SpecProvider,
+  ThemeExtensionIdentifier,
+} from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
 import type { Block, Doc } from '@blocksuite/affine/store';
+import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
+import type { Container } from '@blocksuite/global/di';
+import type { Signal } from '@preact/signals-core';
+import type { FrameworkProvider } from '@toeverything/infra';
 import { useFramework } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { useCallback, useEffect, useRef } from 'react';
+import type { Observable } from 'rxjs';
 import { map, pairwise } from 'rxjs';
 
 import {
@@ -74,7 +91,10 @@ export const EdgelessSnapshot = (props: Props) => {
 
     const editorHost = new BlockStdScope({
       doc,
-      extensions: SpecProvider.getInstance().getSpec('edgeless:preview').value,
+      extensions: [
+        ...SpecProvider.getInstance().getSpec('edgeless:preview').value,
+        getThemeExtension(framework),
+      ],
     }).render();
     docRef.current = doc;
     editorHostRef.current?.remove();
@@ -106,7 +126,7 @@ export const EdgelessSnapshot = (props: Props) => {
 
     // append to dom node
     wrapperRef.current.append(editorHost);
-  }, [docName, firstUpdate, updateElements]);
+  }, [docName, firstUpdate, framework, updateElements]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -150,3 +170,58 @@ export const EdgelessSnapshot = (props: Props) => {
     </div>
   );
 };
+
+function getThemeExtension(framework: FrameworkProvider) {
+  class AffineThemeExtension
+    extends LifeCycleWatcher
+    implements ThemeExtension
+  {
+    static override readonly key = 'affine-settings-theme';
+
+    private readonly theme: Signal<ColorScheme>;
+
+    protected readonly disposables: (() => void)[] = [];
+
+    static override setup(di: Container) {
+      super.setup(di);
+      di.override(ThemeExtensionIdentifier, AffineThemeExtension, [
+        StdIdentifier,
+      ]);
+    }
+
+    constructor(std: BlockStdScope) {
+      super(std);
+      const theme$: Observable<ColorScheme> = framework
+        .get(AppThemeService)
+        .appTheme.theme$.map(theme => {
+          return theme === ColorScheme.Dark
+            ? ColorScheme.Dark
+            : ColorScheme.Light;
+        });
+      const { signal, cleanup } = createSignalFromObservable<ColorScheme>(
+        theme$,
+        ColorScheme.Light
+      );
+      this.theme = signal;
+      this.disposables.push(cleanup);
+    }
+
+    getAppTheme() {
+      return this.theme;
+    }
+
+    getEdgelessTheme() {
+      return this.theme;
+    }
+
+    override unmounted() {
+      this.dispose();
+    }
+
+    dispose() {
+      this.disposables.forEach(dispose => dispose());
+    }
+  }
+
+  return AffineThemeExtension;
+}

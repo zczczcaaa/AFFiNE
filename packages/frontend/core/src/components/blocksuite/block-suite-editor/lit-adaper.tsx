@@ -24,7 +24,6 @@ import {
   type DocCustomPropertyInfo,
   DocService,
   DocsService,
-  FeatureFlagService,
   useFramework,
   useLiveData,
   useService,
@@ -50,6 +49,7 @@ import {
 } from '../../doc-properties';
 import { BiDirectionalLinkPanel } from './bi-directional-link-panel';
 import { BlocksuiteEditorJournalDocTitle } from './journal-doc-title';
+import { extendEdgelessPreviewSpec } from './specs/custom/root-block';
 import {
   patchDocModeService,
   patchEdgelessClipboard,
@@ -96,14 +96,12 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     docsService,
     editorService,
     workspaceService,
-    featureFlagService,
   } = useServices({
     PeekViewService,
     DocService,
     DocsService,
     WorkspaceService,
     EditorService,
-    FeatureFlagService,
   });
   const framework = useFramework();
   const referenceRenderer: ReferenceReactRenderer = useMemo(() => {
@@ -130,12 +128,15 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     };
   }, [workspaceService]);
 
+  useMemo(() => {
+    extendEdgelessPreviewSpec(framework);
+  }, [framework]);
+
   const specs = useMemo(() => {
-    const enableAI = featureFlagService.flags.enable_ai.value;
     return mode === 'edgeless'
-      ? createEdgelessModeSpecs(framework, !!enableAI)
-      : createPageModeSpecs(framework, !!enableAI);
-  }, [featureFlagService.flags.enable_ai.value, mode, framework]);
+      ? createEdgelessModeSpecs(framework)
+      : createPageModeSpecs(framework);
+  }, [mode, framework]);
 
   const confirmModal = useConfirmModal();
   const patchedSpecs = useMemo(() => {
