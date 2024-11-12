@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@blocksuite/affine": "0.17.28",
+    "@blocksuite/affine": "0.17.30",
     "vitest": "2.1.4"
   },
   "exports": {
