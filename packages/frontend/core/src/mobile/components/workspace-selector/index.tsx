@@ -1,12 +1,21 @@
 import { MobileMenu } from '@affine/component';
 import { track } from '@affine/track';
 import { useServiceOptional, WorkspacesService } from '@toeverything/infra';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  forwardRef,
+  type HTMLAttributes,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
 import { CurrentWorkspaceCard } from './current-card';
 import { SelectorMenu } from './menu';
 
-export const WorkspaceSelector = () => {
+export const WorkspaceSelector = forwardRef<
+  HTMLDivElement,
+  HTMLAttributes<HTMLDivElement>
+>(function WorkspaceSelector({ className }, ref) {
   const [open, setOpen] = useState(false);
   const workspaceManager = useServiceOptional(WorkspacesService);
 
@@ -33,7 +42,11 @@ export const WorkspaceSelector = () => {
         style: { padding: 0 },
       }}
     >
-      <CurrentWorkspaceCard onClick={openMenu} />
+      <CurrentWorkspaceCard
+        ref={ref}
+        onClick={openMenu}
+        className={className}
+      />
     </MobileMenu>
   );
-};
+});

@@ -9,7 +9,7 @@ import { useI18n } from '@affine/i18n';
 import { SettingsIcon } from '@blocksuite/icons/rc';
 import { useService } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { SearchInput, WorkspaceSelector } from '../../components';
 import { searchVTScope } from '../../components/search-input/style.css';
@@ -23,18 +23,12 @@ import * as styles from './styles.css';
  *   - hide Search
  */
 export const HomeHeader = () => {
-  const t = useI18n();
-  const workbench = useService(WorkbenchService).workbench;
   const globalDialogService = useService(GlobalDialogService);
 
-  const [dense, setDense] = useState(false);
-
-  useGlobalEvent(
-    'scroll',
-    useCallback(() => {
-      setDense(window.scrollY > 114);
-    }, [])
-  );
+  const workspaceCardRef = useRef<HTMLDivElement>(null);
+  const floatWorkspaceCardRef = useRef<HTMLDivElement>(null);
+  const t = useI18n();
+  const workbench = useService(WorkbenchService).workbench;
 
   const navSearch = useCallback(() => {
     startScopedViewTransition(searchVTScope, () => {
@@ -42,33 +36,49 @@ export const HomeHeader = () => {
     });
   }, [workbench]);
 
+  const [dense, setDense] = useState(false);
+
+  useGlobalEvent(
+    'scroll',
+    useCallback(() => {
+      if (!workspaceCardRef.current || !floatWorkspaceCardRef.current) return;
+      const inFlowTop = workspaceCardRef.current.getBoundingClientRect().top;
+      const floatTop =
+        floatWorkspaceCardRef.current.getBoundingClientRect().top;
+      setDense(inFlowTop <= floatTop);
+    }, [])
+  );
+
+  const openSetting = useCallback(() => {
+    globalDialogService.open('setting', {
+      activeTab: 'appearance',
+    });
+  }, [globalDialogService]);
+
   return (
-    <div className={clsx(styles.root, { dense })}>
-      <SafeArea top className={styles.float}>
-        <div className={styles.headerAndWsSelector}>
-          <div className={styles.wsSelectorWrapper}>
-            <WorkspaceSelector />
-          </div>
-          <div className={styles.settingWrapper}>
-            <IconButton
-              onClick={() => {
-                globalDialogService.open('setting', {
-                  activeTab: 'appearance',
-                });
-              }}
-              size="24"
-              style={{ padding: 10 }}
-              icon={<SettingsIcon />}
-            />
-          </div>
+    <>
+      <SafeArea top className={styles.root}>
+        <div className={styles.headerSettingRow}>
+          <IconButton onClick={openSetting} size={28} icon={<SettingsIcon />} />
         </div>
-        <div className={styles.searchWrapper}>
+        <div className={styles.wsSelectorAndSearch}>
+          <WorkspaceSelector ref={workspaceCardRef} />
           <SearchInput placeholder={t['Quick search']()} onClick={navSearch} />
         </div>
       </SafeArea>
-      <SafeArea top>
-        <div className={styles.space} />
+      {/* float */}
+      <SafeArea top className={clsx(styles.root, styles.float, { dense })}>
+        <WorkspaceSelector
+          className={styles.floatWsSelector}
+          ref={floatWorkspaceCardRef}
+        />
+        <IconButton
+          style={{ transition: 'none' }}
+          onClick={openSetting}
+          size={28}
+          icon={<SettingsIcon />}
+        />
       </SafeArea>
-    </div>
+    </>
   );
 };
