@@ -1,6 +1,9 @@
 import { test } from '@affine-test/kit/playwright';
 import { clickEdgelessModeButton } from '@affine-test/kit/utils/editor';
-import { withCtrlOrMeta } from '@affine-test/kit/utils/keyboard';
+import {
+  withCtrlOrMeta,
+  writeTextToClipboard,
+} from '@affine-test/kit/utils/keyboard';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
@@ -510,25 +513,7 @@ test('can paste a doc link to create link reference', async ({ page }) => {
   await page.keyboard.press('Enter');
 
   // paste the url
-  await page.evaluate(
-    async ([url]) => {
-      const clipData = {
-        'text/plain': url,
-      };
-      const e = new ClipboardEvent('paste', {
-        clipboardData: new DataTransfer(),
-      });
-      Object.defineProperty(e, 'target', {
-        writable: false,
-        value: document,
-      });
-      Object.entries(clipData).forEach(([key, value]) => {
-        e.clipboardData?.setData(key, value);
-      });
-      document.dispatchEvent(e);
-    },
-    [url]
-  );
+  await writeTextToClipboard(page, url);
 
   // check the link reference
   await page.waitForTimeout(500);

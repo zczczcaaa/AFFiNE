@@ -63,3 +63,26 @@ export async function pasteByKeyboard(page: Page) {
   await page.keyboard.press('v', { delay: 50 });
   await keyUpCtrlOrMeta(page);
 }
+
+export async function writeTextToClipboard(page: Page, text: string) {
+  // paste the url
+  await page.evaluate(
+    async ([text]) => {
+      const clipData = {
+        'text/plain': text,
+      };
+      const e = new ClipboardEvent('paste', {
+        clipboardData: new DataTransfer(),
+      });
+      Object.defineProperty(e, 'target', {
+        writable: false,
+        value: document,
+      });
+      Object.entries(clipData).forEach(([key, value]) => {
+        e.clipboardData?.setData(key, value);
+      });
+      document.dispatchEvent(e);
+    },
+    [text]
+  );
+}

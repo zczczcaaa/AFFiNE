@@ -119,34 +119,25 @@ function resolvePeekInfoFromPeekTarget(
     if (element instanceof AffineReference) {
       const referenceInfo = element.referenceInfo;
       if (referenceInfo) {
-        const { pageId: docId } = referenceInfo;
+        const { pageId: docId, params } = referenceInfo;
         const info: DocPeekViewInfo = {
           type: 'doc',
-          docRef: {
-            docId,
-          },
+          docRef: { docId, ...params },
         };
-        Object.assign(info, referenceInfo.params);
         return info;
       }
     } else if ('model' in element) {
       const blockModel = element.model;
-      if (isEmbedLinkedDocModel(blockModel)) {
+      if (
+        isEmbedLinkedDocModel(blockModel) ||
+        isEmbedSyncedDocModel(blockModel)
+      ) {
+        const { pageId: docId, params } = blockModel;
         const info: DocPeekViewInfo = {
           type: 'doc',
-          docRef: {
-            docId: blockModel.pageId,
-          },
+          docRef: { docId, ...params },
         };
-        Object.assign(info, blockModel.params);
         return info;
-      } else if (isEmbedSyncedDocModel(blockModel)) {
-        return {
-          type: 'doc',
-          docRef: {
-            docId: blockModel.pageId,
-          },
-        };
       } else if (isSurfaceRefModel(blockModel)) {
         const refModel = (element as SurfaceRefBlockComponent).referenceModel;
         // refModel can be null if the reference is invalid
