@@ -1,4 +1,3 @@
-import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import {
   AddPageButton,
   AppDownloadButton,
@@ -23,7 +22,6 @@ import {
 } from '@affine/core/modules/explorer';
 import { ExplorerTags } from '@affine/core/modules/explorer/views/sections/tags';
 import { CMDKQuickSearchService } from '@affine/core/modules/quicksearch/services/cmdk';
-import { isNewTabTrigger } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { Doc } from '@blocksuite/affine/store';
@@ -35,17 +33,11 @@ import {
   SettingsIcon,
 } from '@blocksuite/icons/rc';
 import type { Workspace } from '@toeverything/infra';
-import {
-  useLiveData,
-  useService,
-  useServices,
-  WorkspaceService,
-} from '@toeverything/infra';
-import type { MouseEvent, ReactElement } from 'react';
-import { useCallback } from 'react';
+import { useLiveData, useService, useServices } from '@toeverything/infra';
+import type { ReactElement } from 'react';
+import { memo, useCallback } from 'react';
 
 import { WorkbenchService } from '../../modules/workbench';
-import { usePageHelper } from '../blocksuite/block-suite-page-list/utils';
 import { WorkspaceNavigator } from '../workspace-selector';
 import {
   quickSearch,
@@ -72,41 +64,42 @@ export type RootAppSidebarProps = {
   };
 };
 
+const AllDocsButton = () => {
+  const t = useI18n();
+  const { workbenchService } = useServices({
+    WorkbenchService,
+  });
+  const workbench = workbenchService.workbench;
+  const allPageActive = useLiveData(
+    workbench.location$.selector(location => location.pathname === '/all')
+  );
+
+  return (
+    <MenuLinkItem icon={<AllDocsIcon />} active={allPageActive} to={'/all'}>
+      <span data-testid="all-pages">
+        {t['com.affine.workspaceSubPath.all']()}
+      </span>
+    </MenuLinkItem>
+  );
+};
+
 /**
  * This is for the whole affine app sidebar.
  * This component wraps the app sidebar in `@affine/component` with logic and data.
  *
  */
-export const RootAppSidebar = (): ReactElement => {
-  const { workbenchService, workspaceService, cMDKQuickSearchService } =
-    useServices({
-      WorkspaceService,
-      WorkbenchService,
-      CMDKQuickSearchService,
-    });
-  const currentWorkspace = workspaceService.workspace;
+export const RootAppSidebar = memo((): ReactElement => {
+  const { workbenchService, cMDKQuickSearchService } = useServices({
+    WorkbenchService,
+    CMDKQuickSearchService,
+  });
   const t = useI18n();
   const globalDialogService = useService(GlobalDialogService);
   const workspaceDialogService = useService(WorkspaceDialogService);
   const workbench = workbenchService.workbench;
-  const currentPath = useLiveData(
-    workbench.location$.map(location => location.pathname)
-  );
   const onOpenQuickSearchModal = useCallback(() => {
     cMDKQuickSearchService.toggle();
   }, [cMDKQuickSearchService]);
-
-  const allPageActive = currentPath === '/all';
-
-  const pageHelper = usePageHelper(currentWorkspace.docCollection);
-
-  const onClickNewPage = useAsyncCallback(
-    async (e?: MouseEvent) => {
-      pageHelper.createPage(undefined, isNewTabTrigger(e) ? 'new-tab' : true);
-      track.$.navigationPanel.$.createDoc();
-    },
-    [pageHelper]
-  );
 
   const onOpenSettingModal = useCallback(() => {
     globalDialogService.open('setting', {
@@ -169,13 +162,9 @@ export const RootAppSidebar = (): ReactElement => {
             data-event-props="$.navigationPanel.$.quickSearch"
             onClick={onOpenQuickSearchModal}
           />
-          <AddPageButton onClick={onClickNewPage} />
+          <AddPageButton />
         </div>
-        <MenuLinkItem icon={<AllDocsIcon />} active={allPageActive} to={'/all'}>
-          <span data-testid="all-pages">
-            {t['com.affine.workspaceSubPath.all']()}
-          </span>
-        </MenuLinkItem>
+        <AllDocsButton />
         <AppSidebarJournalButton />
         <MenuItem
           data-testid="slider-bar-workspace-setting-button"
@@ -220,6 +209,6 @@ export const RootAppSidebar = (): ReactElement => {
       </SidebarContainer>
     </AppSidebar>
   );
-};
+});
 
 RootAppSidebar.displayName = 'memo(RootAppSidebar)';

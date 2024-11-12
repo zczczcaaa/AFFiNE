@@ -1,24 +1,35 @@
 import { IconButton } from '@affine/component';
+import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
+import { isNewTabTrigger } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
+import track from '@affine/track';
 import { PlusIcon } from '@blocksuite/icons/rc';
+import { useService, WorkspaceService } from '@toeverything/infra';
 import clsx from 'clsx';
 import type React from 'react';
-import type { MouseEventHandler } from 'react';
+import { type MouseEvent, useCallback } from 'react';
 
 import * as styles from './index.css';
 
 interface AddPageButtonProps {
-  onClick?: MouseEventHandler;
   className?: string;
   style?: React.CSSProperties;
 }
 
 const sideBottom = { side: 'bottom' as const };
-export function AddPageButton({
-  onClick,
-  className,
-  style,
-}: AddPageButtonProps) {
+export function AddPageButton({ className, style }: AddPageButtonProps) {
+  const workspaceService = useService(WorkspaceService);
+  const currentWorkspace = workspaceService.workspace;
+  const pageHelper = usePageHelper(currentWorkspace.docCollection);
+
+  const onClickNewPage = useCallback(
+    (e?: MouseEvent) => {
+      pageHelper.createPage(undefined, isNewTabTrigger(e) ? 'new-tab' : true);
+      track.$.navigationPanel.$.createDoc();
+    },
+    [pageHelper]
+  );
+
   const t = useI18n();
 
   return (
@@ -28,8 +39,8 @@ export function AddPageButton({
       data-testid="sidebar-new-page-button"
       style={style}
       className={clsx([styles.root, className])}
-      onClick={onClick}
-      onAuxClick={onClick}
+      onClick={onClickNewPage}
+      onAuxClick={onClickNewPage}
     >
       <PlusIcon />
     </IconButton>

@@ -89,6 +89,34 @@ interface WebExplorerTreeNodeProps extends BaseExplorerTreeNodeProps {
   dropEffect?: ExplorerTreeNodeDropEffect;
 }
 
+/**
+ * specific rename modal for explorer tree node,
+ * Separate it into a separate component to prevent re-rendering the entire component when width changes.
+ */
+const ExplorerTreeNodeRenameModal = ({
+  setRenaming,
+  handleRename,
+  rawName,
+}: {
+  setRenaming: (renaming: boolean) => void;
+  handleRename: (newName: string) => void;
+  rawName: string | undefined;
+}) => {
+  const appSidebarService = useService(AppSidebarService).sidebar;
+  const sidebarWidth = useLiveData(appSidebarService.width$);
+  return (
+    <RenameModal
+      open
+      width={sidebarWidth - 32}
+      onOpenChange={setRenaming}
+      onRename={handleRename}
+      currentName={rawName ?? ''}
+    >
+      <div className={styles.itemRenameAnchor} />
+    </RenameModal>
+  );
+};
+
 export const ExplorerTreeNode = ({
   children,
   icon: Icon,
@@ -125,9 +153,6 @@ export const ExplorerTreeNode = ({
   const [renaming, setRenaming] = useState(defaultRenaming);
   const [lastInGroup, setLastInGroup] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-
-  const appSidebarService = useService(AppSidebarService).sidebar;
-  const sidebarWidth = useLiveData(appSidebarService.width$);
 
   const { emoji, name } = useMemo(() => {
     if (!extractEmojiAsIcon || !rawName) {
@@ -379,16 +404,12 @@ export const ExplorerTreeNode = ({
         </div>
       </div>
 
-      {renameable && (
-        <RenameModal
-          open={!!renaming}
-          width={sidebarWidth - 32}
-          onOpenChange={setRenaming}
-          onRename={handleRename}
-          currentName={rawName ?? ''}
-        >
-          <div className={styles.itemRenameAnchor} />
-        </RenameModal>
+      {renameable && renaming && (
+        <ExplorerTreeNodeRenameModal
+          setRenaming={setRenaming}
+          handleRename={handleRename}
+          rawName={rawName}
+        />
       )}
     </div>
   );

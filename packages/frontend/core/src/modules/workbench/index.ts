@@ -1,6 +1,7 @@
 export { View as WorkbenchView } from './entities/view';
 export { Workbench } from './entities/workbench';
 export { ViewScope } from './scopes/view';
+export { ViewService } from './services/view';
 export { WorkbenchService } from './services/workbench';
 export { useBindWorkbenchToBrowserRouter } from './view/browser-adapter';
 export { useIsActiveView } from './view/use-is-active-view';

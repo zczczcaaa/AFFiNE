@@ -9,7 +9,7 @@ import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import { selectAtom } from 'jotai/utils';
 import type { MouseEventHandler } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 
 import { CollectionListItem } from './collections/collection-list-item';
 import { PageListItem } from './docs/page-list-item';
@@ -240,7 +240,7 @@ export const PageListItemRenderer = (item: ListItem) => {
   );
 };
 
-export const CollectionListItemRenderer = (item: ListItem) => {
+export const CollectionListItemRenderer = memo((item: ListItem) => {
   const props = useAtomValue(listsPropsAtom);
   const { selectionActive } = useAtomValue(selectionStateAtom);
   const collection = item as CollectionMeta;
@@ -252,7 +252,9 @@ export const CollectionListItemRenderer = (item: ListItem) => {
       })}
     />
   );
-};
+});
+
+CollectionListItemRenderer.displayName = 'CollectionListItemRenderer';
 
 export const TagListItemRenderer = (item: ListItem) => {
   const props = useAtomValue(listsPropsAtom);
