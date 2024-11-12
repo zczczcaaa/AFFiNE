@@ -116,7 +116,7 @@ describe('op client', () => {
 
     // @ts-expect-error internal api
     const subscriptions = ctx.producer.obs;
-    ctx.producer.subscribe('sub', new Uint8Array([1, 2, 3]), ob);
+    ctx.producer.ob$('sub', new Uint8Array([1, 2, 3])).subscribe(ob);
 
     expect(ctx.postMessage.mock.calls[0][0]).toMatchInlineSnapshot(`
       {
@@ -160,7 +160,7 @@ describe('op client', () => {
       error: vi.fn(),
       complete: vi.fn(),
     };
-    ctx.producer.subscribe('sub', new Uint8Array([1, 2, 3]), ob);
+    ctx.producer.ob$('sub', new Uint8Array([1, 2, 3])).subscribe(ob);
 
     expect(subscriptions.has('sub:2')).toBe(true);
 
@@ -179,29 +179,23 @@ describe('op client', () => {
 
   it('should transfer transferables with subscribe op', async ctx => {
     const data = new Uint8Array([1, 2, 3]);
-    const unsubscribe = ctx.producer.subscribe(
-      'bin',
-      transfer(data, [data.buffer]),
-      {
+    const sub = ctx.producer
+      .ob$('bin', transfer(data, [data.buffer]))
+      .subscribe({
         next: vi.fn(),
-      }
-    );
+      });
 
     expect(data.byteLength).toBe(0);
 
-    unsubscribe();
+    sub.unsubscribe();
   });
 
   it('should unsubscribe subscription op', ctx => {
-    const unsubscribe = ctx.producer.subscribe(
-      'sub',
-      new Uint8Array([1, 2, 3]),
-      {
-        next: vi.fn(),
-      }
-    );
+    const sub = ctx.producer.ob$('sub', new Uint8Array([1, 2, 3])).subscribe({
+      next: vi.fn(),
+    });
 
-    unsubscribe();
+    sub.unsubscribe();
 
     expect(ctx.postMessage.mock.lastCall).toMatchInlineSnapshot(`
       [

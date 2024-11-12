@@ -430,6 +430,7 @@ __metadata:
     "@radix-ui/react-toolbar": "npm:^1.0.4"
     "@sentry/react": "npm:^8.0.0"
     "@testing-library/react": "npm:^16.0.0"
+    "@toeverything/pdf-viewer": "npm:^0.1.1"
     "@toeverything/theme": "npm:^1.0.17"
     "@types/animejs": "npm:^3.1.12"
     "@types/bytes": "npm:^3.1.4"
@@ -445,6 +446,7 @@ __metadata:
     dayjs: "npm:^1.11.10"
     fake-indexeddb: "npm:^6.0.0"
     file-type: "npm:^19.1.0"
+    filesize: "npm:^10.1.6"
     foxact: "npm:^0.2.33"
     fuse.js: "npm:^7.0.0"
     graphemer: "npm:^1.4.0"
@@ -13110,6 +13112,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@toeverything/pdf-viewer-types@npm:0.1.1":
+  version: 0.1.1
+  resolution: "@toeverything/pdf-viewer-types@npm:0.1.1"
+  checksum: 10/cd7e7785097924778899febaaffecb893451aa9eb0117a5b28047004f788efb6ec1facab74e93d6ac3464033d9a4ad57f09f83c6f45ab3ebf67ceedf2180fd23
+  languageName: node
+  linkType: hard
+
+"@toeverything/pdf-viewer@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@toeverything/pdf-viewer@npm:0.1.1"
+  dependencies:
+    "@toeverything/pdf-viewer-types": "npm:0.1.1"
+    "@toeverything/pdfium": "npm:0.1.1"
+  checksum: 10/7fc4ac3156504467517ed4d99d5ba5ccd3beae0759464a6a9a3a62f2fc09acff44fbee9c2451cc437d97313c51746a631fb0d367b365f19469079588ba7c5ce0
+  languageName: node
+  linkType: hard
+
+"@toeverything/pdfium@npm:0.1.1":
+  version: 0.1.1
+  resolution: "@toeverything/pdfium@npm:0.1.1"
+  checksum: 10/3d832eaef3ea4aba142561ed8529e216ed739026e7680e5d4fcd05d56fdd458a06273d6b18f1dbc0af9edcc538fa6fd0246757ebb4957a048a8d69bbf579549a
+  languageName: node
+  linkType: hard
+
 "@toeverything/theme@npm:^1.0.15, @toeverything/theme@npm:^1.0.17":
   version: 1.0.17
   resolution: "@toeverything/theme@npm:1.0.17"
@@ -20500,7 +20526,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:^10.0.12":
+"filesize@npm:^10.0.12, filesize@npm:^10.1.6":
   version: 10.1.6
   resolution: "filesize@npm:10.1.6"
   checksum: 10/e800837c4fc02303f1944d5a4c7b706df1c5cd95d745181852604fb00a1c2d55d2d3921252722bd2f0c86b59c94edaba23fa224776bbf977455d4034e7be1f45

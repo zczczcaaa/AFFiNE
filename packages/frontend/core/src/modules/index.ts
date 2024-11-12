@@ -19,6 +19,7 @@ import { configureJournalModule } from './journal';
 import { configureNavigationModule } from './navigation';
 import { configureOpenInApp } from './open-in-app';
 import { configureOrganizeModule } from './organize';
+import { configurePDFModule } from './pdf';
 import { configurePeekViewModule } from './peek-view';
 import { configurePermissionsModule } from './permissions';
 import { configureQuickSearchModule } from './quicksearch';
@@ -44,6 +45,7 @@ export function configureCommonModules(framework: Framework) {
   configureShareDocsModule(framework);
   configureShareSettingModule(framework);
   configureTelemetryModule(framework);
+  configurePDFModule(framework);
   configurePeekViewModule(framework);
   configureDocDisplayMetaModule(framework);
   configureQuickSearchModule(framework);

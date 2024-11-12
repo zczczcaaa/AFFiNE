@@ -1,14 +1,5 @@
 import EventEmitter2 from 'eventemitter2';
-import {
-  defer,
-  from,
-  fromEvent,
-  Observable,
-  of,
-  share,
-  take,
-  takeUntil,
-} from 'rxjs';
+import { defer, from, fromEvent, Observable, of, take, takeUntil } from 'rxjs';
 
 import {
   AutoMessageHandler,
@@ -172,7 +163,7 @@ export class OpConsumer<Ops extends OpSchema> extends AutoMessageHandler {
         ob$ = of(ret$);
       }
 
-      return ob$.pipe(share(), takeUntil(fromEvent(signal, 'abort')));
+      return ob$.pipe(takeUntil(fromEvent(signal, 'abort')));
     });
   }
 

@@ -17,7 +17,6 @@ import {
 } from '@blocksuite/icons/rc';
 import { useService } from '@toeverything/infra';
 import clsx from 'clsx';
-import { fileTypeFromBuffer } from 'file-type';
 import { useErrorBoundary } from 'foxact/use-error-boundary';
 import type { PropsWithChildren, ReactElement } from 'react';
 import {
@@ -32,6 +31,10 @@ import type { FallbackProps } from 'react-error-boundary';
 import { ErrorBoundary } from 'react-error-boundary';
 import useSWR from 'swr';
 
+import {
+  downloadResourceWithUrl,
+  resourceUrlToBlob,
+} from '../../../../utils/resource';
 import { PeekViewService } from '../../services/peek-view';
 import { useEditor } from '../utils';
 import { useZoomControls } from './hooks/use-zoom';
@@ -41,30 +44,8 @@ const filterImageBlock = (block: BlockModel): block is ImageBlockModel => {
   return block.flavour === 'affine:image';
 };
 
-async function imageUrlToBlob(url: string): Promise<Blob | undefined> {
-  const buffer = await fetch(url).then(response => {
-    return response.arrayBuffer();
-  });
-
-  if (!buffer) {
-    console.warn('Could not get blob');
-    return;
-  }
-  try {
-    const type = await fileTypeFromBuffer(buffer);
-    if (!type) {
-      return;
-    }
-    const blob = new Blob([buffer], { type: type.mime });
-    return blob;
-  } catch (error) {
-    console.error('Error converting image to blob', error);
-  }
-  return;
-}
-
 async function copyImageToClipboard(url: string) {
-  const blob = await imageUrlToBlob(url);
+  const blob = await resourceUrlToBlob(url);
   if (!blob) {
     return;
   }
@@ -75,23 +56,6 @@ async function copyImageToClipboard(url: string) {
   } catch (error) {
     console.error('Error copying image to clipboard', error);
   }
-}
-
-async function saveBufferToFile(url: string, filename: string) {
-  // given input url may not have correct mime type
-  const blob = await imageUrlToBlob(url);
-  if (!blob) {
-    return;
-  }
-
-  const blobUrl = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = blobUrl;
-  a.download = filename;
-  document.body.append(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(blobUrl);
 }
 
 export type ImagePreviewModalProps = {
@@ -193,7 +157,7 @@ const ImagePreviewModalImpl = ({
   const downloadHandler = useAsyncCallback(async () => {
     const url = imageRef.current?.src;
     if (url) {
-      await saveBufferToFile(url, caption || blockModel?.id || 'image');
+      await downloadResourceWithUrl(url, caption || blockModel?.id || 'image');
     }
   }, [caption, blockModel?.id]);
 

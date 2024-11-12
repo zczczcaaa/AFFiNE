@@ -39,7 +39,7 @@ consumer.register('subscribeStatus', (id: number) => {
 
 // subscribe
 const client: OpClient<Ops>;
-client.subscribe('subscribeStatus', 123, {
+client.ob$('subscribeStatus', 123).subscribe({
   next: status => {
     ui.setServerStatus(status);
   },

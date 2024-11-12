@@ -95,6 +95,7 @@ export type MessageCommunicapable = Pick<
 > & {
   start?(): void;
   close?(): void;
+  terminate?(): void; // For Worker
 };
 
 export function ignoreUnknownEvent(handler: (data: Messages) => void) {
@@ -130,6 +131,7 @@ export function fetchTransferables(data: any): Transferable[] | undefined {
 }
 
 export abstract class AutoMessageHandler {
+  private listening = false;
   protected abstract handlers: Partial<MessageHandlers>;
 
   constructor(protected readonly port: MessageCommunicapable) {}
@@ -144,12 +146,21 @@ export abstract class AutoMessageHandler {
   });
 
   listen() {
+    if (this.listening) {
+      return;
+    }
+
     this.port.addEventListener('message', this.handleMessage);
+    this.port.addEventListener('messageerror', console.error);
     this.port.start?.();
+    this.listening = true;
   }
 
   close() {
     this.port.close?.();
+    this.port.terminate?.(); // For Worker
     this.port.removeEventListener('message', this.handleMessage);
+    this.port.removeEventListener('messageerror', console.error);
+    this.listening = false;
   }
 }

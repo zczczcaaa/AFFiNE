@@ -22,7 +22,7 @@ interface PendingCall extends PromiseWithResolvers<any> {
   timeout: number | NodeJS.Timeout;
 }
 
-interface OpClientOptions {
+export interface OpClientOptions {
   timeout?: number;
 }
 
@@ -155,15 +155,11 @@ export class OpClient<Ops extends OpSchema> extends AutoMessageHandler {
     return promise;
   }
 
-  subscribe<Op extends OpNames<Ops>, Out extends OpOutput<Ops, Op>>(
+  ob$<Op extends OpNames<Ops>, Out extends OpOutput<Ops, Op>>(
     op: Op,
-    ...args: [
-      ...OpInput<Ops, Op>,
-      Partial<Observer<Out>> | ((value: Out) => void),
-    ]
-  ): () => void {
+    ...args: OpInput<Ops, Op>
+  ): Observable<Out> {
     const payload = args[0];
-    const observer = args[1] as Partial<Observer<Out>> | ((value: Out) => void);
 
     const msg = {
       type: 'subscribe',
@@ -172,24 +168,23 @@ export class OpClient<Ops extends OpSchema> extends AutoMessageHandler {
       payload,
     } satisfies SubscribeMessage;
 
-    const sub = new Observable<Out>(ob => {
+    const sub$ = new Observable<Out>(ob => {
       this.obs.set(msg.id, ob);
-    }).subscribe(observer);
 
-    sub.add(() => {
-      this.obs.delete(msg.id);
-      this.port.postMessage({
-        type: 'unsubscribe',
-        id: msg.id,
-      } satisfies UnsubscribeMessage);
+      return () => {
+        ob.complete();
+        this.obs.delete(msg.id);
+        this.port.postMessage({
+          type: 'unsubscribe',
+          id: msg.id,
+        } satisfies UnsubscribeMessage);
+      };
     });
 
     const transferables = fetchTransferables(payload);
     this.port.postMessage(msg, { transfer: transferables });
 
-    return () => {
-      sub.unsubscribe();
-    };
+    return sub$;
   }
 
   destroy() {
