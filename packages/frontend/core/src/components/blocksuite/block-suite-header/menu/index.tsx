@@ -155,6 +155,9 @@ export const PageHeaderMenuButton = ({
       }),
       cancelText: t['com.affine.confirmModal.button.cancel'](),
       confirmText: t.Delete(),
+      confirmButtonOptions: {
+        variant: 'error',
+      },
       onConfirm: () => {
         editorService.editor.doc.moveToTrash();
       },

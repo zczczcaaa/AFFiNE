@@ -36,6 +36,9 @@ const ResolveConflictOperations = ({ docRecord }: { docRecord: DocRecord }) => {
         }),
         cancelText: t['com.affine.confirmModal.button.cancel'](),
         confirmText: t.Delete(),
+        confirmButtonOptions: {
+          variant: 'error',
+        },
         onConfirm: () => {
           docRecord.moveToTrash();
         },

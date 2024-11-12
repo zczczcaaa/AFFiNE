@@ -141,6 +141,9 @@ export const VirtualizedPageList = ({
       }),
       cancelText: t['com.affine.confirmModal.button.cancel'](),
       confirmText: t.Delete(),
+      confirmButtonOptions: {
+        variant: 'error',
+      },
       onConfirm: () => {
         for (const docId of filteredSelectedPageIds) {
           const doc = docsService.list.doc$(docId).value;

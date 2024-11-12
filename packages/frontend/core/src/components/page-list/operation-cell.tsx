@@ -119,6 +119,9 @@ export const PageOperationCell = ({
       }),
       cancelText: t['com.affine.confirmModal.button.cancel'](),
       confirmText: t.Delete(),
+      confirmButtonOptions: {
+        variant: 'error',
+      },
       onConfirm: () => {
         docRecord.moveToTrash();
       },
