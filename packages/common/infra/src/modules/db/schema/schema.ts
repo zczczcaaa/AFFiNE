@@ -16,6 +16,7 @@ export const AFFiNE_WORKSPACE_DB_SCHEMA = {
     primaryMode: f.string().optional(),
     edgelessColorTheme: f.string().optional(),
     journal: f.string().optional(),
+    pageWidth: f.string().optional(),
   }),
   docCustomPropertyInfo: {
     id: f.string().primaryKey().optional().default(nanoid),

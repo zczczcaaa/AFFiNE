@@ -6,6 +6,7 @@ import {
   EdgelessIcon,
   FileIcon,
   HistoryIcon,
+  LongerIcon,
   NumberIcon,
   TagIcon,
   TextIcon,
@@ -19,6 +20,7 @@ import { DocPrimaryModeValue } from './doc-primary-mode';
 import { EdgelessThemeValue } from './edgeless-theme';
 import { JournalValue } from './journal';
 import { NumberValue } from './number';
+import { PageWidthValue } from './page-width';
 import { TagsValue } from './tags';
 import { TextValue } from './text';
 import type { PropertyValueProps } from './types';
@@ -99,6 +101,12 @@ export const DocPropertyTypes = {
     value: EdgelessThemeValue,
     name: 'com.affine.page-properties.property.edgelessTheme',
     description: 'com.affine.page-properties.property.edgelessTheme.tooltips',
+  },
+  pageWidth: {
+    icon: LongerIcon,
+    value: PageWidthValue,
+    name: 'com.affine.page-properties.property.pageWidth',
+    description: 'com.affine.page-properties.property.pageWidth.tooltips',
   },
 } as Record<
   string,

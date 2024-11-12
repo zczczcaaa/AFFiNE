@@ -1,7 +1,7 @@
 import './page-detail-editor.css';
 
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
-import { useLiveData, useService } from '@toeverything/infra';
+import { DocService, useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import clsx from 'clsx';
 import type { CSSProperties } from 'react';
@@ -33,6 +33,9 @@ export const PageDetailEditor = ({ onLoad }: PageDetailEditorProps) => {
   const mode = useLiveData(editor.mode$);
   const defaultOpenProperty = useLiveData(editor.defaultOpenProperty$);
 
+  const doc = useService(DocService).doc;
+  const pageWidth = useLiveData(doc.properties$.selector(p => p.pageWidth));
+
   const isSharedMode = editor.isSharedMode;
   const editorSetting = useService(EditorSettingService).editorSetting;
   const settings = useLiveData(
@@ -42,6 +45,9 @@ export const PageDetailEditor = ({ onLoad }: PageDetailEditorProps) => {
       fullWidthLayout: s.fullWidthLayout,
     }))
   );
+  const fullWidthLayout = pageWidth
+    ? pageWidth === 'fullWidth'
+    : settings.fullWidthLayout;
 
   const value = useMemo(() => {
     const fontStyle = fontStyleOptions.find(
@@ -60,7 +66,7 @@ export const PageDetailEditor = ({ onLoad }: PageDetailEditorProps) => {
   return (
     <Editor
       className={clsx(styles.editor, {
-        'full-screen': !isSharedMode && settings.fullWidthLayout,
+        'full-screen': !isSharedMode && fullWidthLayout,
         'is-public': isSharedMode,
       })}
       style={

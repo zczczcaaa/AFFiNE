@@ -1,20 +1,46 @@
-import { Switch } from '@affine/component';
+import { RadioGroup, type RadioItem, Switch } from '@affine/component';
 import {
   SettingRow,
   SettingWrapper,
 } from '@affine/component/setting-components';
+import type { PageLayoutMode } from '@affine/core/components/doc-properties/types/types';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { useI18n } from '@affine/i18n';
 import { useLiveData, useService } from '@toeverything/infra';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+
+import { settingWrapper } from './style.css';
 
 export const Page = () => {
   const t = useI18n();
   const editorSetting = useService(EditorSettingService).editorSetting;
   const settings = useLiveData(editorSetting.settings$);
 
+  const radioItems = useMemo<RadioItem[]>(
+    () => [
+      {
+        value: 'standard' as PageLayoutMode,
+        label:
+          t[
+            'com.affine.settings.editorSettings.page.default-page-width.standard'
+          ](),
+        testId: 'standard-width-trigger',
+      },
+      {
+        value: 'fullWidth' as PageLayoutMode,
+        label:
+          t[
+            'com.affine.settings.editorSettings.page.default-page-width.full-width'
+          ](),
+        testId: 'full-width-trigger',
+      },
+    ],
+    [t]
+  );
+
   const handleFullWidthLayoutChange = useCallback(
-    (checked: boolean) => {
+    (value: PageLayoutMode) => {
+      const checked = value === 'fullWidth';
       editorSetting.set('fullWidthLayout', checked);
     },
     [editorSetting]
@@ -35,14 +61,18 @@ export const Page = () => {
   return (
     <SettingWrapper title={t['com.affine.settings.editorSettings.page']()}>
       <SettingRow
-        name={t['com.affine.settings.editorSettings.page.full-width.title']()}
+        name={t[
+          'com.affine.settings.editorSettings.page.default-page-width.title'
+        ]()}
         desc={t[
-          'com.affine.settings.editorSettings.page.full-width.description'
+          'com.affine.settings.editorSettings.page.default-page-width.description'
         ]()}
       >
-        <Switch
-          data-testid="full-width-layout-trigger"
-          checked={settings.fullWidthLayout}
+        <RadioGroup
+          items={radioItems}
+          value={settings.fullWidthLayout ? 'fullWidth' : 'standard'}
+          width={250}
+          className={settingWrapper}
           onChange={handleFullWidthLayoutChange}
         />
       </SettingRow>

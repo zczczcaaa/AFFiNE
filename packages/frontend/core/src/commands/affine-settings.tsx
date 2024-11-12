@@ -174,10 +174,10 @@ export function registerAffineSettingsCommands({
     registerAffineCommand({
       id: `affine:change-full-width-layout`,
       label: () =>
-        `${t['com.affine.cmdk.affine.full-width-layout.to']()} ${t[
+        `${t[
           settings$.value.fullWidthLayout
-            ? 'com.affine.cmdk.affine.switch-state.off'
-            : 'com.affine.cmdk.affine.switch-state.on'
+            ? 'com.affine.cmdk.affine.default-page-width-layout.standard'
+            : 'com.affine.cmdk.affine.default-page-width-layout.full-width'
         ]()}`,
       category: 'affine:settings',
       icon: <SettingsIcon />,

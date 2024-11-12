@@ -137,7 +137,7 @@ test('Create a new page without keyword', async ({ page }) => {
   await waitForEditorLoad(page);
   await clickNewPageButton(page);
   await openQuickSearchByShortcut(page);
-  const addNewPage = page.locator('[cmdk-item] >> text=New Page');
+  const addNewPage = page.getByText('New page', { exact: true });
   await addNewPage.click();
   await page.waitForTimeout(300);
   await assertTitle(page, '');
@@ -242,7 +242,7 @@ test('Focus title after creating a new page', async ({ page }) => {
   await waitForEditorLoad(page);
   await clickNewPageButton(page);
   await openQuickSearchByShortcut(page);
-  const addNewPage = page.locator('[cmdk-item] >> text=New Page');
+  const addNewPage = page.getByText('New page', { exact: true });
   await addNewPage.click();
   await titleIsFocused(page);
 });
@@ -275,7 +275,7 @@ test('assert the recent browse pages are on the recent list', async ({
 
   // create second page
   await openQuickSearchByShortcut(page);
-  const addNewPage = page.locator('[cmdk-item] >> text=New Page');
+  const addNewPage = page.getByText('New page', { exact: true });
   await addNewPage.click();
   await waitForEditorLoad(page);
   {
@@ -315,7 +315,7 @@ test('assert the recent browse pages are on the recent list', async ({
   await waitForEditorLoad(page);
   await openQuickSearchByShortcut(page);
   {
-    const addNewPage = page.locator('[cmdk-item] >> text=New Page');
+    const addNewPage = page.getByText('New page', { exact: true });
     await addNewPage.click();
   }
   await waitForEditorLoad(page);

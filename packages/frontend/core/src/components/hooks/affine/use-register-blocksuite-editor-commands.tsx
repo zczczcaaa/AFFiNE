@@ -5,6 +5,7 @@ import {
 } from '@affine/core/commands';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import type { Editor } from '@affine/core/modules/editor';
+import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
 import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
@@ -29,6 +30,11 @@ export function useRegisterBlocksuiteEditorCommands(editor: Editor) {
   const mode = useLiveData(editor.mode$);
   const t = useI18n();
   const workspace = useService(WorkspaceService).workspace;
+
+  const editorSetting = useService(EditorSettingService).editorSetting;
+  const defaultPageWidth = useLiveData(editorSetting.settings$).fullWidthLayout;
+  const pageWidth = useLiveData(doc.properties$.selector(p => p.pageWidth));
+  const checked = pageWidth ? pageWidth === 'fullWidth' : defaultPageWidth;
 
   const favAdapter = useService(CompatibleFavoriteItemsAdapter);
   const favorite = useLiveData(favAdapter.isFavorite$(docId, 'doc'));
@@ -154,6 +160,24 @@ export function useRegisterBlocksuiteEditorCommands(editor: Editor) {
             mode === 'page'
               ? t['com.affine.toastMessage.edgelessMode']()
               : t['com.affine.toastMessage.pageMode']()
+          );
+        },
+      })
+    );
+
+    unsubs.push(
+      registerAffineCommand({
+        id: `editor:page-set-width`,
+        preconditionStrategy: () => mode === 'page',
+        category: `editor:page`,
+        icon: <PageIcon />,
+        label: checked
+          ? t['com.affine.cmdk.affine.current-page-width-layout.standard']()
+          : t['com.affine.cmdk.affine.current-page-width-layout.full-width'](),
+        async run() {
+          doc.record.setProperty(
+            'pageWidth',
+            checked ? 'standard' : 'fullWidth'
           );
         },
       })
@@ -308,5 +332,8 @@ export function useRegisterBlocksuiteEditorCommands(editor: Editor) {
     docId,
     doc,
     openInfoModal,
+    pageWidth,
+    defaultPageWidth,
+    checked,
   ]);
 }

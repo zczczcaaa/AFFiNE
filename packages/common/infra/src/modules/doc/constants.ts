@@ -45,4 +45,10 @@ export const BUILT_IN_CUSTOM_PROPERTY_TYPE = [
     show: 'always-hide',
     index: 'a0000007',
   },
+  {
+    id: 'pageWidth',
+    type: 'pageWidth',
+    show: 'always-hide',
+    index: 'a0000008',
+  },
 ] as DocCustomPropertyInfo[];
