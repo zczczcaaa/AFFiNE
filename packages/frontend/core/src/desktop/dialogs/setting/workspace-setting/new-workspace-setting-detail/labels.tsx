@@ -9,7 +9,6 @@ import * as style from './style.css';
 type WorkspaceStatus =
   | 'local'
   | 'syncCloud'
-  | 'syncDocker'
   | 'selfHosted'
   | 'joinedWorkspace'
   | 'availableOffline'
@@ -59,10 +58,6 @@ const getLabelMap = (t: ReturnType<typeof useI18n>): LabelMap => ({
   syncCloud: {
     value: t['com.affine.settings.workspace.state.sync-affine-cloud'](),
     background: 'var(--affine-tag-blue)',
-  },
-  syncDocker: {
-    value: t['com.affine.settings.workspace.state.sync-affine-docker'](),
-    background: 'var(--affine-tag-green)',
   },
   selfHosted: {
     value: t['com.affine.settings.workspace.state.self-hosted'](),
