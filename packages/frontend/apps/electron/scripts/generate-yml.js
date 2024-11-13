@@ -3,17 +3,25 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const filenamesMapping = {
-  windows: 'latest.yml',
+  all: 'latest.yml',
   macos: 'latest-mac.yml',
   linux: 'latest-linux.yml',
 };
+
+const releaseFiles = ['zip', 'exe', 'dmg', 'appimage', 'deb', 'flatpak'];
 
 const generateYml = platform => {
   const yml = {
     version: process.env.RELEASE_VERSION ?? '0.0.0',
     files: [],
   };
-  const regex = new RegExp(`^affine-.*-${platform}-.*.(exe|zip|dmg|appimage)$`);
+
+  const regex =
+    // we involves all distribution files in one release file to enforce we handle auto updater correctly
+    platform === 'all'
+      ? new RegExp(`.(${releaseFiles.join('|')})$`)
+      : new RegExp(`.+-${platform}-.+.(${releaseFiles.join('|')})$`);
+
   const files = fs.readdirSync(process.cwd()).filter(file => regex.test(file));
   const outputFileName = filenamesMapping[platform];
 
@@ -34,10 +42,13 @@ const generateYml = platform => {
       });
     } catch {}
   });
-  // path & sha512 are deprecated
-  yml.path = yml.files[0].url;
-  yml.sha512 = yml.files[0].sha512;
   yml.releaseDate = new Date().toISOString();
+
+  // NOTE(@forehalo): make sure old windows x64 won't fetch windows arm64 by default
+  // maybe we need to separate arm64 builds to separated yml file `latest-arm64.yml`, `latest-linux-arm64.yml`
+  // check https://github.com/electron-userland/electron-builder/blob/master/packages/electron-updater/src/providers/Provider.ts#L30
+  // and packages/frontend/apps/electron/src/main/updater/affine-update-provider.ts#L100
+  yml.files.sort(a => (a.url.includes('windows-arm64') ? 1 : -1));
 
   const ymlStr =
     `version: ${yml.version}\n` +
@@ -51,13 +62,11 @@ const generateYml = platform => {
         );
       })
       .join('') +
-    `path: ${yml.path}\n` +
-    `sha512: ${yml.sha512}\n` +
     `releaseDate: ${yml.releaseDate}\n`;
 
   fs.writeFileSync(outputFileName, ymlStr);
 };
 
-generateYml('windows');
 generateYml('macos');
 generateYml('linux');
+generateYml('all');
