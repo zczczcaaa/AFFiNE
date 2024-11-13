@@ -128,6 +128,23 @@ export const PeekViewModalContainer = forwardRef<
         const targets = contentClip;
         const lockSizeEl = content;
 
+        // if target has no bounding client rect, find its parent that has bounding client rect
+        let iteration = 0;
+        while (
+          target &&
+          !target.getBoundingClientRect().width &&
+          iteration < 10
+        ) {
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+          target = target.parentElement || undefined;
+          iteration++;
+        }
+
+        if (!target) {
+          resolve();
+          return;
+        }
+
         const from = zoomIn ? target : contentClip;
         const to = zoomIn ? contentClip : target;
 
