@@ -1,6 +1,6 @@
 import type { BUILD_CONFIG_TYPE } from '@affine/env/global';
 
-import packageJson from '../../package.json' assert { type: 'json' };
+import packageJson from '../../package.json' with { type: 'json' };
 import type { BuildFlags } from '../config';
 
 export function getBuildConfig(buildFlags: BuildFlags): BUILD_CONFIG_TYPE {

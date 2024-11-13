@@ -13,7 +13,7 @@ import {
 import chalk from 'chalk';
 import { ProxyAgent, setGlobalDispatcher } from 'undici';
 
-import corePackage from '../../packages/frontend/core/package.json' assert { type: 'json' };
+import corePackage from '../../packages/frontend/core/package.json' with { type: 'json' };
 
 const clipboard = new Clipboard();
 
