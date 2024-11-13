@@ -1,6 +1,7 @@
 import { notify } from '@affine/component';
 import { getAffineCloudBaseUrl } from '@affine/core/modules/cloud/services/fetch';
 import { toURLSearchParams } from '@affine/core/modules/navigation';
+import { copyTextToClipboard } from '@affine/core/utils/clipboard';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { type EditorHost } from '@blocksuite/affine/block-std';
@@ -145,23 +146,18 @@ export const useSharingUrl = ({ workspaceId, pageId }: UseSharingUrl) => {
         elementIds,
       });
       if (sharingUrl) {
-        navigator.clipboard
-          .writeText(sharingUrl)
-          .then(() => {
-            notify.success({
-              title: t['Copied link to clipboard'](),
-            });
+        copyTextToClipboard(sharingUrl)
+          .then(success => {
+            if (success) {
+              notify.success({ title: t['Copied link to clipboard']() });
+            }
           })
           .catch(err => {
             console.error(err);
           });
-        track.$.sharePanel.$.copyShareLink({
-          type,
-        });
+        track.$.sharePanel.$.copyShareLink({ type });
       } else {
-        notify.error({
-          title: 'Network not available',
-        });
+        notify.error({ title: 'Network not available' });
       }
     },
     [pageId, t, workspaceId]

@@ -5,6 +5,7 @@ import {
 } from '@affine/core/components/hooks/affine/use-share-url';
 import { getAffineCloudBaseUrl } from '@affine/core/modules/cloud/services/fetch';
 import { EditorService } from '@affine/core/modules/editor';
+import { copyLinkToBlockStdScopeClipboard } from '@affine/core/utils/clipboard';
 import { I18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type {
@@ -63,18 +64,15 @@ function createCopyLinkToBlockMenuItem(
       const type = model.flavour;
       const page = editor.editorContainer$.value;
 
-      page?.host?.std.clipboard
-        .writeToClipboard(items => {
-          items['text/plain'] = str;
-          // wrap a link
-          items['text/html'] = `<a href="${str}">${str}</a>`;
-          return items;
-        })
-        .then(() => {
-          track.doc.editor.toolbar.copyBlockToLink({ type });
+      copyLinkToBlockStdScopeClipboard(str, page?.host?.std.clipboard)
+        .then(success => {
+          if (!success) return;
+
           notify.success({ title: I18n['Copied link to clipboard']() });
         })
         .catch(console.error);
+
+      track.doc.editor.toolbar.copyBlockToLink({ type });
     },
   });
 }
