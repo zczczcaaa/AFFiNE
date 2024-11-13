@@ -2,6 +2,7 @@ import { join } from 'node:path';
 
 import {
   app,
+  BrowserWindow,
   Menu,
   MenuItem,
   session,
@@ -38,7 +39,6 @@ import {
   type WorkbenchViewMeta,
 } from '../shared-state-schema';
 import { globalStateStorage } from '../shared-storage/storage';
-import { getCustomThemeWindow } from './custom-theme-window';
 import { getMainWindow, MainWindowManager } from './main-window';
 
 async function getAdditionalArguments() {
@@ -1083,24 +1083,19 @@ export const onActiveTabChanged = (fn: (tabId: string) => void) => {
 
 export const showDevTools = (id?: string) => {
   // use focusedWindow?
-  // const focusedWindow = BrowserWindow.getFocusedWindow()
-
-  // workaround for opening devtools for theme-editor window
-  // there should be some strategy like windows manager, so we can know which window is active
-  getCustomThemeWindow()
-    .then(w => {
-      if (w && w.isFocused()) {
-        w.webContents.openDevTools();
-      } else {
-        const view = id
-          ? WebContentViewsManager.instance.getViewById(id)
-          : WebContentViewsManager.instance.activeWorkbenchView;
-        if (view) {
-          view.webContents.openDevTools();
-        }
-      }
-    })
-    .catch(console.error);
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  // check if focused window is main window
+  const mainWindow = WebContentViewsManager.instance.mainWindow;
+  if (focusedWindow && focusedWindow.id !== mainWindow?.id) {
+    focusedWindow.webContents.openDevTools();
+  } else {
+    const view = id
+      ? WebContentViewsManager.instance.getViewById(id)
+      : WebContentViewsManager.instance.activeWorkbenchView;
+    if (view) {
+      view.webContents.openDevTools();
+    }
+  }
 };
 
 export const pingAppLayoutReady = (wc: WebContents, ready: boolean) => {

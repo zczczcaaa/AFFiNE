@@ -113,7 +113,6 @@ export const EdgelessSwitch = ({
       turnOffScalingRef.current?.();
     };
 
-    // TODO(@catsjuice): mobile support
     const onMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest('[data-no-drag]')) return;
