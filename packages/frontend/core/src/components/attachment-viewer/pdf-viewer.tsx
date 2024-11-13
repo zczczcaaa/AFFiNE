@@ -15,13 +15,18 @@ import {
   type PDFVirtuosoContext,
   type PDFVirtuosoProps,
   Scroller,
+  ScrollSeekPlaceholder,
 } from '@affine/core/modules/pdf/views';
 import type { AttachmentBlockModel } from '@blocksuite/affine/blocks';
 import { CollapseIcon, ExpandIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
+import {
+  type ScrollSeekConfiguration,
+  Virtuoso,
+  type VirtuosoHandle,
+} from 'react-virtuoso';
 
 import * as styles from './styles.css';
 import { calculatePageNum } from './utils';
@@ -112,6 +117,13 @@ const PDFViewerInner = ({ pdf, state }: PDFViewerInnerProps) => {
     };
   }, [state, viewportInfo, onPageSelect]);
 
+  const scrollSeekConfig = useMemo<ScrollSeekConfiguration>(() => {
+    return {
+      enter: velocity => Math.abs(velocity) > 1024,
+      exit: velocity => Math.abs(velocity) < 10,
+    };
+  }, []);
+
   useEffect(() => {
     const viewer = viewerRef.current;
     if (!viewer) return;
@@ -142,12 +154,14 @@ const PDFViewerInner = ({ pdf, state }: PDFViewerInnerProps) => {
           Scroller,
           Header: ListPadding,
           Footer: ListPadding,
+          ScrollSeekPlaceholder,
         }}
         context={{
           width: state.meta.width,
           height: state.meta.height,
           pageClassName: styles.pdfPage,
         }}
+        scrollSeekConfiguration={scrollSeekConfig}
       />
       <div className={clsx(['thumbnails', styles.pdfThumbnails])}>
         <div className={clsx([styles.pdfThumbnailsList, { collapsed }])}>
@@ -159,9 +173,11 @@ const PDFViewerInner = ({ pdf, state }: PDFViewerInnerProps) => {
             itemContent={pageContent}
             components={{
               Item,
-              Scroller,
               List: ListWithSmallGap,
+              Scroller,
+              ScrollSeekPlaceholder,
             }}
+            scrollSeekConfiguration={scrollSeekConfig}
             style={thumbnailsConfig.style}
             context={thumbnailsConfig.context}
           />

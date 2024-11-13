@@ -58,6 +58,7 @@ export const pdfPageCanvas = style({
 export const pdfLoading = style({
   display: 'flex',
   alignSelf: 'center',
+  margin: 'auto',
   width: '100%',
   height: '100%',
   maxWidth: '537px',

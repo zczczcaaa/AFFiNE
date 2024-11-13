@@ -84,7 +84,7 @@ export const viewer = style({
   display: 'flex',
   flex: 1,
   overflow: 'hidden',
-  resize: 'both',
+  resize: 'none',
   selectors: {
     '&:before': {
       position: 'absolute',
