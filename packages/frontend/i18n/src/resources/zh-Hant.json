@@ -1312,7 +1312,7 @@
   "com.affine.sidebarSwitch.collapse": "收起側欄",
   "com.affine.sidebarSwitch.expand": "展開側欄",
   "com.affine.snapshot.import-export.enable": "啟用快照匯入匯出",
-  "com.affine.snapshot.import-export.enable.desc": "支援快照匯入和匯出。當您的文件出現資料錯誤時，請啟用此功能並尋求 AFFiNE 團隊的協助。啟用後，您可以在文件的更多選單中找到快照匯出匯入選項。",
+  "com.affine.snapshot.import-export.enable.desc": "啟用後，您可以在文件的更多選單中找到快照匯出匯入選項。",
   "com.affine.star-affine.cancel": "稍後",
   "com.affine.star-affine.confirm": "在 GitHub 點亮星標",
   "com.affine.star-affine.description": "您覺得我們的應用程序有用且有趣嗎？我們希望得到您的支持，以不斷進步！幫助我們的一個好方法是在 GitHub 給我們一顆星。這個簡單的行動可以給我們很大的激勵，並幫助我們繼續為您提供最佳體驗。",
