@@ -1,6 +1,6 @@
 {
   "name": "@affine/ios",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "AFFiNE Desktop Web application",
   "private": true,
   "browser": "src/index.tsx",
