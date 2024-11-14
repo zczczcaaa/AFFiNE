@@ -114,7 +114,7 @@ export class AuthService extends Service {
     } catch (e) {
       track.$.$.auth.signInFail({
         method: 'magic-link',
-        reason: e instanceof BackendError ? e.originError.type : 'unknown',
+        reason: e instanceof BackendError ? e.originError.name : 'unknown',
       });
       throw e;
     }
@@ -135,7 +135,7 @@ export class AuthService extends Service {
     } catch (e) {
       track.$.$.auth.signInFail({
         method: 'magic-link',
-        reason: e instanceof BackendError ? e.originError.type : 'unknown',
+        reason: e instanceof BackendError ? e.originError.name : 'unknown',
       });
       throw e;
     }
@@ -176,7 +176,7 @@ export class AuthService extends Service {
       track.$.$.auth.signInFail({
         method: 'oauth',
         provider,
-        reason: e instanceof BackendError ? e.originError.type : 'unknown',
+        reason: e instanceof BackendError ? e.originError.name : 'unknown',
       });
       throw e;
     }
@@ -200,7 +200,7 @@ export class AuthService extends Service {
       track.$.$.auth.signInFail({
         method: 'oauth',
         provider,
-        reason: e instanceof BackendError ? e.originError.type : 'unknown',
+        reason: e instanceof BackendError ? e.originError.name : 'unknown',
       });
       throw e;
     }
@@ -229,7 +229,7 @@ export class AuthService extends Service {
     } catch (e) {
       track.$.$.auth.signInFail({
         method: 'password',
-        reason: e instanceof BackendError ? e.originError.type : 'unknown',
+        reason: e instanceof BackendError ? e.originError.name : 'unknown',
       });
       throw e;
     }
