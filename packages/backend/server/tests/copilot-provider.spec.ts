@@ -63,7 +63,7 @@ const runIfCopilotConfigured = test.macro(
   }
 );
 
-test.beforeEach(async t => {
+test.serial.before(async t => {
   const module = await createTestingModule({
     imports: [
       ConfigModule.forRoot({
@@ -101,7 +101,7 @@ test.beforeEach(async t => {
   };
 });
 
-test.beforeEach(async t => {
+test.serial.before(async t => {
   const { prompt, executors } = t.context;
 
   executors.image.register();
@@ -121,12 +121,12 @@ test.beforeEach(async t => {
   }
 });
 
-test.afterEach.always(async _ => {
+test.after(async _ => {
   unregisterCopilotProvider(OpenAIProvider.type);
   unregisterCopilotProvider(FalProvider.type);
 });
 
-test.afterEach.always(async t => {
+test.after(async t => {
   await t.context.module.close();
 });
 
@@ -143,7 +143,7 @@ const assertNotWrappedInCodeBlock = (
 
 const checkMDList = (text: string) => {
   const lines = text.split('\n');
-  const listItemRegex = /^( {2})*(-|\*|\+) .+$/;
+  const listItemRegex = /^( {2})*(-|\u2010-\u2015|\*|\+)? .+$/;
   let prevIndent = null;
 
   for (const line of lines) {
@@ -166,7 +166,9 @@ const checkMDList = (text: string) => {
       }
     }
 
-    prevIndent = currentIndent;
+    if (line.trim().startsWith('-')) {
+      prevIndent = currentIndent;
+    }
   }
 
   return true;
@@ -190,14 +192,14 @@ const retry = async (
   while (i--) {
     const ret = await t.try(callback);
     if (ret.passed) {
-      ret.commit();
-      break;
+      return ret.commit();
     } else {
       ret.discard();
       t.log(ret.errors.map(e => e.message).join('\n'));
       t.log(`retrying ${action} ${3 - i}/3 ...`);
     }
   }
+  t.fail(`failed to run ${action}`);
 };
 
 // ==================== utils ====================
@@ -247,6 +249,16 @@ test('should validate markdown list', t => {
   - item 1.1
       - item 1.1.1.1
 `)
+  );
+  t.true(
+    checkMDList(`
+- item 1
+  - item 1.1
+    - item 1.1.1.1
+      item 1.1.1.1 line breaks
+    - item 1.1.1.2
+`),
+    'should allow line breaks'
   );
 });
 
@@ -447,14 +459,14 @@ const workflows = [
   {
     name: 'brainstorm',
     content: 'apple company',
-    verifier: (t: ExecutionContext<Tester>, result: string) => {
+    verifier: (t: ExecutionContext, result: string) => {
       t.assert(checkMDList(result), 'should be a markdown list');
     },
   },
   {
     name: 'presentation',
     content: 'apple company',
-    verifier: (t: ExecutionContext<Tester>, result: string) => {
+    verifier: (t: ExecutionContext, result: string) => {
       for (const l of result.split('\n')) {
         t.notThrows(() => {
           JSON.parse(l.trim());
@@ -475,11 +487,11 @@ for (const { name, content, verifier } of workflows) {
         let result = '';
         for await (const ret of workflow.runGraph({ content }, name)) {
           if (ret.status === GraphExecutorState.EnterNode) {
-            console.log('enter node:', ret.node.name);
+            t.log('enter node:', ret.node.name);
           } else if (ret.status === GraphExecutorState.ExitNode) {
-            console.log('exit node:', ret.node.name);
+            t.log('exit node:', ret.node.name);
           } else if (ret.status === GraphExecutorState.EmitAttachment) {
-            console.log('stream attachment:', ret);
+            t.log('stream attachment:', ret);
           } else {
             result += ret.content;
           }
