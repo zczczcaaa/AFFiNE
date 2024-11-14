@@ -123,6 +123,7 @@ export const PeekViewModalContainer = forwardRef<
 
         if (!contentClip || !content || !target || !overlay) {
           resolve();
+          setAnimeState('idle');
           return;
         }
         const targets = contentClip;
