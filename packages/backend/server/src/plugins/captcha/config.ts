@@ -1,9 +1,18 @@
-import { defineStartupConfig, ModuleConfig } from '../../fundamentals/config';
+import {
+  defineRuntimeConfig,
+  defineStartupConfig,
+  ModuleConfig,
+} from '../../fundamentals/config';
 import { CaptchaConfig } from './types';
 
 declare module '../config' {
   interface PluginsConfig {
-    captcha: ModuleConfig<CaptchaConfig>;
+    captcha: ModuleConfig<
+      CaptchaConfig,
+      {
+        enable: boolean;
+      }
+    >;
   }
 }
 
@@ -19,5 +28,12 @@ defineStartupConfig('plugins.captcha', {
   },
   challenge: {
     bits: 20,
+  },
+});
+
+defineRuntimeConfig('plugins.captcha', {
+  enable: {
+    desc: 'Check captcha challenge when user authenticating the app.',
+    default: false,
   },
 });
