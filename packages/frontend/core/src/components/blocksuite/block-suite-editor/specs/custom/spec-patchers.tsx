@@ -40,6 +40,7 @@ import type {
   PeekOptions,
   PeekViewService as BSPeekViewService,
   QuickSearchResult,
+  ReferenceNodeConfig,
   RootBlockConfig,
   RootService,
 } from '@blocksuite/affine/blocks';
@@ -57,6 +58,7 @@ import {
   PeekViewExtension,
   QuickSearchExtension,
   ReferenceNodeConfigExtension,
+  ReferenceNodeConfigIdentifier,
 } from '@blocksuite/affine/blocks';
 import { type BlockSnapshot, Text } from '@blocksuite/affine/store';
 import {
@@ -564,6 +566,17 @@ export function patchForMobile() {
             ...prev?.(provider),
             keyboardToolbar: createKeyboardToolbarConfig(),
           } satisfies RootBlockConfig;
+        });
+      }
+
+      // Hide reference popup on mobile.
+      {
+        const prev = di.getFactory(ReferenceNodeConfigIdentifier);
+        di.override(ReferenceNodeConfigIdentifier, provider => {
+          return {
+            ...prev?.(provider),
+            hidePopup: true,
+          } satisfies ReferenceNodeConfig;
         });
       }
 
