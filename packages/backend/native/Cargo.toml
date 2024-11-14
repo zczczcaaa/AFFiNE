@@ -24,7 +24,8 @@ mimalloc = { workspace = true }
 mimalloc = { workspace = true, features = ["local_dynamic_tls"] }
 
 [dev-dependencies]
-tokio = "1"
+rayon = { workspace = true }
+tokio = { workspace = true }
 
 [build-dependencies]
 napi-build = { workspace = true }

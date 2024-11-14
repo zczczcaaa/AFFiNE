@@ -104,7 +104,12 @@ impl TryFrom<&str> for Stamp {
 
   fn try_from(value: &str) -> Result<Self, Self::Error> {
     let stamp_vec = value.split(':').collect::<Vec<&str>>();
-    if stamp_vec.len() != 7 {
+    if stamp_vec.len() != 7
+      || stamp_vec
+        .iter()
+        .enumerate()
+        .any(|(i, s)| i != 4 && s.is_empty())
+    {
       return Err(format!(
         "Malformed stamp, expected 6 parts, got {}",
         stamp_vec.len()
@@ -191,35 +196,75 @@ pub fn mint_challenge_response(
 #[cfg(test)]
 mod tests {
   use super::Stamp;
+  use rand::{distributions::Alphanumeric, Rng};
+  use rayon::prelude::*;
 
   #[test]
   fn test_mint() {
-    let response = Stamp::mint("test".into(), Some(22)).format();
-    assert!(Stamp::try_from(response.as_str())
-      .unwrap()
-      .check(22, "test"));
+    {
+      let response = Stamp::mint("test".into(), Some(20)).format();
+      assert!(
+        Stamp::try_from(response.as_str())
+          .unwrap()
+          .check(20, "test"),
+        "should pass"
+      );
+    }
+
+    {
+      let response = Stamp::mint("test".into(), Some(19)).format();
+      assert!(
+        !Stamp::try_from(response.as_str())
+          .unwrap()
+          .check(20, "test"),
+        "should fail with lower bits"
+      );
+    }
+    {
+      let response = Stamp::mint("test".into(), Some(20)).format();
+      assert!(
+        !Stamp::try_from(response.as_str())
+          .unwrap()
+          .check(20, "test2"),
+        "should fail with different resource"
+      );
+    }
   }
 
   #[test]
-  fn test_check() {
-    assert!(Stamp::try_from("1:20:20202116:test::Z4p8WaiO:31c14")
-      .unwrap()
-      .check(20, "test"));
-    assert!(!Stamp::try_from("1:20:20202116:test1::Z4p8WaiO:31c14")
-      .unwrap()
-      .check(20, "test"));
-    assert!(!Stamp::try_from("1:20:20202116:test::z4p8WaiO:31c14")
-      .unwrap()
-      .check(20, "test"));
-    assert!(!Stamp::try_from("1:20:20202116:test::Z4p8WaiO:31C14")
-      .unwrap()
-      .check(20, "test"));
-    assert!(Stamp::try_from("0:20:20202116:test::Z4p8WaiO:31c14").is_err());
-    assert!(!Stamp::try_from("1:19:20202116:test::Z4p8WaiO:31c14")
-      .unwrap()
-      .check(20, "test"));
-    assert!(!Stamp::try_from("1:20:20202115:test::Z4p8WaiO:31c14")
-      .unwrap()
-      .check(20, "test"));
+  fn test_check_expiration() {
+    let response = Stamp::mint("test".into(), Some(20));
+    assert!(response.check_expiration());
+  }
+
+  #[test]
+  fn test_format() {
+    let response = Stamp::mint("test".into(), Some(20));
+    assert_eq!(
+      response.format(),
+      format!(
+        "1:20:{}:test::{}:{}",
+        response.ts, response.rand, response.counter
+      )
+    );
+  }
+
+  #[test]
+  fn test_fuzz() {
+    (0..1000).into_par_iter().for_each(|_| {
+      let bit = rand::random::<u32>() % 20 + 1;
+      let resource = rand::thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(7)
+        .map(char::from)
+        .collect::<String>();
+      let response = Stamp::mint(resource.clone(), Some(bit)).format();
+      assert!(
+        Stamp::try_from(response.as_str())
+          .unwrap()
+          .check(bit, resource),
+        "should pass"
+      );
+    });
   }
 }
