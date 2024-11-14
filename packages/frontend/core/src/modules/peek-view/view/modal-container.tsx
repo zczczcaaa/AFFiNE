@@ -9,6 +9,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -313,7 +314,7 @@ export const PeekViewModalContainer = forwardRef<
     };
   }, [onOpenChange]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (animation === 'zoom') {
       open ? animateZoomIn() : animateZoomOut();
     } else if (animation === 'fade') {
