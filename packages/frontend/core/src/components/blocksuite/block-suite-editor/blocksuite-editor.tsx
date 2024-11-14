@@ -32,10 +32,6 @@ export type EditorProps = {
 };
 
 function usePageRoot(page: Doc) {
-  if (!page.ready) {
-    page.load();
-  }
-
   if (!page.root) {
     use(
       new Promise<void>((resolve, reject) => {

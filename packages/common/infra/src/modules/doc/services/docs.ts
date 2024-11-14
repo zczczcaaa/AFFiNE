@@ -1,3 +1,4 @@
+import { DebugLogger } from '@affine/debug';
 import { Unreachable } from '@affine/env/constant';
 import {
   type AffineTextAttributes,
@@ -15,6 +16,8 @@ import { DocCreated } from '../events';
 import { DocScope } from '../scopes/doc';
 import type { DocsStore } from '../stores/docs';
 import { DocService } from './doc';
+
+const logger = new DebugLogger('DocsService');
 
 export class DocsService extends Service {
   list = this.framework.createEntity(DocRecordList);
@@ -51,6 +54,15 @@ export class DocsService extends Service {
       blockSuiteDoc,
       record: docRecord,
     });
+
+    try {
+      blockSuiteDoc.load();
+    } catch (e) {
+      logger.error('Failed to load doc', {
+        docId,
+        error: e,
+      });
+    }
 
     const doc = docScope.get(DocService).doc;
 
