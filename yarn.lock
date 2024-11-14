@@ -256,8 +256,8 @@ __metadata:
     "@napi-rs/simple-git": "npm:^0.1.18"
     "@slack/web-api": "npm:^7.3.4"
     "@types/node": "npm:^20.14.12"
-    changelogithub: "npm:^0.13.9"
-    jsx-slack: "npm:^6.1.1"
+    changelogithub: "npm:^0.13.11"
+    jsx-slack: "npm:^6.1.2"
     marked: "npm:^15.0.0"
   languageName: unknown
   linkType: soft
@@ -16659,7 +16659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"changelogithub@npm:^0.13.9":
+"changelogithub@npm:^0.13.11":
   version: 0.13.11
   resolution: "changelogithub@npm:0.13.11"
   dependencies:
@@ -23598,7 +23598,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsx-slack@npm:^6.1.1":
+"jsx-slack@npm:^6.1.1, jsx-slack@npm:^6.1.2":
   version: 6.1.2
   resolution: "jsx-slack@npm:6.1.2"
   dependencies:
