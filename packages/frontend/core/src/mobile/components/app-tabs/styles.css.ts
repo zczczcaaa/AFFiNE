@@ -7,7 +7,7 @@ export const appTabsBackground = createVar('appTabsBackground');
 
 export const appTabs = style({
   vars: {
-    [appTabsBackground]: cssVarV2('layer/background/secondary'),
+    [appTabsBackground]: cssVarV2('layer/background/mobile/primary'),
   },
   backgroundColor: appTabsBackground,
   borderTop: `1px solid ${cssVarV2('layer/insideBorder/border')}`,

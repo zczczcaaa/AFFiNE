@@ -68,7 +68,7 @@ export const modalOverlay = style({
       animation: 'none',
     },
     '&.mobile': {
-      backgroundColor: cssVarV2('layer/mobile/modal'),
+      backgroundColor: cssVarV2('layer/background/mobile/modal'),
     },
   },
 });

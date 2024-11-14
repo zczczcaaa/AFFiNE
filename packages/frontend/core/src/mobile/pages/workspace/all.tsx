@@ -4,7 +4,7 @@ import { AppTabs } from '../../components';
 import { AllDocList, AllDocsHeader, AllDocsMenu } from '../../views';
 
 export const Component = () => {
-  useThemeColorV2('layer/background/secondary');
+  useThemeColorV2('layer/background/mobile/primary');
 
   return (
     <>
