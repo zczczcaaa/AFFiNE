@@ -82,14 +82,6 @@ export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
             Official Website
           </a>
           <a
-            href="https://community.affine.pro/home"
-            target="_blank"
-            rel="noreferrer"
-            className={styles.topNavLink}
-          >
-            AFFiNE Community
-          </a>
-          <a
             href="https://affine.pro/blog"
             target="_blank"
             rel="noreferrer"
