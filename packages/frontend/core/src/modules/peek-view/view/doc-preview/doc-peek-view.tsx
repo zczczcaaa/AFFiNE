@@ -108,10 +108,7 @@ function DocPeekPreviewEditor({
         })
       );
 
-      const unbind = editor.bindEditorContainer(
-        editorContainer,
-        (editorContainer as any).title
-      );
+      const unbind = editor.bindEditorContainer(editorContainer);
 
       if (mode === 'edgeless') {
         fitViewport(editorContainer, xywh);
