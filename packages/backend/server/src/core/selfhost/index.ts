@@ -147,9 +147,11 @@ export class SelfhostModule implements OnModuleInit {
 
     // fallback all unknown routes
     app.get([basePath, basePath + '/*'], this.check.use, (req, res) => {
-      const mobile = isMobile({
-        ua: req.headers['user-agent'] ?? undefined,
-      });
+      const mobile =
+        this.config.AFFINE_ENV === 'dev' &&
+        isMobile({
+          ua: req.headers['user-agent'] ?? undefined,
+        });
 
       return res.sendFile(
         join(
