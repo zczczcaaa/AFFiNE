@@ -223,7 +223,7 @@ jobs:
         run: yarn nx test:coverage @affine/monorepo
 
       - name: Upload unit test coverage results
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./.coverage/store/lcov.info
@@ -371,7 +371,7 @@ jobs:
           COPILOT_OPENAI_API_KEY: 'use_fake_openai_api_key'
 
       - name: Upload server test coverage results
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./packages/backend/server/.coverage/lcov.info
@@ -471,7 +471,7 @@ jobs:
 
       - name: Upload server test coverage results
         if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.filter.outputs.backend == 'true' }}
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./packages/backend/server/.coverage/lcov.info
