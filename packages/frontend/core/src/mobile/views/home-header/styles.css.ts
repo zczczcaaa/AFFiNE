@@ -30,7 +30,7 @@ export const float = style({
   position: 'fixed',
   top: 0,
   width: '100%',
-  background: cssVarV2('layer/background/secondary'),
+  background: cssVarV2('layer/background/mobile/primary'),
   zIndex: 1,
 
   display: 'flex',

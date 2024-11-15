@@ -113,7 +113,7 @@ const WithQueryList = () => {
 };
 
 export const Component = () => {
-  useThemeColorV2('layer/background/secondary');
+  useThemeColorV2('layer/background/mobile/primary');
   const searchInput = useLiveData(searchInput$);
   const searchService = useService(MobileSearchService);
 
