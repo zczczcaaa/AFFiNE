@@ -2,11 +2,13 @@ import { IconButton } from '@affine/component';
 import { useCatchEventCallback } from '@affine/core/components/hooks/use-catch-event-hook';
 import { PagePreview } from '@affine/core/components/page-list/page-content-preview';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
+import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
 import {
   WorkbenchLink,
   type WorkbenchLinkProps,
 } from '@affine/core/modules/workbench';
+import { useI18n } from '@affine/i18n';
 import type { DocMeta } from '@blocksuite/affine/store';
 import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
 import clsx from 'clsx';
@@ -40,8 +42,13 @@ export const DocCard = forwardRef<HTMLAnchorElement, DocCardProps>(
     { showTags = true, meta, className, autoHeightById, ...attrs },
     ref
   ) {
+    const t = useI18n();
     const favAdapter = useService(CompatibleFavoriteItemsAdapter);
     const workspace = useService(WorkspaceService).workspace;
+    const docDisplayService = useService(DocDisplayMetaService);
+    const titleInfo = useLiveData(docDisplayService.title$(meta.id));
+    const title =
+      typeof titleInfo === 'string' ? titleInfo : t[titleInfo.i18nKey]();
 
     const favorited = useLiveData(favAdapter.isFavorite$(meta.id, 'doc'));
 
@@ -68,9 +75,7 @@ export const DocCard = forwardRef<HTMLAnchorElement, DocCardProps>(
         {...attrs}
       >
         <header className={styles.head} data-testid="doc-card-header">
-          <h3 className={styles.title}>
-            {meta.title || <span className={styles.untitled}>Untitled</span>}
-          </h3>
+          <h3 className={styles.title}>{title}</h3>
           <IconButton
             aria-label="favorite"
             icon={
