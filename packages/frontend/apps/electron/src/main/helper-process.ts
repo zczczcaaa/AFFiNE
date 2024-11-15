@@ -78,8 +78,12 @@ class HelperProcessManager {
     renderer.postMessage('helper-connection', null, [rendererPort]);
 
     return () => {
-      helperPort.close();
-      rendererPort.close();
+      try {
+        helperPort.close();
+        rendererPort.close();
+      } catch (err) {
+        logger.error('[helper] close port error', err);
+      }
     };
   }
 

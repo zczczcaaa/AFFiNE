@@ -157,7 +157,11 @@ const createMessagePortChannel = (port: MessagePort): EventBasedChannel => {
       port.start();
       return () => {
         port.onmessage = null;
-        port.close();
+        try {
+          port.close();
+        } catch (err) {
+          console.error('[helper] close port error', err);
+        }
       };
     },
     send(data) {
