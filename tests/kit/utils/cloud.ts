@@ -107,7 +107,7 @@ export async function createRandomUser(): Promise<{
 }> {
   const startTime = Date.now();
   const user = {
-    name: faker.internet.userName(),
+    name: faker.internet.username(),
     email: faker.internet.email().toLowerCase(),
     password: '123456',
   };
@@ -157,7 +157,7 @@ export async function createRandomAIUser(): Promise<{
   id: string;
 }> {
   const user = {
-    name: faker.internet.userName(),
+    name: faker.internet.username(),
     email: faker.internet.email().toLowerCase(),
     password: '123456',
   };
