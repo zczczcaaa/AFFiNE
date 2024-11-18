@@ -17,11 +17,9 @@ import { forwardRef, type ReactNode, useMemo } from 'react';
 import * as styles from './styles.css';
 import { DocCardTags } from './tag';
 
-const calcRowsById = (id: string) => {
-  const [MIN, MAX] = [2, 8];
-
+export const calcRowsById = (id: string, min = 2, max = 8) => {
   const code = id.charCodeAt(0);
-  return Math.floor((code % (MAX - MIN)) + MIN);
+  return Math.floor((code % (max - min)) + min);
 };
 
 export interface DocCardProps extends Omit<WorkbenchLinkProps, 'to'> {
