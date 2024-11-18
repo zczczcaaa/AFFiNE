@@ -7,6 +7,7 @@ version = "0.0.0"
 crate-type = ["cdylib"]
 
 [dependencies]
+affine_common = { workspace = true }
 affine_schema = { path = "./schema" }
 anyhow        = { workspace = true }
 chrono        = { workspace = true }
@@ -24,7 +25,7 @@ tokio         = { workspace = true, features = ["full"] }
 uuid          = { workspace = true, features = ["fast-rng", "serde", "v4"] }
 
 [dev-dependencies]
-rayon         = { workspace = true }
+rayon = { workspace = true }
 
 [build-dependencies]
 affine_schema = { path = "./schema" }

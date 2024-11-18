@@ -18,9 +18,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "512761e0bb2578dd7380c6baaa0f4ce03e84f95e960231d1dec8bf4d7d6e2627"
 
 [[package]]
+name = "affine_common"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "rand",
+ "rayon",
+ "sha3",
+]
+
+[[package]]
 name = "affine_native"
 version = "0.0.0"
 dependencies = [
+ "affine_common",
  "affine_schema",
  "anyhow",
  "chrono",
@@ -49,6 +60,7 @@ version = "0.0.0"
 name = "affine_server_native"
 version = "1.0.0"
 dependencies = [
+ "affine_common",
  "chrono",
  "file-format",
  "mimalloc",
