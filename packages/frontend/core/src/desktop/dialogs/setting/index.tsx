@@ -135,8 +135,8 @@ const SettingModalInner = ({
           className={style.wrapper}
           ref={modalContentWrapperRef}
         >
-          <div ref={modalContentRef} className={style.centerContainer}>
-            <div className={style.content}>
+          <div className={style.centerContainer}>
+            <div ref={modalContentRef} className={style.content}>
               <Suspense fallback={<WorkspaceDetailSkeleton />}>
                 {}
                 {settingState.activeTab === 'account' &&
