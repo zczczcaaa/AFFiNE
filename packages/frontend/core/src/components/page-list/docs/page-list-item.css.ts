@@ -72,9 +72,10 @@ globalStyle(`${root} > :last-child`, {
   paddingRight: '8px',
 });
 export const titleIconsWrapper = style({
-  padding: '0 5px',
+  width: 34,
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'center',
   gap: '10px',
 });
 export const selectionCell = style({
