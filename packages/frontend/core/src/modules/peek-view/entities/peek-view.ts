@@ -220,10 +220,10 @@ export type PeekViewMode = 'full' | 'fit' | 'max';
 export class PeekViewEntity extends Entity {
   private readonly _active$ = new LiveData<ActivePeekView | null>(null);
   private readonly _show$ = new LiveData<{
-    animation: PeekViewAnimation;
+    animation: boolean;
     value: boolean;
   }>({
-    animation: 'zoom',
+    animation: true,
     value: false,
   });
 
@@ -258,7 +258,7 @@ export class PeekViewEntity extends Entity {
     this._active$.next({ target, info: resolvedInfo });
     this._show$.next({
       value: true,
-      animation: target.element ? 'zoom' : 'fade',
+      animation: true,
     });
 
     if (abortSignal) {
@@ -281,10 +281,10 @@ export class PeekViewEntity extends Entity {
     return firstValueFrom(race(this._active$, this.show$).pipe(map(() => {})));
   };
 
-  close = (animation?: PeekViewAnimation) => {
+  close = (animation = true) => {
     this._show$.next({
       value: false,
-      animation: animation ?? this._show$.value.animation,
+      animation,
     });
   };
 }

@@ -113,7 +113,7 @@ export const DocPeekViewControls = ({
         nameKey: 'open',
         onClick: () => {
           workbench.openDoc(docRef);
-          peekView.close('none');
+          peekView.close(false);
         },
       },
       {
@@ -122,7 +122,7 @@ export const DocPeekViewControls = ({
         name: t['com.affine.peek-view-controls.open-doc-in-new-tab'](),
         onClick: () => {
           workbench.openDoc(docRef, { at: 'new-tab' });
-          peekView.close('none');
+          peekView.close(false);
         },
       },
       BUILD_CONFIG.isElectron && {
@@ -131,7 +131,7 @@ export const DocPeekViewControls = ({
         name: t['com.affine.peek-view-controls.open-doc-in-split-view'](),
         onClick: () => {
           workbench.openDoc(docRef, { at: 'beside' });
-          peekView.close('none');
+          peekView.close(false);
         },
       },
       {
@@ -178,7 +178,7 @@ export const AttachmentPeekViewControls = ({
           if (docId && blockId) {
             workbench.openAttachment(docId, blockId);
           }
-          peekView.close('none');
+          peekView.close(false);
         },
       },
       {
@@ -190,7 +190,7 @@ export const AttachmentPeekViewControls = ({
           if (docId && blockId) {
             workbench.openAttachment(docId, blockId, { at: 'new-tab' });
           }
-          peekView.close('none');
+          peekView.close(false);
         },
       },
       BUILD_CONFIG.isElectron && {
@@ -204,7 +204,7 @@ export const AttachmentPeekViewControls = ({
           if (docId && blockId) {
             workbench.openAttachment(docId, blockId, { at: 'beside' });
           }
-          peekView.close('none');
+          peekView.close(false);
         },
       },
     ].filter((opt): opt is ControlButtonProps => Boolean(opt));
