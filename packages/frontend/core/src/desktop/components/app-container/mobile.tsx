@@ -1,6 +1,5 @@
 import { SafeArea, Skeleton } from '@affine/component';
-
-import { WorkspaceSelector } from '../workspace-selector';
+import { WorkspaceSelector } from '@affine/core/mobile/components';
 
 const SectionTitleFallback = () => {
   return (
