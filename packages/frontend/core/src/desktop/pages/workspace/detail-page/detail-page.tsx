@@ -302,19 +302,39 @@ const DetailPageImpl = memo(function DetailPageImpl() {
       )}
 
       <ViewSidebarTab tabId="properties" icon={<PropertyIcon />}>
-        <DocPropertySidebar />
+        <Scrollable.Root className={styles.sidebarScrollArea}>
+          <Scrollable.Viewport>
+            <DocPropertySidebar />
+          </Scrollable.Viewport>
+          <Scrollable.Scrollbar />
+        </Scrollable.Root>
       </ViewSidebarTab>
 
       <ViewSidebarTab tabId="journal" icon={<TodayIcon />}>
-        <EditorJournalPanel />
+        <Scrollable.Root className={styles.sidebarScrollArea}>
+          <Scrollable.Viewport>
+            <EditorJournalPanel />
+          </Scrollable.Viewport>
+          <Scrollable.Scrollbar />
+        </Scrollable.Root>
       </ViewSidebarTab>
 
       <ViewSidebarTab tabId="outline" icon={<TocIcon />}>
-        <EditorOutlinePanel editor={editorContainer} />
+        <Scrollable.Root className={styles.sidebarScrollArea}>
+          <Scrollable.Viewport>
+            <EditorOutlinePanel editor={editorContainer} />
+          </Scrollable.Viewport>
+          <Scrollable.Scrollbar />
+        </Scrollable.Root>
       </ViewSidebarTab>
 
       <ViewSidebarTab tabId="frame" icon={<FrameIcon />}>
-        <EditorFramePanel editor={editorContainer} />
+        <Scrollable.Root className={styles.sidebarScrollArea}>
+          <Scrollable.Viewport>
+            <EditorFramePanel editor={editorContainer} />
+          </Scrollable.Viewport>
+          <Scrollable.Scrollbar />
+        </Scrollable.Root>
       </ViewSidebarTab>
 
       <GlobalPageHistoryModal />

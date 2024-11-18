@@ -44,3 +44,7 @@ export const affineDocViewport = style({
 export const scrollbar = style({
   marginRight: '4px',
 });
+
+export const sidebarScrollArea = style({
+  height: '100%',
+});
