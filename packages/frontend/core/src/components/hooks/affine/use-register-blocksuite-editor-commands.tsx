@@ -7,14 +7,21 @@ import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import type { Editor } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
+import { OpenInAppService } from '@affine/core/modules/open-in-app';
 import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import { EdgelessIcon, HistoryIcon, PageIcon } from '@blocksuite/icons/rc';
+import {
+  EdgelessIcon,
+  HistoryIcon,
+  LocalWorkspaceIcon,
+  PageIcon,
+} from '@blocksuite/icons/rc';
 import {
   DocService,
   useLiveData,
   useService,
+  useServiceOptional,
   WorkspaceService,
 } from '@toeverything/infra';
 import { useSetAtom } from 'jotai';
@@ -72,6 +79,8 @@ export function useRegisterBlocksuiteEditorCommands(editor: Editor) {
   }, [doc, openConfirmModal, t]);
 
   const isCloudWorkspace = workspace.flavour === WorkspaceFlavour.AFFINE_CLOUD;
+
+  const openInAppService = useServiceOptional(OpenInAppService);
 
   useEffect(() => {
     const unsubs: Array<() => void> = [];
@@ -298,6 +307,20 @@ export function useRegisterBlocksuiteEditorCommands(editor: Editor) {
       );
     }
 
+    if (isCloudWorkspace && BUILD_CONFIG.isWeb) {
+      unsubs.push(
+        registerAffineCommand({
+          id: 'editor:open-in-app',
+          category: `editor:${mode}`,
+          icon: <LocalWorkspaceIcon />,
+          label: t['com.affine.header.option.open-in-desktop'](),
+          run() {
+            openInAppService?.showOpenInAppPage();
+          },
+        })
+      );
+    }
+
     unsubs.push(
       registerAffineCommand({
         id: 'alert-ctrl-s',
@@ -335,5 +358,6 @@ export function useRegisterBlocksuiteEditorCommands(editor: Editor) {
     pageWidth,
     defaultPageWidth,
     checked,
+    openInAppService,
   ]);
 }
