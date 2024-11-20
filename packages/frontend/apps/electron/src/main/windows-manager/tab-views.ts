@@ -25,6 +25,7 @@ import {
 } from 'rxjs';
 
 import { isMacOS } from '../../shared/utils';
+import { beforeAppQuit } from '../cleanup';
 import { CLOUD_BASE_URL, isDev } from '../config';
 import { mainWindowOrigin, shellViewUrl } from '../constants';
 import { ensureHelperProcess } from '../helper-process';
@@ -749,8 +750,10 @@ export class WebContentViewsManager {
       })
     );
 
-    app.on('before-quit', () => {
-      disposables.forEach(d => d.unsubscribe());
+    disposables.forEach(d => {
+      beforeAppQuit(() => {
+        d.unsubscribe();
+      });
     });
 
     const focusActiveView = () => {

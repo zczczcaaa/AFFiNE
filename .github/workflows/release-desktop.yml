@@ -97,6 +97,7 @@ jobs:
       SENTRY_PROJECT: 'affine'
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      SENTRY_RELEASE: ${{ needs.before-make.outputs.RELEASE_VERSION }}
       MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
     steps:
       - uses: actions/checkout@v4
@@ -213,6 +214,7 @@ jobs:
       SENTRY_PROJECT: 'affine'
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      SENTRY_RELEASE: ${{ needs.before-make.outputs.RELEASE_VERSION }}
       MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
     steps:
       - uses: actions/checkout@v4
