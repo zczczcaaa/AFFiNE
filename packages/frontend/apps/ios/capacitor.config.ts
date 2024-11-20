@@ -24,4 +24,12 @@ const config: CapacitorConfig = {
   },
 };
 
+if (process.env.CAP_SERVER_URL) {
+  Object.assign(config, {
+    server: {
+      url: process.env.CAP_SERVER_URL,
+    },
+  });
+}
+
 export default config;
