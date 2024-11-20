@@ -1,6 +1,7 @@
 import { app, nativeTheme, shell } from 'electron';
 import { getLinkPreview } from 'link-preview-js';
 
+import { isMacOS } from '../../shared/utils';
 import { persistentConfig } from '../config-storage/persist';
 import { logger } from '../logger';
 import type { WorkbenchViewMeta } from '../shared-state-schema';
@@ -219,5 +220,16 @@ export const uiHandlers = {
   restartApp: async () => {
     app.relaunch();
     app.quit();
+  },
+  onLanguageChange: async (e, language: string) => {
+    // only works for win/linux
+    // see https://www.electronjs.org/docs/latest/tutorial/spellchecker#how-to-set-the-languages-the-spellchecker-uses
+    if (isMacOS()) {
+      return;
+    }
+
+    if (e.sender.session.availableSpellCheckerLanguages.includes(language)) {
+      e.sender.session.setSpellCheckerLanguages([language, 'en-US']);
+    }
   },
 } satisfies NamespaceHandlers;

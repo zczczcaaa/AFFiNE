@@ -4,6 +4,8 @@ import {
   GlobalStateService,
 } from '@toeverything/infra';
 
+import { DesktopApiService } from '../desktop-api';
+import { I18n } from '../i18n';
 import { UserDBService } from '../userspace';
 import { EditorSetting } from './entities/editor-setting';
 import { CurrentUserDBEditorSettingProvider } from './impls/user-db';
@@ -25,5 +27,9 @@ export function configureEditorSettingModule(framework: Framework) {
 }
 
 export function configureSpellCheckSettingModule(framework: Framework) {
-  framework.service(SpellCheckSettingService, [GlobalStateService]);
+  framework.service(SpellCheckSettingService, [
+    GlobalStateService,
+    I18n,
+    DesktopApiService,
+  ]);
 }
