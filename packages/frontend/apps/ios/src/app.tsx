@@ -1,6 +1,7 @@
 import { AffineContext } from '@affine/core/components/context';
 import { AppContainer } from '@affine/core/desktop/components/app-container';
 import { configureMobileModules } from '@affine/core/mobile/modules';
+import { VirtualKeyboardProvider } from '@affine/core/mobile/modules/virtual-keyboard';
 import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
 import {
@@ -20,6 +21,7 @@ import {
 } from '@affine/core/modules/workspace-engine';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
+import { Keyboard } from '@capacitor/keyboard';
 import {
   Framework,
   FrameworkRoot,
@@ -74,6 +76,14 @@ framework.impl(ValidatorProvider, {
   async validate(_challenge, resource) {
     const res = await Hashcash.hash({ challenge: resource });
     return res.value;
+  },
+});
+framework.impl(VirtualKeyboardProvider, {
+  addEventListener: (event, callback) => {
+    Keyboard.addListener(event as any, callback as any);
+  },
+  removeAllListeners: () => {
+    Keyboard.removeAllListeners();
   },
 });
 const frameworkProvider = framework.provider();

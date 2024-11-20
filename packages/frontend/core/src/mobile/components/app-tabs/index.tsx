@@ -9,6 +9,7 @@ import { assignInlineVars } from '@vanilla-extract/dynamic';
 import React from 'react';
 import type { Location } from 'react-router-dom';
 
+import { VirtualKeyboardService } from '../../modules/virtual-keyboard/services/virtual-keyboard';
 import { AppTabJournal } from './journal';
 import * as styles from './styles.css';
 
@@ -54,14 +55,20 @@ const routes: Route[] = [
 ];
 
 export const AppTabs = ({ background }: { background?: string }) => {
+  const virtualKeyboardService = useService(VirtualKeyboardService);
+  const virtualKeyboardVisible = useLiveData(virtualKeyboardService.show$);
+
   return (
     <SafeArea
       bottom
       className={styles.appTabs}
       bottomOffset={2}
-      style={assignInlineVars({
-        [styles.appTabsBackground]: background,
-      })}
+      style={{
+        ...assignInlineVars({
+          [styles.appTabsBackground]: background,
+        }),
+        visibility: virtualKeyboardVisible ? 'hidden' : 'visible',
+      }}
     >
       <ul className={styles.appTabsInner} id="app-tabs" role="tablist">
         {routes.map(route => {
