@@ -31,6 +31,7 @@ export const AIUsagePanel = ({
   useEffect(() => {
     // revalidate latest subscription status
     subscriptionService.subscription.revalidate();
+    subscriptionService.prices.revalidate();
   }, [subscriptionService]);
   const copilotQuotaService = useService(UserCopilotQuotaService);
   useEffect(() => {
