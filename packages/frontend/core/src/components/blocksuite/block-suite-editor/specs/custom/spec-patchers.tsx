@@ -169,10 +169,10 @@ export function patchNotificationService({
           <div>
             <span style={{ marginBottom: 12 }}>{toReactNode(message)}</span>
             <Input
+              autoSelect={true}
               placeholder={placeholder}
               defaultValue={value}
               onChange={e => (value = e)}
-              ref={input => input?.select()}
             />
           </div>
         );
@@ -190,6 +190,7 @@ export function patchNotificationService({
           onCancel: () => {
             resolve(null);
           },
+          autoFocusConfirm: false,
         });
         abort?.addEventListener('abort', () => {
           resolve(null);
