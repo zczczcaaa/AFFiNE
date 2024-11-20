@@ -27,7 +27,7 @@ export const SignInItem = () => {
   const t = useI18n();
 
   const onClickSignIn = useCallback(() => {
-    track.$.navigationPanel.workspaceList.signIn();
+    track.$.navigationPanel.workspaceList.requestSignIn();
     setOpen(state => ({
       ...state,
       openModal: true,

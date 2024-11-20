@@ -94,7 +94,12 @@ type ShareEvents =
   | 'copyShareLink'
   | 'openShareMenu'
   | 'share';
-type AuthEvents = 'signIn' | 'signInFail' | 'signedIn' | 'signOut';
+type AuthEvents =
+  | 'requestSignIn'
+  | 'signIn'
+  | 'signInFail'
+  | 'signedIn'
+  | 'signOut';
 type AccountEvents = 'uploadAvatar' | 'removeAvatar' | 'updateUserName';
 type PaymentEvents =
   | 'viewPlans'
@@ -143,7 +148,7 @@ const PageEvents = {
   $: {
     $: {
       $: ['createWorkspace', 'checkout'],
-      auth: ['signIn', 'signedIn', 'signInFail', 'signOut'],
+      auth: ['requestSignIn', 'signIn', 'signedIn', 'signInFail', 'signOut'],
     },
     sharePanel: {
       $: ['createShareLink', 'copyShareLink', 'export', 'open'],
@@ -220,8 +225,8 @@ const PageEvents = {
       others: ['navigate'],
       importModal: ['open'],
       workspaceList: [
+        'requestSignIn',
         'open',
-        'signIn',
         'createWorkspace',
         'createDoc',
         'openSettings',
@@ -278,6 +283,7 @@ const PageEvents = {
       formatToolbar: ['bold'],
       pageRef: ['navigate'],
       toolbar: ['copyBlockToLink'],
+      aiActions: ['requestSignIn'],
     },
     inlineDocInfo: {
       $: ['toggle'],

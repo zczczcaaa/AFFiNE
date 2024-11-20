@@ -2,6 +2,7 @@ import { Skeleton } from '@affine/component';
 import { Button } from '@affine/component/ui/button';
 import { UrlService } from '@affine/core/modules/url';
 import { OAuthProviderType } from '@affine/graphql';
+import track from '@affine/track';
 import { GithubIcon, GoogleDuotoneIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { type ReactElement, useCallback } from 'react';
@@ -85,6 +86,8 @@ function OAuthProvider({
 
     const oauthUrl =
       BUILD_CONFIG.serverUrlPrefix + `/oauth/login?${params.toString()}`;
+
+    track.$.$.auth.signIn({ method: 'oauth', provider });
 
     popupWindow(oauthUrl);
   }, [popupWindow, provider, redirectUrl, scheme]);

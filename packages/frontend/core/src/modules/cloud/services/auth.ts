@@ -146,7 +146,6 @@ export class AuthService extends Service {
     client: string,
     /** @deprecated*/ redirectUrl?: string
   ) {
-    track.$.$.auth.signIn({ method: 'oauth', provider });
     try {
       const res = await this.fetchService.fetch('/api/oauth/preflight', {
         method: 'POST',
