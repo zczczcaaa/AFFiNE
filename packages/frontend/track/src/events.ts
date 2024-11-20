@@ -236,7 +236,7 @@ const PageEvents = {
       $: ['open', 'close', 'switchPageMode', 'viewPlans'],
     },
     importModal: {
-      $: ['open', 'import'],
+      $: ['open', 'import', 'createDoc'],
     },
     paywall: {
       storage: ['viewPlans'],

@@ -206,16 +206,6 @@ export const AFFINE_FLAGS = {
     configurable: false,
     defaultState: isMobile,
   },
-  enable_snapshot_import_export: {
-    category: 'affine',
-    displayName:
-      'com.affine.settings.workspace.experimental-features.enable-snapshot-import-export.name',
-    description:
-      'com.affine.settings.workspace.experimental-features.enable-snapshot-import-export.description',
-    hide: true,
-    configurable: true,
-    defaultState: false,
-  },
 } satisfies { [key in string]: FlagInfo };
 
 export type AFFINE_FLAGS = typeof AFFINE_FLAGS;
