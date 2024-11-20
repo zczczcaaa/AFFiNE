@@ -5,9 +5,9 @@ import { DocService, useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
 import { container } from './page-width.css';
-import type { PageLayoutMode } from './types';
+import type { PageLayoutMode, PropertyValueProps } from './types';
 
-export const PageWidthValue = () => {
+export const PageWidthValue = ({ onChange }: PropertyValueProps) => {
   const t = useI18n();
   const editorSetting = useService(EditorSettingService).editorSetting;
   const defaultPageWidth = useLiveData(editorSetting.settings$).fullWidthLayout;
@@ -44,8 +44,9 @@ export const PageWidthValue = () => {
   const handleChange = useCallback(
     (value: PageLayoutMode) => {
       doc.record.setProperty('pageWidth', value);
+      onChange?.(value, true);
     },
-    [doc]
+    [doc, onChange]
   );
   return (
     <PropertyValue className={container} hoverable={false}>

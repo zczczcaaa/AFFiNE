@@ -13,8 +13,9 @@ import dayjs from 'dayjs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import * as styles from './journal.css';
+import type { PropertyValueProps } from './types';
 
-export const JournalValue = () => {
+export const JournalValue = ({ onChange }: PropertyValueProps) => {
   const t = useI18n();
 
   const journalService = useService(JournalService);
@@ -50,8 +51,9 @@ export const JournalValue = () => {
       const date = dayjs(day).format('YYYY-MM-DD');
       setSelectedDate(date);
       journalService.setJournalDate(doc.id, date);
+      onChange?.(date, true);
     },
-    [journalService, doc.id]
+    [journalService, doc.id, onChange]
   );
 
   const handleCheck = useCallback(
@@ -59,11 +61,12 @@ export const JournalValue = () => {
       if (!v) {
         journalService.removeJournalDate(doc.id);
         setShowDatePicker(false);
+        onChange?.(null, true);
       } else {
         handleDateSelect(selectedDate);
       }
     },
-    [handleDateSelect, journalService, doc.id, selectedDate]
+    [onChange, journalService, doc.id, handleDateSelect, selectedDate]
   );
 
   const workbench = useService(WorkbenchService).workbench;
@@ -101,11 +104,7 @@ export const JournalValue = () => {
       onClick={toggle}
     >
       <div className={styles.root}>
-        <Checkbox
-          className={styles.checkbox}
-          checked={checked}
-          onChange={handleCheck}
-        />
+        <Checkbox className={styles.checkbox} checked={checked} />
         {checked ? (
           <Menu
             contentOptions={{

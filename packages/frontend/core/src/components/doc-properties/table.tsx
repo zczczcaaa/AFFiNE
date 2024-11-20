@@ -131,11 +131,13 @@ export const DocPropertyRow = ({
     typeInfo && 'value' in typeInfo ? typeInfo.value : undefined;
 
   const handleChange = useCallback(
-    (value: any) => {
-      if (typeof value !== 'string') {
-        throw new Error('only allow string value');
+    (value: any, skipCommit?: boolean) => {
+      if (!skipCommit) {
+        if (typeof value !== 'string') {
+          throw new Error('only allow string value');
+        }
+        docService.doc.record.setCustomProperty(propertyInfo.id, value);
       }
-      docService.doc.record.setCustomProperty(propertyInfo.id, value);
       onChange?.(value);
     },
     [docService, onChange, propertyInfo]

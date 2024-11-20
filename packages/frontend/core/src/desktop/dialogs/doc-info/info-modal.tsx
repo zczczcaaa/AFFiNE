@@ -72,6 +72,15 @@ export const InfoTable = ({
     });
   }, []);
 
+  const onPropertyChange = useCallback(
+    (property: DocCustomPropertyInfo, _value: unknown) => {
+      track.$.docInfoPanel.property.editProperty({
+        type: property.type,
+      });
+    },
+    []
+  );
+
   return (
     <>
       {backlinks && backlinks.length > 0 ? (
@@ -122,6 +131,7 @@ export const InfoTable = ({
               key={property.id}
               propertyInfo={property}
               defaultOpenEditMenu={newPropertyId === property.id}
+              onChange={value => onPropertyChange(property, value)}
             />
           ))}
           <Menu
