@@ -112,6 +112,23 @@ const ConflictList = ({ docRecords }: { docRecords: DocRecord[] }) => {
   ));
 };
 
+export const MobileJournalConflictList = ({ date }: { date: string }) => {
+  const docRecordList = useService(DocsService).list;
+  const journalService = useService(JournalService);
+  const docs = useLiveData(
+    useMemo(() => journalService.journalsByDate$(date), [journalService, date])
+  );
+  const docRecords = useLiveData(
+    docRecordList.docs$.map(records =>
+      records.filter(v => {
+        return docs.some(doc => doc.id === v.id);
+      })
+    )
+  );
+
+  return <ConflictList docRecords={docRecords} />;
+};
+
 const ConflictListMenuItem = ({ docRecords }: { docRecords: DocRecord[] }) => {
   const t = useI18n();
   return (
