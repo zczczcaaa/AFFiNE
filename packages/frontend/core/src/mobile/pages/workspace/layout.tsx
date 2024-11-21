@@ -6,7 +6,6 @@ import {
 } from '@affine/core/components/affine/quota-reached-modal';
 import { SWRConfigProvider } from '@affine/core/components/providers/swr-config-provider';
 import { WorkspaceSideEffects } from '@affine/core/components/providers/workspace-side-effects';
-import { AppContainer } from '@affine/core/desktop/components/app-container';
 import { PeekViewManagerModal } from '@affine/core/modules/peek-view';
 import { WorkspaceFlavour } from '@affine/env/workspace';
 import type { Workspace, WorkspaceMetadata } from '@toeverything/infra';
@@ -24,6 +23,7 @@ import {
   useState,
 } from 'react';
 
+import { AppFallback } from '../../components/app-fallback';
 import { WorkspaceDialogs } from '../../dialogs';
 
 // TODO(@forehalo): reuse the global context with [core/electron]
@@ -91,7 +91,7 @@ export const WorkspaceLayout = ({
   }
 
   if (!isRootDocReady) {
-    return <AppContainer fallback />;
+    return <AppFallback />;
   }
 
   return (

@@ -22,7 +22,6 @@ import {
   type ReactElement,
 } from 'react';
 
-import { AppFallback } from './mobile';
 import * as styles from './styles.css';
 
 export const AppContainer = ({
@@ -103,23 +102,7 @@ const BrowserLayout = ({
   );
 };
 
-const MobileLayout = ({
-  children,
-  fallback = false,
-}: PropsWithChildren<{ fallback?: boolean }>) => {
-  return (
-    <div className={styles.browserAppViewContainer}>
-      {fallback ? <AppFallback /> : null}
-      <MainContainer>{children}</MainContainer>
-    </div>
-  );
-};
-
-const LayoutComponent = BUILD_CONFIG.isElectron
-  ? DesktopLayout
-  : BUILD_CONFIG.isMobileEdition
-    ? MobileLayout
-    : BrowserLayout;
+const LayoutComponent = BUILD_CONFIG.isElectron ? DesktopLayout : BrowserLayout;
 
 const MainContainer = forwardRef<
   HTMLDivElement,
