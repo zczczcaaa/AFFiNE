@@ -1,7 +1,7 @@
 import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AffineAIPanelWidgetConfig,
-  EdgelessEditorBlockSpecs,
+  SpecProvider,
 } from '@blocksuite/affine/blocks';
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
@@ -208,7 +208,8 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
         >
           ${new BlockStdScope({
             doc: this._doc,
-            extensions: EdgelessEditorBlockSpecs,
+            extensions:
+              SpecProvider.getInstance().getSpec('edgeless:preview').value,
           }).render()}
         </div>
         <div class="mask"></div>

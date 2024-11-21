@@ -438,12 +438,13 @@ Could you make a new website based on these notes and send back just the html fi
       const url = new URL(getBaseUrl() + '/api/copilot/unsplash/photos');
       url.searchParams.set('query', options.query);
       const result: {
-        results: {
+        results?: {
           urls: {
             regular: string;
           };
         }[];
       } = await fetch(url.toString()).then(res => res.json());
+      if (!result.results) return [];
       return result.results.map(r => {
         const url = new URL(r.urls.regular);
         url.searchParams.set('fit', 'crop');
