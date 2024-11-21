@@ -58,9 +58,7 @@ export const HomeHeader = () => {
   return (
     <>
       <SafeArea top className={styles.root}>
-        <div className={styles.headerSettingRow}>
-          <IconButton onClick={openSetting} size={28} icon={<SettingsIcon />} />
-        </div>
+        <div className={styles.headerSettingRow} />
         <div className={styles.wsSelectorAndSearch}>
           <WorkspaceSelector ref={workspaceCardRef} />
           <SearchInput placeholder={t['Quick search']()} onClick={navSearch} />

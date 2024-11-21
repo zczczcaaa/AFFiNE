@@ -14,10 +14,7 @@ export const root = style({
   width: '100dvw',
 });
 export const headerSettingRow = style({
-  display: 'flex',
-  justifyContent: 'end',
   height: 44,
-  paddingRight: 10,
 });
 export const wsSelectorAndSearch = style({
   display: 'flex',
@@ -30,7 +27,6 @@ export const float = style({
   position: 'fixed',
   top: 0,
   width: '100%',
-  background: cssVarV2('layer/background/mobile/primary'),
   zIndex: 1,
 
   display: 'flex',
@@ -39,14 +35,22 @@ export const float = style({
   gap: 10,
 
   // visibility control
-  visibility: 'hidden',
+  background: 'transparent',
   selectors: {
     '&.dense': {
-      visibility: 'visible',
+      background: cssVarV2('layer/background/mobile/primary'),
     },
   },
 });
 export const floatWsSelector = style({
   width: 0,
   flex: 1,
+  visibility: 'hidden',
+  pointerEvents: 'none',
+  selectors: {
+    [`${float}.dense &`]: {
+      visibility: 'visible',
+      pointerEvents: 'auto',
+    },
+  },
 });
