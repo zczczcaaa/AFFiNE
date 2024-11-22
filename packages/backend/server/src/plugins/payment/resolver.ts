@@ -370,7 +370,7 @@ export class UserSubscriptionResolver {
       };
     }
 
-    return this.db.userSubscription.findUnique({
+    const subscription = await this.db.userSubscription.findUnique({
       where: {
         userId_plan: {
           userId: user.id,
@@ -379,6 +379,18 @@ export class UserSubscriptionResolver {
         status: SubscriptionStatus.Active,
       },
     });
+
+    if (
+      subscription &&
+      subscription.variant &&
+      ![SubscriptionVariant.EA, SubscriptionVariant.Onetime].includes(
+        subscription.variant as SubscriptionVariant
+      )
+    ) {
+      subscription.variant = null;
+    }
+
+    return subscription;
   }
 
   @ResolveField(() => [UserSubscriptionType])
