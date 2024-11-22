@@ -1,11 +1,26 @@
 import type { Storage } from '../storage';
+import {
+  IndexedDBBlobStorage,
+  IndexedDBDocStorage,
+  IndexedDBSyncStorage,
+} from './idb';
+import { IndexedDBV1BlobStorage, IndexedDBV1DocStorage } from './idb/v1';
 
 type StorageConstructor = new (...args: any[]) => Storage;
 
-export const storages: StorageConstructor[] = [];
+const idb: StorageConstructor[] = [
+  IndexedDBDocStorage,
+  IndexedDBBlobStorage,
+  IndexedDBSyncStorage,
+];
 
-// in next pr
-// eslint-disable-next-line sonarjs/no-empty-collection
+const idbv1: StorageConstructor[] = [
+  IndexedDBV1DocStorage,
+  IndexedDBV1BlobStorage,
+];
+
+export const storages: StorageConstructor[] = [...idbv1, ...idb];
+
 const AvailableStorageImplementations = storages.reduce(
   (acc, curr) => {
     acc[curr.name] = curr;
