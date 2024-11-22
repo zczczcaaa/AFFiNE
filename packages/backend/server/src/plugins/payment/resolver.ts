@@ -402,12 +402,25 @@ export class UserSubscriptionResolver {
       throw new AccessDenied();
     }
 
-    return this.db.userSubscription.findMany({
+    const subscriptions = await this.db.userSubscription.findMany({
       where: {
         userId: user.id,
         status: SubscriptionStatus.Active,
       },
     });
+
+    subscriptions.forEach(subscription => {
+      if (
+        subscription.variant &&
+        ![SubscriptionVariant.EA, SubscriptionVariant.Onetime].includes(
+          subscription.variant as SubscriptionVariant
+        )
+      ) {
+        subscription.variant = null;
+      }
+    });
+
+    return subscriptions;
   }
 
   @ResolveField(() => [UserInvoiceType])
