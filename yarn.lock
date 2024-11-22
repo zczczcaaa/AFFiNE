@@ -723,6 +723,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@affine/nbstore@workspace:packages/common/nbstore":
+  version: 0.0.0-use.local
+  resolution: "@affine/nbstore@workspace:packages/common/nbstore"
+  dependencies:
+    "@toeverything/infra": "workspace:*"
+    eventemitter2: "npm:^6.4.9"
+    lodash-es: "npm:^4.17.21"
+    rxjs: "npm:^7.8.1"
+    yjs: "patch:yjs@npm%3A13.6.18#~/.yarn/patches/yjs-npm-13.6.18-ad0d5f7c43.patch"
+  languageName: unknown
+  linkType: soft
+
 "@affine/playstore-auto-bump@workspace:tools/playstore-auto-bump":
   version: 0.0.0-use.local
   resolution: "@affine/playstore-auto-bump@workspace:tools/playstore-auto-bump"

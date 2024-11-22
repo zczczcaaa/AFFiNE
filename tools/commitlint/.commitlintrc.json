@@ -25,7 +25,7 @@
         "native",
         "templates",
         "debug",
-        "storage",
+        "nbstore",
         "infra"
       ]
     ]
