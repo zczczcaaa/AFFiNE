@@ -1,11 +1,21 @@
+import { useGlobalEvent } from '@affine/core/mobile/hooks/use-global-events';
 import anime from 'animejs';
+import clsx from 'clsx';
 import dayjs from 'dayjs';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import {
+  type HTMLAttributes,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   CELL_HEIGHT,
   DATE_FORMAT,
   MONTH_VIEW_HEIGHT,
+  SCROLL_DOWN_TO_FOLD_THRESHOLD,
   WEEK_VIEW_HEIGHT,
 } from './constants';
 import { JournalDatePickerContext } from './context';
@@ -14,7 +24,10 @@ import { SwipeHelper } from './swipe-helper';
 import * as styles from './viewport.css';
 import { WeekHeader, WeekRowSwipe } from './week';
 
-export const ResizeViewport = () => {
+export const ResizeViewport = ({
+  className,
+  ...attrs
+}: HTMLAttributes<HTMLDivElement>) => {
   const { selected } = useContext(JournalDatePickerContext);
   const draggableRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -97,8 +110,29 @@ export const ResizeViewport = () => {
     });
   }, [handleToggleModeWithAnimation, mode]);
 
+  // auto fold when scroll down
+  const prevScrollYRef = useRef(window.scrollY);
+  useGlobalEvent(
+    'scroll',
+    useCallback(() => {
+      if (mode === 'week') return;
+      if (isAnimating) return;
+      const offset = window.scrollY - prevScrollYRef.current;
+      if (offset >= SCROLL_DOWN_TO_FOLD_THRESHOLD) {
+        prevScrollYRef.current = window.scrollY;
+        handleToggleModeWithAnimation('week', 0);
+      }
+    }, [handleToggleModeWithAnimation, isAnimating, mode])
+  );
+  useGlobalEvent(
+    'scrollend',
+    useCallback(() => {
+      prevScrollYRef.current = window.scrollY;
+    }, [])
+  );
+
   return (
-    <div className={styles.root}>
+    <div className={clsx(styles.root, className)} {...attrs}>
       <WeekHeader className={styles.weekRow} />
       <div ref={viewportRef} style={{ height: draggedHeight }}>
         {mode === 'month' || isDragging || isAnimating ? (

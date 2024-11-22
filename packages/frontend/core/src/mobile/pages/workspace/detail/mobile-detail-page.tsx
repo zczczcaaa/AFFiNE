@@ -262,6 +262,12 @@ const MobileDetailPage = ({
             date={date}
             onChange={handleDateChange}
             withDotDates={allJournalDates}
+            className={styles.journalDatePickerSticky}
+            data-standalone={
+              environment.isPwa || BUILD_CONFIG.isAndroid || BUILD_CONFIG.isIOS
+                ? ''
+                : undefined
+            }
           />
         ) : null}
         <DetailPageImpl />
