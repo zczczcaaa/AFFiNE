@@ -5,7 +5,8 @@
   "private": true,
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./op": "./src/op/index.ts"
   },
   "dependencies": {
     "@toeverything/infra": "workspace:*",
