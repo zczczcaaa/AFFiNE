@@ -1,5 +1,5 @@
 import { OpenInAppPage } from '@affine/core/modules/open-in-app/views/open-in-app-page';
-import { appSchemes } from '@affine/core/utils/channel';
+import { appSchemes, channelToScheme } from '@affine/core/utils/channel';
 import type { GetCurrentUserQuery } from '@affine/graphql';
 import { fetcher, getCurrentUserQuery } from '@affine/graphql';
 import type { LoaderFunction } from 'react-router-dom';
@@ -37,7 +37,9 @@ const OpenOAuthJwt = () => {
   const [params] = useSearchParams();
 
   const maybeScheme = appSchemes.safeParse(params.get('scheme'));
-  const scheme = maybeScheme.success ? maybeScheme.data : 'affine';
+  const scheme = maybeScheme.success
+    ? maybeScheme.data
+    : channelToScheme[BUILD_CONFIG.appBuildType];
   const next = params.get('next');
 
   if (!currentUser || !currentUser?.token?.sessionToken) {
