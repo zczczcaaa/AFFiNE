@@ -6,7 +6,6 @@ import {
 } from '@affine/core/components/affine/quota-reached-modal';
 import { SWRConfigProvider } from '@affine/core/components/providers/swr-config-provider';
 import { WorkspaceSideEffects } from '@affine/core/components/providers/workspace-side-effects';
-import { WorkspaceUpgrade } from '@affine/core/components/workspace-upgrade';
 import { AIIsland } from '@affine/core/desktop/components/ai-island';
 import { AppContainer } from '@affine/core/desktop/components/app-container';
 import { WorkspaceDialogs } from '@affine/core/desktop/dialogs';
@@ -64,14 +63,5 @@ const WorkspaceLayoutUIContainer = ({ children }: PropsWithChildren) => {
   );
 };
 const WorkspaceLayoutInner = ({ children }: PropsWithChildren) => {
-  const workspace = useService(WorkspaceService).workspace;
-
-  const upgrading = useLiveData(workspace.upgrade.upgrading$);
-  const needUpgrade = useLiveData(workspace.upgrade.needUpgrade$);
-
-  return (
-    <WorkspaceLayoutUIContainer>
-      {needUpgrade || upgrading ? <WorkspaceUpgrade /> : children}
-    </WorkspaceLayoutUIContainer>
-  );
+  return <WorkspaceLayoutUIContainer>{children}</WorkspaceLayoutUIContainer>;
 };

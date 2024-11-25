@@ -9,7 +9,6 @@ import { WorkspaceDBService } from '../../db';
 import { getAFFiNEWorkspaceSchema } from '../global-schema';
 import type { WorkspaceScope } from '../scopes/workspace';
 import { WorkspaceEngineService } from '../services/engine';
-import { WorkspaceUpgradeService } from '../services/upgrade';
 
 export class Workspace extends Entity {
   constructor(public readonly scope: WorkspaceScope) {
@@ -62,10 +61,6 @@ export class Workspace extends Entity {
 
   get engine() {
     return this.framework.get(WorkspaceEngineService).engine;
-  }
-
-  get upgrade() {
-    return this.framework.get(WorkspaceUpgradeService).upgrade;
   }
 
   name$ = LiveData.from<string | undefined>(

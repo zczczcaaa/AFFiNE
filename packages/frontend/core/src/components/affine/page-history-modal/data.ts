@@ -170,7 +170,6 @@ export const useSnapshotPage = (
       const spaceDoc = page.spaceDoc;
       page.load(() => {
         applyUpdate(spaceDoc, new Uint8Array(snapshot));
-        historyShellWorkspace.schema.upgradeDoc(0, {}, spaceDoc);
       }); // must load before applyUpdate
     }
     return page ?? undefined;

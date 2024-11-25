@@ -150,9 +150,6 @@
       "path": "./tests/affine-local"
     },
     {
-      "path": "./tests/affine-migration"
-    },
-    {
       "path": "./tests/affine-mobile"
     },
     {

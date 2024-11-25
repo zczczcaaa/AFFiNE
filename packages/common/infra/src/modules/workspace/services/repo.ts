@@ -1,6 +1,5 @@
 import { DebugLogger } from '@affine/debug';
 
-import { fixWorkspaceVersion } from '../../../blocksuite';
 import { Service } from '../../../framework';
 import { ObjectPool } from '../../../utils';
 import type { Workspace } from '../entities/workspace';
@@ -104,9 +103,6 @@ export class WorkspaceRepositoryService extends Service {
 
     workspace.engine.setRootDoc(workspace.docCollection.doc);
     workspace.engine.start();
-
-    // apply compatibility fix
-    fixWorkspaceVersion(workspace.docCollection.doc);
 
     this.framework.emitEvent(WorkspaceInitialized, workspace);
 

@@ -16,7 +16,6 @@ import { GlobalCache, GlobalState } from '../storage';
 import { WorkspaceEngine } from './entities/engine';
 import { WorkspaceList } from './entities/list';
 import { WorkspaceProfile } from './entities/profile';
-import { WorkspaceUpgrade } from './entities/upgrade';
 import { Workspace } from './entities/workspace';
 import {
   WorkspaceLocalCacheImpl,
@@ -32,7 +31,6 @@ import { WorkspaceListService } from './services/list';
 import { WorkspaceProfileService } from './services/profile';
 import { WorkspaceRepositoryService } from './services/repo';
 import { WorkspaceTransformService } from './services/transform';
-import { WorkspaceUpgradeService } from './services/upgrade';
 import { WorkspaceService } from './services/workspace';
 import { WorkspacesService } from './services/workspaces';
 import { WorkspaceProfileCacheStore } from './stores/profile-cache';
@@ -72,12 +70,6 @@ export function configureWorkspaceModule(framework: Framework) {
     .entity(Workspace, [WorkspaceScope])
     .service(WorkspaceEngineService, [WorkspaceScope])
     .entity(WorkspaceEngine, [WorkspaceService])
-    .service(WorkspaceUpgradeService)
-    .entity(WorkspaceUpgrade, [
-      WorkspaceService,
-      WorkspaceFactoryService,
-      WorkspaceDestroyService,
-    ])
     .impl(WorkspaceLocalState, WorkspaceLocalStateImpl, [
       WorkspaceService,
       GlobalState,

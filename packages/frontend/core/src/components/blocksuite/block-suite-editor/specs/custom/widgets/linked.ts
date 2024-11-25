@@ -26,16 +26,17 @@ function createNewDocMenuGroup(
     inlineEditor
   );
 
+  const items = Array.isArray(originalNewDocMenuGroup.items)
+    ? originalNewDocMenuGroup.items
+    : originalNewDocMenuGroup.items.value;
+
   // Patch the import item, to use the custom import dialog.
-  const importItemIndex = originalNewDocMenuGroup.items.findIndex(
-    item => item.key === 'import'
-  );
+  const importItemIndex = items.findIndex(item => item.key === 'import');
   if (importItemIndex === -1) {
     return originalNewDocMenuGroup;
   }
 
-  const originalItems = originalNewDocMenuGroup.items;
-  const originalImportItem = originalItems[importItemIndex];
+  const originalImportItem = items[importItemIndex];
   const customImportItem = {
     ...originalImportItem,
     action: () => {
@@ -70,7 +71,7 @@ function createNewDocMenuGroup(
   };
 
   // only replace the original import item
-  originalItems.splice(importItemIndex, 1, customImportItem);
+  items.splice(importItemIndex, 1, customImportItem);
   return originalNewDocMenuGroup;
 }
 
