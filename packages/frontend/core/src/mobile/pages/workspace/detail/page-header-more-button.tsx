@@ -25,6 +25,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { JournalConflictsMenuItem } from './menu/journal-conflicts';
 import { JournalTodayActivityMenuItem } from './menu/journal-today-activity';
+import { EditorModeSwitch } from './menu/mode-switch';
 import * as styles from './page-header-more-button.css';
 import { DocInfoSheet } from './sheets/doc-info';
 
@@ -86,6 +87,7 @@ export const PageHeaderMenuButton = () => {
 
   const EditMenu = (
     <>
+      <EditorModeSwitch />
       <JournalTodayActivityMenuItem suffix={<MenuSeparator />} />
       <MobileMenuItem
         prefixIcon={primaryMode === 'page' ? <EdgelessIcon /> : <PageIcon />}
