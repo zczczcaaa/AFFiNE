@@ -383,7 +383,10 @@ const ChangeRecurring = ({
   );
 };
 
-const SignUpAction = ({ children }: PropsWithChildren) => {
+export const SignUpAction = ({
+  children,
+  className,
+}: PropsWithChildren<{ className?: string }>) => {
   const setOpen = useSetAtom(authAtom);
 
   const onClickSignIn = useCallback(() => {
@@ -396,7 +399,7 @@ const SignUpAction = ({ children }: PropsWithChildren) => {
   return (
     <Button
       onClick={onClickSignIn}
-      className={styles.planAction}
+      className={clsx(styles.planAction, className)}
       variant="primary"
     >
       {children}
