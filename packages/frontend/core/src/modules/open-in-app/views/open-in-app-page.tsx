@@ -6,6 +6,7 @@ import { LocalWorkspaceIcon, Logo1Icon } from '@blocksuite/icons/rc';
 import { useService } from '@toeverything/infra';
 import type { MouseEvent } from 'react';
 import { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
 import { GlobalDialogService } from '../../dialogs';
 import { getOpenUrlInDesktopAppLink } from '../utils';
@@ -17,19 +18,19 @@ interface OpenAppProps {
   urlToOpen?: string | null;
   openHereClicked?: (e: MouseEvent) => void;
 }
+const channel = BUILD_CONFIG.appBuildType;
+const url =
+  'https://affine.pro/download' + (channel !== 'stable' ? '/beta-canary' : '');
 
 export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
   // default to open the current page in desktop app
   urlToOpen ??= getOpenUrlInDesktopAppLink(window.location.href, true);
   const globalDialogService = useService(GlobalDialogService);
   const t = useI18n();
-  const channel = BUILD_CONFIG.appBuildType;
+
   const openDownloadLink = useCallback(() => {
-    const url =
-      'https://affine.pro/download' +
-      (channel !== 'stable' ? '/beta-canary' : '');
     open(url, '_blank');
-  }, [channel]);
+  }, []);
 
   const appIcon = appIconMap[channel];
   const appName = appNames[channel];
@@ -137,6 +138,22 @@ export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
             rel="noreferrer"
           >
             {t['com.affine.auth.open.affine.try-again']()}
+          </a>
+        </div>
+        <div className={styles.accidentHandling}>
+          <div className={styles.prompt}>
+            {t['com.affine.auth.open.affine.still-have-problems']()}
+          </div>
+          <Link to="/" replace className={styles.promptLink}>
+            {t['com.affine.auth.open.affine.continue-with-browser']()}
+          </Link>
+          <a
+            className={styles.promptLink}
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t['com.affine.auth.open.affine.download-latest-client']()}
           </a>
         </div>
       </div>
