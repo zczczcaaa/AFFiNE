@@ -347,6 +347,8 @@ export const createConfiguration: (
     optimization: OptimizeOptionOptions(buildFlags),
 
     devServer: {
+      host: '0.0.0.0',
+      allowedHosts: 'all',
       hot: buildFlags.static ? false : 'only',
       liveReload: !buildFlags.static,
       client: {
