@@ -64,7 +64,11 @@ export const SettingDropdownSelect = <
       ))}
       {...menuOptions}
     >
-      <div className={clsx(styles.root, className)} {...attrs}>
+      <div
+        data-testid="dropdown-select-trigger"
+        className={clsx(styles.root, className)}
+        {...attrs}
+      >
         <span className={styles.label}>{selectedItem?.label ?? ''}</span>
 
         <ArrowDownSmallIcon className={styles.icon} />

@@ -10,19 +10,21 @@ const config: PlaywrightTestConfig = {
   timeout: process.env.CI ? 60_000 : 30_000,
   outputDir: testResultDir,
   projects: [
-    {
-      name: 'Mobile Safari',
-      use: {
-        ...devices['iPhone 14'],
-      },
-    },
+    process.env.CI
+      ? {
+          name: 'Mobile Safari',
+          use: {
+            ...devices['iPhone 14'],
+          },
+        }
+      : undefined,
     {
       name: 'Mobile Chrome',
       use: {
         ...devices['Pixel 5'],
       },
     },
-  ],
+  ].filter(config => config !== undefined),
   expect: {
     timeout: process.env.CI ? 15_000 : 5_000,
   },

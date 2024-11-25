@@ -97,7 +97,8 @@ const MobileRichTextCell = ({
   const [open, setOpen] = useState(false);
   const name = useLiveData(cell.property.name$);
   return (
-    <PropertyValue onClick={() => setOpen(true)}>
+    <>
+      <PropertyValue onClick={() => setOpen(true)}></PropertyValue>
       <ConfigModal
         onBack={() => setOpen(false)}
         open={open}
@@ -125,7 +126,7 @@ const MobileRichTextCell = ({
         onChange={onChange}
         rowId={rowId}
       />
-    </PropertyValue>
+    </>
   );
 };
 

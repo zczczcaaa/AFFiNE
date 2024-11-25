@@ -10,7 +10,10 @@ export const RowLayout = ({
   href,
 }: PropsWithChildren<{ label: ReactNode; href?: string }>) => {
   const content = (
-    <ConfigModal.Row className={styles.baseSettingItem}>
+    <ConfigModal.Row
+      data-testid="setting-row"
+      className={styles.baseSettingItem}
+    >
       <div className={styles.baseSettingItemName}>{label}</div>
       <div className={styles.baseSettingItemAction}>
         {children ||

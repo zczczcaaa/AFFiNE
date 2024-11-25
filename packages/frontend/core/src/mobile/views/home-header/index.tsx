@@ -75,6 +75,7 @@ export const HomeHeader = () => {
           onClick={openSetting}
           size={28}
           icon={<SettingsIcon />}
+          data-testid="settings-button"
         />
       </SafeArea>
     </>

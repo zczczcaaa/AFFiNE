@@ -44,9 +44,6 @@ export const ConfigModal = ({
       animation="slideBottom"
       withoutCloseButton
       contentOptions={{
-        onClick: e => {
-          e.stopPropagation();
-        },
         className:
           variant === 'page'
             ? styles.pageModalContent
