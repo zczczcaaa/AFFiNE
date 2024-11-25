@@ -10,12 +10,19 @@ import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { assignInlineVars } from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
 import type { CSSProperties } from 'react';
-import { forwardRef, useCallback, useEffect, useState } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 import { startScopedViewTransition } from '../../utils';
 import type { IconButtonProps } from '../button';
 import { IconButton } from '../button';
 import { SafeArea } from '../safe-area';
+import { InsideModalContext, ModalConfigContext } from './context';
 import * as styles from './styles.css';
 
 export interface ModalProps extends DialogProps {
@@ -123,6 +130,7 @@ function createContainer() {
 
 export const ModalInner = forwardRef<HTMLDivElement, ModalProps>(
   (props, ref) => {
+    const modalConfig = useContext(ModalConfigContext);
     const {
       modal,
       portalOptions,
@@ -163,6 +171,10 @@ export const ModalInner = forwardRef<HTMLDivElement, ModalProps>(
     const [container, setContainer] = useState<ModalTransitionContainer | null>(
       null
     );
+
+    useEffect(() => {
+      modalConfig.onOpenChange?.(open ?? false);
+    }, [modalConfig, open]);
 
     useEffect(() => {
       if (open) {
@@ -304,10 +316,20 @@ export const ModalInner = forwardRef<HTMLDivElement, ModalProps>(
 ModalInner.displayName = 'ModalInner';
 
 export const Modal = forwardRef<HTMLDivElement, ModalProps>((props, ref) => {
+  const insideModal = useContext(InsideModalContext);
   if (!props.open) {
     return;
   }
-  return <ModalInner {...props} ref={ref} />;
+  return (
+    <InsideModalContext.Provider value={insideModal + 1}>
+      <ModalInner {...props} ref={ref} />
+    </InsideModalContext.Provider>
+  );
 });
 
 Modal.displayName = 'Modal';
+
+export const useIsInsideModal = () => {
+  const context = useContext(InsideModalContext);
+  return context > 0;
+};

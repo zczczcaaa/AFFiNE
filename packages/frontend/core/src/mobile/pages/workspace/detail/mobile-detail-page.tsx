@@ -7,9 +7,9 @@ import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-
 import { usePageDocumentTitle } from '@affine/core/components/hooks/use-global-state';
 import { useJournalRouteHelper } from '@affine/core/components/hooks/use-journal';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
-import { PageHeader } from '@affine/core/components/mobile';
 import { PageDetailEditor } from '@affine/core/components/page-detail-editor';
 import { DetailPageWrapper } from '@affine/core/desktop/pages/workspace/detail-page/detail-page-wrapper';
+import { PageHeader } from '@affine/core/mobile/components';
 import { EditorService } from '@affine/core/modules/editor';
 import { JournalService } from '@affine/core/modules/journal';
 import { WorkbenchService } from '@affine/core/modules/workbench';
@@ -202,19 +202,22 @@ const DetailPageImpl = () => {
   );
 };
 
-const skeleton = (
+const getSkeleton = (back: boolean) => (
   <>
-    <PageHeader back className={styles.header} />
+    <PageHeader back={back} className={styles.header} />
     <PageDetailSkeleton />
   </>
 );
-
-const notFound = (
+const getNotFound = (back: boolean) => (
   <>
-    <PageHeader back className={styles.header} />
+    <PageHeader back={back} className={styles.header} />
     Page Not Found (TODO)
   </>
 );
+const skeleton = getSkeleton(false);
+const skeletonWithBack = getSkeleton(true);
+const notFound = getNotFound(false);
+const notFoundWithBack = getNotFound(true);
 
 const MobileDetailPage = ({
   pageId,
@@ -237,12 +240,12 @@ const MobileDetailPage = ({
   return (
     <div className={styles.root}>
       <DetailPageWrapper
-        skeleton={skeleton}
-        notFound={notFound}
+        skeleton={date ? skeleton : skeletonWithBack}
+        notFound={date ? notFound : notFoundWithBack}
         pageId={pageId}
       >
         <PageHeader
-          back
+          back={!date}
           className={styles.header}
           suffix={
             <>

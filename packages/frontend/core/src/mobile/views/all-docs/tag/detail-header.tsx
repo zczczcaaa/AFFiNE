@@ -1,5 +1,5 @@
 import { IconButton, MobileMenu } from '@affine/component';
-import { PageHeader } from '@affine/core/components/mobile';
+import { PageHeader } from '@affine/core/mobile/components';
 import type { Tag } from '@affine/core/modules/tag';
 import { MoreHorizontalIcon } from '@blocksuite/icons/rc';
 import { useLiveData } from '@toeverything/infra';

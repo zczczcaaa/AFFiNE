@@ -18,6 +18,7 @@
 		9D90BE2D2CCB9876006677DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D90BE222CCB9876006677DB /* Main.storyboard */; };
 		9D90BE2E2CCB9876006677DB /* public in Resources */ = {isa = PBXBuildFile; fileRef = 9D90BE232CCB9876006677DB /* public */; };
 		C4C413792CBE705D00337889 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
+		E93B276C2CED92B1001409B8 /* NavigationGesturePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93B276B2CED92B1001409B8 /* NavigationGesturePlugin.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		9D90BE232CCB9876006677DB /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
+		E93B276B2CED92B1001409B8 /* NavigationGesturePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGesturePlugin.swift; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,7 +67,6 @@
 				504EC3051FED79650016851F /* Products */,
 				7F8756D8B27F46E3366F6CEA /* Pods */,
 				27E2DDA53C4D2A4D1A88CE4A /* Frameworks */,
-				9D6A85312CCF6D6B00DAB35F /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -101,6 +102,7 @@
 		9D90BE1A2CCB9876006677DB /* plugins */ = {
 			isa = PBXGroup;
 			children = (
+				E93B276A2CED9298001409B8 /* NavigationGesture */,
 				9D90BE192CCB9876006677DB /* Cookie */,
 			);
 			path = plugins;
@@ -120,6 +122,14 @@
 				9D90BE232CCB9876006677DB /* public */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		E93B276A2CED9298001409B8 /* NavigationGesture */ = {
+			isa = PBXGroup;
+			children = (
+				E93B276B2CED92B1001409B8 /* NavigationGesturePlugin.swift */,
+			);
+			path = NavigationGesture;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -234,6 +244,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E93B276C2CED92B1001409B8 /* NavigationGesturePlugin.swift in Sources */,
 				9D90BE252CCB9876006677DB /* CookieManager.swift in Sources */,
 				9D90BE262CCB9876006677DB /* CookiePlugin.swift in Sources */,
 				9D6A85332CCF6DA700DAB35F /* HashcashPlugin.swift in Sources */,

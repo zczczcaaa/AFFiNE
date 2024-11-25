@@ -1,4 +1,5 @@
 import { Button, Modal } from '@affine/component';
+import { PageHeader } from '@affine/core/mobile/components';
 import { useI18n } from '@affine/i18n';
 import clsx from 'clsx';
 import {
@@ -8,7 +9,6 @@ import {
   type ReactNode,
 } from 'react';
 
-import { PageHeader } from '../page-header';
 import * as styles from './styles.css';
 
 interface ConfigModalProps {

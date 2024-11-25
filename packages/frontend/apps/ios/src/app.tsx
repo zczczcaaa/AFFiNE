@@ -1,6 +1,7 @@
 import { AffineContext } from '@affine/core/components/context';
 import { AppFallback } from '@affine/core/mobile/components/app-fallback';
 import { configureMobileModules } from '@affine/core/mobile/modules';
+import { NavigationGestureProvider } from '@affine/core/mobile/modules/navigation-gesture';
 import { VirtualKeyboardProvider } from '@affine/core/mobile/modules/virtual-keyboard';
 import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
@@ -32,8 +33,10 @@ import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
 import { configureFetchProvider } from './fetch';
+import { ModalConfigProvider } from './modal-config';
 import { Cookie } from './plugins/cookie';
 import { Hashcash } from './plugins/hashcash';
+import { NavigationGesture } from './plugins/navigation-gesture';
 
 const future = {
   v7_startTransition: true,
@@ -86,6 +89,11 @@ framework.impl(VirtualKeyboardProvider, {
     Keyboard.removeAllListeners();
   },
 });
+framework.impl(NavigationGestureProvider, {
+  isEnabled: () => NavigationGesture.isEnabled(),
+  enable: () => NavigationGesture.enable(),
+  disable: () => NavigationGesture.disable(),
+});
 const frameworkProvider = framework.provider();
 
 // setup application lifecycle events, and emit application start event
@@ -132,11 +140,13 @@ export function App() {
       <FrameworkRoot framework={frameworkProvider}>
         <I18nProvider>
           <AffineContext store={getCurrentStore()}>
-            <RouterProvider
-              fallbackElement={<AppFallback />}
-              router={router}
-              future={future}
-            />
+            <ModalConfigProvider>
+              <RouterProvider
+                fallbackElement={<AppFallback />}
+                router={router}
+                future={future}
+              />
+            </ModalConfigProvider>
           </AffineContext>
         </I18nProvider>
       </FrameworkRoot>
