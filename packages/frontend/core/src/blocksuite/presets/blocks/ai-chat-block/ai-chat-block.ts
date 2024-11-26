@@ -11,7 +11,10 @@ import { ChatWithAIIcon } from '../_common/icon';
 import { AIChatBlockStyles } from './styles';
 
 @Peekable({
-  enableOn: ({ doc }: AIChatBlockComponent) => !doc.readonly,
+  enableOn: ({ doc }: AIChatBlockComponent) => {
+    // Disable on mobile and readonly mode
+    return !BUILD_CONFIG.isMobileEdition && !doc.readonly;
+  },
 })
 export class AIChatBlockComponent extends BlockComponent<AIChatBlockModel> {
   static override styles = AIChatBlockStyles;
