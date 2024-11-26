@@ -597,7 +597,7 @@ __metadata:
     "@magic-works/i18n-codegen": "npm:^0.6.0"
     dayjs: "npm:^1.11.11"
     glob: "npm:^11.0.0"
-    i18next: "npm:^23.11.1"
+    i18next: "npm:^24.0.0"
     react: "npm:^18.2.0"
     react-i18next: "npm:^15.0.0"
     undici: "npm:^6.12.0"
@@ -22304,12 +22304,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^23.11.1":
-  version: 23.16.5
-  resolution: "i18next@npm:23.16.5"
+"i18next@npm:^24.0.0":
+  version: 24.0.0
+  resolution: "i18next@npm:24.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.23.2"
-  checksum: 10/842b6d35d6e0822f1c8c3c2ca8af0fec9d8d9e37a54f63cdf42c0fcc7908d980082daff6ab77ad248324d2c45a0f1fe1e40efe23ba84d950722ece36b61d647c
+  peerDependencies:
+    typescript: ^5
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/f21a6820203aa50d62bf1fa5639459c3cf6bb705b0f07a425f7ab2aab2982245414a23c911b0d21d9b8e0e13920b3ed503dcf3dfa81ac24decb67f55973d28e4
   languageName: node
   linkType: hard
 
