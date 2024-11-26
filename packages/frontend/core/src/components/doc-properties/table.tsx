@@ -250,7 +250,7 @@ const DocWorkspacePropertiesTableBody = forwardRef<
     const workbenchService = useService(WorkbenchService);
     const viewService = useServiceOptional(ViewService);
     const properties = useLiveData(docsService.propertyList.sortedProperties$);
-    const [propertyCollapsed, setPropertyCollapsed] = useState(true);
+    const [addMoreCollapsed, setAddMoreCollapsed] = useState(true);
 
     const [newPropertyId, setNewPropertyId] = useState<string | null>(null);
 
@@ -262,6 +262,10 @@ const DocWorkspacePropertiesTableBody = forwardRef<
       [onPropertyAdded]
     );
 
+    const handleCollapseChange = useCallback(() => {
+      setNewPropertyId(null);
+    }, []);
+
     return (
       <PropertyCollapsibleSection
         ref={ref}
@@ -269,12 +273,13 @@ const DocWorkspacePropertiesTableBody = forwardRef<
         style={style}
         title={t.t('com.affine.workspace.properties')}
         defaultCollapsed={!defaultOpen}
+        onCollapseChange={handleCollapseChange}
         {...props}
       >
         <PropertyCollapsibleContent
           collapsible
-          collapsed={propertyCollapsed}
-          onCollapseChange={setPropertyCollapsed}
+          collapsed={addMoreCollapsed}
+          onCollapseChange={setAddMoreCollapsed}
           className={styles.tableBodySortable}
           collapseButtonText={({ hide, isCollapsed }) =>
             isCollapsed
