@@ -383,12 +383,12 @@ export const ExplorerTreeNode = ({
             e.preventDefault();
           }}
         >
-          {inlineOperations.map(({ view }, index) => (
+          {inlineOperations.map(({ view, index }) => (
             <Fragment key={index}>{view}</Fragment>
           ))}
           {menuOperations.length > 0 && (
             <Menu
-              items={menuOperations.map(({ view }, index) => (
+              items={menuOperations.map(({ view, index }) => (
                 <Fragment key={index}>{view}</Fragment>
               ))}
             >

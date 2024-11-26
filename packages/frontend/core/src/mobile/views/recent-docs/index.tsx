@@ -31,8 +31,8 @@ export const RecentDocs = ({ max = 5 }: { max?: number }) => {
     >
       <div className={styles.scroll} data-testid="recent-docs-list">
         <ul className={styles.list}>
-          {cardMetas.map((doc, index) => (
-            <li key={index} className={styles.cardWrapper}>
+          {cardMetas.map(doc => (
+            <li key={doc.id} className={styles.cardWrapper}>
               <DocCard meta={doc} />
             </li>
           ))}

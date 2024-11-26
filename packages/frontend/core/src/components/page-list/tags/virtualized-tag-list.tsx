@@ -36,8 +36,8 @@ export const VirtualizedTagList = ({
   );
 
   const filteredSelectedTagIds = useMemo(() => {
-    const ids = tags.map(tag => tag.id);
-    return selectedTagIds.filter(id => ids.includes(id));
+    const ids = new Set(tags.map(tag => tag.id));
+    return selectedTagIds.filter(id => ids.has(id));
   }, [selectedTagIds, tags]);
 
   const hideFloatingToolbar = useCallback(() => {

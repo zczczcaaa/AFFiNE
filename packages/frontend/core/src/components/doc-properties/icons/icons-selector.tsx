@@ -26,9 +26,9 @@ const IconsSelectorPanel = ({
       </div>
       <Scrollable.Viewport className={styles.iconsContainerScrollable}>
         <div className={styles.iconsContainer}>
-          {iconRows.map((iconRow, index) => {
+          {iconRows.map(iconRow => {
             return (
-              <div key={index} className={styles.iconsRow}>
+              <div key={iconRow.join('-')} className={styles.iconsRow}>
                 {iconRow.map(iconName => {
                   const Icon = iconNameToComponent(iconName);
                   return (

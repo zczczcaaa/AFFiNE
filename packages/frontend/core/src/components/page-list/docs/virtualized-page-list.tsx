@@ -83,8 +83,8 @@ export const VirtualizedPageList = ({
   }, [filteredPageMetas, listItem]);
 
   const filteredSelectedPageIds = useMemo(() => {
-    const ids = pageMetasToRender.map(page => page.id);
-    return selectedPageIds.filter(id => ids.includes(id));
+    const ids = new Set(pageMetasToRender.map(page => page.id));
+    return selectedPageIds.filter(id => ids.has(id));
   }, [pageMetasToRender, selectedPageIds]);
 
   const hideFloatingToolbar = useCallback(() => {

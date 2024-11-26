@@ -63,8 +63,8 @@ export const VirtualizedCollectionList = ({
   });
 
   const filteredSelectedCollectionIds = useMemo(() => {
-    const ids = collections.map(collection => collection.id);
-    return selectedCollectionIds.filter(id => ids.includes(id));
+    const ids = new Set(collections.map(collection => collection.id));
+    return selectedCollectionIds.filter(id => ids.has(id));
   }, [collections, selectedCollectionIds]);
 
   const hideFloatingToolbar = useCallback(() => {

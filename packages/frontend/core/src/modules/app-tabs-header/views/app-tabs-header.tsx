@@ -39,7 +39,7 @@ import {
 } from '../services/app-tabs-header-service';
 import * as styles from './styles.css';
 
-const TabSupportType = ['collection', 'tag', 'doc'];
+const TabSupportType = new Set(['collection', 'tag', 'doc']);
 
 const tabCanDrop =
   (tab?: TabStatus): NonNullable<DropTargetOptions<AffineDNDData>['canDrop']> =>
@@ -53,7 +53,7 @@ const tabCanDrop =
 
     if (
       ctx.source.data.entity?.type &&
-      TabSupportType.includes(ctx.source.data.entity?.type)
+      TabSupportType.has(ctx.source.data.entity?.type)
     ) {
       return true;
     }

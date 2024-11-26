@@ -584,17 +584,17 @@ export function patchForMobile() {
       // Disable some toolbar widgets for mobile.
       {
         di.override(WidgetViewMapIdentifier('affine:page'), () => {
-          const ignoreWidgets = [
+          const ignoreWidgets = new Set([
             AFFINE_FORMAT_BAR_WIDGET,
             AFFINE_EMBED_CARD_TOOLBAR_WIDGET,
-          ];
+          ]);
 
           type pageRootWidgetViewMapKey = keyof typeof pageRootWidgetViewMap;
           return (
             Object.keys(pageRootWidgetViewMap) as pageRootWidgetViewMapKey[]
           ).reduce(
             (acc, key) => {
-              if (ignoreWidgets.includes(key)) return acc;
+              if (ignoreWidgets.has(key)) return acc;
               acc[key] = pageRootWidgetViewMap[key];
               return acc;
             },

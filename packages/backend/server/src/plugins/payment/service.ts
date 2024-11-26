@@ -64,10 +64,10 @@ export function decodeLookupKey(
   ];
 }
 
-const SubscriptionActivated: Stripe.Subscription.Status[] = [
+const SubscriptionActivated: Set<Stripe.Subscription.Status> = new Set([
   SubscriptionStatus.Active,
   SubscriptionStatus.Trialing,
-];
+]);
 
 export enum CouponType {
   ProEarlyAccessOneYearFree = 'pro_ea_one_year_free',
@@ -750,7 +750,7 @@ export class SubscriptionService {
 
     const [plan, recurring, variant] =
       this.decodePlanFromSubscription(subscription);
-    const planActivated = SubscriptionActivated.includes(subscription.status);
+    const planActivated = SubscriptionActivated.has(subscription.status);
 
     // update features first, features modify are idempotent
     // so there is no need to skip if a subscription already exists.

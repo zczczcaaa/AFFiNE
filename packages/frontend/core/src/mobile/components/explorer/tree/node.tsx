@@ -116,7 +116,7 @@ export const ExplorerTreeNode = ({
             }}
           >
             <MobileMenu
-              items={menuOperations.map(({ view }, index) => (
+              items={menuOperations.map(({ view, index }) => (
                 <Fragment key={index}>{view}</Fragment>
               ))}
             >

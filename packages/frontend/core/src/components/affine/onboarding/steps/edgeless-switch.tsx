@@ -210,6 +210,7 @@ export const EdgelessSwitch = ({
               {
                 /* render blocks */
                 article.blocks.map((block, key) => {
+                  // eslint-disable-next-line react/no-array-index-key
                   return <OnboardingBlock key={key} mode={mode} {...block} />;
                 })
               }

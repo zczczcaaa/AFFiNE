@@ -213,7 +213,7 @@ export const Form = () => {
       <div className="py-2 px-0 text-sm mt-16 max-lg:mt-5 relative">
         {Array.from({ length: count }).map((_, index) => (
           <span
-            key={index}
+            key={`${index}`}
             className={`inline-block w-16 h-1 rounded mr-1 ${
               index <= current - 1
                 ? 'bg-primary'

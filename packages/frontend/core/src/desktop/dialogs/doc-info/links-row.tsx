@@ -21,9 +21,9 @@ export const LinksRow = ({
       title={`${label} · ${references.length}`}
       className={className}
     >
-      {references.map((link, index) => (
+      {references.map(link => (
         <AffinePageReference
-          key={index}
+          key={link.docId}
           pageId={link.docId}
           params={'params' in link ? link.params : undefined}
           className={styles.wrapper}
