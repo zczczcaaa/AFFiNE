@@ -7,6 +7,7 @@ import { Tooltip } from '@affine/component/ui/tooltip';
 import { WorkspaceAvatar } from '@affine/component/workspace-avatar';
 import { UserPlanButton } from '@affine/core/components/affine/auth/user-plan-button';
 import { authAtom } from '@affine/core/components/atoms';
+import { useCatchEventCallback } from '@affine/core/components/hooks/use-catch-event-hook';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
 import { AuthService } from '@affine/core/modules/cloud';
 import { UserFeatureService } from '@affine/core/modules/cloud/services/user-feature';
@@ -38,11 +39,24 @@ import * as style from './style.css';
 
 export type UserInfoProps = {
   onAccountSettingClick: () => void;
+  onTabChange: (
+    key: SettingTab,
+    workspaceMetadata: WorkspaceMetadata | null
+  ) => void;
   active?: boolean;
 };
 
-export const UserInfo = ({ onAccountSettingClick, active }: UserInfoProps) => {
+export const UserInfo = ({
+  onAccountSettingClick,
+  onTabChange,
+  active,
+}: UserInfoProps) => {
   const account = useLiveData(useService(AuthService).session.account$);
+
+  const onClick = useCatchEventCallback(() => {
+    onTabChange('plans', null);
+  }, [onTabChange]);
+
   if (!account) {
     // TODO(@eyhn): loading ui
     return;
@@ -68,7 +82,7 @@ export const UserInfo = ({ onAccountSettingClick, active }: UserInfoProps) => {
           <div className="name" title={account.label}>
             {account.label}
           </div>
-          <UserPlanButton />
+          <UserPlanButton onClick={onClick} />
         </div>
 
         <div className="email" title={account.email}>
@@ -193,6 +207,7 @@ export const SettingSidebar = ({
             <UserInfo
               onAccountSettingClick={onAccountSettingClick}
               active={activeTab === 'account'}
+              onTabChange={onTabChange}
             />
           </Suspense>
         ) : null}

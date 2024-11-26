@@ -30,6 +30,7 @@ import {
 } from '../../modules/cloud';
 import { UserPlanButton } from '../affine/auth/user-plan-button';
 import { useSignOut } from '../hooks/affine/use-sign-out';
+import { useCatchEventCallback } from '../hooks/use-catch-event-hook';
 import * as styles from './index.css';
 import { UnknownUserIcon } from './unknow-user';
 
@@ -113,6 +114,14 @@ const CloudUsage = () => {
   const quota = useService(UserQuotaService).quota;
   const quotaError = useLiveData(quota.error$);
 
+  const globalDialogService = useService(GlobalDialogService);
+  const handleClick = useCatchEventCallback(() => {
+    globalDialogService.open('setting', {
+      activeTab: 'plans',
+      scrollAnchor: 'cloudPricingPlan',
+    });
+  }, [globalDialogService]);
+
   useEffect(() => {
     // revalidate quota to get the latest status
     quota.revalidate();
@@ -150,7 +159,7 @@ const CloudUsage = () => {
           <span>&nbsp;/&nbsp;</span>
           <span>{maxFormatted}</span>
         </div>
-        <UserPlanButton />
+        <UserPlanButton onClick={handleClick} />
       </div>
 
       <div className={styles.cloudUsageBar}>

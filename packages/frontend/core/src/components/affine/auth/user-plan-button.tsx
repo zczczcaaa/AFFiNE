@@ -1,10 +1,8 @@
 import { Tooltip } from '@affine/component/ui/tooltip';
-import { useCatchEventCallback } from '@affine/core/components/hooks/use-catch-event-hook';
-import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { SubscriptionPlan } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
-import { useLiveData, useService, useServices } from '@toeverything/infra';
-import { useEffect } from 'react';
+import { useLiveData, useServices } from '@toeverything/infra';
+import { type SyntheticEvent, useEffect } from 'react';
 
 import {
   ServerConfigService,
@@ -12,7 +10,11 @@ import {
 } from '../../../modules/cloud';
 import * as styles from './style.css';
 
-export const UserPlanButton = () => {
+export const UserPlanButton = ({
+  onClick,
+}: {
+  onClick: (e: SyntheticEvent<Element, Event>) => void;
+}) => {
   const { serverConfigService, subscriptionService } = useServices({
     ServerConfigService,
     SubscriptionService,
@@ -34,14 +36,6 @@ export const UserPlanButton = () => {
     subscriptionService.subscription.revalidate();
   }, [subscriptionService]);
 
-  const globalDialogService = useService(GlobalDialogService);
-  const handleClick = useCatchEventCallback(() => {
-    globalDialogService.open('setting', {
-      activeTab: 'plans',
-      scrollAnchor: 'cloudPricingPlan',
-    });
-  }, [globalDialogService]);
-
   const t = useI18n();
 
   if (!hasPayment) {
@@ -61,7 +55,7 @@ export const UserPlanButton = () => {
       <div
         data-is-believer={isBeliever ? 'true' : undefined}
         className={styles.userPlanButton}
-        onClick={handleClick}
+        onClick={onClick}
         data-event-props="$.settingsPanel.profileAndBadge.viewPlans"
       >
         {planLabel}

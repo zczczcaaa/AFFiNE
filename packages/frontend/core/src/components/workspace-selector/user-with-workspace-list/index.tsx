@@ -16,6 +16,7 @@ import {
 import { useSetAtom } from 'jotai';
 import { useCallback } from 'react';
 
+import { useCatchEventCallback } from '../../hooks/use-catch-event-hook';
 import { AddWorkspace } from './add-workspace';
 import * as styles from './index.css';
 import { UserAccountItem } from './user-account';
@@ -129,12 +130,20 @@ const UserWithWorkspaceListInner = ({
   const workspaceManager = useService(WorkspacesService);
   const workspaces = useLiveData(workspaceManager.list.workspaces$);
 
+  const onOpenPricingPlan = useCatchEventCallback(() => {
+    globalDialogService.open('setting', {
+      activeTab: 'plans',
+      scrollAnchor: 'cloudPricingPlan',
+    });
+  }, [globalDialogService]);
+
   return (
     <div className={styles.workspaceListWrapper}>
       {isAuthenticated ? (
         <UserAccountItem
           email={session.session.account.email ?? 'Unknown User'}
           onEventEnd={onEventEnd}
+          onClick={onOpenPricingPlan}
         />
       ) : (
         <SignInItem />
