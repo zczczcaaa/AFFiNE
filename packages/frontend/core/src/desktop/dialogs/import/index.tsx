@@ -5,6 +5,7 @@ import type {
   WORKSPACE_DIALOG_SCHEMA,
 } from '@affine/core/modules/dialogs';
 import { UrlService } from '@affine/core/modules/url';
+import { DebugLogger } from '@affine/debug';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import {
@@ -29,6 +30,8 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { type ReactElement, useCallback, useState } from 'react';
 
 import * as style from './styles.css';
+
+const logger = new DebugLogger('import');
 
 type ImportType = 'markdown' | 'markdownZip' | 'notion' | 'snapshot' | 'html';
 type AcceptType = 'Markdown' | 'Zip' | 'Html';
@@ -421,6 +424,7 @@ export const ImportDialog = ({
           status: 'failed',
           error: errorMessage || undefined,
         });
+        logger.error('Failed to import', error);
       }
     },
     [docCollection, t]
