@@ -8,7 +8,7 @@
     "@aws-sdk/client-s3": "^3.620.0",
     "@blocksuite/affine": "0.18.0",
     "@clack/core": "^0.3.4",
-    "@clack/prompts": "^0.7.0",
+    "@clack/prompts": "^0.8.0",
     "@magic-works/i18n-codegen": "^0.6.0",
     "@napi-rs/simple-git": "^0.1.16",
     "@perfsee/webpack": "^1.12.2",
@@ -35,7 +35,7 @@
     "tailwindcss": "^3.4.4",
     "terser-webpack-plugin": "^5.3.10",
     "ts-node": "^10.9.2",
-    "vite": "^5.2.8",
+    "vite": "^6.0.1",
     "webpack": "^5.91.0",
     "webpack-dev-server": "^5.0.4",
     "webpack-merge": "^6.0.0"

@@ -4,7 +4,7 @@
   "type": "module",
   "devDependencies": {
     "@blocksuite/affine": "0.18.0",
-    "vitest": "2.1.4"
+    "vitest": "2.1.6"
   },
   "exports": {
     "./automation": "./src/automation.ts",

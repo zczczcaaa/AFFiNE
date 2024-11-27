@@ -261,8 +261,9 @@ export const RulesMode = ({
               }}
             >
               Selected
-              <span className={styles.previewCountTipsHighlight}>count</span>,
-              filtered
+              <span className={styles.previewCountTipsHighlight}>
+                count
+              </span>, filtered
               <span className={styles.previewCountTipsHighlight}>count</span>
             </Trans>
           </div>
