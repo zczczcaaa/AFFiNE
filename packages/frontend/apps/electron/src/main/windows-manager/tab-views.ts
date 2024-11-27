@@ -836,6 +836,12 @@ export class WebContentViewsManager {
 
     if (spellCheckSettings.enabled) {
       view.webContents.on('context-menu', (_event, params) => {
+        const shouldShow =
+          params.misspelledWord && params.dictionarySuggestions.length > 0;
+
+        if (!shouldShow) {
+          return;
+        }
         const menu = new Menu();
 
         // Add each spelling suggestion
