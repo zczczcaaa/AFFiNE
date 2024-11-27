@@ -13,22 +13,27 @@ export class DocRecordList extends Entity {
 
   private readonly pool = new Map<string, DocRecord>();
 
-  public readonly docs$ = LiveData.from<DocRecord[]>(
+  public readonly docsMap$ = LiveData.from<Map<string, DocRecord>>(
     this.store.watchDocIds().pipe(
-      map(ids =>
-        ids.map(id => {
-          const exists = this.pool.get(id);
-          if (exists) {
-            return exists;
-          }
-          const record = this.framework.createEntity(DocRecord, { id });
-          this.pool.set(id, record);
-          return record;
-        })
+      map(
+        ids =>
+          new Map(
+            ids.map(id => {
+              const exists = this.pool.get(id);
+              if (exists) {
+                return [id, exists];
+              }
+              const record = this.framework.createEntity(DocRecord, { id });
+              this.pool.set(id, record);
+              return [id, record];
+            })
+          )
       )
     ),
-    []
+    new Map()
   );
+
+  public readonly docs$ = this.docsMap$.selector(d => Array.from(d.values()));
 
   public readonly trashDocs$ = LiveData.from<DocRecord[]>(
     this.store.watchTrashDocIds().pipe(
@@ -53,7 +58,7 @@ export class DocRecordList extends Entity {
   );
 
   public doc$(id: string) {
-    return this.docs$.map(record => record.find(record => record.id === id));
+    return this.docsMap$.selector(map => map.get(id));
   }
 
   public setPrimaryMode(id: string, mode: DocMode) {

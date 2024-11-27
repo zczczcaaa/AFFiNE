@@ -32,7 +32,7 @@ export class DocsStore extends Store {
       switchMap(yjsObserve),
       map(meta => {
         if (meta instanceof YArray) {
-          return meta.map(v => v.get('id'));
+          return meta.map(v => v.get('id') as string);
         } else {
           return [];
         }
@@ -59,6 +59,7 @@ export class DocsStore extends Store {
   }
 
   watchDocMeta(id: string) {
+    let docMetaIndexCache = -1;
     return yjsObserveByPath(
       this.workspaceService.workspace.rootYDoc.getMap('meta'),
       'pages'
@@ -66,13 +67,23 @@ export class DocsStore extends Store {
       switchMap(yjsObserve),
       map(meta => {
         if (meta instanceof YArray) {
-          let docMetaYMap = null as YMap<any> | null;
-          meta.forEach(doc => {
-            if (doc.get('id') === id) {
-              docMetaYMap = doc;
+          if (docMetaIndexCache >= 0) {
+            const doc = meta.get(docMetaIndexCache);
+            if (doc && doc.get('id') === id) {
+              return doc as YMap<any>;
             }
-          });
-          return docMetaYMap;
+          }
+
+          // meta is YArray, `for-of` is faster then `for`
+          let i = 0;
+          for (const doc of meta) {
+            if (doc && doc.get('id') === id) {
+              docMetaIndexCache = i;
+              return doc as YMap<any>;
+            }
+            i++;
+          }
+          return null;
         } else {
           return null;
         }
