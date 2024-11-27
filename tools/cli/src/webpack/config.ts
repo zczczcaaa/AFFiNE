@@ -149,6 +149,12 @@ export const createConfiguration: (
       alias: {
         yjs: join(workspaceRoot, 'node_modules', 'yjs'),
         lit: join(workspaceRoot, 'node_modules', 'lit'),
+        '@preact/signals-core': join(
+          workspaceRoot,
+          'node_modules',
+          '@preact',
+          'signals-core'
+        ),
       },
     },
 

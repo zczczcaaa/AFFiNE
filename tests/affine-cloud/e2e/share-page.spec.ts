@@ -290,7 +290,7 @@ test('The reference links in the shared page should be accessible normally and c
   const linkedPagePopover = page.locator('.linked-doc-popover');
   await expect(linkedPagePopover).toBeVisible();
   await page.keyboard.type('Test linked doc', { delay: 50 });
-  await page.keyboard.press('Enter');
+  await page.locator('icon-button:has-text("Test linked doc")').first().click();
 
   // enable share page and copy page link
   await enableShare(page);

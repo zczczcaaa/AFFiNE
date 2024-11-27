@@ -331,3 +331,90 @@ test('allow switching to embed view when linking to the other document with mode
   url2.searchParams.delete('refreshKey');
   expect(url.toJSON()).toStrictEqual(url2.toJSON());
 });
+
+test('@ popover should show today menu item', async ({ page }) => {
+  await page.keyboard.press('Enter');
+  await waitForEmptyEditor(page);
+  await page.keyboard.press('@');
+  await expect(page.locator('.linked-doc-popover')).toBeVisible();
+  const todayMenuItem = page.locator('.linked-doc-popover').getByText('Today');
+  await expect(todayMenuItem).toBeVisible();
+
+  const textContent = await todayMenuItem.locator('span').textContent();
+  await todayMenuItem.click();
+  const date = textContent?.trim();
+
+  // a affine-reference should be created with name date
+  await expect(
+    page.locator('affine-reference:has-text("' + date + '")')
+  ).toBeVisible();
+});
+
+test('@ popover with input=tmr', async ({ page }) => {
+  await page.keyboard.press('Enter');
+  await waitForEmptyEditor(page);
+  await page.keyboard.press('@');
+  await page.keyboard.type('tmr');
+  await expect(page.locator('.linked-doc-popover')).toBeVisible();
+  const tomorrowMenuItem = page
+    .locator('.linked-doc-popover')
+    .getByText('Tomorrow');
+  await expect(tomorrowMenuItem).toBeVisible();
+
+  const textContent = await tomorrowMenuItem.locator('span').textContent();
+  await tomorrowMenuItem.click();
+
+  // a affine-reference should be created with name date
+  await expect(
+    page.locator('affine-reference:has-text("' + textContent + '")')
+  ).toBeVisible();
+});
+
+test('@ popover with input=dec should create a reference with a December date', async ({
+  page,
+}) => {
+  await page.keyboard.press('Enter');
+  await waitForEmptyEditor(page);
+  await page.keyboard.press('@');
+  await page.keyboard.type('dc');
+
+  const decemberMenuItem = page.locator(
+    '.linked-doc-popover icon-button:has-text("Dec")'
+  );
+  await expect(decemberMenuItem).toBeVisible();
+
+  const textContent = await decemberMenuItem
+    .locator('.text-container')
+    .textContent();
+  await decemberMenuItem.click();
+
+  // a affine-reference should be created with name date
+  await expect(
+    page.locator('affine-reference:has-text("' + textContent + '")')
+  ).toBeVisible();
+});
+
+test('@ popover with click "select a specific date" should show a date picker', async ({
+  page,
+}) => {
+  await page.keyboard.press('Enter');
+  await waitForEmptyEditor(page);
+  await page.keyboard.press('@');
+
+  const todayMenuItem = page.locator('.linked-doc-popover').getByText('Today');
+  await expect(todayMenuItem).toBeVisible();
+
+  const textContent = await todayMenuItem.locator('span').textContent();
+  const date = textContent?.trim();
+
+  await page.locator('icon-button:has-text("Select a specific date")').click();
+  await expect(
+    page.locator('[data-is-date-cell][data-is-today=true]')
+  ).toBeVisible();
+  await page.locator('[data-is-date-cell][data-is-today=true]').click();
+
+  // a affine-reference should be created with name date
+  await expect(
+    page.locator('affine-reference:has-text("' + date + '")')
+  ).toBeVisible();
+});

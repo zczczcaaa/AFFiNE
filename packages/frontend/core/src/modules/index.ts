@@ -2,6 +2,7 @@ import { configureQuotaModule } from '@affine/core/modules/quota';
 import { configureInfraModules, type Framework } from '@toeverything/infra';
 
 import { configureAppSidebarModule } from './app-sidebar';
+import { configAtMenuConfigModule } from './at-menu-config';
 import { configureCloudModule } from './cloud';
 import { configureCollectionModule } from './collection';
 import { configureDialogModule } from './dialogs';
@@ -67,4 +68,5 @@ export function configureCommonModules(framework: Framework) {
   configureDialogModule(framework);
   configureDocInfoModule(framework);
   configureOpenInApp(framework);
+  configAtMenuConfigModule(framework);
 }

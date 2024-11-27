@@ -51,6 +51,10 @@ export type WORKSPACE_DIALOG_SCHEMA = {
     init: string[];
     onBeforeConfirm?: (ids: string[], cb: () => void) => void;
   }) => string[];
+  'date-selector': (props: {
+    position: [number, number, number, number]; // [x, y, width, height]
+    onSelect?: (date?: string) => void;
+  }) => string;
   import: () => {
     docIds: string[];
     entryId?: string;

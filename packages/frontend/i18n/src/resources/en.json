@@ -1372,6 +1372,8 @@
   "com.affine.toastMessage.successfullyDeleted": "Successfully deleted",
   "com.affine.today": "Today",
   "com.affine.tomorrow": "Tomorrow",
+  "com.affine.last-week": "Last {{weekday}}",
+  "com.affine.next-week": "Next {{weekday}}",
   "com.affine.top-tip.mobile": "Limited to view-only on mobile.",
   "com.affine.trashOperation.delete": "Delete",
   "com.affine.trashOperation.delete.description": "Once deleted, you can't undo this action. Do you confirm?",
@@ -1470,5 +1472,12 @@
   "com.affine.m.selector.journal-menu.conflicts": "Duplicate Entries in Today's Journal",
   "com.affine.attachment.preview.error.title": "Unable to preview this file",
   "com.affine.attachment.preview.error.subtitle": "file type not supported.",
-  "com.affine.pdf.page.render.error": "Failed to render page."
+  "com.affine.pdf.page.render.error": "Failed to render page.",
+  "com.affine.editor.at-menu.link-to-doc": "Link to Doc",
+  "com.affine.editor.at-menu.new-doc": "New Doc",
+  "com.affine.editor.at-menu.create-doc": "Create \"{{name}}\" Doc",
+  "com.affine.editor.at-menu.import": "Import",
+  "com.affine.editor.at-menu.more-docs-hint": "{{count}} more docs",
+  "com.affine.editor.at-menu.journal": "Journal",
+  "com.affine.editor.at-menu.date-picker": "Select a specific date"
 }

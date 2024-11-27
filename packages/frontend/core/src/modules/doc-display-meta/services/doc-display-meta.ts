@@ -90,10 +90,38 @@ export class DocDisplayMetaService extends Service {
     super();
   }
 
+  getJournalIcon(
+    journalDate: string | Dayjs,
+    options?: DocDisplayIconOptions<'rc'>
+  ): typeof TodayIcon;
+
+  getJournalIcon(
+    journalDate: string | Dayjs,
+    options?: DocDisplayIconOptions<'lit'>
+  ): typeof LitYesterdayIcon;
+
+  getJournalIcon<T extends IconType = 'rc'>(
+    journalDate: string | Dayjs,
+    options?: DocDisplayIconOptions<T>
+  ): T extends 'rc' ? typeof TodayIcon : typeof LitTodayIcon;
+
+  getJournalIcon<T extends IconType = 'rc'>(
+    journalDate: string | Dayjs,
+    options?: DocDisplayIconOptions<T>
+  ) {
+    const iconSet = icons[options?.type ?? 'rc'];
+    const day = dayjs(journalDate);
+    return day.isBefore(dayjs(), 'day')
+      ? iconSet.YesterdayIcon
+      : day.isAfter(dayjs(), 'day')
+        ? iconSet.TomorrowIcon
+        : iconSet.TodayIcon;
+  }
+
   icon$<T extends IconType = 'rc'>(
     docId: string,
     options?: DocDisplayIconOptions<T>
-  ): LiveData<T extends 'lit' ? typeof LitTodayIcon : typeof TodayIcon> {
+  ) {
     const iconSet = icons[options?.type ?? 'rc'];
 
     return LiveData.computed(get => {
@@ -113,13 +141,7 @@ export class DocDisplayMetaService extends Service {
         this.journalService.journalDate$(docId).value
       );
       if (journalDate) {
-        if (!options?.compareDate) return iconSet.TodayIcon;
-        const compareDate = dayjs(options?.compareDate);
-        return journalDate.isBefore(compareDate, 'day')
-          ? iconSet.YesterdayIcon
-          : journalDate.isAfter(compareDate, 'day')
-            ? iconSet.TomorrowIcon
-            : iconSet.TodayIcon;
+        return this.getJournalIcon(journalDate, options);
       }
 
       // reference icon

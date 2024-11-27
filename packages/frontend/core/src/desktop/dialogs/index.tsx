@@ -15,6 +15,7 @@ import { ImportDialog } from './import';
 import { ImportTemplateDialog } from './import-template';
 import { ImportWorkspaceDialog } from './import-workspace';
 import { CollectionSelectorDialog } from './selectors/collection';
+import { DateSelectorDialog } from './selectors/date';
 import { DocSelectorDialog } from './selectors/doc';
 import { TagSelectorDialog } from './selectors/tag';
 import { SettingDialog } from './setting';
@@ -36,6 +37,7 @@ const WORKSPACE_DIALOGS = {
   'tag-selector': TagSelectorDialog,
   'doc-selector': DocSelectorDialog,
   'collection-selector': CollectionSelectorDialog,
+  'date-selector': DateSelectorDialog,
   import: ImportDialog,
 } satisfies {
   [key in keyof WORKSPACE_DIALOG_SCHEMA]?: React.FC<
