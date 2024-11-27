@@ -8,6 +8,11 @@ import { SyncAwareness } from '@affine/core/components/affine/awareness';
 import { useRegisterFindInPageCommands } from '@affine/core/components/hooks/affine/use-register-find-in-page-commands';
 import { useRegisterWorkspaceCommands } from '@affine/core/components/hooks/use-register-workspace-commands';
 import { OverCapacityNotification } from '@affine/core/components/over-capacity';
+import {
+  EventSourceService,
+  FetchService,
+  GraphQLService,
+} from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { useRegisterNavigationCommands } from '@affine/core/modules/navigation/view/use-register-navigation-commands';
@@ -37,6 +42,9 @@ import {
   timeout,
 } from 'rxjs';
 import { Map as YMap } from 'yjs';
+
+import { CopilotClient } from '../blocksuite/block-suite-editor/ai/copilot-client';
+import { setupAIProvider } from '../blocksuite/block-suite-editor/ai/setup-provider';
 
 /**
  * @deprecated just for legacy code, will be removed in the future
@@ -128,6 +136,23 @@ export const WorkspaceSideEffects = () => {
       disposable.dispose();
     };
   }, [globalDialogService]);
+
+  const graphqlService = useService(GraphQLService);
+  const eventSourceService = useService(EventSourceService);
+  const fetchService = useService(FetchService);
+
+  useEffect(() => {
+    const dispose = setupAIProvider(
+      new CopilotClient(
+        graphqlService.gql,
+        fetchService.fetch,
+        eventSourceService.eventSource
+      )
+    );
+    return () => {
+      dispose();
+    };
+  }, [eventSourceService, fetchService, graphqlService]);
 
   useRegisterWorkspaceCommands();
   useRegisterNavigationCommands();

@@ -13,6 +13,7 @@ export { WebSocketAuthProvider } from './provider/websocket-auth';
 export { AccountChanged, AuthService } from './services/auth';
 export { CaptchaService } from './services/captcha';
 export { DefaultServerService } from './services/default-server';
+export { EventSourceService } from './services/eventsource';
 export { FetchService } from './services/fetch';
 export { GraphQLService } from './services/graphql';
 export { InvoicesService } from './services/invoices';
@@ -53,6 +54,7 @@ import { AuthService } from './services/auth';
 import { CaptchaService } from './services/captcha';
 import { CloudDocMetaService } from './services/cloud-doc-meta';
 import { DefaultServerService } from './services/default-server';
+import { EventSourceService } from './services/eventsource';
 import { FetchService } from './services/fetch';
 import { GraphQLService } from './services/graphql';
 import { InvoicesService } from './services/invoices';
@@ -84,6 +86,7 @@ export function configureCloudModule(framework: Framework) {
     .scope(ServerScope)
     .service(ServerService, [ServerScope])
     .service(FetchService, [RawFetchProvider, ServerService])
+    .service(EventSourceService, [ServerService])
     .service(GraphQLService, [FetchService])
     .service(
       WebSocketService,

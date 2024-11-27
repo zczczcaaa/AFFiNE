@@ -7,10 +7,10 @@ import {
   getCopilotHistoriesQuery,
   getCopilotHistoryIdsQuery,
   getCopilotSessionsQuery,
-  gqlFetcherFactory,
   GraphQLError,
   type GraphQLQuery,
   type QueryOptions,
+  type QueryResponse,
   type RequestOptions,
   UserFriendlyError,
 } from '@affine/graphql';
@@ -20,26 +20,6 @@ import {
   UnauthorizedError,
 } from '@blocksuite/affine/blocks';
 import { getCurrentStore } from '@toeverything/infra';
-
-/**
- * @deprecated will be removed soon
- */
-export function getBaseUrl(): string {
-  if (BUILD_CONFIG.isElectron || BUILD_CONFIG.isIOS || BUILD_CONFIG.isAndroid) {
-    return BUILD_CONFIG.serverUrlPrefix;
-  }
-  if (typeof window === 'undefined') {
-    // is nodejs
-    return '';
-  }
-  const { protocol, hostname, port } = window.location;
-  return `${protocol}//${hostname}${port ? `:${port}` : ''}`;
-}
-
-/**
- * @deprecated will be removed soon
- */
-const defaultFetcher = gqlFetcherFactory(getBaseUrl() + '/graphql');
 
 type OptionsField<T extends GraphQLQuery> =
   RequestOptions<T>['variables'] extends { options: infer U } ? U : never;
@@ -76,23 +56,22 @@ export function handleError(src: any) {
   return err;
 }
 
-const fetcher = async <Query extends GraphQLQuery>(
-  options: QueryOptions<Query>
-) => {
-  try {
-    return await defaultFetcher<Query>(options);
-  } catch (err) {
-    throw handleError(err);
-  }
-};
-
 export class CopilotClient {
-  readonly backendUrl = getBaseUrl();
+  constructor(
+    readonly gql: <Query extends GraphQLQuery>(
+      options: QueryOptions<Query>
+    ) => Promise<QueryResponse<Query>>,
+    readonly fetcher: (input: string, init?: RequestInit) => Promise<Response>,
+    readonly eventSource: (
+      url: string,
+      eventSourceInitDict?: EventSourceInit
+    ) => EventSource
+  ) {}
 
   async createSession(
     options: OptionsField<typeof createCopilotSessionMutation>
   ) {
-    const res = await fetcher({
+    const res = await this.gql({
       query: createCopilotSessionMutation,
       variables: {
         options,
@@ -102,7 +81,7 @@ export class CopilotClient {
   }
 
   async forkSession(options: OptionsField<typeof forkCopilotSessionMutation>) {
-    const res = await fetcher({
+    const res = await this.gql({
       query: forkCopilotSessionMutation,
       variables: {
         options,
@@ -114,7 +93,7 @@ export class CopilotClient {
   async createMessage(
     options: OptionsField<typeof createCopilotMessageMutation>
   ) {
-    const res = await fetcher({
+    const res = await this.gql({
       query: createCopilotMessageMutation,
       variables: {
         options,
@@ -124,7 +103,7 @@ export class CopilotClient {
   }
 
   async getSessions(workspaceId: string) {
-    const res = await fetcher({
+    const res = await this.gql({
       query: getCopilotSessionsQuery,
       variables: {
         workspaceId,
@@ -140,7 +119,7 @@ export class CopilotClient {
       typeof getCopilotHistoriesQuery
     >['variables']['options']
   ) {
-    const res = await fetcher({
+    const res = await this.gql({
       query: getCopilotHistoriesQuery,
       variables: {
         workspaceId,
@@ -159,7 +138,7 @@ export class CopilotClient {
       typeof getCopilotHistoriesQuery
     >['variables']['options']
   ) {
-    const res = await fetcher({
+    const res = await this.gql({
       query: getCopilotHistoryIdsQuery,
       variables: {
         workspaceId,
@@ -176,7 +155,7 @@ export class CopilotClient {
     docId: string;
     sessionIds: string[];
   }) {
-    const res = await fetcher({
+    const res = await this.gql({
       query: cleanupCopilotSessionMutation,
       variables: {
         input,
@@ -194,11 +173,11 @@ export class CopilotClient {
     messageId?: string;
     signal?: AbortSignal;
   }) {
-    const url = new URL(`${this.backendUrl}/api/copilot/chat/${sessionId}`);
+    let url = `/api/copilot/chat/${sessionId}`;
     if (messageId) {
-      url.searchParams.set('messageId', messageId);
+      url += `?messageId=${encodeURIComponent(messageId)}`;
     }
-    const response = await fetch(url.toString(), { signal });
+    const response = await this.fetcher(url.toString(), { signal });
     return response.text();
   }
 
@@ -213,11 +192,11 @@ export class CopilotClient {
     },
     endpoint = 'stream'
   ) {
-    const url = new URL(
-      `${this.backendUrl}/api/copilot/chat/${sessionId}/${endpoint}`
-    );
-    if (messageId) url.searchParams.set('messageId', messageId);
-    return new EventSource(url.toString());
+    let url = `/api/copilot/chat/${sessionId}/${endpoint}`;
+    if (messageId) {
+      url += `?messageId=${encodeURIComponent(messageId)}`;
+    }
+    return this.eventSource(url);
   }
 
   // Text or image to images
@@ -227,15 +206,18 @@ export class CopilotClient {
     seed?: string,
     endpoint = 'images'
   ) {
-    const url = new URL(
-      `${this.backendUrl}/api/copilot/chat/${sessionId}/${endpoint}`
-    );
-    if (messageId) {
-      url.searchParams.set('messageId', messageId);
+    let url = `/api/copilot/chat/${sessionId}/${endpoint}`;
+
+    if (messageId || seed) {
+      url += '?';
+      url += new URLSearchParams(
+        Object.fromEntries(
+          Object.entries({ messageId, seed }).filter(
+            ([_, v]) => v !== undefined
+          )
+        ) as Record<string, string>
+      ).toString();
     }
-    if (seed) {
-      url.searchParams.set('seed', seed);
-    }
-    return new EventSource(url);
+    return this.eventSource(url);
   }
 }

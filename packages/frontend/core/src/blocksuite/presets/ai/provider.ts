@@ -142,10 +142,6 @@ export class AIProvider {
       ...options: Parameters<BlockSuitePresets.AIActions[T]>
     ) => ReturnType<BlockSuitePresets.AIActions[T]>
   ): void {
-    if (this.actions[id]) {
-      console.warn(`AI action ${id} is already provided`);
-    }
-
     // @ts-expect-error TODO: maybe fix this
     this.actions[id] = (
       ...args: Parameters<BlockSuitePresets.AIActions[T]>
