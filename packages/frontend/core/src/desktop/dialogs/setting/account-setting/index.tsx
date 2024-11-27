@@ -23,7 +23,7 @@ import {
 import { useSetAtom } from 'jotai';
 import { useCallback, useEffect, useState } from 'react';
 
-import { AuthService, ServerConfigService } from '../../../../modules/cloud';
+import { AuthService, ServerService } from '../../../../modules/cloud';
 import type { SettingState } from '../types';
 import { AIUsagePanel } from './ai-usage-panel';
 import { StorageProgress } from './storage-progress';
@@ -178,13 +178,11 @@ export const AccountSetting = ({
 }: {
   onChangeSettingState?: (settingState: SettingState) => void;
 }) => {
-  const { authService, serverConfigService } = useServices({
+  const { authService, serverService } = useServices({
     AuthService,
-    ServerConfigService,
+    ServerService,
   });
-  const serverFeatures = useLiveData(
-    serverConfigService.serverConfig.features$
-  );
+  const serverFeatures = useLiveData(serverService.server.features$);
   const t = useI18n();
   const session = authService.session;
   useEffect(() => {

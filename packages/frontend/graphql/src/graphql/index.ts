@@ -998,6 +998,7 @@ query serverConfig {
     name
     features
     type
+    initialized
     credentialsRequirement {
       ...CredentialsRequirement
     }

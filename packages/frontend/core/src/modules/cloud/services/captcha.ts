@@ -11,10 +11,10 @@ import { EMPTY, exhaustMap, mergeMap } from 'rxjs';
 
 import type { ValidatorProvider } from '../provider/validator';
 import type { FetchService } from './fetch';
-import type { ServerConfigService } from './server-config';
+import type { ServerService } from './server';
 
 export class CaptchaService extends Service {
-  needCaptcha$ = this.serverConfigService.serverConfig.features$.map(
+  needCaptcha$ = this.serverService.server.features$.map(
     r => r?.captcha || false
   );
   challenge$ = new LiveData<string | undefined>(undefined);
@@ -23,7 +23,7 @@ export class CaptchaService extends Service {
   error$ = new LiveData<any | undefined>(undefined);
 
   constructor(
-    private readonly serverConfigService: ServerConfigService,
+    private readonly serverService: ServerService,
     private readonly fetchService: FetchService,
     public readonly validatorProvider?: ValidatorProvider
   ) {

@@ -4,9 +4,9 @@ import {
   GlobalStateService,
 } from '@toeverything/infra';
 
+import { ServersService } from '../cloud';
 import { DesktopApiService } from '../desktop-api';
 import { I18n } from '../i18n';
-import { UserDBService } from '../userspace';
 import { EditorSetting } from './entities/editor-setting';
 import { CurrentUserDBEditorSettingProvider } from './impls/user-db';
 import { EditorSettingProvider } from './provider/editor-setting-provider';
@@ -21,7 +21,7 @@ export function configureEditorSettingModule(framework: Framework) {
     .service(EditorSettingService)
     .entity(EditorSetting, [EditorSettingProvider])
     .impl(EditorSettingProvider, CurrentUserDBEditorSettingProvider, [
-      UserDBService,
+      ServersService,
       GlobalState,
     ]);
 }

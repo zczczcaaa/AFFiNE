@@ -18,7 +18,7 @@ import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
 import { useMutation } from '../../../components/hooks/use-mutation';
-import { ServerConfigService } from '../../../modules/cloud';
+import { ServerService } from '../../../modules/cloud';
 import type { AuthPanelProps } from './index';
 
 const useEmailTitle = (emailType: AuthPanelProps<'sendEmail'>['emailType']) => {
@@ -142,10 +142,10 @@ export const SendEmail = ({
   // todo(@pengx17): impl redirectUrl for sendEmail?
 }: AuthPanelProps<'sendEmail'>) => {
   const t = useI18n();
-  const serverConfig = useService(ServerConfigService).serverConfig;
+  const serverService = useService(ServerService);
 
   const passwordLimits = useLiveData(
-    serverConfig.credentialsRequirement$.map(r => r?.password)
+    serverService.server.credentialsRequirement$.map(r => r?.password)
   );
   const [hasSentEmail, setHasSentEmail] = useState(false);
 

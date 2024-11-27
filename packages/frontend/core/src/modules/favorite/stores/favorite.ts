@@ -3,7 +3,7 @@ import type { WorkspaceDBService, WorkspaceService } from '@toeverything/infra';
 import { LiveData, Store } from '@toeverything/infra';
 import { map } from 'rxjs';
 
-import type { AuthService } from '../../cloud';
+import { AuthService, type WorkspaceServerService } from '../../cloud';
 import type { FavoriteSupportType } from '../constant';
 import { isFavoriteSupportType } from '../constant';
 
@@ -14,27 +14,31 @@ export interface FavoriteRecord {
 }
 
 export class FavoriteStore extends Store {
+  authService = this.workspaceServerService.server?.scope.get(AuthService);
   constructor(
-    private readonly authService: AuthService,
     private readonly workspaceDBService: WorkspaceDBService,
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService: WorkspaceService,
+    private readonly workspaceServerService: WorkspaceServerService
   ) {
     super();
   }
 
   private get userdataDB$() {
-    return this.authService.session.account$.map(account => {
-      // if is local workspace or no account, use __local__ userdata
-      // sometimes we may have cloud workspace but no account for a short time, we also use __local__ userdata
-      if (
-        this.workspaceService.workspace.meta.flavour ===
-          WorkspaceFlavour.LOCAL ||
-        !account
-      ) {
-        return this.workspaceDBService.userdataDB('__local__');
-      }
-      return this.workspaceDBService.userdataDB(account.id);
-    });
+    // if is local workspace or no account, use __local__ userdata
+    // sometimes we may have cloud workspace but no account for a short time, we also use __local__ userdata
+    if (
+      this.workspaceService.workspace.meta.flavour === WorkspaceFlavour.LOCAL ||
+      !this.authService
+    ) {
+      return new LiveData(this.workspaceDBService.userdataDB('__local__'));
+    } else {
+      return this.authService.session.account$.map(account => {
+        if (!account) {
+          return this.workspaceDBService.userdataDB('__local__');
+        }
+        return this.workspaceDBService.userdataDB(account.id);
+      });
+    }
   }
 
   watchIsLoading() {

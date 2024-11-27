@@ -16,7 +16,7 @@ import {
 import type { ReactElement, SVGProps } from 'react';
 import { useEffect } from 'react';
 
-import { AuthService, ServerConfigService } from '../../../../modules/cloud';
+import { AuthService, ServerService } from '../../../../modules/cloud';
 import type { SettingState } from '../types';
 import { AboutAffine } from './about';
 import { AppearanceSettings } from './appearance';
@@ -38,20 +38,16 @@ export type GeneralSettingList = GeneralSettingListItem[];
 
 export const useGeneralSettingList = (): GeneralSettingList => {
   const t = useI18n();
-  const {
-    authService,
-    serverConfigService,
-    userFeatureService,
-    featureFlagService,
-  } = useServices({
-    AuthService,
-    ServerConfigService,
-    UserFeatureService,
-    FeatureFlagService,
-  });
+  const { authService, serverService, userFeatureService, featureFlagService } =
+    useServices({
+      AuthService,
+      ServerService,
+      UserFeatureService,
+      FeatureFlagService,
+    });
   const status = useLiveData(authService.session.status$);
   const hasPaymentFeature = useLiveData(
-    serverConfigService.serverConfig.features$.map(f => f?.payment)
+    serverService.server.features$.map(f => f?.payment)
   );
   const enableEditorSettings = useLiveData(
     featureFlagService.flags.enable_editor_settings.$

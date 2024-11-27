@@ -1,8 +1,8 @@
 import { type Framework, GlobalContextService } from '@toeverything/infra';
 
-import { AuthService } from '../cloud';
+import { ServersService } from '../cloud/services/servers';
 import { TelemetryService } from './services/telemetry';
 
 export function configureTelemetryModule(framework: Framework) {
-  framework.service(TelemetryService, [AuthService, GlobalContextService]);
+  framework.service(TelemetryService, [ServersService, GlobalContextService]);
 }

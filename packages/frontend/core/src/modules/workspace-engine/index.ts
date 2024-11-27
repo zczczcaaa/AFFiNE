@@ -1,15 +1,10 @@
 import {
-  AuthService,
-  FetchService,
-  GraphQLService,
-  WebSocketService,
-} from '@affine/core/modules/cloud';
-import {
   type Framework,
   GlobalState,
   WorkspaceFlavourProvider,
 } from '@toeverything/infra';
 
+import { ServersService } from '../cloud/services/servers';
 import { DesktopApiService } from '../desktop-api';
 import { CloudWorkspaceFlavourProviderService } from './impls/cloud';
 import { IndexedDBBlobStorage } from './impls/engine/blob-indexeddb';
@@ -31,11 +26,8 @@ export function configureBrowserWorkspaceFlavours(framework: Framework) {
     ])
     .service(CloudWorkspaceFlavourProviderService, [
       GlobalState,
-      AuthService,
       WorkspaceEngineStorageProvider,
-      GraphQLService,
-      WebSocketService,
-      FetchService,
+      ServersService,
     ])
     .impl(WorkspaceFlavourProvider('CLOUD'), p =>
       p.get(CloudWorkspaceFlavourProviderService)

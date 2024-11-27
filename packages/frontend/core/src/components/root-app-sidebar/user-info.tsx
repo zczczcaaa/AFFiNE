@@ -23,7 +23,7 @@ import { useCallback, useEffect } from 'react';
 import {
   type AuthAccountInfo,
   AuthService,
-  ServerConfigService,
+  ServerService,
   SubscriptionService,
   UserCopilotQuotaService,
   UserQuotaService,
@@ -276,10 +276,8 @@ const AIUsage = () => {
 };
 
 const OperationMenu = () => {
-  const serverConfigService = useService(ServerConfigService);
-  const serverFeatures = useLiveData(
-    serverConfigService.serverConfig.features$
-  );
+  const serverService = useService(ServerService);
+  const serverFeatures = useLiveData(serverService.server.features$);
 
   return (
     <>

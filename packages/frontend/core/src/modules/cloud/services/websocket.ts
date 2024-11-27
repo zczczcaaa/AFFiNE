@@ -2,14 +2,14 @@ import { ApplicationStarted, OnEvent, Service } from '@toeverything/infra';
 import { Manager } from 'socket.io-client';
 
 import type { WebSocketAuthProvider } from '../provider/websocket-auth';
-import { getAffineCloudBaseUrl } from '../services/fetch';
 import type { AuthService } from './auth';
 import { AccountChanged } from './auth';
+import type { ServerService } from './server';
 
 @OnEvent(AccountChanged, e => e.update)
 @OnEvent(ApplicationStarted, e => e.update)
 export class WebSocketService extends Service {
-  ioManager: Manager = new Manager(`${getAffineCloudBaseUrl()}/`, {
+  ioManager: Manager = new Manager(`${this.serverService.server.baseUrl}/`, {
     autoConnect: false,
     transports: ['websocket'],
     secure: location.protocol === 'https:',
@@ -18,7 +18,7 @@ export class WebSocketService extends Service {
     auth: this.webSocketAuthProvider
       ? cb => {
           this.webSocketAuthProvider
-            ?.getAuthToken(`${getAffineCloudBaseUrl()}/`)
+            ?.getAuthToken(`${this.serverService.server.baseUrl}/`)
             .then(v => {
               cb(v ?? {});
             })
@@ -31,6 +31,7 @@ export class WebSocketService extends Service {
   refCount = 0;
 
   constructor(
+    private readonly serverService: ServerService,
     private readonly authService: AuthService,
     private readonly webSocketAuthProvider?: WebSocketAuthProvider
   ) {

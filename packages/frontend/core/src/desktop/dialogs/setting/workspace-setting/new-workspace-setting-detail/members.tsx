@@ -40,7 +40,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   type AuthAccountInfo,
   AuthService,
-  ServerConfigService,
+  ServerService,
   SubscriptionService,
 } from '../../../../../modules/cloud';
 import type { SettingState } from '../../types';
@@ -65,9 +65,9 @@ export const CloudWorkspaceMembersPanel = ({
 }: {
   onChangeSettingState: (settingState: SettingState) => void;
 }) => {
-  const serverConfig = useService(ServerConfigService).serverConfig;
+  const serverService = useService(ServerService);
   const hasPaymentFeature = useLiveData(
-    serverConfig.features$.map(f => f?.payment)
+    serverService.server.features$.map(f => f?.payment)
   );
   const workspace = useService(WorkspaceService).workspace;
 

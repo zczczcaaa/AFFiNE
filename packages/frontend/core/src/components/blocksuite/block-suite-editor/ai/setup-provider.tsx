@@ -2,7 +2,6 @@ import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import { toggleGeneralAIOnboarding } from '@affine/core/components/affine/ai-onboarding/apis';
 import { authAtom } from '@affine/core/components/atoms';
 import {
-  getBaseUrl,
   type getCopilotHistoriesQuery,
   type RequestOptions,
 } from '@affine/graphql';
@@ -11,6 +10,7 @@ import { assertExists } from '@blocksuite/affine/global/utils';
 import { getCurrentStore } from '@toeverything/infra';
 import { z } from 'zod';
 
+import { getBaseUrl } from './copilot-client';
 import type { PromptKey } from './prompt';
 import {
   cleanupSessions,

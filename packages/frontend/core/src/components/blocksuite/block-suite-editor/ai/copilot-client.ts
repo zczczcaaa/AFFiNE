@@ -3,12 +3,11 @@ import {
   cleanupCopilotSessionMutation,
   createCopilotMessageMutation,
   createCopilotSessionMutation,
-  fetcher as defaultFetcher,
   forkCopilotSessionMutation,
-  getBaseUrl,
   getCopilotHistoriesQuery,
   getCopilotHistoryIdsQuery,
   getCopilotSessionsQuery,
+  gqlFetcherFactory,
   GraphQLError,
   type GraphQLQuery,
   type QueryOptions,
@@ -21,6 +20,26 @@ import {
   UnauthorizedError,
 } from '@blocksuite/affine/blocks';
 import { getCurrentStore } from '@toeverything/infra';
+
+/**
+ * @deprecated will be removed soon
+ */
+export function getBaseUrl(): string {
+  if (BUILD_CONFIG.isElectron || BUILD_CONFIG.isIOS || BUILD_CONFIG.isAndroid) {
+    return BUILD_CONFIG.serverUrlPrefix;
+  }
+  if (typeof window === 'undefined') {
+    // is nodejs
+    return '';
+  }
+  const { protocol, hostname, port } = window.location;
+  return `${protocol}//${hostname}${port ? `:${port}` : ''}`;
+}
+
+/**
+ * @deprecated will be removed soon
+ */
+const defaultFetcher = gqlFetcherFactory(getBaseUrl() + '/graphql');
 
 type OptionsField<T extends GraphQLQuery> =
   RequestOptions<T>['variables'] extends { options: infer U } ? U : never;

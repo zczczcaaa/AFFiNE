@@ -16,7 +16,7 @@ import {
   SettingWrapper,
 } from '@affine/component/setting-components';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
-import { ServerConfigService } from '@affine/core/modules/cloud';
+import { ServerService } from '@affine/core/modules/cloud';
 import { DesktopApiService } from '@affine/core/modules/desktop-api';
 import {
   EditorSettingService,
@@ -358,13 +358,11 @@ const NewDocDefaultModeSettings = () => {
 const AISettings = () => {
   const t = useI18n();
   const { openConfirmModal } = useConfirmModal();
-  const { featureFlagService, serverConfigService } = useServices({
+  const { featureFlagService, serverService } = useServices({
     FeatureFlagService,
-    ServerConfigService,
+    ServerService,
   });
-  const serverFeatures = useLiveData(
-    serverConfigService.serverConfig.features$
-  );
+  const serverFeatures = useLiveData(serverService.server.features$);
   const enableAI = useLiveData(featureFlagService.flags.enable_ai.$);
 
   const onAIChange = useCallback(

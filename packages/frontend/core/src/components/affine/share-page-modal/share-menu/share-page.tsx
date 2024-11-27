@@ -6,7 +6,7 @@ import {
   useSharingUrl,
 } from '@affine/core/components/hooks/affine/use-share-url';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
-import { ServerConfigService } from '@affine/core/modules/cloud';
+import { ServerService } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { EditorService } from '@affine/core/modules/editor';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
@@ -70,13 +70,13 @@ export const AFFiNESharePage = (props: ShareMenuProps) => {
   const currentMode = useLiveData(editor.mode$);
   const editorContainer = useLiveData(editor.editorContainer$);
   const shareInfoService = useService(ShareInfoService);
-  const serverConfig = useService(ServerConfigService).serverConfig;
+  const serverService = useService(ServerService);
   useEffect(() => {
     shareInfoService.shareInfo.revalidate();
   }, [shareInfoService]);
   const isSharedPage = useLiveData(shareInfoService.shareInfo.isShared$);
   const sharedMode = useLiveData(shareInfoService.shareInfo.sharedMode$);
-  const baseUrl = useLiveData(serverConfig.config$.map(c => c?.baseUrl));
+  const baseUrl = serverService.server.baseUrl;
   const isLoading =
     isSharedPage === null || sharedMode === null || baseUrl === null;
 

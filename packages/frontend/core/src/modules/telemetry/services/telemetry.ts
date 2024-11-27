@@ -2,26 +2,31 @@ import { mixpanel } from '@affine/track';
 import type { GlobalContextService } from '@toeverything/infra';
 import { ApplicationStarted, OnEvent, Service } from '@toeverything/infra';
 
-import {
-  AccountChanged,
-  type AuthAccountInfo,
-  type AuthService,
-} from '../../cloud';
+import { AccountChanged, type AuthAccountInfo, AuthService } from '../../cloud';
 import { AccountLoggedOut } from '../../cloud/services/auth';
+import type { ServersService } from '../../cloud/services/servers';
 
 @OnEvent(ApplicationStarted, e => e.onApplicationStart)
 @OnEvent(AccountChanged, e => e.updateIdentity)
 @OnEvent(AccountLoggedOut, e => e.onAccountLoggedOut)
 export class TelemetryService extends Service {
+  private readonly authService;
   constructor(
-    private readonly auth: AuthService,
+    serversService: ServersService,
     private readonly globalContextService: GlobalContextService
   ) {
     super();
+
+    // TODO: support multiple servers
+    const affineCloudServer = serversService.server$('affine-cloud').value;
+    if (!affineCloudServer) {
+      throw new Error('affine-cloud server not found');
+    }
+    this.authService = affineCloudServer.scope.get(AuthService);
   }
 
   onApplicationStart() {
-    const account = this.auth.session.account$.value;
+    const account = this.authService.session.account$.value;
     this.updateIdentity(account);
     this.registerMiddlewares();
   }

@@ -1,5 +1,5 @@
 import { notify } from '@affine/component';
-import { getAffineCloudBaseUrl } from '@affine/core/modules/cloud/services/fetch';
+import { ServerService } from '@affine/core/modules/cloud';
 import { toURLSearchParams } from '@affine/core/modules/navigation';
 import { copyTextToClipboard } from '@affine/core/utils/clipboard';
 import { useI18n } from '@affine/i18n';
@@ -7,6 +7,7 @@ import { track } from '@affine/track';
 import { type EditorHost } from '@blocksuite/affine/block-std';
 import { GfxBlockElementModel } from '@blocksuite/affine/block-std/gfx';
 import type { DocMode, EdgelessRootService } from '@blocksuite/affine/blocks';
+import { useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
 export type UseSharingUrl = {
@@ -24,17 +25,14 @@ export type UseSharingUrl = {
  * https://app.affine.pro/workspace/workspaceId/docId?mode=DocMode&elementIds=seletedElementIds&blockIds=selectedBlockIds
  */
 export const generateUrl = ({
+  baseUrl,
   workspaceId,
   pageId,
   blockIds,
   elementIds,
   shareMode: mode,
   xywh, // not needed currently
-}: UseSharingUrl) => {
-  // Base URL construction
-  const baseUrl = getAffineCloudBaseUrl();
-  if (!baseUrl) return null;
-
+}: UseSharingUrl & { baseUrl: string }) => {
   try {
     const url = new URL(`/workspace/${workspaceId}/${pageId}`, baseUrl);
     const search = toURLSearchParams({ mode, blockIds, elementIds, xywh });
@@ -130,10 +128,12 @@ export const getSelectedNodes = (
 
 export const useSharingUrl = ({ workspaceId, pageId }: UseSharingUrl) => {
   const t = useI18n();
+  const serverService = useService(ServerService);
 
   const onClickCopyLink = useCallback(
     (shareMode?: DocMode, blockIds?: string[], elementIds?: string[]) => {
       const sharingUrl = generateUrl({
+        baseUrl: serverService.server.baseUrl,
         workspaceId,
         pageId,
         blockIds,
@@ -160,7 +160,7 @@ export const useSharingUrl = ({ workspaceId, pageId }: UseSharingUrl) => {
         notify.error({ title: 'Network not available' });
       }
     },
-    [pageId, t, workspaceId]
+    [pageId, serverService, t, workspaceId]
   );
 
   return {

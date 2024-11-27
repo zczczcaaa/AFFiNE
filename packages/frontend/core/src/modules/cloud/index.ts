@@ -1,4 +1,5 @@
 export type { Invoice } from './entities/invoices';
+export { Server } from './entities/server';
 export type { AuthAccountInfo } from './entities/session';
 export {
   BackendError,
@@ -6,19 +7,23 @@ export {
   isNetworkError,
   NetworkError,
 } from './error';
+export { RawFetchProvider } from './provider/fetch';
 export { ValidatorProvider } from './provider/validator';
 export { WebSocketAuthProvider } from './provider/websocket-auth';
 export { AccountChanged, AuthService } from './services/auth';
 export { CaptchaService } from './services/captcha';
+export { DefaultServerService } from './services/default-server';
 export { FetchService } from './services/fetch';
 export { GraphQLService } from './services/graphql';
 export { InvoicesService } from './services/invoices';
-export { ServerConfigService } from './services/server-config';
+export { ServerService } from './services/server';
+export { ServersService } from './services/servers';
 export { SubscriptionService } from './services/subscription';
 export { UserCopilotQuotaService } from './services/user-copilot-quota';
 export { UserFeatureService } from './services/user-feature';
 export { UserQuotaService } from './services/user-quota';
 export { WebSocketService } from './services/websocket';
+export { WorkspaceServerService } from './services/workspace-server';
 
 import {
   DocScope,
@@ -26,38 +31,44 @@ import {
   type Framework,
   GlobalCache,
   GlobalState,
+  GlobalStateService,
   WorkspaceScope,
 } from '@toeverything/infra';
 
 import { UrlService } from '../url';
 import { CloudDocMeta } from './entities/cloud-doc-meta';
 import { Invoices } from './entities/invoices';
-import { ServerConfig } from './entities/server-config';
+import { Server } from './entities/server';
 import { AuthSession } from './entities/session';
 import { Subscription } from './entities/subscription';
 import { SubscriptionPrices } from './entities/subscription-prices';
 import { UserCopilotQuota } from './entities/user-copilot-quota';
 import { UserFeature } from './entities/user-feature';
 import { UserQuota } from './entities/user-quota';
-import { DefaultFetchProvider, FetchProvider } from './provider/fetch';
+import { DefaultRawFetchProvider, RawFetchProvider } from './provider/fetch';
 import { ValidatorProvider } from './provider/validator';
 import { WebSocketAuthProvider } from './provider/websocket-auth';
+import { ServerScope } from './scopes/server';
 import { AuthService } from './services/auth';
 import { CaptchaService } from './services/captcha';
 import { CloudDocMetaService } from './services/cloud-doc-meta';
+import { DefaultServerService } from './services/default-server';
 import { FetchService } from './services/fetch';
 import { GraphQLService } from './services/graphql';
 import { InvoicesService } from './services/invoices';
-import { ServerConfigService } from './services/server-config';
+import { ServerService } from './services/server';
+import { ServersService } from './services/servers';
 import { SubscriptionService } from './services/subscription';
 import { UserCopilotQuotaService } from './services/user-copilot-quota';
 import { UserFeatureService } from './services/user-feature';
 import { UserQuotaService } from './services/user-quota';
 import { WebSocketService } from './services/websocket';
+import { WorkspaceServerService } from './services/workspace-server';
 import { AuthStore } from './stores/auth';
 import { CloudDocMetaStore } from './stores/cloud-doc-meta';
 import { InvoicesStore } from './stores/invoices';
 import { ServerConfigStore } from './stores/server-config';
+import { ServerListStore } from './stores/server-list';
 import { SubscriptionStore } from './stores/subscription';
 import { UserCopilotQuotaStore } from './stores/user-copilot-quota';
 import { UserFeatureStore } from './stores/user-feature';
@@ -65,23 +76,28 @@ import { UserQuotaStore } from './stores/user-quota';
 
 export function configureCloudModule(framework: Framework) {
   framework
-    .service(FetchService, [FetchProvider])
-    .impl(FetchProvider, DefaultFetchProvider)
+    .impl(RawFetchProvider, DefaultRawFetchProvider)
+    .service(ServersService, [ServerListStore])
+    .service(DefaultServerService, [ServersService])
+    .store(ServerListStore, [GlobalStateService])
+    .entity(Server, [ServerListStore])
+    .scope(ServerScope)
+    .service(ServerService, [ServerScope])
+    .service(FetchService, [RawFetchProvider, ServerService])
     .service(GraphQLService, [FetchService])
     .service(
       WebSocketService,
       f =>
         new WebSocketService(
+          f.get(ServerService),
           f.get(AuthService),
           f.getOptional(WebSocketAuthProvider)
         )
     )
-    .service(ServerConfigService)
-    .entity(ServerConfig, [ServerConfigStore])
     .store(ServerConfigStore, [GraphQLService])
     .service(CaptchaService, f => {
       return new CaptchaService(
-        f.get(ServerConfigService),
+        f.get(ServerService),
         f.get(FetchService),
         f.getOptional(ValidatorProvider)
       );
@@ -90,9 +106,14 @@ export function configureCloudModule(framework: Framework) {
     .store(AuthStore, [FetchService, GraphQLService, GlobalState])
     .entity(AuthSession, [AuthStore])
     .service(SubscriptionService, [SubscriptionStore])
-    .store(SubscriptionStore, [GraphQLService, GlobalCache, UrlService])
-    .entity(Subscription, [AuthService, ServerConfigService, SubscriptionStore])
-    .entity(SubscriptionPrices, [ServerConfigService, SubscriptionStore])
+    .store(SubscriptionStore, [
+      GraphQLService,
+      GlobalCache,
+      UrlService,
+      ServerService,
+    ])
+    .entity(Subscription, [AuthService, ServerService, SubscriptionStore])
+    .entity(SubscriptionPrices, [ServerService, SubscriptionStore])
     .service(UserQuotaService)
     .store(UserQuotaStore, [GraphQLService])
     .entity(UserQuota, [AuthService, UserQuotaStore])
@@ -101,7 +122,7 @@ export function configureCloudModule(framework: Framework) {
     .entity(UserCopilotQuota, [
       AuthService,
       UserCopilotQuotaStore,
-      ServerConfigService,
+      ServerService,
     ])
     .service(UserFeatureService)
     .entity(UserFeature, [AuthService, UserFeatureStore])
@@ -114,4 +135,6 @@ export function configureCloudModule(framework: Framework) {
     .service(CloudDocMetaService)
     .entity(CloudDocMeta, [CloudDocMetaStore, DocService, GlobalCache])
     .store(CloudDocMetaStore, [GraphQLService]);
+
+  framework.scope(WorkspaceScope).service(WorkspaceServerService);
 }

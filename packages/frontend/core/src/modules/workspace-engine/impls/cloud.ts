@@ -19,6 +19,7 @@ import {
   onComplete,
   OnEvent,
   onStart,
+  type Workspace,
   type WorkspaceEngineProvider,
   type WorkspaceFlavourProvider,
   type WorkspaceMetadata,
@@ -30,13 +31,16 @@ import { nanoid } from 'nanoid';
 import { EMPTY, map, mergeMap } from 'rxjs';
 import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 
-import type {
+import type { Server } from '../../cloud';
+import {
+  AccountChanged,
   AuthService,
   FetchService,
   GraphQLService,
   WebSocketService,
+  WorkspaceServerService,
 } from '../../cloud';
-import { AccountChanged } from '../../cloud';
+import type { ServersService } from '../../cloud/services/servers';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { CloudAwarenessConnection } from './engine/awareness-cloud';
@@ -55,16 +59,30 @@ export class CloudWorkspaceFlavourProviderService
   extends Service
   implements WorkspaceFlavourProvider
 {
+  private readonly authService: AuthService;
+  private readonly webSocketService: WebSocketService;
+  private readonly fetchService: FetchService;
+  private readonly graphqlService: GraphQLService;
+  private readonly affineCloudServer: Server;
+
   constructor(
     private readonly globalState: GlobalState,
-    private readonly authService: AuthService,
     private readonly storageProvider: WorkspaceEngineStorageProvider,
-    private readonly graphqlService: GraphQLService,
-    private readonly webSocketService: WebSocketService,
-    private readonly fetchService: FetchService
+    serversService: ServersService
   ) {
     super();
+    // TODO: support multiple servers
+    const affineCloudServer = serversService.server$('affine-cloud').value;
+    if (!affineCloudServer) {
+      throw new Error('affine-cloud server not found');
+    }
+    this.affineCloudServer = affineCloudServer;
+    this.authService = affineCloudServer.scope.get(AuthService);
+    this.webSocketService = affineCloudServer.scope.get(WebSocketService);
+    this.fetchService = affineCloudServer.scope.get(FetchService);
+    this.graphqlService = affineCloudServer.scope.get(GraphQLService);
   }
+
   flavour: WorkspaceFlavour = WorkspaceFlavour.AFFINE_CLOUD;
 
   async deleteWorkspace(id: string): Promise<void> {
@@ -244,6 +262,7 @@ export class CloudWorkspaceFlavourProviderService
     );
     return await cloudBlob.get(blob);
   }
+
   getEngineProvider(workspaceId: string): WorkspaceEngineProvider {
     return {
       getAwarenessConnections: () => {
@@ -272,6 +291,13 @@ export class CloudWorkspaceFlavourProviderService
         ];
       },
     };
+  }
+
+  onWorkspaceInitialized(workspace: Workspace): void {
+    // bind the workspace to the affine cloud server
+    workspace.scope
+      .get(WorkspaceServerService)
+      .bindServer(this.affineCloudServer);
   }
 
   private async getIsOwner(workspaceId: string, signal?: AbortSignal) {

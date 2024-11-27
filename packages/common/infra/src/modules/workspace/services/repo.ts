@@ -83,11 +83,12 @@ export class WorkspaceRepositoryService extends Service {
     logger.info(
       `open workspace [${openOptions.metadata.flavour}] ${openOptions.metadata.id} `
     );
+    const flavourProvider = this.providers.find(
+      p => p.flavour === openOptions.metadata.flavour
+    );
     const provider =
       customProvider ??
-      this.providers
-        .find(p => p.flavour === openOptions.metadata.flavour)
-        ?.getEngineProvider(openOptions.metadata.id);
+      flavourProvider?.getEngineProvider(openOptions.metadata.id);
     if (!provider) {
       throw new Error(
         `Unknown workspace flavour: ${openOptions.metadata.flavour}`
@@ -105,6 +106,8 @@ export class WorkspaceRepositoryService extends Service {
     workspace.engine.start();
 
     this.framework.emitEvent(WorkspaceInitialized, workspace);
+
+    flavourProvider?.onWorkspaceInitialized?.(workspace);
 
     this.profileRepo
       .getProfile(openOptions.metadata)

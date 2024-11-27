@@ -10,6 +10,7 @@ import type {
   DocStorage,
 } from '../../../sync';
 import type { WorkspaceProfileInfo } from '../entities/profile';
+import type { Workspace } from '../entities/workspace';
 import type { WorkspaceMetadata } from '../metadata';
 
 export interface WorkspaceEngineProvider {
@@ -55,6 +56,8 @@ export interface WorkspaceFlavourProvider {
   getWorkspaceBlob(id: string, blob: string): Promise<Blob | null>;
 
   getEngineProvider(workspaceId: string): WorkspaceEngineProvider;
+
+  onWorkspaceInitialized?(workspace: Workspace): void;
 }
 
 export const WorkspaceFlavourProvider =

@@ -1,14 +1,13 @@
+import { GraphQLService } from '@affine/core/modules/cloud';
 import { OpenInAppPage } from '@affine/core/modules/open-in-app/views/open-in-app-page';
 import { appSchemes, channelToScheme } from '@affine/core/utils/channel';
 import type { GetCurrentUserQuery } from '@affine/graphql';
-import { fetcher, getCurrentUserQuery } from '@affine/graphql';
-import type { LoaderFunction } from 'react-router-dom';
-import { useLoaderData, useSearchParams } from 'react-router-dom';
+import { getCurrentUserQuery } from '@affine/graphql';
+import { useService } from '@toeverything/infra';
+import { useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 
-interface LoaderData {
-  action: 'url' | 'signin-redirect';
-  currentUser?: GetCurrentUserQuery['currentUser'];
-}
+import { AppContainer } from '../../components/app-container';
 
 const OpenUrl = () => {
   const [params] = useSearchParams();
@@ -33,8 +32,11 @@ const OpenUrl = () => {
  * @deprecated
  */
 const OpenOAuthJwt = () => {
-  const { currentUser } = useLoaderData() as LoaderData;
+  const [currentUser, setCurrentUser] = useState<
+    GetCurrentUserQuery['currentUser'] | null
+  >(null);
   const [params] = useSearchParams();
+  const graphqlService = useService(GraphQLService);
 
   const maybeScheme = appSchemes.safeParse(params.get('scheme'));
   const scheme = maybeScheme.success
@@ -42,8 +44,19 @@ const OpenOAuthJwt = () => {
     : channelToScheme[BUILD_CONFIG.appBuildType];
   const next = params.get('next');
 
+  useEffect(() => {
+    graphqlService
+      .gql({
+        query: getCurrentUserQuery,
+      })
+      .then(res => {
+        setCurrentUser(res?.currentUser || null);
+      })
+      .catch(console.error);
+  }, [graphqlService]);
+
   if (!currentUser || !currentUser?.token?.sessionToken) {
-    return null;
+    return <AppContainer fallback />;
   }
 
   const urlToOpen = `${scheme}://signin-redirect?token=${
@@ -54,7 +67,8 @@ const OpenOAuthJwt = () => {
 };
 
 export const Component = () => {
-  const { action } = useLoaderData() as LoaderData;
+  const params = useParams<{ action: string }>();
+  const action = params.action || '';
 
   if (action === 'url') {
     return <OpenUrl />;
@@ -62,23 +76,4 @@ export const Component = () => {
     return <OpenOAuthJwt />;
   }
   return null;
-};
-
-export const loader: LoaderFunction = async args => {
-  const action = args.params.action || '';
-
-  if (action === 'signin-redirect') {
-    const res = await fetcher({
-      query: getCurrentUserQuery,
-    }).catch(console.error);
-
-    return {
-      action,
-      currentUser: res?.currentUser || null,
-    };
-  } else {
-    return {
-      action,
-    };
-  }
 };

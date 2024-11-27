@@ -16,18 +16,19 @@ import { Store } from '@toeverything/infra';
 
 import type { UrlService } from '../../url';
 import type { SubscriptionType } from '../entities/subscription';
-import { getAffineCloudBaseUrl } from '../services/fetch';
 import type { GraphQLService } from '../services/graphql';
+import type { ServerService } from '../services/server';
 
 const SUBSCRIPTION_CACHE_KEY = 'subscription:';
 
 const getDefaultSubscriptionSuccessCallbackLink = (
+  baseUrl: string,
   plan: SubscriptionPlan | null,
   scheme?: string
 ) => {
   const path =
     plan === SubscriptionPlan.AI ? '/ai-upgrade-success' : '/upgrade-success';
-  const urlString = getAffineCloudBaseUrl() + path;
+  const urlString = baseUrl + path;
   const url = new URL(urlString);
   if (scheme) {
     url.searchParams.set('scheme', scheme);
@@ -39,7 +40,8 @@ export class SubscriptionStore extends Store {
   constructor(
     private readonly gqlService: GraphQLService,
     private readonly globalCache: GlobalCache,
-    private readonly urlService: UrlService
+    private readonly urlService: UrlService,
+    private readonly serverService: ServerService
   ) {
     super();
   }
@@ -132,6 +134,7 @@ export class SubscriptionStore extends Store {
           successCallbackLink:
             input.successCallbackLink ||
             getDefaultSubscriptionSuccessCallbackLink(
+              this.serverService.server.baseUrl,
               input.plan,
               this.urlService.getClientScheme()
             ),

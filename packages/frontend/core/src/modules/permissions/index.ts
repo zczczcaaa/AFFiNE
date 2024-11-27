@@ -2,7 +2,6 @@ export type { Member } from './entities/members';
 export { WorkspaceMembersService } from './services/members';
 export { WorkspacePermissionService } from './services/permission';
 
-import { GraphQLService } from '@affine/core/modules/cloud';
 import {
   type Framework,
   WorkspaceScope,
@@ -10,6 +9,7 @@ import {
   WorkspacesService,
 } from '@toeverything/infra';
 
+import { WorkspaceServerService } from '../cloud';
 import { WorkspaceMembers } from './entities/members';
 import { WorkspacePermission } from './entities/permission';
 import { WorkspaceMembersService } from './services/members';
@@ -25,9 +25,9 @@ export function configurePermissionsModule(framework: Framework) {
       WorkspacesService,
       WorkspacePermissionStore,
     ])
-    .store(WorkspacePermissionStore, [GraphQLService])
+    .store(WorkspacePermissionStore, [WorkspaceServerService])
     .entity(WorkspacePermission, [WorkspaceService, WorkspacePermissionStore])
     .service(WorkspaceMembersService)
-    .store(WorkspaceMembersStore, [GraphQLService])
+    .store(WorkspaceMembersStore, [WorkspaceServerService])
     .entity(WorkspaceMembers, [WorkspaceMembersStore, WorkspaceService]);
 }
