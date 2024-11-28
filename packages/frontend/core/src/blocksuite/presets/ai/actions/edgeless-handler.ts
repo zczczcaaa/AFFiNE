@@ -67,7 +67,8 @@ function actionToRenderer<T extends keyof BlockSuitePresets.AIActions>(
     ] as BlockSuite.EdgelessModel[];
 
     if (
-      isMindMapRoot(selectedElements[0] || isMindmapChild(selectedElements[0]))
+      isMindMapRoot(selectedElements[0]) ||
+      isMindmapChild(selectedElements[0])
     ) {
       const mindmap = selectedElements[0].group as MindmapElementModel;
 
@@ -426,8 +427,7 @@ export function actionToHandler<T extends keyof BlockSuitePresets.AIActions>(
     attachments?: (string | Blob)[];
     seed?: string;
   } | void>,
-  trackerOptions?: BlockSuitePresets.TrackerOptions,
-  toggleEmptyInput?: boolean
+  trackerOptions?: BlockSuitePresets.TrackerOptions
 ) {
   return (host: EditorHost) => {
     const aiPanel = getAIPanel(host);
@@ -490,7 +490,7 @@ export function actionToHandler<T extends keyof BlockSuitePresets.AIActions>(
 
     if (isCreateImageAction || isMakeItRealAction) {
       togglePanel = async () => {
-        if (isEmpty || toggleEmptyInput) return true;
+        if (isEmpty) return true;
         const { notes, shapes, images, edgelessTexts, embedSyncedDocs } =
           BlocksUtils.splitElements(selectedElements);
         const blocks = [

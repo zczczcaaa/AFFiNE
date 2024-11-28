@@ -6,14 +6,12 @@ import type {
 import {
   type AIItemGroupConfig,
   type AISubItemConfig,
-  type CopilotTool,
   EDGELESS_ELEMENT_TOOLBAR_WIDGET,
   type EdgelessElementToolbarWidget,
   matchFlavours,
 } from '@blocksuite/affine/blocks';
 import type { TemplateResult } from 'lit';
 
-import { TOGGLE_EMPTY_INPUT_ACTIONS } from '../actions/consts';
 import { actionToHandler } from '../actions/doc-handler';
 import { actionToHandler as edgelessActionToHandler } from '../actions/edgeless-handler';
 import {
@@ -255,17 +253,6 @@ function edgelessHandler<T extends keyof BlockSuitePresets.AIActions>(
       const selectedElements = edgeless.service.selection.selectedElements;
       if (!selectedElements.length) return;
 
-      edgeless.gfx.tool.setTool({ type: 'copilot' });
-      const currentController =
-        edgeless.gfx.tool.currentTool$.peek() as CopilotTool;
-      if (!currentController) {
-        edgeless.gfx.tool.setTool({ type: 'default' });
-        return;
-      }
-
-      currentController.updateDragPointsWith(selectedElements, 10);
-      currentController.draggingAreaUpdated.emit(false); // do not show edgeless panel
-
       return edgelessActionToHandler(
         id,
         generatingIcon,
@@ -281,11 +268,10 @@ function edgelessHandler<T extends keyof BlockSuitePresets.AIActions>(
             selections?.selectedBlocks?.length === 1 && attachments.length > 0;
           return {
             attachments: sendAttachments ? attachments : undefined,
-            content: sendAttachments ? '' : markdown,
+            input: sendAttachments ? '' : markdown,
           };
         },
-        trackerOptions,
-        TOGGLE_EMPTY_INPUT_ACTIONS.includes(id)
+        trackerOptions
       )(host);
     }
   };

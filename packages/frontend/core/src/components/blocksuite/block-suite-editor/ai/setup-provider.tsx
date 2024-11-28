@@ -296,7 +296,7 @@ export function setupAIProvider(client: CopilotClient) {
 
   AIProvider.provide('makeItReal', options => {
     let promptName: PromptKey = 'Make it real';
-    let content = options.content || '';
+    let content = options.input || '';
 
     // wireframes
     if (options.attachments?.length) {
@@ -374,6 +374,7 @@ Could you make a new website based on these notes and send back just the html fi
     return toImage({
       ...options,
       client,
+      content: options.input,
       promptName,
     });
   });
@@ -384,6 +385,7 @@ Could you make a new website based on these notes and send back just the html fi
     return toImage({
       ...options,
       client,
+      content: options.input,
       timeout: 120000,
       promptName: promptName as PromptKey,
       workflow: !!promptName?.startsWith('workflow:'),
@@ -398,6 +400,7 @@ Could you make a new website based on these notes and send back just the html fi
     return toImage({
       ...options,
       client,
+      content: options.input,
       timeout: 120000,
       promptName,
     });

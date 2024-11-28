@@ -87,7 +87,6 @@ declare global {
     }
 
     interface AIImageActionOptions extends AITextActionOptions {
-      content?: string;
       seed?: string;
     }
 

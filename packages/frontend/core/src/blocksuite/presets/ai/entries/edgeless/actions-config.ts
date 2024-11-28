@@ -288,7 +288,7 @@ const generateGroup: AIItemGroupConfig = {
             const content = aiPanel.inputText?.trim();
             if (!content) return;
             return {
-              content,
+              input: content,
             };
           }
 
@@ -317,7 +317,7 @@ const generateGroup: AIItemGroupConfig = {
           // text to image
           if (content.length && images.length + pureShapes.length === 0) {
             return {
-              content,
+              input: content,
             };
           }
 
@@ -337,7 +337,7 @@ const generateGroup: AIItemGroupConfig = {
           const png = await canvasToBlob(canvas);
           if (!png) return;
           return {
-            content,
+            input: content,
             attachments: [png],
             seed: String(randomSeed()),
           };
@@ -418,7 +418,7 @@ const generateGroup: AIItemGroupConfig = {
             const content = aiPanel.inputText?.trim();
             if (!content) return;
             return {
-              content,
+              input: content,
             };
           }
 
@@ -444,7 +444,7 @@ const generateGroup: AIItemGroupConfig = {
               (s === 1 && shapes[0] instanceof TextElementModel))
           ) {
             return {
-              content,
+              input: content,
             };
           }
 
@@ -472,7 +472,7 @@ const generateGroup: AIItemGroupConfig = {
           });
 
           return {
-            content,
+            input: content,
             attachments: [png],
           };
         }
