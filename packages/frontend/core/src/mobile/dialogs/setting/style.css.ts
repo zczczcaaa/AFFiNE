@@ -35,6 +35,8 @@ export const baseSettingItemAction = style([
     textOverflow: 'ellipsis',
     overflow: 'hidden',
     flexShrink: 1,
+    display: 'flex',
+    alignItems: 'center',
   },
 ]);
 

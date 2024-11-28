@@ -174,7 +174,7 @@ export const AFFINE_FLAGS = {
       'com.affine.settings.workspace.experimental-features.enable-theme-editor.name',
     description:
       'com.affine.settings.workspace.experimental-features.enable-theme-editor.description',
-    configurable: isCanaryBuild,
+    configurable: isCanaryBuild && !isMobile,
     defaultState: isCanaryBuild,
   },
   enable_local_workspace: {

@@ -48,7 +48,7 @@ export interface ModalProps extends DialogProps {
   /**
    * @default 'fadeScaleTop'
    */
-  animation?: 'fadeScaleTop' | 'none' | 'slideBottom';
+  animation?: 'fadeScaleTop' | 'none' | 'slideBottom' | 'slideRight';
   /**
    * Whether to show the modal in full screen mode
    */
