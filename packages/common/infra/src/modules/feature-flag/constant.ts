@@ -16,6 +16,16 @@ export const AFFINE_FLAGS = {
     configurable: true,
     defaultState: true,
   },
+  enable_new_dnd: {
+    category: 'blocksuite',
+    bsFlag: 'enable_new_dnd',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-new-dnd.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-new-dnd.description',
+    configurable: isCanaryBuild,
+    defaultState: false,
+  },
   enable_database_full_width: {
     category: 'blocksuite',
     bsFlag: 'enable_database_full_width',
