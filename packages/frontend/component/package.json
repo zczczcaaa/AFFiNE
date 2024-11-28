@@ -14,7 +14,7 @@
   },
   "peerDependencies": {
     "@blocksuite/affine": "*",
-    "@blocksuite/icons": "2.1.68"
+    "@blocksuite/icons": "2.1.71"
   },
   "dependencies": {
     "@affine/cli": "workspace:*",

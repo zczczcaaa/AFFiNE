@@ -12,10 +12,12 @@ import type {
   GfxBlockElementModel,
   GfxPrimitiveElementModel,
 } from '@blocksuite/affine/block-std/gfx';
-import type { MenuContext } from '@blocksuite/affine/blocks';
+import { type MenuContext } from '@blocksuite/affine/blocks';
 import type { MenuItemGroup } from '@blocksuite/affine-components/toolbar';
 import { LinkIcon } from '@blocksuite/icons/lit';
 import type { FrameworkProvider } from '@toeverything/infra';
+
+import { createCopyAsPngMenuItem } from './copy-as-image';
 
 export function createToolbarMoreMenuConfig(framework: FrameworkProvider) {
   return {
@@ -40,6 +42,12 @@ export function createToolbarMoreMenuConfig(framework: FrameworkProvider) {
           copyIndex + 1,
           0,
           createCopyLinkToBlockMenuItem(framework)
+        );
+
+        clipboardGroup.items.splice(
+          copyIndex + 1,
+          0,
+          createCopyAsPngMenuItem(framework)
         );
       }
 

@@ -1,4 +1,4 @@
-import { app, nativeTheme, shell } from 'electron';
+import { app, clipboard, nativeImage, nativeTheme, shell } from 'electron';
 import { getLinkPreview } from 'link-preview-js';
 
 import { isMacOS } from '../../shared/utils';
@@ -231,5 +231,24 @@ export const uiHandlers = {
     if (e.sender.session.availableSpellCheckerLanguages.includes(language)) {
       e.sender.session.setSpellCheckerLanguages([language, 'en-US']);
     }
+  },
+  captureArea: async (e, { x, y, width, height }: Electron.Rectangle) => {
+    const image = await e.sender.capturePage({
+      x: Math.floor(x),
+      y: Math.floor(y),
+      width: Math.floor(width),
+      height: Math.floor(height),
+    });
+
+    if (image.isEmpty()) {
+      throw new Error('Image is empty or invalid');
+    }
+
+    const buffer = image.toPNG();
+    if (!buffer || !buffer.length) {
+      throw new Error('Failed to generate PNG buffer from image');
+    }
+
+    clipboard.writeImage(nativeImage.createFromBuffer(buffer));
   },
 } satisfies NamespaceHandlers;

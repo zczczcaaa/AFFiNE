@@ -214,7 +214,7 @@ __metadata:
     "@affine/core": "workspace:*"
     "@affine/i18n": "workspace:*"
     "@blocksuite/affine": "npm:0.18.1"
-    "@blocksuite/icons": "npm:^2.1.70"
+    "@blocksuite/icons": "npm:2.1.71"
     "@capacitor/android": "npm:^6.1.2"
     "@capacitor/cli": "npm:^6.1.2"
     "@capacitor/core": "npm:^6.1.2"
@@ -373,7 +373,7 @@ __metadata:
     zod: "npm:^3.22.4"
   peerDependencies:
     "@blocksuite/affine": "*"
-    "@blocksuite/icons": 2.1.68
+    "@blocksuite/icons": 2.1.71
   languageName: unknown
   linkType: soft
 
@@ -613,7 +613,7 @@ __metadata:
     "@affine/core": "workspace:*"
     "@affine/i18n": "workspace:*"
     "@blocksuite/affine": "npm:0.18.1"
-    "@blocksuite/icons": "npm:^2.1.70"
+    "@blocksuite/icons": "npm:2.1.71"
     "@capacitor/app": "npm:^6.0.1"
     "@capacitor/browser": "npm:^6.0.3"
     "@capacitor/cli": "npm:^6.1.2"
@@ -639,7 +639,7 @@ __metadata:
     "@affine/core": "workspace:*"
     "@affine/i18n": "workspace:*"
     "@blocksuite/affine": "npm:0.18.1"
-    "@blocksuite/icons": "npm:^2.1.70"
+    "@blocksuite/icons": "npm:2.1.71"
     "@sentry/react": "npm:^8.0.0"
     "@types/react": "npm:^18.2.75"
     "@types/react-dom": "npm:^18.2.24"
