@@ -57,3 +57,19 @@ test('no postfix', () => {
     generateFractionalIndexingKeyBetween('a0', 'a01').startsWith('a00V')
   ).toBe(true);
 });
+
+test('edge cases', () => {
+  for (let i = 0; i < 100; i++) {
+    let a = generateFractionalIndexingKeyBetween(null, null);
+    let b = generateFractionalIndexingKeyBetween(null, null);
+    if (a > b) {
+      [a, b] = [b, a];
+    }
+    const c = generateFractionalIndexingKeyBetween(a, b);
+    const d = generateFractionalIndexingKeyBetween(c, b);
+    expect(a < c).toBeTruthy();
+    expect(c < b).toBeTruthy();
+    expect(c < d).toBeTruthy();
+    expect(d < b).toBeTruthy();
+  }
+});
