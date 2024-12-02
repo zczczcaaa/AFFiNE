@@ -127,7 +127,7 @@ export const SwipeMenu = ({
 
         const deltaX = isOpenRef.current ? dragX - normalWidth : dragX;
         const prevShouldExecute = shouldExecute;
-        shouldExecute = Math.abs(deltaX) > executeThreshold;
+        shouldExecute = deltaX < -executeThreshold;
         if (shouldExecute && !prevShouldExecute) {
           haptics.impact({ style: 'LIGHT' });
         }
@@ -145,7 +145,7 @@ export const SwipeMenu = ({
           return;
         }
         // open
-        if (Math.abs(deltaX) > normalWidth / 2) {
+        if (deltaX < -normalWidth / 2) {
           animate(content, menu, { deltaX, normalWidth }, -normalWidth);
           isOpenRef.current = true;
         }
