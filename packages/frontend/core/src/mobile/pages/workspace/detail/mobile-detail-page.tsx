@@ -10,11 +10,13 @@ import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-he
 import { PageDetailEditor } from '@affine/core/components/page-detail-editor';
 import { DetailPageWrapper } from '@affine/core/desktop/pages/workspace/detail-page/detail-page-wrapper';
 import { PageHeader } from '@affine/core/mobile/components';
+import { useGlobalEvent } from '@affine/core/mobile/hooks/use-global-events';
+import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorService } from '@affine/core/modules/editor';
 import { JournalService } from '@affine/core/modules/journal';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
-import { i18nTime } from '@affine/i18n';
+import { i18nTime, useI18n } from '@affine/i18n';
 import {
   BookmarkBlockService,
   customImageProxyMiddleware,
@@ -36,11 +38,10 @@ import {
   useServices,
   WorkspaceService,
 } from '@toeverything/infra';
-import { bodyEmphasized } from '@toeverything/theme/typography';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { AppTabs } from '../../../components';
@@ -219,6 +220,8 @@ const skeletonWithBack = getSkeleton(true);
 const notFound = getNotFound(false);
 const notFoundWithBack = getNotFound(true);
 
+const checkShowTitle = () => window.scrollY >= 158;
+
 const MobileDetailPage = ({
   pageId,
   date,
@@ -226,8 +229,15 @@ const MobileDetailPage = ({
   pageId: string;
   date?: string;
 }) => {
+  const t = useI18n();
+  const docDisplayMetaService = useService(DocDisplayMetaService);
   const journalService = useService(JournalService);
+
+  const [showTitle, setShowTitle] = useState(checkShowTitle);
   const { openJournal } = useJournalRouteHelper();
+  const titleInfo = useLiveData(docDisplayMetaService.title$(pageId));
+  const title =
+    typeof titleInfo === 'string' ? titleInfo : t[titleInfo.i18nKey]();
 
   const allJournalDates = useLiveData(journalService.allJournalDates$);
 
@@ -237,6 +247,12 @@ const MobileDetailPage = ({
     },
     [openJournal]
   );
+
+  useGlobalEvent(
+    'scroll',
+    useCallback(() => setShowTitle(checkShowTitle()), [])
+  );
+
   return (
     <div className={styles.root}>
       <DetailPageWrapper
@@ -247,6 +263,7 @@ const MobileDetailPage = ({
         <PageHeader
           back={!date}
           className={styles.header}
+          contentClassName={styles.headerContent}
           suffix={
             <>
               <PageHeaderShareButton />
@@ -265,11 +282,11 @@ const MobileDetailPage = ({
           }
           bottomSpacer={94}
         >
-          {date ? (
-            <span className={bodyEmphasized}>
-              {i18nTime(dayjs(date), { absolute: { accuracy: 'month' } })}
-            </span>
-          ) : null}
+          <span data-show={!!date || showTitle} className={styles.headerTitle}>
+            {date
+              ? i18nTime(dayjs(date), { absolute: { accuracy: 'month' } })
+              : title}
+          </span>
         </PageHeader>
         <DetailPageImpl />
         <AppTabs background={cssVarV2('layer/background/primary')} />

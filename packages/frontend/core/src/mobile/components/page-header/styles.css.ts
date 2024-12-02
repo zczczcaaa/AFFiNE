@@ -1,5 +1,5 @@
 import { cssVarV2 } from '@toeverything/theme/v2';
-import { style } from '@vanilla-extract/css';
+import { createVar, style } from '@vanilla-extract/css';
 
 export const root = style({
   width: '100%',
@@ -18,14 +18,22 @@ export const inner = style({
   alignItems: 'center',
   justifyContent: 'space-between',
 });
+const contentMaxWidth = createVar('contentMaxWidth');
 export const content = style({
+  vars: {
+    [contentMaxWidth]: 'unset',
+  },
+  maxWidth: contentMaxWidth,
   selectors: {
     '&.center': {
+      vars: {
+        // gap(6 * 2) + button(44 * 2) + padding(8 * 2)
+        [contentMaxWidth]: 'calc(100% - 12px - 88px - 16px)',
+      },
       position: 'absolute',
       left: '50%',
       transform: 'translateX(-50%)',
       width: 'fit-content',
-      maxWidth: 'calc(100% - 12px - 88px - 16px)',
       display: 'flex',
       justifyContent: 'center',
       pointerEvents: 'none',

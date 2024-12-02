@@ -31,6 +31,7 @@ export interface PageHeaderProps
    * @default true
    */
   centerContent?: boolean;
+  contentClassName?: string;
 
   prefixClassName?: string;
   prefixStyle?: React.CSSProperties;
@@ -56,6 +57,7 @@ export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(
       children,
       className,
       centerContent = true,
+      contentClassName,
       prefixClassName,
       prefixStyle,
       suffixClassName,
@@ -85,7 +87,9 @@ export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(
             </section>
 
             <section
-              className={clsx(styles.content, { center: centerContent })}
+              className={clsx(styles.content, contentClassName, {
+                center: centerContent,
+              })}
             >
               {children}
             </section>
