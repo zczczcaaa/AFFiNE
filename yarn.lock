@@ -373,7 +373,7 @@ __metadata:
     zod: "npm:^3.22.4"
   peerDependencies:
     "@blocksuite/affine": "*"
-    "@blocksuite/icons": 2.1.71
+    "@blocksuite/icons": 2.1.72
   languageName: unknown
   linkType: soft
 
