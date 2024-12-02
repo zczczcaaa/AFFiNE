@@ -12,6 +12,7 @@ import {
   PlainTextAdapter,
   titleMiddleware,
 } from '@blocksuite/affine/blocks';
+import type { JobMiddleware, Schema } from '@blocksuite/affine/store';
 import { DocCollection, Job } from '@blocksuite/affine/store';
 import { assertExists } from '@blocksuite/global/utils';
 import type {
@@ -184,16 +185,23 @@ export async function replaceFromMarkdown(
   await job.snapshotToSlice(snapshot, host.doc, parent, index);
 }
 
-export async function markDownToDoc(host: EditorHost, answer: string) {
-  const schema = host.std.doc.collection.schema;
+export async function markDownToDoc(
+  schema: Schema,
+  answer: string,
+  additionalMiddlewares?: JobMiddleware[]
+) {
   // Should not create a new doc in the original collection
   const collection = new DocCollection({
     schema,
   });
   collection.meta.initialize();
+  const middlewares = [defaultImageProxyMiddleware];
+  if (additionalMiddlewares) {
+    middlewares.push(...additionalMiddlewares);
+  }
   const job = new Job({
     collection,
-    middlewares: [defaultImageProxyMiddleware],
+    middlewares,
   });
   const mdAdapter = new MarkdownAdapter(job);
   const doc = await mdAdapter.toDoc({

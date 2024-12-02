@@ -1,12 +1,17 @@
-import {
-  type AffineTextAttributes,
-  MarkdownAdapter,
+import type {
+  AffineTextAttributes,
+  AttachmentBlockModel,
+  BookmarkBlockModel,
+  EmbedBlockModel,
+  ImageBlockModel,
 } from '@blocksuite/affine/blocks';
+import { MarkdownAdapter } from '@blocksuite/affine/blocks';
 import {
   createYProxy,
   DocCollection,
   type DraftModel,
   Job,
+  type JobMiddleware,
   type YBlock,
 } from '@blocksuite/affine/store';
 import type { DeltaInsert } from '@blocksuite/inline';
@@ -73,42 +78,6 @@ async function getOrCreateCachedYDoc(data: Uint8Array) {
   }
 }
 
-function yblockToDraftModal(yblock: YBlock): DraftModel | null {
-  const flavour = yblock.get('sys:flavour');
-  const blockSchema = blocksuiteSchema.flavourSchemaMap.get(flavour);
-  if (!blockSchema) {
-    return null;
-  }
-  const keys = Array.from(yblock.keys())
-    .filter(key => key.startsWith('prop:'))
-    .map(key => key.substring(5));
-
-  const props = Object.fromEntries(
-    keys.map(key => [key, createYProxy(yblock.get(`prop:${key}`))])
-  );
-
-  return {
-    ...props,
-    id: yblock.get('sys:id'),
-    flavour,
-    children: [],
-    role: blockSchema.model.role,
-    version: (yblock.get('sys:version') as number) ?? blockSchema.version,
-    keys: Array.from(yblock.keys())
-      .filter(key => key.startsWith('prop:'))
-      .map(key => key.substring(5)),
-  };
-}
-
-const markdownAdapter = new MarkdownAdapter(
-  new Job({
-    collection: new DocCollection({
-      id: 'indexer',
-      schema: blocksuiteSchema,
-    }),
-  })
-);
-
 interface BlockDocumentInfo {
   docId: string;
   blockId: string;
@@ -119,50 +88,364 @@ interface BlockDocumentInfo {
   ref?: string[];
   parentFlavour?: string;
   parentBlockId?: string;
-  additional?: { databaseName?: string };
+  additional?: {
+    databaseName?: string;
+    displayMode?: string;
+    noteBlockId?: string;
+  };
   yblock: YMap<any>;
   markdownPreview?: string;
 }
 
-const markdownPreviewCache = new WeakMap<BlockDocumentInfo, string | null>();
-const generateMarkdownPreview = async (block: BlockDocumentInfo) => {
-  if (markdownPreviewCache.has(block)) {
-    return markdownPreviewCache.get(block);
+const bookmarkFlavours = new Set([
+  'affine:bookmark',
+  'affine:embed-youtube',
+  'affine:embed-figma',
+  'affine:embed-github',
+  'affine:embed-loom',
+]);
+
+function generateMarkdownPreviewBuilder(
+  yRootDoc: YDoc,
+  workspaceId: string,
+  blocks: BlockDocumentInfo[]
+) {
+  function yblockToDraftModal(yblock: YBlock): DraftModel | null {
+    const flavour = yblock.get('sys:flavour');
+    const blockSchema = blocksuiteSchema.flavourSchemaMap.get(flavour);
+    if (!blockSchema) {
+      return null;
+    }
+    const keys = Array.from(yblock.keys())
+      .filter(key => key.startsWith('prop:'))
+      .map(key => key.substring(5));
+
+    const props = Object.fromEntries(
+      keys.map(key => [key, createYProxy(yblock.get(`prop:${key}`))])
+    );
+
+    return {
+      ...props,
+      id: yblock.get('sys:id'),
+      flavour,
+      children: [],
+      role: blockSchema.model.role,
+      version: (yblock.get('sys:version') as number) ?? blockSchema.version,
+      keys: Array.from(yblock.keys())
+        .filter(key => key.startsWith('prop:'))
+        .map(key => key.substring(5)),
+    };
   }
-  const flavour = block.flavour;
-  let markdown: string | null = null;
-  if (
-    flavour === 'affine:paragraph' ||
-    flavour === 'affine:list' ||
-    flavour === 'affine:code'
-  ) {
+
+  const titleMiddleware: JobMiddleware = ({ adapterConfigs }) => {
+    const pages = yRootDoc.getMap('meta').get('pages');
+    if (!(pages instanceof YArray)) {
+      return;
+    }
+    for (const meta of pages.toArray()) {
+      adapterConfigs.set(
+        'title:' + meta.get('id'),
+        meta.get('title')?.toString() ?? 'Untitled'
+      );
+    }
+  };
+
+  const baseUrl = `/workspace/${workspaceId}`;
+
+  function getDocLink(docId: string, blockId: string) {
+    const searchParams = new URLSearchParams();
+    searchParams.set('blockIds', blockId);
+    return `${baseUrl}/${docId}?${searchParams.toString()}`;
+  }
+
+  const docLinkBaseURLMiddleware: JobMiddleware = ({ adapterConfigs }) => {
+    adapterConfigs.set('docLinkBaseUrl', baseUrl);
+  };
+
+  const markdownAdapter = new MarkdownAdapter(
+    new Job({
+      collection: new DocCollection({
+        id: 'indexer',
+        schema: blocksuiteSchema,
+      }),
+      middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
+    })
+  );
+
+  const markdownPreviewCache = new WeakMap<BlockDocumentInfo, string | null>();
+
+  function trimCodeBlock(markdown: string) {
+    const lines = markdown.split('\n').filter(line => line.trim() !== '');
+    if (lines.length > 5) {
+      return [...lines.slice(0, 4), '...', lines.at(-1), ''].join('\n');
+    }
+    return [...lines, ''].join('\n');
+  }
+
+  function trimParagraph(markdown: string) {
+    const lines = markdown.split('\n').filter(line => line.trim() !== '');
+
+    if (lines.length > 3) {
+      return [...lines.slice(0, 3), '...', lines.at(-1), ''].join('\n');
+    }
+
+    return [...lines, ''].join('\n');
+  }
+
+  function getListDepth(block: BlockDocumentInfo) {
+    let parentBlockCount = 0;
+    let currentBlock: BlockDocumentInfo | undefined = block;
+    do {
+      currentBlock = blocks.find(
+        b => b.blockId === currentBlock?.parentBlockId
+      );
+
+      // reach the root block. do not count it.
+      if (!currentBlock || currentBlock.flavour !== 'affine:list') {
+        break;
+      }
+      parentBlockCount++;
+    } while (currentBlock);
+    return parentBlockCount;
+  }
+
+  // only works for list block
+  function indentMarkdown(markdown: string, depth: number) {
+    if (depth <= 0) {
+      return markdown;
+    }
+
+    return (
+      markdown
+        .split('\n')
+        .map(line => '    '.repeat(depth) + line)
+        .join('\n') + '\n'
+    );
+  }
+
+  const generateDatabaseMarkdownPreview = (block: BlockDocumentInfo) => {
+    const isDatabaseBlock = (block: BlockDocumentInfo) => {
+      return block.flavour === 'affine:database';
+    };
+
+    const model = yblockToDraftModal(block.yblock);
+
+    if (!model) {
+      return null;
+    }
+
+    let dbBlock: BlockDocumentInfo | null = null;
+
+    if (isDatabaseBlock(block)) {
+      dbBlock = block;
+    } else {
+      const parentBlock = blocks.find(b => b.blockId === block.parentBlockId);
+
+      if (parentBlock && isDatabaseBlock(parentBlock)) {
+        dbBlock = parentBlock;
+      }
+    }
+
+    if (!dbBlock) {
+      return null;
+    }
+
+    const url = getDocLink(block.docId, dbBlock.blockId);
+    const title = dbBlock.additional?.databaseName;
+
+    return `[database · ${title || 'Untitled'}][](${url})\n`;
+  };
+
+  const generateImageMarkdownPreview = (block: BlockDocumentInfo) => {
+    const isImageModel = (
+      model: DraftModel | null
+    ): model is DraftModel<ImageBlockModel> => {
+      return model?.flavour === 'affine:image';
+    };
+
+    const model = yblockToDraftModal(block.yblock);
+
+    if (!isImageModel(model)) {
+      return null;
+    }
+
+    const info = ['an image block'];
+
+    if (model.sourceId) {
+      info.push(`file id ${model.sourceId}`);
+    }
+
+    if (model.caption) {
+      info.push(`with caption ${model.caption}`);
+    }
+
+    return info.join(', ') + '\n';
+  };
+
+  const generateEmbedMarkdownPreview = (block: BlockDocumentInfo) => {
+    const isEmbedModel = (
+      model: DraftModel | null
+    ): model is DraftModel<EmbedBlockModel> => {
+      return (
+        model?.flavour === 'affine:embed-linked-doc' ||
+        model?.flavour === 'affine:embed-synced-doc'
+      );
+    };
+
     const draftModel = yblockToDraftModal(block.yblock);
-    markdown =
-      block.parentFlavour === 'affine:database'
-        ? `database · ${block.additional?.databaseName}\n`
-        : ((draftModel ? await markdownAdapter.fromBlock(draftModel) : null)
-            ?.file ?? null);
+    if (!isEmbedModel(draftModel)) {
+      return null;
+    }
+
+    const url = getDocLink(block.docId, draftModel.id);
+
+    return `[](${url})\n`;
+  };
+
+  const generateLatexMarkdownPreview = (block: BlockDocumentInfo) => {
+    let content =
+      typeof block.content === 'string'
+        ? block.content.trim()
+        : block.content?.join('').trim();
+
+    content = content?.split('\n').join(' ') ?? '';
+
+    return `LaTeX, with value ${content}\n`;
+  };
+
+  const generateBookmarkMarkdownPreview = (block: BlockDocumentInfo) => {
+    const isBookmarkModel = (
+      model: DraftModel | null
+    ): model is DraftModel<BookmarkBlockModel> => {
+      return bookmarkFlavours.has(model?.flavour ?? '');
+    };
+
+    const draftModel = yblockToDraftModal(block.yblock);
+    if (!isBookmarkModel(draftModel)) {
+      return null;
+    }
+    const title = draftModel.title;
+    const url = draftModel.url;
+    return `[${title}](${url})\n`;
+  };
+
+  const generateAttachmentMarkdownPreview = (block: BlockDocumentInfo) => {
+    const isAttachmentModel = (
+      model: DraftModel | null
+    ): model is DraftModel<AttachmentBlockModel> => {
+      return model?.flavour === 'affine:attachment';
+    };
+
+    const draftModel = yblockToDraftModal(block.yblock);
+    if (!isAttachmentModel(draftModel)) {
+      return null;
+    }
+
+    return `[${draftModel.name}](${draftModel.sourceId})\n`;
+  };
+
+  const generateMarkdownPreview = async (block: BlockDocumentInfo) => {
+    if (markdownPreviewCache.has(block)) {
+      return markdownPreviewCache.get(block);
+    }
+    const flavour = block.flavour;
+    let markdown: string | null = null;
+
+    if (
+      flavour === 'affine:paragraph' ||
+      flavour === 'affine:list' ||
+      flavour === 'affine:code'
+    ) {
+      const draftModel = yblockToDraftModal(block.yblock);
+      markdown =
+        block.parentFlavour === 'affine:database'
+          ? generateDatabaseMarkdownPreview(block)
+          : ((draftModel ? await markdownAdapter.fromBlock(draftModel) : null)
+              ?.file ?? null);
+
+      if (markdown) {
+        if (flavour === 'affine:code') {
+          markdown = trimCodeBlock(markdown);
+        } else if (flavour === 'affine:paragraph') {
+          markdown = trimParagraph(markdown);
+        }
+      }
+    } else if (flavour === 'affine:database') {
+      markdown = generateDatabaseMarkdownPreview(block);
+    } else if (
+      flavour === 'affine:embed-linked-doc' ||
+      flavour === 'affine:embed-synced-doc'
+    ) {
+      markdown = generateEmbedMarkdownPreview(block);
+    } else if (flavour === 'affine:attachment') {
+      markdown = generateAttachmentMarkdownPreview(block);
+    } else if (flavour === 'affine:image') {
+      markdown = generateImageMarkdownPreview(block);
+    } else if (flavour === 'affine:surface' || flavour === 'affine:page') {
+      // skip
+    } else if (flavour === 'affine:latex') {
+      markdown = generateLatexMarkdownPreview(block);
+    } else if (bookmarkFlavours.has(flavour)) {
+      markdown = generateBookmarkMarkdownPreview(block);
+    } else {
+      console.warn(`unknown flavour: ${flavour}`);
+    }
+
+    if (markdown && flavour === 'affine:list') {
+      const blockDepth = getListDepth(block);
+      markdown = indentMarkdown(markdown, Math.max(0, blockDepth));
+    }
+
+    markdownPreviewCache.set(block, markdown);
+    return markdown;
+  };
+
+  return generateMarkdownPreview;
+}
+
+// remove the indent of the first line of list
+// e.g.,
+// ```
+//     - list item 1
+//       - list item 2
+// ```
+// becomes
+// ```
+// - list item 1
+//   - list item 2
+// ```
+function unindentMarkdown(markdown: string) {
+  const lines = markdown.split('\n');
+  const res: string[] = [];
+  let firstListFound = false;
+  let baseIndent = 0;
+
+  for (let current of lines) {
+    const indent = current.match(/^\s*/)?.[0]?.length ?? 0;
+
+    if (indent > 0) {
+      if (!firstListFound) {
+        // For the first list item, remove all indentation
+        firstListFound = true;
+        baseIndent = indent;
+        current = current.trimStart();
+      } else {
+        // For subsequent list items, maintain relative indentation
+        current = ' '.repeat(indent - baseIndent) + current.trimStart();
+      }
+    }
+
+    res.push(current);
   }
-  if (
-    flavour === 'affine:embed-linked-doc' ||
-    flavour === 'affine:embed-synced-doc'
-  ) {
-    markdown = '🔗\n';
-  }
-  if (flavour === 'affine:attachment') {
-    markdown = '📃\n';
-  }
-  if (flavour === 'affine:image') {
-    markdown = '🖼️\n';
-  }
-  markdownPreviewCache.set(block, markdown);
-  return markdown;
-};
+
+  return res.join('\n');
+}
 
 async function crawlingDocData({
   docBuffer,
   storageDocId,
   rootDocBuffer,
+  rootDocId,
 }: WorkerInput & { type: 'doc' }): Promise<WorkerOutput> {
   if (isEmptyUpdate(rootDocBuffer)) {
     console.warn('[worker]: Empty root doc buffer');
@@ -210,11 +493,48 @@ async function crawlingDocData({
     let summary = '';
     const blockDocuments: BlockDocumentInfo[] = [];
 
+    const generateMarkdownPreview = generateMarkdownPreviewBuilder(
+      yRootDoc,
+      rootDocId,
+      blockDocuments
+    );
+
     const blocks = ydoc.getMap<any>('blocks');
+
+    // build a parent map for quick lookup
+    // for each block, record its parent id
+    const parentMap: Record<string, string | null> = {};
+    for (const [id, block] of blocks.entries()) {
+      const children = block.get('sys:children') as YArray<string> | undefined;
+      if (children instanceof YArray && children.length) {
+        for (const child of children) {
+          parentMap[child] = id;
+        }
+      }
+    }
 
     if (blocks.size === 0) {
       return { deletedDoc: [docId] };
     }
+
+    // find the nearest block that satisfies the predicate
+    const nearest = (
+      blockId: string,
+      predicate: (block: YMap<any>) => boolean
+    ) => {
+      let current: string | null = blockId;
+      while (current) {
+        const block = blocks.get(current);
+        if (block && predicate(block)) {
+          return block;
+        }
+        current = parentMap[current] ?? null;
+      }
+      return null;
+    };
+
+    const nearestByFlavour = (blockId: string, flavour: string) =>
+      nearest(blockId, block => block.get('sys:flavour') === flavour);
 
     let rootBlockId: string | null = null;
     for (const block of blocks.values()) {
@@ -261,21 +581,40 @@ async function crawlingDocData({
 
       const flavour = block.get('sys:flavour')?.toString();
       const parentFlavour = parentBlock?.get('sys:flavour')?.toString();
+      const noteBlock = nearestByFlavour(blockId, 'affine:note');
+
+      // display mode:
+      // - both: page and edgeless -> fallback to page
+      // - page: only page -> page
+      // - edgeless: only edgeless -> edgeless
+      // - undefined: edgeless (assuming it is a normal element on the edgeless)
+      let displayMode = noteBlock?.get('prop:displayMode') ?? 'edgeless';
+
+      if (displayMode === 'both') {
+        displayMode = 'page';
+      }
+
+      const noteBlockId: string | undefined = noteBlock
+        ?.get('sys:id')
+        ?.toString();
 
       pushChildren(blockId, block);
+
+      const commonBlockProps = {
+        docId,
+        flavour,
+        blockId,
+        yblock: block,
+        additional: { displayMode, noteBlockId },
+      };
 
       if (flavour === 'affine:page') {
         docTitle = block.get('prop:title').toString();
         blockDocuments.push({
-          docId,
-          flavour,
-          blockId,
+          ...commonBlockProps,
           content: docTitle,
-          yblock: block,
         });
-      }
-
-      if (
+      } else if (
         flavour === 'affine:paragraph' ||
         flavour === 'affine:list' ||
         flavour === 'affine:code'
@@ -313,9 +652,7 @@ async function crawlingDocData({
             : undefined;
 
         blockDocuments.push({
-          docId,
-          flavour,
-          blockId,
+          ...commonBlockProps,
           content: text.toString(),
           ...refs.reduce<{ refDocId: string[]; ref: string[] }>(
             (prev, curr) => {
@@ -327,17 +664,14 @@ async function crawlingDocData({
           ),
           parentFlavour,
           parentBlockId,
-          additional: { databaseName },
-          yblock: block,
+          additional: { ...commonBlockProps.additional, databaseName },
         });
 
         if (summaryLenNeeded > 0) {
           summary += text.toString();
           summaryLenNeeded -= text.length;
         }
-      }
-
-      if (
+      } else if (
         flavour === 'affine:embed-linked-doc' ||
         flavour === 'affine:embed-synced-doc'
       ) {
@@ -346,34 +680,27 @@ async function crawlingDocData({
           // reference info
           const params = block.get('prop:params') ?? {};
           blockDocuments.push({
-            docId,
-            flavour,
-            blockId,
+            ...commonBlockProps,
             refDocId: [pageId],
             ref: [JSON.stringify({ docId: pageId, ...params })],
             parentFlavour,
             parentBlockId,
-            yblock: block,
           });
         }
-      }
-
-      if (flavour === 'affine:attachment' || flavour === 'affine:image') {
+      } else if (
+        flavour === 'affine:attachment' ||
+        flavour === 'affine:image'
+      ) {
         const blobId = block.get('prop:sourceId');
         if (typeof blobId === 'string') {
           blockDocuments.push({
-            docId,
-            flavour,
-            blockId,
+            ...commonBlockProps,
             blob: [blobId],
             parentFlavour,
             parentBlockId,
-            yblock: block,
           });
         }
-      }
-
-      if (flavour === 'affine:surface') {
+      } else if (flavour === 'affine:surface') {
         const texts = [];
 
         const elementsObj = block.get('prop:elements');
@@ -403,17 +730,12 @@ async function crawlingDocData({
         }
 
         blockDocuments.push({
-          docId,
-          flavour,
-          blockId,
+          ...commonBlockProps,
           content: texts,
           parentFlavour,
           parentBlockId,
-          yblock: block,
         });
-      }
-
-      if (flavour === 'affine:database') {
+      } else if (flavour === 'affine:database') {
         const texts = [];
         const columnsObj = block.get('prop:columns');
         const databaseTitle = block.get('prop:title');
@@ -450,11 +772,21 @@ async function crawlingDocData({
         }
 
         blockDocuments.push({
-          docId,
-          flavour,
-          blockId,
+          ...commonBlockProps,
           content: texts,
-          yblock: block,
+          additional: {
+            ...commonBlockProps.additional,
+            databaseName: databaseTitle?.toString(),
+          },
+        });
+      } else if (flavour === 'affine:latex') {
+        blockDocuments.push({
+          ...commonBlockProps,
+          content: block.get('prop:latex')?.toString() ?? '',
+        });
+      } else if (bookmarkFlavours.has(flavour)) {
+        blockDocuments.push({
+          ...commonBlockProps,
         });
       }
     }
@@ -464,15 +796,28 @@ async function crawlingDocData({
     const TARGET_PREVIEW_CHARACTER = 500;
     const TARGET_PREVIOUS_BLOCK = 1;
     const TARGET_FOLLOW_BLOCK = 4;
-    for (let i = 0; i < blockDocuments.length; i++) {
-      const block = blockDocuments[i];
-      if (block.ref) {
+    for (const block of blockDocuments) {
+      if (block.ref?.length) {
+        const target = block;
+
+        // should only generate the markdown preview belong to the same affine:note
+        const noteBlock = nearestByFlavour(block.blockId, 'affine:note');
+
+        const sameNoteBlocks = noteBlock
+          ? blockDocuments.filter(
+              candidate =>
+                nearestByFlavour(candidate.blockId, 'affine:note') === noteBlock
+            )
+          : [];
+
         // only generate markdown preview for reference blocks
-        let previewText = (await generateMarkdownPreview(block)) ?? '';
+        let previewText = (await generateMarkdownPreview(target)) ?? '';
         let previousBlock = 0;
         let followBlock = 0;
-        let previousIndex = i;
-        let followIndex = i;
+        let previousIndex = sameNoteBlocks.findIndex(
+          block => block.blockId === target.blockId
+        );
+        let followIndex = previousIndex;
 
         while (
           !(
@@ -480,14 +825,14 @@ async function crawlingDocData({
               previewText.length > TARGET_PREVIEW_CHARACTER || // stop if preview text reaches the limit
               ((previousBlock >= TARGET_PREVIOUS_BLOCK || previousIndex < 0) &&
                 (followBlock >= TARGET_FOLLOW_BLOCK ||
-                  followIndex >= blockDocuments.length))
+                  followIndex >= sameNoteBlocks.length))
             ) // stop if no more blocks, or preview block reaches the limit
           )
         ) {
           if (previousBlock < TARGET_PREVIOUS_BLOCK) {
             previousIndex--;
             const block =
-              previousIndex >= 0 ? blockDocuments.at(previousIndex) : null;
+              previousIndex >= 0 ? sameNoteBlocks.at(previousIndex) : null;
             const markdown = block
               ? await generateMarkdownPreview(block)
               : null;
@@ -497,14 +842,14 @@ async function crawlingDocData({
                 markdown
               ) /* A small hack to skip blocks with the same content */
             ) {
-              previewText = markdown + previewText;
+              previewText = markdown + '\n' + previewText;
               previousBlock++;
             }
           }
 
           if (followBlock < TARGET_FOLLOW_BLOCK) {
             followIndex++;
-            const block = blockDocuments.at(followIndex);
+            const block = sameNoteBlocks.at(followIndex);
             const markdown = block
               ? await generateMarkdownPreview(block)
               : null;
@@ -514,13 +859,13 @@ async function crawlingDocData({
                 markdown
               ) /* A small hack to skip blocks with the same content */
             ) {
-              previewText = previewText + markdown;
+              previewText = previewText + '\n' + markdown;
               followBlock++;
             }
           }
         }
 
-        block.markdownPreview = previewText;
+        block.markdownPreview = unindentMarkdown(previewText);
       }
     }
     // #endregion

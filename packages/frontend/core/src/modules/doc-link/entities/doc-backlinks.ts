@@ -7,6 +7,10 @@ export interface Backlink {
   docId: string;
   blockId: string;
   title: string;
+  noteBlockId?: string;
+  displayMode?: string;
+  parentBlockId?: string;
+  parentFlavour?: string;
   markdownPreview?: string;
 }
 

@@ -478,9 +478,16 @@ export class DocsSearchService extends Service {
         'docId',
         {
           hits: {
-            fields: ['docId', 'blockId', 'markdownPreview'],
+            fields: [
+              'docId',
+              'blockId',
+              'parentBlockId',
+              'parentFlavour',
+              'additional',
+              'markdownPreview',
+            ],
             pagination: {
-              limit: 1,
+              limit: 5, // the max number of backlinks to show for each doc
             },
           },
           pagination: {
@@ -495,21 +502,60 @@ export class DocsSearchService extends Service {
               buckets.map(bucket => bucket.key)
             );
 
-            return buckets.map(bucket => {
+            return buckets.flatMap(bucket => {
               const title =
                 docData.find(doc => doc.id === bucket.key)?.get('title') ?? '';
-              const blockId = bucket.hits.nodes[0]?.fields.blockId ?? '';
-              const markdownPreview =
-                bucket.hits.nodes[0]?.fields.markdownPreview ?? '';
-              return {
-                docId: bucket.key,
-                blockId: typeof blockId === 'string' ? blockId : blockId[0],
-                title: typeof title === 'string' ? title : title[0],
-                markdownPreview:
-                  typeof markdownPreview === 'string'
-                    ? markdownPreview
-                    : markdownPreview[0],
-              };
+
+              return bucket.hits.nodes.map(node => {
+                const blockId = node.fields.blockId ?? '';
+                const markdownPreview = node.fields.markdownPreview ?? '';
+                const additional =
+                  typeof node.fields.additional === 'string'
+                    ? node.fields.additional
+                    : node.fields.additional[0];
+
+                const additionalData: {
+                  displayMode?: string;
+                  noteBlockId?: string;
+                } = JSON.parse(additional || '{}');
+
+                const displayMode = additionalData.displayMode ?? '';
+                const noteBlockId = additionalData.noteBlockId ?? '';
+                const parentBlockId =
+                  typeof node.fields.parentBlockId === 'string'
+                    ? node.fields.parentBlockId
+                    : node.fields.parentBlockId[0];
+                const parentFlavour =
+                  typeof node.fields.parentFlavour === 'string'
+                    ? node.fields.parentFlavour
+                    : node.fields.parentFlavour[0];
+
+                return {
+                  docId: bucket.key,
+                  blockId: typeof blockId === 'string' ? blockId : blockId[0],
+                  title: typeof title === 'string' ? title : title[0],
+                  markdownPreview:
+                    typeof markdownPreview === 'string'
+                      ? markdownPreview
+                      : markdownPreview[0],
+                  displayMode:
+                    typeof displayMode === 'string'
+                      ? displayMode
+                      : displayMode[0],
+                  noteBlockId:
+                    typeof noteBlockId === 'string'
+                      ? noteBlockId
+                      : noteBlockId[0],
+                  parentBlockId:
+                    typeof parentBlockId === 'string'
+                      ? parentBlockId
+                      : parentBlockId[0],
+                  parentFlavour:
+                    typeof parentFlavour === 'string'
+                      ? parentFlavour
+                      : parentFlavour[0],
+                };
+              });
             });
           });
         })

@@ -26,7 +26,7 @@ export const blockIndexSchema = defineSchema({
   // parent block id
   parentBlockId: 'String',
   // additional info
-  // { "databaseName": "xxx" }
+  // { "databaseName": "xxx", "displayMode": "page/edgeless", "noteBlockId": "xxx" }
   additional: { type: 'String', index: false },
   markdownPreview: { type: 'String', index: false },
 });

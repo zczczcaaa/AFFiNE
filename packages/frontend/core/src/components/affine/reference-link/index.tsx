@@ -7,7 +7,12 @@ import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import type { DocCollection } from '@blocksuite/affine/store';
-import { LiveData, useLiveData, useService } from '@toeverything/infra';
+import {
+  DocsService,
+  LiveData,
+  useLiveData,
+  useService,
+} from '@toeverything/infra';
 import clsx from 'clsx';
 import { nanoid } from 'nanoid';
 import {
@@ -36,6 +41,7 @@ function AffinePageReferenceInner({
   Icon: UserIcon,
 }: AffinePageReferenceProps) {
   const docDisplayMetaService = useService(DocDisplayMetaService);
+  const docsService = useService(DocsService);
   const i18n = useI18n();
 
   let linkWithMode: DocMode | null = null;
@@ -62,15 +68,19 @@ function AffinePageReferenceInner({
       );
     })
   );
-  const title = useLiveData(
+  const notFound = !useLiveData(docsService.list.doc$(pageId));
+
+  let title = useLiveData(
     docDisplayMetaService.title$(pageId, { reference: true })
   );
 
+  title = notFound ? i18n.t('com.affine.notFoundPage.title') : title;
+
   return (
-    <>
+    <span className={notFound ? styles.notFound : ''}>
       <Icon className={styles.pageReferenceIcon} />
       <span className="affine-reference-title">{i18n.t(title)}</span>
-    </>
+    </span>
   );
 }
 

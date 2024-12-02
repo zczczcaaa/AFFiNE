@@ -1,4 +1,9 @@
-import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
+import {
+  BlockStdScope,
+  type EditorHost,
+  type ExtensionType,
+  ShadowlessElement,
+} from '@blocksuite/affine/block-std';
 import type {
   AffineAIPanelState,
   AffineAIPanelWidgetConfig,
@@ -10,8 +15,14 @@ import {
   ParagraphBlockComponent,
 } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import { BlockViewType, type Doc, type Query } from '@blocksuite/affine/store';
-import { css, html, LitElement, nothing, type PropertyValues } from 'lit';
+import {
+  BlockViewType,
+  type Doc,
+  type JobMiddleware,
+  type Query,
+  type Schema,
+} from '@blocksuite/affine/store';
+import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { keyed } from 'lit/directives/keyed.js';
@@ -70,9 +81,12 @@ const customHeadingStyles = css`
 export type TextRendererOptions = {
   maxHeight?: number;
   customHeading?: boolean;
+  extensions?: ExtensionType[];
+  additionalMiddlewares?: JobMiddleware[];
 };
 
-export class TextRenderer extends WithDisposable(LitElement) {
+// todo: refactor it for more general purpose usage instead of AI only?
+export class TextRenderer extends WithDisposable(ShadowlessElement) {
   static override styles = css`
     .ai-answer-text-editor.affine-page-viewport {
       background: transparent;
@@ -177,8 +191,9 @@ export class TextRenderer extends WithDisposable(LitElement) {
     if (this._answers.length > 0) {
       const latestAnswer = this._answers.pop();
       this._answers = [];
-      if (latestAnswer) {
-        markDownToDoc(this.host, latestAnswer)
+      const schema = this.schema ?? this.host?.std.doc.collection.schema;
+      if (latestAnswer && schema) {
+        markDownToDoc(schema, latestAnswer, this.options.additionalMiddlewares)
           .then(doc => {
             this._doc = doc.blockCollection.getDoc({
               query: this._query,
@@ -245,7 +260,7 @@ export class TextRenderer extends WithDisposable(LitElement) {
           html`<div class="ai-answer-text-editor affine-page-viewport">
             ${new BlockStdScope({
               doc: this._doc,
-              extensions: CustomPageEditorBlockSpecs,
+              extensions: this.options.extensions ?? CustomPageEditorBlockSpecs,
             }).render()}
           </div>`
         )}
@@ -277,7 +292,10 @@ export class TextRenderer extends WithDisposable(LitElement) {
   accessor answer!: string;
 
   @property({ attribute: false })
-  accessor host!: EditorHost;
+  accessor host: EditorHost | null = null;
+
+  @property({ attribute: false })
+  accessor schema: Schema | null = null;
 
   @property({ attribute: false })
   accessor options!: TextRendererOptions;
