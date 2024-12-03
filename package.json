@@ -68,8 +68,8 @@
     "@typescript-eslint/eslint-plugin": "^7.6.0",
     "@typescript-eslint/parser": "^7.6.0",
     "@vanilla-extract/vite-plugin": "^4.0.7",
-    "@vitest/coverage-istanbul": "2.1.6",
-    "@vitest/ui": "2.1.6",
+    "@vitest/coverage-istanbul": "2.1.8",
+    "@vitest/ui": "2.1.8",
     "cross-env": "^7.0.3",
     "electron": "^33.0.0",
     "eslint": "^8.57.0",
@@ -95,7 +95,7 @@
     "typescript": "^5.6.3",
     "unplugin-swc": "^1.4.5",
     "vite": "^6.0.1",
-    "vitest": "2.1.6"
+    "vitest": "2.1.8"
   },
   "packageManager": "yarn@4.5.3",
   "resolutions": {
@@ -156,7 +156,7 @@
     "which-typed-array": "npm:@nolyfill/which-typed-array@latest",
     "macos-alias": "npm:@napi-rs/macos-alias@0.0.4",
     "fs-xattr": "npm:@napi-rs/xattr@latest",
-    "vite": "6.0.1",
+    "vite": "6.0.2",
     "decode-named-character-reference@npm:^1.0.0": "patch:decode-named-character-reference@npm%3A1.0.2#~/.yarn/patches/decode-named-character-reference-npm-1.0.2-db17a755fd.patch"
   }
 }
