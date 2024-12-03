@@ -38,7 +38,8 @@ const DesktopNumberValue = ({ value, onChange }: PropertyValueProps) => {
     >
       <input
         className={styles.numberPropertyValueInput}
-        type={'number'}
+        type="number"
+        inputMode="decimal"
         value={tempValue || ''}
         onChange={handleOnChange}
         onBlur={handleBlur}
@@ -109,7 +110,8 @@ const MobileNumberValue = ({
       >
         <input
           className={styles.mobileNumberPropertyValueInput}
-          type={'number'}
+          type="number"
+          inputMode="decimal"
           value={tempValue || ''}
           onChange={handleOnChange}
           onBlur={handleBlur}
