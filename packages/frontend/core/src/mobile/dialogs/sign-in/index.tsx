@@ -1,31 +1,23 @@
 import { IconButton, Modal, SafeArea } from '@affine/component';
-import { authAtom } from '@affine/core/components/atoms';
+import type {
+  DialogComponentProps,
+  GLOBAL_DIALOG_SCHEMA,
+} from '@affine/core/modules/dialogs';
 import { CloseIcon } from '@blocksuite/icons/rc';
 import { cssVarV2 } from '@toeverything/theme/v2';
-import { useAtom } from 'jotai';
-import { useCallback } from 'react';
 
-import { MobileSignIn } from './mobile-sign-in';
+import { MobileSignInPanel } from '../../components/sign-in';
 
-export const MobileSignInModal = () => {
-  const [authAtomValue, setAuthAtom] = useAtom(authAtom);
-  const setOpen = useCallback(
-    (open: boolean) => {
-      setAuthAtom(prev => ({ ...prev, openModal: open }));
-    },
-    [setAuthAtom]
-  );
-
-  const closeModal = useCallback(() => {
-    setOpen(false);
-  }, [setOpen]);
-
+export const SignInDialog = ({
+  close,
+  server: initialServerBaseUrl,
+}: DialogComponentProps<GLOBAL_DIALOG_SCHEMA['sign-in']>) => {
   return (
     <Modal
       fullScreen
       animation="slideBottom"
-      open={authAtomValue.openModal}
-      onOpenChange={setOpen}
+      open
+      onOpenChange={() => close()}
       contentOptions={{
         style: {
           padding: 0,
@@ -35,7 +27,7 @@ export const MobileSignInModal = () => {
       }}
       withoutCloseButton
     >
-      <MobileSignIn onSkip={closeModal} />
+      <MobileSignInPanel onClose={close} server={initialServerBaseUrl} />
       <SafeArea
         top
         style={{ position: 'absolute', top: 0, right: 0, paddingRight: 16 }}
@@ -46,7 +38,7 @@ export const MobileSignInModal = () => {
           variant="solid"
           icon={<CloseIcon />}
           style={{ borderRadius: 8, padding: 4 }}
-          onClick={closeModal}
+          onClick={() => close()}
         />
       </SafeArea>
     </Modal>

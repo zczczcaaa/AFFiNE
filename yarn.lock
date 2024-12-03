@@ -526,6 +526,7 @@ __metadata:
     "@sentry/esbuild-plugin": "npm:^2.16.1"
     "@sentry/react": "npm:^8.0.0"
     "@toeverything/infra": "workspace:*"
+    "@types/set-cookie-parser": "npm:^2.4.10"
     "@types/uuid": "npm:^10.0.0"
     "@vitejs/plugin-react-swc": "npm:^3.6.0"
     async-call-rpc: "npm:^6.4.2"
@@ -548,6 +549,7 @@ __metadata:
     react-router-dom: "npm:^6.22.3"
     rxjs: "npm:^7.8.1"
     semver: "npm:^7.6.0"
+    set-cookie-parser: "npm:^2.7.1"
     tree-kill: "npm:^1.2.2"
     ts-node: "npm:^10.9.2"
     uuid: "npm:^11.0.0"
@@ -13953,6 +13955,15 @@ __metadata:
     "@types/node": "npm:*"
     "@types/send": "npm:*"
   checksum: 10/c5a7171d5647f9fbd096ed1a26105759f3153ccf683824d99fee4c7eb9cde2953509621c56a070dd9fb1159e799e86d300cbe4e42245ebc5b0c1767e8ca94a67
+  languageName: node
+  linkType: hard
+
+"@types/set-cookie-parser@npm:^2.4.10":
+  version: 2.4.10
+  resolution: "@types/set-cookie-parser@npm:2.4.10"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/105cc90c7d7deeb344858f720b58bd137356586545ac00d1a448e050bfcc0f385553ff26bc9c674bd8c2e953a458149eadb1945ee3d1eee81e6c0656236ebc0a
   languageName: node
   linkType: hard
 
@@ -29728,6 +29739,13 @@ __metadata:
   version: 2.0.0
   resolution: "set-blocking@npm:2.0.0"
   checksum: 10/8980ebf7ae9eb945bb036b6e283c547ee783a1ad557a82babf758a065e2fb6ea337fd82cac30dd565c1e606e423f30024a19fff7afbf4977d784720c4026a8ef
+  languageName: node
+  linkType: hard
+
+"set-cookie-parser@npm:^2.7.1":
+  version: 2.7.1
+  resolution: "set-cookie-parser@npm:2.7.1"
+  checksum: 10/c92b1130032693342bca13ea1b1bc93967ab37deec4387fcd8c2a843c0ef2fd9a9f3df25aea5bb3976cd05a91c2cf4632dd6164d6e1814208fb7d7e14edd42b4
   languageName: node
   linkType: hard
 

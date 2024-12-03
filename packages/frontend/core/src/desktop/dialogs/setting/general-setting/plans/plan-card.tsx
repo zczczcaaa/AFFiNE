@@ -1,9 +1,9 @@
 import { Button, type ButtonProps } from '@affine/component/ui/button';
 import { Tooltip } from '@affine/component/ui/tooltip';
-import { authAtom } from '@affine/core/components/atoms';
 import { generateSubscriptionCallbackLink } from '@affine/core/components/hooks/affine/use-subscription-notify';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { AuthService, SubscriptionService } from '@affine/core/modules/cloud';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import {
   type CreateCheckoutSessionInput,
   SubscriptionRecurring,
@@ -18,7 +18,6 @@ import { track } from '@affine/track';
 import { DoneIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
 import type { PropsWithChildren } from 'react';
 import { useCallback, useMemo, useState } from 'react';
@@ -387,14 +386,11 @@ export const SignUpAction = ({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) => {
-  const setOpen = useSetAtom(authAtom);
+  const globalDialogService = useService(GlobalDialogService);
 
   const onClickSignIn = useCallback(() => {
-    setOpen(state => ({
-      ...state,
-      openModal: true,
-    }));
-  }, [setOpen]);
+    globalDialogService.open('sign-in', {});
+  }, [globalDialogService]);
 
   return (
     <Button

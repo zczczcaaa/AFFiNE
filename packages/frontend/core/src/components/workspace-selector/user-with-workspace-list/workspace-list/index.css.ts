@@ -12,11 +12,18 @@ export const workspaceListWrapper = style({
   flexDirection: 'column',
   gap: 2,
 });
-export const workspaceType = style({
+export const workspaceServer = style({
   display: 'flex',
+  justifyContent: 'space-between',
   alignItems: 'center',
   gap: 4,
   padding: '0px 12px',
+});
+
+export const workspaceServerName = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4,
   fontWeight: 500,
   fontSize: cssVar('fontXs'),
   lineHeight: '20px',

@@ -1,8 +1,8 @@
 import { Service } from '../../../framework';
 import type { WorkspaceMetadata } from '..';
-import type { WorkspaceFlavourProvider } from '../providers/flavour';
 import type { WorkspaceDestroyService } from './destroy';
 import type { WorkspaceFactoryService } from './factory';
+import type { WorkspaceFlavoursService } from './flavours';
 import type { WorkspaceListService } from './list';
 import type { WorkspaceProfileService } from './profile';
 import type { WorkspaceRepositoryService } from './repo';
@@ -14,7 +14,7 @@ export class WorkspacesService extends Service {
   }
 
   constructor(
-    private readonly providers: WorkspaceFlavourProvider[],
+    private readonly flavoursService: WorkspaceFlavoursService,
     private readonly listService: WorkspaceListService,
     private readonly profileRepo: WorkspaceProfileService,
     private readonly transform: WorkspaceTransformService,
@@ -46,7 +46,7 @@ export class WorkspacesService extends Service {
   }
 
   async getWorkspaceBlob(meta: WorkspaceMetadata, blob: string) {
-    return await this.providers
+    return await this.flavoursService.flavours$.value
       .find(x => x.flavour === meta.flavour)
       ?.getWorkspaceBlob(meta.id, blob);
   }

@@ -7,10 +7,14 @@ export {
   isNetworkError,
   NetworkError,
 } from './error';
+export { AccountChanged } from './events/account-changed';
+export { AccountLoggedIn } from './events/account-logged-in';
+export { AccountLoggedOut } from './events/account-logged-out';
+export { ServerInitialized } from './events/server-initialized';
 export { RawFetchProvider } from './provider/fetch';
 export { ValidatorProvider } from './provider/validator';
 export { WebSocketAuthProvider } from './provider/websocket-auth';
-export { AccountChanged, AuthService } from './services/auth';
+export { AuthService } from './services/auth';
 export { CaptchaService } from './services/captcha';
 export { DefaultServerService } from './services/default-server';
 export { EventSourceService } from './services/eventsource';
@@ -25,6 +29,7 @@ export { UserFeatureService } from './services/user-feature';
 export { UserQuotaService } from './services/user-quota';
 export { WebSocketService } from './services/websocket';
 export { WorkspaceServerService } from './services/workspace-server';
+export type { ServerConfig } from './types';
 
 import {
   DocScope,
@@ -79,9 +84,10 @@ import { UserQuotaStore } from './stores/user-quota';
 export function configureCloudModule(framework: Framework) {
   framework
     .impl(RawFetchProvider, DefaultRawFetchProvider)
-    .service(ServersService, [ServerListStore])
+    .service(ServersService, [ServerListStore, ServerConfigStore])
     .service(DefaultServerService, [ServersService])
     .store(ServerListStore, [GlobalStateService])
+    .store(ServerConfigStore, [RawFetchProvider])
     .entity(Server, [ServerListStore])
     .scope(ServerScope)
     .service(ServerService, [ServerScope])
@@ -97,7 +103,6 @@ export function configureCloudModule(framework: Framework) {
           f.getOptional(WebSocketAuthProvider)
         )
     )
-    .store(ServerConfigStore, [GraphQLService])
     .service(CaptchaService, f => {
       return new CaptchaService(
         f.get(ServerService),
@@ -106,7 +111,12 @@ export function configureCloudModule(framework: Framework) {
       );
     })
     .service(AuthService, [FetchService, AuthStore, UrlService])
-    .store(AuthStore, [FetchService, GraphQLService, GlobalState])
+    .store(AuthStore, [
+      FetchService,
+      GraphQLService,
+      GlobalState,
+      ServerService,
+    ])
     .entity(AuthSession, [AuthStore])
     .service(SubscriptionService, [SubscriptionStore])
     .store(SubscriptionStore, [
@@ -132,12 +142,13 @@ export function configureCloudModule(framework: Framework) {
     .store(UserFeatureStore, [GraphQLService])
     .service(InvoicesService)
     .store(InvoicesStore, [GraphQLService])
-    .entity(Invoices, [InvoicesStore])
+    .entity(Invoices, [InvoicesStore]);
+
+  framework
     .scope(WorkspaceScope)
+    .service(WorkspaceServerService)
     .scope(DocScope)
     .service(CloudDocMetaService)
     .entity(CloudDocMeta, [CloudDocMetaStore, DocService, GlobalCache])
-    .store(CloudDocMetaStore, [GraphQLService]);
-
-  framework.scope(WorkspaceScope).service(WorkspaceServerService);
+    .store(CloudDocMetaStore, [WorkspaceServerService]);
 }

@@ -5,11 +5,9 @@ import { ObjectPool } from '../../../utils';
 import type { Workspace } from '../entities/workspace';
 import { WorkspaceInitialized } from '../events';
 import type { WorkspaceOpenOptions } from '../open-options';
-import type {
-  WorkspaceEngineProvider,
-  WorkspaceFlavourProvider,
-} from '../providers/flavour';
+import type { WorkspaceEngineProvider } from '../providers/flavour';
 import { WorkspaceScope } from '../scopes/workspace';
+import type { WorkspaceFlavoursService } from './flavours';
 import type { WorkspaceProfileService } from './profile';
 import { WorkspaceService } from './workspace';
 
@@ -17,7 +15,7 @@ const logger = new DebugLogger('affine:workspace-repository');
 
 export class WorkspaceRepositoryService extends Service {
   constructor(
-    private readonly providers: WorkspaceFlavourProvider[],
+    private readonly flavoursService: WorkspaceFlavoursService,
     private readonly profileRepo: WorkspaceProfileService
   ) {
     super();
@@ -83,7 +81,7 @@ export class WorkspaceRepositoryService extends Service {
     logger.info(
       `open workspace [${openOptions.metadata.flavour}] ${openOptions.metadata.id} `
     );
-    const flavourProvider = this.providers.find(
+    const flavourProvider = this.flavoursService.flavours$.value.find(
       p => p.flavour === openOptions.metadata.flavour
     );
     const provider =

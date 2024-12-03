@@ -3,7 +3,6 @@ import {
   buildShowcaseWorkspace,
   createFirstAppData,
 } from '@affine/core/utils/first-app-data';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import {
   useLiveData,
   useService,
@@ -59,11 +58,8 @@ export const Component = ({
   const createCloudWorkspace = useCallback(() => {
     if (createOnceRef.current) return;
     createOnceRef.current = true;
-    buildShowcaseWorkspace(
-      workspacesService,
-      WorkspaceFlavour.AFFINE_CLOUD,
-      'AFFiNE Cloud'
-    )
+    // TODO: support selfhosted
+    buildShowcaseWorkspace(workspacesService, 'affine-cloud', 'AFFiNE Cloud')
       .then(({ meta, defaultDocId }) => {
         if (defaultDocId) {
           jumpToPage(meta.id, defaultDocId);
@@ -86,15 +82,14 @@ export const Component = ({
     // check is user logged in && has cloud workspace
     if (searchParams.get('initCloud') === 'true') {
       if (loggedIn) {
-        if (list.every(w => w.flavour !== WorkspaceFlavour.AFFINE_CLOUD)) {
+        if (list.every(w => w.flavour !== 'affine-cloud')) {
           createCloudWorkspace();
           return;
         }
 
         // open first cloud workspace
         const openWorkspace =
-          list.find(w => w.flavour === WorkspaceFlavour.AFFINE_CLOUD) ??
-          list[0];
+          list.find(w => w.flavour === 'affine-cloud') ?? list[0];
         openPage(openWorkspace.id, defaultIndexRoute);
       } else {
         return;

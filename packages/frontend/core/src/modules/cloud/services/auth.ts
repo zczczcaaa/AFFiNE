@@ -1,18 +1,16 @@
 import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import type { OAuthProviderType } from '@affine/graphql';
 import { track } from '@affine/track';
-import {
-  ApplicationFocused,
-  ApplicationStarted,
-  createEvent,
-  OnEvent,
-  Service,
-} from '@toeverything/infra';
+import { ApplicationFocused, OnEvent, Service } from '@toeverything/infra';
 import { distinctUntilChanged, map, skip } from 'rxjs';
 
 import type { UrlService } from '../../url';
 import { type AuthAccountInfo, AuthSession } from '../entities/session';
 import { BackendError } from '../error';
+import { AccountChanged } from '../events/account-changed';
+import { AccountLoggedIn } from '../events/account-logged-in';
+import { AccountLoggedOut } from '../events/account-logged-out';
+import { ServerStarted } from '../events/server-started';
 import type { AuthStore } from '../stores/auth';
 import type { FetchService } from './fetch';
 
@@ -26,18 +24,8 @@ function toAIUserInfo(account: AuthAccountInfo | null) {
   };
 }
 
-// Emit when account changed
-export const AccountChanged = createEvent<AuthAccountInfo | null>(
-  'AccountChanged'
-);
-
-export const AccountLoggedIn = createEvent<AuthAccountInfo>('AccountLoggedIn');
-
-export const AccountLoggedOut =
-  createEvent<AuthAccountInfo>('AccountLoggedOut');
-
-@OnEvent(ApplicationStarted, e => e.onApplicationStart)
 @OnEvent(ApplicationFocused, e => e.onApplicationFocused)
+@OnEvent(ServerStarted, e => e.onServerStarted)
 export class AuthService extends Service {
   session = this.framework.createEntity(AuthSession);
 
@@ -74,7 +62,7 @@ export class AuthService extends Service {
       });
   }
 
-  private onApplicationStart() {
+  private onServerStarted() {
     this.session.revalidate();
   }
 

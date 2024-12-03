@@ -11,7 +11,6 @@ import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { EditorService } from '@affine/core/modules/editor';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { ShareInfoService } from '@affine/core/modules/share-doc';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { PublicPageMode } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
@@ -316,11 +315,9 @@ export const AFFiNESharePage = (props: ShareMenuProps) => {
 };
 
 export const SharePage = (props: ShareMenuProps) => {
-  if (props.workspaceMetadata.flavour === WorkspaceFlavour.LOCAL) {
+  if (props.workspaceMetadata.flavour === 'local') {
     return <LocalSharePage {...props} />;
-  } else if (
-    props.workspaceMetadata.flavour === WorkspaceFlavour.AFFINE_CLOUD
-  ) {
+  } else {
     return (
       // TODO(@eyhn): refactor this part
       <ErrorBoundary fallback={null}>
@@ -330,5 +327,4 @@ export const SharePage = (props: ShareMenuProps) => {
       </ErrorBoundary>
     );
   }
-  throw new Error('Unreachable');
 };

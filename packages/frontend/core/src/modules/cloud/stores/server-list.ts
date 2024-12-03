@@ -31,11 +31,17 @@ export class ServerListStore extends Store {
   }
 
   addServer(server: ServerMetadata, serverConfig: ServerConfig) {
-    this.updateServerConfig(server.id, serverConfig);
     const oldServers =
       this.globalStateService.globalState.get<ServerMetadata[]>('serverList') ??
       [];
 
+    if (oldServers.some(s => s.baseUrl === server.baseUrl)) {
+      throw new Error(
+        'Server with same base url already exists, ' + server.baseUrl
+      );
+    }
+
+    this.updateServerConfig(server.id, serverConfig);
     this.globalStateService.globalState.set<ServerMetadata[]>('serverList', [
       ...oldServers,
       server,

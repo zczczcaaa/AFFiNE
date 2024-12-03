@@ -12,6 +12,7 @@ import {
 } from '../../../livedata';
 import type { WorkspaceMetadata } from '../metadata';
 import type { WorkspaceFlavourProvider } from '../providers/flavour';
+import type { WorkspaceFlavoursService } from '../services/flavours';
 import type { WorkspaceProfileCacheStore } from '../stores/profile-cache';
 import type { Workspace } from './workspace';
 
@@ -47,12 +48,14 @@ export class WorkspaceProfile extends Entity<{ metadata: WorkspaceMetadata }> {
 
   constructor(
     private readonly cache: WorkspaceProfileCacheStore,
-    providers: WorkspaceFlavourProvider[]
+    flavoursService: WorkspaceFlavoursService
   ) {
     super();
 
     this.provider =
-      providers.find(p => p.flavour === this.props.metadata.flavour) ?? null;
+      flavoursService.flavours$.value.find(
+        p => p.flavour === this.props.metadata.flavour
+      ) ?? null;
   }
 
   private setProfile(info: WorkspaceProfileInfo) {

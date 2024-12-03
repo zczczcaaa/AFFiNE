@@ -20,7 +20,6 @@ import {
   WorkspacePermissionService,
 } from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { Permission, UserFriendlyError } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
@@ -410,7 +409,7 @@ export const MembersPanel = ({
   onChangeSettingState: (settingState: SettingState) => void;
 }): ReactElement | null => {
   const workspace = useService(WorkspaceService).workspace;
-  if (workspace.flavour === WorkspaceFlavour.LOCAL) {
+  if (workspace.flavour === 'local') {
     return <MembersPanelLocal />;
   }
   return (

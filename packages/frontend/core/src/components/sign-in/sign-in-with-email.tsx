@@ -8,20 +8,37 @@ import {
 import { Button } from '@affine/component/ui/button';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { AuthService, CaptchaService } from '@affine/core/modules/cloud';
+import { Unreachable } from '@affine/env/constant';
 import { Trans, useI18n } from '@affine/i18n';
 import { useLiveData, useService } from '@toeverything/infra';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
-import type { AuthPanelProps } from './index';
+import type { SignInState } from '.';
+import { Captcha } from './captcha';
 import * as style from './style.css';
-import { Captcha } from './use-captcha';
 
-export const AfterSignInSendEmail = ({
-  setAuthData: setAuth,
-  email,
-  redirectUrl,
-}: AuthPanelProps<'afterSignInSendEmail'>) => {
+export const SignInWithEmailStep = ({
+  state,
+  changeState,
+  close,
+}: {
+  state: SignInState;
+  changeState: Dispatch<SetStateAction<SignInState>>;
+  close: () => void;
+}) => {
   const [resendCountDown, setResendCountDown] = useState(60);
+
+  const email = state.email;
+
+  if (!email) {
+    throw new Unreachable();
+  }
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,7 +60,20 @@ export const AfterSignInSendEmail = ({
   const needCaptcha = useLiveData(captchaService.needCaptcha$);
   const challenge = useLiveData(captchaService.challenge$);
 
+  const loginStatus = useLiveData(authService.session.status$);
+
+  useEffect(() => {
+    if (loginStatus === 'authenticated') {
+      close();
+      notify.success({
+        title: t['com.affine.auth.toast.title.signed-in'](),
+        message: t['com.affine.auth.toast.message.signed-in'](),
+      });
+    }
+  }, [close, loginStatus, t]);
+
   const onResendClick = useAsyncCallback(async () => {
+    if (isSending || (!verifyToken && needCaptcha)) return;
     setIsSending(true);
     try {
       setResendCountDown(60);
@@ -52,7 +82,7 @@ export const AfterSignInSendEmail = ({
         email,
         verifyToken,
         challenge,
-        redirectUrl
+        state.redirectUrl
       );
     } catch (err) {
       console.error(err);
@@ -61,17 +91,34 @@ export const AfterSignInSendEmail = ({
       });
     }
     setIsSending(false);
-  }, [authService, captchaService, challenge, email, redirectUrl, verifyToken]);
+  }, [
+    authService,
+    captchaService,
+    challenge,
+    email,
+    isSending,
+    needCaptcha,
+    state.redirectUrl,
+    verifyToken,
+  ]);
 
   const onSignInWithPasswordClick = useCallback(() => {
-    setAuth({ state: 'signInWithPassword' });
-  }, [setAuth]);
+    changeState(prev => ({ ...prev, step: 'signInWithPassword' }));
+  }, [changeState]);
 
   const onBackBottomClick = useCallback(() => {
-    setAuth({ state: 'signIn' });
-  }, [setAuth]);
+    changeState(prev => ({ ...prev, step: 'signIn' }));
+  }, [changeState]);
 
-  return (
+  return !verifyToken && needCaptcha ? (
+    <>
+      <ModalHeader title={t['com.affine.auth.sign.in']()} />
+      <AuthContent style={{ height: 100 }}>
+        <Captcha />
+      </AuthContent>
+      <BackButton onClick={onBackBottomClick} />
+    </>
+  ) : (
     <>
       <ModalHeader
         title={t['com.affine.auth.sign.in']()}
@@ -88,20 +135,14 @@ export const AfterSignInSendEmail = ({
 
       <div className={style.resendWrapper}>
         {resendCountDown <= 0 ? (
-          <>
-            <Captcha />
-            <Button
-              style={
-                !verifyToken && needCaptcha ? { cursor: 'not-allowed' } : {}
-              }
-              disabled={(!verifyToken && needCaptcha) || isSending}
-              variant="plain"
-              size="large"
-              onClick={onResendClick}
-            >
-              {t['com.affine.auth.sign.auth.code.resend.hint']()}
-            </Button>
-          </>
+          <Button
+            disabled={isSending}
+            variant="plain"
+            size="large"
+            onClick={onResendClick}
+          >
+            {t['com.affine.auth.sign.auth.code.resend.hint']()}
+          </Button>
         ) : (
           <div className={style.sentRow}>
             <div className={style.sentMessage}>

@@ -1,6 +1,6 @@
 import { notify, useConfirmModal } from '@affine/component';
-import { authAtom } from '@affine/core/components/atoms';
 import { AuthService } from '@affine/core/modules/cloud';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { useI18n } from '@affine/i18n';
 import type { Workspace } from '@toeverything/infra';
 import {
@@ -8,7 +8,6 @@ import {
   useService,
   WorkspacesService,
 } from '@toeverything/infra';
-import { useSetAtom } from 'jotai';
 import { useCallback } from 'react';
 
 import { useNavigateHelper } from '../use-navigate-helper';
@@ -31,7 +30,7 @@ export const useEnableCloud = () => {
   const authService = useService(AuthService);
   const account = useLiveData(authService.session.account$);
   const loginStatus = useLiveData(useService(AuthService).session.status$);
-  const setAuthAtom = useSetAtom(authAtom);
+  const globalDialogService = useService(GlobalDialogService);
   const { openConfirmModal, closeConfirmModal } = useConfirmModal();
   const workspacesService = useService(WorkspacesService);
   const { jumpToPage } = useNavigateHelper();
@@ -58,8 +57,8 @@ export const useEnableCloud = () => {
   );
 
   const openSignIn = useCallback(() => {
-    setAuthAtom(prev => ({ ...prev, openModal: true }));
-  }, [setAuthAtom]);
+    globalDialogService.open('sign-in', {});
+  }, [globalDialogService]);
 
   const signInOrEnableCloud = useCallback(
     async (...args: ConfirmEnableArgs) => {

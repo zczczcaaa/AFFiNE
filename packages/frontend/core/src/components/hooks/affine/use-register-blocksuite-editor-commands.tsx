@@ -8,7 +8,6 @@ import type { Editor } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
 import { OpenInAppService } from '@affine/core/modules/open-in-app';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
@@ -78,7 +77,7 @@ export function useRegisterBlocksuiteEditorCommands(editor: Editor) {
     });
   }, [doc, openConfirmModal, t]);
 
-  const isCloudWorkspace = workspace.flavour === WorkspaceFlavour.AFFINE_CLOUD;
+  const isCloudWorkspace = workspace.flavour !== 'local';
 
   const openInAppService = useServiceOptional(OpenInAppService);
 

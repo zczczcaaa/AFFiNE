@@ -6,13 +6,12 @@ import {
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceShareSettingService } from '@affine/core/modules/share-setting';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
 
 export const SharingPanel = () => {
   const workspace = useService(WorkspaceService).workspace;
-  if (workspace.flavour === WorkspaceFlavour.LOCAL) {
+  if (workspace.flavour === 'local') {
     return null;
   }
   return <Sharing />;

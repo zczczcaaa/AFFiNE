@@ -1,4 +1,3 @@
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { assertEquals } from '@blocksuite/affine/global/utils';
 import { applyUpdate } from 'yjs';
 
@@ -26,12 +25,12 @@ export class WorkspaceTransformService extends Service {
     local: Workspace,
     accountId: string
   ): Promise<WorkspaceMetadata> => {
-    assertEquals(local.flavour, WorkspaceFlavour.LOCAL);
+    assertEquals(local.flavour, 'local');
 
     const localDocStorage = local.engine.doc.storage.behavior;
 
     const newMetadata = await this.factory.create(
-      WorkspaceFlavour.AFFINE_CLOUD,
+      'affine-cloud',
       async (docCollection, blobStorage, docStorage) => {
         const rootDocBinary = await localDocStorage.doc.get(
           local.docCollection.doc.guid

@@ -12,7 +12,6 @@ import {
   ImportTemplateService,
   TemplateDownloaderService,
 } from '@affine/core/modules/import-template';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import { AllDocsIcon } from '@blocksuite/icons/rc';
@@ -56,7 +55,7 @@ const Dialog = ({
     useState<WorkspaceMetadata | null>(null);
   const selectedWorkspace =
     rawSelectedWorkspace ??
-    workspaces.find(w => w.flavour === WorkspaceFlavour.AFFINE_CLOUD) ??
+    workspaces.find(w => w.flavour !== 'local') ??
     workspaces.at(0);
   const selectedWorkspaceName = useWorkspaceName(selectedWorkspace);
   const { openPage, jumpToSignIn } = useNavigateHelper();
@@ -146,7 +145,8 @@ const Dialog = ({
     try {
       const { workspaceId, docId } =
         await importTemplateService.importToNewWorkspace(
-          WorkspaceFlavour.AFFINE_CLOUD,
+          // TODO: support selfhosted
+          'affine-cloud',
           'Workspace',
           templateDownloader.data$.value
         );

@@ -1,4 +1,3 @@
-import { Skeleton } from '@affine/component';
 import { Button } from '@affine/component/ui/button';
 import { ServerService } from '@affine/core/modules/cloud';
 import { UrlService } from '@affine/core/modules/url';
@@ -38,7 +37,7 @@ export function OAuth({ redirectUrl }: { redirectUrl?: string }) {
   const scheme = urlService.getClientScheme();
 
   if (!oauth) {
-    return <Skeleton height={50} />;
+    return null;
   }
 
   return oauthProviders?.map(provider => (

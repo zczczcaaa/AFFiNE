@@ -1,5 +1,4 @@
 import { DebugLogger } from '@affine/debug';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import {
   createWorkspaceMutation,
   deleteWorkspaceMutation,
@@ -8,7 +7,6 @@ import {
 } from '@affine/graphql';
 import { DocCollection } from '@blocksuite/affine/store';
 import {
-  ApplicationStarted,
   type BlobStorage,
   catchErrorInto,
   type DocStorage,
@@ -16,22 +14,24 @@ import {
   fromPromise,
   type GlobalState,
   LiveData,
+  ObjectPool,
   onComplete,
-  OnEvent,
   onStart,
+  Service,
   type Workspace,
   type WorkspaceEngineProvider,
   type WorkspaceFlavourProvider,
+  type WorkspaceFlavoursProvider,
   type WorkspaceMetadata,
   type WorkspaceProfileInfo,
 } from '@toeverything/infra';
-import { effect, getAFFiNEWorkspaceSchema, Service } from '@toeverything/infra';
+import { effect, getAFFiNEWorkspaceSchema } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { nanoid } from 'nanoid';
-import { EMPTY, map, mergeMap } from 'rxjs';
+import { EMPTY, map, mergeMap, Observable, switchMap } from 'rxjs';
 import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 
-import type { Server } from '../../cloud';
+import type { Server, ServersService } from '../../cloud';
 import {
   AccountChanged,
   AuthService,
@@ -40,7 +40,6 @@ import {
   WebSocketService,
   WorkspaceServerService,
 } from '../../cloud';
-import type { ServersService } from '../../cloud/services/servers';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { CloudAwarenessConnection } from './engine/awareness-cloud';
@@ -49,41 +48,41 @@ import { StaticBlobStorage } from './engine/blob-static';
 import { CloudDocEngineServer } from './engine/doc-cloud';
 import { CloudStaticDocStorage } from './engine/doc-cloud-static';
 
-const CLOUD_WORKSPACES_CACHE_KEY = 'cloud-workspace:';
+const getCloudWorkspaceCacheKey = (serverId: string) => {
+  if (serverId === 'affine-cloud') {
+    return 'cloud-workspace:'; // FOR BACKWARD COMPATIBILITY
+  }
+  return `selfhosted-workspace-${serverId}:`;
+};
 
 const logger = new DebugLogger('affine:cloud-workspace-flavour-provider');
 
-@OnEvent(ApplicationStarted, e => e.revalidate)
-@OnEvent(AccountChanged, e => e.revalidate)
-export class CloudWorkspaceFlavourProviderService
-  extends Service
-  implements WorkspaceFlavourProvider
-{
+class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
   private readonly authService: AuthService;
   private readonly webSocketService: WebSocketService;
   private readonly fetchService: FetchService;
   private readonly graphqlService: GraphQLService;
-  private readonly affineCloudServer: Server;
+
+  private readonly unsubscribeAccountChanged: () => void;
 
   constructor(
     private readonly globalState: GlobalState,
     private readonly storageProvider: WorkspaceEngineStorageProvider,
-    serversService: ServersService
+    private readonly server: Server
   ) {
-    super();
-    // TODO: support multiple servers
-    const affineCloudServer = serversService.server$('affine-cloud').value;
-    if (!affineCloudServer) {
-      throw new Error('affine-cloud server not found');
-    }
-    this.affineCloudServer = affineCloudServer;
-    this.authService = affineCloudServer.scope.get(AuthService);
-    this.webSocketService = affineCloudServer.scope.get(WebSocketService);
-    this.fetchService = affineCloudServer.scope.get(FetchService);
-    this.graphqlService = affineCloudServer.scope.get(GraphQLService);
+    this.authService = server.scope.get(AuthService);
+    this.webSocketService = server.scope.get(WebSocketService);
+    this.fetchService = server.scope.get(FetchService);
+    this.graphqlService = server.scope.get(GraphQLService);
+    this.unsubscribeAccountChanged = this.server.scope.eventBus.on(
+      AccountChanged,
+      () => {
+        this.revalidate();
+      }
+    );
   }
 
-  flavour: WorkspaceFlavour = WorkspaceFlavour.AFFINE_CLOUD;
+  flavour = this.server.id;
 
   async deleteWorkspace(id: string): Promise<void> {
     await this.graphqlService.gql({
@@ -95,6 +94,7 @@ export class CloudWorkspaceFlavourProviderService
     this.revalidate();
     await this.waitForLoaded();
   }
+
   async createWorkspace(
     initial: (
       docCollection: DocCollection,
@@ -139,7 +139,7 @@ export class CloudWorkspaceFlavourProviderService
 
     return {
       id: workspaceId,
-      flavour: WorkspaceFlavour.AFFINE_CLOUD,
+      flavour: this.server.id,
     };
   }
   revalidate = effect(
@@ -169,7 +169,7 @@ export class CloudWorkspaceFlavourProviderService
             accountId,
             workspaces: ids.map(({ id, initialized }) => ({
               id,
-              flavour: WorkspaceFlavour.AFFINE_CLOUD,
+              flavour: this.server.id,
               initialized,
             })),
           };
@@ -181,7 +181,7 @@ export class CloudWorkspaceFlavourProviderService
                 return a.id.localeCompare(b.id);
               });
               this.globalState.set(
-                CLOUD_WORKSPACES_CACHE_KEY + accountId,
+                getCloudWorkspaceCacheKey(this.server.id) + accountId,
                 sorted
               );
               if (!isEqual(this.workspaces$.value, sorted)) {
@@ -202,7 +202,9 @@ export class CloudWorkspaceFlavourProviderService
       ({ accountId }) => {
         if (accountId) {
           this.workspaces$.next(
-            this.globalState.get(CLOUD_WORKSPACES_CACHE_KEY + accountId) ?? []
+            this.globalState.get(
+              getCloudWorkspaceCacheKey(this.server.id) + accountId
+            ) ?? []
           );
         } else {
           this.workspaces$.next([]);
@@ -295,9 +297,7 @@ export class CloudWorkspaceFlavourProviderService
 
   onWorkspaceInitialized(workspace: Workspace): void {
     // bind the workspace to the affine cloud server
-    workspace.scope
-      .get(WorkspaceServerService)
-      .bindServer(this.affineCloudServer);
+    workspace.scope.get(WorkspaceServerService).bindServer(this.server);
   }
 
   private async getIsOwner(workspaceId: string, signal?: AbortSignal) {
@@ -315,4 +315,61 @@ export class CloudWorkspaceFlavourProviderService
   private waitForLoaded() {
     return this.isRevalidating$.waitFor(loading => !loading);
   }
+
+  dispose() {
+    this.revalidate.unsubscribe();
+    this.unsubscribeAccountChanged();
+  }
+}
+
+export class CloudWorkspaceFlavoursProvider
+  extends Service
+  implements WorkspaceFlavoursProvider
+{
+  constructor(
+    private readonly globalState: GlobalState,
+    private readonly storageProvider: WorkspaceEngineStorageProvider,
+    private readonly serversService: ServersService
+  ) {
+    super();
+  }
+
+  workspaceFlavours$ = LiveData.from<WorkspaceFlavourProvider[]>(
+    this.serversService.servers$.pipe(
+      switchMap(servers => {
+        const refs = servers.map(server => {
+          const exists = this.pool.get(server.id);
+          if (exists) {
+            return exists;
+          }
+          const provider = new CloudWorkspaceFlavourProvider(
+            this.globalState,
+            this.storageProvider,
+            server
+          );
+          provider.revalidate();
+          const ref = this.pool.put(server.id, provider);
+          return ref;
+        });
+
+        return new Observable<WorkspaceFlavourProvider[]>(subscribe => {
+          subscribe.next(refs.map(ref => ref.obj));
+          return () => {
+            refs.forEach(ref => {
+              ref.release();
+            });
+          };
+        });
+      })
+    ),
+    [] as any
+  );
+
+  private readonly pool = new ObjectPool<string, CloudWorkspaceFlavourProvider>(
+    {
+      onDelete(obj) {
+        obj.dispose();
+      },
+    }
+  );
 }

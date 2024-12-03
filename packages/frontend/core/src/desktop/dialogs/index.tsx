@@ -1,4 +1,3 @@
-import { AuthModal } from '@affine/core/components/affine/auth';
 import {
   type DialogComponentProps,
   type GLOBAL_DIALOG_SCHEMA,
@@ -8,6 +7,7 @@ import {
 import type { WORKSPACE_DIALOG_SCHEMA } from '@affine/core/modules/dialogs/constant';
 import { useLiveData, useService } from '@toeverything/infra';
 
+import { ChangePasswordDialog } from './change-password';
 import { CollectionEditorDialog } from './collection-editor';
 import { CreateWorkspaceDialog } from './create-workspace';
 import { DocInfoDialog } from './doc-info';
@@ -19,12 +19,17 @@ import { DateSelectorDialog } from './selectors/date';
 import { DocSelectorDialog } from './selectors/doc';
 import { TagSelectorDialog } from './selectors/tag';
 import { SettingDialog } from './setting';
+import { SignInDialog } from './sign-in';
+import { VerifyEmailDialog } from './verify-email';
 
 const GLOBAL_DIALOGS = {
   'create-workspace': CreateWorkspaceDialog,
   'import-workspace': ImportWorkspaceDialog,
   'import-template': ImportTemplateDialog,
   setting: SettingDialog,
+  'sign-in': SignInDialog,
+  'change-password': ChangePasswordDialog,
+  'verify-email': VerifyEmailDialog,
 } satisfies {
   [key in keyof GLOBAL_DIALOG_SCHEMA]?: React.FC<
     DialogComponentProps<GLOBAL_DIALOG_SCHEMA[key]>
@@ -66,8 +71,6 @@ export const GlobalDialogs = () => {
           />
         );
       })}
-
-      <AuthModal />
     </>
   );
 };

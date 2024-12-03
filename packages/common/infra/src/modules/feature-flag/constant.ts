@@ -216,6 +216,15 @@ export const AFFINE_FLAGS = {
     configurable: false,
     defaultState: isMobile,
   },
+  enable_multiple_cloud_servers: {
+    category: 'affine',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-multiple-cloud-servers.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-multiple-cloud-servers.description',
+    configurable: isDesktopEnvironment,
+    defaultState: false,
+  },
 } satisfies { [key in string]: FlagInfo };
 
 export type AFFINE_FLAGS = typeof AFFINE_FLAGS;

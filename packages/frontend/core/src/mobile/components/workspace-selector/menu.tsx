@@ -2,7 +2,6 @@ import { IconButton } from '@affine/component';
 import { WorkspaceAvatar } from '@affine/component/workspace-avatar';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { CloseIcon, CollaborationIcon } from '@blocksuite/icons/rc';
 import {
   useLiveData,
@@ -16,10 +15,8 @@ import { type HTMLAttributes, useCallback, useMemo } from 'react';
 
 import * as styles from './menu.css';
 
-const filterByFlavour = (
-  workspaces: WorkspaceMetadata[],
-  flavour: WorkspaceFlavour
-) => workspaces.filter(ws => flavour === ws.flavour);
+const filterByFlavour = (workspaces: WorkspaceMetadata[], flavour: string) =>
+  workspaces.filter(ws => flavour === ws.flavour);
 
 const WorkspaceItem = ({
   workspace,
@@ -93,13 +90,14 @@ export const SelectorMenu = ({ onClose }: { onClose?: () => void }) => {
   const workspacesService = useService(WorkspacesService);
   const workspaces = useLiveData(workspacesService.list.workspaces$);
 
+  // TODO: support selfhosted
   const cloudWorkspaces = useMemo(
-    () => filterByFlavour(workspaces, WorkspaceFlavour.AFFINE_CLOUD),
+    () => filterByFlavour(workspaces, 'affine-cloud'),
     [workspaces]
   );
 
   const localWorkspaces = useMemo(
-    () => filterByFlavour(workspaces, WorkspaceFlavour.LOCAL),
+    () => filterByFlavour(workspaces, 'local'),
     [workspaces]
   );
 

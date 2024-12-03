@@ -1,4 +1,3 @@
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import type { WorkspaceDBService, WorkspaceService } from '@toeverything/infra';
 import { LiveData, Store } from '@toeverything/infra';
 import { map } from 'rxjs';
@@ -27,7 +26,7 @@ export class FavoriteStore extends Store {
     // if is local workspace or no account, use __local__ userdata
     // sometimes we may have cloud workspace but no account for a short time, we also use __local__ userdata
     if (
-      this.workspaceService.workspace.meta.flavour === WorkspaceFlavour.LOCAL ||
+      this.workspaceService.workspace.meta.flavour === 'local' ||
       !this.authService
     ) {
       return new LiveData(this.workspaceDBService.userdataDB('__local__'));

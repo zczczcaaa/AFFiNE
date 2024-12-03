@@ -11,7 +11,6 @@ import { AppContainer } from '@affine/core/desktop/components/app-container';
 import { WorkspaceDialogs } from '@affine/core/desktop/dialogs';
 import { PeekViewManagerModal } from '@affine/core/modules/peek-view';
 import { WorkbenchService } from '@affine/core/modules/workbench';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import {
   LiveData,
   useLiveData,
@@ -29,10 +28,9 @@ export const WorkspaceLayout = function WorkspaceLayout({
       <WorkspaceDialogs />
 
       {/* ---- some side-effect components ---- */}
-      {currentWorkspace?.flavour === WorkspaceFlavour.LOCAL && (
+      {currentWorkspace?.flavour === 'local' ? (
         <LocalQuotaModal />
-      )}
-      {currentWorkspace?.flavour === WorkspaceFlavour.AFFINE_CLOUD && (
+      ) : (
         <CloudQuotaModal />
       )}
       <AiLoginRequiredModal />

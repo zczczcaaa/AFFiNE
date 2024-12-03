@@ -4,7 +4,6 @@ import {
 } from '@affine/core/commands';
 import { useSharingUrl } from '@affine/core/components/hooks/affine/use-share-url';
 import { useIsActiveView } from '@affine/core/modules/workbench';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { track } from '@affine/track';
 import { type WorkspaceMetadata } from '@toeverything/infra';
 import { useEffect } from 'react';
@@ -18,7 +17,7 @@ export function useRegisterCopyLinkCommands({
 }) {
   const isActiveView = useIsActiveView();
   const workspaceId = workspaceMeta.id;
-  const isCloud = workspaceMeta.flavour === WorkspaceFlavour.AFFINE_CLOUD;
+  const isCloud = workspaceMeta.flavour !== 'local';
 
   const { onClickCopyLink } = useSharingUrl({
     workspaceId,

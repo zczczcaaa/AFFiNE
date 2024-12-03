@@ -42,6 +42,7 @@ export const formHint = style({
   fontSize: cssVar('fontSm'),
   position: 'absolute',
   bottom: '4px',
+  height: '22px',
   left: 0,
   lineHeight: '22px',
   selectors: {

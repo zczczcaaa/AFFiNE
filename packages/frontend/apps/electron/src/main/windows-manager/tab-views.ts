@@ -5,7 +5,6 @@ import {
   BrowserWindow,
   Menu,
   MenuItem,
-  session,
   type View,
   type WebContents,
   WebContentsView,
@@ -26,7 +25,7 @@ import {
 
 import { isMacOS } from '../../shared/utils';
 import { beforeAppQuit } from '../cleanup';
-import { CLOUD_BASE_URL, isDev } from '../config';
+import { isDev } from '../config';
 import { mainWindowOrigin, shellViewUrl } from '../constants';
 import { ensureHelperProcess } from '../helper-process';
 import { logger } from '../logger';
@@ -722,23 +721,6 @@ export class WebContentViewsManager {
         // add shell view
         this.createAndAddView('shell').catch(err => logger.error(err));
         (async () => {
-          const updateCookies = () => {
-            session.defaultSession.cookies
-              .get({
-                url: CLOUD_BASE_URL,
-              })
-              .then(cookies => {
-                this.cookies = cookies;
-              })
-              .catch(err => {
-                logger.error('failed to get cookies', err);
-              });
-          };
-          updateCookies();
-          session.defaultSession.cookies.on('changed', () => {
-            updateCookies();
-          });
-
           if (this.tabViewsMeta.workbenches.length === 0) {
             // create a default view (e.g., on first launch)
             await this.addTab();
@@ -919,10 +901,6 @@ export class WebContentViewsManager {
     logger.info(`view ${viewId} created in ${performance.now() - start}ms`);
     return view;
   };
-}
-
-export function getCookies() {
-  return WebContentViewsManager.instance.cookies;
 }
 
 // there is no proper way to listen to webContents resize event

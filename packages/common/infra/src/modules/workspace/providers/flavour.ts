@@ -1,4 +1,3 @@
-import type { WorkspaceFlavour } from '@affine/env/workspace';
 import type { DocCollection } from '@blocksuite/affine/store';
 
 import { createIdentifier } from '../../../framework';
@@ -22,7 +21,7 @@ export interface WorkspaceEngineProvider {
 }
 
 export interface WorkspaceFlavourProvider {
-  flavour: WorkspaceFlavour;
+  flavour: string;
 
   deleteWorkspace(id: string): Promise<void>;
 
@@ -60,5 +59,9 @@ export interface WorkspaceFlavourProvider {
   onWorkspaceInitialized?(workspace: Workspace): void;
 }
 
-export const WorkspaceFlavourProvider =
-  createIdentifier<WorkspaceFlavourProvider>('WorkspaceFlavourProvider');
+export interface WorkspaceFlavoursProvider {
+  workspaceFlavours$: LiveData<WorkspaceFlavourProvider[]>;
+}
+
+export const WorkspaceFlavoursProvider =
+  createIdentifier<WorkspaceFlavoursProvider>('WorkspaceFlavoursProvider');

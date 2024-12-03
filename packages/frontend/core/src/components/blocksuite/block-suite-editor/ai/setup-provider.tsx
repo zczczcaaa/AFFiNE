@@ -1,13 +1,12 @@
 import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import { toggleGeneralAIOnboarding } from '@affine/core/components/affine/ai-onboarding/apis';
-import { authAtom } from '@affine/core/components/atoms';
+import type { GlobalDialogService } from '@affine/core/modules/dialogs';
 import {
   type getCopilotHistoriesQuery,
   type RequestOptions,
 } from '@affine/graphql';
 import { UnauthorizedError } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
-import { getCurrentStore } from '@toeverything/infra';
 import { z } from 'zod';
 
 import type { CopilotClient } from './copilot-client';
@@ -42,7 +41,10 @@ const processTypeToPromptName = new Map(
 // user-id:workspace-id:doc-id -> chat session id
 const chatSessions = new Map<string, Promise<string>>();
 
-export function setupAIProvider(client: CopilotClient) {
+export function setupAIProvider(
+  client: CopilotClient,
+  globalDialogService: GlobalDialogService
+) {
   async function getChatSessionId(workspaceId: string, docId: string) {
     const userId = (await AIProvider.userInfo)?.id;
 
@@ -499,10 +501,7 @@ Could you make a new website based on these notes and send back just the html fi
   });
 
   const disposeRequestLoginHandler = AIProvider.slots.requestLogin.on(() => {
-    getCurrentStore().set(authAtom, s => ({
-      ...s,
-      openModal: true,
-    }));
+    globalDialogService.open('sign-in', {});
   });
 
   setupTracker();

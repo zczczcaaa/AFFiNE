@@ -1,5 +1,4 @@
 import { DebugLogger } from '@affine/debug';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import type { WorkspaceService } from '@toeverything/infra';
 import {
   backoffRetry,
@@ -34,10 +33,7 @@ export class WorkspacePermission extends Entity {
   revalidate = effect(
     exhaustMap(() => {
       return fromPromise(async signal => {
-        if (
-          this.workspaceService.workspace.flavour ===
-          WorkspaceFlavour.AFFINE_CLOUD
-        ) {
+        if (this.workspaceService.workspace.flavour !== 'local') {
           return await this.store.fetchIsOwner(
             this.workspaceService.workspace.id,
             signal

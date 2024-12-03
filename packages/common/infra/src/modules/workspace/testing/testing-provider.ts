@@ -1,4 +1,3 @@
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { DocCollection, nanoid } from '@blocksuite/affine/store';
 import { map } from 'rxjs';
 import { applyUpdate, encodeStateAsUpdate } from 'yjs';
@@ -19,21 +18,17 @@ import type { WorkspaceMetadata } from '../metadata';
 import type {
   WorkspaceEngineProvider,
   WorkspaceFlavourProvider,
+  WorkspaceFlavoursProvider,
 } from '../providers/flavour';
 
-export class TestingWorkspaceLocalProvider
-  extends Service
-  implements WorkspaceFlavourProvider
-{
-  flavour: WorkspaceFlavour = WorkspaceFlavour.LOCAL;
+class TestingWorkspaceLocalProvider implements WorkspaceFlavourProvider {
+  flavour = 'local';
 
   store = wrapMemento(this.globalStore, 'testing/');
   workspaceListStore = wrapMemento(this.store, 'workspaces/');
   docStorage = new MemoryDocStorage(wrapMemento(this.store, 'docs/'));
 
-  constructor(private readonly globalStore: GlobalState) {
-    super();
-  }
+  constructor(private readonly globalStore: GlobalState) {}
 
   async deleteWorkspace(id: string): Promise<void> {
     const list = this.workspaceListStore.get<WorkspaceMetadata[]>('list') ?? [];
@@ -48,7 +43,7 @@ export class TestingWorkspaceLocalProvider
     ) => Promise<void>
   ): Promise<WorkspaceMetadata> {
     const id = nanoid();
-    const meta = { id, flavour: WorkspaceFlavour.LOCAL };
+    const meta = { id, flavour: 'local' };
 
     const blobStorage = new MemoryBlobStorage(
       wrapMemento(this.store, id + '/blobs/')
@@ -75,7 +70,7 @@ export class TestingWorkspaceLocalProvider
     const list = this.workspaceListStore.get<WorkspaceMetadata[]>('list') ?? [];
     this.workspaceListStore.set('list', [...list, meta]);
 
-    return { id, flavour: WorkspaceFlavour.LOCAL };
+    return { id, flavour: 'local' };
   }
   workspaces$ = LiveData.from<WorkspaceMetadata[]>(
     this.workspaceListStore
@@ -131,4 +126,16 @@ export class TestingWorkspaceLocalProvider
       },
     };
   }
+}
+
+export class TestingWorkspaceFlavoursProvider
+  extends Service
+  implements WorkspaceFlavoursProvider
+{
+  constructor(private readonly globalStore: GlobalState) {
+    super();
+  }
+  workspaceFlavours$ = new LiveData<WorkspaceFlavourProvider[]>([
+    new TestingWorkspaceLocalProvider(this.globalStore),
+  ]);
 }

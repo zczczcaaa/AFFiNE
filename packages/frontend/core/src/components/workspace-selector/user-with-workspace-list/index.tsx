@@ -1,6 +1,5 @@
 import { Divider } from '@affine/component/ui/divider';
 import { MenuItem } from '@affine/component/ui/menu';
-import { authAtom } from '@affine/core/components/atoms';
 import { AuthService } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { useI18n } from '@affine/i18n';
@@ -13,7 +12,6 @@ import {
   type WorkspaceMetadata,
   WorkspacesService,
 } from '@toeverything/infra';
-import { useSetAtom } from 'jotai';
 import { useCallback } from 'react';
 
 import { useCatchEventCallback } from '../../hooks/use-catch-event-hook';
@@ -23,17 +21,14 @@ import { UserAccountItem } from './user-account';
 import { AFFiNEWorkspaceList } from './workspace-list';
 
 export const SignInItem = () => {
-  const setOpen = useSetAtom(authAtom);
+  const globalDialogService = useService(GlobalDialogService);
 
   const t = useI18n();
 
   const onClickSignIn = useCallback(() => {
     track.$.navigationPanel.workspaceList.requestSignIn();
-    setOpen(state => ({
-      ...state,
-      openModal: true,
-    }));
-  }, [setOpen]);
+    globalDialogService.open('sign-in', {});
+  }, [globalDialogService]);
 
   return (
     <MenuItem
@@ -83,14 +78,9 @@ const UserWithWorkspaceListInner = ({
 
   const isAuthenticated = session.status === 'authenticated';
 
-  const setOpenSignIn = useSetAtom(authAtom);
-
   const openSignInModal = useCallback(() => {
-    setOpenSignIn(state => ({
-      ...state,
-      openModal: true,
-    }));
-  }, [setOpenSignIn]);
+    globalDialogService.open('sign-in', {});
+  }, [globalDialogService]);
 
   const onNewWorkspace = useCallback(() => {
     if (

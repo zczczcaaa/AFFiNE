@@ -6,11 +6,11 @@ import { Avatar } from '@affine/component/ui/avatar';
 import { Tooltip } from '@affine/component/ui/tooltip';
 import { WorkspaceAvatar } from '@affine/component/workspace-avatar';
 import { UserPlanButton } from '@affine/core/components/affine/auth/user-plan-button';
-import { authAtom } from '@affine/core/components/atoms';
 import { useCatchEventCallback } from '@affine/core/components/hooks/use-catch-event-hook';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
 import { AuthService } from '@affine/core/modules/cloud';
 import { UserFeatureService } from '@affine/core/modules/cloud/services/user-feature';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
 import { useI18n } from '@affine/i18n';
@@ -25,7 +25,6 @@ import {
   WorkspacesService,
 } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useSetAtom } from 'jotai/react';
 import {
   type MouseEvent,
   Suspense,
@@ -95,14 +94,14 @@ export const UserInfo = ({
 
 export const SignInButton = () => {
   const t = useI18n();
-  const setAuthModal = useSetAtom(authAtom);
+  const globalDialogService = useService(GlobalDialogService);
 
   return (
     <div
       className={style.accountButton}
       onClick={useCallback(() => {
-        setAuthModal({ openModal: true, state: 'signIn' });
-      }, [setAuthModal])}
+        globalDialogService.open('sign-in', {});
+      }, [globalDialogService])}
     >
       <div className="avatar not-sign">
         <Logo1Icon />

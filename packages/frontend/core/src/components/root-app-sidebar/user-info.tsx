@@ -8,7 +8,6 @@ import {
   type MenuProps,
   Skeleton,
 } from '@affine/component';
-import { authAtom } from '@affine/core/components/atoms';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
@@ -17,7 +16,6 @@ import { useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { assignInlineVars } from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
-import { useSetAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 
 import {
@@ -58,11 +56,11 @@ const AuthorizedUserInfo = ({ account }: { account: AuthAccountInfo }) => {
 };
 
 const UnauthorizedUserInfo = () => {
-  const setOpen = useSetAtom(authAtom);
+  const globalDialogService = useService(GlobalDialogService);
 
   const openSignInModal = useCallback(() => {
-    setOpen(state => ({ ...state, openModal: true }));
-  }, [setOpen]);
+    globalDialogService.open('sign-in', {});
+  }, [globalDialogService]);
 
   return (
     <IconButton

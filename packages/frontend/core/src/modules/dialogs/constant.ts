@@ -31,6 +31,9 @@ export type GLOBAL_DIALOG_SCHEMA = {
     workspaceMetadata?: WorkspaceMetadata | null;
     scrollAnchor?: string;
   }) => void;
+  'sign-in': (props: { server?: string; step?: 'sign-in' }) => void;
+  'change-password': (props: { server?: string }) => void;
+  'verify-email': (props: { server?: string; changeEmail?: boolean }) => void;
 };
 
 export type WORKSPACE_DIALOG_SCHEMA = {

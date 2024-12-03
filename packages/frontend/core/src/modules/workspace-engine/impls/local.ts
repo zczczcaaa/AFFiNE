@@ -1,11 +1,12 @@
 import { DebugLogger } from '@affine/debug';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { DocCollection } from '@blocksuite/affine/store';
 import type {
   BlobStorage,
   DocStorage,
+  FrameworkProvider,
   WorkspaceEngineProvider,
   WorkspaceFlavourProvider,
+  WorkspaceFlavoursProvider,
   WorkspaceMetadata,
   WorkspaceProfileInfo,
 } from '@toeverything/infra';
@@ -54,17 +55,13 @@ export function setLocalWorkspaceIds(
   );
 }
 
-export class LocalWorkspaceFlavourProvider
-  extends Service
-  implements WorkspaceFlavourProvider
-{
+class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
   constructor(
-    private readonly storageProvider: WorkspaceEngineStorageProvider
-  ) {
-    super();
-  }
+    private readonly storageProvider: WorkspaceEngineStorageProvider,
+    private readonly framework: FrameworkProvider
+  ) {}
 
-  flavour: WorkspaceFlavour = WorkspaceFlavour.LOCAL;
+  flavour = 'local';
   notifyChannel = new BroadcastChannel(
     LOCAL_WORKSPACE_CHANGED_BROADCAST_CHANNEL_KEY
   );
@@ -72,9 +69,8 @@ export class LocalWorkspaceFlavourProvider
   async deleteWorkspace(id: string): Promise<void> {
     setLocalWorkspaceIds(ids => ids.filter(x => x !== id));
 
-    const electronApi = this.framework.getOptional(DesktopApiService);
-
-    if (BUILD_CONFIG.isElectron && electronApi) {
+    if (BUILD_CONFIG.isElectron) {
+      const electronApi = this.framework.get(DesktopApiService);
       await electronApi.handler.workspace.delete(id);
     }
 
@@ -116,7 +112,7 @@ export class LocalWorkspaceFlavourProvider
     // notify all browser tabs, so they can update their workspace list
     this.notifyChannel.postMessage(id);
 
-    return { id, flavour: WorkspaceFlavour.LOCAL };
+    return { id, flavour: 'local' };
   }
   workspaces$ = LiveData.from(
     new Observable<WorkspaceMetadata[]>(subscriber => {
@@ -124,7 +120,7 @@ export class LocalWorkspaceFlavourProvider
       const emit = () => {
         const value = getLocalWorkspaceIds().map(id => ({
           id,
-          flavour: WorkspaceFlavour.LOCAL,
+          flavour: 'local',
         }));
         if (isEqual(last, value)) return;
         subscriber.next(value);
@@ -198,4 +194,19 @@ export class LocalWorkspaceFlavourProvider
       },
     };
   }
+}
+
+export class LocalWorkspaceFlavoursProvider
+  extends Service
+  implements WorkspaceFlavoursProvider
+{
+  constructor(
+    private readonly storageProvider: WorkspaceEngineStorageProvider
+  ) {
+    super();
+  }
+
+  workspaceFlavours$ = new LiveData<WorkspaceFlavourProvider[]>([
+    new LocalWorkspaceFlavourProvider(this.storageProvider, this.framework),
+  ]);
 }

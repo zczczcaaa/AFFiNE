@@ -2,7 +2,6 @@ import { Tabs, Tooltip } from '@affine/component';
 import { Button } from '@affine/component/ui/button';
 import { Menu } from '@affine/component/ui/menu';
 import { ShareInfoService } from '@affine/core/modules/share-doc';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import type { Doc } from '@blocksuite/affine/store';
 import { LockIcon, PublishIcon } from '@blocksuite/icons/rc';
@@ -121,7 +120,7 @@ const CloudShareMenu = (props: ShareMenuProps) => {
 export const ShareMenu = (props: ShareMenuProps) => {
   const { workspaceMetadata } = props;
 
-  if (workspaceMetadata.flavour === WorkspaceFlavour.LOCAL) {
+  if (workspaceMetadata.flavour === 'local') {
     return <LocalShareMenu {...props} />;
   }
   return <CloudShareMenu {...props} />;

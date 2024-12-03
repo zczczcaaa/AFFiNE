@@ -5,7 +5,6 @@ import { useSystemOnline } from '@affine/core/components/hooks/use-system-online
 import { useWorkspace } from '@affine/core/components/hooks/use-workspace';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import {
   ArrowDownSmallIcon,
   CloudWorkspaceIcon,
@@ -97,7 +96,7 @@ const useSyncEngineSyncProgress = (meta: WorkspaceMetadata) => {
 
   let content;
   // TODO(@eyhn): add i18n
-  if (workspace.flavour === WorkspaceFlavour.LOCAL) {
+  if (workspace.flavour === 'local') {
     if (!BUILD_CONFIG.isElectron) {
       content = 'This is a local demo workspace.';
     } else {
@@ -132,7 +131,7 @@ const useSyncEngineSyncProgress = (meta: WorkspaceMetadata) => {
   return {
     message: content,
     icon:
-      workspace.flavour === WorkspaceFlavour.AFFINE_CLOUD ? (
+      workspace.flavour !== 'local' ? (
         !isOnline ? (
           <OfflineStatus />
         ) : (
@@ -143,7 +142,7 @@ const useSyncEngineSyncProgress = (meta: WorkspaceMetadata) => {
       ),
     progress,
     active:
-      workspace.flavour === WorkspaceFlavour.AFFINE_CLOUD &&
+      workspace.flavour !== 'local' &&
       ((syncing && progress !== undefined) || engineState.retrying), // active if syncing or retrying,
   };
 };
@@ -173,7 +172,7 @@ const WorkspaceSyncInfo = ({
   workspaceProfile: WorkspaceProfileInfo;
 }) => {
   const syncStatus = useSyncEngineSyncProgress(workspaceMetadata);
-  const isCloud = workspaceMetadata.flavour === WorkspaceFlavour.AFFINE_CLOUD;
+  const isCloud = workspaceMetadata.flavour !== 'local';
   const { paused, pause } = usePauseAnimation();
 
   // to make sure that animation will play first time
@@ -315,8 +314,7 @@ export const WorkspaceCard = forwardRef<
             )}
           </div>
           <div className={styles.showOnCardHover}>
-            {onClickEnableCloud &&
-            workspaceMetadata.flavour === WorkspaceFlavour.LOCAL ? (
+            {onClickEnableCloud && workspaceMetadata.flavour === 'local' ? (
               <Button
                 className={styles.enableCloudButton}
                 onClick={onEnableCloud}

@@ -11,6 +11,7 @@ import {
 import { EMPTY, exhaustMap, map, mergeMap } from 'rxjs';
 
 import { ServerScope } from '../scopes/server';
+import { AuthService } from '../services/auth';
 import { FetchService } from '../services/fetch';
 import { GraphQLService } from '../services/graphql';
 import { ServerConfigStore } from '../stores/server-config';
@@ -34,6 +35,9 @@ export class Server extends Entity<{
   readonly serverConfigStore = this.scope.framework.get(ServerConfigStore);
   readonly fetch = this.scope.framework.get(FetchService).fetch;
   readonly gql = this.scope.framework.get(GraphQLService).gql;
+  get account$() {
+    return this.scope.framework.get(AuthService).session.account$;
+  }
   readonly serverMetadata = this.props.serverMetadata;
 
   constructor(private readonly serverListStore: ServerListStore) {
@@ -68,7 +72,7 @@ export class Server extends Entity<{
   readonly revalidateConfig = effect(
     exhaustMap(() => {
       return fromPromise(signal =>
-        this.serverConfigStore.fetchServerConfig(signal)
+        this.serverConfigStore.fetchServerConfig(this.baseUrl, signal)
       ).pipe(
         backoffRetry({
           count: Infinity,

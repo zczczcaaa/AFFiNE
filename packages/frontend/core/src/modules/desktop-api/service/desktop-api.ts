@@ -15,7 +15,7 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 
-import { AuthService, ServersService } from '../../cloud';
+import { AuthService, DefaultServerService, ServersService } from '../../cloud';
 import type { DesktopApi } from '../entities/electron-api';
 
 @OnEvent(ApplicationStarted, e => e.setupStartListener)
@@ -138,20 +138,26 @@ export class DesktopApiService extends Service {
   }
 
   private setupAuthRequestEvent() {
-    this.events.ui.onAuthenticationRequest(({ method, payload }) => {
+    this.events.ui.onAuthenticationRequest(({ method, payload, server }) => {
       (async () => {
         if (!(await this.api.handler.ui.isActiveTab())) {
           return;
         }
 
-        // TODO: support multiple servers
-        const affineCloudServer = this.framework
-          .get(ServersService)
-          .server$('affine-cloud').value;
-        if (!affineCloudServer) {
+        // Dynamically get these services to avoid circular dependencies
+        const serversService = this.framework.get(ServersService);
+        const defaultServerService = this.framework.get(DefaultServerService);
+
+        let targetServer;
+        if (server) {
+          targetServer = await serversService.addOrGetServerByBaseUrl(server);
+        } else {
+          targetServer = defaultServerService.server;
+        }
+        if (!targetServer) {
           throw new Error('Affine Cloud server not found');
         }
-        const authService = affineCloudServer.scope.get(AuthService);
+        const authService = targetServer.scope.get(AuthService);
 
         switch (method) {
           case 'magic-link': {

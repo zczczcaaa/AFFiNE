@@ -2,7 +2,6 @@ import { SettingRow } from '@affine/component/setting-components';
 import { Button } from '@affine/component/ui/button';
 import { useEnableCloud } from '@affine/core/components/hooks/affine/use-enable-cloud';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import {
   useLiveData,
@@ -37,7 +36,7 @@ export const EnableCloudPanel = ({
     });
   }, [confirmEnableCloud, onCloseSetting, workspace]);
 
-  if (flavour !== WorkspaceFlavour.LOCAL) {
+  if (flavour !== 'local') {
     return null;
   }
 

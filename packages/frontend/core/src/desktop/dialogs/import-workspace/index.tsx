@@ -6,7 +6,6 @@ import {
 import { _addLocalWorkspace } from '@affine/core/modules/workspace-engine';
 import { DebugLogger } from '@affine/debug';
 import { apis } from '@affine/electron-api';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import { useService, WorkspacesService } from '@toeverything/infra';
 import { useLayoutEffect } from 'react';
@@ -37,7 +36,7 @@ export const ImportWorkspaceDialog = ({
         workspacesService.list.revalidate();
         close({
           workspace: {
-            flavour: WorkspaceFlavour.LOCAL,
+            flavour: 'local',
             id: result.workspaceId,
           },
         });

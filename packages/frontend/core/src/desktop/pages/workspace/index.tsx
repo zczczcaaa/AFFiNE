@@ -1,5 +1,9 @@
 import { AffineOtherPageLayout } from '@affine/component/affine-other-page-layout';
 import { workbenchRoutes } from '@affine/core/desktop/workbench-router';
+import {
+  DefaultServerService,
+  WorkspaceServerService,
+} from '@affine/core/modules/cloud';
 import { ZipTransformer } from '@blocksuite/affine/blocks';
 import type { Workspace, WorkspaceMetadata } from '@toeverything/infra';
 import {
@@ -125,12 +129,15 @@ export const Component = (): ReactElement => {
 };
 
 const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
-  const { workspacesService, globalContextService } = useServices({
-    WorkspacesService,
-    GlobalContextService,
-  });
+  const { workspacesService, globalContextService, defaultServerService } =
+    useServices({
+      WorkspacesService,
+      GlobalContextService,
+      DefaultServerService,
+    });
 
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
+  const workspaceServer = workspace?.scope.get(WorkspaceServerService).server;
 
   useLayoutEffect(() => {
     const ref = workspacesService.open({ metadata: meta });
@@ -189,13 +196,30 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
       };
       localStorage.setItem('last_workspace_id', workspace.id);
       globalContextService.globalContext.workspaceId.set(workspace.id);
+      if (workspaceServer) {
+        globalContextService.globalContext.serverId.set(workspaceServer.id);
+      }
+      globalContextService.globalContext.workspaceFlavour.set(
+        workspace.flavour
+      );
       return () => {
         window.currentWorkspace = undefined;
         globalContextService.globalContext.workspaceId.set(null);
+        if (workspaceServer) {
+          globalContextService.globalContext.serverId.set(
+            defaultServerService.server.id
+          );
+        }
+        globalContextService.globalContext.workspaceFlavour.set(null);
       };
     }
     return;
-  }, [globalContextService, workspace]);
+  }, [
+    defaultServerService.server.id,
+    globalContextService,
+    workspace,
+    workspaceServer,
+  ]);
 
   if (!workspace) {
     return null; // skip this, workspace will be set in layout effect
@@ -203,19 +227,23 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
 
   if (!isRootDocReady) {
     return (
-      <FrameworkScope scope={workspace.scope}>
-        <AppContainer fallback />
+      <FrameworkScope scope={workspaceServer?.scope}>
+        <FrameworkScope scope={workspace.scope}>
+          <AppContainer fallback />
+        </FrameworkScope>
       </FrameworkScope>
     );
   }
 
   return (
-    <FrameworkScope scope={workspace.scope}>
-      <AffineErrorBoundary height="100vh">
-        <WorkspaceLayout>
-          <WorkbenchRoot />
-        </WorkspaceLayout>
-      </AffineErrorBoundary>
+    <FrameworkScope scope={workspaceServer?.scope}>
+      <FrameworkScope scope={workspace.scope}>
+        <AffineErrorBoundary height="100vh">
+          <WorkspaceLayout>
+            <WorkbenchRoot />
+          </WorkspaceLayout>
+        </AffineErrorBoundary>
+      </FrameworkScope>
     </FrameworkScope>
   );
 };

@@ -5,7 +5,8 @@ export { getAFFiNEWorkspaceSchema } from './global-schema';
 export type { WorkspaceMetadata } from './metadata';
 export type { WorkspaceOpenOptions } from './open-options';
 export type { WorkspaceEngineProvider } from './providers/flavour';
-export { WorkspaceFlavourProvider } from './providers/flavour';
+export type { WorkspaceFlavourProvider } from './providers/flavour';
+export { WorkspaceFlavoursProvider } from './providers/flavour';
 export { WorkspaceLocalCache, WorkspaceLocalState } from './providers/storage';
 export { WorkspaceScope } from './scopes/workspace';
 export { WorkspaceService } from './services/workspace';
@@ -21,12 +22,13 @@ import {
   WorkspaceLocalCacheImpl,
   WorkspaceLocalStateImpl,
 } from './impls/storage';
-import { WorkspaceFlavourProvider } from './providers/flavour';
+import { WorkspaceFlavoursProvider } from './providers/flavour';
 import { WorkspaceLocalCache, WorkspaceLocalState } from './providers/storage';
 import { WorkspaceScope } from './scopes/workspace';
 import { WorkspaceDestroyService } from './services/destroy';
 import { WorkspaceEngineService } from './services/engine';
 import { WorkspaceFactoryService } from './services/factory';
+import { WorkspaceFlavoursService } from './services/flavours';
 import { WorkspaceListService } from './services/list';
 import { WorkspaceProfileService } from './services/profile';
 import { WorkspaceRepositoryService } from './services/repo';
@@ -34,12 +36,12 @@ import { WorkspaceTransformService } from './services/transform';
 import { WorkspaceService } from './services/workspace';
 import { WorkspacesService } from './services/workspaces';
 import { WorkspaceProfileCacheStore } from './stores/profile-cache';
-import { TestingWorkspaceLocalProvider } from './testing/testing-provider';
+import { TestingWorkspaceFlavoursProvider } from './testing/testing-provider';
 
 export function configureWorkspaceModule(framework: Framework) {
   framework
     .service(WorkspacesService, [
-      [WorkspaceFlavourProvider],
+      WorkspaceFlavoursService,
       WorkspaceListService,
       WorkspaceProfileService,
       WorkspaceTransformService,
@@ -47,22 +49,23 @@ export function configureWorkspaceModule(framework: Framework) {
       WorkspaceFactoryService,
       WorkspaceDestroyService,
     ])
-    .service(WorkspaceDestroyService, [[WorkspaceFlavourProvider]])
+    .service(WorkspaceFlavoursService, [[WorkspaceFlavoursProvider]])
+    .service(WorkspaceDestroyService, [WorkspaceFlavoursService])
     .service(WorkspaceListService)
-    .entity(WorkspaceList, [[WorkspaceFlavourProvider]])
+    .entity(WorkspaceList, [WorkspaceFlavoursService])
     .service(WorkspaceProfileService)
     .store(WorkspaceProfileCacheStore, [GlobalCache])
     .entity(WorkspaceProfile, [
       WorkspaceProfileCacheStore,
-      [WorkspaceFlavourProvider],
+      WorkspaceFlavoursService,
     ])
-    .service(WorkspaceFactoryService, [[WorkspaceFlavourProvider]])
+    .service(WorkspaceFactoryService, [WorkspaceFlavoursService])
     .service(WorkspaceTransformService, [
       WorkspaceFactoryService,
       WorkspaceDestroyService,
     ])
     .service(WorkspaceRepositoryService, [
-      [WorkspaceFlavourProvider],
+      WorkspaceFlavoursService,
       WorkspaceProfileService,
     ])
     .scope(WorkspaceScope)
@@ -82,8 +85,8 @@ export function configureWorkspaceModule(framework: Framework) {
 
 export function configureTestingWorkspaceProvider(framework: Framework) {
   framework.impl(
-    WorkspaceFlavourProvider('LOCAL'),
-    TestingWorkspaceLocalProvider,
+    WorkspaceFlavoursProvider('LOCAL'),
+    TestingWorkspaceFlavoursProvider,
     [GlobalState]
   );
 }

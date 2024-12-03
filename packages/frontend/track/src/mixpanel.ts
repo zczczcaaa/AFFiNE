@@ -79,8 +79,14 @@ function createMixpanel() {
       return mixpanel.people;
     },
     track_pageview(properties?: { location?: string }) {
-      logger.debug('track_pageview', properties);
-      mixpanel.track_pageview(properties);
+      const middlewareProperties = Array.from(middlewares).reduce(
+        (acc, middleware) => {
+          return middleware('track_pageview', acc);
+        },
+        properties as Record<string, unknown>
+      );
+      logger.debug('track_pageview', middlewareProperties);
+      mixpanel.track_pageview(middlewareProperties);
     },
   };
 

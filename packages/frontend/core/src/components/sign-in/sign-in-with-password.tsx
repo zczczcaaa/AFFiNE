@@ -6,27 +6,52 @@ import {
 } from '@affine/component/auth-components';
 import { Button } from '@affine/component/ui/button';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
-import { AuthService, CaptchaService } from '@affine/core/modules/cloud';
+import {
+  AuthService,
+  CaptchaService,
+  ServerService,
+} from '@affine/core/modules/cloud';
+import { Unreachable } from '@affine/env/constant';
+import { ServerDeploymentType } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { useLiveData, useService } from '@toeverything/infra';
-import type { FC } from 'react';
-import { useCallback, useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import type { AuthPanelProps } from './index';
+import type { SignInState } from '.';
+import { Captcha } from './captcha';
 import * as styles from './style.css';
-import { Captcha } from './use-captcha';
 
-export const SignInWithPassword: FC<AuthPanelProps<'signInWithPassword'>> = ({
-  setAuthData,
-  email,
-  redirectUrl,
+export const SignInWithPasswordStep = ({
+  state,
+  changeState,
+  close,
+}: {
+  state: SignInState;
+  changeState: Dispatch<SetStateAction<SignInState>>;
+  close: () => void;
 }) => {
   const t = useI18n();
   const authService = useService(AuthService);
 
+  const email = state.email;
+
+  if (!email) {
+    throw new Unreachable();
+  }
+
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState(false);
   const captchaService = useService(CaptchaService);
+  const serverService = useService(ServerService);
+  const isSelfhosted = useLiveData(
+    serverService.server.config$.selector(
+      c => c.type === ServerDeploymentType.Selfhosted
+    )
+  );
+  const serverName = useLiveData(
+    serverService.server.config$.selector(c => c.serverName)
+  );
 
   const verifyToken = useLiveData(captchaService.verifyToken$);
   const needCaptcha = useLiveData(captchaService.needCaptcha$);
@@ -34,8 +59,20 @@ export const SignInWithPassword: FC<AuthPanelProps<'signInWithPassword'>> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
 
+  const loginStatus = useLiveData(authService.session.status$);
+
+  useEffect(() => {
+    if (loginStatus === 'authenticated') {
+      close();
+      notify.success({
+        title: t['com.affine.auth.toast.title.signed-in'](),
+        message: t['com.affine.auth.toast.message.signed-in'](),
+      });
+    }
+  }, [close, loginStatus, t]);
+
   const onSignIn = useAsyncCallback(async () => {
-    if (isLoading) return;
+    if (isLoading || (!verifyToken && needCaptcha)) return;
     setIsLoading(true);
 
     try {
@@ -55,6 +92,7 @@ export const SignInWithPassword: FC<AuthPanelProps<'signInWithPassword'>> = ({
   }, [
     isLoading,
     verifyToken,
+    needCaptcha,
     captchaService,
     authService,
     email,
@@ -66,14 +104,7 @@ export const SignInWithPassword: FC<AuthPanelProps<'signInWithPassword'>> = ({
     if (sendingEmail) return;
     setSendingEmail(true);
     try {
-      captchaService.revalidate();
-      await authService.sendEmailMagicLink(
-        email,
-        verifyToken,
-        challenge,
-        redirectUrl
-      );
-      setAuthData({ state: 'afterSignInSendEmail' });
+      changeState(prev => ({ ...prev, step: 'signInWithEmail' }));
     } catch (err) {
       console.error(err);
       notify.error({
@@ -82,26 +113,13 @@ export const SignInWithPassword: FC<AuthPanelProps<'signInWithPassword'>> = ({
       // TODO(@eyhn): handle error better
     }
     setSendingEmail(false);
-  }, [
-    sendingEmail,
-    verifyToken,
-    captchaService,
-    authService,
-    email,
-    challenge,
-    redirectUrl,
-    setAuthData,
-  ]);
-
-  const sendChangePasswordEmail = useCallback(() => {
-    setAuthData({ state: 'sendEmail', emailType: 'changePassword' });
-  }, [setAuthData]);
+  }, [sendingEmail, changeState]);
 
   return (
     <>
       <ModalHeader
         title={t['com.affine.auth.sign.in']()}
-        subTitle={t['com.affine.brand.affineCloud']()}
+        subTitle={serverName}
       />
 
       <Wrapper
@@ -128,23 +146,8 @@ export const SignInWithPassword: FC<AuthPanelProps<'signInWithPassword'>> = ({
           errorHint={t['com.affine.auth.password.error']()}
           onEnter={onSignIn}
         />
-        <div
-          className={styles.forgetPasswordButtonRow}
-          style={{ display: 'none' }} // Not implemented yet.
-        >
-          <a
-            className={styles.linkButton}
-            onClick={sendChangePasswordEmail}
-            style={{
-              color: 'var(--affine-text-secondary-color)',
-              fontSize: 'var(--affine-font-sm)',
-            }}
-          >
-            {t['com.affine.auth.forget']()}
-          </a>
-        </div>
-        {(verifyToken || !needCaptcha) && (
-          <div className={styles.sendMagicLinkButtonRow}>
+        {!isSelfhosted && (
+          <div className={styles.passwordButtonRow}>
             <a
               data-testid="send-magic-link-button"
               className={styles.linkButton}
@@ -168,8 +171,8 @@ export const SignInWithPassword: FC<AuthPanelProps<'signInWithPassword'>> = ({
       </Wrapper>
       <BackButton
         onClick={useCallback(() => {
-          setAuthData({ state: 'signIn' });
-        }, [setAuthData])}
+          changeState(prev => ({ ...prev, step: 'signIn' }));
+        }, [changeState])}
       />
     </>
   );

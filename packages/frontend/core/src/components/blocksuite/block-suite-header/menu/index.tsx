@@ -19,7 +19,6 @@ import { EditorService } from '@affine/core/modules/editor';
 import { OpenInAppService } from '@affine/core/modules/open-in-app/services';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { Doc } from '@blocksuite/affine/store';
@@ -111,7 +110,7 @@ export const PageHeaderMenuButton = ({
 
   const openHistoryModal = useCallback(() => {
     track.$.header.history.open();
-    if (workspace.flavour === WorkspaceFlavour.AFFINE_CLOUD) {
+    if (workspace.flavour === 'affine-cloud') {
       return setHistoryModalOpen(true);
     }
     return setOpenHistoryTipsModal(true);
@@ -398,8 +397,7 @@ export const PageHeaderMenuButton = ({
         data-testid="editor-option-menu-delete"
         onSelect={handleOpenTrashModal}
       />
-      {BUILD_CONFIG.isWeb &&
-      workspace.flavour === WorkspaceFlavour.AFFINE_CLOUD ? (
+      {BUILD_CONFIG.isWeb && workspace.flavour === 'affine-cloud' ? (
         <MenuItem
           prefixIcon={<LocalWorkspaceIcon />}
           data-testid="editor-option-menu-link"
@@ -426,7 +424,7 @@ export const PageHeaderMenuButton = ({
       >
         <HeaderDropDownButton />
       </Menu>
-      {workspace.flavour === WorkspaceFlavour.AFFINE_CLOUD ? (
+      {workspace.flavour !== 'local' ? (
         <PageHistoryModal
           docCollection={workspace.docCollection}
           open={historyModalOpen}

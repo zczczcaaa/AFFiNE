@@ -1,21 +1,32 @@
+import { combineLatest, map, of, switchMap } from 'rxjs';
+
 import { Entity } from '../../../framework';
 import { LiveData } from '../../../livedata';
-import type { WorkspaceFlavourProvider } from '../providers/flavour';
+import type { WorkspaceMetadata } from '../metadata';
+import type { WorkspaceFlavoursService } from '../services/flavours';
 
 export class WorkspaceList extends Entity {
-  workspaces$ = new LiveData(this.providers.map(p => p.workspaces$))
-    .map(v => {
-      return v;
-    })
-    .flat()
-    .map(workspaces => {
-      return workspaces.flat();
-    });
-  isRevalidating$ = new LiveData(
-    this.providers.map(p => p.isRevalidating$ ?? new LiveData(false))
-  )
-    .flat()
-    .map(isLoadings => isLoadings.some(isLoading => isLoading));
+  workspaces$ = LiveData.from<WorkspaceMetadata[]>(
+    this.flavoursService.flavours$.pipe(
+      switchMap(flavours =>
+        combineLatest(flavours.map(flavour => flavour.workspaces$)).pipe(
+          map(workspaces => workspaces.flat())
+        )
+      )
+    ),
+    []
+  );
+
+  isRevalidating$ = LiveData.from<boolean>(
+    this.flavoursService.flavours$.pipe(
+      switchMap(flavours =>
+        combineLatest(
+          flavours.map(flavour => flavour.isRevalidating$ ?? of(false))
+        ).pipe(map(isLoadings => isLoadings.some(isLoading => isLoading)))
+      )
+    ),
+    false
+  );
 
   workspace$(id: string) {
     return this.workspaces$.map(workspaces =>
@@ -23,12 +34,14 @@ export class WorkspaceList extends Entity {
     );
   }
 
-  constructor(private readonly providers: WorkspaceFlavourProvider[]) {
+  constructor(private readonly flavoursService: WorkspaceFlavoursService) {
     super();
   }
 
   revalidate() {
-    this.providers.forEach(provider => provider.revalidate?.());
+    this.flavoursService.flavours$.value.forEach(provider => {
+      provider.revalidate?.();
+    });
   }
 
   waitForRevalidation(signal?: AbortSignal) {

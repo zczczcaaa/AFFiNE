@@ -1,50 +1,58 @@
 import { mixpanel } from '@affine/track';
 import type { GlobalContextService } from '@toeverything/infra';
-import { ApplicationStarted, OnEvent, Service } from '@toeverything/infra';
+import {
+  ApplicationStarted,
+  LiveData,
+  OnEvent,
+  Service,
+} from '@toeverything/infra';
 
-import { AccountChanged, type AuthAccountInfo, AuthService } from '../../cloud';
-import { AccountLoggedOut } from '../../cloud/services/auth';
-import type { ServersService } from '../../cloud/services/servers';
+import type { AuthAccountInfo, Server, ServersService } from '../../cloud';
 
 @OnEvent(ApplicationStarted, e => e.onApplicationStart)
-@OnEvent(AccountChanged, e => e.updateIdentity)
-@OnEvent(AccountLoggedOut, e => e.onAccountLoggedOut)
 export class TelemetryService extends Service {
-  private readonly authService;
+  private readonly disposableFns: (() => void)[] = [];
+
+  private readonly currentAccount$ =
+    this.globalContextService.globalContext.serverId.$.selector(id =>
+      id
+        ? this.serversService.server$(id)
+        : new LiveData<Server | undefined>(undefined)
+    )
+      .flat()
+      .selector(server => server?.account$)
+      .flat();
+
   constructor(
-    serversService: ServersService,
-    private readonly globalContextService: GlobalContextService
+    private readonly globalContextService: GlobalContextService,
+    private readonly serversService: ServersService
   ) {
     super();
 
     // TODO: support multiple servers
-    const affineCloudServer = serversService.server$('affine-cloud').value;
-    if (!affineCloudServer) {
-      throw new Error('affine-cloud server not found');
-    }
-    this.authService = affineCloudServer.scope.get(AuthService);
-  }
 
-  onApplicationStart() {
-    const account = this.authService.session.account$.value;
-    this.updateIdentity(account);
-    this.registerMiddlewares();
-  }
-
-  updateIdentity(account: AuthAccountInfo | null) {
-    if (!account) {
-      return;
-    }
-    mixpanel.identify(account.id);
-    mixpanel.people.set({
-      $email: account.email,
-      $name: account.label,
-      $avatar: account.avatar,
+    let prevAccount: AuthAccountInfo | null = null;
+    const unsubscribe = this.currentAccount$.subscribe(account => {
+      if (prevAccount) {
+        mixpanel.reset();
+      }
+      prevAccount = account ?? null;
+      if (account) {
+        mixpanel.identify(account.id);
+        mixpanel.people.set({
+          $email: account.email,
+          $name: account.label,
+          $avatar: account.avatar,
+        });
+      }
+    });
+    this.disposableFns.push(() => {
+      unsubscribe.unsubscribe();
     });
   }
 
-  onAccountLoggedOut() {
-    mixpanel.reset();
+  onApplicationStart() {
+    this.registerMiddlewares();
   }
 
   registerMiddlewares() {
@@ -59,7 +67,7 @@ export class TelemetryService extends Service {
     );
   }
 
-  extractGlobalContext(): { page?: string } {
+  extractGlobalContext(): { page?: string; serverId?: string } {
     const globalContext = this.globalContextService.globalContext;
     const page = globalContext.isDoc.get()
       ? globalContext.isTrashDoc.get()
@@ -76,11 +84,12 @@ export class TelemetryService extends Service {
             : globalContext.isTag.get()
               ? 'tag'
               : undefined;
-    return { page };
+    const serverId = globalContext.serverId.get() ?? undefined;
+    return { page, serverId };
   }
 
   override dispose(): void {
-    this.disposables.forEach(dispose => dispose());
+    this.disposableFns.forEach(dispose => dispose());
     super.dispose();
   }
 }

@@ -1,14 +1,13 @@
 import { Avatar, ConfirmModal, Input, Switch } from '@affine/component';
 import type { ConfirmModalProps } from '@affine/component/ui/modal';
 import { CloudSvg } from '@affine/core/components/affine/share-page-modal/cloud-svg';
-import { authAtom } from '@affine/core/components/atoms';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { AuthService } from '@affine/core/modules/cloud';
 import {
   type DialogComponentProps,
   type GLOBAL_DIALOG_SCHEMA,
+  GlobalDialogService,
 } from '@affine/core/modules/dialogs';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
@@ -17,7 +16,6 @@ import {
   useService,
   WorkspacesService,
 } from '@toeverything/infra';
-import { useSetAtom } from 'jotai';
 import { useCallback, useState } from 'react';
 
 import { buildShowcaseWorkspace } from '../../../utils/first-app-data';
@@ -27,7 +25,7 @@ interface NameWorkspaceContentProps extends ConfirmModalProps {
   loading: boolean;
   onConfirmName: (
     name: string,
-    workspaceFlavour: WorkspaceFlavour,
+    workspaceFlavour: string,
     avatar?: File
   ) => void;
 }
@@ -47,14 +45,11 @@ const NameWorkspaceContent = ({
   const session = useService(AuthService).session;
   const loginStatus = useLiveData(session.status$);
 
-  const setOpenSignIn = useSetAtom(authAtom);
+  const globalDialogService = useService(GlobalDialogService);
 
   const openSignInModal = useCallback(() => {
-    setOpenSignIn(state => ({
-      ...state,
-      openModal: true,
-    }));
-  }, [setOpenSignIn]);
+    globalDialogService.open('sign-in', {});
+  }, [globalDialogService]);
 
   const onSwitchChange = useCallback(
     (checked: boolean) => {
@@ -67,10 +62,7 @@ const NameWorkspaceContent = ({
   );
 
   const handleCreateWorkspace = useCallback(() => {
-    onConfirmName(
-      workspaceName,
-      enable ? WorkspaceFlavour.AFFINE_CLOUD : WorkspaceFlavour.LOCAL
-    );
+    onConfirmName(workspaceName, enable ? 'affine-cloud' : 'local');
   }, [enable, onConfirmName, workspaceName]);
 
   const onEnter = useCallback(() => {
@@ -161,7 +153,7 @@ export const CreateWorkspaceDialog = ({
   const [loading, setLoading] = useState(false);
 
   const onConfirmName = useAsyncCallback(
-    async (name: string, workspaceFlavour: WorkspaceFlavour) => {
+    async (name: string, workspaceFlavour: string) => {
       track.$.$.$.createWorkspace({ flavour: workspaceFlavour });
       if (loading) return;
       setLoading(true);

@@ -1,4 +1,3 @@
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { describe, expect, test } from 'vitest';
 
 import { Framework } from '../../../framework';
@@ -22,7 +21,7 @@ describe('Workspace System', () => {
     expect(workspaceService.list.workspaces$.value.length).toBe(0);
 
     const workspace = workspaceService.open({
-      metadata: await workspaceService.create(WorkspaceFlavour.LOCAL),
+      metadata: await workspaceService.create('local'),
     });
 
     expect(workspace.workspace).toBeInstanceOf(Workspace);

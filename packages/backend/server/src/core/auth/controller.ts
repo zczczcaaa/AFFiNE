@@ -35,6 +35,7 @@ import { TokenService, TokenType } from './token';
 interface PreflightResponse {
   registered: boolean;
   hasPassword: boolean;
+  magicLink: boolean;
 }
 
 interface SignInCredential {
@@ -82,16 +83,20 @@ export class AuthController {
       params.email
     );
 
+    const magicLinkAvailable = !!this.config.mailer.host;
+
     if (!user) {
       return {
         registered: false,
         hasPassword: false,
+        magicLink: magicLinkAvailable,
       };
     }
 
     return {
       registered: user.registered,
       hasPassword: !!user.password,
+      magicLink: magicLinkAvailable,
     };
   }
 

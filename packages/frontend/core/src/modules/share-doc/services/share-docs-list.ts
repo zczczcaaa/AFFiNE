@@ -1,4 +1,3 @@
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import type { WorkspaceService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 
@@ -10,7 +9,7 @@ export class ShareDocsListService extends Service {
   }
 
   shareDocs =
-    this.workspaceService.workspace.flavour === WorkspaceFlavour.AFFINE_CLOUD
+    this.workspaceService.workspace.flavour !== 'local'
       ? this.framework.createEntity(ShareDocsList)
       : null;
 }

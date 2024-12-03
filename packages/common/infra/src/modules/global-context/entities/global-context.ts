@@ -8,6 +8,9 @@ export class GlobalContext extends Entity {
   memento = new MemoryMemento();
 
   workspaceId = this.define<string>('workspaceId');
+  workspaceFlavour = this.define<string>('workspaceFlavour');
+
+  serverId = this.define<string>('serverId');
 
   /**
    * is in doc page

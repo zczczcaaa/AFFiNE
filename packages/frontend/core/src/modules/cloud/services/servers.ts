@@ -1,12 +1,20 @@
+import { Unreachable } from '@affine/env/constant';
 import { LiveData, ObjectPool, Service } from '@toeverything/infra';
-import { finalize, of, switchMap } from 'rxjs';
+import { nanoid } from 'nanoid';
+import { Observable, switchMap } from 'rxjs';
 
 import { Server } from '../entities/server';
+import { ServerInitialized } from '../events/server-initialized';
+import { ServerStarted } from '../events/server-started';
+import type { ServerConfigStore } from '../stores/server-config';
 import type { ServerListStore } from '../stores/server-list';
 import type { ServerConfig, ServerMetadata } from '../types';
 
 export class ServersService extends Service {
-  constructor(private readonly serverListStore: ServerListStore) {
+  constructor(
+    private readonly serverListStore: ServerListStore,
+    private readonly serverConfigStore: ServerConfigStore
+  ) {
     super();
   }
 
@@ -21,17 +29,21 @@ export class ServersService extends Service {
           const server = this.framework.createEntity(Server, {
             serverMetadata: metadata,
           });
+          server.revalidateConfig();
+          this.eventBus.emit(ServerInitialized, server);
+          server.scope.eventBus.emit(ServerStarted, server);
           const ref = this.serverPool.put(metadata.id, server);
           return ref;
         });
 
-        return of(refs.map(ref => ref.obj)).pipe(
-          finalize(() => {
+        return new Observable<Server[]>(subscribe => {
+          subscribe.next(refs.map(ref => ref.obj));
+          return () => {
             refs.forEach(ref => {
               ref.release();
             });
-          })
-        );
+          };
+        });
       })
     ),
     [] as any
@@ -51,5 +63,44 @@ export class ServersService extends Service {
 
   addServer(metadata: ServerMetadata, config: ServerConfig) {
     this.serverListStore.addServer(metadata, config);
+  }
+
+  removeServer(id: string) {
+    this.serverListStore.removeServer(id);
+  }
+
+  async addServerByBaseUrl(baseUrl: string) {
+    const config = await this.serverConfigStore.fetchServerConfig(baseUrl);
+    const id = nanoid();
+    this.serverListStore.addServer(
+      { id, baseUrl },
+      {
+        credentialsRequirement: config.credentialsRequirement,
+        features: config.features,
+        oauthProviders: config.oauthProviders,
+        serverName: config.name,
+        type: config.type,
+        initialized: config.initialized,
+        version: config.version,
+      }
+    );
+  }
+
+  getServerByBaseUrl(baseUrl: string) {
+    return this.servers$.value.find(s => s.baseUrl === baseUrl);
+  }
+
+  async addOrGetServerByBaseUrl(baseUrl: string) {
+    const server = this.getServerByBaseUrl(baseUrl);
+    if (server) {
+      return server;
+    } else {
+      await this.addServerByBaseUrl(baseUrl);
+      const server = this.getServerByBaseUrl(baseUrl);
+      if (!server) {
+        throw new Unreachable();
+      }
+      return server;
+    }
   }
 }

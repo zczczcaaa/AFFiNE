@@ -21,7 +21,6 @@ import { PeekViewManagerModal } from '@affine/core/modules/peek-view';
 import { ShareReaderService } from '@affine/core/modules/share-doc';
 import { ViewIcon, ViewTitle } from '@affine/core/modules/workbench';
 import { CloudBlobStorage } from '@affine/core/modules/workspace-engine';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { useI18n } from '@affine/i18n';
 import {
   type DocMode,
@@ -170,7 +169,7 @@ const SharePageInner = ({
       {
         metadata: {
           id: workspaceId,
-          flavour: WorkspaceFlavour.AFFINE_CLOUD,
+          flavour: 'affine-cloud',
         },
         isSharedMode: true,
       },

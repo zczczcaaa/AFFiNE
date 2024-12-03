@@ -1,7 +1,6 @@
 import { IconButton, MobileMenu } from '@affine/component';
 import { SharePage } from '@affine/core/components/affine/share-page-modal/share-menu/share-page';
 import { useEnableCloud } from '@affine/core/components/hooks/affine/use-enable-cloud';
-import { WorkspaceFlavour } from '@affine/env/workspace';
 import { ShareiOsIcon } from '@blocksuite/icons/rc';
 import { DocService, useServices, WorkspaceService } from '@toeverything/infra';
 
@@ -16,7 +15,7 @@ export const PageHeaderShareButton = () => {
   const doc = docService.doc.blockSuiteDoc;
   const confirmEnableCloud = useEnableCloud();
 
-  if (workspace.meta.flavour === WorkspaceFlavour.LOCAL) {
+  if (workspace.meta.flavour === 'local') {
     return null;
   }
 

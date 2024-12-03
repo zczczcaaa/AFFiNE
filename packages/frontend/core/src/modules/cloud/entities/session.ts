@@ -68,7 +68,7 @@ export class AuthSession extends Entity {
 
   revalidate = effect(
     exhaustMapWithTrailing(() =>
-      fromPromise(this.getSession()).pipe(
+      fromPromise(() => this.getSession()).pipe(
         backoffRetry({
           count: Infinity,
         }),

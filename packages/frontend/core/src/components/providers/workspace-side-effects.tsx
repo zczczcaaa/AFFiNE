@@ -41,7 +41,6 @@ import {
   switchMap,
   timeout,
 } from 'rxjs';
-import { Map as YMap } from 'yjs';
 
 import { CopilotClient } from '../blocksuite/block-suite-editor/ai/copilot-client';
 import { setupAIProvider } from '../blocksuite/block-suite-editor/ai/setup-provider';
@@ -147,37 +146,17 @@ export const WorkspaceSideEffects = () => {
         graphqlService.gql,
         fetchService.fetch,
         eventSourceService.eventSource
-      )
+      ),
+      globalDialogService
     );
     return () => {
       dispose();
     };
-  }, [eventSourceService, fetchService, graphqlService]);
+  }, [eventSourceService, fetchService, globalDialogService, graphqlService]);
 
   useRegisterWorkspaceCommands();
   useRegisterNavigationCommands();
   useRegisterFindInPageCommands();
-
-  useEffect(() => {
-    // hotfix for blockVersions
-    // this is a mistake in the
-    //    0.8.0 ~ 0.8.1
-    //    0.8.0-beta.0 ~ 0.8.0-beta.3
-    //    0.8.0-canary.17 ~ 0.9.0-canary.3
-    const meta = currentWorkspace.docCollection.doc.getMap('meta');
-    const blockVersions = meta.get('blockVersions');
-    if (
-      !(blockVersions instanceof YMap) &&
-      blockVersions !== null &&
-      blockVersions !== undefined &&
-      typeof blockVersions === 'object'
-    ) {
-      meta.set(
-        'blockVersions',
-        new YMap(Object.entries(blockVersions as Record<string, number>))
-      );
-    }
-  }, [currentWorkspace.docCollection.doc]);
 
   return (
     <>

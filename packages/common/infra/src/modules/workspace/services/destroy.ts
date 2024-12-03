@@ -1,14 +1,16 @@
 import { Service } from '../../../framework';
 import type { WorkspaceMetadata } from '../metadata';
-import type { WorkspaceFlavourProvider } from '../providers/flavour';
+import type { WorkspaceFlavoursService } from './flavours';
 
 export class WorkspaceDestroyService extends Service {
-  constructor(private readonly providers: WorkspaceFlavourProvider[]) {
+  constructor(private readonly flavoursService: WorkspaceFlavoursService) {
     super();
   }
 
   deleteWorkspace = async (metadata: WorkspaceMetadata) => {
-    const provider = this.providers.find(p => p.flavour === metadata.flavour);
+    const provider = this.flavoursService.flavours$.value.find(
+      p => p.flavour === metadata.flavour
+    );
     if (!provider) {
       throw new Error(`Unknown workspace flavour: ${metadata.flavour}`);
     }
