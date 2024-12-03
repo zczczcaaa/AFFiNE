@@ -123,7 +123,7 @@ test('should not be able to sign in if email is invalid', async t => {
     .send({ email: '' })
     .expect(400);
 
-  t.is(res.body.message, 'An invalid email provided.');
+  t.is(res.body.message, 'An invalid email provided: ');
 });
 
 test('should not be able to sign in if forbidden', async t => {

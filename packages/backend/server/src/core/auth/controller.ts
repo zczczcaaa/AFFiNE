@@ -75,7 +75,7 @@ export class AuthController {
     @Body() params?: { email: string }
   ): Promise<PreflightResponse> {
     if (!params?.email) {
-      throw new InvalidEmail();
+      throw new InvalidEmail({ email: 'not provided' });
     }
     validators.assertValidEmail(params.email);
 
@@ -171,7 +171,7 @@ export class AuthController {
         // verify domain has MX, SPF, DMARC records
         const [name, domain, ...rest] = email.split('@');
         if (rest.length || !domain) {
-          throw new InvalidEmail();
+          throw new InvalidEmail({ email });
         }
         const [mx, spf, dmarc] = await Promise.allSettled([
           resolveMx(domain).then(t => t.map(mx => mx.exchange).filter(Boolean)),
@@ -183,11 +183,11 @@ export class AuthController {
           ),
         ]).then(t => t.filter(t => t.status === 'fulfilled').map(t => t.value));
         if (!mx?.length || !spf?.length || !dmarc?.length) {
-          throw new InvalidEmail();
+          throw new InvalidEmail({ email });
         }
         // filter out alias emails
         if (name.includes('+') || name.includes('.')) {
-          throw new InvalidEmail();
+          throw new InvalidEmail({ email });
         }
       }
     }

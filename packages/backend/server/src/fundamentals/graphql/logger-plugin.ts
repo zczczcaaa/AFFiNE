@@ -43,9 +43,12 @@ export class GQLLoggerPlugin implements ApolloServerPlugin {
           );
           error.log('GraphQL');
 
-          metrics.gql
-            .counter('query_error_counter')
-            .add(1, { operation, code: error.status });
+          metrics.gql.counter('query_error_counter').add(1, {
+            operation,
+            code: error.status,
+            type: error.type,
+            error: error.name,
+          });
         });
 
         return Promise.resolve();

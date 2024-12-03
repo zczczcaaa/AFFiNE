@@ -46,7 +46,9 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
       throw error;
     } else {
       error.log('HTTP');
-      metrics.controllers.counter('error').add(1, { status: error.status });
+      metrics.controllers
+        .counter('error')
+        .add(1, { status: error.status, type: error.type, error: error.name });
       const res = host.switchToHttp().getResponse<Response>();
       const respondText = res.getHeader('content-type') === 'text/plain';
 

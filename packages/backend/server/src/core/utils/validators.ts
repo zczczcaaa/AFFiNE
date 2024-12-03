@@ -5,7 +5,7 @@ import { InvalidEmail, InvalidPasswordLength } from '../../fundamentals';
 export function assertValidEmail(email: string) {
   const result = z.string().email().safeParse(email);
   if (!result.success) {
-    throw new InvalidEmail();
+    throw new InvalidEmail({ email });
   }
 }
 

@@ -101,7 +101,12 @@ export class UserFriendlyError extends Error {
   log(context: string) {
     // ignore all user behavior error log
     if (this.type !== 'internal_server_error') {
-      return;
+      // always record auth related error
+      const isAuthError =
+        typeof this.stack === 'string' &&
+        (this.stack.includes('/core/auth/') ||
+          this.stack.includes('/plugins/oauth/'));
+      if (!isAuthError) return;
     }
 
     new Logger(context).error(
@@ -261,7 +266,8 @@ export const USER_FRIENDLY_ERRORS = {
   },
   invalid_email: {
     type: 'invalid_input',
-    message: 'An invalid email provided.',
+    args: { email: 'string' },
+    message: ({ email }) => `An invalid email provided: ${email}`,
   },
   invalid_password_length: {
     type: 'invalid_input',
