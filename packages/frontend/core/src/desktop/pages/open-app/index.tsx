@@ -1,10 +1,11 @@
+import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { GraphQLService } from '@affine/core/modules/cloud';
 import { OpenInAppPage } from '@affine/core/modules/open-in-app/views/open-in-app-page';
 import { appSchemes, channelToScheme } from '@affine/core/utils/channel';
 import type { GetCurrentUserQuery } from '@affine/graphql';
 import { getCurrentUserQuery } from '@affine/graphql';
 import { useService } from '@toeverything/infra';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 import { AppContainer } from '../../components/app-container';
@@ -12,6 +13,15 @@ import { AppContainer } from '../../components/app-container';
 const OpenUrl = () => {
   const [params] = useSearchParams();
   const urlToOpen = params.get('url');
+  const navigateHelper = useNavigateHelper();
+
+  const onOpenHere = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      navigateHelper.jumpToIndex();
+    },
+    [navigateHelper]
+  );
 
   if (!urlToOpen) {
     return null;
@@ -25,7 +35,9 @@ const OpenUrl = () => {
     urlObj.searchParams.set(k, v);
   });
 
-  return <OpenInAppPage urlToOpen={urlObj.toString()} />;
+  return (
+    <OpenInAppPage urlToOpen={urlObj.toString()} openHereClicked={onOpenHere} />
+  );
 };
 
 /**

@@ -1,12 +1,10 @@
 import { Button } from '@affine/component/ui/button';
-import { resolveLinkToDoc } from '@affine/core/modules/navigation';
 import { appIconMap, appNames } from '@affine/core/utils/channel';
 import { Trans, useI18n } from '@affine/i18n';
 import { LocalWorkspaceIcon, Logo1Icon } from '@blocksuite/icons/rc';
 import { useService } from '@toeverything/infra';
 import type { MouseEvent } from 'react';
 import { useCallback } from 'react';
-import { Link } from 'react-router-dom';
 
 import { GlobalDialogService } from '../../dialogs';
 import { getOpenUrlInDesktopAppLink } from '../utils';
@@ -17,12 +15,17 @@ let lastOpened = '';
 interface OpenAppProps {
   urlToOpen?: string | null;
   openHereClicked?: (e: MouseEvent) => void;
+  mode?: 'auth' | 'open-doc'; // default to 'auth'
 }
 const channel = BUILD_CONFIG.appBuildType;
 const url =
   'https://affine.pro/download' + (channel !== 'stable' ? '/beta-canary' : '');
 
-export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
+export const OpenInAppPage = ({
+  urlToOpen,
+  openHereClicked,
+  mode = 'auth',
+}: OpenAppProps) => {
   // default to open the current page in desktop app
   urlToOpen ??= getOpenUrlInDesktopAppLink(window.location.href, true);
   const globalDialogService = useService(GlobalDialogService);
@@ -34,18 +37,6 @@ export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
 
   const appIcon = appIconMap[channel];
   const appName = appNames[channel];
-
-  const maybeDocLink = urlToOpen ? resolveLinkToDoc(urlToOpen) : null;
-
-  const goToDocPage = useCallback(
-    (e: MouseEvent) => {
-      if (!maybeDocLink) {
-        return;
-      }
-      openHereClicked?.(e);
-    },
-    [maybeDocLink, openHereClicked]
-  );
 
   const goToAppearanceSetting = useCallback(
     (e: MouseEvent) => {
@@ -109,7 +100,7 @@ export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
         <img src={appIcon} alt={appName} width={120} height={120} />
 
         <div className={styles.prompt}>
-          {openHereClicked ? (
+          {mode === 'open-doc' ? (
             <Trans i18nKey="com.affine.auth.open.affine.open-doc-prompt">
               This doc is now opened in {appName}
             </Trans>
@@ -124,7 +115,7 @@ export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
           {openHereClicked && (
             <a
               className={styles.promptLink}
-              onClick={goToDocPage}
+              onClick={openHereClicked}
               target="_blank"
               rel="noreferrer"
             >
@@ -140,25 +131,9 @@ export const OpenInAppPage = ({ urlToOpen, openHereClicked }: OpenAppProps) => {
             {t['com.affine.auth.open.affine.try-again']()}
           </a>
         </div>
-        <div className={styles.accidentHandling}>
-          <div className={styles.prompt}>
-            {t['com.affine.auth.open.affine.still-have-problems']()}
-          </div>
-          <Link to="/" replace className={styles.promptLink}>
-            {t['com.affine.auth.open.affine.continue-with-browser']()}
-          </Link>
-          <a
-            className={styles.promptLink}
-            href={url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t['com.affine.auth.open.affine.download-latest-client']()}
-          </a>
-        </div>
       </div>
 
-      {maybeDocLink ? (
+      {mode === 'open-doc' ? (
         <div className={styles.docFooter}>
           <button
             className={styles.editSettingsLink}
