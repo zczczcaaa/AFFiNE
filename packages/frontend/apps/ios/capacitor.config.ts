@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   ios: {
     path: '.',
+    webContentsDebuggingEnabled: true,
   },
   server: {
     // url: 'http://localhost:8080',
