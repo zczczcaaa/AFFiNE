@@ -173,12 +173,12 @@ export const modalContent = style({
   selectors: {
     '[data-full-screen="true"] &': {
       vars: {
-        [widthVar]: '100vw',
-        [heightVar]: '100vh',
-        [minHeightVar]: '100vh',
+        [widthVar]: '100dvw',
+        [heightVar]: '100dvh',
+        [minHeightVar]: '100dvh',
       },
-      maxWidth: '100vw',
-      maxHeight: '100vh',
+      maxWidth: '100dvw',
+      maxHeight: '100dvh',
       borderRadius: 0,
     },
   },
