@@ -37,6 +37,23 @@ class LitReactPortal extends LitElement {
     };
   }
 
+  override attributeChangedCallback(
+    name: string,
+    oldVal: string,
+    newVal: string
+  ) {
+    super.attributeChangedCallback(name, oldVal, newVal);
+    if (name.toLowerCase() === 'portalid') {
+      listeners.forEach(l =>
+        l({
+          name: 'willUpdate',
+          target: this,
+          previousPortalId: oldVal,
+        })
+      );
+    }
+  }
+
   // do not enable shadow root
   override createRenderRoot() {
     return this;
@@ -57,17 +74,6 @@ class LitReactPortal extends LitElement {
       l({
         name: 'disconnectedCallback',
         target: this,
-      })
-    );
-  }
-
-  override willUpdate(changedProperties: any) {
-    super.willUpdate(changedProperties);
-    listeners.forEach(l =>
-      l({
-        name: 'willUpdate',
-        target: this,
-        previousPortalId: changedProperties.get('portalId'),
       })
     );
   }
