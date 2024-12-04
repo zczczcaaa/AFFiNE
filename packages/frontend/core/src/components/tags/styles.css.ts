@@ -80,6 +80,7 @@ export const tagsEditorTagsSelector = style({
   selectors: {
     [`${tagsEditorRootMobile} &`]: {
       padding: 0,
+      maxHeight: 'none',
     },
   },
 });
@@ -110,6 +111,7 @@ export const tagSelectorTagsScrollContainer = style({
       backgroundColor: cssVarV2('layer/background/primary'),
       gap: 0,
       padding: 4,
+      maxHeight: 'none',
     },
   },
 });
