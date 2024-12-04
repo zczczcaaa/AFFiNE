@@ -109,7 +109,7 @@ export const JournalValue = ({ onChange }: PropertyValueProps) => {
               onClick: e => e.stopPropagation(),
               sideOffset: 10,
               alignOffset: -30,
-              style: { padding: 20 },
+              style: { padding: '15px 20px' },
             }}
             rootOptions={{
               modal: true,

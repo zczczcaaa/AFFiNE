@@ -154,8 +154,7 @@ export const EditorJournalPanel = () => {
           customDayRenderer={customDayRenderer}
           value={journalDate?.format('YYYY-MM-DD')}
           onChange={onDateSelect}
-          monthHeaderCellClassName={styles.journalDateCellWrapper}
-          monthBodyCellClassName={styles.journalDateCellWrapper}
+          cellSize={34}
         />
       </div>
       {journalDate ? (
