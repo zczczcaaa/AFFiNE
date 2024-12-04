@@ -8,6 +8,7 @@ import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
 import {
   AuthService,
+  DefaultServerService,
   ValidatorProvider,
   WebSocketAuthProvider,
 } from '@affine/core/modules/cloud';
@@ -131,7 +132,9 @@ CapacitorApp.addListener('appUrlOpen', ({ url }) => {
       return;
     }
 
-    const authService = frameworkProvider.get(AuthService);
+    const authService = frameworkProvider
+      .get(DefaultServerService)
+      .server.scope.get(AuthService);
     if (method === 'oauth') {
       authService
         .signInOauth(payload.code, payload.state, payload.provider)
