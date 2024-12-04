@@ -83,13 +83,15 @@ export const ConfigModal = ({
         )}
         {children}
         {variant === 'popup' && onDone ? (
-          <Button
-            variant="primary"
-            className={styles.bottomDoneButton}
-            onClick={onDone}
-          >
-            {t['Done']()}
-          </Button>
+          <div className={styles.bottomDoneButtonContainer}>
+            <Button
+              variant="primary"
+              className={styles.bottomDoneButton}
+              onClick={onDone}
+            >
+              {t['Done']()}
+            </Button>
+          </div>
         ) : null}
       </div>
     </Modal>

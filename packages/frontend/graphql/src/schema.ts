@@ -268,6 +268,7 @@ export type ErrorDataUnion =
   | DocAccessDeniedDataType
   | DocHistoryNotFoundDataType
   | DocNotFoundDataType
+  | InvalidEmailDataType
   | InvalidHistoryTimestampDataType
   | InvalidPasswordLengthDataType
   | InvalidRuntimeConfigTypeDataType
@@ -385,6 +386,11 @@ export interface HumanReadableQuotaType {
   memberLimit: Scalars['String']['output'];
   name: Scalars['String']['output'];
   storageQuota: Scalars['String']['output'];
+}
+
+export interface InvalidEmailDataType {
+  __typename?: 'InvalidEmailDataType';
+  email: Scalars['String']['output'];
 }
 
 export interface InvalidHistoryTimestampDataType {

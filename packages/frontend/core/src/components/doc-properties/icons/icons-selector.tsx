@@ -63,10 +63,16 @@ export const DocPropertyIconSelector = ({
   return (
     <Menu
       items={
-        <IconsSelectorPanel
-          selectedIcon={propertyInfo.icon}
-          onSelectedChange={onSelectedChange}
-        />
+        <div
+          style={{
+            padding: BUILD_CONFIG.isMobileEdition ? '0 20px' : undefined,
+          }}
+        >
+          <IconsSelectorPanel
+            selectedIcon={propertyInfo.icon}
+            onSelectedChange={onSelectedChange}
+          />
+        </div>
       }
     >
       <div className={styles.iconSelectorButton}>
