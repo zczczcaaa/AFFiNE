@@ -51,7 +51,7 @@ export const PageWidthValue = ({ onChange }: PropertyValueProps) => {
   return (
     <PropertyValue className={container} hoverable={false}>
       <RadioGroup
-        width={194}
+        width={BUILD_CONFIG.isMobileEdition ? '100%' : 194}
         itemHeight={24}
         value={radioValue}
         onChange={handleChange}
