@@ -23,14 +23,15 @@ export class WorkspaceTransformService extends Service {
    */
   transformLocalToCloud = async (
     local: Workspace,
-    accountId: string
+    accountId: string,
+    flavour: string
   ): Promise<WorkspaceMetadata> => {
     assertEquals(local.flavour, 'local');
 
     const localDocStorage = local.engine.doc.storage.behavior;
 
     const newMetadata = await this.factory.create(
-      'affine-cloud',
+      flavour,
       async (docCollection, blobStorage, docStorage) => {
         const rootDocBinary = await localDocStorage.doc.get(
           local.docCollection.doc.guid

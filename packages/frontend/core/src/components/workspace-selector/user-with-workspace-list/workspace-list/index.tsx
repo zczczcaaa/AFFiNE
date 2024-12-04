@@ -11,11 +11,14 @@ import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-he
 import type { Server } from '@affine/core/modules/cloud';
 import { AuthService, ServersService } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { ServerDeploymentType } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import {
   CloudWorkspaceIcon,
   LocalWorkspaceIcon,
   MoreHorizontalIcon,
+  PlusIcon,
+  TeamWorkspaceIcon,
 } from '@blocksuite/icons/rc';
 import type { WorkspaceMetadata } from '@toeverything/infra';
 import {
@@ -54,6 +57,7 @@ const CloudWorkSpaceList = ({
   onClickWorkspaceSetting?: (workspaceMetadata: WorkspaceMetadata) => void;
   onClickEnableCloud?: (meta: WorkspaceMetadata) => void;
 }) => {
+  const t = useI18n();
   const globalContextService = useService(GlobalContextService);
   const globalDialogService = useService(GlobalDialogService);
   const serverName = useLiveData(server.config$.selector(c => c.serverName));
@@ -66,6 +70,8 @@ const CloudWorkSpaceList = ({
   const currentWorkspaceFlavour = useLiveData(
     globalContextService.globalContext.workspaceFlavour.$
   );
+
+  const serverType = server.config$.value.type;
 
   const handleDeleteServer = useCallback(() => {
     serversService.removeServer(server.id);
@@ -94,18 +100,38 @@ const CloudWorkSpaceList = ({
     });
   }, [globalDialogService, server.baseUrl]);
 
+  const onNewWorkspace = useCallback(() => {
+    globalDialogService.open(
+      'create-workspace',
+      {
+        serverId: server.id,
+        forcedCloud: true,
+      },
+      payload => {
+        if (payload) {
+          navigateHelper.openPage(payload.metadata.id, 'all');
+        }
+      }
+    );
+  }, [globalDialogService, navigateHelper, server.id]);
+
   return (
     <div className={styles.workspaceListWrapper}>
       <div className={styles.workspaceServer}>
-        <div className={styles.workspaceServerName}>
-          <CloudWorkspaceIcon
-            width={14}
-            height={14}
-            className={styles.workspaceTypeIcon}
-          />
-          {serverName}&nbsp;-&nbsp;
-          {account ? account.email : 'Not signed in'}
+        <div className={styles.workspaceServerContent}>
+          <div className={styles.workspaceServerName}>
+            {serverType === ServerDeploymentType.Affine ? (
+              <CloudWorkspaceIcon className={styles.workspaceTypeIcon} />
+            ) : (
+              <TeamWorkspaceIcon className={styles.workspaceTypeIcon} />
+            )}
+            <div className={styles.account}>{serverName}</div>
+          </div>
+          <div className={styles.account}>
+            {account ? account.email : 'Not signed in'}
+          </div>
         </div>
+
         <Menu
           items={[
             server.id !== 'affine-cloud' && (
@@ -125,7 +151,9 @@ const CloudWorkSpaceList = ({
             ),
           ]}
         >
-          <IconButton icon={<MoreHorizontalIcon />} />
+          <div>
+            <IconButton icon={<MoreHorizontalIcon />} />
+          </div>
         </Menu>
       </div>
       <WorkspaceList
@@ -134,6 +162,16 @@ const CloudWorkSpaceList = ({
         onSettingClick={onClickWorkspaceSetting}
         onEnableCloudClick={onClickEnableCloud}
       />
+      <MenuItem
+        block={true}
+        prefixIcon={<PlusIcon />}
+        onClick={onNewWorkspace}
+        className={styles.ItemContainer}
+      >
+        <div className={styles.ItemText}>
+          {t['com.affine.workspaceList.addWorkspace.create']()}
+        </div>
+      </MenuItem>
     </div>
   );
 };

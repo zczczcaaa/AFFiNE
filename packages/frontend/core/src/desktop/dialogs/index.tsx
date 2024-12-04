@@ -11,6 +11,7 @@ import { ChangePasswordDialog } from './change-password';
 import { CollectionEditorDialog } from './collection-editor';
 import { CreateWorkspaceDialog } from './create-workspace';
 import { DocInfoDialog } from './doc-info';
+import { EnableCloudDialog } from './enable-cloud';
 import { ImportDialog } from './import';
 import { ImportTemplateDialog } from './import-template';
 import { ImportWorkspaceDialog } from './import-workspace';
@@ -30,6 +31,7 @@ const GLOBAL_DIALOGS = {
   'sign-in': SignInDialog,
   'change-password': ChangePasswordDialog,
   'verify-email': VerifyEmailDialog,
+  'enable-cloud': EnableCloudDialog,
 } satisfies {
   [key in keyof GLOBAL_DIALOG_SCHEMA]?: React.FC<
     DialogComponentProps<GLOBAL_DIALOG_SCHEMA[key]>

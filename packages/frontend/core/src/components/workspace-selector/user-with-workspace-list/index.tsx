@@ -14,10 +14,9 @@ import {
 } from '@toeverything/infra';
 import { useCallback } from 'react';
 
-import { useCatchEventCallback } from '../../hooks/use-catch-event-hook';
+import { AddServer } from './add-server';
 import { AddWorkspace } from './add-workspace';
 import * as styles from './index.css';
-import { UserAccountItem } from './user-account';
 import { AFFiNEWorkspaceList } from './workspace-list';
 
 export const SignInItem = () => {
@@ -90,7 +89,7 @@ const UserWithWorkspaceListInner = ({
       return openSignInModal();
     }
     track.$.navigationPanel.workspaceList.createWorkspace();
-    globalDialogService.open('create-workspace', undefined, payload => {
+    globalDialogService.open('create-workspace', {}, payload => {
       if (payload) {
         onCreatedWorkspace?.(payload);
       }
@@ -117,28 +116,15 @@ const UserWithWorkspaceListInner = ({
     onEventEnd?.();
   }, [globalDialogService, onCreatedWorkspace, onEventEnd]);
 
+  const onAddServer = useCallback(() => {
+    globalDialogService.open('sign-in', { step: 'addSelfhosted' });
+  }, [globalDialogService]);
+
   const workspaceManager = useService(WorkspacesService);
   const workspaces = useLiveData(workspaceManager.list.workspaces$);
 
-  const onOpenPricingPlan = useCatchEventCallback(() => {
-    globalDialogService.open('setting', {
-      activeTab: 'plans',
-      scrollAnchor: 'cloudPricingPlan',
-    });
-  }, [globalDialogService]);
-
   return (
     <div className={styles.workspaceListWrapper}>
-      {isAuthenticated ? (
-        <UserAccountItem
-          email={session.session.account.email ?? 'Unknown User'}
-          onEventEnd={onEventEnd}
-          onClick={onOpenPricingPlan}
-        />
-      ) : (
-        <SignInItem />
-      )}
-      <Divider size="thinner" />
       <AFFiNEWorkspaceList
         onEventEnd={onEventEnd}
         onClickWorkspace={onClickWorkspace}
@@ -150,6 +136,7 @@ const UserWithWorkspaceListInner = ({
         onAddWorkspace={onAddWorkspace}
         onNewWorkspace={onNewWorkspace}
       />
+      <AddServer onAddServer={onAddServer} />
     </div>
   );
 };

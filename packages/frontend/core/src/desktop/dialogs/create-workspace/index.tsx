@@ -23,6 +23,8 @@ import * as styles from './dialog.css';
 
 interface NameWorkspaceContentProps extends ConfirmModalProps {
   loading: boolean;
+  forcedCloud?: boolean;
+  serverId?: string;
   onConfirmName: (
     name: string,
     workspaceFlavour: string,
@@ -33,15 +35,14 @@ interface NameWorkspaceContentProps extends ConfirmModalProps {
 const NameWorkspaceContent = ({
   loading,
   onConfirmName,
+  forcedCloud,
+  serverId,
   ...props
 }: NameWorkspaceContentProps) => {
   const t = useI18n();
   const [workspaceName, setWorkspaceName] = useState('');
-  const featureFlagService = useService(FeatureFlagService);
-  const enableLocalWorkspace = useLiveData(
-    featureFlagService.flags.enable_local_workspace.$
-  );
-  const [enable, setEnable] = useState(!enableLocalWorkspace);
+
+  const [enable, setEnable] = useState(!!forcedCloud);
   const session = useService(AuthService).session;
   const loginStatus = useLiveData(session.status$);
 
@@ -62,8 +63,8 @@ const NameWorkspaceContent = ({
   );
 
   const handleCreateWorkspace = useCallback(() => {
-    onConfirmName(workspaceName, enable ? 'affine-cloud' : 'local');
-  }, [enable, onConfirmName, workspaceName]);
+    onConfirmName(workspaceName, enable ? serverId || 'affine-cloud' : 'local');
+  }, [enable, onConfirmName, serverId, workspaceName]);
 
   const onEnter = useCallback(() => {
     if (workspaceName) {
@@ -120,7 +121,7 @@ const NameWorkspaceContent = ({
               <Switch
                 checked={enable}
                 onChange={onSwitchChange}
-                disabled={!enableLocalWorkspace}
+                disabled={forcedCloud}
               />
             </div>
             <div className={styles.cardDescription}>
@@ -131,7 +132,7 @@ const NameWorkspaceContent = ({
             <CloudSvg />
           </div>
         </div>
-        {!enableLocalWorkspace ? (
+        {forcedCloud ? (
           <a
             className={styles.cloudTips}
             href={BUILD_CONFIG.downloadUrl}
@@ -147,9 +148,15 @@ const NameWorkspaceContent = ({
 };
 
 export const CreateWorkspaceDialog = ({
+  forcedCloud,
+  serverId,
   close,
 }: DialogComponentProps<GLOBAL_DIALOG_SCHEMA['create-workspace']>) => {
   const workspacesService = useService(WorkspacesService);
+  const featureFlagService = useService(FeatureFlagService);
+  const enableLocalWorkspace = useLiveData(
+    featureFlagService.flags.enable_local_workspace.$
+  );
   const [loading, setLoading] = useState(false);
 
   const onConfirmName = useAsyncCallback(
@@ -185,6 +192,8 @@ export const CreateWorkspaceDialog = ({
     <NameWorkspaceContent
       loading={loading}
       open
+      serverId={serverId}
+      forcedCloud={forcedCloud || !enableLocalWorkspace}
       onOpenChange={onOpenChange}
       onConfirmName={onConfirmName}
     />

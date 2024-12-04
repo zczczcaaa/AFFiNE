@@ -1,5 +1,5 @@
 import { Modal } from '@affine/component';
-import { SignInPanel } from '@affine/core/components/sign-in';
+import { SignInPanel, type SignInStep } from '@affine/core/components/sign-in';
 import type {
   DialogComponentProps,
   GLOBAL_DIALOG_SCHEMA,
@@ -7,6 +7,7 @@ import type {
 export const SignInDialog = ({
   close,
   server: initialServerBaseUrl,
+  step,
 }: DialogComponentProps<GLOBAL_DIALOG_SCHEMA['sign-in']>) => {
   return (
     <Modal
@@ -19,7 +20,11 @@ export const SignInDialog = ({
         style: { padding: '44px 40px 20px' },
       }}
     >
-      <SignInPanel onClose={close} server={initialServerBaseUrl} />
+      <SignInPanel
+        onClose={close}
+        server={initialServerBaseUrl}
+        initStep={step as SignInStep}
+      />
     </Modal>
   );
 };

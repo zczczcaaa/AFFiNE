@@ -1,5 +1,5 @@
 import { notify, useConfirmModal } from '@affine/component';
-import { AuthService } from '@affine/core/modules/cloud';
+import { AuthService, ServersService } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { useI18n } from '@affine/i18n';
 import type { Workspace } from '@toeverything/infra';
@@ -22,6 +22,7 @@ interface ConfirmEnableCloudOptions {
    */
   onFinished?: () => void;
   openPageId?: string;
+  serverId?: string;
 }
 type ConfirmEnableArgs = [Workspace, ConfirmEnableCloudOptions | undefined];
 
@@ -33,6 +34,9 @@ export const useEnableCloud = () => {
   const globalDialogService = useService(GlobalDialogService);
   const { openConfirmModal, closeConfirmModal } = useConfirmModal();
   const workspacesService = useService(WorkspacesService);
+  const serversService = useService(ServersService);
+  const serverList = useLiveData(serversService.servers$);
+
   const { jumpToPage } = useNavigateHelper();
 
   const enableCloud = useCallback(
@@ -42,7 +46,8 @@ export const useEnableCloud = () => {
         if (!account) return;
         const { id: newId } = await workspacesService.transformLocalToCloud(
           ws,
-          account.id
+          account.id,
+          'affine-cloud'
         );
         jumpToPage(newId, options?.openPageId || 'all');
         options?.onSuccess?.();
@@ -56,9 +61,13 @@ export const useEnableCloud = () => {
     [account, jumpToPage, t, workspacesService]
   );
 
-  const openSignIn = useCallback(() => {
-    globalDialogService.open('sign-in', {});
-  }, [globalDialogService]);
+  const openSignIn = useCallback(
+    () =>
+      globalDialogService.open('sign-in', {
+        step: 'signIn',
+      }),
+    [globalDialogService]
+  );
 
   const signInOrEnableCloud = useCallback(
     async (...args: ConfirmEnableArgs) => {
@@ -76,12 +85,21 @@ export const useEnableCloud = () => {
 
   const confirmEnableCloud = useCallback(
     (ws: Workspace, options?: ConfirmEnableCloudOptions) => {
-      const { onSuccess, onFinished } = options ?? {};
+      const { onSuccess, onFinished, serverId, openPageId } = options ?? {};
 
       const closeOnSuccess = () => {
         closeConfirmModal();
         onSuccess?.();
       };
+
+      if (serverList.length > 1) {
+        globalDialogService.open('enable-cloud', {
+          workspaceId: ws.id,
+          serverId,
+          openPageId,
+        });
+        return;
+      }
 
       openConfirmModal(
         {
@@ -110,7 +128,15 @@ export const useEnableCloud = () => {
         }
       );
     },
-    [closeConfirmModal, loginStatus, openConfirmModal, signInOrEnableCloud, t]
+    [
+      closeConfirmModal,
+      globalDialogService,
+      loginStatus,
+      openConfirmModal,
+      serverList.length,
+      signInOrEnableCloud,
+      t,
+    ]
   );
 
   return confirmEnableCloud;

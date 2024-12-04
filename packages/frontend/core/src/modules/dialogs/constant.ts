@@ -14,7 +14,7 @@ export type SettingTab =
   | `workspace:${'preference' | 'properties'}`;
 
 export type GLOBAL_DIALOG_SCHEMA = {
-  'create-workspace': () => {
+  'create-workspace': (props: { serverId?: string; forcedCloud?: boolean }) => {
     metadata: WorkspaceMetadata;
     defaultDocId?: string;
   };
@@ -31,9 +31,14 @@ export type GLOBAL_DIALOG_SCHEMA = {
     workspaceMetadata?: WorkspaceMetadata | null;
     scrollAnchor?: string;
   }) => void;
-  'sign-in': (props: { server?: string; step?: 'sign-in' }) => void;
+  'sign-in': (props: { server?: string; step?: string }) => void;
   'change-password': (props: { server?: string }) => void;
   'verify-email': (props: { server?: string; changeEmail?: boolean }) => void;
+  'enable-cloud': (props: {
+    workspaceId: string;
+    openPageId?: string;
+    serverId?: string;
+  }) => boolean;
 };
 
 export type WORKSPACE_DIALOG_SCHEMA = {

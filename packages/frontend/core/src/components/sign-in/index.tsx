@@ -24,12 +24,18 @@ export interface SignInState {
 export const SignInPanel = ({
   onClose,
   server: initialServerBaseUrl,
+  initStep,
 }: {
   onClose: () => void;
   server?: string;
+  initStep?: SignInStep | undefined;
 }) => {
   const [state, setState] = useState<SignInState>({
-    step: initialServerBaseUrl ? 'addSelfhosted' : 'signIn',
+    step: initStep
+      ? initStep
+      : initialServerBaseUrl
+        ? 'addSelfhosted'
+        : 'signIn',
     initialServerBaseUrl: initialServerBaseUrl,
   });
 

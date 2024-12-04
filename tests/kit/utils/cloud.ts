@@ -4,10 +4,7 @@ import {
   waitForAllPagesLoad,
   waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
-import {
-  clickSideBarCurrentWorkspaceBanner,
-  clickSideBarSettingButton,
-} from '@affine-test/kit/utils/sidebar';
+import { clickSideBarSettingButton } from '@affine-test/kit/utils/sidebar';
 import { faker } from '@faker-js/faker';
 import { hash } from '@node-rs/argon2';
 import type { BrowserContext, Cookie, Page } from '@playwright/test';
@@ -239,8 +236,7 @@ export async function loginUser(
     await waitForEditorLoad(page);
   }
 
-  await clickSideBarCurrentWorkspaceBanner(page);
-  await page.getByTestId('cloud-signin-button').click({
+  await page.getByTestId('sidebar-user-avatar').click({
     delay: 200,
   });
   await loginUserDirectly(page, user, config);
