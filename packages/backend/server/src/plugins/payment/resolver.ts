@@ -279,7 +279,7 @@ export class SubscriptionResolver {
       throw new FailedToCheckout();
     }
 
-    return session;
+    return session.url;
   }
 
   @Mutation(() => String, {
@@ -322,7 +322,7 @@ export class SubscriptionResolver {
 
     return this.service.cancelSubscription(
       {
-        targetId: user.id,
+        userId: user.id,
         // @ts-expect-error exam inside
         plan,
       },
@@ -363,7 +363,7 @@ export class SubscriptionResolver {
 
     return this.service.resumeSubscription(
       {
-        targetId: user.id,
+        userId: user.id,
         // @ts-expect-error exam inside
         plan,
       },
@@ -433,7 +433,9 @@ export class UserSubscriptionResolver {
     const subscriptions = await this.db.subscription.findMany({
       where: {
         targetId: user.id,
-        status: SubscriptionStatus.Active,
+        status: {
+          in: [SubscriptionStatus.Active, SubscriptionStatus.Trialing],
+        },
       },
     });
 

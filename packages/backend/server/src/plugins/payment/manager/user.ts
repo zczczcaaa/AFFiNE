@@ -148,6 +148,15 @@ export class UserSubscriptionManager extends SubscriptionManager {
       return { allow_promotion_codes: true };
     })();
 
+    const trials = (() => {
+      if (lookupKey.plan === SubscriptionPlan.AI && !strategy.aiSubscribed) {
+        return {
+          trial_period_days: 7,
+        } as Stripe.Checkout.SessionCreateParams.SubscriptionData;
+      }
+      return undefined;
+    })();
+
     // mode: 'subscription' or 'payment' for lifetime and onetime payment
     const mode =
       lookupKey.recurring === SubscriptionRecurring.Lifetime ||
@@ -169,11 +178,17 @@ export class UserSubscriptionManager extends SubscriptionManager {
           quantity: 1,
         },
       ],
+      customer_update: {
+        name: 'auto',
+      },
       tax_id_collection: {
         enabled: true,
       },
       ...discounts,
       ...mode,
+      subscription_data: {
+        ...trials,
+      },
       success_url: this.url.link(params.successCallbackLink, {
         session_id: '{CHECKOUT_SESSION_ID}',
       }),
