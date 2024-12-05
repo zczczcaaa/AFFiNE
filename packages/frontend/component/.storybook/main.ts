@@ -70,9 +70,9 @@ export default {
     });
   },
 
-  typescript: {
-    reactDocgen: 'react-docgen-typescript',
-  },
+  // typescript: {
+  //   reactDocgen: 'react-docgen-typescript',
+  // },
 } satisfies StorybookConfig;
 
 function getAbsolutePath(value: string): any {
