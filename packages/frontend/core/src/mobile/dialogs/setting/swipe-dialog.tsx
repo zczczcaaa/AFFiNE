@@ -29,21 +29,21 @@ const tick = (
   overlay: HTMLDivElement,
   dialog: HTMLDivElement,
   prev: HTMLElement | null,
-  deltaX: number
+  deltaX: number,
+  fullWidth: number
 ) => {
-  const limitedDeltaX = Math.min(overlay.clientWidth, Math.max(0, deltaX));
-  const percent = limitedDeltaX / overlay.clientWidth;
+  const limitedDeltaX = Math.min(fullWidth, Math.max(0, deltaX));
+  const percent = limitedDeltaX / fullWidth;
   const opacity =
     overlayOpacityRange[1] -
     (overlayOpacityRange[1] - overlayOpacityRange[0]) * percent;
   overlay.style.background = `rgba(0, 0, 0, ${opacity})`;
-  dialog.style.transform = `translateX(${limitedDeltaX}px)`;
+  dialog.style.transform = `translate3d(${limitedDeltaX}px, 0, 0)`;
 
-  const prevEl = prev ?? document.querySelector('#app');
-  if (prevEl) {
+  if (prev) {
     const range = [-80, 0];
     const offset = range[0] + (range[1] - range[0]) * percent;
-    prevEl.style.transform = `translateX(${offset}px)`;
+    prev.style.transform = `translate3d(${offset}px, 0, 0)`;
   }
 };
 const reset = (
@@ -62,16 +62,17 @@ const reset = (
 const getAnimeProxy = (
   overlay: HTMLDivElement,
   dialog: HTMLDivElement,
-  prev: HTMLElement | null,
+  maybePrev: HTMLElement | null,
   init: number
 ) => {
+  const prev = maybePrev ?? document.querySelector('#app');
   return new Proxy(
     { deltaX: init },
     {
       set(target, key, value) {
         if (key === 'deltaX') {
           target.deltaX = value;
-          tick(overlay, dialog, prev, value);
+          tick(overlay, dialog, prev, value, overlay.clientWidth);
           return true;
         }
         return false;
@@ -95,8 +96,8 @@ const cancel = (
       Math.min(overlay.clientWidth, Math.max(0, deltaX))
     ),
     deltaX: 0,
-    easing: 'easeInOutSine',
-    duration: 230,
+    easing: 'cubicBezier(.25,.36,.24,.97)',
+    duration: 320,
     complete: () => {
       complete?.();
       setTimeout(() => {
@@ -121,8 +122,8 @@ const close = (
       Math.min(overlay.clientWidth, Math.max(0, deltaX))
     ),
     deltaX: overlay.clientWidth,
-    easing: 'easeInOutSine',
-    duration: 230,
+    easing: 'cubicBezier(.25,.36,.24,.97)',
+    duration: 320,
     complete: () => {
       complete?.();
       setTimeout(() => {
@@ -178,7 +179,8 @@ export const SwipeDialog = ({
       preventScroll: true,
       onSwipeStart: () => {},
       onSwipe({ deltaX }) {
-        tick(overlay, dialog, prev, deltaX);
+        const prevOrAppRoot = prev ?? document.querySelector('#app');
+        tick(overlay, dialog, prevOrAppRoot, deltaX, overlay.clientWidth);
       },
       onSwipeEnd: ({ deltaX }) => {
         const shouldClose = deltaX > overlay.clientWidth * 0.2;
