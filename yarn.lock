@@ -405,8 +405,8 @@ __metadata:
     "@capacitor/app": "npm:^6.0.1"
     "@capacitor/browser": "npm:^6.0.3"
     "@dnd-kit/core": "npm:^6.1.0"
-    "@dnd-kit/modifiers": "npm:^8.0.0"
-    "@dnd-kit/sortable": "npm:^9.0.0"
+    "@dnd-kit/modifiers": "npm:^9.0.0"
+    "@dnd-kit/sortable": "npm:^10.0.0"
     "@dotlottie/player-component": "npm:^2.7.12"
     "@emotion/cache": "npm:^11.11.0"
     "@emotion/react": "npm:^11.11.4"
@@ -3375,29 +3375,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/modifiers@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "@dnd-kit/modifiers@npm:8.0.0"
+"@dnd-kit/modifiers@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@dnd-kit/modifiers@npm:9.0.0"
   dependencies:
     "@dnd-kit/utilities": "npm:^3.2.2"
     tslib: "npm:^2.0.0"
   peerDependencies:
-    "@dnd-kit/core": ^6.2.0
+    "@dnd-kit/core": ^6.3.0
     react: ">=16.8.0"
-  checksum: 10/dc3927eba6a38c115138bc6039f79bc27ef9c1a12085d41246a7ec93ed77d7aa2ae1e5d46fd199c792dfe1852d9af8f3b529b9831873b65c9dc50711177df713
+  checksum: 10/2ae238a1b787029e95d92319d7e4a0e2ffba8fceed56c4b58dfee7ed6890df207bf89ce522d4126411051121954222bd8e1444fae321485b594ae518c7c4397d
   languageName: node
   linkType: hard
 
-"@dnd-kit/sortable@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "@dnd-kit/sortable@npm:9.0.0"
+"@dnd-kit/sortable@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "@dnd-kit/sortable@npm:10.0.0"
   dependencies:
     "@dnd-kit/utilities": "npm:^3.2.2"
     tslib: "npm:^2.0.0"
   peerDependencies:
-    "@dnd-kit/core": ^6.2.0
+    "@dnd-kit/core": ^6.3.0
     react: ">=16.8.0"
-  checksum: 10/35fe6271fa66f45a055533045dab9bece7f310119e8e37fa6bad7b4b02cb87bd365e9366fea2f5749a525a15b84e2ea86cb8920b00c04823477a8f2b4c4adc7f
+  checksum: 10/bc61c25e76905204a53f91294b8116bf106fa27247eebca2c66478450b2051d7177115a384054e7e5639e6c4430083ade63056f79ee45f549da537cf05bc5288
   languageName: node
   linkType: hard
 
