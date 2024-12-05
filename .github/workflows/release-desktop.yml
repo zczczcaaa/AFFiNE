@@ -170,14 +170,14 @@ jobs:
           mv packages/frontend/apps/electron/out/*/make/deb/${{ matrix.spec.arch }}/*.deb ./builds/affine-${{ needs.before-make.outputs.RELEASE_VERSION }}-${{ env.BUILD_TYPE }}-linux-${{ matrix.spec.arch }}.deb
           mv packages/frontend/apps/electron/out/*/make/flatpak/*/*.flatpak ./builds/affine-${{ needs.before-make.outputs.RELEASE_VERSION }}-${{ env.BUILD_TYPE }}-linux-${{ matrix.spec.arch }}.flatpak
 
-      - uses: actions/attest-build-provenance@v1
+      - uses: actions/attest-build-provenance@v2
         if: ${{ matrix.spec.platform == 'darwin' }}
         with:
           subject-path: |
             ./builds/affine-${{ needs.before-make.outputs.RELEASE_VERSION }}-${{ env.BUILD_TYPE }}-macos-${{ matrix.spec.arch }}.zip
             ./builds/affine-${{ needs.before-make.outputs.RELEASE_VERSION }}-${{ env.BUILD_TYPE }}-macos-${{ matrix.spec.arch }}.dmg
 
-      - uses: actions/attest-build-provenance@v1
+      - uses: actions/attest-build-provenance@v2
         if: ${{ matrix.spec.platform == 'linux' }}
         with:
           subject-path: |
@@ -386,7 +386,7 @@ jobs:
           mv packages/frontend/apps/electron/out/*/make/squirrel.windows/${{ matrix.spec.arch }}/*.exe ./builds/affine-${{ needs.before-make.outputs.RELEASE_VERSION }}-${{ env.BUILD_TYPE }}-windows-${{ matrix.spec.arch }}.exe
           mv packages/frontend/apps/electron/out/*/make/nsis.windows/${{ matrix.spec.arch }}/*.exe ./builds/affine-${{ needs.before-make.outputs.RELEASE_VERSION }}-${{ env.BUILD_TYPE }}-windows-${{ matrix.spec.arch }}.nsis.exe
 
-      - uses: actions/attest-build-provenance@v1
+      - uses: actions/attest-build-provenance@v2
         with:
           subject-path: |
             ./builds/affine-${{ needs.before-make.outputs.RELEASE_VERSION }}-${{ env.BUILD_TYPE }}-windows-${{ matrix.spec.arch }}.zip
