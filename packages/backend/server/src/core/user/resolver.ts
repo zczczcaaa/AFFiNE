@@ -5,7 +5,6 @@ import {
   Int,
   Mutation,
   Query,
-  ResolveField,
   Resolver,
 } from '@nestjs/graphql';
 import { PrismaClient } from '@prisma/client';
@@ -37,7 +36,6 @@ import {
 @Resolver(() => UserType)
 export class UserResolver {
   constructor(
-    private readonly prisma: PrismaClient,
     private readonly storage: AvatarStorage,
     private readonly users: UserService
   ) {}
@@ -70,16 +68,6 @@ export class UserResolver {
       email: user.email,
       hasPassword: !!user.password,
     };
-  }
-
-  @ResolveField(() => Int, {
-    name: 'invoiceCount',
-    description: 'Get user invoice count',
-  })
-  async invoiceCount(@CurrentUser() user: CurrentUser) {
-    return this.prisma.userInvoice.count({
-      where: { userId: user.id },
-    });
   }
 
   @Mutation(() => UserType, {

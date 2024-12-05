@@ -19,7 +19,7 @@ export class SubscriptionCronJobs {
 
   @Cron(CronExpression.EVERY_HOUR)
   async cleanExpiredOnetimeSubscriptions() {
-    const subscriptions = await this.db.userSubscription.findMany({
+    const subscriptions = await this.db.subscription.findMany({
       where: {
         variant: SubscriptionVariant.Onetime,
         end: {
@@ -30,7 +30,7 @@ export class SubscriptionCronJobs {
 
     for (const subscription of subscriptions) {
       this.event.emit('user.subscription.canceled', {
-        userId: subscription.userId,
+        userId: subscription.targetId,
         plan: subscription.plan as SubscriptionPlan,
         recurring: subscription.variant as SubscriptionRecurring,
       });
@@ -42,10 +42,10 @@ export class SubscriptionCronJobs {
     userId,
     plan,
   }: EventPayload<'user.subscription.canceled'>) {
-    await this.db.userSubscription.delete({
+    await this.db.subscription.delete({
       where: {
-        userId_plan: {
-          userId,
+        targetId_plan: {
+          targetId: userId,
           plan,
         },
       },

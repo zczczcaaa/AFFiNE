@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import {
-  PrismaClient,
-  UserStripeCustomer,
-  UserSubscription,
-} from '@prisma/client';
+import { PrismaClient, UserStripeCustomer } from '@prisma/client';
+import { omit, pick } from 'lodash-es';
 import Stripe from 'stripe';
+import { z } from 'zod';
 
 import {
   EarlyAccessType,
@@ -14,6 +12,9 @@ import {
   Config,
   EventEmitter,
   InternalServerError,
+  SubscriptionAlreadyExists,
+  SubscriptionPlanNotFound,
+  URLHelper,
 } from '../../../fundamentals';
 import {
   CouponType,
@@ -26,7 +27,7 @@ import {
   SubscriptionStatus,
   SubscriptionVariant,
 } from '../types';
-import { SubscriptionManager } from './common';
+import { CheckoutParams, Subscription, SubscriptionManager } from './common';
 
 interface PriceStrategyStatus {
   proEarlyAccess: boolean;
@@ -36,15 +37,30 @@ interface PriceStrategyStatus {
   onetime: boolean;
 }
 
+export const UserSubscriptionIdentity = z.object({
+  plan: z.enum([SubscriptionPlan.Pro, SubscriptionPlan.AI]),
+  userId: z.string(),
+});
+
+export const UserSubscriptionCheckoutArgs = z.object({
+  user: z.object({
+    id: z.string(),
+    email: z.string(),
+  }),
+});
+
 @Injectable()
-export class UserSubscriptionManager implements SubscriptionManager {
+export class UserSubscriptionManager extends SubscriptionManager {
   constructor(
-    private readonly db: PrismaClient,
+    stripe: Stripe,
+    db: PrismaClient,
     private readonly config: Config,
-    private readonly stripe: Stripe,
     private readonly feature: FeatureManagementService,
-    private readonly event: EventEmitter
-  ) {}
+    private readonly event: EventEmitter,
+    private readonly url: URLHelper
+  ) {
+    super(stripe, db);
+  }
 
   async filterPrices(
     prices: KnownStripePrice[],
@@ -71,11 +87,105 @@ export class UserSubscriptionManager implements SubscriptionManager {
     return availablePrices;
   }
 
-  async getSubscription(userId: string, plan: SubscriptionPlan) {
-    return this.db.userSubscription.findFirst({
+  async checkout(
+    price: KnownStripePrice,
+    params: z.infer<typeof CheckoutParams>,
+    { user }: z.infer<typeof UserSubscriptionCheckoutArgs>
+  ) {
+    const lookupKey = price.lookupKey;
+    const subscription = await this.getSubscription({
+      // @ts-expect-error filtered already
+      plan: price.lookupKey.plan,
+      user,
+    });
+
+    if (
+      subscription &&
+      // do not allow to re-subscribe unless
+      !(
+        /* current subscription is a onetime subscription and so as the one that's checking out */
+        (
+          (subscription.variant === SubscriptionVariant.Onetime &&
+            lookupKey.variant === SubscriptionVariant.Onetime) ||
+          /* current subscription is normal subscription and is checking-out a lifetime subscription */
+          (subscription.recurring !== SubscriptionRecurring.Lifetime &&
+            subscription.variant !== SubscriptionVariant.Onetime &&
+            lookupKey.recurring === SubscriptionRecurring.Lifetime)
+        )
+      )
+    ) {
+      throw new SubscriptionAlreadyExists({ plan: lookupKey.plan });
+    }
+
+    const customer = await this.getOrCreateCustomer(user.id);
+    const strategy = await this.strategyStatus(customer);
+    const available = await this.isPriceAvailable(price, {
+      ...strategy,
+      onetime: true,
+    });
+
+    if (!available) {
+      throw new SubscriptionPlanNotFound({
+        plan: lookupKey.plan,
+        recurring: lookupKey.recurring,
+      });
+    }
+
+    const discounts = await (async () => {
+      const coupon = await this.getBuildInCoupon(customer, price);
+      if (coupon) {
+        return { discounts: [{ coupon }] };
+      } else if (params.coupon) {
+        const couponId = await this.getCouponFromPromotionCode(
+          params.coupon,
+          customer
+        );
+        if (couponId) {
+          return { discounts: [{ coupon: couponId }] };
+        }
+      }
+
+      return { allow_promotion_codes: true };
+    })();
+
+    // mode: 'subscription' or 'payment' for lifetime and onetime payment
+    const mode =
+      lookupKey.recurring === SubscriptionRecurring.Lifetime ||
+      lookupKey.variant === SubscriptionVariant.Onetime
+        ? {
+            mode: 'payment' as const,
+            invoice_creation: {
+              enabled: true,
+            },
+          }
+        : {
+            mode: 'subscription' as const,
+          };
+
+    return this.stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price: price.price.id,
+          quantity: 1,
+        },
+      ],
+      tax_id_collection: {
+        enabled: true,
+      },
+      ...discounts,
+      ...mode,
+      success_url: this.url.link(params.successCallbackLink, {
+        session_id: '{CHECKOUT_SESSION_ID}',
+      }),
+      customer: customer.stripeCustomerId,
+    });
+  }
+
+  async getSubscription(args: z.infer<typeof UserSubscriptionIdentity>) {
+    return this.db.subscription.findFirst({
       where: {
-        userId,
-        plan,
+        targetId: args.userId,
+        plan: args.plan,
         status: {
           in: [SubscriptionStatus.Active, SubscriptionStatus.Trialing],
         },
@@ -83,11 +193,8 @@ export class UserSubscriptionManager implements SubscriptionManager {
     });
   }
 
-  async saveSubscription({
-    userId,
-    lookupKey,
-    stripeSubscription: subscription,
-  }: KnownStripeSubscription) {
+  async saveStripeSubscription(subscription: KnownStripeSubscription) {
+    const { userId, lookupKey, stripeSubscription } = subscription;
     // update features first, features modify are idempotent
     // so there is no need to skip if a subscription already exists.
     // TODO(@forehalo):
@@ -99,43 +206,85 @@ export class UserSubscriptionManager implements SubscriptionManager {
       recurring: lookupKey.recurring,
     });
 
-    const commonData = {
-      status: subscription.status,
-      stripeScheduleId: subscription.schedule as string | null,
-      nextBillAt: !subscription.canceled_at
-        ? new Date(subscription.current_period_end * 1000)
-        : null,
-      canceledAt: subscription.canceled_at
-        ? new Date(subscription.canceled_at * 1000)
-        : null,
-    };
+    const subscriptionData = this.transformSubscription(subscription);
 
-    return await this.db.userSubscription.upsert({
+    // @deprecated backward compatibility
+    await this.db.deprecatedUserSubscription.upsert({
       where: {
-        stripeSubscriptionId: subscription.id,
+        stripeSubscriptionId: stripeSubscription.id,
       },
-      update: commonData,
+      update: pick(subscriptionData, [
+        'status',
+        'stripeScheduleId',
+        'nextBillAt',
+        'canceledAt',
+      ]),
       create: {
         userId,
-        ...lookupKey,
-        stripeSubscriptionId: subscription.id,
-        start: new Date(subscription.current_period_start * 1000),
-        end: new Date(subscription.current_period_end * 1000),
-        trialStart: subscription.trial_start
-          ? new Date(subscription.trial_start * 1000)
-          : null,
-        trialEnd: subscription.trial_end
-          ? new Date(subscription.trial_end * 1000)
-          : null,
-        ...commonData,
+        ...subscriptionData,
+      },
+    });
+
+    return this.db.subscription.upsert({
+      where: {
+        stripeSubscriptionId: stripeSubscription.id,
+      },
+      update: pick(subscriptionData, [
+        'status',
+        'stripeScheduleId',
+        'nextBillAt',
+        'canceledAt',
+      ]),
+      create: {
+        targetId: userId,
+        ...subscriptionData,
       },
     });
   }
 
-  async cancelSubscription(subscription: UserSubscription) {
-    return this.db.userSubscription.update({
+  async deleteStripeSubscription({
+    userId,
+    lookupKey,
+    stripeSubscription,
+  }: KnownStripeSubscription) {
+    const deleted = await this.db.subscription.deleteMany({
       where: {
-        id: subscription.id,
+        stripeSubscriptionId: stripeSubscription.id,
+      },
+    });
+
+    // @deprecated backward compatibility
+    await this.db.deprecatedUserSubscription.deleteMany({
+      where: {
+        stripeSubscriptionId: stripeSubscription.id,
+      },
+    });
+
+    if (deleted.count > 0) {
+      this.event.emit('user.subscription.canceled', {
+        userId,
+        plan: lookupKey.plan,
+        recurring: lookupKey.recurring,
+      });
+    }
+  }
+
+  async cancelSubscription(subscription: Subscription) {
+    // @deprecated backward compatibility
+    await this.db.deprecatedUserSubscription.updateMany({
+      where: {
+        stripeSubscriptionId: subscription.stripeSubscriptionId,
+      },
+      data: {
+        canceledAt: new Date(),
+        nextBillAt: null,
+      },
+    });
+
+    return this.db.subscription.update({
+      where: {
+        // @ts-expect-error checked outside
+        stripeSubscriptionId: subscription.stripeSubscriptionId,
       },
       data: {
         canceledAt: new Date(),
@@ -144,9 +293,23 @@ export class UserSubscriptionManager implements SubscriptionManager {
     });
   }
 
-  async resumeSubscription(subscription: UserSubscription) {
-    return this.db.userSubscription.update({
-      where: { id: subscription.id },
+  async resumeSubscription(subscription: Subscription) {
+    // @deprecated backward compatibility
+    await this.db.deprecatedUserSubscription.updateMany({
+      where: {
+        stripeSubscriptionId: subscription.stripeSubscriptionId,
+      },
+      data: {
+        canceledAt: null,
+        nextBillAt: subscription.end,
+      },
+    });
+
+    return this.db.subscription.update({
+      where: {
+        // @ts-expect-error checked outside
+        stripeSubscriptionId: subscription.stripeSubscriptionId,
+      },
       data: {
         canceledAt: null,
         nextBillAt: subscription.end,
@@ -155,34 +318,30 @@ export class UserSubscriptionManager implements SubscriptionManager {
   }
 
   async updateSubscriptionRecurring(
-    subscription: UserSubscription,
+    subscription: Subscription,
     recurring: SubscriptionRecurring
   ) {
-    return this.db.userSubscription.update({
-      where: { id: subscription.id },
+    // @deprecated backward compatibility
+    await this.db.deprecatedUserSubscription.updateMany({
+      where: {
+        stripeSubscriptionId: subscription.stripeSubscriptionId,
+      },
+      data: { recurring },
+    });
+
+    return this.db.subscription.update({
+      where: {
+        // @ts-expect-error checked outside
+        stripeSubscriptionId: subscription.stripeSubscriptionId,
+      },
       data: { recurring },
     });
   }
 
-  async deleteSubscription({
-    userId,
-    lookupKey,
-    stripeSubscription,
-  }: KnownStripeSubscription) {
-    await this.db.userSubscription.delete({
-      where: {
-        stripeSubscriptionId: stripeSubscription.id,
-      },
-    });
-
-    this.event.emit('user.subscription.canceled', {
-      userId,
-      plan: lookupKey.plan,
-      recurring: lookupKey.recurring,
-    });
-  }
-
-  async validatePrice(price: KnownStripePrice, customer: UserStripeCustomer) {
+  private async getBuildInCoupon(
+    customer: UserStripeCustomer,
+    price: KnownStripePrice
+  ) {
     const strategyStatus = await this.strategyStatus(customer);
 
     // onetime price is allowed for checkout
@@ -192,7 +351,7 @@ export class UserSubscriptionManager implements SubscriptionManager {
       return null;
     }
 
-    let coupon: CouponType | null = null;
+    let coupon: CouponType | undefined;
 
     if (price.lookupKey.variant === SubscriptionVariant.EA) {
       if (price.lookupKey.plan === SubscriptionPlan.Pro) {
@@ -207,69 +366,40 @@ export class UserSubscriptionManager implements SubscriptionManager {
       }
     }
 
-    return {
-      price,
-      coupon,
-    };
+    return coupon;
   }
 
   async saveInvoice(knownInvoice: KnownStripeInvoice) {
     const { userId, lookupKey, stripeInvoice } = knownInvoice;
 
-    const status = stripeInvoice.status ?? 'void';
-    let error: string | boolean | null = null;
+    const invoiceData = await this.transformInvoice(knownInvoice);
 
-    if (status !== 'paid') {
-      if (stripeInvoice.last_finalization_error) {
-        error = stripeInvoice.last_finalization_error.message ?? true;
-      } else if (
-        stripeInvoice.attempt_count > 1 &&
-        stripeInvoice.payment_intent
-      ) {
-        const paymentIntent =
-          typeof stripeInvoice.payment_intent === 'string'
-            ? await this.stripe.paymentIntents.retrieve(
-                stripeInvoice.payment_intent
-              )
-            : stripeInvoice.payment_intent;
-
-        if (paymentIntent.last_payment_error) {
-          error = paymentIntent.last_payment_error.message ?? true;
-        }
-      }
-    }
-
-    // fallback to generic error message
-    if (error === true) {
-      error = 'Payment Error. Please contact support.';
-    }
-
-    const invoice = this.db.userInvoice.upsert({
+    // @deprecated backward compatibility
+    await this.db.deprecatedUserInvoice.upsert({
       where: {
         stripeInvoiceId: stripeInvoice.id,
       },
-      update: {
-        status,
-        link: stripeInvoice.hosted_invoice_url,
-        amount: stripeInvoice.total,
-        currency: stripeInvoice.currency,
-        lastPaymentError: error,
-      },
+      update: omit(invoiceData, 'stripeInvoiceId'),
       create: {
         userId,
+        ...invoiceData,
+      },
+    });
+
+    const invoice = this.db.invoice.upsert({
+      where: {
         stripeInvoiceId: stripeInvoice.id,
-        status,
-        link: stripeInvoice.hosted_invoice_url,
-        reason: stripeInvoice.billing_reason,
-        amount: stripeInvoice.total,
-        currency: stripeInvoice.currency,
-        lastPaymentError: error,
+      },
+      update: omit(invoiceData, 'stripeInvoiceId'),
+      create: {
+        targetId: userId,
+        ...invoiceData,
       },
     });
 
     // onetime and lifetime subscription is a special "subscription" that doesn't get involved with stripe subscription system
     // we track the deals by invoice only.
-    if (status === 'paid') {
+    if (stripeInvoice.status === 'paid') {
       if (lookupKey.recurring === SubscriptionRecurring.Lifetime) {
         await this.saveLifetimeSubscription(knownInvoice);
       } else if (lookupKey.variant === SubscriptionVariant.Onetime) {
@@ -282,45 +412,49 @@ export class UserSubscriptionManager implements SubscriptionManager {
 
   async saveLifetimeSubscription(
     knownInvoice: KnownStripeInvoice
-  ): Promise<UserSubscription> {
+  ): Promise<Subscription> {
     // cancel previous non-lifetime subscription
-    const prevSubscription = await this.db.userSubscription.findUnique({
+    const prevSubscription = await this.db.subscription.findUnique({
       where: {
-        userId_plan: {
-          userId: knownInvoice.userId,
+        targetId_plan: {
+          targetId: knownInvoice.userId,
           plan: SubscriptionPlan.Pro,
         },
       },
     });
 
-    let subscription: UserSubscription;
-    if (prevSubscription && prevSubscription.stripeSubscriptionId) {
-      subscription = await this.db.userSubscription.update({
-        where: {
-          id: prevSubscription.id,
-        },
-        data: {
-          stripeScheduleId: null,
-          stripeSubscriptionId: null,
-          plan: knownInvoice.lookupKey.plan,
-          recurring: SubscriptionRecurring.Lifetime,
-          start: new Date(),
-          end: null,
-          status: SubscriptionStatus.Active,
-          nextBillAt: null,
-        },
-      });
+    let subscription: Subscription;
+    if (prevSubscription) {
+      if (prevSubscription.stripeSubscriptionId) {
+        subscription = await this.db.subscription.update({
+          where: {
+            id: prevSubscription.id,
+          },
+          data: {
+            stripeScheduleId: null,
+            stripeSubscriptionId: null,
+            plan: knownInvoice.lookupKey.plan,
+            recurring: SubscriptionRecurring.Lifetime,
+            start: new Date(),
+            end: null,
+            status: SubscriptionStatus.Active,
+            nextBillAt: null,
+          },
+        });
 
-      await this.stripe.subscriptions.cancel(
-        prevSubscription.stripeSubscriptionId,
-        {
-          prorate: true,
-        }
-      );
+        await this.stripe.subscriptions.cancel(
+          prevSubscription.stripeSubscriptionId,
+          {
+            prorate: true,
+          }
+        );
+      } else {
+        subscription = prevSubscription;
+      }
     } else {
-      subscription = await this.db.userSubscription.create({
+      subscription = await this.db.subscription.create({
         data: {
-          userId: knownInvoice.userId,
+          targetId: knownInvoice.userId,
           stripeSubscriptionId: null,
           plan: knownInvoice.lookupKey.plan,
           recurring: SubscriptionRecurring.Lifetime,
@@ -343,12 +477,13 @@ export class UserSubscriptionManager implements SubscriptionManager {
 
   async saveOnetimePaymentSubscription(
     knownInvoice: KnownStripeInvoice
-  ): Promise<UserSubscription> {
+  ): Promise<Subscription> {
+    // TODO(@forehalo): identify whether the invoice has already been redeemed.
     const { userId, lookupKey } = knownInvoice;
-    const existingSubscription = await this.db.userSubscription.findUnique({
+    const existingSubscription = await this.db.subscription.findUnique({
       where: {
-        userId_plan: {
-          userId,
+        targetId_plan: {
+          targetId: userId,
           plan: lookupKey.plan,
         },
       },
@@ -362,7 +497,7 @@ export class UserSubscriptionManager implements SubscriptionManager {
       60 *
       1000;
 
-    let subscription: UserSubscription;
+    let subscription: Subscription;
 
     // extends the subscription time if exists
     if (existingSubscription) {
@@ -385,16 +520,16 @@ export class UserSubscriptionManager implements SubscriptionManager {
               ),
             };
 
-      subscription = await this.db.userSubscription.update({
+      subscription = await this.db.subscription.update({
         where: {
           id: existingSubscription.id,
         },
         data: period,
       });
     } else {
-      subscription = await this.db.userSubscription.create({
+      subscription = await this.db.subscription.create({
         data: {
-          userId,
+          targetId: userId,
           stripeSubscriptionId: null,
           ...lookupKey,
           start: new Date(),

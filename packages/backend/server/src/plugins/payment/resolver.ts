@@ -12,15 +12,23 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import type { User, UserSubscription } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
+import { GraphQLJSONObject } from 'graphql-scalars';
 import { groupBy } from 'lodash-es';
+import { z } from 'zod';
 
 import { CurrentUser, Public } from '../../core/auth';
+import { Permission, PermissionService } from '../../core/permission';
 import { UserType } from '../../core/user';
-import { AccessDenied, FailedToCheckout, URLHelper } from '../../fundamentals';
-import { Invoice, Subscription } from './manager';
-import { SubscriptionService } from './service';
+import { WorkspaceType } from '../../core/workspaces';
+import {
+  AccessDenied,
+  FailedToCheckout,
+  WorkspaceIdRequiredToUpdateTeamSubscription,
+} from '../../fundamentals';
+import { Invoice, Subscription, WorkspaceSubscriptionManager } from './manager';
+import { CheckoutParams, SubscriptionService } from './service';
 import {
   InvoiceStatus,
   SubscriptionPlan,
@@ -57,7 +65,7 @@ class SubscriptionPrice {
 }
 
 @ObjectType()
-export class SubscriptionType implements Subscription {
+export class SubscriptionType implements Partial<Subscription> {
   @Field(() => SubscriptionPlan, {
     description:
       "The 'Free' plan just exists to be a placeholder and for the type convenience of frontend.\nThere won't actually be a subscription with plan 'Free'",
@@ -107,7 +115,7 @@ export class SubscriptionType implements Subscription {
 }
 
 @ObjectType()
-export class InvoiceType implements Invoice {
+export class InvoiceType implements Partial<Invoice> {
   @Field()
   currency!: string;
 
@@ -138,7 +146,7 @@ export class InvoiceType implements Invoice {
     nullable: true,
     deprecationReason: 'removed',
   })
-  stripeInvoiceId!: string | null;
+  stripeInvoiceId?: string;
 
   @Field(() => SubscriptionPlan, {
     nullable: true,
@@ -154,7 +162,7 @@ export class InvoiceType implements Invoice {
 }
 
 @InputType()
-class CreateCheckoutSessionInput {
+class CreateCheckoutSessionInput implements z.infer<typeof CheckoutParams> {
   @Field(() => SubscriptionRecurring, {
     nullable: true,
     defaultValue: SubscriptionRecurring.Yearly,
@@ -170,7 +178,7 @@ class CreateCheckoutSessionInput {
   @Field(() => SubscriptionVariant, {
     nullable: true,
   })
-  variant?: SubscriptionVariant;
+  variant!: SubscriptionVariant | null;
 
   @Field(() => String, { nullable: true })
   coupon!: string | null;
@@ -180,17 +188,17 @@ class CreateCheckoutSessionInput {
 
   @Field(() => String, {
     nullable: true,
-    deprecationReason: 'use header `Idempotency-Key`',
+    deprecationReason: 'not required anymore',
   })
   idempotencyKey?: string;
+
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  args!: { workspaceId?: string };
 }
 
 @Resolver(() => SubscriptionType)
 export class SubscriptionResolver {
-  constructor(
-    private readonly service: SubscriptionService,
-    private readonly url: URLHelper
-  ) {}
+  constructor(private readonly service: SubscriptionService) {}
 
   @Public()
   @Query(() => [SubscriptionPrice])
@@ -232,7 +240,11 @@ export class SubscriptionResolver {
     }
 
     // extend it when new plans are added
-    const fixedPlans = [SubscriptionPlan.Pro, SubscriptionPlan.AI];
+    const fixedPlans = [
+      SubscriptionPlan.Pro,
+      SubscriptionPlan.AI,
+      SubscriptionPlan.Team,
+    ];
 
     return fixedPlans.reduce((prices, plan) => {
       const price = findPrice(plan);
@@ -255,26 +267,19 @@ export class SubscriptionResolver {
   async createCheckoutSession(
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'input', type: () => CreateCheckoutSessionInput })
-    input: CreateCheckoutSessionInput,
-    @Headers('idempotency-key') idempotencyKey?: string
+    input: CreateCheckoutSessionInput
   ) {
-    const session = await this.service.checkout({
+    const session = await this.service.checkout(input, {
+      plan: input.plan as any,
       user,
-      lookupKey: {
-        plan: input.plan,
-        recurring: input.recurring,
-        variant: input.variant,
-      },
-      promotionCode: input.coupon,
-      redirectUrl: this.url.link(input.successCallbackLink),
-      idempotencyKey,
+      workspaceId: input.args?.workspaceId,
     });
 
     if (!session.url) {
       throw new FailedToCheckout();
     }
 
-    return session.url;
+    return session;
   }
 
   @Mutation(() => String, {
@@ -294,6 +299,8 @@ export class SubscriptionResolver {
       defaultValue: SubscriptionPlan.Pro,
     })
     plan: SubscriptionPlan,
+    @Args({ name: 'workspaceId', type: () => String, nullable: true })
+    workspaceId: string | null,
     @Headers('idempotency-key') idempotencyKey?: string,
     @Args('idempotencyKey', {
       type: () => String,
@@ -302,7 +309,25 @@ export class SubscriptionResolver {
     })
     _?: string
   ) {
-    return this.service.cancelSubscription(user.id, plan, idempotencyKey);
+    if (plan === SubscriptionPlan.Team) {
+      if (!workspaceId) {
+        throw new WorkspaceIdRequiredToUpdateTeamSubscription();
+      }
+
+      return this.service.cancelSubscription(
+        { workspaceId, plan },
+        idempotencyKey
+      );
+    }
+
+    return this.service.cancelSubscription(
+      {
+        targetId: user.id,
+        // @ts-expect-error exam inside
+        plan,
+      },
+      idempotencyKey
+    );
   }
 
   @Mutation(() => SubscriptionType)
@@ -315,6 +340,8 @@ export class SubscriptionResolver {
       defaultValue: SubscriptionPlan.Pro,
     })
     plan: SubscriptionPlan,
+    @Args({ name: 'workspaceId', type: () => String, nullable: true })
+    workspaceId: string | null,
     @Headers('idempotency-key') idempotencyKey?: string,
     @Args('idempotencyKey', {
       type: () => String,
@@ -323,14 +350,30 @@ export class SubscriptionResolver {
     })
     _?: string
   ) {
-    return this.service.resumeSubscription(user.id, plan, idempotencyKey);
+    if (plan === SubscriptionPlan.Team) {
+      if (!workspaceId) {
+        throw new WorkspaceIdRequiredToUpdateTeamSubscription();
+      }
+
+      return this.service.resumeSubscription(
+        { workspaceId, plan },
+        idempotencyKey
+      );
+    }
+
+    return this.service.resumeSubscription(
+      {
+        targetId: user.id,
+        // @ts-expect-error exam inside
+        plan,
+      },
+      idempotencyKey
+    );
   }
 
   @Mutation(() => SubscriptionType)
   async updateSubscriptionRecurring(
     @CurrentUser() user: CurrentUser,
-    @Args({ name: 'recurring', type: () => SubscriptionRecurring })
-    recurring: SubscriptionRecurring,
     @Args({
       name: 'plan',
       type: () => SubscriptionPlan,
@@ -338,6 +381,10 @@ export class SubscriptionResolver {
       defaultValue: SubscriptionPlan.Pro,
     })
     plan: SubscriptionPlan,
+    @Args({ name: 'workspaceId', type: () => String, nullable: true })
+    workspaceId: string | null,
+    @Args({ name: 'recurring', type: () => SubscriptionRecurring })
+    recurring: SubscriptionRecurring,
     @Headers('idempotency-key') idempotencyKey?: string,
     @Args('idempotencyKey', {
       type: () => String,
@@ -346,9 +393,24 @@ export class SubscriptionResolver {
     })
     _?: string
   ) {
+    if (plan === SubscriptionPlan.Team) {
+      if (!workspaceId) {
+        throw new WorkspaceIdRequiredToUpdateTeamSubscription();
+      }
+
+      return this.service.updateSubscriptionRecurring(
+        { workspaceId, plan },
+        recurring,
+        idempotencyKey
+      );
+    }
+
     return this.service.updateSubscriptionRecurring(
-      user.id,
-      plan,
+      {
+        userId: user.id,
+        // @ts-expect-error exam inside
+        plan,
+      },
       recurring,
       idempotencyKey
     );
@@ -363,14 +425,14 @@ export class UserSubscriptionResolver {
   async subscriptions(
     @CurrentUser() me: User,
     @Parent() user: User
-  ): Promise<UserSubscription[]> {
+  ): Promise<Subscription[]> {
     if (me.id !== user.id) {
       throw new AccessDenied();
     }
 
-    const subscriptions = await this.db.userSubscription.findMany({
+    const subscriptions = await this.db.subscription.findMany({
       where: {
-        userId: user.id,
+        targetId: user.id,
         status: SubscriptionStatus.Active,
       },
     });
@@ -389,6 +451,16 @@ export class UserSubscriptionResolver {
     return subscriptions;
   }
 
+  @ResolveField(() => Int, {
+    name: 'invoiceCount',
+    description: 'Get user invoice count',
+  })
+  async invoiceCount(@CurrentUser() user: CurrentUser) {
+    return this.db.invoice.count({
+      where: { targetId: user.id },
+    });
+  }
+
   @ResolveField(() => [InvoiceType])
   async invoices(
     @CurrentUser() me: User,
@@ -401,14 +473,72 @@ export class UserSubscriptionResolver {
       throw new AccessDenied();
     }
 
-    return this.db.userInvoice.findMany({
+    return this.db.invoice.findMany({
       where: {
-        userId: user.id,
+        targetId: user.id,
       },
       take,
       skip,
       orderBy: {
-        id: 'desc',
+        createdAt: 'desc',
+      },
+    });
+  }
+}
+
+@Resolver(() => WorkspaceType)
+export class WorkspaceSubscriptionResolver {
+  constructor(
+    private readonly service: WorkspaceSubscriptionManager,
+    private readonly db: PrismaClient,
+    private readonly permission: PermissionService
+  ) {}
+
+  @ResolveField(() => SubscriptionType, {
+    nullable: true,
+    description: 'The team subscription of the workspace, if exists.',
+  })
+  async subscription(@Parent() workspace: WorkspaceType) {
+    return this.service.getSubscription({
+      plan: SubscriptionPlan.Team,
+      workspaceId: workspace.id,
+    });
+  }
+
+  @ResolveField(() => Int, {
+    name: 'invoiceCount',
+    description: 'Get user invoice count',
+  })
+  async invoiceCount(
+    @CurrentUser() me: CurrentUser,
+    @Parent() workspace: WorkspaceType
+  ) {
+    await this.permission.checkWorkspace(workspace.id, me.id, Permission.Owner);
+    return this.db.invoice.count({
+      where: {
+        targetId: workspace.id,
+      },
+    });
+  }
+
+  @ResolveField(() => [InvoiceType])
+  async invoices(
+    @CurrentUser() me: CurrentUser,
+    @Parent() workspace: WorkspaceType,
+    @Args('take', { type: () => Int, nullable: true, defaultValue: 8 })
+    take: number,
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number
+  ) {
+    await this.permission.checkWorkspace(workspace.id, me.id, Permission.Owner);
+
+    return this.db.invoice.findMany({
+      where: {
+        targetId: workspace.id,
+      },
+      take,
+      skip,
+      orderBy: {
+        createdAt: 'desc',
       },
     });
   }

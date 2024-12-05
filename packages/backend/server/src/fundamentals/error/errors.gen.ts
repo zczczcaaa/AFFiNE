@@ -328,10 +328,26 @@ export class FailedToUpsertSnapshot extends UserFriendlyError {
     super('internal_server_error', 'failed_to_upsert_snapshot', message);
   }
 }
+@ObjectType()
+class UnsupportedSubscriptionPlanDataType {
+  @Field() plan!: string
+}
+
+export class UnsupportedSubscriptionPlan extends UserFriendlyError {
+  constructor(args: UnsupportedSubscriptionPlanDataType, message?: string | ((args: UnsupportedSubscriptionPlanDataType) => string)) {
+    super('invalid_input', 'unsupported_subscription_plan', message, args);
+  }
+}
 
 export class FailedToCheckout extends UserFriendlyError {
   constructor(message?: string) {
     super('internal_server_error', 'failed_to_checkout', message);
+  }
+}
+
+export class InvalidCheckoutParameters extends UserFriendlyError {
+  constructor(message?: string) {
+    super('invalid_input', 'invalid_checkout_parameters', message);
   }
 }
 @ObjectType()
@@ -342,6 +358,12 @@ class SubscriptionAlreadyExistsDataType {
 export class SubscriptionAlreadyExists extends UserFriendlyError {
   constructor(args: SubscriptionAlreadyExistsDataType, message?: string | ((args: SubscriptionAlreadyExistsDataType) => string)) {
     super('resource_already_exists', 'subscription_already_exists', message, args);
+  }
+}
+
+export class InvalidSubscriptionParameters extends UserFriendlyError {
+  constructor(message?: string) {
+    super('invalid_input', 'invalid_subscription_parameters', message);
   }
 }
 @ObjectType()
@@ -358,6 +380,12 @@ export class SubscriptionNotExists extends UserFriendlyError {
 export class SubscriptionHasBeenCanceled extends UserFriendlyError {
   constructor(message?: string) {
     super('action_forbidden', 'subscription_has_been_canceled', message);
+  }
+}
+
+export class SubscriptionHasNotBeenCanceled extends UserFriendlyError {
+  constructor(message?: string) {
+    super('action_forbidden', 'subscription_has_not_been_canceled', message);
   }
 }
 
@@ -397,6 +425,18 @@ export class SubscriptionPlanNotFound extends UserFriendlyError {
 export class CantUpdateOnetimePaymentSubscription extends UserFriendlyError {
   constructor(message?: string) {
     super('action_forbidden', 'cant_update_onetime_payment_subscription', message);
+  }
+}
+
+export class WorkspaceIdRequiredForTeamSubscription extends UserFriendlyError {
+  constructor(message?: string) {
+    super('invalid_input', 'workspace_id_required_for_team_subscription', message);
+  }
+}
+
+export class WorkspaceIdRequiredToUpdateTeamSubscription extends UserFriendlyError {
+  constructor(message?: string) {
+    super('invalid_input', 'workspace_id_required_to_update_team_subscription', message);
   }
 }
 
@@ -587,15 +627,21 @@ export enum ErrorNames {
   PAGE_IS_NOT_PUBLIC,
   FAILED_TO_SAVE_UPDATES,
   FAILED_TO_UPSERT_SNAPSHOT,
+  UNSUPPORTED_SUBSCRIPTION_PLAN,
   FAILED_TO_CHECKOUT,
+  INVALID_CHECKOUT_PARAMETERS,
   SUBSCRIPTION_ALREADY_EXISTS,
+  INVALID_SUBSCRIPTION_PARAMETERS,
   SUBSCRIPTION_NOT_EXISTS,
   SUBSCRIPTION_HAS_BEEN_CANCELED,
+  SUBSCRIPTION_HAS_NOT_BEEN_CANCELED,
   SUBSCRIPTION_EXPIRED,
   SAME_SUBSCRIPTION_RECURRING,
   CUSTOMER_PORTAL_CREATE_FAILED,
   SUBSCRIPTION_PLAN_NOT_FOUND,
   CANT_UPDATE_ONETIME_PAYMENT_SUBSCRIPTION,
+  WORKSPACE_ID_REQUIRED_FOR_TEAM_SUBSCRIPTION,
+  WORKSPACE_ID_REQUIRED_TO_UPDATE_TEAM_SUBSCRIPTION,
   COPILOT_SESSION_NOT_FOUND,
   COPILOT_SESSION_DELETED,
   NO_COPILOT_PROVIDER_AVAILABLE,
@@ -624,5 +670,5 @@ registerEnumType(ErrorNames, {
 export const ErrorDataUnionType = createUnionType({
   name: 'ErrorDataUnion',
   types: () =>
-    [UnknownOauthProviderDataType, MissingOauthQueryParameterDataType, InvalidEmailDataType, InvalidPasswordLengthDataType, SpaceNotFoundDataType, NotInSpaceDataType, AlreadyInSpaceDataType, SpaceAccessDeniedDataType, SpaceOwnerNotFoundDataType, DocNotFoundDataType, DocAccessDeniedDataType, VersionRejectedDataType, InvalidHistoryTimestampDataType, DocHistoryNotFoundDataType, BlobNotFoundDataType, SubscriptionAlreadyExistsDataType, SubscriptionNotExistsDataType, SameSubscriptionRecurringDataType, SubscriptionPlanNotFoundDataType, CopilotMessageNotFoundDataType, CopilotPromptNotFoundDataType, CopilotProviderSideErrorDataType, RuntimeConfigNotFoundDataType, InvalidRuntimeConfigTypeDataType] as const,
+    [UnknownOauthProviderDataType, MissingOauthQueryParameterDataType, InvalidEmailDataType, InvalidPasswordLengthDataType, SpaceNotFoundDataType, NotInSpaceDataType, AlreadyInSpaceDataType, SpaceAccessDeniedDataType, SpaceOwnerNotFoundDataType, DocNotFoundDataType, DocAccessDeniedDataType, VersionRejectedDataType, InvalidHistoryTimestampDataType, DocHistoryNotFoundDataType, BlobNotFoundDataType, UnsupportedSubscriptionPlanDataType, SubscriptionAlreadyExistsDataType, SubscriptionNotExistsDataType, SameSubscriptionRecurringDataType, SubscriptionPlanNotFoundDataType, CopilotMessageNotFoundDataType, CopilotPromptNotFoundDataType, CopilotProviderSideErrorDataType, RuntimeConfigNotFoundDataType, InvalidRuntimeConfigTypeDataType] as const,
 });

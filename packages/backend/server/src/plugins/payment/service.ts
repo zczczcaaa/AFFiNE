@@ -1,12 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type {
-  User,
-  UserInvoice,
-  UserStripeCustomer,
-  UserSubscription,
-} from '@prisma/client';
+import type { User, UserStripeCustomer } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import Stripe from 'stripe';
+import { z } from 'zod';
 
 import { CurrentUser } from '../../core/auth';
 import { FeatureManagementService } from '../../core/features';
@@ -17,29 +13,55 @@ import {
   Config,
   CustomerPortalCreateFailed,
   InternalServerError,
+  InvalidCheckoutParameters,
+  InvalidSubscriptionParameters,
   OnEvent,
   SameSubscriptionRecurring,
-  SubscriptionAlreadyExists,
   SubscriptionExpired,
   SubscriptionHasBeenCanceled,
+  SubscriptionHasNotBeenCanceled,
   SubscriptionNotExists,
   SubscriptionPlanNotFound,
+  UnsupportedSubscriptionPlan,
   UserNotFound,
 } from '../../fundamentals';
-import { UserSubscriptionManager } from './manager';
+import {
+  CheckoutParams,
+  Invoice,
+  Subscription,
+  SubscriptionManager,
+  UserSubscriptionCheckoutArgs,
+  UserSubscriptionIdentity,
+  UserSubscriptionManager,
+  WorkspaceSubscriptionCheckoutArgs,
+  WorkspaceSubscriptionIdentity,
+  WorkspaceSubscriptionManager,
+} from './manager';
 import { ScheduleManager } from './schedule';
 import {
   encodeLookupKey,
   KnownStripeInvoice,
   KnownStripePrice,
+  KnownStripeSubscription,
   LookupKey,
   retriveLookupKeyFromStripePrice,
   retriveLookupKeyFromStripeSubscription,
   SubscriptionPlan,
   SubscriptionRecurring,
   SubscriptionStatus,
-  SubscriptionVariant,
 } from './types';
+
+export const CheckoutExtraArgs = z.union([
+  UserSubscriptionCheckoutArgs,
+  WorkspaceSubscriptionCheckoutArgs,
+]);
+
+export const SubscriptionIdentity = z.union([
+  UserSubscriptionIdentity,
+  WorkspaceSubscriptionIdentity,
+]);
+
+export { CheckoutParams };
 
 @Injectable()
 export class SubscriptionService {
@@ -52,143 +74,86 @@ export class SubscriptionService {
     private readonly db: PrismaClient,
     private readonly feature: FeatureManagementService,
     private readonly user: UserService,
-    private readonly userManager: UserSubscriptionManager
+    private readonly userManager: UserSubscriptionManager,
+    private readonly workspaceManager: WorkspaceSubscriptionManager
   ) {}
 
-  async listPrices(user?: CurrentUser): Promise<KnownStripePrice[]> {
-    const customer = user ? await this.getOrCreateCustomer(user) : undefined;
-
-    // TODO(@forehalo): cache
-    const prices = await this.stripe.prices.list({
-      active: true,
-      limit: 100,
-    });
-
-    return this.userManager.filterPrices(
-      prices.data
-        .map(price => this.parseStripePrice(price))
-        .filter(Boolean) as KnownStripePrice[],
-      customer
-    );
+  private select(plan: SubscriptionPlan): SubscriptionManager {
+    switch (plan) {
+      case SubscriptionPlan.Team:
+        return this.workspaceManager;
+      case SubscriptionPlan.Pro:
+      case SubscriptionPlan.AI:
+        return this.userManager;
+      default:
+        throw new UnsupportedSubscriptionPlan({ plan });
+    }
   }
 
-  async checkout({
-    user,
-    lookupKey,
-    promotionCode,
-    redirectUrl,
-    idempotencyKey,
-  }: {
-    user: CurrentUser;
-    lookupKey: LookupKey;
-    promotionCode?: string | null;
-    redirectUrl: string;
-    idempotencyKey?: string;
-  }) {
+  async listPrices(user?: CurrentUser): Promise<KnownStripePrice[]> {
+    const prices = await this.listStripePrices();
+
+    const customer = user
+      ? await this.getOrCreateCustomer({
+          userId: user.id,
+          userEmail: user.email,
+        })
+      : undefined;
+
+    return [
+      ...(await this.userManager.filterPrices(prices, customer)),
+      ...this.workspaceManager.filterPrices(prices, customer),
+    ];
+  }
+
+  async checkout(
+    params: z.infer<typeof CheckoutParams>,
+    args: z.infer<typeof CheckoutExtraArgs>
+  ) {
+    const { plan, recurring, variant } = params;
+
     if (
       this.config.deploy &&
       this.config.affine.canary &&
-      !this.feature.isStaff(user.email)
+      !this.feature.isStaff(args.user.email)
     ) {
       throw new ActionForbidden();
     }
 
-    const currentSubscription = await this.userManager.getSubscription(
-      user.id,
-      lookupKey.plan
-    );
+    const price = await this.getPrice({
+      plan,
+      recurring,
+      variant: variant ?? null,
+    });
 
-    if (
-      currentSubscription &&
-      // do not allow to re-subscribe unless
-      !(
-        /* current subscription is a onetime subscription and so as the one that's checking out */
-        (
-          (currentSubscription.variant === SubscriptionVariant.Onetime &&
-            lookupKey.variant === SubscriptionVariant.Onetime) ||
-          /* current subscription is normal subscription and is checking-out a lifetime subscription */
-          (currentSubscription.recurring !== SubscriptionRecurring.Lifetime &&
-            currentSubscription.variant !== SubscriptionVariant.Onetime &&
-            lookupKey.recurring === SubscriptionRecurring.Lifetime)
-        )
-      )
-    ) {
-      throw new SubscriptionAlreadyExists({ plan: lookupKey.plan });
-    }
-
-    const price = await this.getPrice(lookupKey);
-    const customer = await this.getOrCreateCustomer(user);
-
-    const priceAndAutoCoupon = price
-      ? await this.userManager.validatePrice(price, customer)
-      : null;
-
-    if (!priceAndAutoCoupon) {
+    if (!price) {
       throw new SubscriptionPlanNotFound({
-        plan: lookupKey.plan,
-        recurring: lookupKey.recurring,
+        plan,
+        recurring,
       });
     }
 
-    let discounts: Stripe.Checkout.SessionCreateParams['discounts'] = [];
+    const manager = this.select(plan);
+    const result = CheckoutExtraArgs.safeParse(args);
 
-    if (priceAndAutoCoupon.coupon) {
-      discounts = [{ coupon: priceAndAutoCoupon.coupon }];
-    } else if (promotionCode) {
-      const coupon = await this.getCouponFromPromotionCode(
-        promotionCode,
-        customer
-      );
-      if (coupon) {
-        discounts = [{ coupon }];
-      }
+    if (!result.success) {
+      throw new InvalidCheckoutParameters();
     }
 
-    return await this.stripe.checkout.sessions.create(
-      {
-        line_items: [
-          {
-            price: priceAndAutoCoupon.price.price.id,
-            quantity: 1,
-          },
-        ],
-        tax_id_collection: {
-          enabled: true,
-        },
-        // discount
-        ...(discounts.length ? { discounts } : { allow_promotion_codes: true }),
-        // mode: 'subscription' or 'payment' for lifetime and onetime payment
-        ...(lookupKey.recurring === SubscriptionRecurring.Lifetime ||
-        lookupKey.variant === SubscriptionVariant.Onetime
-          ? {
-              mode: 'payment',
-              invoice_creation: {
-                enabled: true,
-              },
-            }
-          : {
-              mode: 'subscription',
-            }),
-        success_url: redirectUrl,
-        customer: customer.stripeCustomerId,
-        customer_update: {
-          address: 'auto',
-          name: 'auto',
-        },
-      },
-      { idempotencyKey }
-    );
+    return manager.checkout(price, params, args);
   }
 
   async cancelSubscription(
-    userId: string,
-    plan: SubscriptionPlan,
+    identity: z.infer<typeof SubscriptionIdentity>,
     idempotencyKey?: string
-  ): Promise<UserSubscription> {
-    const subscription = await this.userManager.getSubscription(userId, plan);
+  ): Promise<Subscription> {
+    this.assertSubscriptionIdentity(identity);
+
+    const manager = this.select(identity.plan);
+    const subscription = await manager.getSubscription(identity);
 
     if (!subscription) {
-      throw new SubscriptionNotExists({ plan });
+      throw new SubscriptionNotExists({ plan: identity.plan });
     }
 
     if (!subscription.stripeSubscriptionId) {
@@ -202,7 +167,7 @@ export class SubscriptionService {
     }
 
     // update the subscription in db optimistically
-    const newSubscription = this.userManager.cancelSubscription(subscription);
+    const newSubscription = manager.cancelSubscription(subscription);
 
     // should release the schedule first
     if (subscription.stripeScheduleId) {
@@ -224,18 +189,21 @@ export class SubscriptionService {
   }
 
   async resumeSubscription(
-    userId: string,
-    plan: SubscriptionPlan,
+    identity: z.infer<typeof SubscriptionIdentity>,
     idempotencyKey?: string
-  ): Promise<UserSubscription> {
-    const subscription = await this.userManager.getSubscription(userId, plan);
+  ): Promise<Subscription> {
+    this.assertSubscriptionIdentity(identity);
+
+    const manager = this.select(identity.plan);
+
+    const subscription = await manager.getSubscription(identity);
 
     if (!subscription) {
-      throw new SubscriptionNotExists({ plan });
+      throw new SubscriptionNotExists({ plan: identity.plan });
     }
 
     if (!subscription.canceledAt) {
-      throw new SubscriptionHasBeenCanceled();
+      throw new SubscriptionHasNotBeenCanceled();
     }
 
     if (!subscription.stripeSubscriptionId || !subscription.end) {
@@ -249,8 +217,7 @@ export class SubscriptionService {
     }
 
     // update the subscription in db optimistically
-    const newSubscription =
-      await this.userManager.resumeSubscription(subscription);
+    const newSubscription = await manager.resumeSubscription(subscription);
 
     if (subscription.stripeScheduleId) {
       const manager = await this.scheduleManager.fromSchedule(
@@ -269,15 +236,17 @@ export class SubscriptionService {
   }
 
   async updateSubscriptionRecurring(
-    userId: string,
-    plan: SubscriptionPlan,
+    identity: z.infer<typeof SubscriptionIdentity>,
     recurring: SubscriptionRecurring,
     idempotencyKey?: string
-  ): Promise<UserSubscription> {
-    const subscription = await this.userManager.getSubscription(userId, plan);
+  ): Promise<Subscription> {
+    this.assertSubscriptionIdentity(identity);
+
+    const manager = this.select(identity.plan);
+    const subscription = await manager.getSubscription(identity);
 
     if (!subscription) {
-      throw new SubscriptionNotExists({ plan });
+      throw new SubscriptionNotExists({ plan: identity.plan });
     }
 
     if (!subscription.stripeSubscriptionId) {
@@ -293,25 +262,29 @@ export class SubscriptionService {
     }
 
     const price = await this.getPrice({
-      plan,
+      plan: identity.plan,
       recurring,
+      variant: null,
     });
 
     if (!price) {
-      throw new SubscriptionPlanNotFound({ plan, recurring });
+      throw new SubscriptionPlanNotFound({
+        plan: identity.plan,
+        recurring,
+      });
     }
 
     // update the subscription in db optimistically
-    const newSubscription = this.userManager.updateSubscriptionRecurring(
+    const newSubscription = manager.updateSubscriptionRecurring(
       subscription,
       recurring
     );
 
-    const manager = await this.scheduleManager.fromSubscription(
+    const scheduleManager = await this.scheduleManager.fromSubscription(
       subscription.stripeSubscriptionId
     );
 
-    await manager.update(price.price.id, idempotencyKey);
+    await scheduleManager.update(price.price.id, idempotencyKey);
 
     return newSubscription;
   }
@@ -339,14 +312,14 @@ export class SubscriptionService {
     }
   }
 
-  async saveStripeInvoice(stripeInvoice: Stripe.Invoice): Promise<UserInvoice> {
+  async saveStripeInvoice(stripeInvoice: Stripe.Invoice): Promise<Invoice> {
     const knownInvoice = await this.parseStripeInvoice(stripeInvoice);
 
     if (!knownInvoice) {
       throw new InternalServerError('Failed to parse stripe invoice.');
     }
 
-    return this.userManager.saveInvoice(knownInvoice);
+    return this.select(knownInvoice.lookupKey.plan).saveInvoice(knownInvoice);
   }
 
   async saveStripeSubscription(subscription: Stripe.Subscription) {
@@ -360,10 +333,12 @@ export class SubscriptionService {
       subscription.status === SubscriptionStatus.Active ||
       subscription.status === SubscriptionStatus.Trialing;
 
+    const manager = this.select(knownSubscription.lookupKey.plan);
+
     if (!isPlanActive) {
-      await this.userManager.deleteSubscription(knownSubscription);
+      await manager.deleteStripeSubscription(knownSubscription);
     } else {
-      await this.userManager.saveSubscription(knownSubscription);
+      await manager.saveStripeSubscription(knownSubscription);
     }
   }
 
@@ -374,19 +349,26 @@ export class SubscriptionService {
       throw new InternalServerError('Failed to parse stripe subscription.');
     }
 
-    await this.userManager.deleteSubscription(knownSubscription);
+    const manager = this.select(knownSubscription.lookupKey.plan);
+    await manager.deleteStripeSubscription(knownSubscription);
   }
 
-  async getOrCreateCustomer(user: CurrentUser): Promise<UserStripeCustomer> {
+  async getOrCreateCustomer({
+    userId,
+    userEmail,
+  }: {
+    userId: string;
+    userEmail: string;
+  }): Promise<UserStripeCustomer> {
     let customer = await this.db.userStripeCustomer.findUnique({
       where: {
-        userId: user.id,
+        userId,
       },
     });
 
     if (!customer) {
       const stripeCustomersList = await this.stripe.customers.list({
-        email: user.email,
+        email: userEmail,
         limit: 1,
       });
 
@@ -395,13 +377,13 @@ export class SubscriptionService {
         stripeCustomer = stripeCustomersList.data[0];
       } else {
         stripeCustomer = await this.stripe.customers.create({
-          email: user.email,
+          email: userEmail,
         });
       }
 
       customer = await this.db.userStripeCustomer.create({
         data: {
-          userId: user.id,
+          userId,
           stripeCustomerId: stripeCustomer.id,
         },
       });
@@ -467,6 +449,17 @@ export class SubscriptionService {
     return user.id;
   }
 
+  private async listStripePrices(): Promise<KnownStripePrice[]> {
+    const prices = await this.stripe.prices.list({
+      active: true,
+      limit: 100,
+    });
+
+    return prices.data
+      .map(price => this.parseStripePrice(price))
+      .filter(Boolean) as KnownStripePrice[];
+  }
+
   private async getPrice(
     lookupKey: LookupKey
   ): Promise<KnownStripePrice | null> {
@@ -482,35 +475,6 @@ export class SubscriptionService {
           lookupKey,
           price,
         }
-      : null;
-  }
-
-  private async getCouponFromPromotionCode(
-    userFacingPromotionCode: string,
-    customer: UserStripeCustomer
-  ) {
-    const list = await this.stripe.promotionCodes.list({
-      code: userFacingPromotionCode,
-      active: true,
-      limit: 1,
-    });
-
-    const code = list.data[0];
-    if (!code) {
-      return null;
-    }
-
-    // the coupons are always bound to products, we need to check it first
-    // but the logic would be too complicated, and stripe will complain if the code is not applicable when checking out
-    // It's safe to skip the check here
-    // code.coupon.applies_to.products.forEach()
-
-    // check if the code is bound to a specific customer
-    return !code.customer ||
-      (typeof code.customer === 'string'
-        ? code.customer === customer.stripeCustomerId
-        : code.customer.id === customer.stripeCustomerId)
-      ? code.coupon.id
       : null;
   }
 
@@ -549,10 +513,13 @@ export class SubscriptionService {
       userId: user.id,
       stripeInvoice: invoice,
       lookupKey,
+      metadata: invoice.subscription_details?.metadata ?? {},
     };
   }
 
-  private async parseStripeSubscription(subscription: Stripe.Subscription) {
+  private async parseStripeSubscription(
+    subscription: Stripe.Subscription
+  ): Promise<KnownStripeSubscription | null> {
     const lookupKey = retriveLookupKeyFromStripeSubscription(subscription);
 
     if (!lookupKey) {
@@ -569,6 +536,8 @@ export class SubscriptionService {
       userId,
       lookupKey,
       stripeSubscription: subscription,
+      quantity: subscription.items.data[0]?.quantity ?? 1,
+      metadata: subscription.metadata,
     };
   }
 
@@ -581,5 +550,15 @@ export class SubscriptionService {
           price,
         }
       : null;
+  }
+
+  private assertSubscriptionIdentity(
+    args: z.infer<typeof SubscriptionIdentity>
+  ) {
+    const result = SubscriptionIdentity.safeParse(args);
+
+    if (!result.success) {
+      throw new InvalidSubscriptionParameters();
+    }
   }
 }

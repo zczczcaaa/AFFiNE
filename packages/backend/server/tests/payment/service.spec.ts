@@ -14,7 +14,7 @@ import {
   FeatureManagementService,
 } from '../../src/core/features';
 import { EventEmitter } from '../../src/fundamentals';
-import { Config, ConfigModule } from '../../src/fundamentals/config';
+import { Config, ConfigModule, Runtime } from '../../src/fundamentals/config';
 import { SubscriptionService } from '../../src/plugins/payment/service';
 import {
   CouponType,
@@ -32,6 +32,8 @@ const PRO_LIFETIME = `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Lifetime}`
 const PRO_EA_YEARLY = `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.EA}`;
 const AI_YEARLY = `${SubscriptionPlan.AI}_${SubscriptionRecurring.Yearly}`;
 const AI_YEARLY_EA = `${SubscriptionPlan.AI}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.EA}`;
+const TEAM_MONTHLY = `${SubscriptionPlan.Team}_${SubscriptionRecurring.Monthly}`;
+const TEAM_YEARLY = `${SubscriptionPlan.Team}_${SubscriptionRecurring.Yearly}`;
 // prices for code redeeming
 const PRO_MONTHLY_CODE = `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Monthly}_${SubscriptionVariant.Onetime}`;
 const PRO_YEARLY_CODE = `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.Onetime}`;
@@ -107,6 +109,18 @@ const PRICES = {
     id: AI_YEARLY_CODE,
     lookup_key: AI_YEARLY_CODE,
   },
+  [TEAM_MONTHLY]: {
+    unit_amount: 1500,
+    currency: 'usd',
+    id: TEAM_MONTHLY,
+    lookup_key: TEAM_MONTHLY,
+  },
+  [TEAM_YEARLY]: {
+    unit_amount: 14400,
+    currency: 'usd',
+    id: TEAM_YEARLY,
+    lookup_key: TEAM_YEARLY,
+  },
 } as any as Record<string, Stripe.Price>;
 
 const sub: Stripe.Subscription = {
@@ -139,6 +153,7 @@ const sub: Stripe.Subscription = {
   trial_end: null,
   trial_start: null,
   schedule: null,
+  metadata: {},
 };
 
 const test = ava as TestFn<{
@@ -148,6 +163,7 @@ const test = ava as TestFn<{
   service: SubscriptionService;
   event: Sinon.SinonStubbedInstance<EventEmitter>;
   feature: Sinon.SinonStubbedInstance<FeatureManagementService>;
+  runtime: Sinon.SinonStubbedInstance<Runtime>;
   stripe: {
     customers: Sinon.SinonStubbedInstance<Stripe.CustomersResource>;
     prices: Sinon.SinonStubbedInstance<Stripe.PricesResource>;
@@ -156,6 +172,7 @@ const test = ava as TestFn<{
     checkout: {
       sessions: Sinon.SinonStubbedInstance<Stripe.Checkout.SessionsResource>;
     };
+    promotionCodes: Sinon.SinonStubbedInstance<Stripe.PromotionCodesResource>;
   };
 }>;
 
@@ -192,12 +209,14 @@ test.before(async t => {
       m.overrideProvider(EventEmitter).useValue(
         Sinon.createStubInstance(EventEmitter)
       );
+      m.overrideProvider(Runtime).useValue(Sinon.createStubInstance(Runtime));
     },
   });
 
   t.context.event = app.get(EventEmitter);
   t.context.service = app.get(SubscriptionService);
   t.context.feature = app.get(FeatureManagementService);
+  t.context.runtime = app.get(Runtime);
   t.context.db = app.get(PrismaClient);
   t.context.app = app;
 
@@ -210,6 +229,7 @@ test.before(async t => {
     checkout: {
       sessions: Sinon.stub(stripe.checkout.sessions),
     },
+    promotionCodes: Sinon.stub(stripe.promotionCodes),
   };
 
   t.context.stripe = stripeStubs;
@@ -219,10 +239,17 @@ test.beforeEach(async t => {
   const { db, app, stripe } = t.context;
   Sinon.reset();
   await initTestingDB(db);
-  // TODO(@forehalo): workaround for runtime module, need to init all runtime configs in [initTestingDB]
-  await app.get(Config).runtime.onModuleInit();
+  t.context.runtime.fetch
+    .withArgs('plugins.payment/showLifetimePrice')
+    .resolves(true);
   t.context.u1 = await app.get(AuthService).signUp('u1@affine.pro', '1');
 
+  await db.workspace.create({
+    data: {
+      id: 'ws_1',
+      public: false,
+    },
+  });
   await db.userStripeCustomer.create({
     data: {
       userId: t.context.u1.id,
@@ -266,6 +293,15 @@ test('should list normal prices for authenticated user', async t => {
   feature.isEarlyAccessUser.withArgs(u1.id, EarlyAccessType.AI).resolves(false);
 
   const prices = await service.listPrices(u1);
+
+  t.snapshot(prices.map(p => encodeLookupKey(p.lookupKey)));
+});
+
+test('should not show lifetime price if not enabled', async t => {
+  const { service, runtime } = t.context;
+  runtime.fetch.withArgs('plugins.payment/showLifetimePrice').resolves(false);
+
+  const prices = await service.listPrices(t.context.u1);
 
   t.snapshot(prices.map(p => encodeLookupKey(p.lookupKey)));
 });
@@ -368,9 +404,9 @@ test('should list normal prices for ai ea user with old subscriptions', async t 
 test('should throw if user has subscription already', async t => {
   const { service, u1, db } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: 'sub_1',
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Monthly,
@@ -382,15 +418,14 @@ test('should throw if user has subscription already', async t => {
 
   await t.throwsAsync(
     () =>
-      service.checkout({
-        user: u1,
-        lookupKey: {
+      service.checkout(
+        {
           plan: SubscriptionPlan.Pro,
           recurring: SubscriptionRecurring.Monthly,
+          successCallbackLink: '',
         },
-        redirectUrl: '',
-        idempotencyKey: '',
-      }),
+        { user: u1 }
+      ),
     { message: 'You have already subscribed to the pro plan.' }
   );
 });
@@ -401,15 +436,14 @@ test('should get correct pro plan price for checking out', async t => {
   {
     feature.isEarlyAccessUser.resolves(false);
 
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.Pro,
         recurring: SubscriptionRecurring.Monthly,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: PRO_MONTHLY,
@@ -420,15 +454,14 @@ test('should get correct pro plan price for checking out', async t => {
   // ea user, but monthly
   {
     feature.isEarlyAccessUser.resolves(true);
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.Pro,
         recurring: SubscriptionRecurring.Monthly,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: PRO_MONTHLY,
@@ -439,16 +472,15 @@ test('should get correct pro plan price for checking out', async t => {
   // ea user, yearly
   {
     feature.isEarlyAccessUser.resolves(true);
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.Pro,
         recurring: SubscriptionRecurring.Yearly,
         variant: SubscriptionVariant.EA,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: PRO_EA_YEARLY,
@@ -478,15 +510,14 @@ test('should get correct pro plan price for checking out', async t => {
       ],
     });
 
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.Pro,
         recurring: SubscriptionRecurring.Yearly,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: PRO_YEARLY,
@@ -495,16 +526,15 @@ test('should get correct pro plan price for checking out', async t => {
 
     await t.throwsAsync(
       () =>
-        service.checkout({
-          user: u1,
-          lookupKey: {
+        service.checkout(
+          {
             plan: SubscriptionPlan.Pro,
             recurring: SubscriptionRecurring.Yearly,
             variant: SubscriptionVariant.EA,
+            successCallbackLink: '',
           },
-          redirectUrl: '',
-          idempotencyKey: '',
-        }),
+          { user: u1 }
+        ),
       {
         message: 'You are trying to access a unknown subscription plan.',
       }
@@ -517,15 +547,14 @@ test('should get correct pro plan price for checking out', async t => {
     const config = app.get(Config);
     await config.runtime.set('plugins.payment/showLifetimePrice', true);
 
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.Pro,
         recurring: SubscriptionRecurring.Lifetime,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: PRO_LIFETIME,
@@ -541,15 +570,14 @@ test('should get correct ai plan price for checking out', async t => {
   {
     feature.isEarlyAccessUser.resolves(false);
 
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.AI,
         recurring: SubscriptionRecurring.Yearly,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: AI_YEARLY,
@@ -561,16 +589,15 @@ test('should get correct ai plan price for checking out', async t => {
   {
     feature.isEarlyAccessUser.resolves(true);
 
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.AI,
         recurring: SubscriptionRecurring.Yearly,
         variant: SubscriptionVariant.EA,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: AI_YEARLY_EA,
@@ -603,15 +630,14 @@ test('should get correct ai plan price for checking out', async t => {
       ],
     });
 
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.AI,
         recurring: SubscriptionRecurring.Yearly,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: AI_YEARLY,
@@ -620,16 +646,15 @@ test('should get correct ai plan price for checking out', async t => {
 
     await t.throwsAsync(
       () =>
-        service.checkout({
-          user: u1,
-          lookupKey: {
+        service.checkout(
+          {
             plan: SubscriptionPlan.AI,
             recurring: SubscriptionRecurring.Yearly,
             variant: SubscriptionVariant.EA,
+            successCallbackLink: '',
           },
-          redirectUrl: '',
-          idempotencyKey: '',
-        }),
+          { user: u1 }
+        ),
       {
         message: 'You are trying to access a unknown subscription plan.',
       }
@@ -645,15 +670,14 @@ test('should get correct ai plan price for checking out', async t => {
     // @ts-expect-error stub
     stripe.subscriptions.list.resolves({ data: [] });
 
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.AI,
         recurring: SubscriptionRecurring.Yearly,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: AI_YEARLY,
@@ -686,15 +710,14 @@ test('should get correct ai plan price for checking out', async t => {
       ],
     });
 
-    await service.checkout({
-      user: u1,
-      lookupKey: {
+    await service.checkout(
+      {
         plan: SubscriptionPlan.AI,
         recurring: SubscriptionRecurring.Yearly,
+        successCallbackLink: '',
       },
-      redirectUrl: '',
-      idempotencyKey: '',
-    });
+      { user: u1 }
+    );
 
     t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
       price: AI_YEARLY,
@@ -706,19 +729,26 @@ test('should get correct ai plan price for checking out', async t => {
 test('should apply user coupon for checking out', async t => {
   const { service, u1, stripe } = t.context;
 
-  // @ts-expect-error private member
-  Sinon.stub(service, 'getCouponFromPromotionCode').resolves('coupon_1');
+  stripe.promotionCodes.list.resolves({
+    data: [
+      {
+        // @ts-expect-error mock
+        coupon: {
+          id: 'coupon_1',
+        },
+      },
+    ],
+  });
 
-  await service.checkout({
-    user: u1,
-    lookupKey: {
+  await service.checkout(
+    {
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Monthly,
+      successCallbackLink: '',
+      coupon: 'test',
     },
-    redirectUrl: '',
-    idempotencyKey: '',
-    promotionCode: 'test',
-  });
+    { user: u1 }
+  );
 
   t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
     price: PRO_MONTHLY,
@@ -732,8 +762,8 @@ test('should be able to create subscription', async t => {
 
   await service.saveStripeSubscription(sub);
 
-  const subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   t.true(
@@ -764,8 +794,8 @@ test('should be able to update subscription', async t => {
     })
   );
 
-  const subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   t.is(subInDB?.status, SubscriptionStatus.Active);
@@ -789,8 +819,8 @@ test('should be able to delete subscription', async t => {
     })
   );
 
-  const subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   t.is(subInDB, null);
@@ -799,9 +829,9 @@ test('should be able to delete subscription', async t => {
 test('should be able to cancel subscription', async t => {
   const { service, db, u1, stripe } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: 'sub_1',
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Yearly,
@@ -817,7 +847,10 @@ test('should be able to cancel subscription', async t => {
     canceled_at: 1714118236,
   } as any);
 
-  const subInDB = await service.cancelSubscription(u1.id, SubscriptionPlan.Pro);
+  const subInDB = await service.cancelSubscription({
+    userId: u1.id,
+    plan: SubscriptionPlan.Pro,
+  });
 
   t.true(
     stripe.subscriptions.update.calledOnceWith('sub_1', {
@@ -831,9 +864,9 @@ test('should be able to cancel subscription', async t => {
 test('should be able to resume subscription', async t => {
   const { service, db, u1, stripe } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: 'sub_1',
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Yearly,
@@ -846,7 +879,10 @@ test('should be able to resume subscription', async t => {
 
   stripe.subscriptions.update.resolves(sub as any);
 
-  const subInDB = await service.resumeSubscription(u1.id, SubscriptionPlan.Pro);
+  const subInDB = await service.resumeSubscription({
+    userId: u1.id,
+    plan: SubscriptionPlan.Pro,
+  });
 
   t.true(
     stripe.subscriptions.update.calledOnceWith('sub_1', {
@@ -868,10 +904,21 @@ const subscriptionSchedule: Stripe.SubscriptionSchedule = {
         // @ts-expect-error mock
         {
           price: PRO_MONTHLY,
+          quantity: 1,
         },
       ],
-      start_date: 1714118236,
-      end_date: 1745654236,
+      start_date: Math.floor(Date.now() / 1000),
+      end_date: Math.floor((Date.now() + 30 * 24 * 60 * 60 * 1000) / 1000),
+    },
+    {
+      items: [
+        // @ts-expect-error mock
+        {
+          price: PRO_YEARLY,
+          quantity: 1,
+        },
+      ],
+      start_date: Math.floor((Date.now() + 30 * 24 * 60 * 60 * 1000) / 1000),
     },
   ],
 };
@@ -879,9 +926,9 @@ const subscriptionSchedule: Stripe.SubscriptionSchedule = {
 test('should be able to update recurring', async t => {
   const { service, db, u1, stripe } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: 'sub_1',
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Monthly,
@@ -892,51 +939,54 @@ test('should be able to update recurring', async t => {
   });
 
   // 1. turn a subscription into a subscription schedule
-  // 2. update the schedule
-  //   2.1 update the current phase with an end date
-  //   2.2 add a new phase with a start date
-
+  // 2. update the current phase with an end date
   stripe.subscriptions.retrieve.resolves(sub as any);
   stripe.subscriptionSchedules.create.resolves(subscriptionSchedule as any);
   stripe.subscriptionSchedules.update.resolves(subscriptionSchedule as any);
 
   await service.updateSubscriptionRecurring(
-    u1.id,
-    SubscriptionPlan.Pro,
+    {
+      userId: u1.id,
+      plan: SubscriptionPlan.Pro,
+    },
     SubscriptionRecurring.Yearly
   );
 
-  t.true(stripe.subscriptionSchedules.update.calledOnce);
-  const arg = stripe.subscriptionSchedules.update.firstCall.args;
-  t.is(arg[0], subscriptionSchedule.id);
-  t.deepEqual(arg[1], {
-    phases: [
+  t.true(
+    stripe.subscriptionSchedules.update.calledOnceWith(
+      subscriptionSchedule.id,
       {
-        items: [
+        phases: [
           {
-            price: PRO_MONTHLY,
+            items: [
+              {
+                price: PRO_MONTHLY,
+                quantity: 1,
+              },
+            ],
+            start_date: subscriptionSchedule.phases[0].start_date,
+            end_date: subscriptionSchedule.phases[0].end_date,
+          },
+          {
+            items: [
+              {
+                price: PRO_YEARLY,
+                quantity: 1,
+              },
+            ],
           },
         ],
-        start_date: 1714118236,
-        end_date: 1745654236,
-      },
-      {
-        items: [
-          {
-            price: PRO_YEARLY,
-          },
-        ],
-      },
-    ],
-  });
+      }
+    )
+  );
 });
 
 test('should release the schedule if the new recurring is the same as the current phase', async t => {
   const { service, db, u1, stripe } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: 'sub_1',
       stripeScheduleId: 'sub_sched_1',
       plan: SubscriptionPlan.Pro,
@@ -953,15 +1003,129 @@ test('should release the schedule if the new recurring is the same as the curren
   } as any);
   stripe.subscriptionSchedules.retrieve.resolves(subscriptionSchedule as any);
 
-  await service.updateSubscriptionRecurring(
-    u1.id,
-    SubscriptionPlan.Pro,
+  const subInDB = await service.updateSubscriptionRecurring(
+    {
+      userId: u1.id,
+      plan: SubscriptionPlan.Pro,
+    },
     SubscriptionRecurring.Monthly
   );
 
   t.true(
     stripe.subscriptionSchedules.release.calledOnceWith(subscriptionSchedule.id)
   );
+
+  t.is(subInDB.recurring, SubscriptionRecurring.Monthly);
+});
+
+test('should be able to cancel subscription with schedule', async t => {
+  const { service, u1, stripe } = t.context;
+
+  await service.saveStripeSubscription({
+    ...sub,
+    schedule: 'sub_sched_1',
+  });
+
+  stripe.subscriptionSchedules.retrieve.resolves(subscriptionSchedule as any);
+
+  const subInDB = await service.cancelSubscription({
+    userId: u1.id,
+    plan: SubscriptionPlan.Pro,
+  });
+
+  t.true(
+    stripe.subscriptionSchedules.update.calledOnceWith(
+      subscriptionSchedule.id,
+      {
+        phases: [
+          {
+            items: [
+              {
+                price: PRO_MONTHLY,
+                quantity: 1,
+              },
+            ],
+            coupon: undefined,
+            start_date: subscriptionSchedule.phases[0].start_date,
+            end_date: subscriptionSchedule.phases[0].end_date,
+            metadata: {
+              next_coupon: null,
+              next_price: PRO_YEARLY,
+            },
+          },
+        ],
+        end_behavior: 'cancel',
+      }
+    )
+  );
+
+  t.is(subInDB.status, SubscriptionStatus.Active);
+  t.truthy(subInDB.canceledAt);
+  t.falsy(subInDB.nextBillAt);
+});
+
+test('should be able to resume subscription with schedule', async t => {
+  const { service, u1, stripe } = t.context;
+
+  await service.saveStripeSubscription({
+    ...sub,
+    canceled_at: 1714118236,
+    schedule: 'sub_sched_1',
+  });
+
+  stripe.subscriptionSchedules.retrieve.resolves({
+    ...subscriptionSchedule,
+    phases: [
+      {
+        items: [
+          // @ts-expect-error mock
+          {
+            price: PRO_MONTHLY,
+            quantity: 1,
+          },
+        ],
+        start_date: subscriptionSchedule.phases[0].start_date,
+        end_date: subscriptionSchedule.phases[0].end_date,
+        metadata: {
+          next_price: PRO_YEARLY,
+        },
+      },
+    ],
+    end_behavior: 'cancel',
+  });
+
+  const subInDB = await service.resumeSubscription({
+    userId: u1.id,
+    plan: SubscriptionPlan.Pro,
+  });
+
+  t.true(
+    stripe.subscriptionSchedules.update.calledOnceWith(
+      subscriptionSchedule.id,
+      {
+        phases: [
+          {
+            items: [{ price: PRO_MONTHLY, quantity: 1 }],
+            start_date: subscriptionSchedule.phases[0].start_date,
+            end_date: subscriptionSchedule.phases[0].end_date,
+            metadata: {
+              next_price: null,
+              next_coupon: null,
+            },
+          },
+          {
+            items: [{ price: PRO_YEARLY, quantity: 1 }],
+            coupon: undefined,
+          },
+        ],
+        end_behavior: 'release',
+      }
+    )
+  );
+
+  t.is(subInDB.status, SubscriptionStatus.Active);
+  t.falsy(subInDB.canceledAt);
+  t.truthy(subInDB.nextBillAt);
 });
 
 // ============== Lifetime Subscription ===============
@@ -1023,38 +1187,40 @@ const onetimeYearlyInvoice: Stripe.Invoice = {
 };
 
 test('should not be able to checkout for lifetime recurring if not enabled', async t => {
-  const { service, u1, app } = t.context;
-  await app.get(Config).runtime.set('plugins.payment/showLifetimePrice', false);
+  const { service, u1, runtime } = t.context;
+  runtime.fetch.withArgs('plugins.payment/showLifetimePrice').resolves(false);
 
   await t.throwsAsync(
     () =>
-      service.checkout({
-        user: u1,
-        lookupKey: {
+      service.checkout(
+        {
           plan: SubscriptionPlan.Pro,
           recurring: SubscriptionRecurring.Lifetime,
+          variant: null,
+          successCallbackLink: '',
         },
-        redirectUrl: '',
-        idempotencyKey: '',
-      }),
+        {
+          user: u1,
+        }
+      ),
     { message: 'You are trying to access a unknown subscription plan.' }
   );
 });
 
 test('should be able to checkout for lifetime recurring', async t => {
-  const { service, u1, app, stripe } = t.context;
-  const config = app.get(Config);
-  await config.runtime.set('plugins.payment/showLifetimePrice', true);
+  const { service, u1, stripe } = t.context;
 
-  await service.checkout({
-    user: u1,
-    lookupKey: {
+  await service.checkout(
+    {
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Lifetime,
+      variant: null,
+      successCallbackLink: '',
     },
-    redirectUrl: '',
-    idempotencyKey: '',
-  });
+    {
+      user: u1,
+    }
+  );
 
   t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
     price: PRO_LIFETIME,
@@ -1065,9 +1231,9 @@ test('should be able to checkout for lifetime recurring', async t => {
 test('should not be able to checkout for lifetime recurring if already subscribed', async t => {
   const { service, u1, db } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: null,
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Lifetime,
@@ -1078,20 +1244,22 @@ test('should not be able to checkout for lifetime recurring if already subscribe
 
   await t.throwsAsync(
     () =>
-      service.checkout({
-        user: u1,
-        lookupKey: {
+      service.checkout(
+        {
           plan: SubscriptionPlan.Pro,
           recurring: SubscriptionRecurring.Lifetime,
+          variant: null,
+          successCallbackLink: '',
         },
-        redirectUrl: '',
-        idempotencyKey: '',
-      }),
+        {
+          user: u1,
+        }
+      ),
     { message: 'You have already subscribed to the pro plan.' }
   );
 
-  await db.userSubscription.updateMany({
-    where: { userId: u1.id },
+  await db.subscription.updateMany({
+    where: { targetId: u1.id },
     data: {
       stripeSubscriptionId: null,
       recurring: SubscriptionRecurring.Monthly,
@@ -1102,15 +1270,17 @@ test('should not be able to checkout for lifetime recurring if already subscribe
 
   await t.throwsAsync(
     () =>
-      service.checkout({
-        user: u1,
-        lookupKey: {
+      service.checkout(
+        {
           plan: SubscriptionPlan.Pro,
           recurring: SubscriptionRecurring.Lifetime,
+          variant: null,
+          successCallbackLink: '',
         },
-        redirectUrl: '',
-        idempotencyKey: '',
-      }),
+        {
+          user: u1,
+        }
+      ),
     { message: 'You have already subscribed to the pro plan.' }
   );
 });
@@ -1121,8 +1291,8 @@ test('should be able to subscribe to lifetime recurring', async t => {
 
   await service.saveStripeInvoice(lifetimeInvoice);
 
-  const subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   t.true(
@@ -1141,9 +1311,9 @@ test('should be able to subscribe to lifetime recurring', async t => {
 test('should be able to subscribe to lifetime recurring with old subscription', async t => {
   const { service, stripe, db, u1, event } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: 'sub_1',
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Monthly,
@@ -1156,8 +1326,8 @@ test('should be able to subscribe to lifetime recurring with old subscription', 
   stripe.subscriptions.cancel.resolves(sub as any);
   await service.saveStripeInvoice(lifetimeInvoice);
 
-  const subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   t.true(
@@ -1176,9 +1346,9 @@ test('should be able to subscribe to lifetime recurring with old subscription', 
 test('should not be able to cancel lifetime subscription', async t => {
   const { service, db, u1 } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Lifetime,
       status: SubscriptionStatus.Active,
@@ -1188,7 +1358,11 @@ test('should not be able to cancel lifetime subscription', async t => {
   });
 
   await t.throwsAsync(
-    () => service.cancelSubscription(u1.id, SubscriptionPlan.Pro),
+    () =>
+      service.cancelSubscription({
+        plan: SubscriptionPlan.Pro,
+        userId: u1.id,
+      }),
     { message: 'Onetime payment subscription cannot be canceled.' }
   );
 });
@@ -1196,9 +1370,9 @@ test('should not be able to cancel lifetime subscription', async t => {
 test('should not be able to update lifetime recurring', async t => {
   const { service, db, u1 } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Lifetime,
       status: SubscriptionStatus.Active,
@@ -1210,8 +1384,10 @@ test('should not be able to update lifetime recurring', async t => {
   await t.throwsAsync(
     () =>
       service.updateSubscriptionRecurring(
-        u1.id,
-        SubscriptionPlan.Pro,
+        {
+          plan: SubscriptionPlan.Pro,
+          userId: u1.id,
+        },
         SubscriptionRecurring.Monthly
       ),
     { message: 'You cannot update an onetime payment subscription.' }
@@ -1222,16 +1398,17 @@ test('should not be able to update lifetime recurring', async t => {
 test('should be able to checkout for onetime payment', async t => {
   const { service, u1, stripe } = t.context;
 
-  await service.checkout({
-    user: u1,
-    lookupKey: {
+  await service.checkout(
+    {
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Monthly,
       variant: SubscriptionVariant.Onetime,
+      successCallbackLink: '',
     },
-    redirectUrl: '',
-    idempotencyKey: '',
-  });
+    {
+      user: u1,
+    }
+  );
 
   t.true(stripe.checkout.sessions.create.calledOnce);
   const arg = stripe.checkout.sessions.create.firstCall
@@ -1246,9 +1423,9 @@ test('should be able to checkout for onetime payment', async t => {
 test('should be able to checkout onetime payment if previous subscription is onetime', async t => {
   const { service, u1, stripe, db } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: 'sub_1',
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Monthly,
@@ -1259,16 +1436,17 @@ test('should be able to checkout onetime payment if previous subscription is one
     },
   });
 
-  await service.checkout({
-    user: u1,
-    lookupKey: {
+  await service.checkout(
+    {
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Monthly,
       variant: SubscriptionVariant.Onetime,
+      successCallbackLink: '',
     },
-    redirectUrl: '',
-    idempotencyKey: '',
-  });
+    {
+      user: u1,
+    }
+  );
 
   t.true(stripe.checkout.sessions.create.calledOnce);
   const arg = stripe.checkout.sessions.create.firstCall
@@ -1283,9 +1461,9 @@ test('should be able to checkout onetime payment if previous subscription is one
 test('should not be able to checkout out onetime payment if previous subscription is not onetime', async t => {
   const { service, u1, db } = t.context;
 
-  await db.userSubscription.create({
+  await db.subscription.create({
     data: {
-      userId: u1.id,
+      targetId: u1.id,
       stripeSubscriptionId: 'sub_1',
       plan: SubscriptionPlan.Pro,
       recurring: SubscriptionRecurring.Monthly,
@@ -1297,21 +1475,22 @@ test('should not be able to checkout out onetime payment if previous subscriptio
 
   await t.throwsAsync(
     () =>
-      service.checkout({
-        user: u1,
-        lookupKey: {
+      service.checkout(
+        {
           plan: SubscriptionPlan.Pro,
           recurring: SubscriptionRecurring.Monthly,
           variant: SubscriptionVariant.Onetime,
+          successCallbackLink: '',
         },
-        redirectUrl: '',
-        idempotencyKey: '',
-      }),
+        {
+          user: u1,
+        }
+      ),
     { message: 'You have already subscribed to the pro plan.' }
   );
 
-  await db.userSubscription.updateMany({
-    where: { userId: u1.id },
+  await db.subscription.updateMany({
+    where: { targetId: u1.id },
     data: {
       stripeSubscriptionId: null,
       recurring: SubscriptionRecurring.Lifetime,
@@ -1320,16 +1499,17 @@ test('should not be able to checkout out onetime payment if previous subscriptio
 
   await t.throwsAsync(
     () =>
-      service.checkout({
-        user: u1,
-        lookupKey: {
+      service.checkout(
+        {
           plan: SubscriptionPlan.Pro,
           recurring: SubscriptionRecurring.Monthly,
           variant: SubscriptionVariant.Onetime,
+          successCallbackLink: '',
         },
-        redirectUrl: '',
-        idempotencyKey: '',
-      }),
+        {
+          user: u1,
+        }
+      ),
     { message: 'You have already subscribed to the pro plan.' }
   );
 });
@@ -1339,8 +1519,8 @@ test('should be able to subscribe onetime payment subscription', async t => {
 
   await service.saveStripeInvoice(onetimeMonthlyInvoice);
 
-  const subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   t.true(
@@ -1365,16 +1545,16 @@ test('should be able to recalculate onetime payment subscription period', async 
 
   await service.saveStripeInvoice(onetimeMonthlyInvoice);
 
-  let subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  let subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   t.truthy(subInDB);
 
   let end = subInDB!.end!;
   await service.saveStripeInvoice(onetimeMonthlyInvoice);
-  subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   // add 30 days
@@ -1382,23 +1562,23 @@ test('should be able to recalculate onetime payment subscription period', async 
 
   end = subInDB!.end!;
   await service.saveStripeInvoice(onetimeYearlyInvoice);
-  subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   // add 365 days
   t.is(subInDB!.end!.getTime(), end.getTime() + 365 * 24 * 60 * 60 * 1000);
 
   // make subscription expired
-  await db.userSubscription.update({
+  await db.subscription.update({
     where: { id: subInDB!.id },
     data: {
       end: new Date(Date.now() - 1000),
     },
   });
   await service.saveStripeInvoice(onetimeYearlyInvoice);
-  subInDB = await db.userSubscription.findFirst({
-    where: { userId: u1.id },
+  subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
   });
 
   // add 365 days from now
@@ -1407,3 +1587,148 @@ test('should be able to recalculate onetime payment subscription period', async 
     new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toDateString()
   );
 });
+
+// TEAM
+test('should be able to list prices for team', async t => {
+  const { service } = t.context;
+
+  const prices = await service.listPrices(undefined);
+
+  t.snapshot(prices.map(p => encodeLookupKey(p.lookupKey)));
+});
+
+test('should be able to checkout for team', async t => {
+  const { service, u1, stripe } = t.context;
+
+  await service.checkout(
+    {
+      plan: SubscriptionPlan.Team,
+      recurring: SubscriptionRecurring.Monthly,
+      variant: null,
+      successCallbackLink: '',
+    },
+    {
+      user: u1,
+      workspaceId: 'ws_1',
+    }
+  );
+
+  t.deepEqual(getLastCheckoutPrice(stripe.checkout.sessions.create), {
+    price: TEAM_MONTHLY,
+    coupon: undefined,
+  });
+});
+
+test('should not be able to checkout for workspace if subscribed', async t => {
+  const { service, u1, db } = t.context;
+
+  await db.subscription.create({
+    data: {
+      targetId: 'ws_1',
+      stripeSubscriptionId: 'sub_1',
+      plan: SubscriptionPlan.Team,
+      recurring: SubscriptionRecurring.Monthly,
+      status: SubscriptionStatus.Active,
+      start: new Date(),
+      end: new Date(),
+      quantity: 1,
+    },
+  });
+
+  await t.throwsAsync(
+    () =>
+      service.checkout(
+        {
+          plan: SubscriptionPlan.Team,
+          recurring: SubscriptionRecurring.Monthly,
+          variant: null,
+          successCallbackLink: '',
+        },
+        {
+          user: u1,
+          workspaceId: 'ws_1',
+        }
+      ),
+    { message: 'You have already subscribed to the team plan.' }
+  );
+});
+
+const teamSub: Stripe.Subscription = {
+  ...sub,
+  items: {
+    object: 'list',
+    data: [
+      {
+        id: 'si_1',
+        // @ts-expect-error stub
+        price: {
+          id: TEAM_MONTHLY,
+          lookup_key: 'team_monthly',
+        },
+        subscription: 'sub_1',
+        quantity: 1,
+      },
+    ],
+  },
+  metadata: {
+    workspaceId: 'ws_1',
+  },
+};
+
+test('should be able to create team subscription', async t => {
+  const { event, service, db } = t.context;
+
+  await service.saveStripeSubscription(teamSub);
+
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: 'ws_1' },
+  });
+
+  t.true(
+    event.emit.calledOnceWith('workspace.subscription.activated', {
+      workspaceId: 'ws_1',
+      plan: SubscriptionPlan.Team,
+      recurring: SubscriptionRecurring.Monthly,
+      quantity: 1,
+    })
+  );
+  t.is(subInDB?.stripeSubscriptionId, sub.id);
+});
+
+test('should be able to update team subscription', async t => {
+  const { service, db, event } = t.context;
+
+  await service.saveStripeSubscription(teamSub);
+
+  await service.saveStripeSubscription({
+    ...teamSub,
+    items: {
+      ...teamSub.items,
+      data: [
+        {
+          ...teamSub.items.data[0],
+          quantity: 2,
+        },
+      ],
+    },
+  });
+
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: 'ws_1' },
+  });
+
+  t.is(subInDB?.quantity, 2);
+
+  t.true(
+    event.emit.calledWith('workspace.subscription.activated', {
+      workspaceId: 'ws_1',
+      plan: SubscriptionPlan.Team,
+      recurring: SubscriptionRecurring.Monthly,
+      quantity: 2,
+    })
+  );
+});
+
+// NOTE(@forehalo): cancel and resume a team subscription share the same logic with user subscription
+test.skip('should be able to cancel team subscription', async () => {});
+test.skip('should be able to resume team subscription', async () => {});

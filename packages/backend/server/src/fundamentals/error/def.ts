@@ -412,14 +412,27 @@ export const USER_FRIENDLY_ERRORS = {
   },
 
   // Subscription Errors
+  unsupported_subscription_plan: {
+    type: 'invalid_input',
+    args: { plan: 'string' },
+    message: ({ plan }) => `Unsupported subscription plan: ${plan}.`,
+  },
   failed_to_checkout: {
     type: 'internal_server_error',
     message: 'Failed to create checkout session.',
+  },
+  invalid_checkout_parameters: {
+    type: 'invalid_input',
+    message: 'Invalid checkout parameters provided.',
   },
   subscription_already_exists: {
     type: 'resource_already_exists',
     args: { plan: 'string' },
     message: ({ plan }) => `You have already subscribed to the ${plan} plan.`,
+  },
+  invalid_subscription_parameters: {
+    type: 'invalid_input',
+    message: 'Invalid subscription parameters provided.',
   },
   subscription_not_exists: {
     type: 'resource_not_found',
@@ -429,6 +442,10 @@ export const USER_FRIENDLY_ERRORS = {
   subscription_has_been_canceled: {
     type: 'action_forbidden',
     message: 'Your subscription has already been canceled.',
+  },
+  subscription_has_not_been_canceled: {
+    type: 'action_forbidden',
+    message: 'Your subscription has not been canceled.',
   },
   subscription_expired: {
     type: 'action_forbidden',
@@ -452,6 +469,14 @@ export const USER_FRIENDLY_ERRORS = {
   cant_update_onetime_payment_subscription: {
     type: 'action_forbidden',
     message: 'You cannot update an onetime payment subscription.',
+  },
+  workspace_id_required_for_team_subscription: {
+    type: 'invalid_input',
+    message: 'A workspace is required to checkout for team subscription.',
+  },
+  workspace_id_required_to_update_team_subscription: {
+    type: 'invalid_input',
+    message: 'Workspace id is required to update team subscription.',
   },
 
   // Copilot errors
