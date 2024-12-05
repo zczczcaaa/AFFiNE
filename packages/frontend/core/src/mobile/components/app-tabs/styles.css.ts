@@ -7,10 +7,10 @@ export const appTabsBackground = createVar('appTabsBackground');
 
 export const appTabs = style({
   vars: {
-    [appTabsBackground]: cssVarV2('layer/background/mobile/primary'),
+    [appTabsBackground]: cssVarV2.layer.background.mobile.primary,
   },
   backgroundColor: appTabsBackground,
-  borderTop: `1px solid ${cssVarV2('layer/insideBorder/border')}`,
+  borderTop: `1px solid ${cssVarV2.layer.insideBorder.border}`,
 
   width: '100dvw',
 
@@ -36,12 +36,12 @@ export const tabItem = style({
   height: 36,
   padding: 3,
   fontSize: 30,
-  color: cssVarV2('icon/primary'),
+  color: cssVarV2.icon.primary,
   lineHeight: 0,
 
   selectors: {
     '&[data-active="true"]': {
-      color: cssVarV2('button/primary'),
+      color: cssVarV2.button.primary,
     },
   },
 });
