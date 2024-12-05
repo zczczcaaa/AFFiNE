@@ -416,7 +416,7 @@ jobs:
         with:
           filters: |
             backend:
-              - 'packages/backend/server/src/**'
+              - 'packages/backend/server/src/plugins/copilot/**'
 
       - name: Setup Node.js
         if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.filter.outputs.backend == 'true' }}
