@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import type { User, UserStripeCustomer } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import Stripe from 'stripe';
@@ -15,6 +15,7 @@ import {
   InternalServerError,
   InvalidCheckoutParameters,
   InvalidSubscriptionParameters,
+  Mutex,
   OnEvent,
   SameSubscriptionRecurring,
   SubscriptionExpired,
@@ -39,6 +40,8 @@ import {
 } from './manager';
 import { ScheduleManager } from './schedule';
 import {
+  decodeLookupKey,
+  DEFAULT_PRICES,
   encodeLookupKey,
   KnownStripeInvoice,
   KnownStripePrice,
@@ -49,6 +52,7 @@ import {
   SubscriptionPlan,
   SubscriptionRecurring,
   SubscriptionStatus,
+  SubscriptionVariant,
 } from './types';
 
 export const CheckoutExtraArgs = z.union([
@@ -64,7 +68,7 @@ export const SubscriptionIdentity = z.union([
 export { CheckoutParams };
 
 @Injectable()
-export class SubscriptionService {
+export class SubscriptionService implements OnApplicationBootstrap {
   private readonly logger = new Logger(SubscriptionService.name);
   private readonly scheduleManager = new ScheduleManager(this.stripe);
 
@@ -75,8 +79,13 @@ export class SubscriptionService {
     private readonly feature: FeatureManagementService,
     private readonly user: UserService,
     private readonly userManager: UserSubscriptionManager,
-    private readonly workspaceManager: WorkspaceSubscriptionManager
+    private readonly workspaceManager: WorkspaceSubscriptionManager,
+    private readonly mutex: Mutex
   ) {}
+
+  async onApplicationBootstrap() {
+    await this.initStripeProducts();
+  }
 
   private select(plan: SubscriptionPlan): SubscriptionManager {
     switch (plan) {
@@ -559,6 +568,74 @@ export class SubscriptionService {
 
     if (!result.success) {
       throw new InvalidSubscriptionParameters();
+    }
+  }
+
+  private async initStripeProducts() {
+    // only init stripe products in dev mode or canary deployment
+    if (
+      (this.config.deploy && !this.config.affine.canary) ||
+      !this.config.node.dev
+    ) {
+      return;
+    }
+
+    await using lock = await this.mutex.lock('init stripe prices');
+
+    if (!lock) {
+      return;
+    }
+
+    const keys = new Set<string>();
+    try {
+      await this.stripe.prices
+        .list({
+          active: true,
+          limit: 100,
+        })
+        .autoPagingEach(item => {
+          if (item.lookup_key) {
+            keys.add(item.lookup_key);
+          }
+        });
+    } catch {
+      this.logger.warn('Failed to list stripe prices, skip auto init.');
+      return;
+    }
+
+    for (const [key, setting] of DEFAULT_PRICES) {
+      if (keys.has(key)) {
+        continue;
+      }
+
+      const lookupKey = decodeLookupKey(key);
+
+      try {
+        await this.stripe.prices.create({
+          product_data: {
+            name: setting.product,
+          },
+          billing_scheme: 'per_unit',
+          unit_amount: setting.price,
+          currency: 'usd',
+          lookup_key: key,
+          tax_behavior: 'inclusive',
+          recurring:
+            lookupKey.recurring === SubscriptionRecurring.Lifetime ||
+            lookupKey.variant === SubscriptionVariant.Onetime
+              ? undefined
+              : {
+                  interval:
+                    lookupKey.recurring === SubscriptionRecurring.Monthly
+                      ? 'month'
+                      : 'year',
+                  interval_count: 1,
+                  usage_type: 'licensed',
+                },
+        });
+      } catch (e) {
+        this.logger.error('Failed to create stripe price.', e);
+      }
     }
   }
 }

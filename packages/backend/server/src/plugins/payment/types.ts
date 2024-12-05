@@ -152,25 +152,67 @@ export interface KnownStripePrice {
   price: Stripe.Price;
 }
 
-const VALID_LOOKUP_KEYS = new Set([
+export const DEFAULT_PRICES = new Map([
   // pro
-  `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Monthly}`,
-  `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}`,
+  [
+    `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Monthly}`,
+    {
+      product: 'AFFiNE Pro',
+      price: 799,
+    },
+  ],
+  [
+    `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}`,
+    {
+      product: 'AFFiNE Pro',
+      price: 8100,
+    },
+  ],
   // only EA for yearly pro
-  `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.EA}`,
-  `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Lifetime}`,
-  `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Monthly}_${SubscriptionVariant.Onetime}`,
-  `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.Onetime}`,
+  [
+    `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.EA}`,
+    { product: 'AFFiNE Pro', price: 5000 },
+  ],
+  [
+    `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Lifetime}`,
+    {
+      product: 'AFFiNE Pro Believer',
+      price: 49900,
+    },
+  ],
+  [
+    `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Monthly}_${SubscriptionVariant.Onetime}`,
+    { product: 'AFFiNE Pro - One Month', price: 799 },
+  ],
+  [
+    `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.Onetime}`,
+    { product: 'AFFiNE Pro - One Year', price: 8100 },
+  ],
 
   // ai
-  `${SubscriptionPlan.AI}_${SubscriptionRecurring.Yearly}`,
+  [
+    `${SubscriptionPlan.AI}_${SubscriptionRecurring.Yearly}`,
+    { product: 'AFFiNE AI', price: 10680 },
+  ],
   // only EA for yearly AI
-  `${SubscriptionPlan.AI}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.EA}`,
-  `${SubscriptionPlan.AI}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.Onetime}`,
+  [
+    `${SubscriptionPlan.AI}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.EA}`,
+    { product: 'AFFiNE AI', price: 9900 },
+  ],
+  [
+    `${SubscriptionPlan.AI}_${SubscriptionRecurring.Yearly}_${SubscriptionVariant.Onetime}`,
+    { product: 'AFFiNE AI - One Year', price: 10680 },
+  ],
 
   // team
-  `${SubscriptionPlan.Team}_${SubscriptionRecurring.Monthly}`,
-  `${SubscriptionPlan.Team}_${SubscriptionRecurring.Yearly}`,
+  [
+    `${SubscriptionPlan.Team}_${SubscriptionRecurring.Monthly}`,
+    { product: 'AFFiNE Team(per seat)', price: 1500 },
+  ],
+  [
+    `${SubscriptionPlan.Team}_${SubscriptionRecurring.Yearly}`,
+    { product: 'AFFiNE Team(per seat)', price: 14400 },
+  ],
 ]);
 
 // [Plan x Recurring x Variant] make a stripe price lookup key
@@ -181,19 +223,19 @@ export function encodeLookupKey({
 }: LookupKey): string {
   const key = `${plan}_${recurring}` + (variant ? `_${variant}` : '');
 
-  if (!VALID_LOOKUP_KEYS.has(key)) {
+  if (!DEFAULT_PRICES.has(key)) {
     throw new Error(`Invalid price: ${key}`);
   }
 
   return key;
 }
 
-export function decodeLookupKey(key: string): LookupKey | null {
+export function decodeLookupKey(key: string): LookupKey {
   // NOTE(@forehalo):
   //   we have some legacy prices in stripe still in used,
   //   so we give it `pro_monthly_xxx` variant to make it invisible but valid,
   //   and those variant won't be listed in [SubscriptionVariant]
-  // if (!VALID_LOOKUP_KEYS.has(key)) {
+  // if (!DEFAULT_PRICES.has(key)) {
   //   return null;
   // }
   const [plan, recurring, variant] = key.split('_');
