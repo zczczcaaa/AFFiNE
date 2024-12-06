@@ -189,9 +189,10 @@ export const ExplorerCollectionNode = ({
   const handleCanDrop = useMemo<DropTargetOptions<AffineDNDData>['canDrop']>(
     () => args => {
       const entityType = args.source.data.entity?.type;
+      const isExternalDrop = args.source.data.from?.at === 'external';
       return args.treeInstruction?.type !== 'make-child'
         ? ((typeof canDrop === 'function' ? canDrop(args) : canDrop) ?? true)
-        : entityType === 'doc';
+        : entityType === 'doc' || isExternalDrop;
     },
     [canDrop]
   );

@@ -16,8 +16,10 @@ export const favoriteChildrenDropEffect: ExplorerTreeNodeDropEffect = data => {
     ) {
       return 'move';
     } else if (
-      data.source.data.entity?.type &&
-      isFavoriteSupportType(data.source.data.entity.type)
+      (data.source.data.entity?.type &&
+        isFavoriteSupportType(data.source.data.entity.type)) ||
+      // always allow external drop
+      data.source.data.from?.at === 'external'
     ) {
       return 'link';
     }
@@ -37,7 +39,7 @@ export const favoriteRootCanDrop: DropTargetOptions<AffineDNDData>['canDrop'] =
   data => {
     return data.source.data.entity?.type
       ? isFavoriteSupportType(data.source.data.entity.type)
-      : false;
+      : data.source.data.from?.at === 'external'; // always allow external drop
   };
 
 export const favoriteChildrenCanDrop: DropTargetOptions<AffineDNDData>['canDrop'] =

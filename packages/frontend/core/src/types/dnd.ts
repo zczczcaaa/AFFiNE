@@ -74,6 +74,9 @@ export interface AffineDNDData extends DNDData {
       | {
           at: 'doc-property:manager';
           workspaceId: string;
+        }
+      | {
+          at: 'external'; // for blocksuite or external apps
         };
   };
   dropTarget:

@@ -103,6 +103,8 @@ export const useDraggable = <D extends DNDData = DNDData>(
       },
     };
 
+    dragRef.current.dataset.affineDraggable = 'true';
+
     const cleanupDraggable = draggable({
       element: dragRef.current,
       dragHandle: dragHandleRef.current ?? undefined,

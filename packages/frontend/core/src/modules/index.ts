@@ -6,6 +6,7 @@ import { configAtMenuConfigModule } from './at-menu-config';
 import { configureCloudModule } from './cloud';
 import { configureCollectionModule } from './collection';
 import { configureDialogModule } from './dialogs';
+import { configureDndModule } from './dnd';
 import { configureDocDisplayMetaModule } from './doc-display-meta';
 import { configureDocInfoModule } from './doc-info';
 import { configureDocLinksModule } from './doc-link';
@@ -69,4 +70,5 @@ export function configureCommonModules(framework: Framework) {
   configureDocInfoModule(framework);
   configureOpenInApp(framework);
   configAtMenuConfigModule(framework);
+  configureDndModule(framework);
 }

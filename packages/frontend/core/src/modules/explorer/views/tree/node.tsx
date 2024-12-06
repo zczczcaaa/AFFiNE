@@ -11,6 +11,7 @@ import {
 } from '@affine/component';
 import { RenameModal } from '@affine/component/rename-modal';
 import { AppSidebarService } from '@affine/core/modules/app-sidebar';
+import { DndService } from '@affine/core/modules/dnd/services';
 import { WorkbenchLink } from '@affine/core/modules/workbench';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { extractEmojiIcon } from '@affine/core/utils';
@@ -185,6 +186,8 @@ export const ExplorerTreeNode = ({
     },
     [canDrop, reorderable]
   );
+  const dndService = useService(DndService);
+
   const {
     dropTargetRef,
     treeInstruction,
@@ -221,6 +224,9 @@ export const ExplorerTreeNode = ({
         }
       },
       canDrop: handleCanDrop,
+      externalDataAdapter(args) {
+        return dndService.externalDataAdapter(args) as any;
+      },
     }),
     [
       dndData?.dropTarget,
@@ -232,6 +238,7 @@ export const ExplorerTreeNode = ({
       cid,
       onDrop,
       setCollapsed,
+      dndService,
     ]
   );
   const isSelfDraggedOver = draggedOverDraggable?.data.__cid === cid;

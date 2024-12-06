@@ -3,9 +3,11 @@ import {
   Skeleton,
   useDropTarget,
 } from '@affine/component';
+import { DndService } from '@affine/core/modules/dnd/services';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { useI18n } from '@affine/i18n';
 import { FavoriteIcon } from '@blocksuite/icons/rc';
+import { useService } from '@toeverything/infra';
 
 import { ExplorerEmptySection } from '../../layouts/empty-section';
 import { DropEffect } from '../../tree';
@@ -21,6 +23,7 @@ const RootEmptyLoading = () => {
 };
 const RootEmptyReady = ({ onDrop }: Omit<RootEmptyProps, 'isLoading'>) => {
   const t = useI18n();
+  const dndService = useService(DndService);
 
   const { dropTargetRef, draggedOverDraggable, draggedOverPosition } =
     useDropTarget<AffineDNDData>(
@@ -30,8 +33,9 @@ const RootEmptyReady = ({ onDrop }: Omit<RootEmptyProps, 'isLoading'>) => {
         },
         onDrop: onDrop,
         canDrop: favoriteRootCanDrop,
+        externalDataAdapter: dndService.externalDataAdapter,
       }),
-      [onDrop]
+      [dndService.externalDataAdapter, onDrop]
     );
 
   return (
