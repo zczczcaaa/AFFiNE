@@ -2,6 +2,7 @@ import {
   IconButton,
   MenuItem,
   MenuSeparator,
+  MenuSub,
   toast,
   useConfirmModal,
 } from '@affine/component';
@@ -12,6 +13,7 @@ import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
 import type { NodeOperation } from '@affine/core/modules/explorer';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
 import { WorkbenchService } from '@affine/core/modules/workbench';
+import { preventDefault } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
@@ -33,12 +35,12 @@ import {
 } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
+import { DocFrameScope, DocInfoSheet } from '../../../doc-info';
 import { DocRenameSubMenu } from './dialog';
 
 export const useExplorerDocNodeOperations = (
   docId: string,
   options: {
-    openInfoModal: () => void;
     openNodeCollapsed: () => void;
   }
 ) => {
@@ -74,10 +76,6 @@ export const useExplorerDocNodeOperations = (
     duplicate(docId, true);
     track.$.navigationPanel.docs.createDoc();
   }, [docId, duplicate]);
-  const handleOpenInfoModal = useCallback(() => {
-    track.$.docInfoPanel.$.open();
-    options.openInfoModal();
-  }, [options]);
 
   const handleMoveToTrash = useCallback(() => {
     if (!docRecord) {
@@ -154,7 +152,6 @@ export const useExplorerDocNodeOperations = (
       handleOpenInSplitView,
       handleOpenInNewTab,
       handleMoveToTrash,
-      handleOpenInfoModal,
       handleRename,
     }),
     [
@@ -164,7 +161,6 @@ export const useExplorerDocNodeOperations = (
       handleMoveToTrash,
       handleOpenInNewTab,
       handleOpenInSplitView,
-      handleOpenInfoModal,
       handleRename,
       handleToggleFavoriteDoc,
     ]
@@ -188,7 +184,6 @@ export const useExplorerDocNodeOperationsMenu = (
     handleOpenInSplitView,
     handleOpenInNewTab,
     handleMoveToTrash,
-    handleOpenInfoModal,
     handleRename,
   } = useExplorerDocNodeOperations(docId, options);
 
@@ -224,12 +219,20 @@ export const useExplorerDocNodeOperationsMenu = (
       {
         index: 50,
         view: (
-          <MenuItem
-            prefixIcon={<InformationIcon />}
-            onClick={handleOpenInfoModal}
+          <MenuSub
+            triggerOptions={{
+              prefixIcon: <InformationIcon />,
+              onClick: preventDefault,
+            }}
+            title={title ?? t['unnamed']()}
+            items={
+              <DocFrameScope docId={docId}>
+                <DocInfoSheet docId={docId} />
+              </DocFrameScope>
+            }
           >
-            {t['com.affine.page-properties.page-info.view']()}
-          </MenuItem>
+            <span>{t['com.affine.page-properties.page-info.view']()}</span>
+          </MenuSub>
         ),
       },
       {
@@ -305,6 +308,7 @@ export const useExplorerDocNodeOperationsMenu = (
       },
     ],
     [
+      docId,
       enableMultiView,
       favorite,
       handleAddLinkedPage,
@@ -312,7 +316,6 @@ export const useExplorerDocNodeOperationsMenu = (
       handleMoveToTrash,
       handleOpenInNewTab,
       handleOpenInSplitView,
-      handleOpenInfoModal,
       handleRename,
       handleToggleFavoriteDoc,
       t,

@@ -8,6 +8,7 @@ import {
 import { useFavorite } from '@affine/core/components/blocksuite/block-suite-header/favorite';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
 import { EditorOutlinePanel } from '@affine/core/desktop/pages/workspace/detail-page/tabs/outline';
+import { DocInfoSheet } from '@affine/core/mobile/components';
 import { EditorService } from '@affine/core/modules/editor';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
 import { preventDefault } from '@affine/core/utils';
@@ -27,7 +28,6 @@ import { JournalConflictsMenuItem } from './menu/journal-conflicts';
 import { JournalTodayActivityMenuItem } from './menu/journal-today-activity';
 import { EditorModeSwitch } from './menu/mode-switch';
 import * as styles from './page-header-more-button.css';
-import { DocInfoSheet } from './sheets/doc-info';
 
 export const PageHeaderMenuButton = () => {
   const t = useI18n();
