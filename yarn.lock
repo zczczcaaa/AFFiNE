@@ -364,7 +364,7 @@ __metadata:
     react-paginate: "npm:^8.2.0"
     react-router-dom: "npm:^6.22.3"
     react-transition-state: "npm:^2.1.1"
-    sonner: "npm:^1.4.41"
+    sonner: "npm:^1.7.0"
     storybook: "npm:^8.2.9"
     swr: "npm:^2.2.5"
     typescript: "npm:^5.6.3"
@@ -30180,7 +30180,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sonner@npm:^1.4.41, sonner@npm:^1.5.0":
+"sonner@npm:^1.5.0, sonner@npm:^1.7.0":
   version: 1.7.0
   resolution: "sonner@npm:1.7.0"
   peerDependencies:

@@ -1,8 +1,11 @@
 import { Toaster } from 'sonner';
 
+import { sonner } from './styles.css';
+
 export function MobileNotificationCenter() {
   return (
     <Toaster
+      className={sonner}
       visibleToasts={1}
       position="top-center"
       style={{
