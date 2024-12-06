@@ -1,10 +1,8 @@
 import { DebugLogger } from '@affine/debug';
 import { Unreachable } from '@affine/env/constant';
-import {
-  type AffineTextAttributes,
-  type DocMode,
-} from '@blocksuite/affine/blocks';
+import type { DocMode } from '@blocksuite/affine/blocks';
 import type { DeltaInsert } from '@blocksuite/affine/inline';
+import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 
 import { Service } from '../../../framework';
 import { type DocProps, initDocFromProps } from '../../../initialization';

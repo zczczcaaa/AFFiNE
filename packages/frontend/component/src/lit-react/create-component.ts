@@ -277,8 +277,6 @@ export const createComponent = <
       }
     }
 
-    const element = elementRef.current;
-
     for (const [k, v] of Object.entries(props)) {
       if (reservedReactProperties.has(k)) {
         reactProps[k] = v;
@@ -318,14 +316,13 @@ export const createComponent = <
 
     React.useLayoutEffect(() => {
       const container = containerRef.current;
-      if (!container) {
+      const element = elementRef.current;
+      if (!container || !element) {
         return;
       }
+      if (element.isConnected) return;
       container.append(element);
-      return () => {
-        element.remove();
-      };
-    }, [element]);
+    }, []);
 
     return React.createElement(tagName, {
       ...reactProps,
