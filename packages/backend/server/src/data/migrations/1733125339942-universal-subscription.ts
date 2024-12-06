@@ -12,9 +12,9 @@ export class UniversalSubscription1733125339942 {
       });
 
       await db.subscription.createMany({
-        data: oldSubscriptions.map(s => ({
-          targetId: s.userId,
-          ...s,
+        data: oldSubscriptions.map(({ userId, ...subscription }) => ({
+          targetId: userId,
+          ...subscription,
         })),
       });
 
