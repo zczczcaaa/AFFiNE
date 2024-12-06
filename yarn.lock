@@ -181,6 +181,7 @@ __metadata:
     "@radix-ui/react-tooltip": "npm:^1.1.1"
     "@sentry/react": "npm:^8.9.0"
     "@tanstack/react-table": "npm:^8.19.3"
+    "@toeverything/infra": "workspace:*"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
     cmdk: "npm:^1.0.0"

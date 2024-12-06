@@ -14,7 +14,7 @@ const clientProvider: Provider = {
       return PrismaService.INSTANCE;
     }
 
-    return new PrismaService(config.database);
+    return new PrismaService(config.prisma);
   },
   inject: [Config],
 };

@@ -8,10 +8,10 @@ interface PrismaStartupConfiguration extends Prisma.PrismaClientOptions {
 
 declare module '../config' {
   interface AppConfig {
-    database: ModuleConfig<PrismaStartupConfiguration>;
+    prisma: ModuleConfig<PrismaStartupConfiguration>;
   }
 }
 
-defineStartupConfig('database', {
+defineStartupConfig('prisma', {
   datasourceUrl: '',
 });

@@ -9,7 +9,7 @@ import type { GraphQLError } from 'graphql';
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration, SWRResponse } from 'swr';
 import useSWR from 'swr';
-import useSWRImutable from 'swr/immutable';
+import useSWRImmutable from 'swr/immutable';
 import useSWRInfinite from 'swr/infinite';
 
 /**
@@ -60,7 +60,7 @@ const createUseQuery =
     );
     const graphqlService = useService(GraphQLService);
 
-    const useSWRFn = immutable ? useSWRImutable : useSWR;
+    const useSWRFn = immutable ? useSWRImmutable : useSWR;
     return useSWRFn(
       options ? () => ['cloud', options.query.id, options.variables] : null,
       options ? () => graphqlService.gql(options) : null,

@@ -415,35 +415,39 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: affine-darwin-x64-builds
-          path: ./
+          path: ./release
       - name: Download Artifacts (macos-arm64)
         uses: actions/download-artifact@v4
         with:
           name: affine-darwin-arm64-builds
-          path: ./
+          path: ./release
       - name: Download Artifacts (windows-x64)
         uses: actions/download-artifact@v4
         with:
           name: affine-win32-x64-builds
-          path: ./
+          path: ./release
       - name: Download Artifacts (windows-arm64)
         uses: actions/download-artifact@v4
         with:
           name: affine-win32-arm64-builds
-          path: ./
+          path: ./release
       - name: Download Artifacts (linux-x64)
         uses: actions/download-artifact@v4
         with:
           name: affine-linux-x64-builds
-          path: ./
+          path: ./release
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Generate Release yml
         run: |
-          node ./packages/frontend/apps/electron/scripts/generate-yml.js
+          node ./scripts/generate-release-yml.js
         env:
           RELEASE_VERSION: ${{ needs.before-make.outputs.RELEASE_VERSION }}
+      - name: Copy Selfhost Release Files
+        run: |
+          cp ./.github/deployment/self-host/compose.yaml ./release/docker-compose.yaml
+          cp ./.github/deployment/self-host/.env.example ./release/.env.example
       - name: Create Release Draft
         if: ${{ github.ref_type == 'tag' }}
         uses: softprops/action-gh-release@v2
@@ -452,16 +456,7 @@ jobs:
           body: ''
           draft: ${{ github.event.inputs.is-draft }}
           prerelease: ${{ github.event.inputs.is-pre-release }}
-          files: |
-            ./VERSION
-            ./*.zip
-            ./*.dmg
-            ./*.exe
-            ./*.appimage
-            ./*.deb
-            ./*.flatpak
-            ./*.apk
-            ./*.yml
+          files: ./release/*
       - name: Create Nightly Release Draft
         if: ${{ github.ref_type == 'branch' }}
         uses: softprops/action-gh-release@v2
@@ -476,13 +471,4 @@ jobs:
           body: ''
           draft: false
           prerelease: true
-          files: |
-            ./VERSION
-            ./*.zip
-            ./*.dmg
-            ./*.exe
-            ./*.appimage
-            ./*.deb
-            ./*.apk
-            ./*.flatpak
-            ./*.yml
+          files: ./release/*

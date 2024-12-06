@@ -2,6 +2,8 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
+const releaseDir = path.join(process.cwd(), './release');
+
 const filenamesMapping = {
   all: 'latest.yml',
   macos: 'latest-mac.yml',
@@ -22,11 +24,11 @@ const generateYml = platform => {
       ? new RegExp(`.(${releaseFiles.join('|')})$`)
       : new RegExp(`.+-${platform}-.+.(${releaseFiles.join('|')})$`);
 
-  const files = fs.readdirSync(process.cwd()).filter(file => regex.test(file));
+  const files = fs.readdirSync(releaseDir).filter(file => regex.test(file));
   const outputFileName = filenamesMapping[platform];
 
   files.forEach(fileName => {
-    const filePath = path.join(process.cwd(), './', fileName);
+    const filePath = path.join(releaseDir, fileName);
     try {
       const fileData = fs.readFileSync(filePath);
       const hash = crypto

@@ -20,6 +20,7 @@ export function getBuildConfig(buildFlags: BuildFlags): BUILD_CONFIG_TYPE {
         isMobileWeb: buildFlags.distribution === 'mobile',
         isIOS: buildFlags.distribution === 'ios',
         isAndroid: buildFlags.distribution === 'android',
+        isAdmin: buildFlags.distribution === 'admin',
 
         isSelfHosted: process.env.SELF_HOSTED === 'true',
         appBuildType: 'stable' as const,

@@ -261,7 +261,7 @@ export class ServerServiceConfigResolver {
   }
 
   database(): ServerDatabaseConfig {
-    const url = new URL(this.config.database.datasourceUrl);
+    const url = new URL(this.config.prisma.datasourceUrl);
 
     return {
       host: url.hostname,

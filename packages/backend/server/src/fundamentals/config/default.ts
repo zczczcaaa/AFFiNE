@@ -14,7 +14,7 @@ import { readEnv } from './env';
 import { defaultStartupConfig } from './register';
 
 function getPredefinedAFFiNEConfig(): PreDefinedAFFiNEConfig {
-  const NODE_ENV = readEnv<NODE_ENV>('NODE_ENV', 'development', [
+  const NODE_ENV = readEnv<NODE_ENV>('NODE_ENV', 'production', [
     'development',
     'test',
     'production',

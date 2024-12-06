@@ -341,7 +341,7 @@ export const createConfiguration: (
             ],
           }),
       buildFlags.mode === 'production' &&
-      (buildConfig.isWeb || buildConfig.isMobileWeb) &&
+      (buildConfig.isWeb || buildConfig.isMobileWeb || buildConfig.isAdmin) &&
       process.env.R2_SECRET_ACCESS_KEY
         ? new WebpackS3Plugin()
         : null,
