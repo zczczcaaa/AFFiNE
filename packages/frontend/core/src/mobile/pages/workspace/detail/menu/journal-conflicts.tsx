@@ -22,7 +22,11 @@ import { type MouseEvent, useCallback, useMemo } from 'react';
 
 import * as styles from './journal-conflicts.css';
 
-const ResolveConflictOperations = ({ docRecord }: { docRecord: DocRecord }) => {
+export const ResolveConflictOperations = ({
+  docRecord,
+}: {
+  docRecord: DocRecord;
+}) => {
   const t = useI18n();
   const journalService = useService(JournalService);
   const { openConfirmModal } = useConfirmModal();
@@ -106,7 +110,7 @@ const DocItem = ({ docRecord }: { docRecord: DocRecord }) => {
   );
 };
 
-const ConflictList = ({ docRecords }: { docRecords: DocRecord[] }) => {
+export const ConflictList = ({ docRecords }: { docRecords: DocRecord[] }) => {
   return docRecords.map(docRecord => (
     <DocItem key={docRecord.id} docRecord={docRecord} />
   ));

@@ -1491,6 +1491,7 @@
   "com.affine.attachment.preview.error.title": "Unable to preview this file",
   "com.affine.attachment.preview.error.subtitle": "file type not supported.",
   "com.affine.pdf.page.render.error": "Failed to render page.",
+  "com.affine.editor.journal-conflict.title": "Duplicate Entries in Today's Journal",
   "com.affine.editor.at-menu.link-to-doc": "Link to Doc",
   "com.affine.editor.at-menu.new-doc": "New Doc",
   "com.affine.editor.at-menu.create-doc": "Create \"{{name}}\" Doc",

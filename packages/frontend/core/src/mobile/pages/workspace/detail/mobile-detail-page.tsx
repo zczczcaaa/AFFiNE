@@ -45,6 +45,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { AppTabs } from '../../../components';
+import { JournalConflictBlock } from './journal-conflict-block';
 import { JournalDatePicker } from './journal-date-picker';
 import * as styles from './mobile-detail-page.css';
 import { PageHeaderMenuButton } from './page-header-more-button';
@@ -288,6 +289,7 @@ const MobileDetailPage = ({
               : title}
           </span>
         </PageHeader>
+        <JournalConflictBlock date={date} />
         <DetailPageImpl />
         <AppTabs background={cssVarV2('layer/background/primary')} />
       </DetailPageWrapper>
