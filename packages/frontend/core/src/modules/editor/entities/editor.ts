@@ -153,17 +153,6 @@ export class Editor extends Entity {
         if (!isEqual(selector, omit(editorParams, ['mode']))) {
           this.setSelector(selector);
         }
-
-        if (params.databaseId && params.databaseRowId) {
-          const defaultOpenProperty: DefaultOpenProperty = {
-            type: 'database',
-            databaseId: params.databaseId,
-            databaseRowId: params.databaseRowId,
-          };
-          if (!isEqual(defaultOpenProperty, this.defaultOpenProperty$.value)) {
-            this.setDefaultOpenProperty(defaultOpenProperty);
-          }
-        }
       } finally {
         updating = false;
       }
