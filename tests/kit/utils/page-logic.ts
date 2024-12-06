@@ -70,9 +70,10 @@ export const createLinkedPage = async (page: Page, pageName?: string) => {
   await expect(linkedPagePopover).toBeVisible();
   await type(page, pageName || 'Untitled');
 
-  await page.keyboard.press('ArrowUp');
-  await page.keyboard.press('ArrowUp');
-  await page.keyboard.press('Enter', { delay: 50 });
+  await linkedPagePopover
+    .locator(`icon-button`)
+    .filter({ hasText: `New "${pageName}" page` })
+    .click();
 };
 
 export async function clickPageMoreActions(page: Page) {

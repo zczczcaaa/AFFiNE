@@ -17,6 +17,7 @@ export {
   type MaybeDate,
 } from './services/journal';
 export { JournalDocService } from './services/journal-doc';
+export { suggestJournalDate } from './suggest-journal-date';
 
 export function configureJournalModule(framework: Framework) {
   framework

@@ -7,7 +7,7 @@ import { I18n } from '@affine/i18n';
 import dayjs from 'dayjs';
 import { describe, expect, test } from 'vitest';
 
-import { suggestJournalDate } from '../../services/index';
+import { suggestJournalDate } from '../suggest-journal-date';
 
 describe('suggestJournalDate', () => {
   test('today', () => {

@@ -193,7 +193,6 @@ export interface CreateCheckoutSessionInput {
   coupon?: InputMaybe<Scalars['String']['input']>;
   idempotencyKey?: InputMaybe<Scalars['String']['input']>;
   plan?: InputMaybe<SubscriptionPlan>;
-  quantity?: InputMaybe<Scalars['Int']['input']>;
   recurring?: InputMaybe<SubscriptionRecurring>;
   successCallbackLink: Scalars['String']['input'];
   variant?: InputMaybe<SubscriptionVariant>;
@@ -1257,6 +1256,9 @@ export interface WorkspaceType {
   id: Scalars['ID']['output'];
   /** is current workspace initialized */
   initialized: Scalars['Boolean']['output'];
+  /** Get user invoice count */
+  invoiceCount: Scalars['Int']['output'];
+  invoices: Array<InvoiceType>;
   /** member count of workspace */
   memberCount: Scalars['Int']['output'];
   /** Members of workspace */
@@ -1287,6 +1289,11 @@ export interface WorkspaceType {
 export interface WorkspaceTypeHistoriesArgs {
   before?: InputMaybe<Scalars['DateTime']['input']>;
   guid: Scalars['String']['input'];
+  take?: InputMaybe<Scalars['Int']['input']>;
+}
+
+export interface WorkspaceTypeInvoicesArgs {
+  skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
 }
 

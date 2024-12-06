@@ -1,25 +1,32 @@
+import { fuzzyMatch } from '@affine/core/utils/fuzzy-match';
 import { I18n, i18nTime } from '@affine/i18n';
 import track from '@affine/track';
 import {
   type AffineInlineEditor,
+  type DocMode,
   type LinkedMenuGroup,
   type LinkedMenuItem,
   type LinkedWidgetConfig,
   LinkedWidgetUtils,
 } from '@blocksuite/affine/blocks';
+import { Text } from '@blocksuite/affine/store';
 import type { EditorHost } from '@blocksuite/block-std';
-import { DateTimeIcon } from '@blocksuite/icons/lit';
+import {
+  DateTimeIcon,
+  NewXxxEdgelessIcon,
+  NewXxxPageIcon,
+} from '@blocksuite/icons/lit';
 import type { DocMeta } from '@blocksuite/store';
 import { signal } from '@preact/signals-core';
-import type { WorkspaceService } from '@toeverything/infra';
+import type { DocsService, WorkspaceService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
-import dayjs from 'dayjs';
 import { html } from 'lit';
 
 import type { WorkspaceDialogService } from '../../dialogs';
 import type { DocDisplayMetaService } from '../../doc-display-meta';
-import { JOURNAL_DATE_FORMAT, type JournalService } from '../../journal';
+import type { EditorSettingService } from '../../editor-setting';
+import { type JournalService, suggestJournalDate } from '../../journal';
 import type { RecentDocsService } from '../../quicksearch';
 
 const MAX_DOCS = 3;
@@ -31,7 +38,8 @@ export class AtMenuConfigService extends Service {
     private readonly docDisplayMetaService: DocDisplayMetaService,
     private readonly dialogService: WorkspaceDialogService,
     private readonly recentDocsService: RecentDocsService,
-    private readonly workspaceDialogService: WorkspaceDialogService
+    private readonly editorSettingService: EditorSettingService,
+    private readonly docsService: DocsService
   ) {
     super();
   }
@@ -64,26 +72,17 @@ export class AtMenuConfigService extends Service {
       !!this.journalService.journalDate$(d.id).value;
     const docItems = signal<LinkedMenuItem[]>([]);
 
+    const showRecent = query.trim().length === 0;
+
     // recent docs should be at the top
-    const recentDocs = this.recentDocsService.getRecentDocs();
-
-    const sortedRawMetas =
-      query.trim().length === 0
-        ? rawMetas.toSorted((a, b) => {
-            const indexA = recentDocs.findIndex(doc => doc.id === a.id);
-            const indexB = recentDocs.findIndex(doc => doc.id === b.id);
-
-            if (indexA > -1 && indexB < 0) {
-              return -1;
-            } else if (indexA < 0 && indexB > -1) {
-              return 1;
-            } else if (indexA > -1 && indexB > -1) {
-              return indexA - indexB;
-            }
-
-            return Number.MAX_SAFE_INTEGER;
+    const docMetas = showRecent
+      ? this.recentDocsService
+          .getRecentDocs()
+          .map(record => {
+            return rawMetas.find(meta => meta.id === record.id);
           })
-        : rawMetas;
+          .filter((m): m is DocMeta => !!m)
+      : rawMetas;
 
     const docDisplayMetaService = this.docDisplayMetaService;
 
@@ -126,7 +125,7 @@ export class AtMenuConfigService extends Service {
     };
 
     (async () => {
-      for (const [index, meta] of sortedRawMetas.entries()) {
+      for (const [index, meta] of docMetas.entries()) {
         if (abortSignal.aborted) {
           return;
         }
@@ -144,7 +143,11 @@ export class AtMenuConfigService extends Service {
     })().catch(console.error);
 
     return {
-      name: I18n.t('com.affine.editor.at-menu.link-to-doc'),
+      name: showRecent
+        ? I18n.t('com.affine.editor.at-menu.recent-docs')
+        : I18n.t('com.affine.editor.at-menu.link-to-doc', {
+            query,
+          }),
       items: docItems,
       maxDisplay: MAX_DOCS,
       get overflowText() {
@@ -182,13 +185,50 @@ export class AtMenuConfigService extends Service {
       return originalNewDocMenuGroup;
     }
 
-    const customNewDocItem: LinkedMenuItem = {
-      ...newDocItem,
-      name: I18n.t('com.affine.editor.at-menu.create-doc', {
-        name: query || I18n.t('Untitled'),
-      }),
+    const createPage = (mode: DocMode) => {
+      const page = this.docsService.createDoc({
+        docProps: {
+          note: this.editorSettingService.editorSetting.get('affine:note'),
+          page: { title: new Text(query) },
+        },
+        primaryMode: mode,
+      });
+
+      return page;
     };
 
+    const customNewDocItems: LinkedMenuItem[] = [
+      {
+        key: 'create-page',
+        icon: NewXxxPageIcon(),
+        name: I18n.t('com.affine.editor.at-menu.create-page', {
+          name: query || I18n.t('Untitled'),
+        }),
+        action: () => {
+          close();
+          const page = createPage('page');
+          this.insertDoc(inlineEditor, page.id);
+          track.doc.editor.atMenu.createDoc({
+            mode: 'page',
+          });
+        },
+      },
+      {
+        key: 'create-edgeless',
+        icon: NewXxxEdgelessIcon(),
+        name: I18n.t('com.affine.editor.at-menu.create-edgeless', {
+          name: query || I18n.t('Untitled'),
+        }),
+        action: () => {
+          close();
+          const page = createPage('edgeless');
+          this.insertDoc(inlineEditor, page.id);
+          track.doc.editor.atMenu.createDoc({
+            mode: 'edgeless',
+          });
+        },
+      },
+    ];
     const customImportItem: LinkedMenuItem = {
       ...importItem,
       name: I18n.t('com.affine.editor.at-menu.import'),
@@ -203,10 +243,7 @@ export class AtMenuConfigService extends Service {
           // If the imported file is a workspace file, insert the entry page node.
           const { docIds, entryId, isWorkspaceFile } = payload;
           if (isWorkspaceFile && entryId) {
-            LinkedWidgetUtils.insertLinkedNode({
-              inlineEditor,
-              docId: entryId,
-            });
+            this.insertDoc(inlineEditor, entryId);
             return;
           }
 
@@ -221,7 +258,7 @@ export class AtMenuConfigService extends Service {
     return {
       ...originalNewDocMenuGroup,
       name: I18n.t('com.affine.editor.at-menu.new-doc'),
-      items: [customNewDocItem, customImportItem],
+      items: [...customNewDocItems, customImportItem],
     };
   }
 
@@ -252,12 +289,12 @@ export class AtMenuConfigService extends Service {
 
           const { x, y, width, height } = getRect();
 
-          const id = this.workspaceDialogService.open('date-selector', {
+          const id = this.dialogService.open('date-selector', {
             position: [x, y, width, height || 20],
             onSelect: date => {
               if (date) {
                 onSelectDate(date);
-                this.workspaceDialogService.close(id);
+                this.dialogService.close(id);
               }
             },
           });
@@ -325,164 +362,4 @@ export class AtMenuConfigService extends Service {
       },
     };
   }
-}
-
-/**
- * Checks if the name is a fuzzy match of the query.
- *
- * @example
- * ```ts
- * const name = 'John Smith';
- * const query = 'js';
- * const isMatch = fuzzyMatch(name, query);
- * // isMatch: true
- * ```
- *
- * if initialMatch = true, the first char must match as well
- */
-function fuzzyMatch(name: string, query: string, matchInitial?: boolean) {
-  const pureName = name
-    .trim()
-    .toLowerCase()
-    .split('')
-    .filter(char => char !== ' ')
-    .join('');
-
-  const regex = new RegExp(
-    query
-      .split('')
-      .filter(char => char !== ' ')
-      .map(item => `${escapeRegExp(item)}.*`)
-      .join(''),
-    'i'
-  );
-
-  if (matchInitial && query.length > 0 && !pureName.startsWith(query[0])) {
-    return false;
-  }
-
-  return regex.test(pureName);
-}
-
-function escapeRegExp(input: string) {
-  // escape regex characters in the input string to prevent regex format errors
-  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-// todo: infer locale from user's locale?
-const monthNames = Array.from({ length: 12 }, (_, index) =>
-  new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
-    new Date(2024, index)
-  )
-);
-
-// todo: infer locale from user's locale?
-const weekDayNames = Array.from({ length: 7 }, (_, index) =>
-  new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(
-    new Date(2024, 0, index)
-  )
-);
-
-export function suggestJournalDate(query: string): {
-  dateString: string;
-  alias?: string;
-} | null {
-  // given a query string, suggest a journal date
-  // if the query is empty or, starts with "t" AND matches today
-  //   -> suggest today's date
-  // if the query starts with "y" AND matches "yesterday"
-  //   -> suggest yesterday's date
-  // if the query starts with "l" AND matches last
-  //   -> suggest last week's date
-  // if the query starts with "n" AND matches "next"
-  //   -> suggest next week's date
-  // if the query starts with the first letter of a month and matches the month name
-  //   -> if the trailing part matches a number
-  //      -> suggest the date of the month
-  //      -> otherwise, suggest the current day of the month
-  // otherwise, return null
-  query = query.trim().toLowerCase().split(' ').join('');
-
-  if (query === '' || fuzzyMatch('today', query, true)) {
-    return {
-      dateString: dayjs().format(JOURNAL_DATE_FORMAT),
-      alias: I18n.t('com.affine.today'),
-    };
-  }
-
-  if (fuzzyMatch('tomorrow', query, true)) {
-    return {
-      dateString: dayjs().add(1, 'day').format(JOURNAL_DATE_FORMAT),
-      alias: I18n.t('com.affine.tomorrow'),
-    };
-  }
-
-  if (fuzzyMatch('yesterday', query, true)) {
-    return {
-      dateString: dayjs().subtract(1, 'day').format(JOURNAL_DATE_FORMAT),
-      alias: I18n.t('com.affine.yesterday'),
-    };
-  }
-
-  // next week dates, start from monday
-  const nextWeekDates = Array.from({ length: 7 }, (_, index) =>
-    dayjs()
-      .add(1, 'week')
-      .startOf('week')
-      .add(index, 'day')
-      .format(JOURNAL_DATE_FORMAT)
-  ).map(date => ({
-    dateString: date,
-    alias: I18n.t('com.affine.next-week', {
-      weekday: weekDayNames[dayjs(date).day()],
-    }),
-  }));
-
-  const lastWeekDates = Array.from({ length: 7 }, (_, index) =>
-    dayjs()
-      .subtract(1, 'week')
-      .startOf('week')
-      .add(index, 'day')
-      .format(JOURNAL_DATE_FORMAT)
-  ).map(date => ({
-    dateString: date,
-    alias: I18n.t('com.affine.last-week', {
-      weekday: weekDayNames[dayjs(date).day()],
-    }),
-  }));
-
-  for (const date of [...nextWeekDates, ...lastWeekDates]) {
-    const matched = fuzzyMatch(date.alias, query, true);
-    if (matched) {
-      return date;
-    }
-  }
-
-  // if query is a string that starts with alphabet letters and/or numbers
-  const regex = new RegExp(`^([a-z]+)(\\d*)$`, 'i');
-  const matched = query.match(regex);
-
-  if (matched) {
-    const [_, letters, numbers] = matched;
-
-    for (const month of monthNames) {
-      const monthMatched = fuzzyMatch(month, letters, true);
-      if (monthMatched) {
-        let day = numbers ? parseInt(numbers) : dayjs().date();
-        const invalidDay = day < 1 || day > 31;
-        if (invalidDay) {
-          // fallback to today's day
-          day = dayjs().date();
-        }
-        const year = dayjs().year();
-        return {
-          dateString: dayjs(`${year}-${month}-${day}`).format(
-            JOURNAL_DATE_FORMAT
-          ),
-        };
-      }
-    }
-  }
-
-  return null;
 }

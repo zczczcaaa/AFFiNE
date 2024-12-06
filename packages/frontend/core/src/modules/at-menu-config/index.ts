@@ -1,4 +1,5 @@
 import {
+  DocsService,
   type Framework,
   WorkspaceScope,
   WorkspaceService,
@@ -6,6 +7,7 @@ import {
 
 import { WorkspaceDialogService } from '../dialogs';
 import { DocDisplayMetaService } from '../doc-display-meta';
+import { EditorSettingService } from '../editor-setting';
 import { JournalService } from '../journal';
 import { RecentDocsService } from '../quicksearch';
 import { AtMenuConfigService } from './services';
@@ -19,6 +21,7 @@ export function configAtMenuConfigModule(framework: Framework) {
       DocDisplayMetaService,
       WorkspaceDialogService,
       RecentDocsService,
-      WorkspaceDialogService,
+      EditorSettingService,
+      DocsService,
     ]);
 }
