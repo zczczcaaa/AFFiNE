@@ -6,6 +6,8 @@ import {
 import { Slot } from '@blocksuite/affine/store';
 import { captureException } from '@sentry/react';
 
+import type { ChatContextValue } from './chat-panel/chat-context';
+
 export interface AIUserInfo {
   id: string;
   email: string;
@@ -18,6 +20,12 @@ export interface AIChatParams {
   mode?: 'page' | 'edgeless';
   // Auto select and append selection to input via `Continue with AI` action.
   autoSelect?: boolean;
+  appendCard?: boolean;
+}
+
+export interface AISendParams {
+  input?: string;
+  context?: Partial<ChatContextValue | null>;
 }
 
 export type ActionEventType =
@@ -104,6 +112,7 @@ export class AIProvider {
     // use case: when user selects "continue in chat" in an ask ai result panel
     // do we need to pass the context to the chat panel?
     requestOpenWithChat: new Slot<AIChatParams>(),
+    requestSendWithChat: new Slot<AISendParams>(),
     requestInsertTemplate: new Slot<{
       template: string;
       mode: 'page' | 'edgeless';

@@ -1,6 +1,8 @@
 import { TextRenderer } from './_common/components/text-renderer';
 import { AskAIButton } from './ai/_common/components/ask-ai-button';
+import { AskAIIcon } from './ai/_common/components/ask-ai-icon';
 import { AskAIPanel } from './ai/_common/components/ask-ai-panel';
+import { AskAIToolbarButton } from './ai/_common/components/ask-ai-toolbar';
 import { ChatActionList } from './ai/_common/components/chat-action-list';
 import { ChatCopyMore } from './ai/_common/components/copy-more';
 import { ChatPanel } from './ai/chat-panel';
@@ -36,7 +38,9 @@ import { ImagePlaceholder } from './blocks/ai-chat-block/components/image-placeh
 import { UserInfo } from './blocks/ai-chat-block/components/user-info';
 
 export function registerBlocksuitePresetsCustomComponents() {
+  customElements.define('ask-ai-icon', AskAIIcon);
   customElements.define('ask-ai-button', AskAIButton);
+  customElements.define('ask-ai-toolbar-button', AskAIToolbarButton);
   customElements.define('ask-ai-panel', AskAIPanel);
   customElements.define('chat-action-list', ChatActionList);
   customElements.define('chat-copy-more', ChatCopyMore);

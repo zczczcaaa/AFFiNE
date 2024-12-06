@@ -15,11 +15,12 @@ export function setupFormatBarAIEntry(formatBar: AffineFormatBarWidget) {
       {
         type: 'custom' as const,
         render(formatBar: AffineFormatBarWidget): TemplateResult | null {
-          return html` <ask-ai-button
-            .host=${formatBar.host}
-            .actionGroups=${AIItemGroups}
-            .toggleType=${'hover'}
-          ></ask-ai-button>`;
+          return html`
+            <ask-ai-toolbar-button
+              .host=${formatBar.host}
+              .actionGroups=${AIItemGroups}
+            ></ask-ai-toolbar-button>
+          `;
         },
       },
       { type: 'divider' },

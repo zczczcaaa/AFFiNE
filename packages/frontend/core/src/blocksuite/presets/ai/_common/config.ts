@@ -399,7 +399,11 @@ const OthersAIGroup: AIItemGroupConfig = {
       icon: CommentIcon,
       handler: host => {
         const panel = getAIPanel(host);
-        AIProvider.slots.requestOpenWithChat.emit({ host, autoSelect: true });
+        AIProvider.slots.requestOpenWithChat.emit({
+          host,
+          autoSelect: true,
+          appendCard: true,
+        });
         panel.hide();
       },
     },

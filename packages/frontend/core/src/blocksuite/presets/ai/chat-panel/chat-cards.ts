@@ -506,7 +506,9 @@ export class ChatCards extends WithDisposable(LitElement) {
 
     this._disposables.add(
       AIProvider.slots.requestOpenWithChat.on(async params => {
-        await this._appendCardWithParams(params);
+        if (params.appendCard) {
+          await this._appendCardWithParams(params);
+        }
       })
     );
 

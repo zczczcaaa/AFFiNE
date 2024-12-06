@@ -110,6 +110,7 @@ const othersGroup: AIItemGroupConfig = {
           host,
           mode: 'edgeless',
           autoSelect: true,
+          appendCard: true,
         });
         panel.hide();
       },

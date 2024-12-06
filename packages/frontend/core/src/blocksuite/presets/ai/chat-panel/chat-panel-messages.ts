@@ -263,7 +263,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         ></chat-cards>
       </div>
       ${this.showDownIndicator
-        ? html`<div class="down-indicator" @click=${() => this.scrollToDown()}>
+        ? html`<div class="down-indicator" @click=${this.scrollToEnd}>
             ${DownArrowIcon}
           </div>`
         : nothing} `;
@@ -387,8 +387,15 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
     return html` <ai-loading></ai-loading>`;
   }
 
-  scrollToDown() {
-    this.messagesContainer.scrollTo(0, this.messagesContainer.scrollHeight);
+  scrollToEnd() {
+    this.updateComplete
+      .then(() => {
+        this.messagesContainer.scrollTo({
+          top: this.messagesContainer.scrollHeight,
+          behavior: 'smooth',
+        });
+      })
+      .catch(console.error);
   }
 
   retry = async () => {
