@@ -57,7 +57,7 @@ export class PriorityQueue {
     this.priorityMap.clear();
   }
 
-  updatePriority(id: string, priority: number) {
+  setPriority(id: string, priority: number) {
     if (this.remove(id)) {
       this.push(id, priority);
     }

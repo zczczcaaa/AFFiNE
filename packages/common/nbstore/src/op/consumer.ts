@@ -104,8 +104,12 @@ export class SpaceStorageConsumer extends SpaceStorage {
   }
 
   private registerBlobHandlers(storage: BlobStorage) {
-    this.consumer.register('getBlob', storage.get.bind(storage));
-    this.consumer.register('setBlob', storage.set.bind(storage));
+    this.consumer.register('getBlob', key => {
+      return storage.get(key);
+    });
+    this.consumer.register('setBlob', blob => {
+      return storage.set(blob);
+    });
     this.consumer.register('deleteBlob', ({ key, permanently }) => {
       return storage.delete(key, permanently);
     });

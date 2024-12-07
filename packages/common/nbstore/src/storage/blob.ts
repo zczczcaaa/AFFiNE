@@ -21,9 +21,13 @@ export abstract class BlobStorage<
 > extends Storage<Options> {
   override readonly storageType = 'blob';
 
-  abstract get(key: string): Promise<BlobRecord | null>;
-  abstract set(blob: BlobRecord): Promise<void>;
-  abstract delete(key: string, permanently: boolean): Promise<void>;
-  abstract release(): Promise<void>;
-  abstract list(): Promise<ListedBlobRecord[]>;
+  abstract get(key: string, signal?: AbortSignal): Promise<BlobRecord | null>;
+  abstract set(blob: BlobRecord, signal?: AbortSignal): Promise<void>;
+  abstract delete(
+    key: string,
+    permanently: boolean,
+    signal?: AbortSignal
+  ): Promise<void>;
+  abstract release(signal?: AbortSignal): Promise<void>;
+  abstract list(signal?: AbortSignal): Promise<ListedBlobRecord[]>;
 }
