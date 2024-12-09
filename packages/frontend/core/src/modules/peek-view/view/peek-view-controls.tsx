@@ -169,7 +169,8 @@ export const AttachmentPeekViewControls = ({
         name: t['com.affine.peek-view-controls.close'](),
         onClick: () => peekView.close(),
       },
-      {
+      // TODO(@fundon): needs to be implemented on mobile
+      BUILD_CONFIG.isDesktopEdition && {
         icon: <ExpandFullIcon />,
         name: t['com.affine.peek-view-controls.open-attachment'](),
         nameKey: 'open',
