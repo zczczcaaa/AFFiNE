@@ -56,6 +56,7 @@ import {
   patchEmbedLinkedDocBlockConfig,
   patchForMobile,
   patchForSharedPage,
+  patchGenerateDocUrlExtension,
   patchNotificationService,
   patchParseDocUrlExtension,
   patchPeekViewService,
@@ -112,6 +113,8 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
       const pageId = data.pageId;
       if (!pageId) return <span />;
 
+      // title alias
+      const title = data.title;
       const params = toURLSearchParams(data.params);
 
       if (workspaceService.workspace.openOptions.isSharedMode) {
@@ -120,11 +123,14 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
             docCollection={workspaceService.workspace.docCollection}
             pageId={pageId}
             params={params}
+            title={title}
           />
         );
       }
 
-      return <AffinePageReference pageId={pageId} params={params} />;
+      return (
+        <AffinePageReference pageId={pageId} params={params} title={title} />
+      );
     };
   }, [workspaceService]);
 
@@ -147,6 +153,7 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     patched = patched.concat(patchPeekViewService(peekViewService));
     patched = patched.concat(patchEdgelessClipboard());
     patched = patched.concat(patchParseDocUrlExtension(framework));
+    patched = patched.concat(patchGenerateDocUrlExtension(framework));
     patched = patched.concat(patchQuickSearchService(framework));
     patched = patched.concat(patchEmbedLinkedDocBlockConfig(framework));
     if (shared) {

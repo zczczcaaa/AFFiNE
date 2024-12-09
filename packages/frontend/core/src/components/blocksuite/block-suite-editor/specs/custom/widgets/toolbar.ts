@@ -93,7 +93,7 @@ function createCopyLinkToBlockMenuItem(
       const mode = editor.mode$.value;
       const pageId = editor.doc.id;
       const workspaceId = editor.doc.workspace.id;
-      const options: UseSharingUrl = { workspaceId, pageId, shareMode: mode };
+      const options: UseSharingUrl = { workspaceId, pageId, mode };
       let type = '';
 
       if (mode === 'page') {

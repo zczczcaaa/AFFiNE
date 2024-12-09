@@ -7,6 +7,7 @@ import {
   toReactNode,
   type useConfirmModal,
 } from '@affine/component';
+import { WorkspaceServerService } from '@affine/core/modules/cloud';
 import type { EditorService } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { resolveLinkToDoc } from '@affine/core/modules/navigation';
@@ -47,6 +48,7 @@ import {
   EdgelessRootBlockComponent,
   EmbedLinkedDocBlockComponent,
   EmbedLinkedDocBlockConfigExtension,
+  GenerateDocUrlExtension,
   MobileSpecsPatches,
   NotificationExtension,
   ParseDocUrlExtension,
@@ -55,6 +57,7 @@ import {
   ReferenceNodeConfigExtension,
 } from '@blocksuite/affine/blocks';
 import { type BlockSnapshot, Text } from '@blocksuite/affine/store';
+import type { ReferenceParams } from '@blocksuite/affine-model';
 import {
   AIChatBlockSchema,
   type DocProps,
@@ -68,6 +71,7 @@ import { customElement } from 'lit/decorators.js';
 import { literal } from 'lit/static-html.js';
 import { pick } from 'lodash-es';
 
+import { generateUrl } from '../../../../hooks/affine/use-share-url';
 import { createKeyboardToolbarConfig } from './widgets/keyboard-toolbar';
 
 export type ReferenceReactRenderer = (
@@ -110,13 +114,13 @@ export function patchReferenceRenderer(
   reactToLit: (element: ElementOrFactory) => TemplateResult,
   reactRenderer: ReferenceReactRenderer
 ): ExtensionType {
-  const litRenderer = (reference: AffineReference) => {
+  const customContent = (reference: AffineReference) => {
     const node = reactRenderer(reference);
     return reactToLit(node);
   };
 
   return ReferenceNodeConfigExtension({
-    customContent: litRenderer,
+    customContent,
   });
 }
 
@@ -463,16 +467,30 @@ export function patchParseDocUrlExtension(framework: FrameworkProvider) {
       const info = resolveLinkToDoc(url);
       if (!info || info.workspaceId !== workspaceService.workspace.id) return;
 
-      return {
-        docId: info.docId,
-        blockIds: info.blockIds,
-        elementIds: info.elementIds,
-        mode: info.mode,
-      };
+      delete info.refreshKey;
+
+      return info;
     },
   });
 
   return [ParseDocUrl];
+}
+
+export function patchGenerateDocUrlExtension(framework: FrameworkProvider) {
+  const workspaceService = framework.get(WorkspaceService);
+  const workspaceServerService = framework.get(WorkspaceServerService);
+  const GenerateDocUrl = GenerateDocUrlExtension({
+    generateDocUrl(pageId: string, params?: ReferenceParams) {
+      return generateUrl({
+        ...params,
+        pageId,
+        workspaceId: workspaceService.workspace.id,
+        baseUrl: workspaceServerService.server?.baseUrl ?? location.origin,
+      });
+    },
+  });
+
+  return [GenerateDocUrl];
 }
 
 export function patchEdgelessClipboard() {

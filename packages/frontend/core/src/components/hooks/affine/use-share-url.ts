@@ -13,7 +13,7 @@ import { useCallback } from 'react';
 export type UseSharingUrl = {
   workspaceId: string;
   pageId: string;
-  shareMode?: DocMode;
+  mode?: DocMode;
   blockIds?: string[];
   elementIds?: string[];
   xywh?: string; // not needed currently
@@ -30,7 +30,7 @@ export const generateUrl = ({
   pageId,
   blockIds,
   elementIds,
-  shareMode: mode,
+  mode,
   xywh, // not needed currently
 }: UseSharingUrl & { baseUrl: string }) => {
   try {
@@ -38,23 +38,24 @@ export const generateUrl = ({
     const search = toURLSearchParams({ mode, blockIds, elementIds, xywh });
     if (search?.size) url.search = search.toString();
     return url.toString();
-  } catch {
-    return null;
+  } catch (err) {
+    console.error(err);
+    return undefined;
   }
 };
 
 const getShareLinkType = ({
-  shareMode,
+  mode,
   blockIds,
   elementIds,
 }: {
-  shareMode?: DocMode;
+  mode?: DocMode;
   blockIds?: string[];
   elementIds?: string[];
 }) => {
-  if (shareMode === 'page') {
+  if (mode === 'page') {
     return 'doc';
-  } else if (shareMode === 'edgeless') {
+  } else if (mode === 'edgeless') {
     return 'whiteboard';
   } else if (blockIds && blockIds.length > 0) {
     return 'block';
@@ -131,17 +132,17 @@ export const useSharingUrl = ({ workspaceId, pageId }: UseSharingUrl) => {
   const serverService = useService(ServerService);
 
   const onClickCopyLink = useCallback(
-    (shareMode?: DocMode, blockIds?: string[], elementIds?: string[]) => {
+    (mode?: DocMode, blockIds?: string[], elementIds?: string[]) => {
       const sharingUrl = generateUrl({
         baseUrl: serverService.server.baseUrl,
         workspaceId,
         pageId,
         blockIds,
         elementIds,
-        shareMode, // if view is not provided, use the current view
+        mode, // if view is not provided, use the current view
       });
       const type = getShareLinkType({
-        shareMode,
+        mode,
         blockIds,
         elementIds,
       });

@@ -30,6 +30,7 @@ import * as styles from './styles.css';
 interface AffinePageReferenceProps {
   pageId: string;
   params?: URLSearchParams;
+  title?: string | null; // title alias
   className?: string;
   Icon?: ComponentType;
   onClick?: (e: MouseEvent) => void;
@@ -38,20 +39,21 @@ interface AffinePageReferenceProps {
 function AffinePageReferenceInner({
   pageId,
   params,
+  title,
   Icon: UserIcon,
 }: AffinePageReferenceProps) {
   const docDisplayMetaService = useService(DocDisplayMetaService);
   const docsService = useService(DocsService);
   const i18n = useI18n();
 
-  let linkWithMode: DocMode | null = null;
-  let linkToNode = false;
+  let referenceWithMode: DocMode | null = null;
+  let referenceToNode = false;
   if (params) {
     const m = params.get('mode');
     if (m && (m === 'page' || m === 'edgeless')) {
-      linkWithMode = m as DocMode;
+      referenceWithMode = m as DocMode;
     }
-    linkToNode = params.has('blockIds') || params.has('elementIds');
+    referenceToNode = params.has('blockIds') || params.has('elementIds');
   }
 
   const Icon = useLiveData(
@@ -61,25 +63,33 @@ function AffinePageReferenceInner({
       }
       return get(
         docDisplayMetaService.icon$(pageId, {
-          mode: linkWithMode ?? undefined,
+          mode: referenceWithMode ?? undefined,
           reference: true,
-          referenceToNode: linkToNode,
+          referenceToNode,
+          hasTitleAlias: Boolean(title),
         })
       );
     })
   );
+
   const notFound = !useLiveData(docsService.list.doc$(pageId));
 
-  let title = useLiveData(
+  const docTitle = useLiveData(
     docDisplayMetaService.title$(pageId, { reference: true })
   );
 
-  title = notFound ? i18n.t('com.affine.notFoundPage.title') : title;
+  if (notFound) {
+    title = i18n.t('com.affine.notFoundPage.title');
+  }
+
+  if (!title) {
+    title = i18n.t(docTitle);
+  }
 
   return (
     <span className={notFound ? styles.notFound : ''}>
       <Icon className={styles.pageReferenceIcon} />
-      <span className="affine-reference-title">{i18n.t(title)}</span>
+      <span className="affine-reference-title">{title}</span>
     </span>
   );
 }
@@ -87,6 +97,7 @@ function AffinePageReferenceInner({
 export function AffinePageReference({
   pageId,
   params,
+  title,
   className,
   Icon,
   onClick: userOnClick,
@@ -152,7 +163,12 @@ export function AffinePageReference({
       onClick={onClick}
       className={clsx(styles.pageReferenceLink, className)}
     >
-      <AffinePageReferenceInner pageId={pageId} params={params} Icon={Icon} />
+      <AffinePageReferenceInner
+        pageId={pageId}
+        params={params}
+        title={title}
+        Icon={Icon}
+      />
     </WorkbenchLink>
   );
 }
@@ -161,6 +177,7 @@ export function AffineSharedPageReference({
   pageId,
   docCollection,
   params,
+  title,
   Icon,
   onClick: userOnClick,
 }: AffinePageReferenceProps & {
@@ -213,7 +230,12 @@ export function AffineSharedPageReference({
       onClick={onClick}
       className={styles.pageReferenceLink}
     >
-      <AffinePageReferenceInner pageId={pageId} params={params} Icon={Icon} />
+      <AffinePageReferenceInner
+        pageId={pageId}
+        params={params}
+        title={title}
+        Icon={Icon}
+      />
     </Link>
   );
 }

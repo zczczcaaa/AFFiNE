@@ -580,3 +580,305 @@ test('should show edgeless content when switching card view of linked mode doc i
     edgelessText.y + edgelessText.height
   );
 });
+
+// Aliases & Copy link
+test.describe('Customize linked doc title and description', () => {
+  // Inline View
+  test('should set a custom title for inline link', async ({ page }) => {
+    await page.keyboard.press('Enter');
+    await createLinkedPage(page, 'Test Page');
+
+    const link = page.locator('affine-reference');
+    const title = link.locator('.affine-reference-title');
+    await link.hover();
+
+    const toolbar = page.locator('reference-popup');
+
+    // Copies link
+    await toolbar.getByRole('button', { name: 'Copy link' }).click();
+    const url0 = await link.locator('a').getAttribute('href');
+    const url1 = await (
+      await page.evaluateHandle(() => navigator.clipboard.readText())
+    ).jsonValue();
+    expect(url0).not.toBeNull();
+    expect(new URL(url0!, coreUrl).pathname).toBe(new URL(url1).pathname);
+
+    // Edits title
+    await toolbar.getByRole('button', { name: 'Edit' }).click();
+
+    // Title alias
+    await page.keyboard.type('Test Page Alias');
+    await page.keyboard.press('Enter');
+
+    await expect(title).toHaveText('Test Page Alias');
+
+    // Original title
+    await link.hover();
+    const docTitle = toolbar.getByRole('button', { name: 'Doc title' });
+    await expect(docTitle).toHaveText('Test Page', { useInnerText: true });
+
+    // Edits title
+    await toolbar.getByRole('button', { name: 'Edit' }).click();
+
+    const aliasPopup = page.locator('reference-alias-popup');
+
+    // Input
+    await expect(aliasPopup.locator('input')).toHaveValue('Test Page Alias');
+
+    // Reset
+    await aliasPopup.getByRole('button', { name: 'Reset' }).click();
+
+    await expect(title).toHaveText('Test Page');
+
+    await link.hover();
+    await expect(docTitle).toBeHidden();
+  });
+
+  // Card View
+  test('should set a custom title and description for card link', async ({
+    page,
+  }) => {
+    await page.keyboard.press('Enter');
+    await createLinkedPage(page, 'Test Page');
+
+    const inlineLink = page.locator('affine-reference');
+    const inlineToolbar = page.locator('reference-popup');
+
+    await inlineLink.hover();
+
+    // Copies link
+    await inlineToolbar.getByRole('button', { name: 'Copy link' }).click();
+    const url0 = await (
+      await page.evaluateHandle(() => navigator.clipboard.readText())
+    ).jsonValue();
+
+    // Edits title
+    await inlineToolbar.getByRole('button', { name: 'Edit' }).click();
+
+    // Title alias
+    await page.keyboard.type('Test Page Alias');
+    await page.keyboard.press('Enter');
+
+    await inlineLink.hover();
+
+    // Switches to card view
+    await inlineToolbar.getByRole('button', { name: 'Switch view' }).click();
+    await inlineToolbar.getByRole('button', { name: 'Card view' }).click();
+
+    const cardLink = page.locator('affine-embed-linked-doc-block');
+    const cardTitle = cardLink.locator(
+      '.affine-embed-linked-doc-content-title-text'
+    );
+    const cardDescription = cardLink.locator(
+      '.affine-embed-linked-doc-content-note.alias'
+    );
+    const cardToolbar = page.locator('affine-embed-card-toolbar');
+
+    await cardLink.click();
+
+    // Copies link
+    await cardToolbar.getByRole('button', { name: 'Copy link' }).click();
+    const url1 = await (
+      await page.evaluateHandle(() => navigator.clipboard.readText())
+    ).jsonValue();
+
+    expect(url0).not.toBeNull();
+    expect(url1).not.toBeNull();
+    expect(url0).toBe(url1);
+
+    const docTitle = cardToolbar.getByRole('button', { name: 'Doc title' });
+    await expect(docTitle).toHaveText('Test Page', { useInnerText: true });
+    await expect(cardTitle).toHaveText('Test Page Alias');
+
+    // Edits title & description
+    await cardToolbar.getByRole('button', { name: 'Edit' }).click();
+
+    const cardEditPopup = page.locator('embed-card-edit-modal');
+
+    // Title alias
+    await page.keyboard.type('Test Page Alias Again');
+    await page.keyboard.press('Tab');
+    // Description alias
+    await page.keyboard.type('This is a new description');
+
+    // Saves aliases
+    await cardEditPopup.getByRole('button', { name: 'Save' }).click();
+    await expect(cardTitle).toHaveText('Test Page Alias Again');
+    await expect(cardDescription).toHaveText('This is a new description');
+
+    await cardLink.click();
+
+    // Switches to inline view
+    {
+      await cardToolbar.getByRole('button', { name: 'Switch view' }).click();
+      await cardToolbar.getByRole('button', { name: 'Inline view' }).click();
+
+      // Focuses inline editor
+      const bounds = (await inlineLink.boundingBox())!;
+      await page.mouse.click(
+        bounds.x + bounds.width + 30,
+        bounds.y + bounds.height / 2
+      );
+
+      await inlineLink.hover();
+
+      const title = inlineLink.locator('.affine-reference-title');
+      await expect(title).toHaveText('Test Page Alias Again');
+
+      // Switches to card view
+      await inlineToolbar.getByRole('button', { name: 'Switch view' }).click();
+      await inlineToolbar.getByRole('button', { name: 'Card view' }).click();
+    }
+
+    await cardLink.click();
+
+    await cardToolbar.getByRole('button', { name: 'Edit' }).click();
+
+    // Resets
+    await cardEditPopup.getByRole('button', { name: 'Reset' }).click();
+
+    await expect(cardTitle).toHaveText('Test Page');
+    await expect(cardDescription).toBeHidden();
+  });
+
+  // Embed View
+  test('should automatically switch to card view and set a custom title and description', async ({
+    page,
+  }) => {
+    await page.keyboard.press('Enter');
+    await createLinkedPage(page, 'Test Page');
+
+    const inlineLink = page.locator('affine-reference');
+    const inlineToolbar = page.locator('reference-popup');
+
+    await inlineLink.hover();
+
+    // Copies link
+    await inlineToolbar.getByRole('button', { name: 'Copy link' }).click();
+    const url0 = await (
+      await page.evaluateHandle(() => navigator.clipboard.readText())
+    ).jsonValue();
+
+    // Switches to card view
+    await inlineToolbar.getByRole('button', { name: 'Switch view' }).click();
+    await inlineToolbar.getByRole('button', { name: 'Card view' }).click();
+
+    const cardLink = page.locator('affine-embed-linked-doc-block');
+    const cardTitle = cardLink.locator(
+      '.affine-embed-linked-doc-content-title-text'
+    );
+    const cardDescription = cardLink.locator(
+      '.affine-embed-linked-doc-content-note.alias'
+    );
+    const cardToolbar = page.locator('affine-embed-card-toolbar');
+
+    await cardLink.click();
+
+    // Copies link
+    await cardToolbar.getByRole('button', { name: 'Copy link' }).click();
+    const url1 = await (
+      await page.evaluateHandle(() => navigator.clipboard.readText())
+    ).jsonValue();
+
+    // Switches to embed view
+    await cardToolbar.getByRole('button', { name: 'Switch view' }).click();
+    await cardToolbar.getByRole('button', { name: 'Embed view' }).click();
+
+    const embedLink = page.locator('affine-embed-synced-doc-block');
+    const embedTitle = embedLink.locator('.affine-embed-synced-doc-title');
+    const embedToolbar = page.locator('affine-embed-card-toolbar');
+
+    await embedLink.click();
+
+    // Copies link
+    await embedToolbar.getByRole('button', { name: 'Copy link' }).click();
+    const url2 = await (
+      await page.evaluateHandle(() => navigator.clipboard.readText())
+    ).jsonValue();
+
+    expect(url0).not.toBeNull();
+    expect(url1).not.toBeNull();
+    expect(url2).not.toBeNull();
+    expect(url0).toBe(url1);
+    expect(url1).toBe(url2);
+
+    // Edits title & description
+    await embedToolbar.getByRole('button', { name: 'Edit' }).click();
+
+    const embedEditPopup = page.locator('embed-card-edit-modal');
+
+    // Title alias
+    await page.keyboard.type('Test Page Alias Again');
+    await page.keyboard.press('Tab');
+    // Description alias
+    await page.keyboard.type('This is a new description');
+
+    // Cancels
+    await embedEditPopup.getByRole('button', { name: 'Cancel' }).click();
+    await expect(embedEditPopup).toBeHidden();
+
+    await embedLink.click();
+
+    // Edits title & description
+    await embedToolbar.getByRole('button', { name: 'Edit' }).click();
+
+    // Title alias
+    await page.keyboard.type('Test Page Alias');
+    await page.keyboard.press('Tab');
+    // Description alias
+    await page.keyboard.type('This is a new description');
+
+    // Saves aliases
+    await embedEditPopup.getByRole('button', { name: 'Save' }).click();
+
+    // Automatically switch to card view
+    await expect(embedLink).toBeHidden();
+
+    await expect(cardTitle).toHaveText('Test Page Alias');
+    await expect(cardDescription).toHaveText('This is a new description');
+
+    await cardLink.click();
+
+    const docTitle = cardToolbar.getByRole('button', { name: 'Doc title' });
+    await expect(docTitle).toHaveText('Test Page', { useInnerText: true });
+    await expect(cardTitle).toHaveText('Test Page Alias');
+
+    // Switches to embed view
+    await cardToolbar.getByRole('button', { name: 'Switch view' }).click();
+    await cardToolbar.getByRole('button', { name: 'Embed view' }).click();
+
+    await expect(embedTitle).toHaveText('Test Page');
+
+    await embedLink.click();
+
+    // Switches to inline view
+    {
+      await embedToolbar.getByRole('button', { name: 'Switch view' }).click();
+      await embedToolbar.getByRole('button', { name: 'Inline view' }).click();
+
+      // Focuses inline editor
+      const bounds = (await inlineLink.boundingBox())!;
+      await page.mouse.click(
+        bounds.x + bounds.width + 30,
+        bounds.y + bounds.height / 2
+      );
+
+      await inlineLink.hover();
+
+      // Upstreams: https://github.com/toeverything/blocksuite/pull/8884
+      // const title = inlineLink.locator('.affine-reference-title');
+      // await expect(title).toHaveText('Test Page');
+
+      // Switches to embed view
+      await inlineToolbar.getByRole('button', { name: 'Switch view' }).click();
+      await inlineToolbar.getByRole('button', { name: 'Embed view' }).click();
+    }
+
+    await embedLink.click();
+
+    await expect(embedTitle).toHaveText('Test Page');
+    await expect(
+      embedToolbar.getByRole('button', { name: 'Doc title' })
+    ).toBeHidden();
+  });
+});

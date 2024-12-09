@@ -1,6 +1,7 @@
 import { extractEmojiIcon } from '@affine/core/utils';
 import { i18nTime } from '@affine/i18n';
 import {
+  AliasIcon as LitAliasIcon,
   BlockLinkIcon as LitBlockLinkIcon,
   EdgelessIcon as LitEdgelessIcon,
   LinkedEdgelessIcon as LitLinkedEdgelessIcon,
@@ -11,6 +12,7 @@ import {
   YesterdayIcon as LitYesterdayIcon,
 } from '@blocksuite/icons/lit';
 import {
+  AliasIcon,
   BlockLinkIcon,
   EdgelessIcon,
   LinkedEdgelessIcon,
@@ -42,6 +44,7 @@ interface DocDisplayIconOptions<T extends IconType> {
   mode?: 'edgeless' | 'page';
   reference?: boolean;
   referenceToNode?: boolean;
+  hasTitleAlias?: boolean;
   /**
    * @default true
    */
@@ -57,6 +60,7 @@ interface DocDisplayTitleOptions {
 }
 
 const rcIcons = {
+  AliasIcon,
   BlockLinkIcon,
   EdgelessIcon,
   LinkedEdgelessIcon,
@@ -67,6 +71,7 @@ const rcIcons = {
   YesterdayIcon,
 };
 const litIcons = {
+  AliasIcon: LitAliasIcon,
   BlockLinkIcon: LitBlockLinkIcon,
   EdgelessIcon: LitEdgelessIcon,
   LinkedEdgelessIcon: LitLinkedEdgelessIcon,
@@ -130,6 +135,12 @@ export class DocDisplayMetaService extends Service {
       const mode = doc ? get(doc.primaryMode$) : undefined;
       const finalMode = options?.mode ?? mode ?? 'page';
       const referenceToNode = !!(options?.reference && options.referenceToNode);
+      const hasTitleAlias = !!(options?.reference && options?.hasTitleAlias);
+
+      // increases block link priority with title alias
+      if (hasTitleAlias) {
+        return iconSet.AliasIcon;
+      }
 
       // increases block link priority
       if (referenceToNode) {

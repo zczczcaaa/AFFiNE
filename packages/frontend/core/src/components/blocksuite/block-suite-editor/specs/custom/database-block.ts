@@ -52,7 +52,7 @@ function createCopyLinkToBlockMenuItem(
       const options: UseSharingUrl = {
         workspaceId,
         pageId,
-        shareMode: mode,
+        mode,
         blockIds: [model.id],
       };
 
