@@ -11,29 +11,41 @@ import {
   QuotaService,
   QuotaType,
 } from '../src/core/quota';
+import { OneGB, OneMB } from '../src/core/quota/constant';
 import { FreePlan, ProPlan } from '../src/core/quota/schema';
 import { StorageModule } from '../src/core/storage';
+import { WorkspaceResolver } from '../src/core/workspaces/resolvers';
 import { createTestingModule } from './utils';
+import { WorkspaceResolverMock } from './utils/feature';
 
 const test = ava as TestFn<{
   auth: AuthService;
   quota: QuotaService;
   quotaManager: QuotaManagementService;
+  workspace: WorkspaceResolver;
   module: TestingModule;
 }>;
 
 test.beforeEach(async t => {
   const module = await createTestingModule({
     imports: [StorageModule, QuotaModule],
+    providers: [WorkspaceResolver],
+    tapModule: module => {
+      module
+        .overrideProvider(WorkspaceResolver)
+        .useClass(WorkspaceResolverMock);
+    },
   });
 
   const quota = module.get(QuotaService);
   const quotaManager = module.get(QuotaManagementService);
+  const workspace = module.get(WorkspaceResolver);
   const auth = module.get(AuthService);
 
   t.context.module = module;
   t.context.quota = quota;
   t.context.quotaManager = quotaManager;
+  t.context.workspace = workspace;
   t.context.auth = auth;
 });
 
@@ -127,4 +139,29 @@ test('should be able to check quota', async t => {
     freePlan.copilotActionLimit!,
     'should be free plan'
   );
+});
+
+test('should be able to override quota', async t => {
+  const { auth, quotaManager, workspace } = t.context;
+
+  const u1 = await auth.signUp('test@affine.pro', '123456');
+  const w1 = await workspace.createWorkspace(u1, null);
+
+  const wq1 = await quotaManager.getWorkspaceUsage(w1.id);
+  t.is(wq1.blobLimit, 10 * OneMB, 'should be 10MB');
+  t.is(wq1.businessBlobLimit, 100 * OneMB, 'should be 100MB');
+  t.is(wq1.memberLimit, 3, 'should be 3');
+
+  await quotaManager.addTeamWorkspace(w1.id, 'test');
+  const wq2 = await quotaManager.getWorkspaceUsage(w1.id);
+  t.is(wq2.storageQuota, 120 * OneGB, 'should be override to 100GB');
+  t.is(wq2.businessBlobLimit, 500 * OneMB, 'should be override to 500MB');
+  t.is(wq2.memberLimit, 1, 'should be override to 1');
+
+  await quotaManager.updateWorkspaceConfig(w1.id, QuotaType.TeamPlanV1, {
+    memberLimit: 2,
+  });
+  const wq3 = await quotaManager.getWorkspaceUsage(w1.id);
+  t.is(wq3.storageQuota, 140 * OneGB, 'should be override to 120GB');
+  t.is(wq3.memberLimit, 2, 'should be override to 1');
 });

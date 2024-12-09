@@ -10,23 +10,24 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
 import { getStreamAsBuffer } from 'get-stream';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
 import type { FileUpload } from '../../../fundamentals';
 import {
+  Cache,
   CantChangeSpaceOwner,
   DocNotFound,
   EventEmitter,
   InternalServerError,
   MailService,
-  MemberQuotaExceeded,
   RequestMutex,
   SpaceAccessDenied,
   SpaceNotFound,
   Throttle,
   TooManyRequest,
+  UserFriendlyError,
   UserNotFound,
 } from '../../../fundamentals';
 import { CurrentUser, Public } from '../../auth';
@@ -78,6 +79,7 @@ export class WorkspaceResolver {
   private readonly logger = new Logger(WorkspaceResolver.name);
 
   constructor(
+    private readonly cache: Cache,
     private readonly mailer: MailService,
     private readonly prisma: PrismaClient,
     private readonly permissions: PermissionService,
@@ -153,31 +155,21 @@ export class WorkspaceResolver {
     @Args('take', { type: () => Int, nullable: true }) take?: number
   ) {
     const data = await this.prisma.workspaceUserPermission.findMany({
-      where: {
-        workspaceId: workspace.id,
-      },
+      where: { workspaceId: workspace.id },
       skip,
       take: take || 8,
-      orderBy: [
-        {
-          createdAt: 'asc',
-        },
-        {
-          type: 'desc',
-        },
-      ],
-      include: {
-        user: true,
-      },
+      orderBy: [{ createdAt: 'asc' }, { type: 'desc' }],
+      include: { user: true },
     });
 
     return data
       .filter(({ user }) => !!user)
-      .map(({ id, accepted, type, user }) => ({
+      .map(({ id, accepted, status, type, user }) => ({
         ...user,
         permission: type,
         inviteId: id,
         accepted,
+        status,
       }));
   }
 
@@ -240,7 +232,14 @@ export class WorkspaceResolver {
     const data = await this.prisma.workspaceUserPermission.findMany({
       where: {
         userId: user.id,
-        accepted: true,
+        OR: [
+          {
+            accepted: true,
+          },
+          {
+            status: WorkspaceMemberStatus.Accepted,
+          },
+        ],
       },
       include: {
         workspace: true,
@@ -287,6 +286,7 @@ export class WorkspaceResolver {
             type: Permission.Owner,
             userId: user.id,
             accepted: true,
+            status: WorkspaceMemberStatus.Accepted,
           },
         },
       },
@@ -331,7 +331,12 @@ export class WorkspaceResolver {
     @Args({ name: 'input', type: () => UpdateWorkspaceInput })
     { id, ...updates }: UpdateWorkspaceInput
   ) {
-    await this.permissions.checkWorkspace(id, user.id, Permission.Admin);
+    const isTeam = await this.quota.isTeamWorkspace(id);
+    await this.permissions.checkWorkspace(
+      id,
+      user.id,
+      isTeam ? Permission.Owner : Permission.Admin
+    );
 
     return this.prisma.workspace.update({
       where: {
@@ -379,7 +384,7 @@ export class WorkspaceResolver {
     }
 
     try {
-      // lock to prevent concurrent invite
+      // lock to prevent concurrent invite and grant
       const lockFlag = `invite:${workspaceId}`;
       await using lock = await this.mutex.lock(lockFlag);
       if (!lock) {
@@ -387,10 +392,7 @@ export class WorkspaceResolver {
       }
 
       // member limit check
-      const quota = await this.quota.getWorkspaceUsage(workspaceId);
-      if (quota.memberCount >= quota.memberLimit) {
-        return new MemberQuotaExceeded();
-      }
+      await this.quota.checkWorkspaceSeat(workspaceId);
 
       let target = await this.users.findUserByEmail(email);
       if (target) {
@@ -452,6 +454,10 @@ export class WorkspaceResolver {
       }
       return inviteId;
     } catch (e) {
+      // pass through user friendly error
+      if (e instanceof UserFriendlyError) {
+        return e;
+      }
       this.logger.error('failed to invite user', e);
       return new TooManyRequest();
     }
@@ -463,16 +469,26 @@ export class WorkspaceResolver {
     description: 'send workspace invitation',
   })
   async getInviteInfo(@Args('inviteId') inviteId: string) {
-    const workspaceId = await this.prisma.workspaceUserPermission
-      .findUniqueOrThrow({
-        where: {
-          id: inviteId,
-        },
-        select: {
-          workspaceId: true,
-        },
-      })
-      .then(({ workspaceId }) => workspaceId);
+    let workspaceId = null;
+    // invite link
+    const invite = await this.cache.get<{ workspaceId: string }>(
+      `workspace:inviteLinkId:${inviteId}`
+    );
+    if (typeof invite?.workspaceId === 'string') {
+      workspaceId = invite.workspaceId;
+    }
+    if (!workspaceId) {
+      workspaceId = await this.prisma.workspaceUserPermission
+        .findUniqueOrThrow({
+          where: {
+            id: inviteId,
+          },
+          select: {
+            workspaceId: true,
+          },
+        })
+        .then(({ workspaceId }) => workspaceId);
+    }
 
     const workspaceContent = await this.doc.getWorkspaceContent(workspaceId);
 
@@ -511,22 +527,81 @@ export class WorkspaceResolver {
     @Args('workspaceId') workspaceId: string,
     @Args('userId') userId: string
   ) {
-    await this.permissions.checkWorkspace(
+    const isTeam = await this.quota.isTeamWorkspace(workspaceId);
+    const isAdmin = await this.permissions.tryCheckWorkspaceIs(
       workspaceId,
-      user.id,
+      userId,
       Permission.Admin
     );
+    if (isTeam && isAdmin) {
+      // only owner can revoke team workspace admin
+      await this.permissions.checkWorkspaceIs(
+        workspaceId,
+        user.id,
+        Permission.Owner
+      );
+    } else {
+      await this.permissions.checkWorkspace(
+        workspaceId,
+        user.id,
+        Permission.Admin
+      );
+    }
 
-    return this.permissions.revokeWorkspace(workspaceId, userId);
+    const result = await this.permissions.revokeWorkspace(workspaceId, userId);
+
+    if (result && isTeam) {
+      // TODO(@darkskygit): send team revoke mail
+    }
+
+    return result;
   }
 
   @Mutation(() => Boolean)
   @Public()
   async acceptInviteById(
+    @CurrentUser() user: CurrentUser | undefined,
     @Args('workspaceId') workspaceId: string,
     @Args('inviteId') inviteId: string,
     @Args('sendAcceptMail', { nullable: true }) sendAcceptMail: boolean
   ) {
+    if (user) {
+      // invite link
+      const invite = await this.cache.get<{ inviteId: string }>(
+        `workspace:inviteLink:${workspaceId}`
+      );
+      if (invite?.inviteId === inviteId) {
+        const lockFlag = `invite:${workspaceId}`;
+        await using lock = await this.mutex.lock(lockFlag);
+        if (!lock) {
+          return new TooManyRequest();
+        }
+
+        const quota = await this.quota.getWorkspaceUsage(workspaceId);
+        if (quota.memberCount >= quota.memberLimit) {
+          await this.permissions.grant(
+            workspaceId,
+            user.id,
+            Permission.Write,
+            WorkspaceMemberStatus.NeedMoreSeatAndReview
+          );
+          return true;
+        } else {
+          const inviteId = await this.permissions.grant(workspaceId, user.id);
+          // invite by link need admin to approve
+          return this.permissions.acceptWorkspaceInvitation(
+            inviteId,
+            workspaceId,
+            WorkspaceMemberStatus.UnderReview
+          );
+        }
+      }
+    }
+
+    // we added seats when sending invitation emails, but the deduction may fail
+    // so we need to check seat again here
+    await this.quota.checkWorkspaceSeat(workspaceId, true);
+
     const {
       invitee,
       user: inviter,
@@ -538,6 +613,7 @@ export class WorkspaceResolver {
     }
 
     if (sendAcceptMail) {
+      // TODO(@darkskygit): team accept mail
       await this.mailer.sendAcceptedEmail(inviter.email, {
         inviteeName: invitee.name,
         workspaceName: workspace.name,

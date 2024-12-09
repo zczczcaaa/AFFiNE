@@ -12,6 +12,7 @@ import { WorkspaceManagementResolver } from './management';
 import {
   DocHistoryResolver,
   PagePermissionResolver,
+  TeamWorkspaceResolver,
   WorkspaceBlobResolver,
   WorkspaceResolver,
 } from './resolvers';
@@ -29,6 +30,7 @@ import {
   controllers: [WorkspacesController],
   providers: [
     WorkspaceResolver,
+    TeamWorkspaceResolver,
     WorkspaceManagementResolver,
     PagePermissionResolver,
     DocHistoryResolver,

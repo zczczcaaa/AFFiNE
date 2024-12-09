@@ -166,7 +166,11 @@ export class WorkspaceBlobResolver {
     @Args('workspaceId') workspaceId: string,
     @Args('hash') name: string
   ) {
-    await this.permissions.checkWorkspace(workspaceId, user.id);
+    await this.permissions.checkWorkspace(
+      workspaceId,
+      user.id,
+      Permission.Write
+    );
 
     await this.storage.delete(workspaceId, name);
 

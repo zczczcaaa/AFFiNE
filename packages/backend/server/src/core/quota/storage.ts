@@ -1,16 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 
+import { MemberQuotaExceeded } from '../../fundamentals';
 import { FeatureService, FeatureType } from '../features';
 import { PermissionService } from '../permission';
 import { WorkspaceBlobStorage } from '../storage';
 import { OneGB } from './constant';
+import { QuotaConfig } from './quota';
 import { QuotaService } from './service';
-import { formatSize, QuotaQueryType } from './types';
-
-type QuotaBusinessType = QuotaQueryType & {
-  businessBlobLimit: number;
-  unlimited: boolean;
-};
+import { formatSize, Quota, type QuotaBusinessType, QuotaType } from './types';
 
 @Injectable()
 export class QuotaManagementService {
@@ -38,6 +35,46 @@ export class QuotaManagementService {
       memberLimit: quota.feature.memberLimit,
       copilotActionLimit: quota.feature.copilotActionLimit,
     };
+  }
+
+  async getWorkspaceConfig<Q extends QuotaType>(
+    workspaceId: string,
+    quota: Q
+  ): Promise<QuotaConfig | undefined> {
+    return this.quota.getWorkspaceConfig(workspaceId, quota);
+  }
+
+  async updateWorkspaceConfig<Q extends QuotaType>(
+    workspaceId: string,
+    quota: Q,
+    configs: Partial<Quota<Q>['configs']>
+  ) {
+    const orig = await this.getWorkspaceConfig(workspaceId, quota);
+    return await this.quota.updateWorkspaceConfig(
+      workspaceId,
+      quota,
+      Object.assign({}, orig?.override, configs)
+    );
+  }
+
+  // ======== Team Workspace ========
+  async addTeamWorkspace(workspaceId: string, reason: string) {
+    return this.quota.switchWorkspaceQuota(
+      workspaceId,
+      QuotaType.TeamPlanV1,
+      reason
+    );
+  }
+
+  async removeTeamWorkspace(workspaceId: string) {
+    return this.quota.deactivateWorkspaceQuota(
+      workspaceId,
+      QuotaType.TeamPlanV1
+    );
+  }
+
+  async isTeamWorkspace(workspaceId: string) {
+    return this.quota.hasWorkspaceQuota(workspaceId, QuotaType.TeamPlanV1);
   }
 
   async getUserUsage(userId: string) {
@@ -109,6 +146,26 @@ export class QuotaManagementService {
     );
   }
 
+  private async getWorkspaceQuota(userId: string, workspaceId: string) {
+    const { feature: workspaceQuota } =
+      (await this.quota.getWorkspaceQuota(workspaceId)) || {};
+    const { feature: userQuota } = await this.quota.getUserQuota(userId);
+    if (workspaceQuota) {
+      return workspaceQuota.withOverride({
+        // override user quota with workspace quota
+        copilotActionLimit: userQuota.copilotActionLimit,
+      });
+    }
+    return userQuota;
+  }
+
+  async checkWorkspaceSeat(workspaceId: string, excludeSelf = false) {
+    const quota = await this.getWorkspaceUsage(workspaceId);
+    if (quota.memberCount - (excludeSelf ? 1 : 0) >= quota.memberLimit) {
+      throw new MemberQuotaExceeded();
+    }
+  }
+
   // get workspace's owner quota and total size of used
   // quota was apply to owner's account
   async getWorkspaceUsage(workspaceId: string): Promise<QuotaBusinessType> {
@@ -116,17 +173,15 @@ export class QuotaManagementService {
     const memberCount =
       await this.permissions.getWorkspaceMemberCount(workspaceId);
     const {
-      feature: {
-        name,
-        blobLimit,
-        businessBlobLimit,
-        historyPeriod,
-        memberLimit,
-        storageQuota,
-        copilotActionLimit,
-        humanReadable,
-      },
-    } = await this.quota.getUserQuota(owner.id);
+      name,
+      blobLimit,
+      businessBlobLimit,
+      historyPeriod,
+      memberLimit,
+      storageQuota,
+      copilotActionLimit,
+      humanReadable,
+    } = await this.getWorkspaceQuota(owner.id, workspaceId);
     // get all workspaces size of owner used
     const usedSize = await this.getUserUsage(owner.id);
     // relax restrictions if workspace has unlimited feature
@@ -157,7 +212,7 @@ export class QuotaManagementService {
     return quota;
   }
 
-  private mergeUnlimitedQuota(orig: QuotaBusinessType) {
+  private mergeUnlimitedQuota(orig: QuotaBusinessType): QuotaBusinessType {
     return {
       ...orig,
       storageQuota: 1000 * OneGB,

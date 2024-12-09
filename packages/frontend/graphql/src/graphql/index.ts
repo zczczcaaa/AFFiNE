@@ -442,6 +442,7 @@ query getMembersByWorkspaceId($workspaceId: String!, $skip: Int!, $take: Int!) {
       inviteId
       accepted
       emailVerified
+      status
     }
   }
 }`,
@@ -702,6 +703,7 @@ query getWorkspaces {
   workspaces {
     id
     initialized
+    team
     owner {
       id
     }
@@ -1166,15 +1168,29 @@ mutation verifyEmail($token: String!) {
 }`,
 };
 
-export const getEnableUrlPreviewQuery = {
-  id: 'getEnableUrlPreviewQuery' as const,
-  operationName: 'getEnableUrlPreview',
+export const getWorkspaceConfigQuery = {
+  id: 'getWorkspaceConfigQuery' as const,
+  operationName: 'getWorkspaceConfig',
   definitionName: 'workspace',
   containsFile: false,
   query: `
-query getEnableUrlPreview($id: String!) {
+query getWorkspaceConfig($id: String!) {
   workspace(id: $id) {
+    enableAi
     enableUrlPreview
+  }
+}`,
+};
+
+export const setEnableAiMutation = {
+  id: 'setEnableAiMutation' as const,
+  operationName: 'setEnableAi',
+  definitionName: 'updateWorkspace',
+  containsFile: false,
+  query: `
+mutation setEnableAi($id: ID!, $enableAi: Boolean!) {
+  updateWorkspace(input: {id: $id, enableAi: $enableAi}) {
+    id
   }
 }`,
 };
@@ -1306,6 +1322,47 @@ mutation acceptInviteByInviteId($workspaceId: String!, $inviteId: String!, $send
 }`,
 };
 
+export const inviteBatchMutation = {
+  id: 'inviteBatchMutation' as const,
+  operationName: 'inviteBatch',
+  definitionName: 'inviteBatch',
+  containsFile: false,
+  query: `
+mutation inviteBatch($workspaceId: String!, $emails: [String!]!, $sendInviteMail: Boolean) {
+  inviteBatch(
+    workspaceId: $workspaceId
+    emails: $emails
+    sendInviteMail: $sendInviteMail
+  ) {
+    email
+    inviteId
+    sentSuccess
+  }
+}`,
+};
+
+export const inviteLinkMutation = {
+  id: 'inviteLinkMutation' as const,
+  operationName: 'inviteLink',
+  definitionName: 'inviteLink',
+  containsFile: false,
+  query: `
+mutation inviteLink($workspaceId: String!, $expireTime: WorkspaceInviteLinkExpireTime!) {
+  inviteLink(workspaceId: $workspaceId, expireTime: $expireTime)
+}`,
+};
+
+export const revokeInviteLinkMutation = {
+  id: 'revokeInviteLinkMutation' as const,
+  operationName: 'revokeInviteLink',
+  definitionName: 'revokeInviteLink',
+  containsFile: false,
+  query: `
+mutation revokeInviteLink($workspaceId: String!) {
+  revokeInviteLink(workspaceId: $workspaceId)
+}`,
+};
+
 export const workspaceQuotaQuery = {
   id: 'workspaceQuotaQuery' as const,
   operationName: 'workspaceQuota',
@@ -1331,5 +1388,27 @@ query workspaceQuota($id: String!) {
       usedSize
     }
   }
+}`,
+};
+
+export const approveWorkspaceTeamMemberMutation = {
+  id: 'approveWorkspaceTeamMemberMutation' as const,
+  operationName: 'approveWorkspaceTeamMember',
+  definitionName: 'approveMember',
+  containsFile: false,
+  query: `
+mutation approveWorkspaceTeamMember($workspaceId: String!, $userId: String!) {
+  approveMember(workspaceId: $workspaceId, userId: $userId)
+}`,
+};
+
+export const grantWorkspaceTeamMemberMutation = {
+  id: 'grantWorkspaceTeamMemberMutation' as const,
+  operationName: 'grantWorkspaceTeamMember',
+  definitionName: 'grantMember',
+  containsFile: false,
+  query: `
+mutation grantWorkspaceTeamMember($workspaceId: String!, $userId: String!, $permission: Permission!) {
+  grantMember(workspaceId: $workspaceId, userId: $userId, permission: $permission)
 }`,
 };

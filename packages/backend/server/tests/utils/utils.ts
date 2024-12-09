@@ -14,6 +14,8 @@ import { UserFeaturesInit1698652531198 } from '../../src/data/migrations/1698652
 import { Config, GlobalExceptionFilter } from '../../src/fundamentals';
 import { GqlModule } from '../../src/fundamentals/graphql';
 
+export type PermissionEnum = 'Owner' | 'Admin' | 'Write' | 'Read';
+
 async function flushDB(client: PrismaClient) {
   const result: { tablename: string }[] =
     await client.$queryRaw`SELECT tablename

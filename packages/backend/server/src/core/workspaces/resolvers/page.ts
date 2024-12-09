@@ -140,7 +140,7 @@ export class PagePermissionResolver {
     await this.permission.checkWorkspace(
       docId.workspace,
       user.id,
-      Permission.Read
+      Permission.Write
     );
 
     return this.permission.publishPage(docId.workspace, docId.guid, mode);
@@ -177,7 +177,7 @@ export class PagePermissionResolver {
     await this.permission.checkWorkspace(
       docId.workspace,
       user.id,
-      Permission.Read
+      Permission.Write
     );
 
     const isPublic = await this.permission.isPublicPage(

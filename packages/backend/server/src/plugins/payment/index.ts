@@ -3,6 +3,7 @@ import './config';
 import { ServerFeature } from '../../core/config';
 import { FeatureModule } from '../../core/features';
 import { PermissionModule } from '../../core/permission';
+import { QuotaModule } from '../../core/quota';
 import { UserModule } from '../../core/user';
 import { Plugin } from '../registry';
 import { StripeWebhookController } from './controller';
@@ -11,6 +12,7 @@ import {
   UserSubscriptionManager,
   WorkspaceSubscriptionManager,
 } from './manager';
+import { TeamQuotaOverride } from './quota';
 import {
   SubscriptionResolver,
   UserSubscriptionResolver,
@@ -22,7 +24,7 @@ import { StripeWebhook } from './webhook';
 
 @Plugin({
   name: 'payment',
-  imports: [FeatureModule, UserModule, PermissionModule],
+  imports: [FeatureModule, QuotaModule, UserModule, PermissionModule],
   providers: [
     StripeProvider,
     SubscriptionService,
@@ -33,6 +35,7 @@ import { StripeWebhook } from './webhook';
     WorkspaceSubscriptionManager,
     SubscriptionCronJobs,
     WorkspaceSubscriptionResolver,
+    TeamQuotaOverride,
   ],
   controllers: [StripeWebhookController],
   requires: [

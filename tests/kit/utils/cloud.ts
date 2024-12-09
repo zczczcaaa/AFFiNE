@@ -90,6 +90,7 @@ export async function addUserToWorkspace(
         workspaceId: workspace.id,
         userId,
         accepted: true,
+        status: 'Accepted',
         type: permission,
       },
     });

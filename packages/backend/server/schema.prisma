@@ -97,8 +97,10 @@ model VerificationToken {
 model Workspace {
   id               String   @id @default(uuid()) @db.VarChar
   public           Boolean
-  enableUrlPreview Boolean  @default(false) @map("enable_url_preview")
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  // workspace level feature flags
+  enableAi         Boolean  @default(true) @map("enable_ai")
+  enableUrlPreview Boolean  @default(false) @map("enable_url_preview")
 
   pages           WorkspacePage[]
   permissions     WorkspaceUserPermission[]
@@ -126,21 +128,33 @@ model WorkspacePage {
   @@map("workspace_pages")
 }
 
+enum WorkspaceMemberStatus {
+  Pending // 1. old state accepted = false
+  NeedMoreSeat // 2.1 for team: workspace owner need to buy more seat
+  NeedMoreSeatAndReview // 2.2 for team: workspace owner need to buy more seat and member need review
+  UnderReview // 3. for team: member is under review
+  Accepted // 4. old state accepted = true
+}
+
 model WorkspaceUserPermission {
-  id          String   @id @default(uuid()) @db.VarChar
-  workspaceId String   @map("workspace_id") @db.VarChar
-  userId      String   @map("user_id") @db.VarChar
+  id          String                @id @default(uuid()) @db.VarChar
+  workspaceId String                @map("workspace_id") @db.VarChar
+  userId      String                @map("user_id") @db.VarChar
   // Read/Write
-  type        Int      @db.SmallInt
-  /// Whether the permission invitation is accepted by the user
-  accepted    Boolean  @default(false)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  type        Int                   @db.SmallInt
+  /// @deprecated Whether the permission invitation is accepted by the user
+  accepted    Boolean               @default(false)
+  /// Whether the invite status of the workspace member
+  status      WorkspaceMemberStatus @default(Pending)
+  createdAt   DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  /// When the invite status changed
+  updatedAt   DateTime              @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
-  // optimize for quering user's workspace permissions
+  // optimize for querying user's workspace permissions
   @@index(userId)
   @@map("workspace_user_permissions")
 }
@@ -200,6 +214,8 @@ model WorkspaceFeature {
   workspaceId String @map("workspace_id") @db.VarChar
   featureId   Int    @map("feature_id") @db.Integer
 
+  // override quota's configs
+  configs   Json      @default("{}") @db.Json
   // we will record the reason why the feature is enabled/disabled
   // for example:
   // - copilet_v1: "owner buy the copilet feature package"
@@ -216,6 +232,7 @@ model WorkspaceFeature {
   feature   Feature   @relation(fields: [featureId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
+  @@index([workspaceId])
   @@map("workspace_features")
 }
 
@@ -225,7 +242,7 @@ model Feature {
   version   Int      @default(0) @db.Integer
   // 0: feature, 1: quota
   type      Int      @db.Integer
-  // configs, define by feature conntroller
+  // configs, define by feature controller
   configs   Json     @db.Json
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 

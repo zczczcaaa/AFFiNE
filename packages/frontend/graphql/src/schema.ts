@@ -438,9 +438,21 @@ export interface InvitationWorkspaceType {
   name: Scalars['String']['output'];
 }
 
+export interface InviteResult {
+  __typename?: 'InviteResult';
+  email: Scalars['String']['output'];
+  /** Invite id, null if invite record create failed */
+  inviteId: Maybe<Scalars['String']['output']>;
+  /** Invite email sent success */
+  sentSuccess: Scalars['Boolean']['output'];
+}
+
 export interface InviteUserType {
   __typename?: 'InviteUserType';
-  /** User accepted */
+  /**
+   * User accepted
+   * @deprecated Use `status` instead
+   */
   accepted: Scalars['Boolean']['output'];
   /** User avatar url */
   avatarUrl: Maybe<Scalars['String']['output']>;
@@ -462,6 +474,8 @@ export interface InviteUserType {
   name: Maybe<Scalars['String']['output']>;
   /** User permission in workspace */
   permission: Permission;
+  /** Member invite status in workspace */
+  status: WorkspaceMemberStatus;
 }
 
 export enum InvoiceStatus {
@@ -519,6 +533,7 @@ export interface Mutation {
   __typename?: 'Mutation';
   acceptInviteById: Scalars['Boolean']['output'];
   addWorkspaceFeature: Scalars['Int']['output'];
+  approveMember: Scalars['String']['output'];
   cancelSubscription: SubscriptionType;
   changeEmail: UserType;
   changePassword: Scalars['Boolean']['output'];
@@ -547,7 +562,10 @@ export interface Mutation {
   deleteWorkspace: Scalars['Boolean']['output'];
   /** Create a chat session */
   forkCopilotSession: Scalars['String']['output'];
+  grantMember: Scalars['String']['output'];
   invite: Scalars['String']['output'];
+  inviteBatch: Array<InviteResult>;
+  inviteLink: Scalars['String']['output'];
   leaveWorkspace: Scalars['Boolean']['output'];
   publishPage: WorkspacePage;
   recoverDoc: Scalars['DateTime']['output'];
@@ -556,6 +574,7 @@ export interface Mutation {
   removeWorkspaceFeature: Scalars['Int']['output'];
   resumeSubscription: SubscriptionType;
   revoke: Scalars['Boolean']['output'];
+  revokeInviteLink: Scalars['Boolean']['output'];
   /** @deprecated use revokePublicPage */
   revokePage: Scalars['Boolean']['output'];
   revokePublicPage: WorkspacePage;
@@ -595,6 +614,11 @@ export interface MutationAcceptInviteByIdArgs {
 
 export interface MutationAddWorkspaceFeatureArgs {
   feature: FeatureType;
+  workspaceId: Scalars['String']['input'];
+}
+
+export interface MutationApproveMemberArgs {
+  userId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 }
 
@@ -665,10 +689,27 @@ export interface MutationForkCopilotSessionArgs {
   options: ForkChatSessionInput;
 }
 
+export interface MutationGrantMemberArgs {
+  permission: Permission;
+  userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+}
+
 export interface MutationInviteArgs {
   email: Scalars['String']['input'];
   permission: Permission;
   sendInviteMail?: InputMaybe<Scalars['Boolean']['input']>;
+  workspaceId: Scalars['String']['input'];
+}
+
+export interface MutationInviteBatchArgs {
+  emails: Array<Scalars['String']['input']>;
+  sendInviteMail?: InputMaybe<Scalars['Boolean']['input']>;
+  workspaceId: Scalars['String']['input'];
+}
+
+export interface MutationInviteLinkArgs {
+  expireTime: WorkspaceInviteLinkExpireTime;
   workspaceId: Scalars['String']['input'];
 }
 
@@ -703,6 +744,10 @@ export interface MutationResumeSubscriptionArgs {
 
 export interface MutationRevokeArgs {
   userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+}
+
+export interface MutationRevokeInviteLinkArgs {
   workspaceId: Scalars['String']['input'];
 }
 
@@ -1144,6 +1189,8 @@ export interface UpdateUserInput {
 }
 
 export interface UpdateWorkspaceInput {
+  /** Enable AI */
+  enableAi?: InputMaybe<Scalars['Boolean']['input']>;
   /** Enable url previous when sharing */
   enableUrlPreview?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
@@ -1222,6 +1269,22 @@ export interface WorkspaceBlobSizes {
   size: Scalars['SafeInt']['output'];
 }
 
+/** Workspace invite link expire time */
+export enum WorkspaceInviteLinkExpireTime {
+  OneDay = 'OneDay',
+  OneMonth = 'OneMonth',
+  OneWeek = 'OneWeek',
+  ThreeDays = 'ThreeDays',
+}
+
+/** Member invite status in workspace */
+export enum WorkspaceMemberStatus {
+  Accepted = 'Accepted',
+  NeedMoreSeat = 'NeedMoreSeat',
+  Pending = 'Pending',
+  UnderReview = 'UnderReview',
+}
+
 export interface WorkspacePage {
   __typename?: 'WorkspacePage';
   id: Scalars['String']['output'];
@@ -1248,6 +1311,8 @@ export interface WorkspaceType {
   blobsSize: Scalars['Int']['output'];
   /** Workspace created date */
   createdAt: Scalars['DateTime']['output'];
+  /** Enable AI */
+  enableAi: Scalars['Boolean']['output'];
   /** Enable url previous when sharing */
   enableUrlPreview: Scalars['Boolean']['output'];
   /** Enabled features of workspace */
@@ -1284,6 +1349,8 @@ export interface WorkspaceType {
   sharedPages: Array<Scalars['String']['output']>;
   /** The team subscription of the workspace, if exists. */
   subscription: Maybe<SubscriptionType>;
+  /** if workspace is team workspace */
+  team: Scalars['Boolean']['output'];
 }
 
 export interface WorkspaceTypeHistoriesArgs {
@@ -1706,6 +1773,7 @@ export type GetMembersByWorkspaceIdQuery = {
       inviteId: string;
       accepted: boolean;
       emailVerified: boolean | null;
+      status: WorkspaceMemberStatus;
     }>;
   };
 };
@@ -1939,6 +2007,7 @@ export type GetWorkspacesQuery = {
     __typename?: 'WorkspaceType';
     id: string;
     initialized: boolean;
+    team: boolean;
     owner: { __typename?: 'UserType'; id: string };
   }>;
 };
@@ -2361,13 +2430,27 @@ export type VerifyEmailMutation = {
   verifyEmail: boolean;
 };
 
-export type GetEnableUrlPreviewQueryVariables = Exact<{
+export type GetWorkspaceConfigQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type GetEnableUrlPreviewQuery = {
+export type GetWorkspaceConfigQuery = {
   __typename?: 'Query';
-  workspace: { __typename?: 'WorkspaceType'; enableUrlPreview: boolean };
+  workspace: {
+    __typename?: 'WorkspaceType';
+    enableAi: boolean;
+    enableUrlPreview: boolean;
+  };
+};
+
+export type SetEnableAiMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  enableAi: Scalars['Boolean']['input'];
+}>;
+
+export type SetEnableAiMutation = {
+  __typename?: 'Mutation';
+  updateWorkspace: { __typename?: 'WorkspaceType'; id: string };
 };
 
 export type SetEnableUrlPreviewMutationVariables = Exact<{
@@ -2469,6 +2552,41 @@ export type AcceptInviteByInviteIdMutation = {
   acceptInviteById: boolean;
 };
 
+export type InviteBatchMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  emails: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  sendInviteMail?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+export type InviteBatchMutation = {
+  __typename?: 'Mutation';
+  inviteBatch: Array<{
+    __typename?: 'InviteResult';
+    email: string;
+    inviteId: string | null;
+    sentSuccess: boolean;
+  }>;
+};
+
+export type InviteLinkMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  expireTime: WorkspaceInviteLinkExpireTime;
+}>;
+
+export type InviteLinkMutation = {
+  __typename?: 'Mutation';
+  inviteLink: string;
+};
+
+export type RevokeInviteLinkMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+export type RevokeInviteLinkMutation = {
+  __typename?: 'Mutation';
+  revokeInviteLink: boolean;
+};
+
 export type WorkspaceQuotaQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -2496,6 +2614,27 @@ export type WorkspaceQuotaQuery = {
       };
     };
   };
+};
+
+export type ApproveWorkspaceTeamMemberMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+}>;
+
+export type ApproveWorkspaceTeamMemberMutation = {
+  __typename?: 'Mutation';
+  approveMember: string;
+};
+
+export type GrantWorkspaceTeamMemberMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+  permission: Permission;
+}>;
+
+export type GrantWorkspaceTeamMemberMutation = {
+  __typename?: 'Mutation';
+  grantMember: string;
 };
 
 export type Queries =
@@ -2675,9 +2814,9 @@ export type Queries =
       response: SubscriptionQuery;
     }
   | {
-      name: 'getEnableUrlPreviewQuery';
-      variables: GetEnableUrlPreviewQueryVariables;
-      response: GetEnableUrlPreviewQuery;
+      name: 'getWorkspaceConfigQuery';
+      variables: GetWorkspaceConfigQueryVariables;
+      response: GetWorkspaceConfigQuery;
     }
   | {
       name: 'enabledFeaturesQuery';
@@ -2892,6 +3031,11 @@ export type Mutations =
       response: VerifyEmailMutation;
     }
   | {
+      name: 'setEnableAiMutation';
+      variables: SetEnableAiMutationVariables;
+      response: SetEnableAiMutation;
+    }
+  | {
       name: 'setEnableUrlPreviewMutation';
       variables: SetEnableUrlPreviewMutationVariables;
       response: SetEnableUrlPreviewMutation;
@@ -2920,4 +3064,29 @@ export type Mutations =
       name: 'acceptInviteByInviteIdMutation';
       variables: AcceptInviteByInviteIdMutationVariables;
       response: AcceptInviteByInviteIdMutation;
+    }
+  | {
+      name: 'inviteBatchMutation';
+      variables: InviteBatchMutationVariables;
+      response: InviteBatchMutation;
+    }
+  | {
+      name: 'inviteLinkMutation';
+      variables: InviteLinkMutationVariables;
+      response: InviteLinkMutation;
+    }
+  | {
+      name: 'revokeInviteLinkMutation';
+      variables: RevokeInviteLinkMutationVariables;
+      response: RevokeInviteLinkMutation;
+    }
+  | {
+      name: 'approveWorkspaceTeamMemberMutation';
+      variables: ApproveWorkspaceTeamMemberMutationVariables;
+      response: ApproveWorkspaceTeamMemberMutation;
+    }
+  | {
+      name: 'grantWorkspaceTeamMemberMutation';
+      variables: GrantWorkspaceTeamMemberMutationVariables;
+      response: GrantWorkspaceTeamMemberMutation;
     };

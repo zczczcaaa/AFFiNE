@@ -1,17 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
+import { groupBy } from 'lodash-es';
 
 import {
   DocAccessDenied,
+  EventEmitter,
+  PrismaTransaction,
   SpaceAccessDenied,
   SpaceOwnerNotFound,
 } from '../../fundamentals';
+import { FeatureKind } from '../features/types';
+import { QuotaType } from '../quota/types';
 import { Permission, PublicPageMode } from './types';
 
 @Injectable()
 export class PermissionService {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly event: EventEmitter
+  ) {}
+
+  private get acceptedCondition() {
+    return [
+      {
+        accepted: true,
+      },
+      {
+        status: WorkspaceMemberStatus.Accepted,
+      },
+    ];
+  }
 
   /// Start regin: workspace permission
   async get(ws: string, user: string) {
@@ -19,7 +38,7 @@ export class PermissionService {
       where: {
         workspaceId: ws,
         userId: user,
-        accepted: true,
+        OR: this.acceptedCondition,
       },
     });
 
@@ -36,7 +55,7 @@ export class PermissionService {
       .count({
         where: {
           workspaceId,
-          accepted: true,
+          OR: this.acceptedCondition,
         },
       })
       .then(count => count > 0);
@@ -47,8 +66,8 @@ export class PermissionService {
       .findMany({
         where: {
           userId,
-          accepted: true,
           type: Permission.Owner,
+          OR: this.acceptedCondition,
         },
         select: {
           workspaceId: true,
@@ -120,19 +139,31 @@ export class PermissionService {
     return this.tryCheckPage(ws, id, user);
   }
 
+  async getWorkspaceMemberStatus(ws: string, user: string) {
+    return this.prisma.workspaceUserPermission
+      .findFirst({
+        where: {
+          workspaceId: ws,
+          userId: user,
+        },
+        select: { status: true },
+      })
+      .then(r => r?.status);
+  }
+
   /**
    * Returns whether a given user is a member of a workspace and has the given or higher permission.
    */
   async isWorkspaceMember(
     ws: string,
     user: string,
-    permission: Permission
+    permission: Permission = Permission.Read
   ): Promise<boolean> {
     const count = await this.prisma.workspaceUserPermission.count({
       where: {
         workspaceId: ws,
         userId: user,
-        accepted: true,
+        OR: this.acceptedCondition,
         type: {
           gte: permission,
         },
@@ -193,7 +224,7 @@ export class PermissionService {
         where: {
           workspaceId: ws,
           userId: user,
-          accepted: true,
+          OR: this.acceptedCondition,
           type: {
             gte: permission,
           },
@@ -206,6 +237,33 @@ export class PermissionService {
     // unsigned in, workspace is not public
     // unaccessible
     return false;
+  }
+
+  async checkWorkspaceIs(
+    ws: string,
+    user: string,
+    permission: Permission = Permission.Read
+  ) {
+    if (!(await this.tryCheckWorkspaceIs(ws, user, permission))) {
+      throw new SpaceAccessDenied({ spaceId: ws });
+    }
+  }
+
+  async tryCheckWorkspaceIs(
+    ws: string,
+    user: string,
+    permission: Permission = Permission.Read
+  ) {
+    const count = await this.prisma.workspaceUserPermission.count({
+      where: {
+        workspaceId: ws,
+        userId: user,
+        OR: this.acceptedCondition,
+        type: permission,
+      },
+    });
+
+    return count > 0;
   }
 
   async allowUrlPreview(ws: string) {
@@ -222,13 +280,14 @@ export class PermissionService {
   async grant(
     ws: string,
     user: string,
-    permission: Permission = Permission.Read
+    permission: Permission = Permission.Read,
+    status: WorkspaceMemberStatus = WorkspaceMemberStatus.Pending
   ): Promise<string> {
     const data = await this.prisma.workspaceUserPermission.findFirst({
       where: {
         workspaceId: ws,
         userId: user,
-        accepted: true,
+        OR: this.acceptedCondition,
       },
     });
 
@@ -274,6 +333,7 @@ export class PermissionService {
           workspaceId: ws,
           userId: user,
           type: permission,
+          status,
         },
       })
       .then(p => p.id);
@@ -291,33 +351,124 @@ export class PermissionService {
     });
   }
 
-  async acceptWorkspaceInvitation(invitationId: string, workspaceId: string) {
+  private async isTeamWorkspace(tx: PrismaTransaction, workspaceId: string) {
+    return await tx.workspaceFeature
+      .count({
+        where: {
+          workspaceId,
+          activated: true,
+          feature: {
+            feature: QuotaType.TeamPlanV1,
+            type: FeatureKind.Feature,
+          },
+        },
+      })
+      .then(count => count > 0);
+  }
+
+  async acceptWorkspaceInvitation(
+    invitationId: string,
+    workspaceId: string,
+    status: WorkspaceMemberStatus = WorkspaceMemberStatus.Accepted
+  ) {
     const result = await this.prisma.workspaceUserPermission.updateMany({
       where: {
         id: invitationId,
         workspaceId: workspaceId,
+        AND: [{ accepted: false }, { status: WorkspaceMemberStatus.Pending }],
       },
       data: {
         accepted: true,
+        status: status,
       },
     });
 
     return result.count > 0;
   }
 
-  async revokeWorkspace(ws: string, user: string) {
-    const result = await this.prisma.workspaceUserPermission.deleteMany({
-      where: {
-        workspaceId: ws,
-        userId: user,
-        type: {
-          // We shouldn't revoke owner permission, should auto deleted by workspace/user delete cascading
-          not: Permission.Owner,
+  async refreshSeatStatus(workspaceId: string, memberLimit: number) {
+    return this.prisma.$transaction(async tx => {
+      const members = await tx.workspaceUserPermission.findMany({
+        where: {
+          workspaceId,
         },
-      },
+        select: {
+          userId: true,
+          status: true,
+          updatedAt: true,
+        },
+      });
+      const memberCount = members.filter(
+        m => m.status === WorkspaceMemberStatus.Accepted
+      ).length;
+      const NeedUpdateStatus = new Set<WorkspaceMemberStatus>([
+        WorkspaceMemberStatus.NeedMoreSeat,
+        WorkspaceMemberStatus.NeedMoreSeatAndReview,
+      ]);
+      const needChange = members
+        .filter(m => NeedUpdateStatus.has(m.status))
+        .toSorted((a, b) => Number(a.updatedAt) - Number(b.updatedAt))
+        .slice(0, memberLimit - memberCount);
+      const { NeedMoreSeat, NeedMoreSeatAndReview } = groupBy(
+        needChange,
+        m => m.status
+      );
+      const approvedCount = await tx.workspaceUserPermission
+        .updateMany({
+          where: {
+            userId: {
+              in: NeedMoreSeat?.map(m => m.userId) ?? [],
+            },
+          },
+          data: {
+            status: WorkspaceMemberStatus.Accepted,
+          },
+        })
+        .then(r => r.count);
+      const needReviewCount = await tx.workspaceUserPermission
+        .updateMany({
+          where: {
+            userId: {
+              in: NeedMoreSeatAndReview?.map(m => m.userId) ?? [],
+            },
+          },
+          data: {
+            status: WorkspaceMemberStatus.UnderReview,
+          },
+        })
+        .then(r => r.count);
+      return approvedCount + needReviewCount === needChange.length;
     });
+  }
 
-    return result.count > 0;
+  async revokeWorkspace(workspaceId: string, user: string) {
+    return await this.prisma.$transaction(async tx => {
+      const result = await tx.workspaceUserPermission.deleteMany({
+        where: {
+          workspaceId,
+          userId: user,
+          // We shouldn't revoke owner permission
+          // should auto deleted by workspace/user delete cascading
+          type: { not: Permission.Owner },
+        },
+      });
+
+      const success = result.count > 0;
+
+      if (success) {
+        const isTeam = await this.isTeamWorkspace(tx, workspaceId);
+        if (isTeam) {
+          const count = await tx.workspaceUserPermission.count({
+            where: { workspaceId },
+          });
+          this.event.emit('workspace.members.updated', {
+            workspaceId,
+            count,
+          });
+        }
+      }
+      return success;
+    });
   }
   /// End regin: workspace permission
 
