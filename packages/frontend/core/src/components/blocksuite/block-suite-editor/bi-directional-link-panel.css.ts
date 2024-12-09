@@ -88,13 +88,13 @@ globalStyle(`${link} .affine-reference-title`, {
 export const linkPreviewContainer = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '8px',
 });
 
 export const linkPreview = style({
   border: `1px solid ${cssVarV2('layer/insideBorder/border')}`,
   borderRadius: '8px',
   padding: '8px',
+  marginBottom: '8px',
   color: cssVarV2('text/primary'),
   ':hover': {
     backgroundColor: cssVarV2('layer/background/hoverOverlay'),

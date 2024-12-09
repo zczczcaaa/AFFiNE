@@ -95,26 +95,6 @@ export const InfoTable = ({
 
   return (
     <>
-      {backlinks && backlinks.length > 0 ? (
-        <>
-          <LinksRow
-            references={backlinks}
-            onClick={onClose}
-            label={t['com.affine.page-properties.backlinks']()}
-          />
-          <Divider size="thinner" />
-        </>
-      ) : null}
-      {links && links.length > 0 ? (
-        <>
-          <LinksRow
-            references={links}
-            onClick={onClose}
-            label={t['com.affine.page-properties.outgoing-links']()}
-          />
-          <Divider size="thinner" />
-        </>
-      ) : null}
       <PropertyCollapsibleSection
         title={t.t('com.affine.workspace.properties')}
       >
@@ -166,6 +146,26 @@ export const InfoTable = ({
       </PropertyCollapsibleSection>
       <Divider size="thinner" />
       <DocDatabaseBacklinkInfo onChange={onBacklinkPropertyChange} />
+      {backlinks && backlinks.length > 0 ? (
+        <>
+          <LinksRow
+            references={backlinks}
+            onClick={onClose}
+            label={t['com.affine.page-properties.backlinks']()}
+          />
+          <Divider size="thinner" />
+        </>
+      ) : null}
+      {links && links.length > 0 ? (
+        <>
+          <LinksRow
+            references={links}
+            onClick={onClose}
+            label={t['com.affine.page-properties.outgoing-links']()}
+          />
+          <Divider size="thinner" />
+        </>
+      ) : null}
     </>
   );
 };

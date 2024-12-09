@@ -78,27 +78,6 @@ export const DocInfoSheet = ({
         <Suspense>
           <TimeRow docId={docId} className={styles.timeRow} />
           <Divider size="thinner" />
-          {backlinks && backlinks.length > 0 ? (
-            <>
-              <LinksRow
-                className={styles.linksRow}
-                references={backlinks}
-                label={t['com.affine.page-properties.backlinks']()}
-              />
-              <Divider size="thinner" />
-            </>
-          ) : null}
-          {links && links.length > 0 ? (
-            <>
-              <LinksRow
-                className={styles.linksRow}
-                references={links}
-                label={t['com.affine.page-properties.outgoing-links']()}
-              />
-              <Divider size="thinner" />
-            </>
-          ) : null}
-
           <PropertyCollapsibleSection
             title={t.t('com.affine.workspace.properties')}
           >
@@ -150,6 +129,27 @@ export const DocInfoSheet = ({
           <Divider size="thinner" />
 
           <DocDatabaseBacklinkInfo />
+
+          {backlinks && backlinks.length > 0 ? (
+            <>
+              <LinksRow
+                className={styles.linksRow}
+                references={backlinks}
+                label={t['com.affine.page-properties.backlinks']()}
+              />
+              <Divider size="thinner" />
+            </>
+          ) : null}
+          {links && links.length > 0 ? (
+            <>
+              <LinksRow
+                className={styles.linksRow}
+                references={links}
+                label={t['com.affine.page-properties.outgoing-links']()}
+              />
+              <Divider size="thinner" />
+            </>
+          ) : null}
         </Suspense>
       </Scrollable.Viewport>
       <Scrollable.Scrollbar className={styles.scrollBar} />
