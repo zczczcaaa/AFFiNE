@@ -3,14 +3,15 @@ import { test } from '@affine-test/kit/playwright';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
+  createLinkedPage,
   dragTo,
-  getBlockSuiteEditorTitle,
   waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
 import { clickSideBarAllPageButton } from '@affine-test/kit/utils/sidebar';
 import {
   getCurrentCollectionIdFromUrl,
   getCurrentDocIdFromUrl,
+  getDocIdFromUrl,
 } from '@affine-test/kit/utils/url';
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
@@ -43,8 +44,7 @@ const createCollection = async (page: Page, name: string) => {
 };
 
 const createPage = async (page: Page, title: string) => {
-  await clickNewPageButton(page);
-  await getBlockSuiteEditorTitle(page).fill(title);
+  await clickNewPageButton(page, title);
 };
 
 const dragToCollection = async (page: Page, dragItem: Locator) => {
@@ -211,4 +211,35 @@ test('items in favourites can be reordered by dragging', async ({ page }) => {
   await expect(
     page.getByTestId('explorer-favorites').locator('[draggable]').last()
   ).toHaveText('test collection');
+});
+
+test('drag a page link in editor to favourites', async ({ page }) => {
+  await clickNewPageButton(page);
+  await page.waitForTimeout(500);
+  await page.keyboard.press('Enter');
+  await createLinkedPage(page, 'hi from another page');
+
+  const pageReference = page.locator('a').filter({
+    has: page.locator(
+      '.affine-reference-title:has-text("hi from another page")'
+    ),
+  });
+
+  const pageLink = await pageReference.evaluate(
+    el => (el as HTMLAnchorElement).href
+  );
+
+  expect(pageLink).toBeTruthy();
+
+  if (!pageLink) {
+    return;
+  }
+
+  const pageId = getDocIdFromUrl(pageLink);
+
+  await dragToFavourites(
+    page,
+    page.locator('.affine-reference-title:has-text("hi from another page")'),
+    pageId
+  );
 });
