@@ -1,51 +1,29 @@
 import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
-import { JournalService } from '@affine/core/modules/journal';
-import { WorkbenchService } from '@affine/core/modules/workbench';
 import track from '@affine/track';
 import { EditIcon } from '@blocksuite/icons/rc';
-import {
-  DocsService,
-  useLiveData,
-  useServices,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { useService, WorkspaceService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
-import { tabItem } from './styles.css';
+import type { AppTabCustomFCProps } from './data';
+import { TabItem } from './tab-item';
 
-export const AppTabCreate = () => {
-  const { docsService, workbenchService, workspaceService, journalService } =
-    useServices({
-      DocsService,
-      WorkbenchService,
-      WorkspaceService,
-      JournalService,
-    });
-  const workbench = workbenchService.workbench;
+export const AppTabCreate = ({ tab }: AppTabCustomFCProps) => {
+  const workspaceService = useService(WorkspaceService);
   const currentWorkspace = workspaceService.workspace;
-  const location = useLiveData(workbench.location$);
   const pageHelper = usePageHelper(currentWorkspace.docCollection);
 
-  const maybeDocId = location.pathname.split('/')[1].split('?')[0];
-  const doc = useLiveData(docsService.list.doc$(maybeDocId));
-  const journalDate = useLiveData(journalService.journalDate$(maybeDocId));
-  const isActive = !!doc && !journalDate;
-
-  const createPage = useCallback(() => {
-    if (isActive) return;
-    pageHelper.createPage(undefined, true);
-    track.$.navigationPanel.$.createDoc();
-  }, [isActive, pageHelper]);
+  const createPage = useCallback(
+    (isActive: boolean) => {
+      if (isActive) return;
+      pageHelper.createPage(undefined, true);
+      track.$.navigationPanel.$.createDoc();
+    },
+    [pageHelper]
+  );
 
   return (
-    <div
-      className={tabItem}
-      data-active={isActive}
-      role="tab"
-      aria-label="New Page"
-      onClick={createPage}
-    >
+    <TabItem id={tab.key} onClick={createPage} label="New Page">
       <EditIcon />
-    </div>
+    </TabItem>
   );
 };
