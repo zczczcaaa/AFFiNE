@@ -585,7 +585,10 @@ export function actionToResponse<T extends keyof BlockSuitePresets.AIActions>(
             handler: () => {
               reportResponse('result:continue-in-chat');
               const panel = getAIPanel(host);
-              AIProvider.slots.requestOpenWithChat.emit({ host });
+              AIProvider.slots.requestOpenWithChat.emit({
+                host,
+                appendCard: true,
+              });
               panel.hide();
             },
           },

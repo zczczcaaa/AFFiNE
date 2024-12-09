@@ -412,7 +412,10 @@ const OthersAIGroup: AIItemGroupConfig = {
       icon: ChatWithAIIcon,
       handler: host => {
         const panel = getAIPanel(host);
-        AIProvider.slots.requestOpenWithChat.emit({ host });
+        AIProvider.slots.requestOpenWithChat.emit({
+          host,
+          appendCard: true,
+        });
         panel.hide();
       },
     },

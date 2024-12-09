@@ -412,32 +412,33 @@ jobs:
           fi
 
       - uses: dorny/paths-filter@v3
-        id: filter
+        id: apifilter
         with:
           filters: |
-            backend:
+            changed:
               - 'packages/backend/server/src/plugins/copilot/**'
+              - 'packages/backend/server/tests/copilot.*'
 
       - name: Setup Node.js
-        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.filter.outputs.backend == 'true' }}
+        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.apifilter.outputs.changed == 'true' }}
         uses: ./.github/actions/setup-node
         with:
           electron-install: false
           full-cache: true
 
       - name: Download server-native.node
-        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.filter.outputs.backend == 'true' }}
+        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.apifilter.outputs.changed == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: server-native.node
           path: ./packages/backend/server
 
       - name: Prepare Server Test Environment
-        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.filter.outputs.backend == 'true' }}
+        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.apifilter.outputs.changed == 'true' }}
         uses: ./.github/actions/server-test-env
 
       - name: Run server tests
-        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.filter.outputs.backend == 'true' }}
+        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.apifilter.outputs.changed == 'true' }}
         run: yarn workspace @affine/server test:copilot:coverage --forbid-only
         env:
           CARGO_TARGET_DIR: '${{ github.workspace }}/target'
@@ -445,7 +446,7 @@ jobs:
           COPILOT_FAL_API_KEY: ${{ secrets.COPILOT_FAL_API_KEY }}
 
       - name: Upload server test coverage results
-        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.filter.outputs.backend == 'true' }}
+        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.apifilter.outputs.changed == 'true' }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -494,8 +495,17 @@ jobs:
             echo "skip=true" >> $GITHUB_OUTPUT
           fi
 
+      - uses: dorny/paths-filter@v3
+        id: e2efilter
+        with:
+          filters: |
+            changed:
+              - 'packages/frontend/core/src/blocksuite/presets/ai/**'
+              - 'packages/frontend/core/src/components/blocksuite/block-suite-editor/ai/**'
+              - 'tests/affine-cloud-copilot/**'
+
       - name: Setup Node.js
-        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' }}
+        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.e2efilter.outputs.changed == 'true' }}
         uses: ./.github/actions/setup-node
         with:
           playwright-install: true
@@ -503,14 +513,14 @@ jobs:
           hard-link-nm: false
 
       - name: Download server-native.node
-        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' }}
+        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.e2efilter.outputs.changed == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: server-native.node
           path: ./packages/backend/server
 
       - name: Run Copilot E2E Test ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
-        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' }}
+        if: ${{ steps.check-blocksuite-update.outputs.skip != 'true' || steps.e2efilter.outputs.changed == 'true' }}
         uses: ./.github/actions/copilot-test
         with:
           script: yarn workspace @affine-test/affine-cloud-copilot e2e --forbid-only --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}

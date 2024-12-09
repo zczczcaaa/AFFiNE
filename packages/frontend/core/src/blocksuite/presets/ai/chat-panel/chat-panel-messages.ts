@@ -12,6 +12,7 @@ import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { debounce } from 'lodash-es';
 
 import {
   EdgelessEditorActions,
@@ -133,7 +134,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   accessor updateContext!: (context: Partial<ChatContextValue>) => void;
 
   @query('.chat-panel-messages')
-  accessor messagesContainer!: HTMLDivElement;
+  accessor messagesContainer: HTMLDivElement | null = null;
 
   @state()
   accessor showChatCards = true;
@@ -203,6 +204,17 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         </div>`;
   }
 
+  private readonly _onScroll = () => {
+    if (!this.messagesContainer) return;
+    const { clientHeight, scrollTop, scrollHeight } = this.messagesContainer;
+    this.showDownIndicator = scrollHeight - scrollTop - clientHeight > 200;
+  };
+
+  private readonly _debouncedOnScroll = debounce(
+    this._onScroll.bind(this),
+    100
+  );
+
   protected override render() {
     const { items } = this.chatContextValue;
     const { isLoading } = this;
@@ -227,12 +239,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
 
       <div
         class="chat-panel-messages"
-        @scroll=${(evt: Event) => {
-          const element = evt.target as HTMLDivElement;
-          this.showDownIndicator =
-            element.scrollHeight - element.scrollTop - element.clientHeight >
-            200;
-        }}
+        @scroll=${() => this._debouncedOnScroll()}
       >
         ${items.length === 0
           ? html`<div class="chat-panel-messages-placeholder">
@@ -390,6 +397,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   scrollToEnd() {
     this.updateComplete
       .then(() => {
+        if (!this.messagesContainer) return;
         this.messagesContainer.scrollTo({
           top: this.messagesContainer.scrollHeight,
           behavior: 'smooth',

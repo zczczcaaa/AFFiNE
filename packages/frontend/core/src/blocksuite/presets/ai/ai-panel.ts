@@ -231,7 +231,10 @@ export function buildTextResponseConfig<
           icon: ChatWithAIIcon,
           handler: () => {
             reportResponse('result:continue-in-chat');
-            AIProvider.slots.requestOpenWithChat.emit({ host });
+            AIProvider.slots.requestOpenWithChat.emit({
+              host,
+              appendCard: true,
+            });
             panel.hide();
           },
         },

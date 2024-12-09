@@ -121,7 +121,11 @@ const othersGroup: AIItemGroupConfig = {
       showWhen: () => true,
       handler: host => {
         const panel = getAIPanel(host);
-        AIProvider.slots.requestOpenWithChat.emit({ host, mode: 'edgeless' });
+        AIProvider.slots.requestOpenWithChat.emit({
+          host,
+          mode: 'edgeless',
+          appendCard: true,
+        });
         panel.hide();
       },
     },
