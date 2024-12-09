@@ -1,19 +1,22 @@
+import { DNDContext } from '@affine/component';
 import { AffineOtherPageLayout } from '@affine/component/affine-other-page-layout';
 import { workbenchRoutes } from '@affine/core/desktop/workbench-router';
 import {
   DefaultServerService,
   WorkspaceServerService,
 } from '@affine/core/modules/cloud';
+import { DndService } from '@affine/core/modules/dnd/services';
 import { ZipTransformer } from '@blocksuite/affine/blocks';
 import type { Workspace, WorkspaceMetadata } from '@toeverything/infra';
 import {
   FrameworkScope,
   GlobalContextService,
   useLiveData,
+  useService,
   useServices,
   WorkspacesService,
 } from '@toeverything/infra';
-import type { ReactElement } from 'react';
+import type { PropsWithChildren, ReactElement } from 'react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { matchPath, useLocation, useParams } from 'react-router-dom';
 
@@ -128,6 +131,18 @@ export const Component = (): ReactElement => {
   return <WorkspacePage meta={meta} />;
 };
 
+const DNDContextProvider = ({ children }: PropsWithChildren) => {
+  const dndService = useService(DndService);
+  const contextValue = useMemo(() => {
+    return {
+      externalDataAdapter: dndService.externalDataAdapter,
+    };
+  }, [dndService.externalDataAdapter]);
+  return (
+    <DNDContext.Provider value={contextValue}>{children}</DNDContext.Provider>
+  );
+};
+
 const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
   const { workspacesService, globalContextService, defaultServerService } =
     useServices({
@@ -229,7 +244,9 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
     return (
       <FrameworkScope scope={workspaceServer?.scope}>
         <FrameworkScope scope={workspace.scope}>
-          <AppContainer fallback />
+          <DNDContextProvider>
+            <AppContainer fallback />
+          </DNDContextProvider>
         </FrameworkScope>
       </FrameworkScope>
     );
@@ -238,11 +255,13 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
   return (
     <FrameworkScope scope={workspaceServer?.scope}>
       <FrameworkScope scope={workspace.scope}>
-        <AffineErrorBoundary height="100vh">
-          <WorkspaceLayout>
-            <WorkbenchRoot />
-          </WorkspaceLayout>
-        </AffineErrorBoundary>
+        <DNDContextProvider>
+          <AffineErrorBoundary height="100vh">
+            <WorkspaceLayout>
+              <WorkbenchRoot />
+            </WorkspaceLayout>
+          </AffineErrorBoundary>
+        </DNDContextProvider>
       </FrameworkScope>
     </FrameworkScope>
   );

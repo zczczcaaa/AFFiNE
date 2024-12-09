@@ -4,7 +4,6 @@ import {
   useDropTarget,
 } from '@affine/component';
 import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
-import { DndService } from '@affine/core/modules/dnd/services';
 import {
   DropEffect,
   ExplorerTreeRoot,
@@ -21,7 +20,6 @@ import { track } from '@affine/track';
 import { PlusIcon } from '@blocksuite/icons/rc';
 import {
   useLiveData,
-  useService,
   useServices,
   WorkspaceService,
 } from '@toeverything/infra';
@@ -151,8 +149,6 @@ export const ExplorerFavorites = () => {
     [favoriteService]
   );
 
-  const dndService = useService(DndService);
-
   const { dropTargetRef, draggedOverDraggable, draggedOverPosition } =
     useDropTarget<AffineDNDData>(
       () => ({
@@ -161,9 +157,9 @@ export const ExplorerFavorites = () => {
         },
         onDrop: handleDrop,
         canDrop: favoriteRootCanDrop,
-        externalDataAdapter: dndService.externalDataAdapter,
+        allowExternal: true,
       }),
-      [dndService.externalDataAdapter, handleDrop]
+      [handleDrop]
     );
 
   return (

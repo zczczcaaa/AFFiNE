@@ -17,9 +17,10 @@ import {
   type Instruction,
   type ItemMode,
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/tree-item';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { DNDData } from './types';
+import { DNDContext } from './context';
+import type { DNDData, ExternalDataAdapter } from './types';
 
 export type DropTargetDropEvent<D extends DNDData> = {
   treeInstruction: Instruction | null;
@@ -58,25 +59,27 @@ type DropTargetGet<T, D extends DNDData> =
   | T
   | ((data: DropTargetGetFeedback<D>) => T);
 
-export type ExternalGetDataFeedbackArgs = Parameters<
-  NonNullable<Parameters<typeof dropTargetForExternal>[0]['getData']>
->[0];
-
-export type ExternalDataAdapter<D extends DNDData> = (
-  args: ExternalGetDataFeedbackArgs
-) => D['draggable'];
+const isExternalDrag = <D extends DNDData>(
+  args: Pick<DropTargetGetFeedback<D>, 'source'>
+) => {
+  return !args.source['data'];
+};
 
 const getAdaptedEventArgs = <
   D extends DNDData,
   Args extends Pick<DropTargetGetFeedback<D>, 'source'>,
 >(
   options: DropTargetOptions<D>,
-  args: Args
+  args: Args,
+  isDropEvent = false
 ): Args => {
   const data =
-    !args.source['data'] && options.externalDataAdapter
-      ? // @ts-expect-error hack for external data adapter (source has no data field)
-        options.externalDataAdapter(args as ExternalGetDataFeedbackArgs)
+    isExternalDrag(args) && options.externalDataAdapter
+      ? options.externalDataAdapter(
+          // @ts-expect-error hack for external data adapter (source has no data field)
+          args as ExternalGetDataFeedbackArgs,
+          isDropEvent
+        )
       : args.source['data'];
 
   return {
@@ -167,11 +170,16 @@ export interface DropTargetOptions<D extends DNDData = DNDData> {
   onDrag?: (data: DropTargetDragEvent<D>) => void;
   /**
    * external data adapter.
-   * if this is provided, the drop target will handle external elements as well.
+   * Will use the external data adapter from the context if not provided.
+   */
+  externalDataAdapter?: ExternalDataAdapter<D>;
+  /**
+   * Make the drop target allow external data.
+   * If this is undefined, it will be set to true if externalDataAdapter is provided.
    *
    * @default undefined
    */
-  externalDataAdapter?: ExternalDataAdapter<D>;
+  allowExternal?: boolean;
 }
 
 export const useDropTarget = <D extends DNDData = DNDData>(
@@ -205,19 +213,56 @@ export const useDropTarget = <D extends DNDData = DNDData>(
   const enableDraggedOverPosition = useRef(false);
   const enableDropEffect = useRef(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const options = useMemo(getOptions, deps);
+  const dropTargetContext = useContext(DNDContext);
+
+  const options = useMemo(() => {
+    const opts = getOptions();
+    const allowExternal = opts.allowExternal ?? !!opts.externalDataAdapter;
+    return {
+      ...opts,
+      allowExternal,
+      externalDataAdapter: allowExternal
+        ? (opts.externalDataAdapter ??
+          (dropTargetContext.externalDataAdapter as ExternalDataAdapter<D>))
+        : undefined,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, dropTargetContext.externalDataAdapter]);
 
   const dropTargetOptions = useMemo(() => {
+    const wrappedCanDrop = dropTargetGet(options.canDrop, options);
     return {
       get element() {
         return dropTargetRef.current;
       },
-      canDrop: dropTargetGet(options.canDrop, options),
+      canDrop: wrappedCanDrop
+        ? (args: DropTargetGetFeedback<D>) => {
+            // check if args has data. if not, it's an external drag
+            // we always allow external drag since the data is only
+            // available in drop event
+            if (isExternalDrag(args) && options.externalDataAdapter) {
+              return true;
+            }
+            return wrappedCanDrop(args);
+          }
+        : undefined,
       getDropEffect: dropTargetGet(options.dropEffect, options),
       getIsSticky: dropTargetGet(options.isSticky, options),
-      onDrop: (args: DropTargetDropEvent<D>) => {
-        args = getAdaptedEventArgs(options, args);
+      onDrop: (_args: DropTargetDropEvent<D>) => {
+        // external data is only available in drop event thus
+        // this is the only case for getAdaptedEventArgs
+        const args = getAdaptedEventArgs(options, _args, true);
+        if (
+          isExternalDrag(_args) &&
+          options.externalDataAdapter &&
+          typeof options.canDrop === 'function' &&
+          // there is a small flaw that canDrop called in onDrop misses
+          // `input and `element` arguments
+          !options.canDrop(args as any)
+        ) {
+          return;
+        }
+
         if (enableDraggedOver.current) {
           setDraggedOver(false);
         }

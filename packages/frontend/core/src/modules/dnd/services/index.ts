@@ -1,4 +1,7 @@
-import type { ExternalGetDataFeedbackArgs } from '@affine/component';
+import type {
+  ExternalDataAdapter,
+  ExternalGetDataFeedbackArgs,
+} from '@affine/component';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import type { DocsService, WorkspaceService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
@@ -23,7 +26,13 @@ export class DndService extends Service {
 
   private readonly resolvers = new Map<string, EntityResolver>();
 
-  externalDataAdapter = (args: ExternalGetDataFeedbackArgs) => {
+  externalDataAdapter: ExternalDataAdapter<AffineDNDData> = (
+    args: ExternalGetDataFeedbackArgs,
+    isDropEvent?: boolean
+  ) => {
+    if (!isDropEvent) {
+      return {};
+    }
     const from: AffineDNDData['draggable']['from'] = {
       at: 'external',
     };
@@ -41,6 +50,10 @@ export class DndService extends Service {
           }
         }
       }
+    }
+
+    if (!entity) {
+      return {}; // no resolver can handle this data
     }
 
     return {
