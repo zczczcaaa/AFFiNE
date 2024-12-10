@@ -26,3 +26,4 @@ packages/frontend/templates/onboarding
 packages/backend/native/index.d.ts
 packages/frontend/native/index.d.ts
 packages/frontend/native/index.js
+compose.yaml
