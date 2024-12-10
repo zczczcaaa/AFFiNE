@@ -18,7 +18,8 @@
       {
         "ignoreTypes": true
       }
-    ]
+    ],
+    "import/namespace": "off"
   },
   "overrides": [
     {
