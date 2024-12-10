@@ -4,9 +4,11 @@ import { Button } from '@affine/component/ui/button';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { useSystemOnline } from '@affine/core/components/hooks/use-system-online';
 import { DesktopApiService } from '@affine/core/modules/desktop-api';
+import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import {
+  useLiveData,
   useService,
   type Workspace,
   type WorkspaceMetadata,
@@ -23,6 +25,13 @@ export const DesktopExportPanel = ({
   workspace,
 }: ExportPanelProps) => {
   const workspaceId = workspaceMetadata.id;
+  const workspacePermissionService = useService(
+    WorkspacePermissionService
+  ).permission;
+  const isTeam = useLiveData(workspacePermissionService.isTeam$);
+  const isOwner = useLiveData(workspacePermissionService.isOwner$);
+  const isAdmin = useLiveData(workspacePermissionService.isAdmin$);
+
   const t = useI18n();
   const [saving, setSaving] = useState(false);
   const isOnline = useSystemOnline();
@@ -54,6 +63,10 @@ export const DesktopExportPanel = ({
       setSaving(false);
     }
   }, [desktopApi, isOnline, saving, t, workspace, workspaceId]);
+
+  if (isTeam && !isOwner && !isAdmin) {
+    return null;
+  }
 
   return (
     <SettingRow name={t['Export']()} desc={t['Export Description']()}>

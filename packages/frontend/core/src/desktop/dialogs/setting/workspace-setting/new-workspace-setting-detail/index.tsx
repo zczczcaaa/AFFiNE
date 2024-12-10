@@ -20,6 +20,7 @@ import { MembersPanel } from './members';
 import { ProfilePanel } from './profile';
 import { SharingPanel } from './sharing';
 import type { WorkspaceSettingDetailProps } from './types';
+import { WorkspaceQuotaPanel } from './workspace-quota';
 
 export const WorkspaceSettingDetail = ({
   workspaceMetadata,
@@ -69,6 +70,7 @@ export const WorkspaceSettingDetail = ({
       </SettingWrapper>
       <SettingWrapper title={t['com.affine.brand.affineCloud']()}>
         <EnableCloudPanel onCloseSetting={onCloseSetting} />
+        <WorkspaceQuotaPanel />
         <MembersPanel onChangeSettingState={onChangeSettingState} />
       </SettingWrapper>
       <AiSetting />

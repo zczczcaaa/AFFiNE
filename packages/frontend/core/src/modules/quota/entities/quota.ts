@@ -6,13 +6,15 @@ import {
   catchErrorInto,
   effect,
   Entity,
+  exhaustMapSwitchUntilChanged,
   fromPromise,
   LiveData,
-  mapInto,
   onComplete,
   onStart,
 } from '@toeverything/infra';
-import { exhaustMap } from 'rxjs';
+import { cssVarV2 } from '@toeverything/theme/v2';
+import bytes from 'bytes';
+import { EMPTY, map, mergeMap } from 'rxjs';
 
 import { isBackendError, isNetworkError } from '../../cloud';
 import type { WorkspaceQuotaStore } from '../stores/quota';
@@ -26,6 +28,38 @@ export class WorkspaceQuota extends Entity {
   isLoading$ = new LiveData(false);
   error$ = new LiveData<any>(null);
 
+  /** Used storage in bytes */
+  used$ = new LiveData<number | null>(null);
+  /** Formatted used storage */
+  usedFormatted$ = this.used$.map(used =>
+    used !== null ? bytes.format(used) : null
+  );
+  /** Maximum storage limit in bytes */
+  max$ = this.quota$.map(quota => (quota ? quota.storageQuota : null));
+  /** Maximum storage limit formatted */
+  maxFormatted$ = this.max$.map(max => (max ? bytes.format(max) : null));
+
+  /** Percentage of storage used */
+  percent$ = LiveData.computed(get => {
+    const max = get(this.max$);
+    const used = get(this.used$);
+    if (max === null || used === null) {
+      return null;
+    }
+    return Math.min(
+      100,
+      Math.max(0.5, Number(((used / max) * 100).toFixed(4)))
+    );
+  });
+
+  color$ = this.percent$.map(percent =>
+    percent !== null
+      ? percent > 80
+        ? cssVarV2('status/error')
+        : cssVarV2('toast/iconState/regular')
+      : null
+  );
+
   constructor(
     private readonly workspaceService: WorkspaceService,
     private readonly store: WorkspaceQuotaStore
@@ -34,28 +68,59 @@ export class WorkspaceQuota extends Entity {
   }
 
   revalidate = effect(
-    exhaustMap(() => {
-      return fromPromise(signal =>
-        this.store.fetchWorkspaceQuota(
-          this.workspaceService.workspace.id,
-          signal
-        )
-      ).pipe(
-        backoffRetry({
-          when: isNetworkError,
-          count: Infinity,
-        }),
-        backoffRetry({
-          when: isBackendError,
-          count: 3,
-        }),
-        mapInto(this.quota$),
-        catchErrorInto(this.error$, error => {
-          logger.error('Failed to fetch isOwner', error);
-        }),
-        onStart(() => this.isLoading$.setValue(true)),
-        onComplete(() => this.isLoading$.setValue(false))
-      );
-    })
+    map(() => ({
+      workspaceId: this.workspaceService.workspace.id,
+    })),
+    exhaustMapSwitchUntilChanged(
+      (a, b) => a.workspaceId === b.workspaceId,
+      ({ workspaceId }) => {
+        return fromPromise(async signal => {
+          if (!workspaceId) {
+            return; // no quota if no workspace
+          }
+          const data = await this.store.fetchWorkspaceQuota(
+            this.workspaceService.workspace.id,
+            signal
+          );
+          return { quota: data, used: data.usedSize };
+        }).pipe(
+          backoffRetry({
+            when: isNetworkError,
+            count: Infinity,
+          }),
+          backoffRetry({
+            when: isBackendError,
+            count: 3,
+          }),
+          mergeMap(data => {
+            if (data) {
+              const { quota, used } = data;
+              this.quota$.next(quota);
+              this.used$.next(used);
+            } else {
+              this.quota$.next(null);
+              this.used$.next(null);
+            }
+            return EMPTY;
+          }),
+          catchErrorInto(this.error$, error => {
+            logger.error('Failed to fetch workspace quota', error);
+          }),
+          onStart(() => this.isLoading$.setValue(true)),
+          onComplete(() => this.isLoading$.setValue(false))
+        );
+      }
+    )
   );
+
+  reset() {
+    this.quota$.next(null);
+    this.used$.next(null);
+    this.error$.next(null);
+    this.isLoading$.next(false);
+  }
+
+  override dispose(): void {
+    this.revalidate.unsubscribe();
+  }
 }

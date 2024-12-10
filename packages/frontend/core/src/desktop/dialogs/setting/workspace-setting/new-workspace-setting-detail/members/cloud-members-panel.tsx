@@ -146,7 +146,7 @@ export const CloudWorkspaceMembersPanel = ({
     return (
       <span>
         {t['com.affine.payment.member.description2']()}
-        {hasPaymentFeature ? (
+        {hasPaymentFeature && isOwner ? (
           <div
             className={styles.goUpgradeWrapper}
             onClick={handleUpgradeConfirm}
@@ -158,7 +158,14 @@ export const CloudWorkspaceMembersPanel = ({
         ) : null}
       </span>
     );
-  }, [handleUpgradeConfirm, hasPaymentFeature, isTeam, t, workspaceQuota]);
+  }, [
+    handleUpgradeConfirm,
+    hasPaymentFeature,
+    isOwner,
+    isTeam,
+    t,
+    workspaceQuota,
+  ]);
 
   const title = useMemo(() => {
     if (isTeam) {

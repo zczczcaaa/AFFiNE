@@ -103,7 +103,7 @@ const getSignUpText = (
     case SubscriptionPlan.Free:
       return t['com.affine.payment.sign-up-free']();
     case SubscriptionPlan.Team:
-      return t['com.affine.payment.start-free-trial']();
+      return t['com.affine.payment.upgrade']();
     default:
       return t['com.affine.payment.buy-pro']();
   }
@@ -263,7 +263,7 @@ const UpgradeToTeam = () => {
         variant="primary"
         data-event-args-url={url}
       >
-        {t['com.affine.payment.start-free-trial']()}
+        {t['com.affine.payment.upgrade']()}
       </Button>
     </a>
   );
