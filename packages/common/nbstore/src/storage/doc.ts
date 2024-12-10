@@ -2,7 +2,7 @@ import EventEmitter2 from 'eventemitter2';
 import { diffUpdate, encodeStateVectorFromUpdate, mergeUpdates } from 'yjs';
 
 import { isEmptyUpdate } from '../utils/is-empty-update';
-import type { Lock } from './lock';
+import type { Locker } from './lock';
 import { SingletonLocker } from './lock';
 import { Storage, type StorageOptions } from './storage';
 
@@ -42,7 +42,7 @@ export abstract class DocStorage<
 > extends Storage<Opts> {
   private readonly event = new EventEmitter2();
   override readonly storageType = 'doc';
-  private readonly locker = new SingletonLocker();
+  protected readonly locker: Locker = new SingletonLocker();
 
   // REGION: open apis by Op system
   /**
@@ -243,7 +243,7 @@ export abstract class DocStorage<
     return merge(updates.filter(bin => !isEmptyUpdate(bin)));
   }
 
-  protected async lockDocForUpdate(docId: string): Promise<Lock> {
+  protected async lockDocForUpdate(docId: string): Promise<AsyncDisposable> {
     return this.locker.lock(`workspace:${this.spaceId}:update`, docId);
   }
 }

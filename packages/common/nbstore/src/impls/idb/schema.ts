@@ -101,6 +101,13 @@ export interface DocStorageSchema extends DBSchema {
       peer: string;
     };
   };
+  locks: {
+    key: string;
+    value: {
+      key: string;
+      lock: Date;
+    };
+  };
 }
 
 const migrate: OpenDBCallbacks<DocStorageSchema>['upgrade'] = (
@@ -159,6 +166,11 @@ const init: Migrate = db => {
   });
 
   db.createObjectStore('blobData', {
+    keyPath: 'key',
+    autoIncrement: false,
+  });
+
+  db.createObjectStore('locks', {
     keyPath: 'key',
     autoIncrement: false,
   });

@@ -5,9 +5,24 @@ export class IndexedDBSyncStorage extends SyncStorage {
   readonly connection = share(new IDBConnection(this.options));
 
   get db() {
-    return this.connection.inner;
+    return this.connection.inner.db;
   }
 
+  override async getPeerRemoteClock(
+    peer: string,
+    docId: string
+  ): Promise<DocClock | null> {
+    const trx = this.db.transaction('peerClocks', 'readonly');
+
+    const record = await trx.store.get([peer, docId]);
+
+    return record
+      ? {
+          docId: record.docId,
+          timestamp: record.clock,
+        }
+      : null;
+  }
   override async getPeerRemoteClocks(peer: string) {
     const trx = this.db.transaction('peerClocks', 'readonly');
 
@@ -34,6 +49,21 @@ export class IndexedDBSyncStorage extends SyncStorage {
     }
   }
 
+  override async getPeerPulledRemoteClock(
+    peer: string,
+    docId: string
+  ): Promise<DocClock | null> {
+    const trx = this.db.transaction('peerClocks', 'readonly');
+
+    const record = await trx.store.get([peer, docId]);
+
+    return record
+      ? {
+          docId: record.docId,
+          timestamp: record.pulledClock,
+        }
+      : null;
+  }
   override async getPeerPulledRemoteClocks(peer: string) {
     const trx = this.db.transaction('peerClocks', 'readonly');
 
@@ -59,6 +89,21 @@ export class IndexedDBSyncStorage extends SyncStorage {
     }
   }
 
+  override async getPeerPushedClock(
+    peer: string,
+    docId: string
+  ): Promise<DocClock | null> {
+    const trx = this.db.transaction('peerClocks', 'readonly');
+
+    const record = await trx.store.get([peer, docId]);
+
+    return record
+      ? {
+          docId: record.docId,
+          timestamp: record.pushedClock,
+        }
+      : null;
+  }
   override async getPeerPushedClocks(peer: string) {
     const trx = this.db.transaction('peerClocks', 'readonly');
 

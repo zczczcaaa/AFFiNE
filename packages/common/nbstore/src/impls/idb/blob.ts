@@ -10,7 +10,7 @@ export class IndexedDBBlobStorage extends BlobStorage {
   readonly connection = share(new IDBConnection(this.options));
 
   get db() {
-    return this.connection.inner;
+    return this.connection.inner.db;
   }
 
   override async get(key: string) {

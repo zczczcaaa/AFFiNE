@@ -1,5 +1,5 @@
 export interface Locker {
-  lock(domain: string, resource: string): Promise<Lock>;
+  lock(domain: string, resource: string): Promise<AsyncDisposable>;
 }
 
 export class SingletonLocker implements Locker {

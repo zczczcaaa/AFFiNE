@@ -4,18 +4,36 @@ import {
   type DocClocks,
   type DocRecord,
   DocStorage,
+  type DocStorageOptions,
   type DocUpdate,
 } from '../../storage';
 import { IDBConnection } from './db';
+import { IndexedDBLocker } from './lock';
+
+interface ChannelMessage {
+  type: 'update';
+  update: DocRecord;
+  origin?: string;
+}
 
 export class IndexedDBDocStorage extends DocStorage {
   readonly connection = share(new IDBConnection(this.options));
 
   get db() {
-    return this.connection.inner;
+    return this.connection.inner.db;
   }
 
+  get channel() {
+    return this.connection.inner.channel;
+  }
+
+  override locker = new IndexedDBLocker(this.connection);
+
   private _lastTimestamp = new Date(0);
+
+  constructor(options: DocStorageOptions) {
+    super(options);
+  }
 
   private generateTimestamp() {
     const timestamp = new Date();
@@ -46,6 +64,17 @@ export class IndexedDBDocStorage extends DocStorage {
       },
       origin
     );
+
+    this.channel.postMessage({
+      type: 'update',
+      update: {
+        docId: update.docId,
+        bin: update.bin,
+        timestamp,
+        editor: update.editor,
+      },
+      origin,
+    } satisfies ChannelMessage);
 
     return { docId: update.docId, timestamp };
   }
@@ -143,5 +172,32 @@ export class IndexedDBDocStorage extends DocStorage {
 
     trx.commit();
     return updates.length;
+  }
+
+  private docUpdateListener = 0;
+
+  override subscribeDocUpdate(
+    callback: (update: DocRecord, origin?: string) => void
+  ): () => void {
+    if (this.docUpdateListener === 0) {
+      this.channel.addEventListener('message', this.handleChannelMessage);
+    }
+    this.docUpdateListener++;
+
+    const dispose = super.subscribeDocUpdate(callback);
+
+    return () => {
+      dispose();
+      this.docUpdateListener--;
+      if (this.docUpdateListener === 0) {
+        this.channel.removeEventListener('message', this.handleChannelMessage);
+      }
+    };
+  }
+
+  handleChannelMessage(event: MessageEvent<ChannelMessage>) {
+    if (event.data.type === 'update') {
+      this.emit('update', event.data.update, event.data.origin);
+    }
   }
 }
