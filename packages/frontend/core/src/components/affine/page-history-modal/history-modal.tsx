@@ -2,8 +2,8 @@ import { Loading, Scrollable } from '@affine/component';
 import { EditorLoading } from '@affine/component/page-detail-skeleton';
 import { Button, IconButton } from '@affine/component/ui/button';
 import { Modal, useConfirmModal } from '@affine/component/ui/modal';
-import { useDocCollectionPageTitle } from '@affine/core/components/hooks/use-block-suite-workspace-page-title';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorService } from '@affine/core/modules/editor';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
@@ -433,7 +433,10 @@ const PageHistoryManager = ({
   const editor = useService(EditorService).editor;
   const [mode, setMode] = useState<DocMode>(editor.mode$.value);
 
-  const title = useDocCollectionPageTitle(docCollection, pageId);
+  const docDisplayMetaService = useService(DocDisplayMetaService);
+  const i18n = useI18n();
+
+  const title = useLiveData(docDisplayMetaService.title$(pageId));
 
   const onConfirmRestore = useCallback(() => {
     openConfirmModal({
@@ -467,7 +470,7 @@ const PageHistoryManager = ({
           snapshotPage={snapshotPage}
           mode={mode}
           onModeChange={setMode}
-          title={title}
+          title={i18n.t(title)}
         />
 
         <PageHistoryList

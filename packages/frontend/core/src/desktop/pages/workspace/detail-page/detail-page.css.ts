@@ -1,4 +1,5 @@
 import { cssVar } from '@toeverything/theme';
+import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 export const mainContainer = style({
@@ -37,6 +38,11 @@ export const affineDocViewport = style({
     print: {
       display: 'none',
       zIndex: -1,
+    },
+  },
+  selectors: {
+    '&[data-dragging="true"]': {
+      backgroundColor: cssVarV2.layer.background.hoverOverlay,
     },
   },
 });

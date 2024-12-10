@@ -1,7 +1,9 @@
 import {
   Divider,
+  DragHandle,
   type InlineEditHandle,
   observeResize,
+  useDraggable,
 } from '@affine/component';
 import { SharePageButton } from '@affine/core/components/affine/share-page-modal';
 import { FavoriteButton } from '@affine/core/components/blocksuite/block-suite-header/favorite';
@@ -13,11 +15,13 @@ import { DetailPageHeaderPresentButton } from '@affine/core/components/blocksuit
 import { BlocksuiteHeaderTitle } from '@affine/core/components/blocksuite/block-suite-header/title';
 import { EditorModeSwitch } from '@affine/core/components/blocksuite/block-suite-mode-switch';
 import { useRegisterCopyLinkCommands } from '@affine/core/components/hooks/affine/use-register-copy-link-commands';
-import { useDocCollectionPageTitle } from '@affine/core/components/hooks/use-block-suite-workspace-page-title';
 import { HeaderDivider } from '@affine/core/components/pure/header';
+import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorService } from '@affine/core/modules/editor';
 import { JournalService } from '@affine/core/modules/journal';
 import { ViewIcon, ViewTitle } from '@affine/core/modules/workbench';
+import type { AffineDNDData } from '@affine/core/types/dnd';
+import { useI18n } from '@affine/i18n';
 import type { Doc } from '@blocksuite/affine/store';
 import { useLiveData, useService, type Workspace } from '@toeverything/infra';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
@@ -60,7 +64,11 @@ export function JournalPageHeader({ page, workspace }: PageHeaderProps) {
 
   const { hideShare, hideToday } =
     useDetailPageHeaderResponsive(containerWidth);
-  const title = useDocCollectionPageTitle(workspace.docCollection, page?.id);
+
+  const docDisplayMetaService = useService(DocDisplayMetaService);
+  const i18n = useI18n();
+  const title = i18n.t(useLiveData(docDisplayMetaService.title$(page.id)));
+
   return (
     <Header className={styles.header} ref={containerRef}>
       <ViewTitle title={title} />
@@ -106,7 +114,10 @@ export function NormalPageHeader({ page, workspace }: PageHeaderProps) {
     );
   }, []);
 
-  const title = useDocCollectionPageTitle(workspace.docCollection, page?.id);
+  const docDisplayMetaService = useService(DocDisplayMetaService);
+  const i18n = useI18n();
+  const title = i18n.t(useLiveData(docDisplayMetaService.title$(page.id)));
+
   const editor = useService(EditorService).editor;
   const currentMode = useLiveData(editor.mode$);
 
@@ -148,8 +159,12 @@ export function NormalPageHeader({ page, workspace }: PageHeaderProps) {
   );
 }
 
-export function DetailPageHeader(props: PageHeaderProps) {
-  const { page, workspace } = props;
+export function DetailPageHeader(
+  props: PageHeaderProps & {
+    onDragging?: (dragging: boolean) => void;
+  }
+) {
+  const { page, workspace, onDragging } = props;
   const journalService = useService(JournalService);
   const isJournal = !!useLiveData(journalService.journalDate$(page.id));
   const isInTrash = page.meta?.trash;
@@ -159,9 +174,42 @@ export function DetailPageHeader(props: PageHeaderProps) {
     docId: page.id,
   });
 
-  return isJournal && !isInTrash ? (
-    <JournalPageHeader {...props} />
-  ) : (
-    <NormalPageHeader {...props} />
+  const { dragRef, dragHandleRef, dragging } =
+    useDraggable<AffineDNDData>(() => {
+      return {
+        data: {
+          from: {
+            at: 'doc-detail:header',
+            docId: page.id,
+          },
+          entity: {
+            type: 'doc',
+            id: page.id,
+          },
+        },
+        disableDragPreview: true,
+      };
+    }, [page.id]);
+
+  const inner =
+    isJournal && !isInTrash ? (
+      <JournalPageHeader {...props} />
+    ) : (
+      <NormalPageHeader {...props} />
+    );
+
+  useEffect(() => {
+    onDragging?.(dragging);
+  }, [dragging, onDragging]);
+
+  return (
+    <div className={styles.root} ref={dragRef} data-dragging={dragging}>
+      <DragHandle
+        ref={dragHandleRef}
+        dragging={dragging}
+        className={styles.dragHandle}
+      />
+      {inner}
+    </div>
   );
 }

@@ -249,10 +249,16 @@ const DetailPageImpl = memo(function DetailPageImpl() {
     setHasScrollTop(hasScrollTop);
   }, []);
 
+  const [dragging, setDragging] = useState(false);
+
   return (
     <FrameworkScope scope={editor.scope}>
       <ViewHeader>
-        <DetailPageHeader page={doc.blockSuiteDoc} workspace={workspace} />
+        <DetailPageHeader
+          page={doc.blockSuiteDoc}
+          workspace={workspace}
+          onDragging={setDragging}
+        />
       </ViewHeader>
       <ViewBody>
         <div
@@ -267,6 +273,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
               <Scrollable.Viewport
                 onScroll={handleScroll}
                 ref={scrollViewportRef}
+                data-dragging={dragging}
                 className={clsx(
                   'affine-page-viewport',
                   styles.affineDocViewport,

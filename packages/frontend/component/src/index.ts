@@ -7,6 +7,7 @@ export * from './ui/checkbox';
 export * from './ui/date-picker';
 export * from './ui/divider';
 export * from './ui/dnd';
+export * from './ui/drag-handle';
 export * from './ui/editable';
 export * from './ui/empty';
 export * from './ui/error-message';

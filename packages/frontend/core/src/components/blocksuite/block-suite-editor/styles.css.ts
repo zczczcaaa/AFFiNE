@@ -3,7 +3,6 @@ import { style, type StyleRule } from '@vanilla-extract/css';
 
 export const docEditorRoot = style({
   display: 'block',
-  background: cssVar('backgroundPrimaryColor'),
   overflowX: 'clip',
 });
 
