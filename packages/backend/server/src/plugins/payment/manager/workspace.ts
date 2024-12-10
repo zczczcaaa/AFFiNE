@@ -106,10 +106,12 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
           quantity: count,
         },
       ],
+      customer_update: {
+        name: 'auto',
+      },
       tax_id_collection: {
         enabled: true,
       },
-
       ...discounts,
       mode: 'subscription',
       success_url: this.url.link(params.successCallbackLink),
