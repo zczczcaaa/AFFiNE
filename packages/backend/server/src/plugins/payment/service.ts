@@ -42,11 +42,9 @@ import { ScheduleManager } from './schedule';
 import {
   decodeLookupKey,
   DEFAULT_PRICES,
-  encodeLookupKey,
   KnownStripeInvoice,
   KnownStripePrice,
   KnownStripeSubscription,
-  LookupKey,
   retriveLookupKeyFromStripePrice,
   retriveLookupKeyFromStripeSubscription,
   SubscriptionPlan,
@@ -129,19 +127,6 @@ export class SubscriptionService implements OnApplicationBootstrap {
       throw new ActionForbidden();
     }
 
-    const price = await this.getPrice({
-      plan,
-      recurring,
-      variant: variant ?? null,
-    });
-
-    if (!price) {
-      throw new SubscriptionPlanNotFound({
-        plan,
-        recurring,
-      });
-    }
-
     const manager = this.select(plan);
     const result = CheckoutExtraArgs.safeParse(args);
 
@@ -149,7 +134,15 @@ export class SubscriptionService implements OnApplicationBootstrap {
       throw new InvalidCheckoutParameters();
     }
 
-    return manager.checkout(price, params, args);
+    return manager.checkout(
+      {
+        plan,
+        recurring,
+        variant: variant ?? null,
+      },
+      params,
+      args
+    );
   }
 
   async cancelSubscription(
@@ -270,7 +263,7 @@ export class SubscriptionService implements OnApplicationBootstrap {
       throw new SameSubscriptionRecurring({ recurring });
     }
 
-    const price = await this.getPrice({
+    const price = await manager.getPrice({
       plan: identity.plan,
       recurring,
       variant: null,
@@ -467,24 +460,6 @@ export class SubscriptionService implements OnApplicationBootstrap {
     return prices.data
       .map(price => this.parseStripePrice(price))
       .filter(Boolean) as KnownStripePrice[];
-  }
-
-  private async getPrice(
-    lookupKey: LookupKey
-  ): Promise<KnownStripePrice | null> {
-    const prices = await this.stripe.prices.list({
-      lookup_keys: [encodeLookupKey(lookupKey)],
-      limit: 1,
-    });
-
-    const price = prices.data[0];
-
-    return price
-      ? {
-          lookupKey,
-          price,
-        }
-      : null;
   }
 
   private async parseStripeInvoice(

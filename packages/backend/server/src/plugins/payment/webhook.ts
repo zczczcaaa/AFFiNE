@@ -26,14 +26,14 @@ export class StripeWebhook {
   @OnStripeEvent('invoice.updated')
   @OnStripeEvent('invoice.finalization_failed')
   @OnStripeEvent('invoice.payment_failed')
-  @OnStripeEvent('invoice.payment_succeeded')
+  @OnStripeEvent('invoice.paid')
   async onInvoiceUpdated(
     event:
       | Stripe.InvoiceCreatedEvent
       | Stripe.InvoiceUpdatedEvent
       | Stripe.InvoiceFinalizationFailedEvent
       | Stripe.InvoicePaymentFailedEvent
-      | Stripe.InvoicePaymentSucceededEvent
+      | Stripe.InvoicePaidEvent
   ) {
     const invoice = await this.stripe.invoices.retrieve(event.data.object.id);
     await this.service.saveStripeInvoice(invoice);

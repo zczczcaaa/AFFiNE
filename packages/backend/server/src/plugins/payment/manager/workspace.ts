@@ -9,12 +9,14 @@ import {
   type EventPayload,
   OnEvent,
   SubscriptionAlreadyExists,
+  SubscriptionPlanNotFound,
   URLHelper,
 } from '../../../fundamentals';
 import {
   KnownStripeInvoice,
   KnownStripePrice,
   KnownStripeSubscription,
+  LookupKey,
   retriveLookupKeyFromStripeSubscription,
   SubscriptionPlan,
   SubscriptionRecurring,
@@ -62,7 +64,7 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
   }
 
   async checkout(
-    { price }: KnownStripePrice,
+    lookupKey: LookupKey,
     params: z.infer<typeof CheckoutParams>,
     args: z.infer<typeof WorkspaceSubscriptionCheckoutArgs>
   ) {
@@ -73,6 +75,15 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
 
     if (subscription) {
       throw new SubscriptionAlreadyExists({ plan: SubscriptionPlan.Team });
+    }
+
+    const price = await this.getPrice(lookupKey);
+
+    if (!price) {
+      throw new SubscriptionPlanNotFound({
+        plan: lookupKey.plan,
+        recurring: lookupKey.recurring,
+      });
     }
 
     const customer = await this.getOrCreateCustomer(args.user.id);
@@ -102,7 +113,7 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
     return this.stripe.checkout.sessions.create({
       line_items: [
         {
-          price: price.id,
+          price: price.price.id,
           quantity: count,
         },
       ],

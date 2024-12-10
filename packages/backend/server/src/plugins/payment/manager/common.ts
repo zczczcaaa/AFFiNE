@@ -66,7 +66,7 @@ export abstract class SubscriptionManager {
   ): KnownStripePrice[] | Promise<KnownStripePrice[]>;
 
   abstract checkout(
-    price: KnownStripePrice,
+    lookupKey: LookupKey,
     params: z.infer<typeof CheckoutParams>,
     args: any
   ): Promise<Stripe.Checkout.Session>;
@@ -206,9 +206,7 @@ export abstract class SubscriptionManager {
     return customer;
   }
 
-  protected async getPrice(
-    lookupKey: LookupKey
-  ): Promise<KnownStripePrice | null> {
+  async getPrice(lookupKey: LookupKey): Promise<KnownStripePrice | null> {
     const prices = await this.stripe.prices.list({
       lookup_keys: [encodeLookupKey(lookupKey)],
       limit: 1,

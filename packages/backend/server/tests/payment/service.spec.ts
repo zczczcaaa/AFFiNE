@@ -476,7 +476,6 @@ test('should get correct pro plan price for checking out', async t => {
       {
         plan: SubscriptionPlan.Pro,
         recurring: SubscriptionRecurring.Yearly,
-        variant: SubscriptionVariant.EA,
         successCallbackLink: '',
       },
       { user: u1 }
@@ -593,7 +592,6 @@ test('should get correct ai plan price for checking out', async t => {
       {
         plan: SubscriptionPlan.AI,
         recurring: SubscriptionRecurring.Yearly,
-        variant: SubscriptionVariant.EA,
         successCallbackLink: '',
       },
       { user: u1 }

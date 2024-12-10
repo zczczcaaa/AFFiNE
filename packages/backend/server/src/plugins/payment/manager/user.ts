@@ -12,6 +12,7 @@ import {
   Config,
   EventEmitter,
   InternalServerError,
+  InvalidCheckoutParameters,
   SubscriptionAlreadyExists,
   SubscriptionPlanNotFound,
   URLHelper,
@@ -21,6 +22,7 @@ import {
   KnownStripeInvoice,
   KnownStripePrice,
   KnownStripeSubscription,
+  LookupKey,
   retriveLookupKeyFromStripeSubscription,
   SubscriptionPlan,
   SubscriptionRecurring,
@@ -88,15 +90,20 @@ export class UserSubscriptionManager extends SubscriptionManager {
   }
 
   async checkout(
-    price: KnownStripePrice,
+    lookupKey: LookupKey,
     params: z.infer<typeof CheckoutParams>,
     { user }: z.infer<typeof UserSubscriptionCheckoutArgs>
   ) {
-    const lookupKey = price.lookupKey;
+    if (
+      lookupKey.plan !== SubscriptionPlan.Pro &&
+      lookupKey.plan !== SubscriptionPlan.AI
+    ) {
+      throw new InvalidCheckoutParameters();
+    }
+
     const subscription = await this.getSubscription({
-      // @ts-expect-error filtered already
-      plan: price.lookupKey.plan,
-      user,
+      plan: lookupKey.plan,
+      userId: user.id,
     });
 
     if (
@@ -119,12 +126,12 @@ export class UserSubscriptionManager extends SubscriptionManager {
 
     const customer = await this.getOrCreateCustomer(user.id);
     const strategy = await this.strategyStatus(customer);
-    const available = await this.isPriceAvailable(price, {
-      ...strategy,
-      onetime: true,
-    });
+    const price = await this.autoPrice(lookupKey, strategy);
 
-    if (!available) {
+    if (
+      !price ||
+      !(await this.isPriceAvailable(price, { ...strategy, onetime: true }))
+    ) {
       throw new SubscriptionPlanNotFound({
         plan: lookupKey.plan,
         recurring: lookupKey.recurring,
@@ -562,6 +569,40 @@ export class UserSubscriptionManager extends SubscriptionManager {
     });
 
     return subscription;
+  }
+
+  private async autoPrice(lookupKey: LookupKey, strategy: PriceStrategyStatus) {
+    // auto select ea variant when available if not specified
+    let variant: SubscriptionVariant | null = lookupKey.variant;
+
+    if (!variant) {
+      // make the if conditions separated, more readable
+      // pro early access
+      if (
+        lookupKey.plan === SubscriptionPlan.Pro &&
+        lookupKey.recurring === SubscriptionRecurring.Yearly &&
+        strategy.proEarlyAccess &&
+        !strategy.proSubscribed
+      ) {
+        variant = SubscriptionVariant.EA;
+      }
+
+      // ai early access
+      if (
+        lookupKey.plan === SubscriptionPlan.AI &&
+        lookupKey.recurring === SubscriptionRecurring.Yearly &&
+        strategy.aiEarlyAccess &&
+        !strategy.aiSubscribed
+      ) {
+        variant = SubscriptionVariant.EA;
+      }
+    }
+
+    return this.getPrice({
+      plan: lookupKey.plan,
+      recurring: lookupKey.recurring,
+      variant,
+    });
   }
 
   private async isPriceAvailable(
