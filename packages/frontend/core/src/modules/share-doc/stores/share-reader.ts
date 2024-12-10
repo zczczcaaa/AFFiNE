@@ -18,6 +18,9 @@ export class ShareReaderStore extends Store {
       const docResponse = await this.rawFetch.fetch(
         `/api/workspaces/${workspaceId}/docs/${docId}`
       );
+      if (docResponse.status !== 200) {
+        throw new Error('Failed to fetch workspace');
+      }
       const publishMode = docResponse.headers.get(
         'publish-mode'
       ) as DocMode | null;
@@ -26,6 +29,9 @@ export class ShareReaderStore extends Store {
       const workspaceResponse = await this.rawFetch.fetch(
         `/api/workspaces/${workspaceId}/docs/${workspaceId}`
       );
+      if (workspaceResponse.status !== 200) {
+        throw new Error('Failed to fetch workspace');
+      }
       const workspaceBinary = await workspaceResponse.arrayBuffer();
 
       return {
