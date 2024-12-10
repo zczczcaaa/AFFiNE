@@ -19,7 +19,13 @@ type TypeFormInfo = {
 const getTypeFormLink = (id: string, info: TypeFormInfo) => {
   const plans = Array.isArray(info.plan) ? info.plan : [info.plan];
   const product_id = plans
-    .map(plan => (plan === SubscriptionPlan.AI ? 'ai' : 'cloud'))
+    .map(plan =>
+      plan === SubscriptionPlan.AI
+        ? 'ai'
+        : plan === SubscriptionPlan.Team
+          ? 'team'
+          : 'cloud'
+    )
     .join('-');
   const product_price =
     info.recurring === SubscriptionRecurring.Monthly
@@ -46,7 +52,11 @@ export const generateSubscriptionCallbackLink = (
     throw new Error('Account is required');
   }
   const baseUrl =
-    plan === SubscriptionPlan.AI ? '/ai-upgrade-success' : '/upgrade-success';
+    plan === SubscriptionPlan.AI
+      ? '/ai-upgrade-success'
+      : plan === SubscriptionPlan.Team
+        ? '/upgrade-success/team'
+        : '/upgrade-success';
 
   let name = account?.info?.name ?? '';
   if (name.includes(separator)) {

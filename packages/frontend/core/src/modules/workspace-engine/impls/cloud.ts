@@ -2,7 +2,7 @@ import { DebugLogger } from '@affine/debug';
 import {
   createWorkspaceMutation,
   deleteWorkspaceMutation,
-  getIsOwnerQuery,
+  getWorkspaceInfoQuery,
   getWorkspacesQuery,
 } from '@affine/graphql';
 import { DocCollection } from '@blocksuite/affine/store';
@@ -212,9 +212,11 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
       }
     )
   );
+
   error$ = new LiveData<any>(null);
   isRevalidating$ = new LiveData(false);
   workspaces$ = new LiveData<WorkspaceMetadata[]>([]);
+
   async getWorkspaceProfile(
     id: string,
     signal?: AbortSignal
@@ -228,11 +230,13 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
     const localData = await docStorage.doc.get(id);
     const cloudData = await cloudStorage.pull(id);
 
-    const isOwner = await this.getIsOwner(id, signal);
+    const info = await this.getWorkspaceInfo(id, signal);
 
     if (!cloudData && !localData) {
       return {
-        isOwner,
+        isOwner: info.isOwner,
+        isAdmin: info.isAdmin,
+        isTeam: info.workspace.team,
       };
     }
 
@@ -247,7 +251,9 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
     return {
       name: bs.meta.name,
       avatar: bs.meta.avatar,
-      isOwner,
+      isOwner: info.isOwner,
+      isAdmin: info.isAdmin,
+      isTeam: info.workspace.team,
     };
   }
   async getWorkspaceBlob(id: string, blob: string): Promise<Blob | null> {
@@ -300,16 +306,14 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
     workspace.scope.get(WorkspaceServerService).bindServer(this.server);
   }
 
-  private async getIsOwner(workspaceId: string, signal?: AbortSignal) {
-    return (
-      await this.graphqlService.gql({
-        query: getIsOwnerQuery,
-        variables: {
-          workspaceId,
-        },
-        context: { signal },
-      })
-    ).isOwner;
+  private async getWorkspaceInfo(workspaceId: string, signal?: AbortSignal) {
+    return await this.graphqlService.gql({
+      query: getWorkspaceInfoQuery,
+      variables: {
+        workspaceId,
+      },
+      context: { signal },
+    });
   }
 
   private waitForLoaded() {

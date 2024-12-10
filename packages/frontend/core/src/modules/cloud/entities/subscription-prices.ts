@@ -27,6 +27,9 @@ export class SubscriptionPrices extends Entity {
   aiPrice$ = this.prices$.map(prices =>
     prices ? prices.find(price => price.plan === 'AI') : null
   );
+  teamPrice$ = this.prices$.map(prices =>
+    prices ? prices.find(price => price.plan === 'Team') : null
+  );
 
   readableLifetimePrice$ = this.proPrice$.map(price =>
     price?.lifetimeAmount

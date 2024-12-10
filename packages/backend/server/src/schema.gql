@@ -594,6 +594,9 @@ type Query {
   """send workspace invitation"""
   getInviteInfo(inviteId: String!): InvitationType!
 
+  """Get is admin of workspace"""
+  isAdmin(workspaceId: String!): Boolean!
+
   """Get is owner of workspace"""
   isOwner(workspaceId: String!): Boolean!
 

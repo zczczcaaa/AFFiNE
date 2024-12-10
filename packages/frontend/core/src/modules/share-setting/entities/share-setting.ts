@@ -81,6 +81,14 @@ export class WorkspaceShareSetting extends Entity {
     await this.waitForRevalidation();
   }
 
+  async setEnableAi(enableAi: EnableAi) {
+    await this.store.updateWorkspaceEnableAi(
+      this.workspaceService.workspace.id,
+      enableAi
+    );
+    await this.waitForRevalidation();
+  }
+
   override dispose(): void {
     this.revalidate.unsubscribe();
   }

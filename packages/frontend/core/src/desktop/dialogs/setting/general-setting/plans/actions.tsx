@@ -45,8 +45,7 @@ export const CancelAction = ({
       const prevRecurring = subscription.pro$.value?.recurring;
       setIsMutating(true);
       await subscription.cancelSubscription(idempotencyKey);
-      subscription.revalidate();
-      await subscription.isRevalidating$.waitFor(v => !v);
+      await subscription.waitForRevalidation();
       // refresh idempotency key
       setIdempotencyKey(nanoid());
       onOpenChange(false);
@@ -92,6 +91,68 @@ export const CancelAction = ({
   );
 };
 
+export const CancelTeamAction = ({
+  children,
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+} & PropsWithChildren) => {
+  const [idempotencyKey, setIdempotencyKey] = useState(nanoid());
+  const [isMutating, setIsMutating] = useState(false);
+  const subscription = useService(SubscriptionService).subscription;
+  const teamSubscription = useLiveData(subscription.team$);
+  const authService = useService(AuthService);
+  const downgradeNotify = useDowngradeNotify();
+
+  const downgrade = useAsyncCallback(async () => {
+    try {
+      const account = authService.session.account$.value;
+      const prevRecurring = teamSubscription?.recurring;
+      setIsMutating(true);
+      await subscription.cancelSubscription(idempotencyKey);
+      await subscription.waitForRevalidation();
+      // refresh idempotency key
+      setIdempotencyKey(nanoid());
+      onOpenChange(false);
+
+      if (account && prevRecurring) {
+        downgradeNotify(
+          getDowngradeQuestionnaireLink({
+            email: account.email ?? '',
+            id: account.id,
+            name: account.info?.name ?? '',
+            plan: SubscriptionPlan.Team,
+            recurring: prevRecurring,
+          })
+        );
+      }
+    } finally {
+      setIsMutating(false);
+    }
+  }, [
+    authService.session.account$.value,
+    teamSubscription,
+    subscription,
+    idempotencyKey,
+    onOpenChange,
+    downgradeNotify,
+  ]);
+
+  return (
+    <>
+      {children}
+      <DowngradeModal
+        open={open}
+        onCancel={downgrade}
+        onOpenChange={onOpenChange}
+        loading={isMutating}
+      />
+    </>
+  );
+};
+
 /**
  * Resume payment action with modal & request
  * @param param0
@@ -114,8 +175,7 @@ export const ResumeAction = ({
     try {
       setIsMutating(true);
       await subscription.resumeSubscription(idempotencyKey);
-      subscription.revalidate();
-      await subscription.isRevalidating$.waitFor(v => !v);
+      await subscription.waitForRevalidation();
       // refresh idempotency key
       setIdempotencyKey(nanoid());
       onOpenChange(false);

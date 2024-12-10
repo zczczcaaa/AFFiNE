@@ -400,6 +400,17 @@ query getInviteInfo($inviteId: String!) {
 }`,
 };
 
+export const getIsAdminQuery = {
+  id: 'getIsAdminQuery' as const,
+  operationName: 'getIsAdmin',
+  definitionName: 'isAdmin',
+  containsFile: false,
+  query: `
+query getIsAdmin($workspaceId: String!) {
+  isAdmin(workspaceId: $workspaceId)
+}`,
+};
+
 export const getIsOwnerQuery = {
   id: 'getIsOwnerQuery' as const,
   operationName: 'getIsOwner',
@@ -607,6 +618,21 @@ export const getWorkspaceFeaturesQuery = {
 query getWorkspaceFeatures($workspaceId: String!) {
   workspace(id: $workspaceId) {
     features
+  }
+}`,
+};
+
+export const getWorkspaceInfoQuery = {
+  id: 'getWorkspaceInfoQuery' as const,
+  operationName: 'getWorkspaceInfo',
+  definitionName: 'isAdmin,isOwner,workspace',
+  containsFile: false,
+  query: `
+query getWorkspaceInfo($workspaceId: String!) {
+  isAdmin(workspaceId: $workspaceId)
+  isOwner(workspaceId: $workspaceId)
+  workspace(id: $workspaceId) {
+    team
   }
 }`,
 };
@@ -1304,6 +1330,25 @@ mutation inviteByEmail($workspaceId: String!, $email: String!, $permission: Perm
     permission: $permission
     sendInviteMail: $sendInviteMail
   )
+}`,
+};
+
+export const inviteByEmailsMutation = {
+  id: 'inviteByEmailsMutation' as const,
+  operationName: 'inviteByEmails',
+  definitionName: 'inviteBatch',
+  containsFile: false,
+  query: `
+mutation inviteByEmails($workspaceId: String!, $emails: [String!]!, $sendInviteMail: Boolean) {
+  inviteBatch(
+    workspaceId: $workspaceId
+    emails: $emails
+    sendInviteMail: $sendInviteMail
+  ) {
+    email
+    inviteId
+    sentSuccess
+  }
 }`,
 };
 

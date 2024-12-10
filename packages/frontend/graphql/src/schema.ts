@@ -891,6 +891,8 @@ export interface Query {
   error: ErrorDataUnion;
   /** send workspace invitation */
   getInviteInfo: InvitationType;
+  /** Get is admin of workspace */
+  isAdmin: Scalars['Boolean']['output'];
   /** Get is owner of workspace */
   isOwner: Scalars['Boolean']['output'];
   /**
@@ -934,6 +936,10 @@ export interface QueryErrorArgs {
 
 export interface QueryGetInviteInfoArgs {
   inviteId: Scalars['String']['input'];
+}
+
+export interface QueryIsAdminArgs {
+  workspaceId: Scalars['String']['input'];
 }
 
 export interface QueryIsOwnerArgs {
@@ -1738,6 +1744,12 @@ export type GetInviteInfoQuery = {
   };
 };
 
+export type GetIsAdminQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+export type GetIsAdminQuery = { __typename?: 'Query'; isAdmin: boolean };
+
 export type GetIsOwnerQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
 }>;
@@ -1920,6 +1932,17 @@ export type GetWorkspaceFeaturesQueryVariables = Exact<{
 export type GetWorkspaceFeaturesQuery = {
   __typename?: 'Query';
   workspace: { __typename?: 'WorkspaceType'; features: Array<FeatureType> };
+};
+
+export type GetWorkspaceInfoQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+export type GetWorkspaceInfoQuery = {
+  __typename?: 'Query';
+  isAdmin: boolean;
+  isOwner: boolean;
+  workspace: { __typename?: 'WorkspaceType'; team: boolean };
 };
 
 export type GetWorkspacePageMetaByIdQueryVariables = Exact<{
@@ -2542,6 +2565,22 @@ export type InviteByEmailMutationVariables = Exact<{
 
 export type InviteByEmailMutation = { __typename?: 'Mutation'; invite: string };
 
+export type InviteByEmailsMutationVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  emails: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  sendInviteMail?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+export type InviteByEmailsMutation = {
+  __typename?: 'Mutation';
+  inviteBatch: Array<{
+    __typename?: 'InviteResult';
+    email: string;
+    inviteId: string | null;
+    sentSuccess: boolean;
+  }>;
+};
+
 export type AcceptInviteByInviteIdMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   inviteId: Scalars['String']['input'];
@@ -2685,6 +2724,11 @@ export type Queries =
       response: GetInviteInfoQuery;
     }
   | {
+      name: 'getIsAdminQuery';
+      variables: GetIsAdminQueryVariables;
+      response: GetIsAdminQuery;
+    }
+  | {
       name: 'getIsOwnerQuery';
       variables: GetIsOwnerQueryVariables;
       response: GetIsOwnerQuery;
@@ -2743,6 +2787,11 @@ export type Queries =
       name: 'getWorkspaceFeaturesQuery';
       variables: GetWorkspaceFeaturesQueryVariables;
       response: GetWorkspaceFeaturesQuery;
+    }
+  | {
+      name: 'getWorkspaceInfoQuery';
+      variables: GetWorkspaceInfoQueryVariables;
+      response: GetWorkspaceInfoQuery;
     }
   | {
       name: 'getWorkspacePageMetaByIdQuery';
@@ -3060,6 +3109,11 @@ export type Mutations =
       name: 'inviteByEmailMutation';
       variables: InviteByEmailMutationVariables;
       response: InviteByEmailMutation;
+    }
+  | {
+      name: 'inviteByEmailsMutation';
+      variables: InviteByEmailsMutationVariables;
+      response: InviteByEmailsMutation;
     }
   | {
       name: 'acceptInviteByInviteIdMutation';

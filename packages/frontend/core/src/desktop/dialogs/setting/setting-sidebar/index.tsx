@@ -251,20 +251,6 @@ export const WorkspaceList = ({
   );
 };
 
-const subTabConfigs = [
-  {
-    key: 'workspace:preference',
-    title: 'com.affine.settings.workspace.preferences',
-  },
-  {
-    key: 'workspace:properties',
-    title: 'com.affine.settings.workspace.properties',
-  },
-] satisfies {
-  key: SettingTab;
-  title: keyof ReturnType<typeof useI18n>;
-}[];
-
 const WorkspaceListItem = ({
   activeTab,
   meta,
@@ -294,7 +280,30 @@ const WorkspaceListItem = ({
     onClick('workspace:preference');
   }, [onClick]);
 
+  const showBilling = information?.isTeam && information?.isOwner;
   const subTabs = useMemo(() => {
+    const subTabConfigs = [
+      {
+        key: 'workspace:preference',
+        title: 'com.affine.settings.workspace.preferences',
+      },
+      {
+        key: 'workspace:properties',
+        title: 'com.affine.settings.workspace.properties',
+      },
+      ...(showBilling
+        ? [
+            {
+              key: 'workspace:billing' as SettingTab,
+              title: 'com.affine.settings.workspace.billing',
+            },
+          ]
+        : []),
+    ] satisfies {
+      key: SettingTab;
+      title: keyof ReturnType<typeof useI18n>;
+    }[];
+
     return subTabConfigs.map(({ key, title }) => {
       return (
         <div
@@ -311,7 +320,7 @@ const WorkspaceListItem = ({
         </div>
       );
     });
-  }, [activeTab, onClick, t]);
+  }, [activeTab, onClick, showBilling, t]);
 
   return (
     <>

@@ -2,6 +2,7 @@ import type { SettingTab } from '@affine/core/modules/dialogs/constant';
 import type { WorkspaceMetadata } from '@toeverything/infra';
 
 import type { SettingState } from '../types';
+import { WorkspaceSettingBilling } from './billing';
 import { WorkspaceSettingDetail } from './new-workspace-setting-detail';
 import { WorkspaceSettingProperties } from './properties';
 
@@ -29,6 +30,8 @@ export const WorkspaceSetting = ({
       return (
         <WorkspaceSettingProperties workspaceMetadata={workspaceMetadata} />
       );
+    case 'workspace:billing':
+      return <WorkspaceSettingBilling />;
   }
   return null;
 };

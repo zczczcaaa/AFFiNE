@@ -11,6 +11,7 @@ import { ArrowRightSmallIcon } from '@blocksuite/icons/rc';
 import { FrameworkScope } from '@toeverything/infra';
 import { useCallback } from 'react';
 
+import { AiSetting } from './ai';
 import { DeleteLeaveWorkspace } from './delete-leave-workspace';
 import { EnableCloudPanel } from './enable-cloud';
 import { DesktopExportPanel } from './export';
@@ -70,6 +71,7 @@ export const WorkspaceSettingDetail = ({
         <EnableCloudPanel onCloseSetting={onCloseSetting} />
         <MembersPanel onChangeSettingState={onChangeSettingState} />
       </SettingWrapper>
+      <AiSetting />
       <SharingPanel />
       {BUILD_CONFIG.isElectron && (
         <SettingWrapper title={t['Storage and Export']()}>

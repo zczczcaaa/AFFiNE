@@ -224,6 +224,21 @@ export class WorkspaceResolver {
     return data?.user?.id === user.id;
   }
 
+  @Query(() => Boolean, {
+    description: 'Get is admin of workspace',
+    complexity: 2,
+  })
+  async isAdmin(
+    @CurrentUser() user: CurrentUser,
+    @Args('workspaceId') workspaceId: string
+  ) {
+    return this.permissions.tryCheckWorkspaceIs(
+      workspaceId,
+      user.id,
+      Permission.Admin
+    );
+  }
+
   @Query(() => [WorkspaceType], {
     description: 'Get all accessible workspaces for current user',
     complexity: 2,

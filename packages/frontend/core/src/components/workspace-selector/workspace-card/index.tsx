@@ -14,6 +14,7 @@ import {
   LocalWorkspaceIcon,
   NoNetworkIcon,
   SettingsIcon,
+  TeamWorkspaceIcon,
   UnsyncIcon,
 } from '@blocksuite/icons/rc';
 import {
@@ -28,6 +29,7 @@ import { forwardRef, useCallback, useEffect, useState } from 'react';
 
 import { useCatchEventCallback } from '../../hooks/use-catch-event-hook';
 import * as styles from './styles.css';
+export { PureWorkspaceCard } from './pure-workspace-card';
 
 const CloudWorkspaceStatus = () => {
   return (
@@ -240,6 +242,7 @@ export const WorkspaceCard = forwardRef<
     avatarSize?: number;
     disable?: boolean;
     hideCollaborationIcon?: boolean;
+    hideTeamWorkspaceIcon?: boolean;
     active?: boolean;
     onClickOpenSettings?: (workspaceMetadata: WorkspaceMetadata) => void;
     onClickEnableCloud?: (workspaceMetadata: WorkspaceMetadata) => void;
@@ -256,6 +259,7 @@ export const WorkspaceCard = forwardRef<
       className,
       disable,
       hideCollaborationIcon,
+      hideTeamWorkspaceIcon,
       active,
       ...props
     },
@@ -325,6 +329,9 @@ export const WorkspaceCard = forwardRef<
             {hideCollaborationIcon || information?.isOwner ? null : (
               <CollaborationIcon className={styles.collaborationIcon} />
             )}
+            {hideTeamWorkspaceIcon || !information?.isTeam ? null : (
+              <TeamWorkspaceIcon className={styles.collaborationIcon} />
+            )}
             {onClickOpenSettings && (
               <div className={styles.settingButton} onClick={onOpenSettings}>
                 <SettingsIcon width={16} height={16} />
@@ -336,7 +343,7 @@ export const WorkspaceCard = forwardRef<
 
         {active && (
           <div className={styles.activeContainer}>
-            <DoneIcon className={styles.activeIcon} />{' '}
+            <DoneIcon className={styles.activeIcon} />
           </div>
         )}
       </div>

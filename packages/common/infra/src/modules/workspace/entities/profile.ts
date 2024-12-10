@@ -22,6 +22,8 @@ export interface WorkspaceProfileInfo {
   avatar?: string;
   name?: string;
   isOwner?: boolean;
+  isAdmin?: boolean;
+  isTeam?: boolean;
 }
 
 /**
