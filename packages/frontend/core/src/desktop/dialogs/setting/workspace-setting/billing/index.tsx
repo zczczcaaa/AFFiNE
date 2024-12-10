@@ -10,8 +10,8 @@ import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hoo
 import { useMutation } from '@affine/core/components/hooks/use-mutation';
 import {
   AuthService,
-  InvoicesService,
-  SubscriptionService,
+  WorkspaceInvoicesService,
+  WorkspaceSubscriptionService,
 } from '@affine/core/modules/cloud';
 import { UrlService } from '@affine/core/modules/url';
 import {
@@ -41,8 +41,10 @@ import * as styles from './styles.css';
 export const WorkspaceSettingBilling = () => {
   const t = useI18n();
   const workspace = useService(WorkspaceService).workspace;
-  const subscriptionService = useService(SubscriptionService);
-  const team = useLiveData(subscriptionService.subscription.team$);
+  const subscriptionService = useService(WorkspaceSubscriptionService);
+  const subscription = useLiveData(
+    subscriptionService.subscription.subscription$
+  );
   const title = useLiveData(workspace.name$) || 'untitled';
 
   if (workspace === null) {
@@ -51,7 +53,7 @@ export const WorkspaceSettingBilling = () => {
     return null;
   }
 
-  if (!team) {
+  if (!subscription) {
     return <Loading />;
   }
 
@@ -67,8 +69,8 @@ export const WorkspaceSettingBilling = () => {
         <TeamCard />
         <TypeFormLink />
         <PaymentMethodUpdater />
-        {team.end && team.canceledAt ? (
-          <ResumeSubscription expirationDate={team.end} />
+        {subscription?.end && subscription.canceledAt ? (
+          <ResumeSubscription expirationDate={subscription.end} />
         ) : null}
       </SettingWrapper>
 
@@ -81,8 +83,10 @@ export const WorkspaceSettingBilling = () => {
 
 const TeamCard = () => {
   const t = useI18n();
-  const subscriptionService = useService(SubscriptionService);
-  const teamSubscription = useLiveData(subscriptionService.subscription.team$);
+  const subscriptionService = useService(WorkspaceSubscriptionService);
+  const teamSubscription = useLiveData(
+    subscriptionService.subscription.subscription$
+  );
   const teamPrices = useLiveData(subscriptionService.prices.teamPrice$);
 
   const [openCancelModal, setOpenCancelModal] = useState(false);
@@ -198,23 +202,22 @@ const ResumeSubscription = ({ expirationDate }: { expirationDate: string }) => {
 
 const TypeFormLink = () => {
   const t = useI18n();
-  const subscriptionService = useService(SubscriptionService);
+  const workspaceSubscriptionService = useService(WorkspaceSubscriptionService);
   const authService = useService(AuthService);
 
-  const team = useLiveData(subscriptionService.subscription.team$);
+  const workspaceSubscription = useLiveData(
+    workspaceSubscriptionService.subscription.subscription$
+  );
   const account = useLiveData(authService.session.account$);
 
   if (!account) return null;
-
-  const plan = [];
-  if (team) plan.push(SubscriptionPlan.Team);
 
   const link = getUpgradeQuestionnaireLink({
     name: account.info?.name,
     id: account.id,
     email: account.email,
-    recurring: team?.recurring ?? SubscriptionRecurring.Yearly,
-    plan,
+    recurring: workspaceSubscription?.recurring ?? SubscriptionRecurring.Yearly,
+    plan: SubscriptionPlan.Team,
   });
 
   return (
@@ -263,7 +266,7 @@ const PaymentMethodUpdater = () => {
 const BillingHistory = () => {
   const t = useI18n();
 
-  const invoicesService = useService(InvoicesService);
+  const invoicesService = useService(WorkspaceInvoicesService);
   const pageInvoices = useLiveData(invoicesService.invoices.pageInvoices$);
   const invoiceCount = useLiveData(invoicesService.invoices.invoiceCount$);
   const isLoading = useLiveData(invoicesService.invoices.isLoading$);

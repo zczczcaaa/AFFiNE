@@ -5,6 +5,7 @@ import type {
 import {
   cancelSubscriptionMutation,
   createCheckoutSessionMutation,
+  getWorkspaceSubscriptionQuery,
   pricesQuery,
   resumeSubscriptionMutation,
   SubscriptionPlan,
@@ -27,7 +28,11 @@ const getDefaultSubscriptionSuccessCallbackLink = (
   scheme?: string
 ) => {
   const path =
-    plan === SubscriptionPlan.AI ? '/ai-upgrade-success' : '/upgrade-success';
+    plan === SubscriptionPlan.Team
+      ? '/upgrade-success/team'
+      : plan === SubscriptionPlan.AI
+        ? '/ai-upgrade-success'
+        : '/upgrade-success';
   const urlString = baseUrl + path;
   const url = new URL(urlString);
   if (scheme) {
@@ -61,6 +66,30 @@ export class SubscriptionStore extends Store {
     return {
       userId: data.currentUser?.id,
       subscriptions: data.currentUser?.subscriptions,
+    };
+  }
+
+  async fetchWorkspaceSubscriptions(
+    workspaceId: string,
+    abortSignal?: AbortSignal
+  ) {
+    const data = await this.gqlService.gql({
+      query: getWorkspaceSubscriptionQuery,
+      variables: {
+        workspaceId,
+      },
+      context: {
+        signal: abortSignal,
+      },
+    });
+
+    if (!data.workspace) {
+      throw new Error('No workspace');
+    }
+
+    return {
+      workspaceId: data.workspace.subscription?.id,
+      subscription: data.workspace.subscription,
     };
   }
 
@@ -112,6 +141,22 @@ export class SubscriptionStore extends Store {
 
   setCachedSubscriptions(userId: string, subscriptions: SubscriptionType[]) {
     return this.globalCache.set(SUBSCRIPTION_CACHE_KEY + userId, subscriptions);
+  }
+
+  getCachedWorkspaceSubscription(workspaceId: string) {
+    return this.globalCache.get<SubscriptionType>(
+      SUBSCRIPTION_CACHE_KEY + workspaceId
+    );
+  }
+
+  setCachedWorkspaceSubscription(
+    workspaceId: string,
+    subscription: SubscriptionType
+  ) {
+    return this.globalCache.set(
+      SUBSCRIPTION_CACHE_KEY + workspaceId,
+      subscription
+    );
   }
 
   setSubscriptionRecurring(

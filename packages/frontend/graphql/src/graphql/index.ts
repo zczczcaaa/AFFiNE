@@ -706,6 +706,29 @@ query getWorkspacePublicPages($workspaceId: String!) {
 }`,
 };
 
+export const getWorkspaceSubscriptionQuery = {
+  id: 'getWorkspaceSubscriptionQuery' as const,
+  operationName: 'getWorkspaceSubscription',
+  definitionName: 'workspace',
+  containsFile: false,
+  query: `
+query getWorkspaceSubscription($workspaceId: String!) {
+  workspace(id: $workspaceId) {
+    subscription {
+      id
+      status
+      plan
+      recurring
+      start
+      end
+      nextBillAt
+      canceledAt
+      variant
+    }
+  }
+}`,
+};
+
 export const getWorkspaceQuery = {
   id: 'getWorkspaceQuery' as const,
   operationName: 'getWorkspace',
@@ -1405,6 +1428,29 @@ export const revokeInviteLinkMutation = {
   query: `
 mutation revokeInviteLink($workspaceId: String!) {
   revokeInviteLink(workspaceId: $workspaceId)
+}`,
+};
+
+export const workspaceInvoicesQuery = {
+  id: 'workspaceInvoicesQuery' as const,
+  operationName: 'workspaceInvoices',
+  definitionName: 'workspace',
+  containsFile: false,
+  query: `
+query workspaceInvoices($take: Int!, $skip: Int!, $workspaceId: String!) {
+  workspace(id: $workspaceId) {
+    invoiceCount
+    invoices(take: $take, skip: $skip) {
+      id
+      status
+      currency
+      amount
+      reason
+      lastPaymentError
+      link
+      createdAt
+    }
+  }
 }`,
 };
 

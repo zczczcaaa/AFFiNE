@@ -28,7 +28,9 @@ export { UserCopilotQuotaService } from './services/user-copilot-quota';
 export { UserFeatureService } from './services/user-feature';
 export { UserQuotaService } from './services/user-quota';
 export { WebSocketService } from './services/websocket';
+export { WorkspaceInvoicesService } from './services/workspace-invoices';
 export { WorkspaceServerService } from './services/workspace-server';
+export { WorkspaceSubscriptionService } from './services/workspace-subscription';
 export type { ServerConfig } from './types';
 
 import {
@@ -39,6 +41,7 @@ import {
   GlobalState,
   GlobalStateService,
   WorkspaceScope,
+  WorkspaceService,
 } from '@toeverything/infra';
 
 import { UrlService } from '../url';
@@ -51,6 +54,8 @@ import { SubscriptionPrices } from './entities/subscription-prices';
 import { UserCopilotQuota } from './entities/user-copilot-quota';
 import { UserFeature } from './entities/user-feature';
 import { UserQuota } from './entities/user-quota';
+import { WorkspaceInvoices } from './entities/workspace-invoices';
+import { WorkspaceSubscription } from './entities/workspace-subscription';
 import { DefaultRawFetchProvider, RawFetchProvider } from './provider/fetch';
 import { ValidatorProvider } from './provider/validator';
 import { WebSocketAuthProvider } from './provider/websocket-auth';
@@ -70,7 +75,9 @@ import { UserCopilotQuotaService } from './services/user-copilot-quota';
 import { UserFeatureService } from './services/user-feature';
 import { UserQuotaService } from './services/user-quota';
 import { WebSocketService } from './services/websocket';
+import { WorkspaceInvoicesService } from './services/workspace-invoices';
 import { WorkspaceServerService } from './services/workspace-server';
+import { WorkspaceSubscriptionService } from './services/workspace-subscription';
 import { AuthStore } from './stores/auth';
 import { CloudDocMetaStore } from './stores/cloud-doc-meta';
 import { InvoicesStore } from './stores/invoices';
@@ -142,7 +149,16 @@ export function configureCloudModule(framework: Framework) {
     .store(UserFeatureStore, [GraphQLService])
     .service(InvoicesService)
     .store(InvoicesStore, [GraphQLService])
-    .entity(Invoices, [InvoicesStore]);
+    .entity(Invoices, [InvoicesStore])
+    .scope(WorkspaceScope)
+    .service(WorkspaceSubscriptionService, [SubscriptionStore])
+    .entity(WorkspaceSubscription, [
+      WorkspaceService,
+      ServerService,
+      SubscriptionStore,
+    ])
+    .service(WorkspaceInvoicesService)
+    .entity(WorkspaceInvoices, [InvoicesStore, WorkspaceService]);
 
   framework
     .scope(WorkspaceScope)

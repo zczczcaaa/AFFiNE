@@ -2014,6 +2014,29 @@ export type GetWorkspacePublicPagesQuery = {
   };
 };
 
+export type GetWorkspaceSubscriptionQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+}>;
+
+export type GetWorkspaceSubscriptionQuery = {
+  __typename?: 'Query';
+  workspace: {
+    __typename?: 'WorkspaceType';
+    subscription: {
+      __typename?: 'SubscriptionType';
+      id: string | null;
+      status: SubscriptionStatus;
+      plan: SubscriptionPlan;
+      recurring: SubscriptionRecurring;
+      start: string;
+      end: string | null;
+      nextBillAt: string | null;
+      canceledAt: string | null;
+      variant: SubscriptionVariant | null;
+    } | null;
+  };
+};
+
 export type GetWorkspaceQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -2627,6 +2650,31 @@ export type RevokeInviteLinkMutation = {
   revokeInviteLink: boolean;
 };
 
+export type WorkspaceInvoicesQueryVariables = Exact<{
+  take: Scalars['Int']['input'];
+  skip: Scalars['Int']['input'];
+  workspaceId: Scalars['String']['input'];
+}>;
+
+export type WorkspaceInvoicesQuery = {
+  __typename?: 'Query';
+  workspace: {
+    __typename?: 'WorkspaceType';
+    invoiceCount: number;
+    invoices: Array<{
+      __typename?: 'InvoiceType';
+      id: string | null;
+      status: InvoiceStatus;
+      currency: string;
+      amount: number;
+      reason: string;
+      lastPaymentError: string | null;
+      link: string | null;
+      createdAt: string;
+    }>;
+  };
+};
+
 export type WorkspaceQuotaQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -2814,6 +2862,11 @@ export type Queries =
       response: GetWorkspacePublicPagesQuery;
     }
   | {
+      name: 'getWorkspaceSubscriptionQuery';
+      variables: GetWorkspaceSubscriptionQueryVariables;
+      response: GetWorkspaceSubscriptionQuery;
+    }
+  | {
       name: 'getWorkspaceQuery';
       variables: GetWorkspaceQueryVariables;
       response: GetWorkspaceQuery;
@@ -2882,6 +2935,11 @@ export type Queries =
       name: 'listWorkspaceFeaturesQuery';
       variables: ListWorkspaceFeaturesQueryVariables;
       response: ListWorkspaceFeaturesQuery;
+    }
+  | {
+      name: 'workspaceInvoicesQuery';
+      variables: WorkspaceInvoicesQueryVariables;
+      response: WorkspaceInvoicesQuery;
     }
   | {
       name: 'workspaceQuotaQuery';

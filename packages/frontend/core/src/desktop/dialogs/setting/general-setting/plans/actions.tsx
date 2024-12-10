@@ -8,7 +8,11 @@ import { nanoid } from 'nanoid';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useState } from 'react';
 
-import { AuthService, SubscriptionService } from '../../../../../modules/cloud';
+import {
+  AuthService,
+  SubscriptionService,
+  WorkspaceSubscriptionService,
+} from '../../../../../modules/cloud';
 import { ConfirmLoadingModal, DowngradeModal } from './modals';
 
 /**
@@ -101,15 +105,15 @@ export const CancelTeamAction = ({
 } & PropsWithChildren) => {
   const [idempotencyKey, setIdempotencyKey] = useState(nanoid());
   const [isMutating, setIsMutating] = useState(false);
-  const subscription = useService(SubscriptionService).subscription;
-  const teamSubscription = useLiveData(subscription.team$);
+  const subscription = useService(WorkspaceSubscriptionService).subscription;
+  const workspaceSubscription = useLiveData(subscription.subscription$);
   const authService = useService(AuthService);
   const downgradeNotify = useDowngradeNotify();
 
   const downgrade = useAsyncCallback(async () => {
     try {
       const account = authService.session.account$.value;
-      const prevRecurring = teamSubscription?.recurring;
+      const prevRecurring = workspaceSubscription?.recurring;
       setIsMutating(true);
       await subscription.cancelSubscription(idempotencyKey);
       await subscription.waitForRevalidation();
@@ -133,7 +137,7 @@ export const CancelTeamAction = ({
     }
   }, [
     authService.session.account$.value,
-    teamSubscription,
+    workspaceSubscription,
     subscription,
     idempotencyKey,
     onOpenChange,
