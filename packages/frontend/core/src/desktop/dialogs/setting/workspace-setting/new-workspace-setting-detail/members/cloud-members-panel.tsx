@@ -1,7 +1,5 @@
 import { Button, Loading, notify } from '@affine/component';
 import {
-  InviteModal,
-  type InviteModalProps,
   InviteTeamMemberModal,
   type InviteTeamMemberModalProps,
   MemberLimitModal,
@@ -98,25 +96,6 @@ export const CloudWorkspaceMembersPanel = ({
     return success;
   }, [permissionService.permission]);
 
-  const onInviteConfirm = useCallback<InviteModalProps['onConfirm']>(
-    async ({ email, permission }) => {
-      setIsMutating(true);
-      const success = await permissionService.permission.inviteMember(
-        email,
-        permission,
-        true
-      );
-      if (success) {
-        notify.success({
-          title: t['Invitation sent'](),
-          message: t['Invitation sent hint'](),
-        });
-        setOpen(false);
-      }
-      setIsMutating(false);
-    },
-    [permissionService.permission, t]
-  );
   const onInviteBatchConfirm = useCallback<
     InviteTeamMemberModalProps['onConfirm']
   >(
@@ -208,18 +187,7 @@ export const CloudWorkspaceMembersPanel = ({
         {isOwner ? (
           <>
             <Button onClick={openModal}>{t['Invite Members']()}</Button>
-            {isTeam ? (
-              <InviteTeamMemberModal
-                open={open}
-                setOpen={setOpen}
-                onConfirm={onInviteBatchConfirm}
-                isMutating={isMutating}
-                copyTextToClipboard={copyTextToClipboard}
-                onGenerateInviteLink={onGenerateInviteLink}
-                onRevokeInviteLink={onRevokeInviteLink}
-                importCSV={<ImportCSV onImport={onImportCSV} />}
-              />
-            ) : isLimited ? (
+            {isLimited && !isTeam ? (
               <MemberLimitModal
                 isFreePlan={!plan}
                 open={open}
@@ -229,11 +197,15 @@ export const CloudWorkspaceMembersPanel = ({
                 onConfirm={handleUpgradeConfirm}
               />
             ) : (
-              <InviteModal
+              <InviteTeamMemberModal
                 open={open}
                 setOpen={setOpen}
-                onConfirm={onInviteConfirm}
+                onConfirm={onInviteBatchConfirm}
                 isMutating={isMutating}
+                copyTextToClipboard={copyTextToClipboard}
+                onGenerateInviteLink={onGenerateInviteLink}
+                onRevokeInviteLink={onRevokeInviteLink}
+                importCSV={<ImportCSV onImport={onImportCSV} />}
               />
             )}
           </>

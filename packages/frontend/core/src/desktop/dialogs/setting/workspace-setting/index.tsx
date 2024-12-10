@@ -31,7 +31,7 @@ export const WorkspaceSetting = ({
         <WorkspaceSettingProperties workspaceMetadata={workspaceMetadata} />
       );
     case 'workspace:billing':
-      return <WorkspaceSettingBilling />;
+      return <WorkspaceSettingBilling workspaceMetadata={workspaceMetadata} />;
   }
   return null;
 };

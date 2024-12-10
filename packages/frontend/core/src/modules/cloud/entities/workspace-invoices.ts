@@ -14,7 +14,8 @@ import {
 import { EMPTY, map, mergeMap } from 'rxjs';
 
 import { isBackendError, isNetworkError } from '../error';
-import type { InvoicesStore } from '../stores/invoices';
+import type { WorkspaceServerService } from '../services/workspace-server';
+import { InvoicesStore } from '../stores/invoices';
 
 export type Invoice = NonNullable<
   InvoicesQuery['currentUser']
@@ -22,11 +23,13 @@ export type Invoice = NonNullable<
 
 export class WorkspaceInvoices extends Entity {
   constructor(
-    private readonly store: InvoicesStore,
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService: WorkspaceService,
+    private readonly workspaceServerService: WorkspaceServerService
   ) {
     super();
   }
+
+  store = this.workspaceServerService.server?.scope.get(InvoicesStore);
 
   pageNum$ = new LiveData(0);
   invoiceCount$ = new LiveData<number | undefined>(undefined);
@@ -43,6 +46,9 @@ export class WorkspaceInvoices extends Entity {
       (a, b) => a === b,
       pageNum => {
         return fromPromise(async signal => {
+          if (!this.store) {
+            throw new Error('No invoices store');
+          }
           return this.store.fetchWorkspaceInvoices(
             pageNum * this.PAGE_SIZE,
             this.PAGE_SIZE,

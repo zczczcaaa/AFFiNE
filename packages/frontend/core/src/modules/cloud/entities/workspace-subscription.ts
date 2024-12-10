@@ -15,8 +15,8 @@ import {
 import { EMPTY, mergeMap } from 'rxjs';
 
 import { isBackendError, isNetworkError } from '../error';
-import type { ServerService } from '../services/server';
-import type { SubscriptionStore } from '../stores/subscription';
+import type { WorkspaceServerService } from '../services/workspace-server';
+import { SubscriptionStore } from '../stores/subscription';
 
 export type SubscriptionType = NonNullable<
   SubscriptionQuery['currentUser']
@@ -33,18 +33,25 @@ export class WorkspaceSubscription extends Entity {
 
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly serverService: ServerService,
-    private readonly store: SubscriptionStore
+    private readonly workspaceServerService: WorkspaceServerService
   ) {
     super();
   }
+  server = this.workspaceServerService.server;
+  store = this.workspaceServerService.server?.scope.get(SubscriptionStore);
 
   async resumeSubscription(idempotencyKey: string, plan?: SubscriptionPlan) {
+    if (!this.store) {
+      throw new Error('Subscription store not available');
+    }
     await this.store.mutateResumeSubscription(idempotencyKey, plan);
     await this.waitForRevalidation();
   }
 
   async cancelSubscription(idempotencyKey: string, plan?: SubscriptionPlan) {
+    if (!this.store) {
+      throw new Error('Subscription store not available');
+    }
     await this.store.mutateCancelSubscription(idempotencyKey, plan);
     await this.waitForRevalidation();
   }
@@ -54,6 +61,9 @@ export class WorkspaceSubscription extends Entity {
     recurring: SubscriptionRecurring,
     plan?: SubscriptionPlan
   ) {
+    if (!this.store) {
+      throw new Error('Subscription store not available');
+    }
     await this.store.setSubscriptionRecurring(idempotencyKey, recurring, plan);
     await this.waitForRevalidation();
   }
@@ -70,14 +80,20 @@ export class WorkspaceSubscription extends Entity {
     exhaustMapWithTrailing(() => {
       return fromPromise(async signal => {
         const currentWorkspaceId = this.workspaceService.workspace.id;
-        if (!currentWorkspaceId) {
+        if (!currentWorkspaceId || !this.server) {
           return undefined; // no subscription if no user
         }
-        const serverConfig =
-          await this.serverService.server.features$.waitForNonNull(signal);
+
+        const serverConfig = await this.server.features$.waitForNonNull(signal);
 
         if (!serverConfig.payment) {
           // No payment feature, no subscription
+          return {
+            workspaceId: currentWorkspaceId,
+            subscription: null,
+          };
+        }
+        if (!this.store) {
           return {
             workspaceId: currentWorkspaceId,
             subscription: null,
@@ -101,7 +117,7 @@ export class WorkspaceSubscription extends Entity {
           when: isBackendError,
         }),
         mergeMap(data => {
-          if (data && data.subscription && data.workspaceId) {
+          if (data && data.subscription && data.workspaceId && this.store) {
             this.store.setCachedWorkspaceSubscription(
               data.workspaceId,
               data.subscription

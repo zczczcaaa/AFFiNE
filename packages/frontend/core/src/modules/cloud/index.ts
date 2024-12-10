@@ -149,16 +149,7 @@ export function configureCloudModule(framework: Framework) {
     .store(UserFeatureStore, [GraphQLService])
     .service(InvoicesService)
     .store(InvoicesStore, [GraphQLService])
-    .entity(Invoices, [InvoicesStore])
-    .scope(WorkspaceScope)
-    .service(WorkspaceSubscriptionService, [SubscriptionStore])
-    .entity(WorkspaceSubscription, [
-      WorkspaceService,
-      ServerService,
-      SubscriptionStore,
-    ])
-    .service(WorkspaceInvoicesService)
-    .entity(WorkspaceInvoices, [InvoicesStore, WorkspaceService]);
+    .entity(Invoices, [InvoicesStore]);
 
   framework
     .scope(WorkspaceScope)
@@ -167,4 +158,10 @@ export function configureCloudModule(framework: Framework) {
     .service(CloudDocMetaService)
     .entity(CloudDocMeta, [CloudDocMetaStore, DocService, GlobalCache])
     .store(CloudDocMetaStore, [WorkspaceServerService]);
+  framework
+    .scope(WorkspaceScope)
+    .service(WorkspaceSubscriptionService, [WorkspaceServerService])
+    .entity(WorkspaceSubscription, [WorkspaceService, WorkspaceServerService])
+    .service(WorkspaceInvoicesService)
+    .entity(WorkspaceInvoices, [WorkspaceService, WorkspaceServerService]);
 }

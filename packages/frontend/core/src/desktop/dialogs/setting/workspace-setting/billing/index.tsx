@@ -8,8 +8,10 @@ import {
 import { getUpgradeQuestionnaireLink } from '@affine/core/components/hooks/affine/use-subscription-notify';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { useMutation } from '@affine/core/components/hooks/use-mutation';
+import { useWorkspace } from '@affine/core/components/hooks/use-workspace';
 import {
   AuthService,
+  SubscriptionService,
   WorkspaceInvoicesService,
   WorkspaceSubscriptionService,
 } from '@affine/core/modules/cloud';
@@ -27,7 +29,7 @@ import {
   FrameworkScope,
   useLiveData,
   useService,
-  WorkspaceService,
+  type WorkspaceMetadata,
 } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -38,18 +40,29 @@ import {
 } from '../../general-setting/plans/actions';
 import * as styles from './styles.css';
 
-export const WorkspaceSettingBilling = () => {
+export const WorkspaceSettingBilling = ({
+  workspaceMetadata,
+}: {
+  workspaceMetadata: WorkspaceMetadata;
+}) => {
+  // useWorkspace hook is a vary heavy operation here, but we need syncing name and avatar changes here,
+  // we don't have a better way to do this now
+  const workspace = useWorkspace(workspaceMetadata);
+
   const t = useI18n();
-  const workspace = useService(WorkspaceService).workspace;
-  const subscriptionService = useService(WorkspaceSubscriptionService);
-  const subscription = useLiveData(
-    subscriptionService.subscription.subscription$
+
+  const subscriptionService = workspace?.scope.get(
+    WorkspaceSubscriptionService
   );
-  const title = useLiveData(workspace.name$) || 'untitled';
+  const subscription = useLiveData(
+    subscriptionService?.subscription.subscription$
+  );
+
+  useEffect(() => {
+    subscriptionService?.subscription.revalidate();
+  }, [subscriptionService]);
 
   if (workspace === null) {
-    console.log('workspace is null', title);
-
     return null;
   }
 
@@ -83,17 +96,20 @@ export const WorkspaceSettingBilling = () => {
 
 const TeamCard = () => {
   const t = useI18n();
-  const subscriptionService = useService(WorkspaceSubscriptionService);
+  const workspaceSubscriptionService = useService(WorkspaceSubscriptionService);
+  const subscriptionService = useService(SubscriptionService);
+
   const teamSubscription = useLiveData(
-    subscriptionService.subscription.subscription$
+    workspaceSubscriptionService.subscription.subscription$
   );
   const teamPrices = useLiveData(subscriptionService.prices.teamPrice$);
 
   const [openCancelModal, setOpenCancelModal] = useState(false);
+
   useEffect(() => {
-    subscriptionService.subscription.revalidate();
-    subscriptionService.prices.revalidate();
-  }, [subscriptionService]);
+    workspaceSubscriptionService.subscription.revalidate();
+  }, [workspaceSubscriptionService.subscription]);
+
   const expiration = teamSubscription?.end;
   const nextBillingDate = teamSubscription?.nextBillAt;
   const recurring = teamSubscription?.recurring;
