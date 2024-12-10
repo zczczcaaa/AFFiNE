@@ -14,19 +14,19 @@ export async function toBuffer(input: BlobInputType): Promise<Buffer> {
       : Buffer.from(input);
 }
 
-export async function autoMetadata(
+export function autoMetadata(
   blob: Buffer,
-  raw: PutObjectMetadata
-): Promise<PutObjectMetadata> {
+  raw: PutObjectMetadata = {}
+): PutObjectMetadata {
   const metadata = {
     ...raw,
   };
-  try {
-    // length
-    if (!metadata.contentLength) {
-      metadata.contentLength = blob.length;
-    }
 
+  if (!metadata.contentLength) {
+    metadata.contentLength = blob.byteLength;
+  }
+
+  try {
     // checksum
     if (!metadata.checksumCRC32) {
       metadata.checksumCRC32 = crc32(blob).toString(16);
@@ -34,15 +34,11 @@ export async function autoMetadata(
 
     // mime type
     if (!metadata.contentType) {
-      try {
-        metadata.contentType = getMime(blob);
-      } catch {
-        // ignore
-      }
+      metadata.contentType = getMime(blob);
     }
-
-    return metadata;
   } catch {
-    return metadata;
+    // noop
   }
+
+  return metadata;
 }

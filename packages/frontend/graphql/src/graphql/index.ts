@@ -47,19 +47,37 @@ export const deleteBlobMutation = {
   definitionName: 'deleteBlob',
   containsFile: false,
   query: `
-mutation deleteBlob($workspaceId: String!, $hash: String!) {
-  deleteBlob(workspaceId: $workspaceId, hash: $hash)
+mutation deleteBlob($workspaceId: String!, $key: String!, $permanently: Boolean) {
+  deleteBlob(workspaceId: $workspaceId, key: $key, permanently: $permanently)
 }`,
 };
 
 export const listBlobsQuery = {
   id: 'listBlobsQuery' as const,
   operationName: 'listBlobs',
-  definitionName: 'listBlobs',
+  definitionName: 'workspace',
   containsFile: false,
   query: `
 query listBlobs($workspaceId: String!) {
-  listBlobs(workspaceId: $workspaceId)
+  workspace(id: $workspaceId) {
+    blobs {
+      key
+      size
+      mime
+      createdAt
+    }
+  }
+}`,
+};
+
+export const releaseDeletedBlobsMutation = {
+  id: 'releaseDeletedBlobsMutation' as const,
+  operationName: 'releaseDeletedBlobs',
+  definitionName: 'releaseDeletedBlobs',
+  containsFile: false,
+  query: `
+mutation releaseDeletedBlobs($workspaceId: String!) {
+  releaseDeletedBlobs(workspaceId: $workspaceId)
 }`,
 };
 
@@ -885,7 +903,7 @@ mutation publishPage($workspaceId: String!, $pageId: String!, $mode: PublicPageM
 export const quotaQuery = {
   id: 'quotaQuery' as const,
   operationName: 'quota',
-  definitionName: 'currentUser,collectAllBlobSizes',
+  definitionName: 'currentUser',
   containsFile: false,
   query: `
 query quota {
@@ -905,9 +923,9 @@ query quota {
         memberLimit
       }
     }
-  }
-  collectAllBlobSizes {
-    size
+    quotaUsage {
+      storageQuota
+    }
   }
 }`,
 };

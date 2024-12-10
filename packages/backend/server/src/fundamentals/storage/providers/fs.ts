@@ -119,7 +119,7 @@ export class FsStorageProvider implements StorageProvider {
             results.push({
               key: res,
               lastModified: stat.mtime,
-              size: stat.size,
+              contentLength: stat.size,
             });
           }
         }
@@ -216,11 +216,17 @@ export class FsStorageProvider implements StorageProvider {
     raw: PutObjectMetadata
   ) {
     try {
-      const metadata = await autoMetadata(blob, raw);
+      const metadata = autoMetadata(blob, raw);
 
       if (raw.checksumCRC32 && metadata.checksumCRC32 !== raw.checksumCRC32) {
         throw new Error(
           'The checksum of the uploaded file is not matched with the one you provide, the file may be corrupted and the uploading will not be processed.'
+        );
+      }
+
+      if (raw.contentLength && metadata.contentLength !== raw.contentLength) {
+        throw new Error(
+          'The content length of the uploaded file is not matched with the one you provide, the file may be corrupted and the uploading will not be processed.'
         );
       }
 

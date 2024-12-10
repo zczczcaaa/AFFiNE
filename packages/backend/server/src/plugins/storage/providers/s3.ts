@@ -50,7 +50,7 @@ export class S3StorageProvider implements StorageProvider {
   ): Promise<void> {
     const blob = await toBuffer(body);
 
-    metadata = await autoMetadata(blob, metadata);
+    metadata = autoMetadata(blob, metadata);
 
     try {
       await this.client.send(
@@ -140,7 +140,7 @@ export class S3StorageProvider implements StorageProvider {
             listResult.Contents.map(r => ({
               key: r.Key!,
               lastModified: r.LastModified!,
-              size: r.Size!,
+              contentLength: r.Size!,
             }))
           );
         }
