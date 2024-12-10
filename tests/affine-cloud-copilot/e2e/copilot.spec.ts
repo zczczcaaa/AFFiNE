@@ -486,15 +486,14 @@ test.describe('chat with block', () => {
           .then(b => b.click());
       });
 
-      // TODO(@darkskygit): not work on ci
-      test.skip('explain this image', async ({ page }) => {
+      test('explain this image', async ({ page }) => {
         await page
           .waitForSelector('.ai-item-explain-this-image')
           .then(i => i.click());
         expect(await collectTextAnswer(page)).toBeTruthy();
       });
-      // TODO(@darkskygit): not work on ci
-      test.skip('generate a caption', async ({ page }) => {
+
+      test('generate a caption', async ({ page }) => {
         await page
           .waitForSelector('.ai-item-generate-a-caption')
           .then(i => i.click());
