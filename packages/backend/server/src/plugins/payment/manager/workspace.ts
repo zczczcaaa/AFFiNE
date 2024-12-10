@@ -128,7 +128,6 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
       success_url: this.url.link(params.successCallbackLink),
       customer: customer.stripeCustomerId,
       subscription_data: {
-        trial_period_days: 15,
         metadata: {
           workspaceId: args.workspaceId,
         },
