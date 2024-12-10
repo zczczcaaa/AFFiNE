@@ -179,27 +179,19 @@ export class UserSubscriptionManager extends SubscriptionManager {
           };
 
     return this.stripe.checkout.sessions.create({
+      customer: customer.stripeCustomerId,
       line_items: [
         {
           price: price.price.id,
           quantity: 1,
         },
       ],
-      customer_update: {
-        name: 'auto',
-      },
-      tax_id_collection: {
-        enabled: true,
-      },
-      ...discounts,
       ...mode,
+      ...discounts,
       subscription_data: {
         ...trials,
       },
-      success_url: this.url.link(params.successCallbackLink, {
-        session_id: '{CHECKOUT_SESSION_ID}',
-      }),
-      customer: customer.stripeCustomerId,
+      success_url: this.url.link(params.successCallbackLink),
     });
   }
 

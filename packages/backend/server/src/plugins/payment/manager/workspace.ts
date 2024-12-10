@@ -111,27 +111,21 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
     });
 
     return this.stripe.checkout.sessions.create({
+      customer: customer.stripeCustomerId,
       line_items: [
         {
           price: price.price.id,
           quantity: count,
         },
       ],
-      customer_update: {
-        name: 'auto',
-      },
-      tax_id_collection: {
-        enabled: true,
-      },
-      ...discounts,
       mode: 'subscription',
-      success_url: this.url.link(params.successCallbackLink),
-      customer: customer.stripeCustomerId,
       subscription_data: {
         metadata: {
           workspaceId: args.workspaceId,
         },
       },
+      ...discounts,
+      success_url: this.url.link(params.successCallbackLink),
     });
   }
 
