@@ -18,6 +18,10 @@
 		9D90BE2D2CCB9876006677DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D90BE222CCB9876006677DB /* Main.storyboard */; };
 		9D90BE2E2CCB9876006677DB /* public in Resources */ = {isa = PBXBuildFile; fileRef = 9D90BE232CCB9876006677DB /* public */; };
 		C4C413792CBE705D00337889 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
+		C4C97C6E2D0304D100BC2AD1 /* libaffine_mobile_native.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4C97C6D2D0304D100BC2AD1 /* libaffine_mobile_native.a */; };
+		C4C97C7C2D030BE000BC2AD1 /* affine_mobile_native.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C97C6F2D0307B700BC2AD1 /* affine_mobile_native.swift */; };
+		C4C97C7D2D030BE000BC2AD1 /* affine_mobile_nativeFFI.h in Sources */ = {isa = PBXBuildFile; fileRef = C4C97C702D0307B700BC2AD1 /* affine_mobile_nativeFFI.h */; };
+		C4C97C7E2D030BE000BC2AD1 /* affine_mobile_nativeFFI.modulemap in Sources */ = {isa = PBXBuildFile; fileRef = C4C97C712D0307B700BC2AD1 /* affine_mobile_nativeFFI.modulemap */; };
 		E93B276C2CED92B1001409B8 /* NavigationGesturePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93B276B2CED92B1001409B8 /* NavigationGesturePlugin.swift */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +40,11 @@
 		9D90BE232CCB9876006677DB /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
+		C4C97C6B2D03027900BC2AD1 /* libaffine_mobile_native.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libaffine_mobile_native.a; path = "../../../../../target/aarch64-apple-ios-sim/release/libaffine_mobile_native.a"; sourceTree = "<group>"; };
+		C4C97C6D2D0304D100BC2AD1 /* libaffine_mobile_native.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libaffine_mobile_native.a; sourceTree = "<group>"; };
+		C4C97C6F2D0307B700BC2AD1 /* affine_mobile_native.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = affine_mobile_native.swift; sourceTree = "<group>"; };
+		C4C97C702D0307B700BC2AD1 /* affine_mobile_nativeFFI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = affine_mobile_nativeFFI.h; sourceTree = "<group>"; };
+		C4C97C712D0307B700BC2AD1 /* affine_mobile_nativeFFI.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = affine_mobile_nativeFFI.modulemap; sourceTree = "<group>"; };
 		E93B276B2CED92B1001409B8 /* NavigationGesturePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGesturePlugin.swift; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -45,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4C97C6E2D0304D100BC2AD1 /* libaffine_mobile_native.a in Frameworks */,
 				C4C413792CBE705D00337889 /* Pods_App.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -55,6 +65,8 @@
 		27E2DDA53C4D2A4D1A88CE4A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C4C97C6B2D03027900BC2AD1 /* libaffine_mobile_native.a */,
+				C4C97C6D2D0304D100BC2AD1 /* libaffine_mobile_native.a */,
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
 			);
 			name = Frameworks;
@@ -63,6 +75,7 @@
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
+				C4C97C722D0307B700BC2AD1 /* uniffi */,
 				9D90BE242CCB9876006677DB /* App */,
 				504EC3051FED79650016851F /* Products */,
 				7F8756D8B27F46E3366F6CEA /* Pods */,
@@ -124,6 +137,17 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		C4C97C722D0307B700BC2AD1 /* uniffi */ = {
+			isa = PBXGroup;
+			children = (
+				C4C97C6F2D0307B700BC2AD1 /* affine_mobile_native.swift */,
+				C4C97C702D0307B700BC2AD1 /* affine_mobile_nativeFFI.h */,
+				C4C97C712D0307B700BC2AD1 /* affine_mobile_nativeFFI.modulemap */,
+			);
+			name = uniffi;
+			path = App/uniffi;
+			sourceTree = "<group>";
+		};
 		E93B276A2CED9298001409B8 /* NavigationGesture */ = {
 			isa = PBXGroup;
 			children = (
@@ -139,6 +163,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
 			buildPhases = (
+				C4C97C6A2D0300E100BC2AD1 /* Build Rust */,
 				6634F4EFEBD30273BCE97C65 /* [CP] Check Pods Manifest.lock */,
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
@@ -237,6 +262,24 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App/Pods-App-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		C4C97C6A2D0300E100BC2AD1 /* Build Rust */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Rust";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nbash $SRCROOT/xc-universal-binary.sh affine_mobile_native $SRCROOT/../../../mobile-native $CONFIGURATION\\n\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -244,6 +287,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4C97C7C2D030BE000BC2AD1 /* affine_mobile_native.swift in Sources */,
+				C4C97C7D2D030BE000BC2AD1 /* affine_mobile_nativeFFI.h in Sources */,
+				C4C97C7E2D030BE000BC2AD1 /* affine_mobile_nativeFFI.modulemap in Sources */,
 				E93B276C2CED92B1001409B8 /* NavigationGesturePlugin.swift in Sources */,
 				9D90BE252CCB9876006677DB /* CookieManager.swift in Sources */,
 				9D90BE262CCB9876006677DB /* CookiePlugin.swift in Sources */,
@@ -400,6 +446,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = app.affine.pro;
@@ -407,6 +457,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "AppStore app.affine.pro";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "AppStore app.affine.pro";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "IOSApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.0;
@@ -430,6 +481,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				MARKETING_VERSION = 1.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = app.affine.pro;
@@ -437,6 +492,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "AppStore app.affine.pro";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "AppStore app.affine.pro";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "IOSApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.0;
