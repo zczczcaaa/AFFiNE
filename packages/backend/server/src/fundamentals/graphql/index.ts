@@ -35,9 +35,9 @@ export type GraphqlContext = {
           },
           autoSchemaFile: join(
             fileURLToPath(import.meta.url),
-            config.node.test
-              ? '../../../../node_modules/.cache/schema.gql'
-              : '../../../schema.gql'
+            config.node.dev
+              ? '../../../schema.gql'
+              : '../../../../node_modules/.cache/schema.gql'
           ),
           sortSchema: true,
           context: ({

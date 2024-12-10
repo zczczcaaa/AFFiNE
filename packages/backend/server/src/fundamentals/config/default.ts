@@ -18,6 +18,7 @@ function getPredefinedAFFiNEConfig(): PreDefinedAFFiNEConfig {
     'development',
     'test',
     'production',
+    'script',
   ]);
   const AFFINE_ENV = readEnv<AFFINE_ENV>('AFFINE_ENV', 'dev', [
     'dev',
@@ -47,6 +48,7 @@ function getPredefinedAFFiNEConfig(): PreDefinedAFFiNEConfig {
     prod: NODE_ENV === 'production',
     dev: NODE_ENV === 'development',
     test: NODE_ENV === 'test',
+    script: NODE_ENV === 'script',
   };
 
   return {

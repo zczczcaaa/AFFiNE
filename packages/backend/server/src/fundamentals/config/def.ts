@@ -4,7 +4,7 @@ import { AppStartupConfig } from './types';
 export type EnvConfigType = 'string' | 'int' | 'float' | 'boolean';
 export type ServerFlavor = 'allinone' | 'graphql' | 'sync' | 'renderer';
 export type AFFINE_ENV = 'dev' | 'beta' | 'production';
-export type NODE_ENV = 'development' | 'test' | 'production';
+export type NODE_ENV = 'development' | 'test' | 'production' | 'script';
 
 export enum DeploymentType {
   Affine = 'affine',
@@ -25,7 +25,12 @@ export interface PreDefinedAFFiNEConfig {
   readonly isSelfhosted: boolean;
   readonly flavor: { type: string } & { [key in ServerFlavor]: boolean };
   readonly affine: { canary: boolean; beta: boolean; stable: boolean };
-  readonly node: { prod: boolean; dev: boolean; test: boolean };
+  readonly node: {
+    prod: boolean;
+    dev: boolean;
+    test: boolean;
+    script: boolean;
+  };
   readonly deploy: boolean;
 }
 
