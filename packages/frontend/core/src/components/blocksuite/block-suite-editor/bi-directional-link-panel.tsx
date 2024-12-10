@@ -16,7 +16,9 @@ import type { JobMiddleware } from '@blocksuite/affine/store';
 import { ToggleExpandIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import {
+  DocService,
   getAFFiNEWorkspaceSchema,
+  GlobalSessionStateService,
   LiveData,
   useFramework,
   useLiveData,
@@ -47,16 +49,50 @@ const BlocksuiteTextRenderer = createReactComponentFromLit({
   elementClass: TextRenderer,
 });
 
+const PREFIX = 'bi-directional-link-panel-collapse:';
+
+const useBiDirectionalLinkPanelCollapseState = (
+  docId: string,
+  linkDocId?: string
+) => {
+  const { globalSessionStateService } = useServices({
+    GlobalSessionStateService,
+  });
+
+  const path = linkDocId ? docId + ':' + linkDocId : docId;
+
+  const [open, setOpen] = useState(
+    globalSessionStateService.globalSessionState.get(PREFIX + path) ?? false
+  );
+
+  const wrappedSetOpen = useCallback(
+    (open: boolean) => {
+      setOpen(open);
+      globalSessionStateService.globalSessionState.set(PREFIX + path, open);
+    },
+    [path, globalSessionStateService]
+  );
+
+  return [open, wrappedSetOpen] as const;
+};
+
 const CollapsibleSection = ({
   title,
   children,
   length,
+  docId,
+  linkDocId,
 }: {
   title: ReactNode;
   children: ReactNode;
   length?: number;
+  docId: string;
+  linkDocId?: string;
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useBiDirectionalLinkPanelCollapseState(
+    docId,
+    linkDocId
+  );
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen}>
       <Collapsible.Trigger className={styles.link}>
@@ -114,14 +150,18 @@ const usePreviewExtensions = () => {
 };
 
 export const BiDirectionalLinkPanel = () => {
-  const [show, setShow] = useState(false);
-  const { docLinksService, workspaceService } = useServices({
+  const { docLinksService, workspaceService, docService } = useServices({
     DocLinksService,
     WorkspaceService,
+    DocService,
   });
 
   const [extensions, portals] = usePreviewExtensions();
   const t = useI18n();
+
+  const [show, setShow] = useBiDirectionalLinkPanelCollapseState(
+    docService.doc.id
+  );
 
   const links = useLiveData(
     show ? docLinksService.links.links$ : new LiveData([] as Link[])
@@ -157,7 +197,7 @@ export const BiDirectionalLinkPanel = () => {
 
   const handleClickShow = useCallback(() => {
     setShow(!show);
-  }, [show]);
+  }, [show, setShow]);
 
   const textRendererOptions = useMemo(() => {
     const docLinkBaseURLMiddleware: JobMiddleware = ({ adapterConfigs }) => {
@@ -205,6 +245,8 @@ export const BiDirectionalLinkPanel = () => {
                 key={linkGroup.docId}
                 title={<AffinePageReference pageId={linkGroup.docId} />}
                 length={linkGroup.links.length}
+                docId={docService.doc.id}
+                linkDocId={linkGroup.docId}
               >
                 <div className={styles.linkPreviewContainer}>
                   {linkGroup.links.map(link => {

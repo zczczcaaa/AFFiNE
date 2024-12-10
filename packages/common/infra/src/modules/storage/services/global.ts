@@ -1,5 +1,9 @@
 import { Service } from '../../../framework';
-import type { GlobalCache, GlobalState } from '../providers/global';
+import type {
+  GlobalCache,
+  GlobalSessionState,
+  GlobalState,
+} from '../providers/global';
 
 export class GlobalStateService extends Service {
   constructor(public readonly globalState: GlobalState) {
@@ -9,6 +13,12 @@ export class GlobalStateService extends Service {
 
 export class GlobalCacheService extends Service {
   constructor(public readonly globalCache: GlobalCache) {
+    super();
+  }
+}
+
+export class GlobalSessionStateService extends Service {
+  constructor(public readonly globalSessionState: GlobalSessionState) {
     super();
   }
 }

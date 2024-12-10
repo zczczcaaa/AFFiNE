@@ -27,6 +27,7 @@ import { configurePermissionsModule } from './permissions';
 import { configureQuickSearchModule } from './quicksearch';
 import { configureShareDocsModule } from './share-doc';
 import { configureShareSettingModule } from './share-setting';
+import { configureCommonGlobalStorageImpls } from './storage';
 import { configureSystemFontFamilyModule } from './system-font-family';
 import { configureTagModule } from './tag';
 import { configureTelemetryModule } from './telemetry';
@@ -71,4 +72,5 @@ export function configureCommonModules(framework: Framework) {
   configureOpenInApp(framework);
   configAtMenuConfigModule(framework);
   configureDndModule(framework);
+  configureCommonGlobalStorageImpls(framework);
 }

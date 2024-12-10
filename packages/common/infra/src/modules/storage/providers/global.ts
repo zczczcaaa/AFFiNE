@@ -16,5 +16,13 @@ export const GlobalState = createIdentifier<GlobalState>('GlobalState');
  * Cache may be deleted from time to time, business logic should not rely on cache.
  */
 export interface GlobalCache extends Memento {}
-
 export const GlobalCache = createIdentifier<GlobalCache>('GlobalCache');
+
+/**
+ * A memento object that stores session state.
+ *
+ * Session state is not persisted, it will be cleared when the application is closed. (thinking about sessionStorage)
+ */
+export interface GlobalSessionState extends Memento {}
+export const GlobalSessionState =
+  createIdentifier<GlobalSessionState>('GlobalSessionState');
