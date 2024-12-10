@@ -225,6 +225,15 @@ export const AFFINE_FLAGS = {
     configurable: isDesktopEnvironment,
     defaultState: false,
   },
+  enable_mobile_edgeless_editing: {
+    category: 'affine',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-mobile-edgeless-editing.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-mobile-edgeless-editing.description',
+    configurable: isMobile,
+    defaultState: false,
+  },
 } satisfies { [key in string]: FlagInfo };
 
 export type AFFINE_FLAGS = typeof AFFINE_FLAGS;

@@ -83,6 +83,8 @@ const DetailPageImpl = () => {
 
   const enableKeyboardToolbar =
     featureFlagService.flags.enable_mobile_keyboard_toolbar.value;
+  const enableEdgelessEditing =
+    featureFlagService.flags.enable_mobile_edgeless_editing.value;
   const { setDocReadonly } = useDocMetaHelper();
 
   // TODO(@eyhn): remove jotai here
@@ -111,8 +113,17 @@ const DetailPageImpl = () => {
   }, [doc, globalContext, mode]);
 
   useEffect(() => {
-    if (!enableKeyboardToolbar) setDocReadonly(doc.id, true);
-  }, [enableKeyboardToolbar, doc.id, setDocReadonly]);
+    setDocReadonly(
+      doc.id,
+      !enableKeyboardToolbar || (mode === 'edgeless' && !enableEdgelessEditing)
+    );
+  }, [
+    enableKeyboardToolbar,
+    doc.id,
+    setDocReadonly,
+    mode,
+    enableEdgelessEditing,
+  ]);
 
   useEffect(() => {
     globalContext.isTrashDoc.set(!!isInTrash);

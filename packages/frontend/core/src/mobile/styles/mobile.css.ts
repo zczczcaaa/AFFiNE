@@ -27,6 +27,9 @@ globalStyle('body:has(#app-tabs) affine-keyboard-toolbar[data-shrink="true"]', {
 globalStyle('body:has(#app-tabs) affine-keyboard-tool-panel', {
   paddingBottom: `calc(${globalVars.appTabHeight} + env(safe-area-inset-bottom) + 8px)`,
 });
+globalStyle('body:has(#app-tabs) edgeless-toolbar-widget', {
+  bottom: `calc(${globalVars.appTabHeight} + env(safe-area-inset-bottom))`,
+});
 globalStyle('html', {
   height: '100dvh',
   overflowY: 'auto',
