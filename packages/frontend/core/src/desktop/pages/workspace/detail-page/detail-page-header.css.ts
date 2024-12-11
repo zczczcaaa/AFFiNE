@@ -1,3 +1,4 @@
+import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 export const root = style({
@@ -49,4 +50,9 @@ export const dragHandle = style({
 export const dragPreview = style({
   // see https://atlassian.design/components/pragmatic-drag-and-drop/web-platform-design-constraints/#native-drag-previews
   maxWidth: '280px',
+  border: `1px solid ${cssVarV2('layer/insideBorder/border')}`,
+  padding: '4px 16px',
+  overflow: 'hidden',
+  backgroundColor: cssVarV2('layer/background/primary'),
+  borderRadius: '12px',
 });
