@@ -243,3 +243,83 @@ test('drag a page link in editor to favourites', async ({ page }) => {
     pageId
   );
 });
+
+async function enableNewDND(page: Page) {
+  await page.evaluate(() => {
+    // @ts-expect-error
+    window.currentEditor.doc.awarenessStore.setFlag('enable_new_dnd', true);
+  });
+}
+
+test('drag a page card block to another page', async ({ page }) => {
+  await enableNewDND(page);
+  await clickNewPageButton(page);
+  await page.waitForTimeout(500);
+  await page.keyboard.press('Enter');
+  await createLinkedPage(page, 'hi from another page');
+
+  const pageReference = page.locator('a').filter({
+    has: page.locator(
+      '.affine-reference-title:has-text("hi from another page")'
+    ),
+  });
+
+  const pageLink = await pageReference.evaluate(
+    el => (el as HTMLAnchorElement).href
+  );
+
+  expect(pageLink).toBeTruthy();
+
+  if (!pageLink) {
+    return;
+  }
+
+  const pageId = getDocIdFromUrl(pageLink);
+
+  await pageReference.hover();
+
+  const inlineToolbar = page.locator('reference-popup');
+
+  // convert page reference to card block
+  await inlineToolbar.getByRole('button', { name: 'Switch view' }).click();
+  await inlineToolbar.getByRole('button', { name: 'Card view' }).click();
+
+  // hover the card block to show the drag handle
+  const box = await page.locator('affine-embed-linked-doc-block').boundingBox();
+
+  expect(box).toBeTruthy();
+
+  if (!box) {
+    return;
+  }
+
+  await page.mouse.move(box.x - 5, box.y + box.height / 2);
+
+  await dragToFavourites(
+    page,
+    page.locator('.affine-drag-handle-container'),
+    pageId
+  );
+});
+
+test('drag a favourite page into blocksuite', async ({ page }) => {
+  await enableNewDND(page);
+  await clickNewPageButton(page, 'hi from page');
+  await page.getByTestId('pin-button').click();
+  const pageId = getCurrentDocIdFromUrl(page);
+  const item = page
+    .getByTestId(`explorer-favorites`)
+    .locator(`[data-testid="explorer-doc-${pageId}"]`);
+  await expect(item).toBeVisible();
+
+  // drag item into blocksuite editor
+  await dragTo(
+    page,
+    item,
+    page.locator('.affine-paragraph-block-container').first()
+  );
+
+  await expect(page.locator('affine-embed-linked-doc-block')).toContainText(
+    'hi from page'
+  );
+});

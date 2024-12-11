@@ -174,7 +174,7 @@ export function DetailPageHeader(
     docId: page.id,
   });
 
-  const { dragRef, dragHandleRef, dragging } =
+  const { dragRef, dragging, CustomDragPreview } =
     useDraggable<AffineDNDData>(() => {
       return {
         data: {
@@ -187,7 +187,7 @@ export function DetailPageHeader(
             id: page.id,
           },
         },
-        disableDragPreview: true,
+        dragPreviewPosition: 'pointer-outside',
       };
     }, [page.id]);
 
@@ -203,13 +203,14 @@ export function DetailPageHeader(
   }, [dragging, onDragging]);
 
   return (
-    <div className={styles.root} ref={dragRef} data-dragging={dragging}>
-      <DragHandle
-        ref={dragHandleRef}
-        dragging={dragging}
-        className={styles.dragHandle}
-      />
-      {inner}
-    </div>
+    <>
+      <div className={styles.root} ref={dragRef} data-dragging={dragging}>
+        <DragHandle dragging={dragging} className={styles.dragHandle} />
+        {inner}
+      </div>
+      <CustomDragPreview>
+        <div className={styles.dragPreview}>{inner}</div>
+      </CustomDragPreview>
+    </>
   );
 }

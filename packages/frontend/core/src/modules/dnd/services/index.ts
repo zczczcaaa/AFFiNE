@@ -1,16 +1,26 @@
-import type {
-  ExternalDataAdapter,
-  ExternalGetDataFeedbackArgs,
+import {
+  type ExternalGetDataFeedbackArgs,
+  type fromExternalData,
+  type toExternalData,
 } from '@affine/component';
+import { createPageModeSpecs } from '@affine/core/components/blocksuite/block-suite-editor/specs/page';
 import type { AffineDNDData } from '@affine/core/types/dnd';
+import { BlockStdScope } from '@blocksuite/affine/block-std';
+import { DndApiExtensionIdentifier } from '@blocksuite/affine/blocks';
+import {
+  DocCollection,
+  nanoid,
+  type SliceSnapshot,
+} from '@blocksuite/affine/store';
 import type { DocsService, WorkspaceService } from '@toeverything/infra';
-import { Service } from '@toeverything/infra';
+import { getAFFiNEWorkspaceSchema, Service } from '@toeverything/infra';
 
 import { resolveLinkToDoc } from '../../navigation';
 
-type EntityResolver = (
-  data: string
-) => AffineDNDData['draggable']['entity'] | null;
+type Entity = AffineDNDData['draggable']['entity'];
+type EntityResolver = (data: string) => Entity | null;
+
+type ExternalDragPayload = ExternalGetDataFeedbackArgs['source'];
 
 export class DndService extends Service {
   constructor(
@@ -20,13 +30,47 @@ export class DndService extends Service {
     super();
 
     // order matters
-    this.resolvers.set('text/html', this.resolveHTML);
-    this.resolvers.set('text/uri-list', this.resolveUriList);
+    this.resolvers.push(this.resolveBlocksuiteExternalData);
+
+    const mimeResolvers: [string, EntityResolver][] = [
+      ['text/html', this.resolveHTML],
+      ['text/uri-list', this.resolveUriList],
+    ];
+
+    mimeResolvers.forEach(([type, resolver]) => {
+      this.resolvers.push((source: ExternalDragPayload) => {
+        if (source.types.includes(type)) {
+          const stringData = source.getStringData(type);
+          if (stringData) {
+            return resolver(stringData);
+          }
+        }
+        return null;
+      });
+    });
   }
 
-  private readonly resolvers = new Map<string, EntityResolver>();
+  private readonly resolvers: ((
+    source: ExternalDragPayload
+  ) => Entity | null)[] = [];
 
-  externalDataAdapter: ExternalDataAdapter<AffineDNDData> = (
+  readonly blocksuiteDndAPI = (() => {
+    const collection = new DocCollection({
+      schema: getAFFiNEWorkspaceSchema(),
+    });
+    collection.meta.initialize();
+    const doc = collection.createDoc();
+    const std = new BlockStdScope({
+      doc,
+      extensions: createPageModeSpecs(this.framework),
+    });
+    this.disposables.push(() => {
+      collection.dispose();
+    });
+    return std.get(DndApiExtensionIdentifier);
+  })();
+
+  fromExternalData: fromExternalData<AffineDNDData> = (
     args: ExternalGetDataFeedbackArgs,
     isDropEvent?: boolean
   ) => {
@@ -36,19 +80,15 @@ export class DndService extends Service {
     const from: AffineDNDData['draggable']['from'] = {
       at: 'external',
     };
-    let entity: AffineDNDData['draggable']['entity'];
+
+    let entity: Entity | null = null;
 
     // in the order of the resolvers instead of the order of the types
-    for (const [type, resolver] of this.resolvers) {
-      if (args.source.types.includes(type)) {
-        const stringData = args.source.getStringData(type);
-        if (stringData) {
-          const candidate = resolver(stringData);
-          if (candidate) {
-            entity = candidate;
-            break;
-          }
-        }
+    for (const resolver of this.resolvers) {
+      const candidate = resolver(args.source);
+      if (candidate) {
+        entity = candidate;
+        break;
       }
     }
 
@@ -59,6 +99,47 @@ export class DndService extends Service {
     return {
       from,
       entity,
+    };
+  };
+
+  toExternalData: toExternalData<AffineDNDData> = (args, data) => {
+    const normalData = typeof data === 'function' ? data(args) : data;
+
+    if (
+      !normalData ||
+      !normalData.entity ||
+      normalData.entity.type !== 'doc' ||
+      !normalData.entity.id
+    ) {
+      return {};
+    }
+
+    // todo: use blocksuite provided api to generate snapshot
+    const snapshotSlice: SliceSnapshot = {
+      content: [
+        {
+          children: [],
+          flavour: 'affine:embed-linked-doc',
+          type: 'block',
+          id: nanoid(),
+          props: {
+            pageId: normalData.entity.id,
+          },
+        },
+      ],
+      type: 'slice',
+      pageId: nanoid(),
+      pageVersion: 1,
+      workspaceId: this.workspaceService.workspace.id,
+      workspaceVersion: 2,
+    };
+
+    const serialized = JSON.stringify(snapshotSlice);
+
+    const html = `<div data-blocksuite-snapshot="${encodeURIComponent(serialized)}"></div>`;
+
+    return {
+      'text/html': html,
     };
   };
 
@@ -87,15 +168,54 @@ export class DndService extends Service {
     return null;
   };
 
-  // todo: implement this
-  private readonly resolveHTML: EntityResolver = _html => {
+  private readonly resolveBlocksuiteExternalData = (
+    source: ExternalDragPayload
+  ): Entity | null => {
+    const fakeDataTransfer = new Proxy(new DataTransfer(), {
+      get(target, prop) {
+        if (prop === 'getData') {
+          return (type: string) => source.getStringData(type);
+        }
+        return target[prop as keyof DataTransfer];
+      },
+    });
+    const snapshot = this.blocksuiteDndAPI.decodeSnapshot(fakeDataTransfer);
+    if (!snapshot) {
+      return null;
+    }
+    return this.resolveBlockSnapshot(snapshot);
+  };
+
+  private readonly resolveHTML: EntityResolver = html => {
     try {
-      // const parser = new DOMParser();
-      // const doc = parser.parseFromString(html, 'text/html');
-      // return doc.body.innerText;
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      // If drag from another secure context, the url-list
+      // will be "about:blank#blocked"
+      // We can still infer the url-list from the anchor tags
+      const urls = Array.from(doc.querySelectorAll('a'))
+        .map(a => a.href)
+        .join('\n');
+      return this.resolveUriList(urls);
     } catch {
       // ignore the error
       return null;
+    }
+  };
+
+  private readonly resolveBlockSnapshot = (
+    snapshot: SliceSnapshot
+  ): Entity | null => {
+    for (const block of snapshot.content) {
+      if (
+        ['affine:embed-linked-doc', 'affine:embed-synced-doc'].includes(
+          block.flavour
+        )
+      ) {
+        return {
+          type: 'doc',
+          id: block.props.pageId as string,
+        };
+      }
     }
     return null;
   };

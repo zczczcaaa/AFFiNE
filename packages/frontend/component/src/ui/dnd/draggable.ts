@@ -5,42 +5,21 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source';
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
 import type { DropTargetRecord } from '@atlaskit/pragmatic-drag-and-drop/types';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOM, { flushSync } from 'react-dom';
 
-import type { DNDData } from './types';
-
-type DraggableGetFeedback = Parameters<
-  NonNullable<Parameters<typeof draggable>[0]['getInitialData']>
->[0];
-
-type DraggableGet<T> = T | ((data: DraggableGetFeedback) => T);
-
-function draggableGet<T>(
-  get: T
-): T extends undefined
-  ? undefined
-  : T extends DraggableGet<infer I>
-    ? (args: DraggableGetFeedback) => I
-    : never {
-  if (get === undefined) {
-    return undefined as any;
-  }
-  return ((args: DraggableGetFeedback) =>
-    typeof get === 'function' ? (get as any)(args) : get) as any;
-}
+import { DNDContext } from './context';
+import {
+  type DNDData,
+  type DraggableGet,
+  draggableGet,
+  type DraggableGetFeedback,
+  type toExternalData,
+} from './types';
 
 export interface DraggableOptions<D extends DNDData = DNDData> {
   data?: DraggableGet<D['draggable']>;
-  dataForExternal?: DraggableGet<{
-    [Key in
-      | 'text/uri-list'
-      | 'text/plain'
-      | 'text/html'
-      | 'Files'
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      | (string & {})]?: string;
-  }>;
+  toExternalData?: toExternalData<D>;
   canDrag?: DraggableGet<boolean>;
   disableDragPreview?: boolean;
   dragPreviewPosition?: DraggableDragPreviewPosition;
@@ -82,8 +61,23 @@ export const useDraggable = <D extends DNDData = DNDData>(
   const enableDropTarget = useRef(false);
   const enableDragging = useRef(false);
 
+  const context = useContext(DNDContext);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const options = useMemo(getOptions, deps);
+  const options = useMemo(() => {
+    const opts = getOptions();
+
+    const toExternalData = opts.toExternalData ?? context.toExternalData;
+    return {
+      ...opts,
+      toExternalData: toExternalData
+        ? (args: DraggableGetFeedback) => {
+            return (opts.toExternalData ?? toExternalData)(args, opts.data);
+          }
+        : undefined,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, context.toExternalData]);
 
   useEffect(() => {
     if (!dragRef.current) {
@@ -110,7 +104,7 @@ export const useDraggable = <D extends DNDData = DNDData>(
       dragHandle: dragHandleRef.current ?? undefined,
       canDrag: draggableGet(options.canDrag),
       getInitialData: draggableGet(options.data),
-      getInitialDataForExternal: draggableGet(options.dataForExternal),
+      getInitialDataForExternal: draggableGet(options.toExternalData),
       onDragStart: args => {
         if (enableDragging.current) {
           setDragging(true);

@@ -92,7 +92,7 @@ export const DropTarget: StoryFn<{ canDrop: boolean }> = ({ canDrop }) => {
       onDrop(data) {
         setDropData(prev => prev + data.source.data.text);
       },
-      externalDataAdapter(args) {
+      fromExternalData(args) {
         return {
           text: args.source.getStringData(args.source.types[0]) || 'no value',
         };

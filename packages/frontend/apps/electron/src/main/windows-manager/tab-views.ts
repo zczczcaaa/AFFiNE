@@ -171,6 +171,7 @@ export class WebContentViewsManager {
           ready: ready.has(w.id),
           activeViewIndex: w.activeViewIndex,
           views: w.views,
+          basename: w.basename,
         };
       });
     }),
@@ -952,6 +953,7 @@ export const onTabsStatusChange = (
       pinned: boolean;
       activeViewIndex: number;
       views: WorkbenchViewMeta[];
+      basename: string;
     }[]
   ) => void
 ) => {

@@ -45,3 +45,8 @@ export const dragHandle = style({
     },
   },
 });
+
+export const dragPreview = style({
+  // see https://atlassian.design/components/pragmatic-drag-and-drop/web-platform-design-constraints/#native-drag-previews
+  maxWidth: '280px',
+});

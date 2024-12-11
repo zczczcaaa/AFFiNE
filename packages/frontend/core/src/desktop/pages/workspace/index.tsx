@@ -135,9 +135,10 @@ const DNDContextProvider = ({ children }: PropsWithChildren) => {
   const dndService = useService(DndService);
   const contextValue = useMemo(() => {
     return {
-      externalDataAdapter: dndService.externalDataAdapter,
+      fromExternalData: dndService.fromExternalData,
+      toExternalData: dndService.toExternalData,
     };
-  }, [dndService.externalDataAdapter]);
+  }, [dndService.fromExternalData, dndService.toExternalData]);
   return (
     <DNDContext.Provider value={contextValue}>{children}</DNDContext.Provider>
   );

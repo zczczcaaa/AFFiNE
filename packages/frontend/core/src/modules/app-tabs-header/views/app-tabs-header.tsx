@@ -31,6 +31,7 @@ import {
 
 import { AppSidebarService } from '../../app-sidebar';
 import { DesktopApiService } from '../../desktop-api';
+import { resolveLinkToDoc } from '../../navigation';
 import { iconNameToIcon } from '../../workbench/constants';
 import { DesktopStateSynchronizer } from '../../workbench/services/desktop-state-synchronizer';
 import {
@@ -176,23 +177,50 @@ const WorkbenchTab = ({
       dropEffect: 'move',
       canDrop: tabCanDrop(workbench),
       isSticky: true,
+      allowExternal: true,
     }),
     [onDrop, workbench]
   );
 
-  const { dragRef } = useDraggable<AffineDNDData>(
-    () => ({
+  const { dragRef } = useDraggable<AffineDNDData>(() => {
+    const urls = workbench.views.map(view => {
+      const url = new URL(
+        workbench.basename + (view.path?.pathname ?? ''),
+        location.origin
+      );
+      url.search = view.path?.search ?? '';
+      return url.toString();
+    });
+
+    let entity: AffineDNDData['draggable']['entity'];
+
+    for (const url of urls) {
+      const maybeDocLink = resolveLinkToDoc(url);
+      if (maybeDocLink && maybeDocLink.docId) {
+        entity = {
+          type: 'doc',
+          id: maybeDocLink.docId,
+        };
+      }
+    }
+
+    return {
       canDrag: dnd,
       data: {
         from: {
           at: 'app-header:tabs',
           tabId: workbench.id,
         },
+        entity,
       },
       dragPreviewPosition: 'pointer-outside',
-    }),
-    [dnd, workbench.id]
-  );
+      toExternalData: () => {
+        return {
+          'text/uri-list': urls.join('\n'),
+        };
+      },
+    };
+  }, [dnd, workbench.basename, workbench.id, workbench.views]);
 
   return (
     <div
