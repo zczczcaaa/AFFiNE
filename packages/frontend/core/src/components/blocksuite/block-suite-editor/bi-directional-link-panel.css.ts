@@ -96,6 +96,9 @@ export const linkPreview = style({
   padding: '8px',
   marginBottom: '8px',
   color: cssVarV2('text/primary'),
+  vars: {
+    [cssVar('fontFamily')]: cssVar('fontSansFamily'),
+  },
   ':hover': {
     backgroundColor: cssVarV2('layer/background/hoverOverlay'),
   },
