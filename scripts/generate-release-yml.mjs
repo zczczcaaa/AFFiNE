@@ -27,6 +27,9 @@ const generateYml = platform => {
   const files = fs.readdirSync(releaseDir).filter(file => regex.test(file));
   const outputFileName = filenamesMapping[platform];
 
+  console.info(`Release content for ${platform}:`);
+  console.info(JSON.stringify(files, null, 2), '\n');
+
   files.forEach(fileName => {
     const filePath = path.join(releaseDir, fileName);
     try {
@@ -66,7 +69,7 @@ const generateYml = platform => {
       .join('') +
     `releaseDate: ${yml.releaseDate}\n`;
 
-  fs.writeFileSync(outputFileName, ymlStr);
+  fs.writeFileSync(path.join(releaseDir, outputFileName), ymlStr);
 };
 
 generateYml('macos');
