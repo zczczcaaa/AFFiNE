@@ -6,14 +6,14 @@ export interface BlobRecord {
   key: string;
   data: Uint8Array;
   mime: string;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface ListedBlobRecord {
   key: string;
   mime: string;
   size: number;
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export abstract class BlobStorage<

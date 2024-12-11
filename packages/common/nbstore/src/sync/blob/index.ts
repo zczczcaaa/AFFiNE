@@ -1,6 +1,6 @@
 import { difference } from 'lodash-es';
 
-import type { BlobStorage } from '../../storage';
+import type { BlobRecord, BlobStorage } from '../../storage';
 import { MANUALLY_STOP, throwIfAborted } from '../../utils/throw-if-aborted';
 
 export class BlobSyncEngine {
@@ -10,6 +10,29 @@ export class BlobSyncEngine {
     readonly local: BlobStorage,
     readonly remotes: BlobStorage[]
   ) {}
+
+  async downloadBlob(blobId: string, signal?: AbortSignal) {
+    const localBlob = await this.local.get(blobId, signal);
+    if (localBlob) {
+      return localBlob;
+    }
+
+    for (const storage of this.remotes) {
+      const data = await storage.get(blobId, signal);
+      if (data) {
+        await this.local.set(data, signal);
+        return data;
+      }
+    }
+    return null;
+  }
+
+  async uploadBlob(blob: BlobRecord, signal?: AbortSignal) {
+    await this.local.set(blob);
+    await Promise.allSettled(
+      this.remotes.map(remote => remote.set(blob, signal))
+    );
+  }
 
   private async sync(signal?: AbortSignal) {
     throwIfAborted(signal);
@@ -93,5 +116,10 @@ export class BlobSyncEngine {
   stop() {
     this.abort?.abort();
     this.abort = null;
+  }
+
+  addPriority(_id: string, _priority: number): () => void {
+    // TODO: implement
+    return () => {};
   }
 }
