@@ -4,7 +4,6 @@ import { useI18n } from '@affine/i18n';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ConfirmModal } from '../../../ui/modal';
-import { notify } from '../../../ui/notification';
 import { type InviteMethodType, ModalContent } from './modal-content';
 import * as styles from './styles.css';
 
@@ -61,11 +60,7 @@ export const InviteTeamMemberModal = ({
     onConfirm({
       emails: inviteEmailsArray,
     });
-    notify.success({
-      title: t['com.affine.payment.member.team.invite.notify.title'](),
-      message: t['com.affine.payment.member.team.invite.notify.message'](),
-    });
-  }, [inviteEmails, inviteMethod, onConfirm, setOpen, t]);
+  }, [inviteEmails, inviteMethod, onConfirm, setOpen]);
 
   useEffect(() => {
     if (!open) {

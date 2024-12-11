@@ -12,6 +12,7 @@ import { AuthPageContainer } from '@affine/component/auth-components';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
 import { PureWorkspaceCard } from '@affine/core/components/workspace-selector/workspace-card';
+import { AuthService } from '@affine/core/modules/cloud';
 import { buildShowcaseWorkspace } from '@affine/core/utils/first-app-data';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
 import { SubscriptionPlan, SubscriptionRecurring } from '@affine/graphql';
@@ -24,8 +25,10 @@ import {
   WorkspacesService,
 } from '@toeverything/infra';
 import { useCallback, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { Upgrade } from '../../dialogs/setting/general-setting/plans/plan-card';
+import { PageNotFound } from '../404';
 import * as styles from './styles.css';
 
 const benefitList: I18nString[] = [
@@ -36,6 +39,20 @@ const benefitList: I18nString[] = [
 ];
 
 export const Component = () => {
+  const authService = useService(AuthService);
+  const authStatus = useLiveData(authService.session.status$);
+
+  const [params] = useSearchParams();
+  const recurring = params.get('recurring');
+
+  const authIsRevalidating = useLiveData(authService.session.isRevalidating$);
+  if (authStatus === 'unauthenticated' && !authIsRevalidating) {
+    return <PageNotFound noPermission />;
+  }
+  return <UpgradeToTeam recurring={recurring} />;
+};
+
+export const UpgradeToTeam = ({ recurring }: { recurring: string | null }) => {
   const t = useI18n();
   const workspacesList = useService(WorkspacesService).list;
   const workspaces = useLiveData(workspacesList.workspaces$);
@@ -111,6 +128,7 @@ export const Component = () => {
             {t['com.affine.upgrade-to-team-page.benefit.description']()}
           </div>
           <UpgradeDialog
+            recurring={recurring}
             open={openUpgrade}
             onOpenChange={setOpenUpgrade}
             workspaceName={name}
@@ -132,16 +150,25 @@ const UpgradeDialog = ({
   onOpenChange,
   workspaceName,
   workspaceId,
+  recurring,
 }: {
   open: boolean;
   workspaceName: string;
   workspaceId: string;
+  recurring: string | null;
   onOpenChange: (open: boolean) => void;
 }) => {
   const t = useI18n();
   const onClose = useCallback(() => {
     onOpenChange(false);
   }, [onOpenChange]);
+
+  const currentRecurring =
+    recurring &&
+    recurring.toLowerCase() === SubscriptionRecurring.Yearly.toLowerCase()
+      ? SubscriptionRecurring.Yearly
+      : SubscriptionRecurring.Monthly;
+
   return (
     <Modal width={480} open={open} onOpenChange={onOpenChange}>
       <div className={styles.dialogTitle}>
@@ -163,7 +190,7 @@ const UpgradeDialog = ({
         <Button onClick={onClose}>{t['Cancel']()}</Button>
         <Upgrade
           className={styles.upgradeButtonInDialog}
-          recurring={SubscriptionRecurring.Monthly}
+          recurring={currentRecurring}
           plan={SubscriptionPlan.Team}
           onCheckoutSuccess={onClose}
           checkoutInput={{

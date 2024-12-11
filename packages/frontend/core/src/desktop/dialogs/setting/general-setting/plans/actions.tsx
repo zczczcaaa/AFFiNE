@@ -13,7 +13,11 @@ import {
   SubscriptionService,
   WorkspaceSubscriptionService,
 } from '../../../../../modules/cloud';
-import { ConfirmLoadingModal, DowngradeModal } from './modals';
+import {
+  ConfirmLoadingModal,
+  DowngradeModal,
+  DowngradeTeamModal,
+} from './modals';
 
 /**
  * Cancel action with modal & request
@@ -115,7 +119,10 @@ export const CancelTeamAction = ({
       const account = authService.session.account$.value;
       const prevRecurring = workspaceSubscription?.recurring;
       setIsMutating(true);
-      await subscription.cancelSubscription(idempotencyKey);
+      await subscription.cancelSubscription(
+        idempotencyKey,
+        SubscriptionPlan.Team
+      );
       await subscription.waitForRevalidation();
       // refresh idempotency key
       setIdempotencyKey(nanoid());
@@ -136,18 +143,22 @@ export const CancelTeamAction = ({
       setIsMutating(false);
     }
   }, [
-    authService.session.account$.value,
-    workspaceSubscription,
+    authService,
+    workspaceSubscription?.recurring,
     subscription,
     idempotencyKey,
     onOpenChange,
     downgradeNotify,
   ]);
 
+  if (workspaceSubscription?.canceledAt) {
+    return null;
+  }
+
   return (
     <>
       {children}
-      <DowngradeModal
+      <DowngradeTeamModal
         open={open}
         onCancel={downgrade}
         onOpenChange={onOpenChange}
@@ -190,6 +201,48 @@ export const ResumeAction = ({
           recurring: proSubscription.recurring,
         });
       }
+    } finally {
+      setIsMutating(false);
+    }
+  }, [subscription, idempotencyKey, onOpenChange]);
+
+  return (
+    <>
+      {children}
+      <ConfirmLoadingModal
+        type={'resume'}
+        open={open}
+        onConfirm={resume}
+        onOpenChange={onOpenChange}
+        loading={isMutating}
+      />
+    </>
+  );
+};
+export const TeamResumeAction = ({
+  children,
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+} & PropsWithChildren) => {
+  // allow replay request on network error until component unmount or success
+  const [idempotencyKey, setIdempotencyKey] = useState(nanoid());
+  const [isMutating, setIsMutating] = useState(false);
+  const subscription = useService(WorkspaceSubscriptionService).subscription;
+
+  const resume = useAsyncCallback(async () => {
+    try {
+      setIsMutating(true);
+      await subscription.resumeSubscription(
+        idempotencyKey,
+        SubscriptionPlan.Team
+      );
+      await subscription.waitForRevalidation();
+      // refresh idempotency key
+      setIdempotencyKey(nanoid());
+      onOpenChange(false);
     } finally {
       setIsMutating(false);
     }

@@ -15,6 +15,7 @@ import {
   WorkspaceInvoicesService,
   WorkspaceSubscriptionService,
 } from '@affine/core/modules/cloud';
+import { WorkspaceQuotaService } from '@affine/core/modules/quota';
 import { UrlService } from '@affine/core/modules/url';
 import {
   createCustomerPortalMutation,
@@ -36,7 +37,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   CancelTeamAction,
-  ResumeAction,
+  TeamResumeAction,
 } from '../../general-setting/plans/actions';
 import * as styles from './styles.css';
 
@@ -60,7 +61,7 @@ export const WorkspaceSettingBilling = ({
 
   useEffect(() => {
     subscriptionService?.subscription.revalidate();
-  }, [subscriptionService]);
+  }, [subscriptionService?.subscription]);
 
   if (workspace === null) {
     return null;
@@ -97,8 +98,10 @@ export const WorkspaceSettingBilling = ({
 const TeamCard = () => {
   const t = useI18n();
   const workspaceSubscriptionService = useService(WorkspaceSubscriptionService);
+  const workspaceQuotaService = useService(WorkspaceQuotaService);
   const subscriptionService = useService(SubscriptionService);
-
+  const workspaceQuota = useLiveData(workspaceQuotaService.quota.quota$);
+  const workspaceMemberCount = workspaceQuota?.memberCount;
   const teamSubscription = useLiveData(
     workspaceSubscriptionService.subscription.subscription$
   );
@@ -108,7 +111,13 @@ const TeamCard = () => {
 
   useEffect(() => {
     workspaceSubscriptionService.subscription.revalidate();
-  }, [workspaceSubscriptionService.subscription]);
+    workspaceQuotaService.quota.revalidate();
+    subscriptionService.prices.revalidate();
+  }, [
+    subscriptionService,
+    workspaceQuotaService,
+    workspaceSubscriptionService,
+  ]);
 
   const expiration = teamSubscription?.end;
   const nextBillingDate = teamSubscription?.nextBillAt;
@@ -147,12 +156,22 @@ const TeamCard = () => {
   }, [expiration, nextBillingDate, t]);
 
   const amount = teamSubscription
-    ? teamPrices
+    ? teamPrices && workspaceMemberCount
       ? teamSubscription.recurring === SubscriptionRecurring.Monthly
-        ? String((teamPrices.amount ?? 0) / 100)
-        : String((teamPrices.yearlyAmount ?? 0) / 100)
+        ? String(
+            (teamPrices.amount ? teamPrices.amount * workspaceMemberCount : 0) /
+              100
+          )
+        : String(
+            (teamPrices.yearlyAmount
+              ? teamPrices.yearlyAmount * workspaceMemberCount
+              : 0) / 100
+          )
       : '?'
     : '0';
+  const handleClick = useCallback(() => {
+    setOpenCancelModal(true);
+  }, []);
 
   return (
     <div className={styles.planCard}>
@@ -171,7 +190,11 @@ const TeamCard = () => {
           open={openCancelModal}
           onOpenChange={setOpenCancelModal}
         >
-          <Button variant="primary" className={styles.cancelPlanButton}>
+          <Button
+            variant="primary"
+            className={styles.cancelPlanButton}
+            onClick={handleClick}
+          >
             {t[
               'com.affine.settings.workspace.billing.team-workspace.cancel-plan'
             ]()}
@@ -207,11 +230,11 @@ const ResumeSubscription = ({ expirationDate }: { expirationDate: string }) => {
         }
       )}
     >
-      <ResumeAction open={open} onOpenChange={setOpen}>
+      <TeamResumeAction open={open} onOpenChange={setOpen}>
         <Button onClick={handleClick}>
           {t['com.affine.payment.billing-setting.resume-subscription']()}
         </Button>
-      </ResumeAction>
+      </TeamResumeAction>
     </SettingRow>
   );
 };

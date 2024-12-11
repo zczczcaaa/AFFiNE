@@ -153,7 +153,7 @@ const ActionButton = ({ detail, recurring }: PlanCardProps) => {
 
   // team
   if (detail.plan === SubscriptionPlan.Team) {
-    return <UpgradeToTeam />;
+    return <UpgradeToTeam recurring={recurring} />;
   }
 
   // lifetime
@@ -247,10 +247,11 @@ const Downgrade = ({ disabled }: { disabled?: boolean }) => {
   );
 };
 
-const UpgradeToTeam = () => {
+const UpgradeToTeam = ({ recurring }: { recurring: SubscriptionRecurring }) => {
   const t = useI18n();
   const serverService = useService(ServerService);
-  const url = `${serverService.server.baseUrl}/upgrade-to-team`;
+  const url = `${serverService.server.baseUrl}/upgrade-to-team?recurring=${recurring}`;
+
   return (
     <a
       className={styles.planAction}

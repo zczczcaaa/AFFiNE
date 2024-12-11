@@ -96,12 +96,14 @@ export class SubscriptionStore extends Store {
   async mutateResumeSubscription(
     idempotencyKey: string,
     plan?: SubscriptionPlan,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
+    workspaceId?: string
   ) {
     const data = await this.gqlService.gql({
       query: resumeSubscriptionMutation,
       variables: {
         plan,
+        workspaceId,
       },
       context: {
         signal: abortSignal,
@@ -116,12 +118,14 @@ export class SubscriptionStore extends Store {
   async mutateCancelSubscription(
     idempotencyKey: string,
     plan?: SubscriptionPlan,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
+    workspaceId?: string
   ) {
     const data = await this.gqlService.gql({
       query: cancelSubscriptionMutation,
       variables: {
         plan,
+        workspaceId,
       },
       context: {
         signal: abortSignal,
@@ -162,13 +166,15 @@ export class SubscriptionStore extends Store {
   setSubscriptionRecurring(
     idempotencyKey: string,
     recurring: SubscriptionRecurring,
-    plan?: SubscriptionPlan
+    plan?: SubscriptionPlan,
+    workspaceId?: string
   ) {
     return this.gqlService.gql({
       query: updateSubscriptionMutation,
       variables: {
         plan,
         recurring,
+        workspaceId,
       },
       context: {
         headers: {

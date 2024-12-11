@@ -98,8 +98,8 @@ export const cancelSubscriptionMutation = {
   definitionName: 'cancelSubscription',
   containsFile: false,
   query: `
-mutation cancelSubscription($plan: SubscriptionPlan = Pro) {
-  cancelSubscription(plan: $plan) {
+mutation cancelSubscription($plan: SubscriptionPlan = Pro, $workspaceId: String) {
+  cancelSubscription(plan: $plan, workspaceId: $workspaceId) {
     id
     status
     nextBillAt
@@ -188,7 +188,7 @@ export const createCopilotMessageMutation = {
   id: 'createCopilotMessageMutation' as const,
   operationName: 'createCopilotMessage',
   definitionName: 'createCopilotMessage',
-  containsFile: true,
+  containsFile: false,
   query: `
 mutation createCopilotMessage($options: CreateChatMessageInput!) {
   createCopilotMessage(options: $options)
@@ -960,8 +960,8 @@ export const resumeSubscriptionMutation = {
   definitionName: 'resumeSubscription',
   containsFile: false,
   query: `
-mutation resumeSubscription($plan: SubscriptionPlan = Pro) {
-  resumeSubscription(plan: $plan) {
+mutation resumeSubscription($plan: SubscriptionPlan = Pro, $workspaceId: String) {
+  resumeSubscription(plan: $plan, workspaceId: $workspaceId) {
     id
     status
     nextBillAt
@@ -1184,8 +1184,12 @@ export const updateSubscriptionMutation = {
   definitionName: 'updateSubscriptionRecurring',
   containsFile: false,
   query: `
-mutation updateSubscription($plan: SubscriptionPlan = Pro, $recurring: SubscriptionRecurring!) {
-  updateSubscriptionRecurring(plan: $plan, recurring: $recurring) {
+mutation updateSubscription($plan: SubscriptionPlan = Pro, $recurring: SubscriptionRecurring!, $workspaceId: String) {
+  updateSubscriptionRecurring(
+    plan: $plan
+    recurring: $recurring
+    workspaceId: $workspaceId
+  ) {
     id
     plan
     recurring

@@ -44,7 +44,12 @@ export class WorkspaceSubscription extends Entity {
     if (!this.store) {
       throw new Error('Subscription store not available');
     }
-    await this.store.mutateResumeSubscription(idempotencyKey, plan);
+    await this.store.mutateResumeSubscription(
+      idempotencyKey,
+      plan,
+      undefined,
+      this.workspaceService.workspace.id
+    );
     await this.waitForRevalidation();
   }
 
@@ -52,7 +57,12 @@ export class WorkspaceSubscription extends Entity {
     if (!this.store) {
       throw new Error('Subscription store not available');
     }
-    await this.store.mutateCancelSubscription(idempotencyKey, plan);
+    await this.store.mutateCancelSubscription(
+      idempotencyKey,
+      plan,
+      undefined,
+      this.workspaceService.workspace.id
+    );
     await this.waitForRevalidation();
   }
 
@@ -64,7 +74,12 @@ export class WorkspaceSubscription extends Entity {
     if (!this.store) {
       throw new Error('Subscription store not available');
     }
-    await this.store.setSubscriptionRecurring(idempotencyKey, recurring, plan);
+    await this.store.setSubscriptionRecurring(
+      idempotencyKey,
+      recurring,
+      plan,
+      this.workspaceService.workspace.id
+    );
     await this.waitForRevalidation();
   }
 

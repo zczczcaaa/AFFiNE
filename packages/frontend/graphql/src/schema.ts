@@ -1476,6 +1476,7 @@ export type SetBlobMutation = { __typename?: 'Mutation'; setBlob: string };
 
 export type CancelSubscriptionMutationVariables = Exact<{
   plan?: InputMaybe<SubscriptionPlan>;
+  workspaceId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type CancelSubscriptionMutation = {
@@ -2256,6 +2257,7 @@ export type RemoveAvatarMutation = {
 
 export type ResumeSubscriptionMutationVariables = Exact<{
   plan?: InputMaybe<SubscriptionPlan>;
+  workspaceId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type ResumeSubscriptionMutation = {
@@ -2467,6 +2469,7 @@ export type UpdateServerRuntimeConfigsMutation = {
 export type UpdateSubscriptionMutationVariables = Exact<{
   plan?: InputMaybe<SubscriptionPlan>;
   recurring: SubscriptionRecurring;
+  workspaceId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type UpdateSubscriptionMutation = {

@@ -1,4 +1,4 @@
-import { MenuItem, notify } from '@affine/component';
+import { MenuItem, notify, useConfirmModal } from '@affine/component';
 import {
   type Member,
   WorkspacePermissionService,
@@ -21,31 +21,55 @@ export const MemberOptions = ({
 }) => {
   const t = useI18n();
   const permission = useService(WorkspacePermissionService).permission;
+  const { openConfirmModal } = useConfirmModal();
+
+  const openRemoveConfirmModal = useCallback(
+    (successNotify: { title: string; message: string }) => {
+      openConfirmModal({
+        title: t['com.affine.payment.member.team.remove.confirm.title'](),
+        description:
+          t['com.affine.payment.member.team.remove.confirm.description'](),
+        confirmText:
+          t['com.affine.payment.member.team.remove.confirm.confirm-button'](),
+        cancelText: t['com.affine.payment.member.team.remove.confirm.cancel'](),
+        confirmButtonOptions: {
+          variant: 'error',
+        },
+        onConfirm: () =>
+          permission
+            .revokeMember(member.id)
+            .then(result => {
+              if (result) {
+                notify.success({
+                  title: successNotify.title,
+                  message: successNotify.message,
+                });
+              }
+            })
+            .catch(error => {
+              notify.error({
+                title: 'Operation failed',
+                message: error.message,
+              });
+            }),
+      });
+    },
+    [member.id, openConfirmModal, permission, t]
+  );
 
   const handleAssignOwner = useCallback(() => {
     openAssignModal();
   }, [openAssignModal]);
 
   const handleRevoke = useCallback(() => {
-    permission
-      .revokeMember(member.id)
-      .then(result => {
-        if (result) {
-          notify.success({
-            title: t['com.affine.payment.member.team.revoke.notify.title'](),
-            message: t['com.affine.payment.member.team.revoke.notify.message']({
-              name: member.name || member.email || member.id,
-            }),
-          });
-        }
-      })
-      .catch(error => {
-        notify.error({
-          title: 'Operation failed',
-          message: error.message,
-        });
-      });
-  }, [permission, member, t]);
+    openRemoveConfirmModal({
+      title: t['com.affine.payment.member.team.revoke.notify.title'](),
+      message: t['com.affine.payment.member.team.revoke.notify.message']({
+        name: member.name || member.email || member.id,
+      }),
+    });
+  }, [openRemoveConfirmModal, member, t]);
+
   const handleApprove = useCallback(() => {
     permission
       .approveMember(member.id)
@@ -70,48 +94,22 @@ export const MemberOptions = ({
   }, [member, permission, t]);
 
   const handleDecline = useCallback(() => {
-    permission
-      .revokeMember(member.id)
-      .then(result => {
-        if (result) {
-          notify.success({
-            title: t['com.affine.payment.member.team.decline.notify.title'](),
-            message: t['com.affine.payment.member.team.decline.notify.message'](
-              {
-                name: member.name || member.email || member.id,
-              }
-            ),
-          });
-        }
-      })
-      .catch(error => {
-        notify.error({
-          title: 'Operation failed',
-          message: error.message,
-        });
-      });
-  }, [member, permission, t]);
+    openRemoveConfirmModal({
+      title: t['com.affine.payment.member.team.decline.notify.title'](),
+      message: t['com.affine.payment.member.team.decline.notify.message']({
+        name: member.name || member.email || member.id,
+      }),
+    });
+  }, [member, openRemoveConfirmModal, t]);
 
   const handleRemove = useCallback(() => {
-    permission
-      .revokeMember(member.id)
-      .then(result => {
-        if (result) {
-          notify.success({
-            title: t['com.affine.payment.member.team.remove.notify.title'](),
-            message: t['com.affine.payment.member.team.remove.notify.message']({
-              name: member.name || member.email || member.id,
-            }),
-          });
-        }
-      })
-      .catch(error => {
-        notify.error({
-          title: 'Operation failed',
-          message: error.message,
-        });
-      });
-  }, [member, permission, t]);
+    openRemoveConfirmModal({
+      title: t['com.affine.payment.member.team.remove.notify.title'](),
+      message: t['com.affine.payment.member.team.remove.notify.message']({
+        name: member.name || member.email || member.id,
+      }),
+    });
+  }, [member, openRemoveConfirmModal, t]);
 
   const handleChangeToAdmin = useCallback(() => {
     permission
