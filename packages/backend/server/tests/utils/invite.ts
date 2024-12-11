@@ -78,7 +78,7 @@ export async function inviteLink(
     .send({
       query: `
             mutation {
-              inviteLink(workspaceId: "${workspaceId}", expireTime: ${expireTime})
+              createInviteLink(workspaceId: "${workspaceId}", expireTime: ${expireTime})
             }
           `,
     })
@@ -86,7 +86,7 @@ export async function inviteLink(
   if (res.body.errors) {
     throw new Error(res.body.errors[0].message);
   }
-  return res.body.data.inviteLink;
+  return res.body.data.createInviteLink;
 }
 
 export async function acceptInviteById(
@@ -187,5 +187,10 @@ export async function getInviteInfo(
           `,
     })
     .expect(200);
+  if (res.body.errors) {
+    throw new Error(res.body.errors[0].message, {
+      cause: res.body.errors[0].cause,
+    });
+  }
   return res.body.data.getInviteInfo;
 }

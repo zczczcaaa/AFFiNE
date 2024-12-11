@@ -191,7 +191,7 @@ export class QuotaManagementService {
       FeatureType.UnlimitedWorkspace
     );
 
-    const quota = {
+    const quota: QuotaBusinessType = {
       name,
       blobLimit,
       businessBlobLimit,

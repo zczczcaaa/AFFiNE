@@ -1,6 +1,6 @@
-mutation inviteLink(
+mutation createInviteLink(
   $workspaceId: String!
   $expireTime: WorkspaceInviteLinkExpireTime!
 ) {
-  inviteLink(workspaceId: $workspaceId, expireTime: $expireTime)
+  createInviteLink(workspaceId: $workspaceId, expireTime: $expireTime)
 }

@@ -438,6 +438,14 @@ export interface InvitationWorkspaceType {
   name: Scalars['String']['output'];
 }
 
+export interface InviteLink {
+  __typename?: 'InviteLink';
+  /** Invite link expire time */
+  expireTime: Scalars['DateTime']['output'];
+  /** Invite link */
+  link: Scalars['String']['output'];
+}
+
 export interface InviteResult {
   __typename?: 'InviteResult';
   email: Scalars['String']['output'];
@@ -559,6 +567,7 @@ export interface Mutation {
   createCopilotSession: Scalars['String']['output'];
   /** Create a stripe customer portal to manage payment methods */
   createCustomerPortal: Scalars['String']['output'];
+  createInviteLink: Scalars['String']['output'];
   /** Create a new user */
   createUser: UserType;
   /** Create a new workspace */
@@ -573,7 +582,6 @@ export interface Mutation {
   grantMember: Scalars['String']['output'];
   invite: Scalars['String']['output'];
   inviteBatch: Array<InviteResult>;
-  inviteLink: Scalars['String']['output'];
   leaveWorkspace: Scalars['Boolean']['output'];
   publishPage: WorkspacePage;
   recoverDoc: Scalars['DateTime']['output'];
@@ -673,6 +681,11 @@ export interface MutationCreateCopilotSessionArgs {
   options: CreateChatSessionInput;
 }
 
+export interface MutationCreateInviteLinkArgs {
+  expireTime: WorkspaceInviteLinkExpireTime;
+  workspaceId: Scalars['String']['input'];
+}
+
 export interface MutationCreateUserArgs {
   input: CreateUserInput;
 }
@@ -716,11 +729,6 @@ export interface MutationInviteArgs {
 export interface MutationInviteBatchArgs {
   emails: Array<Scalars['String']['input']>;
   sendInviteMail?: InputMaybe<Scalars['Boolean']['input']>;
-  workspaceId: Scalars['String']['input'];
-}
-
-export interface MutationInviteLinkArgs {
-  expireTime: WorkspaceInviteLinkExpireTime;
   workspaceId: Scalars['String']['input'];
 }
 
@@ -1342,6 +1350,8 @@ export interface WorkspaceType {
   id: Scalars['ID']['output'];
   /** is current workspace initialized */
   initialized: Scalars['Boolean']['output'];
+  /** invite link for workspace */
+  inviteLink: Maybe<InviteLink>;
   /** Get user invoice count */
   invoiceCount: Scalars['Int']['output'];
   invoices: Array<InvoiceType>;
@@ -2526,6 +2536,11 @@ export type GetWorkspaceConfigQuery = {
     __typename?: 'WorkspaceType';
     enableAi: boolean;
     enableUrlPreview: boolean;
+    inviteLink: {
+      __typename?: 'InviteLink';
+      link: string;
+      expireTime: string;
+    } | null;
   };
 };
 
@@ -2670,14 +2685,14 @@ export type InviteBatchMutation = {
   }>;
 };
 
-export type InviteLinkMutationVariables = Exact<{
+export type CreateInviteLinkMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   expireTime: WorkspaceInviteLinkExpireTime;
 }>;
 
-export type InviteLinkMutation = {
+export type CreateInviteLinkMutation = {
   __typename?: 'Mutation';
-  inviteLink: string;
+  createInviteLink: string;
 };
 
 export type RevokeInviteLinkMutationVariables = Exact<{
@@ -3228,9 +3243,9 @@ export type Mutations =
       response: InviteBatchMutation;
     }
   | {
-      name: 'inviteLinkMutation';
-      variables: InviteLinkMutationVariables;
-      response: InviteLinkMutation;
+      name: 'createInviteLinkMutation';
+      variables: CreateInviteLinkMutationVariables;
+      response: CreateInviteLinkMutation;
     }
   | {
       name: 'revokeInviteLinkMutation';

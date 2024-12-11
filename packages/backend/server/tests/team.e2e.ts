@@ -17,6 +17,7 @@ import {
   acceptInviteById,
   createTestingApp,
   createWorkspace,
+  getInviteInfo,
   grantMember,
   inviteLink,
   inviteUser,
@@ -95,11 +96,14 @@ const init = async (app: INestApplication, memberLimit = 10) => {
 
   const createInviteLink = async () => {
     const inviteId = await inviteLink(app, owner.token.token, ws.id, 'OneDay');
-    return async (email: string): Promise<UserAuthedType> => {
-      const member = await signUp(app, email.split('@')[0], email, '123456');
-      await acceptInviteById(app, ws.id, inviteId, false, member.token.token);
-      return member;
-    };
+    return [
+      inviteId,
+      async (email: string): Promise<UserAuthedType> => {
+        const member = await signUp(app, email.split('@')[0], email, '123456');
+        await acceptInviteById(app, ws.id, inviteId, false, member.token.token);
+        return member;
+      },
+    ] as const;
   };
 
   const admin = await invite('admin@affine.pro', 'Admin');
@@ -237,8 +241,15 @@ test('should be able to leave workspace', async t => {
 
 test('should be able to invite by link', async t => {
   const { app, permissions, quotaManager } = t.context;
-  const { createInviteLink, ws } = await init(app, 4);
-  const invite = await createInviteLink();
+  const { createInviteLink, owner, ws } = await init(app, 4);
+  const [inviteId, invite] = await createInviteLink();
+
+  {
+    // check invite link
+    const info = await getInviteInfo(app, owner.token.token, inviteId);
+    t.is(info.workspace.id, ws.id, 'should be able to get invite info');
+  }
+
   {
     // invite link
     const members: UserAuthedType[] = [];

@@ -280,7 +280,7 @@ export class QuotaService {
         .findFirst({
           where: {
             workspaceId,
-            feature: { feature: type, type: FeatureKind.Feature },
+            feature: { feature: type, type: FeatureKind.Quota },
             activated: true,
           },
           select: { configs: true },

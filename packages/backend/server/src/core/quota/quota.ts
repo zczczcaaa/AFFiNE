@@ -1,3 +1,5 @@
+import { pick } from 'lodash-es';
+
 import { PrismaTransaction } from '../../fundamentals';
 import { formatDate, formatSize, Quota, QuotaSchema } from './types';
 
@@ -5,7 +7,7 @@ const QuotaCache = new Map<number, QuotaConfig>();
 
 export class QuotaConfig {
   readonly config: Quota;
-  readonly override?: Quota['configs'];
+  readonly override?: Partial<Quota['configs']>;
 
   static async get(tx: PrismaTransaction, featureId: number) {
     const cachedQuota = QuotaCache.get(featureId);
@@ -49,7 +51,10 @@ export class QuotaConfig {
         configs: Object.assign({}, config.data.configs, override),
       });
       if (overrideConfig.success) {
-        this.override = overrideConfig.data.configs;
+        this.override = pick(
+          overrideConfig.data.configs,
+          Object.keys(override)
+        );
       } else {
         throw new Error(
           `Invalid quota override config: ${override.error.message}, ${JSON.stringify(

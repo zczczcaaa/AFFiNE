@@ -361,6 +361,14 @@ type InvitationWorkspaceType {
   name: String!
 }
 
+type InviteLink {
+  """Invite link expire time"""
+  expireTime: DateTime!
+
+  """Invite link"""
+  link: String!
+}
+
 type InviteResult {
   email: String!
 
@@ -496,6 +504,7 @@ type Mutation {
 
   """Create a stripe customer portal to manage payment methods"""
   createCustomerPortal: String!
+  createInviteLink(expireTime: WorkspaceInviteLinkExpireTime!, workspaceId: String!): String!
 
   """Create a new user"""
   createUser(input: CreateUserInput!): UserType!
@@ -514,7 +523,6 @@ type Mutation {
   grantMember(permission: Permission!, userId: String!, workspaceId: String!): String!
   invite(email: String!, permission: Permission!, sendInviteMail: Boolean, workspaceId: String!): String!
   inviteBatch(emails: [String!]!, sendInviteMail: Boolean, workspaceId: String!): [InviteResult!]!
-  inviteLink(expireTime: WorkspaceInviteLinkExpireTime!, workspaceId: String!): String!
   leaveWorkspace(sendLeaveMail: Boolean, workspaceId: String!, workspaceName: String!): Boolean!
   publishPage(mode: PublicPageMode = Page, pageId: String!, workspaceId: String!): WorkspacePage!
   recoverDoc(guid: String!, timestamp: DateTime!, workspaceId: String!): DateTime!
@@ -995,6 +1003,9 @@ type WorkspaceType {
 
   """is current workspace initialized"""
   initialized: Boolean!
+
+  """invite link for workspace"""
+  inviteLink: InviteLink
 
   """Get user invoice count"""
   invoiceCount: Int!

@@ -2,11 +2,11 @@ import type { WorkspaceServerService } from '@affine/core/modules/cloud';
 import {
   acceptInviteByInviteIdMutation,
   approveWorkspaceTeamMemberMutation,
+  createInviteLinkMutation,
   getWorkspaceInfoQuery,
   grantWorkspaceTeamMemberMutation,
   inviteByEmailMutation,
   inviteByEmailsMutation,
-  inviteLinkMutation,
   leaveWorkspaceMutation,
   type Permission,
   revokeInviteLinkMutation,
@@ -83,13 +83,13 @@ export class WorkspacePermissionStore extends Store {
       throw new Error('No Server');
     }
     const inviteLink = await this.workspaceServerService.server.gql({
-      query: inviteLinkMutation,
+      query: createInviteLinkMutation,
       variables: {
         workspaceId,
         expireTime,
       },
     });
-    return inviteLink.inviteLink;
+    return inviteLink.createInviteLink;
   }
 
   async revokeInviteLink(workspaceId: string, signal?: AbortSignal) {

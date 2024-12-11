@@ -485,12 +485,15 @@ export class WorkspaceResolver {
   })
   async getInviteInfo(@Args('inviteId') inviteId: string) {
     let workspaceId = null;
+    let invitee = null;
     // invite link
-    const invite = await this.cache.get<{ workspaceId: string }>(
-      `workspace:inviteLinkId:${inviteId}`
-    );
+    const invite = await this.cache.get<{
+      workspaceId: string;
+      inviteeUserId: string;
+    }>(`workspace:inviteLinkId:${inviteId}`);
     if (typeof invite?.workspaceId === 'string') {
       workspaceId = invite.workspaceId;
+      invitee = { user: await this.users.findUserById(invite.inviteeUserId) };
     }
     if (!workspaceId) {
       workspaceId = await this.prisma.workspaceUserPermission
@@ -508,10 +511,13 @@ export class WorkspaceResolver {
     const workspaceContent = await this.doc.getWorkspaceContent(workspaceId);
 
     const owner = await this.permissions.getWorkspaceOwner(workspaceId);
-    const invitee = await this.permissions.getWorkspaceInvitation(
-      inviteId,
-      workspaceId
-    );
+
+    if (!invitee) {
+      invitee = await this.permissions.getWorkspaceInvitation(
+        inviteId,
+        workspaceId
+      );
+    }
 
     let avatar = '';
     if (workspaceContent?.avatarKey) {

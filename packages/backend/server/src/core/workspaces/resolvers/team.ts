@@ -16,12 +16,14 @@ import {
   NotInSpace,
   RequestMutex,
   TooManyRequest,
+  URLHelper,
 } from '../../../fundamentals';
 import { CurrentUser } from '../../auth';
 import { Permission, PermissionService } from '../../permission';
 import { QuotaManagementService } from '../../quota';
 import { UserService } from '../../user';
 import {
+  InviteLink,
   InviteResult,
   WorkspaceInviteLinkExpireTime,
   WorkspaceType,
@@ -41,6 +43,7 @@ export class TeamWorkspaceResolver {
     private readonly cache: Cache,
     private readonly event: EventEmitter,
     private readonly mailer: MailService,
+    private readonly url: URLHelper,
     private readonly prisma: PrismaClient,
     private readonly permissions: PermissionService,
     private readonly users: UserService,
@@ -70,6 +73,10 @@ export class TeamWorkspaceResolver {
       user.id,
       Permission.Admin
     );
+
+    if (emails.length > 512) {
+      return new TooManyRequest();
+    }
 
     // lock to prevent concurrent invite
     const lockFlag = `invite:${workspaceId}`;
@@ -150,8 +157,27 @@ export class TeamWorkspaceResolver {
     return results;
   }
 
+  @ResolveField(() => InviteLink, {
+    description: 'invite link for workspace',
+    nullable: true,
+  })
+  async inviteLink(@Parent() workspace: WorkspaceType) {
+    const cacheId = `workspace:inviteLink:${workspace.id}`;
+    const id = await this.cache.get<{ inviteId: string }>(cacheId);
+    if (id) {
+      const expireTime = await this.cache.ttl(cacheId);
+      if (Number.isSafeInteger(expireTime)) {
+        return {
+          link: this.url.link(`/invite/${id.inviteId}`),
+          expireTime: new Date(Date.now() + expireTime),
+        };
+      }
+    }
+    return null;
+  }
+
   @Mutation(() => String)
-  async inviteLink(
+  async createInviteLink(
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId') workspaceId: string,
     @Args('expireTime', { type: () => WorkspaceInviteLinkExpireTime })
@@ -171,7 +197,11 @@ export class TeamWorkspaceResolver {
     const inviteId = nanoid();
     const cacheInviteId = `workspace:inviteLinkId:${inviteId}`;
     await this.cache.set(cacheWorkspaceId, { inviteId }, { ttl: expireTime });
-    await this.cache.set(cacheInviteId, { workspaceId }, { ttl: expireTime });
+    await this.cache.set(
+      cacheInviteId,
+      { workspaceId, inviteeUserId: user.id },
+      { ttl: expireTime }
+    );
     return inviteId;
   }
 
