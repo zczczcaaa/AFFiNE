@@ -144,6 +144,7 @@ export class WorkspaceBlobStorage {
       if (!meta) {
         const blob = await this.get(workspaceId, key);
         meta = blob.metadata;
+        blob.body?.destroy();
       }
 
       if (meta) {
