@@ -2,17 +2,37 @@ import type { DocStorage, SyncStorage } from '../../storage';
 import { DocSyncPeer } from './peer';
 
 export class DocSyncEngine {
+  private readonly peers: DocSyncPeer[];
+  private abort: AbortController | null = null;
+
   constructor(
     readonly local: DocStorage,
     readonly sync: SyncStorage,
-    readonly peers: DocStorage[]
-  ) {}
+    readonly remotes: DocStorage[]
+  ) {
+    this.peers = remotes.map(remote => new DocSyncPeer(local, sync, remote));
+  }
 
-  async run(signal?: AbortSignal) {
-    await Promise.all(
-      this.peers.map(peer =>
-        new DocSyncPeer(this.local, this.sync, peer).mainLoop(signal)
-      )
-    );
+  start() {
+    if (this.abort) {
+      this.abort.abort();
+    }
+    const abort = new AbortController();
+    this.abort = abort;
+    Promise.allSettled(
+      this.peers.map(peer => peer.mainLoop(abort.signal))
+    ).catch(error => {
+      console.error(error);
+    });
+  }
+
+  stop() {
+    this.abort?.abort();
+    this.abort = null;
+  }
+
+  addPriority(id: string, priority: number) {
+    const undo = this.peers.map(peer => peer.addPriority(id, priority));
+    return () => undo.forEach(fn => fn());
   }
 }

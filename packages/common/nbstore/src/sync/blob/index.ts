@@ -4,6 +4,8 @@ import type { BlobStorage } from '../../storage';
 import { MANUALLY_STOP, throwIfAborted } from '../../utils/throw-if-aborted';
 
 export class BlobSyncEngine {
+  private abort: AbortController | null = null;
+
   constructor(
     readonly local: BlobStorage,
     readonly remotes: BlobStorage[]
@@ -72,18 +74,24 @@ export class BlobSyncEngine {
     }
   }
 
-  async run(signal?: AbortSignal) {
-    if (signal?.aborted) {
-      return;
+  start() {
+    if (this.abort) {
+      this.abort.abort();
     }
 
-    try {
-      await this.sync(signal);
-    } catch (error) {
+    const abort = new AbortController();
+    this.abort = abort;
+
+    this.sync(abort.signal).catch(error => {
       if (error === MANUALLY_STOP) {
         return;
       }
       console.error('sync blob error', error);
-    }
+    });
+  }
+
+  stop() {
+    this.abort?.abort();
+    this.abort = null;
   }
 }

@@ -610,11 +610,6 @@ export class DocSyncPeer {
     this.statusUpdatedSubject$.next(job.docId);
   }
 
-  setPriority(docId: string, priority: number) {
-    this.prioritySettings.set(docId, priority);
-    return this.status.jobDocQueue.setPriority(docId, priority);
-  }
-
   addPriority(id: string, priority: number) {
     const oldPriority = this.prioritySettings.get(id) ?? 0;
     this.prioritySettings.set(id, priority);

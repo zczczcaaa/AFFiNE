@@ -10,6 +10,7 @@ import {
 } from '../impls/idb';
 import { SpaceStorage } from '../storage';
 import { SyncEngine } from '../sync';
+import { expectYjsEqual } from './utils';
 
 test('doc', async () => {
   const doc = new YDoc();
@@ -53,19 +54,24 @@ test('doc', async () => {
   });
 
   const sync = new SyncEngine(peerA, [peerB, peerC]);
-  const abort = new AbortController();
-  sync.run(abort.signal);
+  sync.start();
 
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   {
     const b = await peerB.get('doc').getDoc('doc1');
-    expect(b).not.toBeNull();
-    expect(b?.bin).toEqual(update);
+    expectYjsEqual(b!.bin, {
+      test: {
+        hello: 'world',
+      },
+    });
 
     const c = await peerC.get('doc').getDoc('doc1');
-    expect(c).not.toBeNull();
-    expect(c?.bin).toEqual(update);
+    expectYjsEqual(c!.bin, {
+      test: {
+        hello: 'world',
+      },
+    });
   }
 
   doc.getMap('test').set('foo', 'bar');
@@ -79,12 +85,20 @@ test('doc', async () => {
 
   {
     const a = await peerA.get('doc').getDoc('doc1');
-    expect(a).not.toBeNull();
-    expect(a?.bin).toEqual(update2);
+    expectYjsEqual(a!.bin, {
+      test: {
+        hello: 'world',
+        foo: 'bar',
+      },
+    });
 
     const c = await peerC.get('doc').getDoc('doc1');
-    expect(c).not.toBeNull();
-    expect(c?.bin).toEqual(update2);
+    expectYjsEqual(c!.bin, {
+      test: {
+        hello: 'world',
+        foo: 'bar',
+      },
+    });
   }
 });
 
@@ -130,8 +144,7 @@ test('blob', async () => {
   await peerC.connect();
 
   const sync = new SyncEngine(peerA, [peerB, peerC]);
-  const abort = new AbortController();
-  sync.run(abort.signal);
+  sync.start();
 
   await new Promise(resolve => setTimeout(resolve, 1000));
 
