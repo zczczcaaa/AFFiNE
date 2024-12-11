@@ -439,15 +439,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Generate Release yml
-        run: |
-          node ./scripts/generate-release-yml.js
-        env:
-          RELEASE_VERSION: ${{ needs.before-make.outputs.RELEASE_VERSION }}
       - name: Copy Selfhost Release Files
         run: |
           cp ./.github/deployment/self-host/compose.yaml ./release/docker-compose.yaml
           cp ./.github/deployment/self-host/.env.example ./release/.env.example
+      - name: Generate Release yml
+        run: |
+          node ./scripts/generate-release-yml.mjs
+        env:
+          RELEASE_VERSION: ${{ needs.before-make.outputs.RELEASE_VERSION }}
       - name: Create Release Draft
         if: ${{ github.ref_type == 'tag' }}
         uses: softprops/action-gh-release@v2
