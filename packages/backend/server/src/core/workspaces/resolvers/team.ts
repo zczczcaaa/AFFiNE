@@ -176,13 +176,13 @@ export class TeamWorkspaceResolver {
     return null;
   }
 
-  @Mutation(() => String)
+  @Mutation(() => InviteLink)
   async createInviteLink(
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId') workspaceId: string,
     @Args('expireTime', { type: () => WorkspaceInviteLinkExpireTime })
     expireTime: WorkspaceInviteLinkExpireTime
-  ) {
+  ): Promise<InviteLink | null> {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
@@ -191,7 +191,13 @@ export class TeamWorkspaceResolver {
     const cacheWorkspaceId = `workspace:inviteLink:${workspaceId}`;
     const invite = await this.cache.get<{ inviteId: string }>(cacheWorkspaceId);
     if (typeof invite?.inviteId === 'string') {
-      return invite.inviteId;
+      const expireTime = await this.cache.ttl(cacheWorkspaceId);
+      if (Number.isSafeInteger(expireTime)) {
+        return {
+          link: this.url.link(`/invite/${invite.inviteId}`),
+          expireTime: new Date(Date.now() + expireTime),
+        };
+      }
     }
 
     const inviteId = nanoid();
@@ -202,7 +208,10 @@ export class TeamWorkspaceResolver {
       { workspaceId, inviteeUserId: user.id },
       { ttl: expireTime }
     );
-    return inviteId;
+    return {
+      link: this.url.link(`/invite/${inviteId}`),
+      expireTime: new Date(Date.now() + expireTime),
+    };
   }
 
   @Mutation(() => Boolean)
@@ -239,24 +248,25 @@ export class TeamWorkspaceResolver {
         return new TooManyRequest();
       }
 
-      const isUnderReview =
-        (await this.permissions.getWorkspaceMemberStatus(
-          workspaceId,
-          userId
-        )) === WorkspaceMemberStatus.UnderReview;
-      if (isUnderReview) {
-        const result = await this.permissions.grant(
-          workspaceId,
-          userId,
-          Permission.Write,
-          WorkspaceMemberStatus.Accepted
-        );
+      const status = await this.permissions.getWorkspaceMemberStatus(
+        workspaceId,
+        userId
+      );
+      if (status) {
+        if (status === WorkspaceMemberStatus.UnderReview) {
+          const result = await this.permissions.grant(
+            workspaceId,
+            userId,
+            Permission.Write,
+            WorkspaceMemberStatus.Accepted
+          );
 
-        if (result) {
-          // TODO(@darkskygit): send team approve mail
+          if (result) {
+            // TODO(@darkskygit): send team approve mail
+          }
+          return result;
         }
-
-        return result;
+        return new TooManyRequest();
       } else {
         return new NotInSpace({ spaceId: workspaceId });
       }

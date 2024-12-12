@@ -277,6 +277,22 @@ export class PermissionService {
     return count > 0;
   }
 
+  private getAllowedStatusSource(
+    to: WorkspaceMemberStatus
+  ): WorkspaceMemberStatus[] {
+    switch (to) {
+      case WorkspaceMemberStatus.NeedMoreSeat:
+        return [WorkspaceMemberStatus.Pending];
+      case WorkspaceMemberStatus.NeedMoreSeatAndReview:
+        return [WorkspaceMemberStatus.UnderReview];
+      case WorkspaceMemberStatus.Pending:
+      case WorkspaceMemberStatus.UnderReview:
+        return [WorkspaceMemberStatus.Accepted];
+      default:
+        return [];
+    }
+  }
+
   async grant(
     ws: string,
     user: string,
@@ -284,47 +300,43 @@ export class PermissionService {
     status: WorkspaceMemberStatus = WorkspaceMemberStatus.Pending
   ): Promise<string> {
     const data = await this.prisma.workspaceUserPermission.findFirst({
-      where: {
-        workspaceId: ws,
-        userId: user,
-        OR: this.acceptedCondition,
-      },
+      where: { workspaceId: ws, userId: user },
     });
 
     if (data) {
-      const [p] = await this.prisma.$transaction(
-        [
-          this.prisma.workspaceUserPermission.update({
-            where: {
-              workspaceId_userId: {
-                workspaceId: ws,
-                userId: user,
-              },
-            },
-            data: {
-              type: permission,
-            },
-          }),
+      if (data.accepted && data.status === WorkspaceMemberStatus.Accepted) {
+        const [p] = await this.prisma.$transaction(
+          [
+            this.prisma.workspaceUserPermission.update({
+              where: { workspaceId_userId: { workspaceId: ws, userId: user } },
+              data: { type: permission },
+            }),
 
-          // If the new permission is owner, we need to revoke old owner
-          permission === Permission.Owner
-            ? this.prisma.workspaceUserPermission.updateMany({
-                where: {
-                  workspaceId: ws,
-                  type: Permission.Owner,
-                  userId: {
-                    not: user,
+            // If the new permission is owner, we need to revoke old owner
+            permission === Permission.Owner
+              ? this.prisma.workspaceUserPermission.updateMany({
+                  where: {
+                    workspaceId: ws,
+                    type: Permission.Owner,
+                    userId: { not: user },
                   },
-                },
-                data: {
-                  type: Permission.Admin,
-                },
-              })
-            : null,
-        ].filter(Boolean) as Prisma.PrismaPromise<any>[]
-      );
+                  data: { type: Permission.Admin },
+                })
+              : null,
+          ].filter(Boolean) as Prisma.PrismaPromise<any>[]
+        );
 
-      return p.id;
+        return p.id;
+      }
+      const allowedStatus = this.getAllowedStatusSource(data.status);
+      if (allowedStatus.includes(status)) {
+        const ret = await this.prisma.workspaceUserPermission.update({
+          where: { workspaceId_userId: { workspaceId: ws, userId: user } },
+          data: { status },
+        });
+        return ret.id;
+      }
+      return data.id;
     }
 
     return this.prisma.workspaceUserPermission
@@ -377,10 +389,7 @@ export class PermissionService {
         workspaceId: workspaceId,
         AND: [{ accepted: false }, { status: WorkspaceMemberStatus.Pending }],
       },
-      data: {
-        accepted: true,
-        status: status,
-      },
+      data: { accepted: true, status },
     });
 
     return result.count > 0;

@@ -586,18 +586,18 @@ export class WorkspaceResolver {
     @Args('inviteId') inviteId: string,
     @Args('sendAcceptMail', { nullable: true }) sendAcceptMail: boolean
   ) {
+    const lockFlag = `invite:${workspaceId}`;
+    await using lock = await this.mutex.lock(lockFlag);
+    if (!lock) {
+      return new TooManyRequest();
+    }
+
     if (user) {
       // invite link
       const invite = await this.cache.get<{ inviteId: string }>(
         `workspace:inviteLink:${workspaceId}`
       );
       if (invite?.inviteId === inviteId) {
-        const lockFlag = `invite:${workspaceId}`;
-        await using lock = await this.mutex.lock(lockFlag);
-        if (!lock) {
-          return new TooManyRequest();
-        }
-
         const quota = await this.quota.getWorkspaceUsage(workspaceId);
         if (quota.memberCount >= quota.memberLimit) {
           await this.permissions.grant(
@@ -606,6 +606,12 @@ export class WorkspaceResolver {
             Permission.Write,
             WorkspaceMemberStatus.NeedMoreSeatAndReview
           );
+          const memberCount =
+            await this.permissions.getWorkspaceMemberCount(workspaceId);
+          this.event.emit('workspace.members.updated', {
+            workspaceId,
+            count: memberCount,
+          });
           return true;
         } else {
           const inviteId = await this.permissions.grant(workspaceId, user.id);

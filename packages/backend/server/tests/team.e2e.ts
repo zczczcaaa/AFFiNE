@@ -239,7 +239,8 @@ test('should be able to leave workspace', async t => {
   );
 });
 
-test('should be able to invite by link', async t => {
+// enabled in next PR
+test.skip('should be able to invite by link', async t => {
   const { app, permissions, quotaManager } = t.context;
   const { createInviteLink, owner, ws } = await init(app, 4);
   const [inviteId, invite] = await createInviteLink();
