@@ -22,6 +22,7 @@ import {
   EventEmitter,
   InternalServerError,
   MailService,
+  MemberQuotaExceeded,
   RequestMutex,
   SpaceAccessDenied,
   SpaceNotFound,
@@ -528,13 +529,14 @@ export class WorkspaceResolver {
       return new TooManyRequest();
     }
 
+    const isTeam = await this.quota.isTeamWorkspace(workspaceId);
     if (user) {
       const status = await this.permissions.getWorkspaceMemberStatus(
         workspaceId,
         user.id
       );
       if (status === WorkspaceMemberStatus.Accepted) {
-        throw new AlreadyInSpace({ spaceId: workspaceId });
+        return new AlreadyInSpace({ spaceId: workspaceId });
       }
 
       // invite link
@@ -544,35 +546,44 @@ export class WorkspaceResolver {
       if (invite?.inviteId === inviteId) {
         const quota = await this.quota.getWorkspaceUsage(workspaceId);
         if (quota.memberCount >= quota.memberLimit) {
-          await this.permissions.grant(
-            workspaceId,
-            user.id,
-            Permission.Write,
-            WorkspaceMemberStatus.NeedMoreSeatAndReview
-          );
-          const memberCount =
-            await this.permissions.getWorkspaceMemberCount(workspaceId);
-          this.event.emit('workspace.members.updated', {
-            workspaceId,
-            count: memberCount,
-          });
-          return true;
+          // only team workspace allow over limit
+          if (isTeam) {
+            await this.permissions.grant(
+              workspaceId,
+              user.id,
+              Permission.Write,
+              WorkspaceMemberStatus.NeedMoreSeatAndReview
+            );
+            const memberCount =
+              await this.permissions.getWorkspaceMemberCount(workspaceId);
+            this.event.emit('workspace.members.updated', {
+              workspaceId,
+              count: memberCount,
+            });
+            return true;
+          } else if (!status) {
+            return new MemberQuotaExceeded();
+          }
         } else {
           const inviteId = await this.permissions.grant(workspaceId, user.id);
-          this.event.emit('workspace.team.reviewRequest', {
-            inviteIds: [inviteId],
-          });
+          if (isTeam) {
+            this.event.emit('workspace.team.reviewRequest', {
+              inviteIds: [inviteId],
+            });
+          }
           // invite by link need admin to approve
           return await this.permissions.acceptWorkspaceInvitation(
             inviteId,
             workspaceId,
-            WorkspaceMemberStatus.UnderReview
+            isTeam
+              ? WorkspaceMemberStatus.UnderReview
+              : WorkspaceMemberStatus.Accepted
           );
         }
       }
     }
 
-    // we added seats when sending invitation emails, but the deduction may fail
+    // we added seats when sending invitation emails, but the payment may fail
     // so we need to check seat again here
     await this.quota.checkWorkspaceSeat(workspaceId, true);
 

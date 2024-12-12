@@ -14,6 +14,7 @@ import {
   QuotaService,
   QuotaType,
 } from '../src/core/quota';
+import { WorkspaceType } from '../src/core/workspaces';
 import {
   acceptInviteById,
   createInviteLink,
@@ -71,11 +72,12 @@ test.afterEach.always(async t => {
 
 const init = async (app: INestApplication, memberLimit = 10) => {
   const owner = await signUp(app, 'test', 'test@affine.pro', '123456');
-  const ws = await createWorkspace(app, owner.token.token);
+  const workspace = await createWorkspace(app, owner.token.token);
 
+  const teamWorkspace = await createWorkspace(app, owner.token.token);
   const quota = app.get(QuotaManagementService);
-  await quota.addTeamWorkspace(ws.id, 'test');
-  await quota.updateWorkspaceConfig(ws.id, QuotaType.TeamPlanV1, {
+  await quota.addTeamWorkspace(teamWorkspace.id, 'test');
+  await quota.updateWorkspaceConfig(teamWorkspace.id, QuotaType.TeamPlanV1, {
     memberLimit,
   });
 
@@ -87,11 +89,11 @@ const init = async (app: INestApplication, memberLimit = 10) => {
     const inviteId = await inviteUser(
       app,
       owner.token.token,
-      ws.id,
+      teamWorkspace.id,
       member.email,
       permission
     );
-    await acceptInviteById(app, ws.id, inviteId);
+    await acceptInviteById(app, teamWorkspace.id, inviteId);
     return member;
   };
 
@@ -101,11 +103,16 @@ const init = async (app: INestApplication, memberLimit = 10) => {
       const member = await signUp(app, email.split('@')[0], email, '123456');
       members.push(member);
     }
-    const invites = await inviteUsers(app, owner.token.token, ws.id, emails);
+    const invites = await inviteUsers(
+      app,
+      owner.token.token,
+      teamWorkspace.id,
+      emails
+    );
     return [members, invites] as const;
   };
 
-  const getCreateInviteLinkFetcher = async () => {
+  const getCreateInviteLinkFetcher = async (ws: WorkspaceType) => {
     const { link } = await createInviteLink(
       app,
       owner.token.token,
@@ -135,7 +142,8 @@ const init = async (app: INestApplication, memberLimit = 10) => {
     inviteBatch,
     createInviteLink: getCreateInviteLinkFetcher,
     owner,
-    ws,
+    workspace,
+    teamWorkspace,
     admin,
     write,
     read,
@@ -144,7 +152,7 @@ const init = async (app: INestApplication, memberLimit = 10) => {
 
 test('should be able to check seat limit', async t => {
   const { app, permissions, quotaManager } = t.context;
-  const { invite, inviteBatch, ws } = await init(app, 4);
+  const { invite, inviteBatch, teamWorkspace: ws } = await init(app, 4);
 
   {
     // invite
@@ -202,7 +210,7 @@ test('should be able to check seat limit', async t => {
 
 test('should be able to grant team member permission', async t => {
   const { app, permissions } = t.context;
-  const { owner, ws, admin, write, read } = await init(app);
+  const { owner, teamWorkspace: ws, admin, write, read } = await init(app);
 
   await t.throwsAsync(
     grantMember(app, read.token.token, ws.id, write.id, 'Write'),
@@ -239,7 +247,7 @@ test('should be able to grant team member permission', async t => {
 
 test('should be able to leave workspace', async t => {
   const { app } = t.context;
-  const { owner, ws, admin, write, read } = await init(app);
+  const { owner, teamWorkspace: ws, admin, write, read } = await init(app);
 
   t.false(
     await leaveWorkspace(app, owner.token.token, ws.id),
@@ -261,64 +269,92 @@ test('should be able to leave workspace', async t => {
 
 test('should be able to invite by link', async t => {
   const { app, permissions, quotaManager } = t.context;
-  const { createInviteLink, owner, ws } = await init(app, 4);
-  const [inviteId, invite, acceptInvite] = await createInviteLink();
+  const {
+    createInviteLink,
+    owner,
+    workspace: ws,
+    teamWorkspace: tws,
+  } = await init(app, 4);
+  const [inviteId, invite] = await createInviteLink(ws);
+  const [teamInviteId, teamInvite, acceptTeamInvite] =
+    await createInviteLink(tws);
 
   {
     // check invite link
     const info = await getInviteInfo(app, owner.token.token, inviteId);
     t.is(info.workspace.id, ws.id, 'should be able to get invite info');
+
+    // check team invite link
+    const teamInfo = await getInviteInfo(app, owner.token.token, teamInviteId);
+    t.is(teamInfo.workspace.id, tws.id, 'should be able to get invite info');
   }
 
   {
     // invite link
+    const t1 = await invite('test1@affine.pro');
+    const t2 = await invite('test2@affine.pro');
+
+    await t.throwsAsync(
+      invite('test3@affine.pro'),
+      { message: 'You have exceeded your workspace member quota.' },
+      'should throw error if exceed member limit'
+    );
+
+    const s1 = await permissions.getWorkspaceMemberStatus(ws.id, t1.id);
+    t.is(s1, WorkspaceMemberStatus.Accepted, 'should be able to check status');
+    const s2 = await permissions.getWorkspaceMemberStatus(ws.id, t2.id);
+    t.is(s2, WorkspaceMemberStatus.Accepted, 'should be able to check status');
+  }
+
+  {
+    // team invite link
     const members: UserAuthedType[] = [];
     await t.notThrowsAsync(async () => {
-      members.push(await invite('member3@affine.pro'));
-      members.push(await invite('member4@affine.pro'));
+      members.push(await teamInvite('member3@affine.pro'));
+      members.push(await teamInvite('member4@affine.pro'));
     }, 'should not throw error even exceed member limit');
     const [m3, m4] = members;
 
     t.is(
-      await permissions.getWorkspaceMemberStatus(ws.id, m3.id),
+      await permissions.getWorkspaceMemberStatus(tws.id, m3.id),
       WorkspaceMemberStatus.NeedMoreSeatAndReview,
       'should not change status'
     );
     t.is(
-      await permissions.getWorkspaceMemberStatus(ws.id, m4.id),
+      await permissions.getWorkspaceMemberStatus(tws.id, m4.id),
       WorkspaceMemberStatus.NeedMoreSeatAndReview,
       'should not change status'
     );
 
-    await quotaManager.updateWorkspaceConfig(ws.id, QuotaType.TeamPlanV1, {
+    await quotaManager.updateWorkspaceConfig(tws.id, QuotaType.TeamPlanV1, {
       memberLimit: 5,
     });
-    await permissions.refreshSeatStatus(ws.id, 5);
+    await permissions.refreshSeatStatus(tws.id, 5);
     t.is(
-      await permissions.getWorkspaceMemberStatus(ws.id, m3.id),
+      await permissions.getWorkspaceMemberStatus(tws.id, m3.id),
       WorkspaceMemberStatus.UnderReview,
       'should not change status'
     );
     t.is(
-      await permissions.getWorkspaceMemberStatus(ws.id, m4.id),
+      await permissions.getWorkspaceMemberStatus(tws.id, m4.id),
       WorkspaceMemberStatus.NeedMoreSeatAndReview,
       'should not change status'
     );
 
-    await quotaManager.updateWorkspaceConfig(ws.id, QuotaType.TeamPlanV1, {
+    await quotaManager.updateWorkspaceConfig(tws.id, QuotaType.TeamPlanV1, {
       memberLimit: 6,
     });
-    await permissions.refreshSeatStatus(ws.id, 6);
+    await permissions.refreshSeatStatus(tws.id, 6);
     t.is(
-      await permissions.getWorkspaceMemberStatus(ws.id, m4.id),
+      await permissions.getWorkspaceMemberStatus(tws.id, m4.id),
       WorkspaceMemberStatus.UnderReview,
       'should not change status'
     );
 
     {
-      const message = `You have already joined in Space ${ws.id}.`;
+      const message = `You have already joined in Space ${tws.id}.`;
       await t.throwsAsync(
-        acceptInvite(owner.token.token),
+        acceptTeamInvite(owner.token.token),
         { message },
         'should throw error if member already in workspace'
       );

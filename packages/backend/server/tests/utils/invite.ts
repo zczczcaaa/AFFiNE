@@ -112,7 +112,6 @@ export async function acceptInviteById(
     })
     .expect(200);
   if (res.body.errors) {
-    console.error(res.body.errors);
     throw new Error(res.body.errors[0].message, {
       cause: res.body.errors[0].cause,
     });
