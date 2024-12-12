@@ -812,7 +812,7 @@ __metadata:
     "@socket.io/redis-adapter": "npm:^8.3.0"
     "@types/cookie-parser": "npm:^1.4.7"
     "@types/express": "npm:^4.17.21"
-    "@types/graphql-upload": "npm:^16.0.7"
+    "@types/graphql-upload": "npm:^17.0.0"
     "@types/keyv": "npm:^4.2.0"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/mixpanel": "npm:^2.14.8"
@@ -13430,16 +13430,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/graphql-upload@npm:^16.0.7":
-  version: 16.0.7
-  resolution: "@types/graphql-upload@npm:16.0.7"
+"@types/graphql-upload@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "@types/graphql-upload@npm:17.0.0"
   dependencies:
     "@types/express": "npm:*"
     "@types/koa": "npm:*"
     "@types/node": "npm:*"
     fs-capacitor: "npm:^8.0.0"
-    graphql: "npm:^16.3.0"
-  checksum: 10/06521957111e25217e925bfeee66e3d8d861797a4ca940f3fc475233319d372d3046bfc66c3d00811d567ead4abb28a3d051d1cb9f7f4f342552288c8deba3c0
+    graphql: "npm:^16.9.0"
+  checksum: 10/ce53ecceb4791f95846e5503735d0009b369aff2c855c5c9e48fe824803d5536673d1b527189d9b2e8d2672d72bb1bcd4f82a2be67728170a5aaf87fd918419f
   languageName: node
   linkType: hard
 
@@ -21558,7 +21558,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.3.0, graphql@npm:^16.8.1":
+"graphql@npm:^16.8.1, graphql@npm:^16.9.0":
   version: 16.9.0
   resolution: "graphql@npm:16.9.0"
   checksum: 10/5833f82bb6c31bec120bbf9cd400eda873e1bb7ef5c17974fa262cd82dc68728fda5d4cb859dc8aaa4c4fe4f6fe1103a9c47efc01a12c02ae5cb581d8e4029e2

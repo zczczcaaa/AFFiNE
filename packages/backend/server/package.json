@@ -96,7 +96,7 @@
     "@nestjs/testing": "^10.3.7",
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.21",
-    "@types/graphql-upload": "^16.0.7",
+    "@types/graphql-upload": "^17.0.0",
     "@types/keyv": "^4.2.0",
     "@types/lodash-es": "^4.17.12",
     "@types/mixpanel": "^2.14.8",
