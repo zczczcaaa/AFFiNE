@@ -70,9 +70,10 @@ export const CloudQuotaModal = () => {
     if (!workspaceQuota) {
       return;
     }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     currentWorkspace.engine.blob.singleBlobSizeLimit = bytes.parse(
       workspaceQuota.blobLimit.toString()
-    );
+    )!;
 
     const disposable = currentWorkspace.engine.blob.onAbortLargeBlob.on(() => {
       setOpen(true);

@@ -9,13 +9,15 @@ import {
   AttachmentBlockSpec,
   ImageBlockService,
 } from '@blocksuite/affine/blocks';
-import bytes from 'bytes';
+
+// bytes.parse('2GB')
+const MAX_FILE_SIZE = 2147483648;
 
 class CustomAttachmentBlockService extends AttachmentBlockService {
   override mounted(): void {
     // blocksuite default max file size is 10MB, we override it to 2GB
     // but the real place to limit blob size is CloudQuotaModal / LocalQuotaModal
-    this.maxFileSize = bytes.parse('2GB');
+    this.maxFileSize = MAX_FILE_SIZE;
     super.mounted();
   }
 }
@@ -24,7 +26,7 @@ class CustomImageBlockService extends ImageBlockService {
   override mounted(): void {
     // blocksuite default max file size is 10MB, we override it to 2GB
     // but the real place to limit blob size is CloudQuotaModal / LocalQuotaModal
-    this.maxFileSize = bytes.parse('2GB');
+    this.maxFileSize = MAX_FILE_SIZE;
     super.mounted();
   }
 }
