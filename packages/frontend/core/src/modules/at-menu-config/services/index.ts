@@ -22,9 +22,11 @@ import type { DocsService, WorkspaceService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 import type { WorkspaceDialogService } from '../../dialogs';
 import type { DocDisplayMetaService } from '../../doc-display-meta';
+import type { DocsSearchService } from '../../docs-search';
 import type { EditorSettingService } from '../../editor-setting';
 import { type JournalService, suggestJournalDate } from '../../journal';
 import type { RecentDocsService } from '../../quicksearch';
@@ -39,7 +41,8 @@ export class AtMenuConfigService extends Service {
     private readonly dialogService: WorkspaceDialogService,
     private readonly recentDocsService: RecentDocsService,
     private readonly editorSettingService: EditorSettingService,
-    private readonly docsService: DocsService
+    private readonly docsService: DocsService,
+    private readonly docsSearch: DocsSearchService
   ) {
     super();
   }
@@ -72,22 +75,14 @@ export class AtMenuConfigService extends Service {
       !!this.journalService.journalDate$(d.id).value;
     const docItems = signal<LinkedMenuItem[]>([]);
 
-    const showRecent = query.trim().length === 0;
-
-    // recent docs should be at the top
-    const docMetas = showRecent
-      ? this.recentDocsService
-          .getRecentDocs()
-          .map(record => {
-            return rawMetas.find(meta => meta.id === record.id);
-          })
-          .filter((m): m is DocMeta => !!m)
-      : rawMetas;
-
     const docDisplayMetaService = this.docDisplayMetaService;
 
-    const toDocItem = (meta: DocMeta): LinkedMenuItem | null => {
-      if (isJournal(meta) && !meta.updatedDate) {
+    type DocMetaWithHighlights = DocMeta & {
+      highlights: string | undefined;
+    };
+
+    const toDocItem = (meta: DocMetaWithHighlights): LinkedMenuItem | null => {
+      if (isJournal(meta)) {
         return null;
       }
 
@@ -108,7 +103,7 @@ export class AtMenuConfigService extends Service {
       }
 
       return {
-        name: title,
+        name: meta.highlights ? html`${unsafeHTML(meta.highlights)}` : title,
         key: meta.id,
         icon: docDisplayMetaService
           .icon$(meta.id, {
@@ -124,7 +119,29 @@ export class AtMenuConfigService extends Service {
       };
     };
 
+    const showRecent = query.trim().length === 0;
+
     (async () => {
+      const docMetas = (
+        showRecent
+          ? this.recentDocsService.getRecentDocs()
+          : await this.searchDocs(query)
+      )
+        .map(doc => {
+          const meta = rawMetas.find(meta => meta.id === doc.id);
+
+          if (!meta) {
+            return null;
+          }
+
+          const highlights = 'highlights' in doc ? doc.highlights : undefined;
+          return {
+            ...meta,
+            highlights,
+          };
+        })
+        .filter((m): m is DocMetaWithHighlights => !!m);
+
       for (const [index, meta] of docMetas.entries()) {
         if (abortSignal.aborted) {
           return;
@@ -369,5 +386,57 @@ export class AtMenuConfigService extends Service {
         return y + height;
       },
     };
+  }
+
+  // only search docs by title, excluding blocks
+  private async searchDocs(query: string) {
+    const { buckets } = await this.docsSearch.indexer.blockIndex.aggregate(
+      {
+        type: 'boolean',
+        occur: 'must',
+        queries: [
+          {
+            type: 'match',
+            field: 'content',
+            match: query,
+          },
+          {
+            type: 'boolean',
+            occur: 'should',
+            queries: [
+              {
+                type: 'match',
+                field: 'flavour',
+                match: 'affine:page',
+              },
+            ],
+          },
+        ],
+      },
+      'docId',
+      {
+        hits: {
+          fields: ['docId', 'content'],
+          pagination: {
+            limit: 1,
+          },
+          highlights: [
+            {
+              field: 'content',
+              before: `<span style="color: ${cssVarV2('text/emphasis')}">`,
+              end: '</span>',
+            },
+          ],
+        },
+      }
+    );
+    const result = buckets.map(bucket => {
+      return {
+        id: bucket.key,
+        title: bucket.hits.nodes[0].fields.content,
+        highlights: bucket.hits.nodes[0].highlights.content[0],
+      };
+    });
+    return result;
   }
 }
