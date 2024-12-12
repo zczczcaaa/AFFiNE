@@ -1,6 +1,7 @@
 import { SafeArea } from '@affine/component';
 import clsx from 'clsx';
-import { forwardRef, type HtmlHTMLAttributes, type ReactNode } from 'react';
+import type { HtmlHTMLAttributes, ReactElement, ReactNode } from 'react';
+import { forwardRef } from 'react';
 
 import { NavigationBackButton } from '../navigation-back';
 import * as styles from './styles.css';
@@ -11,6 +12,7 @@ export interface PageHeaderProps
    * whether to show back button
    */
   back?: boolean;
+  backIcon?: ReactElement;
   /**
    * Override back button action
    */
@@ -51,6 +53,7 @@ export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(
   function PageHeader(
     {
       back,
+      backIcon,
       backAction,
       prefix,
       suffix,
@@ -82,7 +85,9 @@ export const PageHeader = forwardRef<HTMLDivElement, PageHeaderProps>(
               className={clsx(styles.prefix, prefixClassName)}
               style={prefixStyle}
             >
-              {back ? <NavigationBackButton backAction={backAction} /> : null}
+              {back ? (
+                <NavigationBackButton icon={backIcon} backAction={backAction} />
+              ) : null}
               {prefix}
             </section>
 

@@ -1,10 +1,12 @@
 import { createContext } from 'react';
 
+type OnClose = (() => void) | undefined;
 export interface ModalConfig {
   /**
-   * add global callback for modal open/close
+   * add global callback for modal open,
+   * return a function to handle close/unmount callback
    */
-  onOpenChange?: (open: boolean) => void;
+  onOpen?: () => OnClose;
 }
 export const ModalConfigContext = createContext<ModalConfig>({});
 

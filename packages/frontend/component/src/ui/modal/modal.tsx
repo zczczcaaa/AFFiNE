@@ -130,7 +130,7 @@ function createContainer() {
 
 export const ModalInner = forwardRef<HTMLDivElement, ModalProps>(
   (props, ref) => {
-    const modalConfig = useContext(ModalConfigContext);
+    const { onOpen: modalConfigOnOpen } = useContext(ModalConfigContext);
     const {
       modal,
       portalOptions,
@@ -173,8 +173,9 @@ export const ModalInner = forwardRef<HTMLDivElement, ModalProps>(
     );
 
     useEffect(() => {
-      modalConfig.onOpenChange?.(open ?? false);
-    }, [modalConfig, open]);
+      if (open) return modalConfigOnOpen?.();
+      return;
+    }, [modalConfigOnOpen, open]);
 
     useEffect(() => {
       if (open) {

@@ -1,5 +1,10 @@
-import { Scrollable } from '@affine/component';
+import {
+  InsideModalContext,
+  ModalConfigContext,
+  Scrollable,
+} from '@affine/component';
 import { PageHeader } from '@affine/core/mobile/components';
+import { ArrowLeftSmallIcon } from '@blocksuite/icons/rc';
 import { assignInlineVars } from '@vanilla-extract/dynamic';
 import anime from 'animejs';
 import {
@@ -146,6 +151,8 @@ export const SwipeDialog = ({
   triggerSize = 10,
   onOpenChange,
 }: SwipeDialogProps) => {
+  const insideModal = useContext(InsideModalContext);
+  const { onOpen: globalOnOpen } = useContext(ModalConfigContext);
   const swiperTriggerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -202,39 +209,47 @@ export const SwipeDialog = ({
     }
   }, [open, prev]);
 
+  useEffect(() => {
+    if (open) return globalOnOpen?.();
+    return;
+  }, [globalOnOpen, open]);
+
   if (!open) return null;
 
   return (
     <SwipeDialogContext.Provider value={{ stack: [...stack, dialogRef] }}>
-      {createPortal(
-        <div className={styles.root}>
-          <div className={styles.overlay} ref={overlayRef} />
-          <div role="dialog" className={styles.dialog} ref={dialogRef}>
-            <div className={styles.content}>
-              <PageHeader
-                back
-                backAction={animateClose}
-                className={styles.header}
-              >
-                <span className={styles.dialogTitle}>{title}</span>
-              </PageHeader>
+      <InsideModalContext.Provider value={insideModal + 1}>
+        {createPortal(
+          <div className={styles.root}>
+            <div className={styles.overlay} ref={overlayRef} />
+            <div role="dialog" className={styles.dialog} ref={dialogRef}>
+              <div className={styles.content}>
+                <PageHeader
+                  back
+                  backIcon={<ArrowLeftSmallIcon />}
+                  backAction={animateClose}
+                  className={styles.header}
+                >
+                  <span className={styles.dialogTitle}>{title}</span>
+                </PageHeader>
 
-              <Scrollable.Root className={styles.scrollArea}>
-                <Scrollable.Viewport>{children}</Scrollable.Viewport>
-                <Scrollable.Scrollbar orientation="vertical" />
-              </Scrollable.Root>
+                <Scrollable.Root className={styles.scrollArea}>
+                  <Scrollable.Viewport>{children}</Scrollable.Viewport>
+                  <Scrollable.Scrollbar orientation="vertical" />
+                </Scrollable.Root>
+              </div>
+              <div
+                ref={swiperTriggerRef}
+                className={styles.swipeBackTrigger}
+                style={assignInlineVars({
+                  [styles.triggerSizeVar]: `${triggerSize}px`,
+                })}
+              />
             </div>
-            <div
-              ref={swiperTriggerRef}
-              className={styles.swipeBackTrigger}
-              style={assignInlineVars({
-                [styles.triggerSizeVar]: `${triggerSize}px`,
-              })}
-            />
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body
+        )}
+      </InsideModalContext.Provider>
     </SwipeDialogContext.Provider>
   );
 };

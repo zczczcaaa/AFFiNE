@@ -17,6 +17,7 @@ export interface NavigationBackButtonProps extends IconButtonProps {
  * A button to control the back behavior of the mobile app, as well as manage navigation gesture
  */
 export const NavigationBackButton = ({
+  icon,
   backAction,
   style: propsStyle,
   ...otherProps
@@ -46,7 +47,7 @@ export const NavigationBackButton = ({
       size={24}
       style={style}
       onClick={handleRouteBack}
-      icon={isInsideModal ? <CloseIcon /> : <ArrowLeftSmallIcon />}
+      icon={icon ?? (isInsideModal ? <CloseIcon /> : <ArrowLeftSmallIcon />)}
       data-testid="page-header-back"
       {...otherProps}
     />
