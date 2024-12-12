@@ -57,6 +57,13 @@ export const createWorkspaceItem = style({
   gap: '12px',
 });
 
+export const noWorkspaceItem = style({
+  padding: '4px 12px',
+  fontSize: cssVar('fontSm'),
+  fontWeight: 500,
+  color: cssVarV2('text/secondary'),
+});
+
 export const itemContent = style({
   fontSize: cssVar('fontSm'),
   fontWeight: 500,

@@ -233,15 +233,21 @@ const WorkspaceSelector = ({
 
   return (
     <div>
-      {cloudWorkspaces.length > 0 &&
+      {cloudWorkspaces.length > 0 ? (
         cloudWorkspaces.map(workspace => (
           <WorkspaceItem
             key={workspace.id}
             meta={workspace}
             onSelect={handleSelect}
           />
-        ))}
-      {cloudWorkspaces.length > 0 && <Divider size="thinner" />}
+        ))
+      ) : (
+        <div className={styles.noWorkspaceItem}>
+          {t['com.affine.upgrade-to-team-page.no-workspace-available']()}
+        </div>
+      )}
+      <Divider size="thinner" />
+
       <MenuItem
         className={styles.createWorkspaceItem}
         prefix={<NewPageIcon className={styles.itemIcon} fontSize={28} />}

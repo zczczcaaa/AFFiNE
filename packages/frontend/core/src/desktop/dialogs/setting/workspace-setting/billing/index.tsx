@@ -119,7 +119,7 @@ const TeamCard = () => {
     workspaceSubscriptionService,
   ]);
 
-  const expiration = teamSubscription?.end;
+  const expiration = teamSubscription?.canceledAt;
   const nextBillingDate = teamSubscription?.nextBillAt;
   const recurring = teamSubscription?.recurring;
 

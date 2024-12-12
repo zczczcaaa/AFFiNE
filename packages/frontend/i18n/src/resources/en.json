@@ -1596,6 +1596,7 @@
   "com.affine.upgrade-to-team-page.create-and-upgrade-confirm.description": "A workspace is your virtual space to capture, create and plan as just one person or together as a team.",
   "com.affine.upgrade-to-team-page.create-and-upgrade-confirm.placeholder": "Set a workspace name",
   "com.affine.upgrade-to-team-page.create-and-upgrade-confirm.confirm": "Continue to Pricing",
+  "com.affine.upgrade-to-team-page.no-workspace-available": "No workspace available",
   "com.affine.workspace.storage": "Workspace storage",
   "com.affine.cmdk.affine.category.affine.journal": "Journal",
   "com.affine.cmdk.affine.category.affine.date-picker": "Select a specific date"
