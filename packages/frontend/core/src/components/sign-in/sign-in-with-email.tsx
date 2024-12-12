@@ -16,6 +16,7 @@ import {
   type SetStateAction,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -32,7 +33,8 @@ export const SignInWithEmailStep = ({
   changeState: Dispatch<SetStateAction<SignInState>>;
   close: () => void;
 }) => {
-  const [resendCountDown, setResendCountDown] = useState(60);
+  const initialSent = useRef(false);
+  const [resendCountDown, setResendCountDown] = useState(0);
 
   const email = state.email;
 
@@ -72,7 +74,7 @@ export const SignInWithEmailStep = ({
     }
   }, [close, loginStatus, t]);
 
-  const onResendClick = useAsyncCallback(async () => {
+  const sendEmail = useAsyncCallback(async () => {
     if (isSending || (!verifyToken && needCaptcha)) return;
     setIsSending(true);
     try {
@@ -101,6 +103,13 @@ export const SignInWithEmailStep = ({
     state.redirectUrl,
     verifyToken,
   ]);
+
+  useEffect(() => {
+    if (!initialSent.current && (verifyToken || !needCaptcha)) {
+      initialSent.current = true;
+      sendEmail();
+    }
+  }, [initialSent, needCaptcha, sendEmail, verifyToken]);
 
   const onSignInWithPasswordClick = useCallback(() => {
     changeState(prev => ({ ...prev, step: 'signInWithPassword' }));
@@ -139,7 +148,7 @@ export const SignInWithEmailStep = ({
             disabled={isSending}
             variant="plain"
             size="large"
-            onClick={onResendClick}
+            onClick={sendEmail}
           >
             {t['com.affine.auth.sign.auth.code.resend.hint']()}
           </Button>

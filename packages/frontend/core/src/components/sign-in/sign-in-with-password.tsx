@@ -57,7 +57,6 @@ export const SignInWithPasswordStep = ({
   const needCaptcha = useLiveData(captchaService.needCaptcha$);
   const challenge = useLiveData(captchaService.challenge$);
   const [isLoading, setIsLoading] = useState(false);
-  const [sendingEmail, setSendingEmail] = useState(false);
 
   const loginStatus = useLiveData(authService.session.status$);
 
@@ -100,20 +99,9 @@ export const SignInWithPasswordStep = ({
     challenge,
   ]);
 
-  const sendMagicLink = useAsyncCallback(async () => {
-    if (sendingEmail) return;
-    setSendingEmail(true);
-    try {
-      changeState(prev => ({ ...prev, step: 'signInWithEmail' }));
-    } catch (err) {
-      console.error(err);
-      notify.error({
-        title: 'Failed to send email, please try again.',
-      });
-      // TODO(@eyhn): handle error better
-    }
-    setSendingEmail(false);
-  }, [sendingEmail, changeState]);
+  const sendMagicLink = useCallback(() => {
+    changeState(prev => ({ ...prev, step: 'signInWithEmail' }));
+  }, [changeState]);
 
   return (
     <>
