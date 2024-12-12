@@ -5,7 +5,6 @@ import { useRegisterBlocksuiteEditorCommands } from '@affine/core/components/hoo
 import { useActiveBlocksuiteEditor } from '@affine/core/components/hooks/use-block-suite-editor';
 import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import { usePageDocumentTitle } from '@affine/core/components/hooks/use-global-state';
-import { useJournalRouteHelper } from '@affine/core/components/hooks/use-journal';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { PageDetailEditor } from '@affine/core/components/page-detail-editor';
 import { DetailPageWrapper } from '@affine/core/desktop/pages/workspace/detail-page/detail-page-wrapper';
@@ -244,20 +243,26 @@ const MobileDetailPage = ({
   const t = useI18n();
   const docDisplayMetaService = useService(DocDisplayMetaService);
   const journalService = useService(JournalService);
-
+  const workbench = useService(WorkbenchService).workbench;
   const [showTitle, setShowTitle] = useState(checkShowTitle);
-  const { openJournal } = useJournalRouteHelper();
   const titleInfo = useLiveData(docDisplayMetaService.title$(pageId));
   const title =
     typeof titleInfo === 'string' ? titleInfo : t[titleInfo.i18nKey]();
 
   const allJournalDates = useLiveData(journalService.allJournalDates$);
 
+  const location = useLiveData(workbench.location$);
+  const fromTab = location.search.includes('fromTab');
+
   const handleDateChange = useCallback(
     (date: string) => {
-      openJournal(date);
+      const docId = journalService.ensureJournalByDate(date).id;
+      workbench.openDoc(
+        { docId, fromTab: fromTab ? 'true' : undefined },
+        { replaceHistory: true }
+      );
     },
-    [openJournal]
+    [fromTab, journalService, workbench]
   );
 
   useGlobalEvent(
@@ -273,7 +278,7 @@ const MobileDetailPage = ({
         pageId={pageId}
       >
         <PageHeader
-          back={!date}
+          back={!fromTab}
           className={styles.header}
           contentClassName={styles.headerContent}
           suffix={

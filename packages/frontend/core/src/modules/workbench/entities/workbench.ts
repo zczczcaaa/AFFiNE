@@ -124,7 +124,12 @@ export class Workbench extends Entity {
   }
 
   openDoc(
-    id: string | ({ docId: string } & ReferenceParams),
+    id:
+      | string
+      | ({ docId: string } & (
+          | ReferenceParams
+          | Record<string, string | undefined>
+        )),
     options?: WorkbenchOpenOptions
   ) {
     const isString = typeof id === 'string';

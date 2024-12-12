@@ -1,4 +1,3 @@
-import { useJournalRouteHelper } from '@affine/core/components/hooks/use-journal';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { JournalService } from '@affine/core/modules/journal';
 import { WorkbenchService } from '@affine/core/modules/workbench';
@@ -21,8 +20,10 @@ export const AppTabJournal = ({ tab }: AppTabCustomFCProps) => {
     docDisplayMetaService.icon$(maybeDocId, { compareDate: new Date() })
   );
 
-  const { openToday } = useJournalRouteHelper();
-  const handleOpenToday = useCallback(() => openToday(false), [openToday]);
+  const handleOpenToday = useCallback(() => {
+    const docId = journalService.ensureJournalByDate(new Date()).id;
+    workbench.openDoc({ docId, fromTab: 'true' }, { at: 'active' });
+  }, [journalService, workbench]);
 
   const Icon = journalDate ? JournalIcon : TodayIcon;
 

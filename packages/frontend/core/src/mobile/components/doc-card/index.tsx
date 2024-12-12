@@ -70,6 +70,7 @@ export const DocCard = forwardRef<HTMLAnchorElement, DocCardProps>(
         ref={ref}
         className={clsx(styles.card, className)}
         data-testid="doc-card"
+        data-doc-id={meta.id}
         {...attrs}
       >
         <header className={styles.head} data-testid="doc-card-header">

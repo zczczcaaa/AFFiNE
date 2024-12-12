@@ -1,4 +1,5 @@
 import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
+import { WorkbenchService } from '@affine/core/modules/workbench';
 import track from '@affine/track';
 import { EditIcon } from '@blocksuite/icons/rc';
 import { useService, WorkspaceService } from '@toeverything/infra';
@@ -8,6 +9,7 @@ import type { AppTabCustomFCProps } from './data';
 import { TabItem } from './tab-item';
 
 export const AppTabCreate = ({ tab }: AppTabCustomFCProps) => {
+  const workbench = useService(WorkbenchService).workbench;
   const workspaceService = useService(WorkspaceService);
   const currentWorkspace = workspaceService.workspace;
   const pageHelper = usePageHelper(currentWorkspace.docCollection);
@@ -15,10 +17,11 @@ export const AppTabCreate = ({ tab }: AppTabCustomFCProps) => {
   const createPage = useCallback(
     (isActive: boolean) => {
       if (isActive) return;
-      pageHelper.createPage(undefined, true);
+      const doc = pageHelper.createPage(undefined, false);
+      workbench.openDoc({ docId: doc.id, fromTab: 'true' });
       track.$.navigationPanel.$.createDoc();
     },
-    [pageHelper]
+    [pageHelper, workbench]
   );
 
   return (

@@ -61,9 +61,7 @@ export const useJournalRouteHelper = () => {
   const openJournal = useCallback(
     (maybeDate: MaybeDate, newTab?: boolean) => {
       const page = getJournalByDate(maybeDate);
-      workbench.openDoc(page.id, {
-        at: newTab ? 'new-tab' : 'active',
-      });
+      workbench.openDoc(page.id, { at: newTab ? 'new-tab' : 'active' });
       track.$.navigationPanel.journal.navigate({
         to: 'journal',
       });
