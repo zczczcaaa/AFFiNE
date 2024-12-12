@@ -43,7 +43,9 @@ export const EdgelessSwitch = ({
   const prevStateRef = useRef<EdgelessSwitchState | null>(
     article.initState ?? null
   );
-  const enableScrollTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const enableScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
   const turnOffScalingRef = useRef<() => void>(() => {});
 
   const [scrollable, setScrollable] = useState(false);

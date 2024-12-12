@@ -4,7 +4,14 @@ import { SubscriptionPlan, SubscriptionRecurring } from '@affine/graphql';
 import { Trans, useI18n } from '@affine/i18n';
 import { AfFiNeIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useServices } from '@toeverything/infra';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type ReactNode,
+  type RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { CloudPlanLayout } from './layout';
 import { LifetimePlan } from './lifetime/lifetime-plan';
@@ -236,7 +243,7 @@ export const CloudPlans = () => {
   // auto scroll to current plan card
   useEffect(() => {
     if (!scrollWrapper.current) return;
-    const currentPlanCard = scrollWrapper.current?.querySelector(
+    const currentPlanCard = scrollWrapper.current.querySelector(
       '[data-current="true"]'
     );
     const wrapperComputedStyle = getComputedStyle(scrollWrapper.current);
@@ -247,11 +254,12 @@ export const CloudPlans = () => {
       : 0;
     const appeared = scrollWrapper.current.dataset.appeared === 'true';
     const animationFrameId = requestAnimationFrame(() => {
-      scrollWrapper.current?.scrollTo({
+      if (!scrollWrapper.current) return;
+      scrollWrapper.current.scrollTo({
         behavior: appeared ? 'smooth' : 'instant',
         left,
       });
-      scrollWrapper.current?.setAttribute('data-appeared', 'true');
+      scrollWrapper.current.dataset.appeared = 'true';
     });
     return () => {
       cancelAnimationFrame(animationFrameId);
@@ -343,7 +351,7 @@ export const CloudPlans = () => {
       select={cloudSelect}
       toggle={cloudToggle}
       scroll={cloudScroll}
-      scrollRef={scrollWrapper}
+      scrollRef={scrollWrapper as RefObject<HTMLDivElement>}
       lifetime={isOnetimePro ? null : <LifetimePlan />}
     />
   );

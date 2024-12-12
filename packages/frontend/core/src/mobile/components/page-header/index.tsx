@@ -1,6 +1,11 @@
 import { SafeArea } from '@affine/component';
 import clsx from 'clsx';
-import type { HtmlHTMLAttributes, ReactElement, ReactNode } from 'react';
+import type {
+  HtmlHTMLAttributes,
+  ReactElement,
+  ReactNode,
+  SVGAttributes,
+} from 'react';
 import { forwardRef } from 'react';
 
 import { NavigationBackButton } from '../navigation-back';
@@ -12,7 +17,7 @@ export interface PageHeaderProps
    * whether to show back button
    */
   back?: boolean;
-  backIcon?: ReactElement;
+  backIcon?: ReactElement<SVGAttributes<SVGElement>>;
   /**
    * Override back button action
    */

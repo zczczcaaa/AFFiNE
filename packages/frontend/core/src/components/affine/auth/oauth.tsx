@@ -5,12 +5,12 @@ import { OAuthProviderType } from '@affine/graphql';
 import track from '@affine/track';
 import { GithubIcon, GoogleDuotoneIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactElement, type SVGAttributes, useCallback } from 'react';
 
 const OAuthProviderMap: Record<
   OAuthProviderType,
   {
-    icon: ReactElement;
+    icon: ReactElement<SVGAttributes<SVGElement>>;
   }
 > = {
   [OAuthProviderType.Google]: {

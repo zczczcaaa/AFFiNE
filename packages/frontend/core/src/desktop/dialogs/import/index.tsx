@@ -27,7 +27,12 @@ import {
 import { useService, WorkspaceService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { cssVarV2 } from '@toeverything/theme/v2';
-import { type ReactElement, useCallback, useState } from 'react';
+import {
+  type ReactElement,
+  type SVGAttributes,
+  useCallback,
+  useState,
+} from 'react';
 
 import * as style from './styles.css';
 
@@ -222,8 +227,8 @@ const ImportOptionItem = ({
   onImport,
 }: {
   label: string;
-  prefixIcon: ReactElement;
-  suffixIcon?: ReactElement;
+  prefixIcon: ReactElement<SVGAttributes<SVGElement>>;
+  suffixIcon?: ReactElement<SVGAttributes<SVGElement>>;
   suffixTooltip?: string;
   type: ImportType;
   onImport: (type: ImportType) => void;

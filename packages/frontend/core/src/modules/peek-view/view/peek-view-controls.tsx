@@ -14,6 +14,7 @@ import {
   type HTMLAttributes,
   type MouseEventHandler,
   type ReactElement,
+  type SVGAttributes,
   useCallback,
   useMemo,
 } from 'react';
@@ -26,7 +27,7 @@ import * as styles from './peek-view-controls.css';
 
 type ControlButtonProps = {
   nameKey: string;
-  icon: ReactElement;
+  icon: ReactElement<SVGAttributes<SVGElement>>;
   name: string;
   onClick: () => void;
 };

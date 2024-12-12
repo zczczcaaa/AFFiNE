@@ -139,7 +139,7 @@ const close = (
 };
 
 const SwipeDialogContext = createContext<{
-  stack: Array<RefObject<HTMLElement>>;
+  stack: Array<RefObject<HTMLElement | null>>;
 }>({
   stack: [],
 });
@@ -155,7 +155,7 @@ export const SwipeDialog = ({
   const { onOpen: globalOnOpen } = useContext(ModalConfigContext);
   const swiperTriggerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
 
   const { stack } = useContext(SwipeDialogContext);
   const prev = stack[stack.length - 1]?.current;
@@ -187,9 +187,11 @@ export const SwipeDialog = ({
       onSwipeStart: () => {},
       onSwipe({ deltaX }) {
         const prevOrAppRoot = prev ?? document.querySelector('#app');
+        if (!overlay || !dialog) return;
         tick(overlay, dialog, prevOrAppRoot, deltaX, overlay.clientWidth);
       },
       onSwipeEnd: ({ deltaX }) => {
+        if (!overlay || !dialog) return;
         const shouldClose = deltaX > overlay.clientWidth * 0.2;
         if (shouldClose) {
           close(overlay, dialog, prev, deltaX, handleClose);
