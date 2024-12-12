@@ -1,4 +1,7 @@
-import type { WorkspaceInviteLinkExpireTime } from '@affine/graphql';
+import type {
+  InviteLink,
+  WorkspaceInviteLinkExpireTime,
+} from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { EmailIcon, LinkIcon } from '@blocksuite/icons/rc';
 
@@ -20,9 +23,11 @@ export const ModalContent = ({
   onGenerateInviteLink,
   onRevokeInviteLink,
   importCSV,
+  invitationLink,
 }: {
   inviteEmail: string;
   importCSV: React.ReactNode;
+  invitationLink: InviteLink | null;
   setInviteEmail: (value: string) => void;
   inviteMethod: InviteMethodType;
   onInviteMethodChange: (value: InviteMethodType) => void;
@@ -78,6 +83,7 @@ export const ModalContent = ({
         />
       ) : (
         <LinkInvite
+          invitationLink={invitationLink}
           copyTextToClipboard={copyTextToClipboard}
           generateInvitationLink={onGenerateInviteLink}
           revokeInvitationLink={onRevokeInviteLink}

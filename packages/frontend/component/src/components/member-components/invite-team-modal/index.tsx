@@ -1,5 +1,8 @@
 import { emailRegex } from '@affine/component/auth-components';
-import type { WorkspaceInviteLinkExpireTime } from '@affine/graphql';
+import type {
+  InviteLink,
+  WorkspaceInviteLinkExpireTime,
+} from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -18,6 +21,7 @@ export interface InviteTeamMemberModalProps {
   ) => Promise<string>;
   onRevokeInviteLink: () => Promise<boolean>;
   importCSV: React.ReactNode;
+  invitationLink: InviteLink | null;
 }
 
 const parseEmailString = (emailString: string): string[] => {
@@ -36,6 +40,7 @@ export const InviteTeamMemberModal = ({
   onGenerateInviteLink,
   onRevokeInviteLink,
   importCSV,
+  invitationLink,
 }: InviteTeamMemberModalProps) => {
   const t = useI18n();
   const [inviteEmails, setInviteEmails] = useState('');
@@ -95,6 +100,7 @@ export const InviteTeamMemberModal = ({
       childrenContentClassName={styles.contentStyle}
     >
       <ModalContent
+        invitationLink={invitationLink}
         inviteEmail={inviteEmails}
         setInviteEmail={setInviteEmails}
         handleConfirm={handleConfirm}

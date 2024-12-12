@@ -1,5 +1,5 @@
 import { DebugLogger } from '@affine/debug';
-import type { GetWorkspaceConfigQuery } from '@affine/graphql';
+import type { GetWorkspaceConfigQuery, InviteLink } from '@affine/graphql';
 import type { WorkspaceService } from '@toeverything/infra';
 import {
   backoffRetry,
@@ -25,6 +25,7 @@ const logger = new DebugLogger('affine:workspace-permission');
 export class WorkspaceShareSetting extends Entity {
   enableAi$ = new LiveData<EnableAi | null>(null);
   enableUrlPreview$ = new LiveData<EnableUrlPreview | null>(null);
+  inviteLink$ = new LiveData<InviteLink | null>(null);
   isLoading$ = new LiveData(false);
   error$ = new LiveData<any>(null);
 
@@ -56,6 +57,7 @@ export class WorkspaceShareSetting extends Entity {
           if (value) {
             this.enableAi$.next(value.enableAi);
             this.enableUrlPreview$.next(value.enableUrlPreview);
+            this.inviteLink$.next(value.inviteLink);
           }
           return EMPTY;
         }),

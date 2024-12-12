@@ -13,6 +13,7 @@ import {
   WorkspacePermissionService,
 } from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
+import { WorkspaceShareSettingService } from '@affine/core/modules/share-setting';
 import { copyTextToClipboard } from '@affine/core/utils/clipboard';
 import { emailRegex } from '@affine/core/utils/email-regex';
 import type { WorkspaceInviteLinkExpireTime } from '@affine/graphql';
@@ -49,6 +50,10 @@ export const CloudWorkspaceMembersPanel = ({
   onChangeSettingState: (settingState: SettingState) => void;
   isTeam?: boolean;
 }) => {
+  const workspaceShareSettingService = useService(WorkspaceShareSettingService);
+  const inviteLink = useLiveData(
+    workspaceShareSettingService.sharePreview.inviteLink$
+  );
   const serverService = useService(ServerService);
   const hasPaymentFeature = useLiveData(
     serverService.server.features$.map(f => f?.payment)
@@ -90,15 +95,17 @@ export const CloudWorkspaceMembersPanel = ({
     async (expireTime: WorkspaceInviteLinkExpireTime) => {
       const { link } =
         await permissionService.permission.generateInviteLink(expireTime);
+      workspaceShareSettingService.sharePreview.revalidate();
       return link;
     },
-    [permissionService.permission]
+    [permissionService.permission, workspaceShareSettingService.sharePreview]
   );
 
   const onRevokeInviteLink = useCallback(async () => {
     const success = await permissionService.permission.revokeInviteLink();
+    workspaceShareSettingService.sharePreview.revalidate();
     return success;
-  }, [permissionService.permission]);
+  }, [permissionService.permission, workspaceShareSettingService.sharePreview]);
 
   const onInviteBatchConfirm = useCallback<
     InviteTeamMemberModalProps['onConfirm']
@@ -218,6 +225,7 @@ export const CloudWorkspaceMembersPanel = ({
                 onGenerateInviteLink={onGenerateInviteLink}
                 onRevokeInviteLink={onRevokeInviteLink}
                 importCSV={<ImportCSV onImport={onImportCSV} />}
+                invitationLink={inviteLink}
               />
             )}
           </>

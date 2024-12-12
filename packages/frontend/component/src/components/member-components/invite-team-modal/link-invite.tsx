@@ -1,4 +1,7 @@
-import { WorkspaceInviteLinkExpireTime } from '@affine/graphql';
+import {
+  type InviteLink,
+  WorkspaceInviteLinkExpireTime,
+} from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { CloseIcon } from '@blocksuite/icons/rc';
 import { cssVar } from '@toeverything/theme';
@@ -39,10 +42,12 @@ const getMenuItems = (t: ReturnType<typeof useI18n>) => [
 ];
 
 export const LinkInvite = ({
+  invitationLink,
   copyTextToClipboard,
   generateInvitationLink,
   revokeInvitationLink,
 }: {
+  invitationLink: InviteLink | null;
   generateInvitationLink: (
     expireTime: WorkspaceInviteLinkExpireTime
   ) => Promise<string>;
@@ -53,7 +58,6 @@ export const LinkInvite = ({
   const [selectedValue, setSelectedValue] = useState(
     WorkspaceInviteLinkExpireTime.OneWeek
   );
-  const [invitationLink, setInvitationLink] = useState('');
   const menuItems = getMenuItems(t);
   const items = useMemo(() => {
     return menuItems.map(item => (
@@ -69,21 +73,20 @@ export const LinkInvite = ({
   );
 
   const onGenerate = useCallback(() => {
-    generateInvitationLink(selectedValue)
-      .then(link => {
-        setInvitationLink(link);
-      })
-      .catch(err => {
-        console.error('Failed to generate invitation link: ', err);
-        notify.error({
-          title: 'Failed to generate invitation link',
-          message: err.message,
-        });
+    generateInvitationLink(selectedValue).catch(err => {
+      console.error('Failed to generate invitation link: ', err);
+      notify.error({
+        title: 'Failed to generate invitation link',
+        message: err.message,
       });
+    });
   }, [generateInvitationLink, selectedValue]);
 
   const onCopy = useCallback(() => {
-    copyTextToClipboard(invitationLink)
+    if (!invitationLink) {
+      return;
+    }
+    copyTextToClipboard(invitationLink.link)
       .then(() =>
         notify.success({
           title: t['Copied link to clipboard'](),
@@ -99,17 +102,13 @@ export const LinkInvite = ({
   }, [copyTextToClipboard, invitationLink, t]);
 
   const onReset = useCallback(() => {
-    revokeInvitationLink()
-      .then(() => {
-        setInvitationLink('');
-      })
-      .catch(err => {
-        console.error('Failed to revoke invitation link: ', err);
-        notify.error({
-          title: 'Failed to revoke invitation link',
-          message: err.message,
-        });
+    revokeInvitationLink().catch(err => {
+      console.error('Failed to revoke invitation link: ', err);
+      notify.error({
+        title: 'Failed to revoke invitation link',
+        message: err.message,
       });
+    });
   }, [revokeInvitationLink]);
 
   return (
@@ -136,7 +135,7 @@ export const LinkInvite = ({
         <Input
           value={
             invitationLink
-              ? invitationLink
+              ? invitationLink.link
               : 'https://your-app.com/invite/xxxxxxxx'
           }
           inputMode="none"
