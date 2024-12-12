@@ -43,6 +43,13 @@ export const modalContentContainer = style({
         },
       },
     },
+    'screen and (width > 640px) and (width <= 1024px)': {
+      selectors: {
+        [`${modalContentWrapper}[data-mode="fit"] &`]: {
+          paddingRight: 12,
+        },
+      },
+    },
   },
   selectors: {
     [`${modalContentWrapper}[data-mode="max"] &`]: {
@@ -106,6 +113,9 @@ export const modalControls = style({
       right: 0,
       left: 0,
       padding: '8px',
+    },
+    'screen and (width > 640px) and (width <= 1024px)': {
+      paddingLeft: 0,
     },
   },
 });
