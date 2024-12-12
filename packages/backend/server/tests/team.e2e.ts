@@ -120,6 +120,9 @@ const init = async (app: INestApplication, memberLimit = 10) => {
         await acceptInviteById(app, ws.id, inviteId, false, member.token.token);
         return member;
       },
+      async (token: string) => {
+        await acceptInviteById(app, ws.id, inviteId, false, token);
+      },
     ] as const;
   };
 
@@ -259,7 +262,7 @@ test('should be able to leave workspace', async t => {
 test('should be able to invite by link', async t => {
   const { app, permissions, quotaManager } = t.context;
   const { createInviteLink, owner, ws } = await init(app, 4);
-  const [inviteId, invite] = await createInviteLink();
+  const [inviteId, invite, acceptInvite] = await createInviteLink();
 
   {
     // check invite link
@@ -311,5 +314,14 @@ test('should be able to invite by link', async t => {
       WorkspaceMemberStatus.UnderReview,
       'should not change status'
     );
+
+    {
+      const message = `You have already joined in Space ${ws.id}.`;
+      await t.throwsAsync(
+        acceptInvite(owner.token.token),
+        { message },
+        'should throw error if member already in workspace'
+      );
+    }
   }
 });

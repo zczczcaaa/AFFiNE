@@ -323,16 +323,23 @@ export class PermissionService {
     });
 
     if (data) {
+      const toBeOwner = permission === Permission.Owner;
       if (data.accepted && data.status === WorkspaceMemberStatus.Accepted) {
         const [p] = await this.prisma.$transaction(
           [
             this.prisma.workspaceUserPermission.update({
-              where: { workspaceId_userId: { workspaceId: ws, userId: user } },
+              where: {
+                workspaceId_userId: { workspaceId: ws, userId: user },
+                // only update permission:
+                // 1. if the new permission is owner and original permission is admin
+                // 2. if the original permission is not owner
+                type: toBeOwner ? Permission.Admin : { not: Permission.Owner },
+              },
               data: { type: permission },
             }),
 
             // If the new permission is owner, we need to revoke old owner
-            permission === Permission.Owner
+            toBeOwner
               ? this.prisma.workspaceUserPermission.updateMany({
                   where: {
                     workspaceId: ws,

@@ -15,6 +15,7 @@ import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
 import type { FileUpload } from '../../../fundamentals';
 import {
+  AlreadyInSpace,
   Cache,
   CantChangeSpaceOwner,
   DocNotFound,
@@ -528,6 +529,14 @@ export class WorkspaceResolver {
     }
 
     if (user) {
+      const status = await this.permissions.getWorkspaceMemberStatus(
+        workspaceId,
+        user.id
+      );
+      if (status === WorkspaceMemberStatus.Accepted) {
+        throw new AlreadyInSpace({ spaceId: workspaceId });
+      }
+
       // invite link
       const invite = await this.cache.get<{ inviteId: string }>(
         `workspace:inviteLink:${workspaceId}`
