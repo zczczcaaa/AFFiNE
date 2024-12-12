@@ -14,6 +14,11 @@ import { FeatureKind } from '../features/types';
 import { QuotaType } from '../quota/types';
 import { Permission, PublicPageMode } from './types';
 
+const NeedUpdateStatus = new Set<WorkspaceMemberStatus>([
+  WorkspaceMemberStatus.NeedMoreSeat,
+  WorkspaceMemberStatus.NeedMoreSeatAndReview,
+]);
+
 @Injectable()
 export class PermissionService {
   constructor(
@@ -92,6 +97,20 @@ export class PermissionService {
     }
 
     return owner.user;
+  }
+
+  async getWorkspaceAdmin(workspaceId: string) {
+    const admin = await this.prisma.workspaceUserPermission.findMany({
+      where: {
+        workspaceId,
+        type: Permission.Admin,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return admin.map(({ user }) => user);
   }
 
   async getWorkspaceMemberCount(workspaceId: string) {
@@ -351,18 +370,6 @@ export class PermissionService {
       .then(p => p.id);
   }
 
-  async getWorkspaceInvitation(invitationId: string, workspaceId: string) {
-    return this.prisma.workspaceUserPermission.findUniqueOrThrow({
-      where: {
-        id: invitationId,
-        workspaceId,
-      },
-      include: {
-        user: true,
-      },
-    });
-  }
-
   private async isTeamWorkspace(tx: PrismaTransaction, workspaceId: string) {
     return await tx.workspaceFeature
       .count({
@@ -396,24 +403,14 @@ export class PermissionService {
   }
 
   async refreshSeatStatus(workspaceId: string, memberLimit: number) {
-    return this.prisma.$transaction(async tx => {
+    const [pending, underReview] = await this.prisma.$transaction(async tx => {
       const members = await tx.workspaceUserPermission.findMany({
-        where: {
-          workspaceId,
-        },
-        select: {
-          userId: true,
-          status: true,
-          updatedAt: true,
-        },
+        where: { workspaceId },
+        select: { userId: true, status: true, updatedAt: true },
       });
       const memberCount = members.filter(
         m => m.status === WorkspaceMemberStatus.Accepted
       ).length;
-      const NeedUpdateStatus = new Set<WorkspaceMemberStatus>([
-        WorkspaceMemberStatus.NeedMoreSeat,
-        WorkspaceMemberStatus.NeedMoreSeatAndReview,
-      ]);
       const needChange = members
         .filter(m => NeedUpdateStatus.has(m.status))
         .toSorted((a, b) => Number(a.updatedAt) - Number(b.updatedAt))
@@ -422,32 +419,41 @@ export class PermissionService {
         needChange,
         m => m.status
       );
-      const approvedCount = await tx.workspaceUserPermission
-        .updateMany({
+      const inviteByMail = NeedMoreSeat?.map(m => m.userId) ?? [];
+      await tx.workspaceUserPermission.updateMany({
+        where: { workspaceId, userId: { in: inviteByMail } },
+        data: { status: WorkspaceMemberStatus.Pending },
+      });
+      const inviteByLink = NeedMoreSeatAndReview?.map(m => m.userId) ?? [];
+      await tx.workspaceUserPermission.updateMany({
+        where: { workspaceId, userId: { in: inviteByLink } },
+        data: { status: WorkspaceMemberStatus.UnderReview },
+      });
+
+      const pending = await tx.workspaceUserPermission
+        .findMany({
           where: {
-            userId: {
-              in: NeedMoreSeat?.map(m => m.userId) ?? [],
-            },
+            workspaceId,
+            userId: { in: inviteByLink },
+            status: WorkspaceMemberStatus.Pending,
           },
-          data: {
-            status: WorkspaceMemberStatus.Accepted,
-          },
+          select: { id: true, user: { select: { email: true } } },
         })
-        .then(r => r.count);
-      const needReviewCount = await tx.workspaceUserPermission
-        .updateMany({
+        .then(r => r.map(m => ({ inviteId: m.id, email: m.user.email })));
+      const underReview = await tx.workspaceUserPermission
+        .findMany({
           where: {
-            userId: {
-              in: NeedMoreSeatAndReview?.map(m => m.userId) ?? [],
-            },
-          },
-          data: {
+            workspaceId,
+            userId: { in: inviteByLink },
             status: WorkspaceMemberStatus.UnderReview,
           },
+          select: { id: true },
         })
-        .then(r => r.count);
-      return approvedCount + needReviewCount === needChange.length;
+        .then(r => ({ inviteIds: r.map(m => m.id) }));
+      return [pending, underReview] as const;
     });
+    this.event.emit('workspace.team.seatAvailable', pending);
+    this.event.emit('workspace.team.reviewRequest', underReview);
   }
 
   async revokeWorkspace(workspaceId: string, user: string) {
@@ -473,6 +479,10 @@ export class PermissionService {
           this.event.emit('workspace.members.updated', {
             workspaceId,
             count,
+          });
+          this.event.emit('workspace.team.declineRequest', {
+            workspaceId,
+            inviteeId: user,
           });
         }
       }

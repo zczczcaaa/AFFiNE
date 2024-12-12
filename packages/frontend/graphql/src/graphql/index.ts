@@ -840,12 +840,8 @@ export const leaveWorkspaceMutation = {
   definitionName: 'leaveWorkspace',
   containsFile: false,
   query: `
-mutation leaveWorkspace($workspaceId: String!, $workspaceName: String!, $sendLeaveMail: Boolean) {
-  leaveWorkspace(
-    workspaceId: $workspaceId
-    workspaceName: $workspaceName
-    sendLeaveMail: $sendLeaveMail
-  )
+mutation leaveWorkspace($workspaceId: String!, $sendLeaveMail: Boolean) {
+  leaveWorkspace(workspaceId: $workspaceId, sendLeaveMail: $sendLeaveMail)
 }`,
 };
 
@@ -1442,7 +1438,10 @@ export const createInviteLinkMutation = {
   containsFile: false,
   query: `
 mutation createInviteLink($workspaceId: String!, $expireTime: WorkspaceInviteLinkExpireTime!) {
-  createInviteLink(workspaceId: $workspaceId, expireTime: $expireTime)
+  createInviteLink(workspaceId: $workspaceId, expireTime: $expireTime) {
+    link
+    expireTime
+  }
 }`,
 };
 

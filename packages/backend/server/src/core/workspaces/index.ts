@@ -15,6 +15,7 @@ import {
   TeamWorkspaceResolver,
   WorkspaceBlobResolver,
   WorkspaceResolver,
+  WorkspaceService,
 } from './resolvers';
 
 @Module({
@@ -35,6 +36,7 @@ import {
     PagePermissionResolver,
     DocHistoryResolver,
     WorkspaceBlobResolver,
+    WorkspaceService,
   ],
 })
 export class WorkspaceModule {}

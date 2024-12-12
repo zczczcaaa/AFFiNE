@@ -65,12 +65,12 @@ export async function inviteUsers(
   return res.body.data.inviteBatch;
 }
 
-export async function inviteLink(
+export async function createInviteLink(
   app: INestApplication,
   token: string,
   workspaceId: string,
   expireTime: 'OneDay' | 'ThreeDays' | 'OneWeek' | 'OneMonth'
-): Promise<string> {
+): Promise<{ link: string; expireTime: string }> {
   const res = await request(app.getHttpServer())
     .post(gql)
     .auth(token, { type: 'bearer' })
@@ -78,7 +78,10 @@ export async function inviteLink(
     .send({
       query: `
             mutation {
-              createInviteLink(workspaceId: "${workspaceId}", expireTime: ${expireTime})
+              createInviteLink(workspaceId: "${workspaceId}", expireTime: ${expireTime}) {
+                link
+                expireTime
+              }
             }
           `,
     })
@@ -109,7 +112,10 @@ export async function acceptInviteById(
     })
     .expect(200);
   if (res.body.errors) {
-    throw new Error(res.body.errors[0].message);
+    console.error(res.body.errors);
+    throw new Error(res.body.errors[0].message, {
+      cause: res.body.errors[0].cause,
+    });
   }
   return res.body.data.acceptInviteById;
 }
@@ -127,7 +133,7 @@ export async function leaveWorkspace(
     .send({
       query: `
             mutation {
-              leaveWorkspace(workspaceId: "${workspaceId}", workspaceName: "test workspace", sendLeaveMail: ${sendLeaveMail})
+              leaveWorkspace(workspaceId: "${workspaceId}", sendLeaveMail: ${sendLeaveMail})
             }
           `,
     })

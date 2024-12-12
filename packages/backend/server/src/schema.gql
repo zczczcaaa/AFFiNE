@@ -504,7 +504,7 @@ type Mutation {
 
   """Create a stripe customer portal to manage payment methods"""
   createCustomerPortal: String!
-  createInviteLink(expireTime: WorkspaceInviteLinkExpireTime!, workspaceId: String!): String!
+  createInviteLink(expireTime: WorkspaceInviteLinkExpireTime!, workspaceId: String!): InviteLink!
 
   """Create a new user"""
   createUser(input: CreateUserInput!): UserType!
@@ -523,7 +523,7 @@ type Mutation {
   grantMember(permission: Permission!, userId: String!, workspaceId: String!): String!
   invite(email: String!, permission: Permission!, sendInviteMail: Boolean, workspaceId: String!): String!
   inviteBatch(emails: [String!]!, sendInviteMail: Boolean, workspaceId: String!): [InviteResult!]!
-  leaveWorkspace(sendLeaveMail: Boolean, workspaceId: String!, workspaceName: String!): Boolean!
+  leaveWorkspace(sendLeaveMail: Boolean, workspaceId: String!, workspaceName: String @deprecated(reason: "no longer used")): Boolean!
   publishPage(mode: PublicPageMode = Page, pageId: String!, workspaceId: String!): WorkspacePage!
   recoverDoc(guid: String!, timestamp: DateTime!, workspaceId: String!): DateTime!
   releaseDeletedBlobs(workspaceId: String!): Boolean!

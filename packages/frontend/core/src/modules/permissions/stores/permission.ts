@@ -180,7 +180,7 @@ export class WorkspacePermissionStore extends Store {
   /**
    * @param workspaceName for send email
    */
-  async leaveWorkspace(workspaceId: string, workspaceName: string) {
+  async leaveWorkspace(workspaceId: string) {
     if (!this.workspaceServerService.server) {
       throw new Error('No Server');
     }
@@ -188,7 +188,6 @@ export class WorkspacePermissionStore extends Store {
       query: leaveWorkspaceMutation,
       variables: {
         workspaceId,
-        workspaceName,
       },
     });
   }

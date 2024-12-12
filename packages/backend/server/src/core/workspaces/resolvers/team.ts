@@ -12,8 +12,9 @@ import { nanoid } from 'nanoid';
 import {
   Cache,
   EventEmitter,
-  MailService,
+  type EventPayload,
   NotInSpace,
+  OnEvent,
   RequestMutex,
   TooManyRequest,
   URLHelper,
@@ -28,7 +29,7 @@ import {
   WorkspaceInviteLinkExpireTime,
   WorkspaceType,
 } from '../types';
-import { WorkspaceResolver } from './workspace';
+import { WorkspaceService } from './service';
 
 /**
  * Workspace team resolver
@@ -42,14 +43,13 @@ export class TeamWorkspaceResolver {
   constructor(
     private readonly cache: Cache,
     private readonly event: EventEmitter,
-    private readonly mailer: MailService,
     private readonly url: URLHelper,
     private readonly prisma: PrismaClient,
     private readonly permissions: PermissionService,
     private readonly users: UserService,
     private readonly quota: QuotaManagementService,
     private readonly mutex: RequestMutex,
-    private readonly workspace: WorkspaceResolver
+    private readonly workspaceService: WorkspaceService
   ) {}
 
   @ResolveField(() => Boolean, {
@@ -119,20 +119,8 @@ export class TeamWorkspaceResolver {
             : WorkspaceMemberStatus.Pending
         );
         if (!needMoreSeat && sendInviteMail) {
-          const inviteInfo = await this.workspace.getInviteInfo(ret.inviteId);
-
           try {
-            await this.mailer.sendInviteEmail(email, ret.inviteId, {
-              workspace: {
-                id: inviteInfo.workspace.id,
-                name: inviteInfo.workspace.name,
-                avatar: inviteInfo.workspace.avatar,
-              },
-              user: {
-                avatar: inviteInfo.user?.avatarUrl || '',
-                name: inviteInfo.user?.name || '',
-              },
-            });
+            await this.workspaceService.sendInviteMail(ret.inviteId, email);
             ret.sentSuccess = true;
           } catch (e) {
             this.logger.warn(
@@ -182,7 +170,7 @@ export class TeamWorkspaceResolver {
     @Args('workspaceId') workspaceId: string,
     @Args('expireTime', { type: () => WorkspaceInviteLinkExpireTime })
     expireTime: WorkspaceInviteLinkExpireTime
-  ): Promise<InviteLink | null> {
+  ): Promise<InviteLink> {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
@@ -205,7 +193,7 @@ export class TeamWorkspaceResolver {
     await this.cache.set(cacheWorkspaceId, { inviteId }, { ttl: expireTime });
     await this.cache.set(
       cacheInviteId,
-      { workspaceId, inviteeUserId: user.id },
+      { workspaceId, inviterUserId: user.id },
       { ttl: expireTime }
     );
     return {
@@ -262,7 +250,8 @@ export class TeamWorkspaceResolver {
           );
 
           if (result) {
-            // TODO(@darkskygit): send team approve mail
+            // send approve mail
+            await this.workspaceService.sendReviewApproveEmail(result);
           }
           return result;
         }
@@ -320,5 +309,32 @@ export class TeamWorkspaceResolver {
       this.logger.error('failed to invite user', e);
       return new TooManyRequest();
     }
+  }
+
+  @OnEvent('workspace.team.seatAvailable')
+  async onSeatAvailable(payload: EventPayload<'workspace.team.seatAvailable'>) {
+    // send invite mail when seat is available for NeedMoreSeat member
+    for (const { inviteId, email } of payload) {
+      await this.workspaceService.sendInviteMail(inviteId, email);
+    }
+  }
+
+  @OnEvent('workspace.team.reviewRequest')
+  async onReviewRequest({
+    inviteIds,
+  }: EventPayload<'workspace.team.reviewRequest'>) {
+    // send review request mail to owner and admin
+    for (const inviteId of inviteIds) {
+      await this.workspaceService.sendReviewRequestMail(inviteId);
+    }
+  }
+
+  @OnEvent('workspace.team.declineRequest')
+  async onDeclineRequest({
+    workspaceId,
+    inviteeId,
+  }: EventPayload<'workspace.team.declineRequest'>) {
+    // send decline mail
+    await this.workspaceService.sendReviewDeclinedEmail(workspaceId, inviteeId);
   }
 }

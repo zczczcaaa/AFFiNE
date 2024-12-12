@@ -16,10 +16,7 @@ export class WorkspacePermissionService extends Service {
   }
 
   async leaveWorkspace() {
-    await this.store.leaveWorkspace(
-      this.workspaceService.workspace.id,
-      this.workspaceService.workspace.name$.value ?? ''
-    );
+    await this.store.leaveWorkspace(this.workspaceService.workspace.id);
     this.workspacesService.list.revalidate();
   }
 }

@@ -7,6 +7,7 @@ import ava from 'ava';
 
 import { AppModule } from '../src/app.module';
 import { AuthService } from '../src/core/auth';
+import { DocContentService } from '../src/core/doc-renderer';
 import { Permission, PermissionService } from '../src/core/permission';
 import {
   QuotaManagementService,
@@ -15,11 +16,11 @@ import {
 } from '../src/core/quota';
 import {
   acceptInviteById,
+  createInviteLink,
   createTestingApp,
   createWorkspace,
   getInviteInfo,
   grantMember,
-  inviteLink,
   inviteUser,
   inviteUsers,
   leaveWorkspace,
@@ -40,6 +41,16 @@ const test = ava as TestFn<{
 test.beforeEach(async t => {
   const { app } = await createTestingApp({
     imports: [AppModule],
+    tapModule: module => {
+      module.overrideProvider(DocContentService).useValue({
+        getWorkspaceContent() {
+          return {
+            name: 'test',
+            avatarKey: null,
+          };
+        },
+      });
+    },
   });
 
   const quota = app.get(QuotaService);
@@ -94,8 +105,14 @@ const init = async (app: INestApplication, memberLimit = 10) => {
     return [members, invites] as const;
   };
 
-  const createInviteLink = async () => {
-    const inviteId = await inviteLink(app, owner.token.token, ws.id, 'OneDay');
+  const getCreateInviteLinkFetcher = async () => {
+    const { link } = await createInviteLink(
+      app,
+      owner.token.token,
+      ws.id,
+      'OneDay'
+    );
+    const inviteId = link.split('/').pop()!;
     return [
       inviteId,
       async (email: string): Promise<UserAuthedType> => {
@@ -113,7 +130,7 @@ const init = async (app: INestApplication, memberLimit = 10) => {
   return {
     invite,
     inviteBatch,
-    createInviteLink,
+    createInviteLink: getCreateInviteLinkFetcher,
     owner,
     ws,
     admin,
@@ -169,7 +186,7 @@ test('should be able to check seat limit', async t => {
         ws.id,
         (await members1)[0][0].id
       ),
-      WorkspaceMemberStatus.Accepted,
+      WorkspaceMemberStatus.Pending,
       'should become accepted after refresh'
     );
     t.is(
@@ -239,8 +256,7 @@ test('should be able to leave workspace', async t => {
   );
 });
 
-// enabled in next PR
-test.skip('should be able to invite by link', async t => {
+test('should be able to invite by link', async t => {
   const { app, permissions, quotaManager } = t.context;
   const { createInviteLink, owner, ws } = await init(app, 4);
   const [inviteId, invite] = await createInviteLink();

@@ -567,7 +567,7 @@ export interface Mutation {
   createCopilotSession: Scalars['String']['output'];
   /** Create a stripe customer portal to manage payment methods */
   createCustomerPortal: Scalars['String']['output'];
-  createInviteLink: Scalars['String']['output'];
+  createInviteLink: InviteLink;
   /** Create a new user */
   createUser: UserType;
   /** Create a new workspace */
@@ -735,7 +735,7 @@ export interface MutationInviteBatchArgs {
 export interface MutationLeaveWorkspaceArgs {
   sendLeaveMail?: InputMaybe<Scalars['Boolean']['input']>;
   workspaceId: Scalars['String']['input'];
-  workspaceName: Scalars['String']['input'];
+  workspaceName?: InputMaybe<Scalars['String']['input']>;
 }
 
 export interface MutationPublishPageArgs {
@@ -2163,7 +2163,6 @@ export type InvoicesQuery = {
 
 export type LeaveWorkspaceMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
-  workspaceName: Scalars['String']['input'];
   sendLeaveMail?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
@@ -2692,7 +2691,11 @@ export type CreateInviteLinkMutationVariables = Exact<{
 
 export type CreateInviteLinkMutation = {
   __typename?: 'Mutation';
-  createInviteLink: string;
+  createInviteLink: {
+    __typename?: 'InviteLink';
+    link: string;
+    expireTime: string;
+  };
 };
 
 export type RevokeInviteLinkMutationVariables = Exact<{

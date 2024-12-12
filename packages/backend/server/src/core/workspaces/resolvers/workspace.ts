@@ -11,7 +11,6 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
-import { getStreamAsBuffer } from 'get-stream';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
 import type { FileUpload } from '../../../fundamentals';
@@ -32,10 +31,8 @@ import {
 } from '../../../fundamentals';
 import { CurrentUser, Public } from '../../auth';
 import { type Editor, PgWorkspaceDocStorageAdapter } from '../../doc';
-import { DocContentService } from '../../doc-renderer';
 import { Permission, PermissionService } from '../../permission';
 import { QuotaManagementService, QuotaQueryType } from '../../quota';
-import { WorkspaceBlobStorage } from '../../storage';
 import { UserService, UserType } from '../../user';
 import {
   InvitationType,
@@ -43,7 +40,7 @@ import {
   UpdateWorkspaceInput,
   WorkspaceType,
 } from '../types';
-import { defaultWorkspaceAvatar } from '../utils';
+import { WorkspaceService } from './service';
 
 @ObjectType()
 export class EditorType implements Partial<Editor> {
@@ -86,9 +83,8 @@ export class WorkspaceResolver {
     private readonly quota: QuotaManagementService,
     private readonly users: UserService,
     private readonly event: EventEmitter,
-    private readonly blobStorage: WorkspaceBlobStorage,
     private readonly mutex: RequestMutex,
-    private readonly doc: DocContentService,
+    private readonly workspaceService: WorkspaceService,
     private readonly workspaceStorage: PgWorkspaceDocStorageAdapter
   ) {}
 
@@ -433,20 +429,8 @@ export class WorkspaceResolver {
         permission
       );
       if (sendInviteMail) {
-        const inviteInfo = await this.getInviteInfo(inviteId);
-
         try {
-          await this.mailer.sendInviteEmail(email, inviteId, {
-            workspace: {
-              id: inviteInfo.workspace.id,
-              name: inviteInfo.workspace.name,
-              avatar: inviteInfo.workspace.avatar,
-            },
-            user: {
-              avatar: inviteInfo.user?.avatarUrl || '',
-              name: inviteInfo.user?.name || '',
-            },
-          });
+          await this.workspaceService.sendInviteMail(inviteId, email);
         } catch (e) {
           const ret = await this.permissions.revokeWorkspace(
             workspaceId,
@@ -483,63 +467,20 @@ export class WorkspaceResolver {
   @Query(() => InvitationType, {
     description: 'send workspace invitation',
   })
-  async getInviteInfo(@Args('inviteId') inviteId: string) {
-    let workspaceId = null;
-    let invitee = null;
-    // invite link
-    const invite = await this.cache.get<{
-      workspaceId: string;
-      inviteeUserId: string;
-    }>(`workspace:inviteLinkId:${inviteId}`);
-    if (typeof invite?.workspaceId === 'string') {
-      workspaceId = invite.workspaceId;
-      invitee = { user: await this.users.findUserById(invite.inviteeUserId) };
-    }
-    if (!workspaceId) {
-      workspaceId = await this.prisma.workspaceUserPermission
-        .findUniqueOrThrow({
-          where: {
-            id: inviteId,
-          },
-          select: {
-            workspaceId: true,
-          },
-        })
-        .then(({ workspaceId }) => workspaceId);
-    }
-
-    const workspaceContent = await this.doc.getWorkspaceContent(workspaceId);
-
+  async getInviteInfo(
+    @CurrentUser() user: UserType | undefined,
+    @Args('inviteId') inviteId: string
+  ) {
+    const { workspaceId, inviteeUserId } =
+      await this.workspaceService.getInviteInfo(inviteId);
+    const workspace = await this.workspaceService.getWorkspaceInfo(workspaceId);
     const owner = await this.permissions.getWorkspaceOwner(workspaceId);
 
-    if (!invitee) {
-      invitee = await this.permissions.getWorkspaceInvitation(
-        inviteId,
-        workspaceId
-      );
-    }
+    const inviteeId = inviteeUserId || user?.id;
+    if (!inviteeId) throw new UserNotFound();
+    const invitee = await this.users.findUserById(inviteeId);
 
-    let avatar = '';
-    if (workspaceContent?.avatarKey) {
-      const avatarBlob = await this.blobStorage.get(
-        workspaceId,
-        workspaceContent.avatarKey
-      );
-
-      if (avatarBlob.body) {
-        avatar = (await getStreamAsBuffer(avatarBlob.body)).toString('base64');
-      }
-    }
-
-    return {
-      workspace: {
-        name: workspaceContent?.name ?? '',
-        avatar: avatar || defaultWorkspaceAvatar,
-        id: workspaceId,
-      },
-      user: owner,
-      invitee: invitee.user,
-    };
+    return { workspace, user: owner, invitee };
   }
 
   @Mutation(() => Boolean)
@@ -569,13 +510,7 @@ export class WorkspaceResolver {
       );
     }
 
-    const result = await this.permissions.revokeWorkspace(workspaceId, userId);
-
-    if (result && isTeam) {
-      // TODO(@darkskygit): send team revoke mail
-    }
-
-    return result;
+    return await this.permissions.revokeWorkspace(workspaceId, userId);
   }
 
   @Mutation(() => Boolean)
@@ -615,8 +550,11 @@ export class WorkspaceResolver {
           return true;
         } else {
           const inviteId = await this.permissions.grant(workspaceId, user.id);
+          this.event.emit('workspace.team.reviewRequest', {
+            inviteIds: [inviteId],
+          });
           // invite by link need admin to approve
-          return this.permissions.acceptWorkspaceInvitation(
+          return await this.permissions.acceptWorkspaceInvitation(
             inviteId,
             workspaceId,
             WorkspaceMemberStatus.UnderReview
@@ -629,36 +567,31 @@ export class WorkspaceResolver {
     // so we need to check seat again here
     await this.quota.checkWorkspaceSeat(workspaceId, true);
 
-    const {
-      invitee,
-      user: inviter,
-      workspace,
-    } = await this.getInviteInfo(inviteId);
-
-    if (!inviter || !invitee) {
-      throw new UserNotFound();
-    }
-
     if (sendAcceptMail) {
-      // TODO(@darkskygit): team accept mail
-      await this.mailer.sendAcceptedEmail(inviter.email, {
-        inviteeName: invitee.name,
-        workspaceName: workspace.name,
-      });
+      const success = await this.workspaceService.sendAcceptedEmail(inviteId);
+      if (!success) throw new UserNotFound();
     }
 
-    return this.permissions.acceptWorkspaceInvitation(inviteId, workspaceId);
+    return await this.permissions.acceptWorkspaceInvitation(
+      inviteId,
+      workspaceId
+    );
   }
 
   @Mutation(() => Boolean)
   async leaveWorkspace(
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId') workspaceId: string,
-    @Args('workspaceName') workspaceName: string,
-    @Args('sendLeaveMail', { nullable: true }) sendLeaveMail: boolean
+    @Args('sendLeaveMail', { nullable: true }) sendLeaveMail?: boolean,
+    @Args('workspaceName', {
+      nullable: true,
+      deprecationReason: 'no longer used',
+    })
+    _workspaceName?: string
   ) {
     await this.permissions.checkWorkspace(workspaceId, user.id);
-
+    const { name: workspaceName } =
+      await this.workspaceService.getWorkspaceInfo(workspaceId);
     const owner = await this.permissions.getWorkspaceOwner(workspaceId);
 
     if (sendLeaveMail) {

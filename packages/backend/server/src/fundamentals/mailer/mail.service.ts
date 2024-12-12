@@ -166,6 +166,7 @@ export class MailService {
       html,
     });
   }
+
   async sendChangeEmail(to: string, url: string) {
     const html = emailTemplate({
       title: 'Verify your current email for AFFiNE',
@@ -180,6 +181,7 @@ export class MailService {
       html,
     });
   }
+
   async sendVerifyChangeEmail(to: string, url: string) {
     const html = emailTemplate({
       title: 'Verify your new email address',
@@ -194,6 +196,7 @@ export class MailService {
       html,
     });
   }
+
   async sendVerifyEmail(to: string, url: string) {
     const html = emailTemplate({
       title: 'Verify your email address',
@@ -208,6 +211,7 @@ export class MailService {
       html,
     });
   }
+
   async sendNotificationChangeEmail(to: string) {
     const html = emailTemplate({
       title: 'Email change successful',
@@ -219,6 +223,7 @@ export class MailService {
       html,
     });
   }
+
   async sendAcceptedEmail(
     to: string,
     {
@@ -241,6 +246,7 @@ export class MailService {
       html,
     });
   }
+
   async sendLeaveWorkspaceEmail(
     to: string,
     {
@@ -262,5 +268,47 @@ export class MailService {
       subject: title,
       html,
     });
+  }
+
+  // =================== Team Workspace Mails ===================
+  async sendReviewRequestMail(
+    to: string,
+    invitee: string,
+    ws: { id: string; name: string }
+  ) {
+    const { id: workspaceId, name: workspaceName } = ws;
+    const title = `New request to join ${workspaceName}`;
+
+    const html = emailTemplate({
+      title: 'Request to join your workspace',
+      content: `${invitee} has requested to join ${workspaceName}. As a workspace owner/admin, you can approve or decline this request.`,
+      buttonContent: 'Review request',
+      buttonUrl: this.url.link(`/workspace/${workspaceId}`),
+    });
+    return this.sendMail({ to, subject: title, html });
+  }
+
+  async sendReviewApproveEmail(to: string, ws: { id: string; name: string }) {
+    const { id: workspaceId, name: workspaceName } = ws;
+    const title = `Your request to join ${workspaceName} has been approved`;
+
+    const html = emailTemplate({
+      title: 'Welcome to the workspace!',
+      content: `Your request to join ${workspaceName} has been accepted. You can now access the team workspace and collaborate with other members.`,
+      buttonContent: 'Open Workspace',
+      buttonUrl: this.url.link(`/workspace/${workspaceId}`),
+    });
+    return this.sendMail({ to, subject: title, html });
+  }
+
+  async sendReviewDeclinedEmail(to: string, ws: { name: string }) {
+    const { name: workspaceName } = ws;
+    const title = `Your request to join ${workspaceName} was declined`;
+
+    const html = emailTemplate({
+      title: 'Request declined',
+      content: `Your request to join ${workspaceName} has been declined by the workspace admin.`,
+    });
+    return this.sendMail({ to, subject: title, html });
   }
 }
