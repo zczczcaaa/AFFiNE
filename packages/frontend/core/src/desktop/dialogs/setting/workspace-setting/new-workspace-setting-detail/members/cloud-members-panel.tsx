@@ -8,7 +8,10 @@ import { SettingRow } from '@affine/component/setting-components';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { Upload } from '@affine/core/components/pure/file-upload';
 import { ServerService, SubscriptionService } from '@affine/core/modules/cloud';
-import { WorkspacePermissionService } from '@affine/core/modules/permissions';
+import {
+  WorkspaceMembersService,
+  WorkspacePermissionService,
+} from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
 import { copyTextToClipboard } from '@affine/core/utils/clipboard';
 import { emailRegex } from '@affine/core/utils/email-regex';
@@ -50,6 +53,7 @@ export const CloudWorkspaceMembersPanel = ({
   const hasPaymentFeature = useLiveData(
     serverService.server.features$.map(f => f?.payment)
   );
+  const membersService = useService(WorkspaceMembersService);
   const permissionService = useService(WorkspacePermissionService);
   const isOwner = useLiveData(permissionService.permission.isOwner$);
   const isAdmin = useLiveData(permissionService.permission.isAdmin$);
@@ -111,10 +115,11 @@ export const CloudWorkspaceMembersPanel = ({
           message: t['Invitation sent hint'](),
         });
         setOpen(false);
+        membersService.members.revalidate();
       }
       setIsMutating(false);
     },
-    [permissionService.permission, t]
+    [membersService.members, permissionService.permission, t]
   );
 
   const onImportCSV = useAsyncCallback(

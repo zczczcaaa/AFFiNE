@@ -1,6 +1,7 @@
 import { MenuItem, notify, useConfirmModal } from '@affine/component';
 import {
   type Member,
+  WorkspaceMembersService,
   WorkspacePermissionService,
 } from '@affine/core/modules/permissions';
 import { Permission, WorkspaceMemberStatus } from '@affine/graphql';
@@ -20,6 +21,7 @@ export const MemberOptions = ({
   openAssignModal: () => void;
 }) => {
   const t = useI18n();
+  const membersService = useService(WorkspaceMembersService);
   const permission = useService(WorkspacePermissionService).permission;
   const { openConfirmModal } = useConfirmModal();
 
@@ -44,6 +46,7 @@ export const MemberOptions = ({
                   title: successNotify.title,
                   message: successNotify.message,
                 });
+                membersService.members.revalidate();
               }
             })
             .catch(error => {
@@ -54,7 +57,7 @@ export const MemberOptions = ({
             }),
       });
     },
-    [member.id, openConfirmModal, permission, t]
+    [member, membersService, openConfirmModal, permission, t]
   );
 
   const handleAssignOwner = useCallback(() => {
@@ -83,6 +86,7 @@ export const MemberOptions = ({
               }
             ),
           });
+          membersService.members.revalidate();
         }
       })
       .catch(error => {
@@ -91,7 +95,7 @@ export const MemberOptions = ({
           message: error.message,
         });
       });
-  }, [member, permission, t]);
+  }, [member, membersService, permission, t]);
 
   const handleDecline = useCallback(() => {
     openRemoveConfirmModal({
@@ -124,6 +128,7 @@ export const MemberOptions = ({
               name: member.name || member.email || member.id,
             }),
           });
+          membersService.members.revalidate();
         }
       })
       .catch(error => {
@@ -132,7 +137,7 @@ export const MemberOptions = ({
           message: error.message,
         });
       });
-  }, [member, permission, t]);
+  }, [member, membersService, permission, t]);
   const handleChangeToCollaborator = useCallback(() => {
     permission
       .adjustMemberPermission(member.id, Permission.Write)
@@ -146,6 +151,7 @@ export const MemberOptions = ({
               name: member.name || member.email || member.id,
             }),
           });
+          membersService.members.revalidate();
         }
       })
       .catch(error => {
@@ -154,7 +160,7 @@ export const MemberOptions = ({
           message: error.message,
         });
       });
-  }, [member, permission, t]);
+  }, [member, membersService, permission, t]);
 
   const operationButtonInfo = useMemo(() => {
     return [

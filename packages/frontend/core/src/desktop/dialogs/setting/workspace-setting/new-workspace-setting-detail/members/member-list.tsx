@@ -116,6 +116,7 @@ const MemberItem = ({
   const t = useI18n();
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const membersService = useService(WorkspaceMembersService);
   const workspace = useService(WorkspaceService).workspace;
   const workspaceName = useLiveData(workspace.name$);
   const permission = useService(WorkspacePermissionService).permission;
@@ -139,6 +140,7 @@ const MemberItem = ({
               name: member.name || member.email || member.id,
             }),
           });
+          membersService.members.revalidate();
         }
       })
       .catch(error => {
@@ -147,7 +149,7 @@ const MemberItem = ({
           message: error.message,
         });
       });
-  }, [permission, member, t]);
+  }, [permission, member, t, membersService]);
 
   const memberStatus = useMemo(() => getMemberStatus(member), [member]);
 
