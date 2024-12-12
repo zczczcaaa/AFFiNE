@@ -285,7 +285,8 @@ export type ErrorDataUnion =
   | SubscriptionPlanNotFoundDataType
   | UnknownOauthProviderDataType
   | UnsupportedSubscriptionPlanDataType
-  | VersionRejectedDataType;
+  | VersionRejectedDataType
+  | WrongSignInCredentialsDataType;
 
 export enum ErrorNames {
   ACCESS_DENIED = 'ACCESS_DENIED',
@@ -1406,6 +1407,11 @@ export interface WorkspaceTypePageMetaArgs {
 
 export interface WorkspaceTypePublicPageArgs {
   pageId: Scalars['String']['input'];
+}
+
+export interface WrongSignInCredentialsDataType {
+  __typename?: 'WrongSignInCredentialsDataType';
+  email: Scalars['String']['output'];
 }
 
 export interface TokenType {

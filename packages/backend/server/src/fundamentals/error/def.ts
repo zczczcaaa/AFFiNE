@@ -37,6 +37,25 @@ const BaseTypeToHttpStatusMap: Record<UserFriendlyErrorBaseType, HttpStatus> = {
   internal_server_error: HttpStatus.INTERNAL_SERVER_ERROR,
 };
 
+const IncludedEvents = new Set([
+  // email
+  'invalid_email',
+  'email_token_not_found',
+  'invalid_email_token',
+  'email_already_used',
+  'same_email_provided',
+  // magic link
+  'action_forbidden',
+  'link_expired',
+  'email_verification_required',
+  // oauth
+  'missing_oauth_query_parameter',
+  'unknown_oauth_provider',
+  'invalid_oauth_callback_state',
+  'oauth_state_expired',
+  'oauth_account_already_connected',
+]);
+
 export class UserFriendlyError extends Error {
   /**
    * Standard HTTP status code
@@ -100,13 +119,11 @@ export class UserFriendlyError extends Error {
 
   log(context: string) {
     // ignore all user behavior error log
-    if (this.type !== 'internal_server_error') {
-      // always record auth related error
-      const isAuthError =
-        typeof this.stack === 'string' &&
-        (this.stack.includes('/core/auth/') ||
-          this.stack.includes('/plugins/oauth/'));
-      if (!isAuthError) return;
+    if (
+      this.type !== 'internal_server_error' &&
+      !IncludedEvents.has(this.name)
+    ) {
+      return;
     }
 
     new Logger(context).error(
@@ -239,7 +256,8 @@ export const USER_FRIENDLY_ERRORS = {
   },
   wrong_sign_in_credentials: {
     type: 'invalid_input',
-    message: 'Wrong user email or password.',
+    args: { email: 'string' },
+    message: ({ email }) => `Wrong user email or password: ${email}`,
   },
   unknown_oauth_provider: {
     type: 'invalid_input',

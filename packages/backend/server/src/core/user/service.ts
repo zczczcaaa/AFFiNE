@@ -184,7 +184,7 @@ export class UserService {
     const user = await this.findUserWithHashedPasswordByEmail(email);
 
     if (!user) {
-      throw new WrongSignInCredentials();
+      throw new WrongSignInCredentials({ email });
     }
 
     if (!user.password) {
@@ -197,7 +197,7 @@ export class UserService {
     );
 
     if (!passwordMatches) {
-      throw new WrongSignInCredentials();
+      throw new WrongSignInCredentials({ email });
     }
 
     return user;
