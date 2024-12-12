@@ -20,6 +20,7 @@ import {
   RecentDocsQuickSearchSession,
 } from '@affine/core/modules/quicksearch';
 import { ExternalLinksQuickSearchSession } from '@affine/core/modules/quicksearch/impls/external-links';
+import { JournalsQuickSearchSession } from '@affine/core/modules/quicksearch/impls/journals';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { isNewTabTrigger } from '@affine/core/utils';
 import { DebugLogger } from '@affine/debug';
@@ -331,7 +332,7 @@ export function patchQuickSearchService(framework: FrameworkProvider) {
   const QuickSearch = QuickSearchExtension({
     async openQuickSearch() {
       let searchResult: QuickSearchResult = null;
-      searchResult = await new Promise(resolve =>
+      searchResult = await new Promise((resolve, reject) =>
         framework.get(QuickSearchService).quickSearch.show(
           [
             framework.get(RecentDocsQuickSearchSession),
@@ -339,6 +340,7 @@ export function patchQuickSearchService(framework: FrameworkProvider) {
             framework.get(DocsQuickSearchSession),
             framework.get(LinksQuickSearchSession),
             framework.get(ExternalLinksQuickSearchSession),
+            framework.get(JournalsQuickSearchSession),
           ],
           result => {
             if (result === null) {
@@ -369,6 +371,18 @@ export function patchQuickSearchService(framework: FrameworkProvider) {
                   'elementIds',
                 ]),
               });
+              return;
+            }
+
+            if (result.source === 'date-picker') {
+              result.payload
+                .getDocId()
+                .then(docId => {
+                  if (docId) {
+                    resolve({ docId });
+                  }
+                })
+                .catch(reject);
               return;
             }
 

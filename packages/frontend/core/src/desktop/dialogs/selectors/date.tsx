@@ -63,13 +63,23 @@ export const DateSelectorDialog = ({
     >
       {/* hack the menu positioning using the following fixed anchor */}
       <div
-        style={{
-          position: 'fixed',
-          left: position[0],
-          top: position[1],
-          width: position[2],
-          height: position[3],
-        }}
+        style={
+          position
+            ? {
+                position: 'fixed',
+                left: position[0],
+                top: position[1],
+                width: position[2],
+                height: position[3],
+              }
+            : {
+                position: 'fixed',
+                left: '50%',
+                top: '50%',
+                width: 0,
+                height: 0,
+              }
+        }
       />
     </Menu>
   );

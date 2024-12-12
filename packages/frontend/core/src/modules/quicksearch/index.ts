@@ -8,8 +8,10 @@ import {
 } from '@toeverything/infra';
 
 import { CollectionService } from '../collection';
+import { WorkspaceDialogService } from '../dialogs';
 import { DocDisplayMetaService } from '../doc-display-meta/services/doc-display-meta';
 import { DocsSearchService } from '../docs-search';
+import { JournalService } from '../journal';
 import { TagService } from '../tag';
 import { WorkbenchService } from '../workbench';
 import { QuickSearch } from './entities/quick-search';
@@ -18,6 +20,7 @@ import { CommandsQuickSearchSession } from './impls/commands';
 import { CreationQuickSearchSession } from './impls/creation';
 import { DocsQuickSearchSession } from './impls/docs';
 import { ExternalLinksQuickSearchSession } from './impls/external-links';
+import { JournalsQuickSearchSession } from './impls/journals';
 import { LinksQuickSearchSession } from './impls/links';
 import { RecentDocsQuickSearchSession } from './impls/recent-docs';
 import { TagsQuickSearchSession } from './impls/tags';
@@ -67,6 +70,11 @@ export function configureQuickSearchModule(framework: Framework) {
     .entity(TagsQuickSearchSession, [TagService])
     .entity(RecentDocsQuickSearchSession, [
       RecentDocsService,
+      DocDisplayMetaService,
+    ])
+    .entity(JournalsQuickSearchSession, [
+      JournalService,
+      WorkspaceDialogService,
       DocDisplayMetaService,
     ]);
 }
