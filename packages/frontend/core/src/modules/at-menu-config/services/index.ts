@@ -294,6 +294,10 @@ export class AtMenuConfigService extends Service {
             onSelect: date => {
               if (date) {
                 onSelectDate(date);
+                track.doc.editor.atMenu.linkDoc({
+                  journal: true,
+                  type: 'specific date',
+                });
                 this.dialogService.close(id);
               }
             },
@@ -328,6 +332,10 @@ export class AtMenuConfigService extends Service {
               >`
           : dateDisplay,
         action: () => {
+          track.doc.editor.atMenu.linkDoc({
+            journal: true,
+            type: alias,
+          });
           onSelectDate(dateString);
         },
       });

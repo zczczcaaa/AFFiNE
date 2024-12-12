@@ -26,7 +26,7 @@ type NavigationEvents =
   | 'open'
   | 'close'; // openclose modal/diaglog
 
-// END SECTION
+// END SECTIONalias
 
 // SECTION: doc events
 type WorkspaceEvents =
@@ -430,6 +430,7 @@ export type EventArgs = {
   };
   editProperty: { type: string };
   addProperty: { type: string; control: 'at menu' | 'property list' };
+  linkDoc: { type: string; journal: boolean };
 };
 
 // for type checking
