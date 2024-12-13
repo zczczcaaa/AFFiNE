@@ -10,3 +10,8 @@ sha3   = { workspace = true }
 
 [dev-dependencies]
 rayon = { workspace = true }
+criterion2    = { workspace = true }
+
+[[bench]]
+name    = "hashcash"
+harness = false

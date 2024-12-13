@@ -516,6 +516,7 @@ __metadata:
     "@affine/core": "workspace:*"
     "@affine/i18n": "workspace:*"
     "@affine/native": "workspace:*"
+    "@affine/nbstore": "workspace:*"
     "@blocksuite/affine": "npm:0.18.7"
     "@electron-forge/cli": "npm:^7.3.0"
     "@electron-forge/core": "npm:^7.3.0"
@@ -724,10 +725,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@affine/nbstore@workspace:packages/common/nbstore":
+"@affine/nbstore@workspace:*, @affine/nbstore@workspace:packages/common/nbstore":
   version: 0.0.0-use.local
   resolution: "@affine/nbstore@workspace:packages/common/nbstore"
   dependencies:
+    "@affine/electron-api": "workspace:*"
     "@affine/graphql": "workspace:*"
     "@datastructures-js/binary-search-tree": "npm:^5.3.2"
     "@toeverything/infra": "workspace:*"
@@ -741,6 +743,7 @@ __metadata:
     vitest: "npm:2.1.8"
     yjs: "patch:yjs@npm%3A13.6.18#~/.yarn/patches/yjs-npm-13.6.18-ad0d5f7c43.patch"
   peerDependencies:
+    "@affine/electron-api": "workspace:*"
     "@affine/graphql": "workspace:*"
     idb: ^8.0.0
     socket.io-client: ^4.7.5
@@ -4057,7 +4060,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/react@npm:^11.11.4":
+"@emotion/react@npm:^11.11.4, @emotion/react@npm:^11.14.0":
   version: 11.14.0
   resolution: "@emotion/react@npm:11.14.0"
   dependencies:
@@ -12937,9 +12940,11 @@ __metadata:
     "@affine/templates": "workspace:*"
     "@blocksuite/affine": "npm:0.18.7"
     "@datastructures-js/binary-search-tree": "npm:^5.3.2"
+    "@emotion/react": "npm:^11.14.0"
     "@swc/core": "npm:^1.0.0"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/react": "npm:^16.1.0"
+    "@types/react": "npm:^19.0.1"
     eventemitter2: "npm:^6.4.9"
     fake-indexeddb: "npm:^6.0.0"
     foxact: "npm:^0.2.33"
@@ -12951,28 +12956,14 @@ __metadata:
     jotai-effect: "npm:^1.0.0"
     lodash-es: "npm:^4.17.21"
     nanoid: "npm:^5.0.7"
-    react: "npm:^19.0.0"
+    react: "npm:19.0.0"
     rxjs: "npm:^7.8.1"
     vitest: "npm:2.1.8"
     yjs: "patch:yjs@npm%3A13.6.18#~/.yarn/patches/yjs-npm-13.6.18-ad0d5f7c43.patch"
     zod: "npm:^3.22.4"
   peerDependencies:
-    "@affine/templates": "*"
-    "@swc/core": ^1.0.0
-    "@testing-library/dom": ">=7.0.0"
     electron: "*"
-    react: ^19.0.0
     react-dom: ^19.0.0
-    yjs: ^13
-  peerDependenciesMeta:
-    "@affine/templates":
-      optional: true
-    electron:
-      optional: true
-    react:
-      optional: true
-    yjs:
-      optional: true
   languageName: unknown
   linkType: soft
 
@@ -13864,7 +13855,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^19.0.0":
+"@types/react@npm:^19.0.0, @types/react@npm:^19.0.1":
   version: 19.0.1
   resolution: "@types/react@npm:19.0.1"
   dependencies:

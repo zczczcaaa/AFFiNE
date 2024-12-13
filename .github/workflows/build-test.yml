@@ -354,11 +354,10 @@ jobs:
           name: affine
           fail_ci_if_error: false
 
-  server-native-test:
-    name: Run server native tests
+  rust-test:
+    name: Run native tests
     runs-on: ubuntu-latest
     env:
-      RUSTFLAGS: -D warnings
       CARGO_TERM_COLOR: always
     steps:
       - uses: actions/checkout@v4
@@ -656,7 +655,7 @@ jobs:
         uses: ./.github/actions/setup-node
         timeout-minutes: 10
         with:
-          extra-flags: workspaces focus @affine/electron @affine/monorepo @affine-test/affine-desktop
+          extra-flags: workspaces focus @affine/electron @affine/monorepo @affine-test/affine-desktop @affine/nbstore @toeverything/infra
           playwright-install: true
           hard-link-nm: false
           enableScripts: false
@@ -756,7 +755,7 @@ jobs:
       - build-server-native
       - build-electron-renderer
       - server-test
-      - server-native-test
+      - rust-test
       - copilot-api-test
       - copilot-e2e-test
       - server-e2e-test

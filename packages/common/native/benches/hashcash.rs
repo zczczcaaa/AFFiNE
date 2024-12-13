@@ -2,7 +2,7 @@ use std::hint::black_box;
 
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 
-use affine_native::hashcash::Stamp;
+use affine_common::hashcash::Stamp;
 
 fn bench_hashcash(c: &mut Criterion) {
   let mut group = c.benchmark_group("hashcash");

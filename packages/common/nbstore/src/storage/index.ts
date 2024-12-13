@@ -6,6 +6,8 @@ import type { BlobStorage } from './blob';
 import type { DocStorage } from './doc';
 import type { SyncStorage } from './sync';
 
+type Storages = DocStorage | BlobStorage | SyncStorage;
+
 export class SpaceStorage {
   protected readonly storages: Map<StorageType, Storage> = new Map();
   private readonly event = new EventEmitter2();
@@ -17,24 +19,20 @@ export class SpaceStorage {
     );
   }
 
-  tryGet(type: 'blob'): BlobStorage | undefined;
-  tryGet(type: 'sync'): SyncStorage | undefined;
-  tryGet(type: 'doc'): DocStorage | undefined;
-  tryGet(type: StorageType) {
-    return this.storages.get(type);
+  tryGet<T extends StorageType>(
+    type: T
+  ): Extract<Storages, { storageType: T }> | undefined {
+    return this.storages.get(type) as Extract<Storages, { storageType: T }>;
   }
 
-  get(type: 'blob'): BlobStorage;
-  get(type: 'sync'): SyncStorage;
-  get(type: 'doc'): DocStorage;
-  get(type: StorageType) {
-    const storage = this.storages.get(type);
+  get<T extends StorageType>(type: T): Extract<Storages, { storageType: T }> {
+    const storage = this.tryGet(type);
 
     if (!storage) {
       throw new Error(`Storage ${type} not registered.`);
     }
 
-    return storage;
+    return storage as Extract<Storages, { storageType: T }>;
   }
 
   async connect() {
