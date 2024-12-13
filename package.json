@@ -80,7 +80,6 @@
     "eslint-plugin-rxjs": "^5.0.3",
     "eslint-plugin-sonarjs": "^3.0.1",
     "eslint-plugin-unicorn": "^56.0.1",
-    "eslint-plugin-unused-imports": "^4.1.4",
     "happy-dom": "^15.11.7",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.11",

@@ -9,9 +9,6 @@ const config = {
     react: {
       version: 'detect',
     },
-    next: {
-      rootDir: 'packages/frontend/core',
-    },
   },
   extends: [
     'eslint:recommended',
@@ -37,7 +34,6 @@ const config = {
     '@typescript-eslint',
     'sonarjs',
     'import-x',
-    'unused-imports',
     'rxjs',
     'unicorn',
   ],
@@ -144,7 +140,6 @@ const config = {
     '@typescript-eslint/require-array-sort-compare': 'error',
     '@typescript-eslint/unified-signatures': 'error',
     '@typescript-eslint/prefer-for-of': 'error',
-    'unused-imports/no-unused-imports': 'error',
     '@typescript-eslint/no-restricted-imports': [
       'error',
       {
