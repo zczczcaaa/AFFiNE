@@ -10,10 +10,10 @@
     "./e2e-enhance/*": "./e2e-enhance/*.ts"
   },
   "devDependencies": {
-    "@node-rs/argon2": "^2.0.0",
+    "@node-rs/argon2": "^2.0.2",
     "@playwright/test": "=1.49.1",
-    "express": "^4.19.2",
-    "http-proxy-middleware": "^3.0.0"
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3"
   },
   "peerDependencies": {
     "@playwright/test": "*",

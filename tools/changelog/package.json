@@ -6,13 +6,13 @@
   "private": true,
   "description": "Generate changelog from version changes",
   "dependencies": {
-    "@napi-rs/simple-git": "^0.1.18",
-    "@slack/web-api": "^7.3.4",
+    "@napi-rs/simple-git": "^0.1.19",
+    "@slack/web-api": "^7.8.0",
     "changelogithub": "^0.13.11",
     "jsx-slack": "^6.1.2",
-    "marked": "^15.0.0"
+    "marked": "^15.0.3"
   },
   "devDependencies": {
-    "@types/node": "^20.14.12"
+    "@types/node": "^20.17.10"
   }
 }

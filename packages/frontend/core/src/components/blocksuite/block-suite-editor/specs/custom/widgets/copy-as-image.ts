@@ -101,7 +101,7 @@ function withDescendantElements(elements: GfxModel[]) {
     if (set.has(element)) return;
     set.add(element);
     if (isGfxGroupCompatibleModel(element)) {
-      element.descendantElements.map(descendant => set.add(descendant));
+      element.descendantElements.forEach(descendant => set.add(descendant));
     }
   });
   return [...set];

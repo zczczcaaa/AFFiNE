@@ -9,9 +9,9 @@
   "devDependencies": {
     "@affine-test/kit": "workspace:*",
     "@playwright/test": "=1.49.1",
-    "express": "^4.19.2",
-    "http-proxy-middleware": "^3.0.0",
-    "serve": "^14.2.1"
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3",
+    "serve": "^14.2.4"
   },
   "version": "0.18.0"
 }
