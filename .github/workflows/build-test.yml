@@ -472,6 +472,7 @@ jobs:
       DATABASE_URL: postgresql://affine:affine@localhost:5432/affine
       IN_CI_TEST: true
       REDIS_SERVER_HOST: localhost
+      DEPLOYMENT_TYPE: affine
     strategy:
       fail-fast: false
       matrix:
