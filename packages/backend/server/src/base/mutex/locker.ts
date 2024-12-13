@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Command } from 'ioredis';
 
-import { ILocker, Lock } from '../../base';
-import { SessionRedis } from './instances';
+import { SessionRedis } from '../redis';
+import { Lock } from './lock';
 
 // === atomic mutex lock ===
 // acquire lock
@@ -36,8 +36,9 @@ else
 end`;
 
 @Injectable()
-export class RedisMutexLocker implements ILocker {
-  private readonly logger = new Logger(RedisMutexLocker.name);
+export class Locker {
+  private readonly logger = new Logger(Locker.name);
+
   constructor(private readonly redis: SessionRedis) {}
 
   async lock(owner: string, key: string): Promise<Lock> {

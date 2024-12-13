@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
-import { Locker } from './local-lock';
+import { Locker } from './locker';
 import { Mutex, RequestMutex } from './mutex';
 
 @Global()
@@ -11,4 +11,4 @@ import { Mutex, RequestMutex } from './mutex';
 export class MutexModule {}
 
 export { Locker, Mutex, RequestMutex };
-export { type Locker as ILocker, Lock } from './lock';
+export { Lock } from './lock';

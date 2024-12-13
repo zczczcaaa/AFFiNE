@@ -555,7 +555,7 @@ export class SubscriptionService implements OnApplicationBootstrap {
       return;
     }
 
-    await using lock = await this.mutex.lock('init stripe prices');
+    await using lock = await this.mutex.acquire('init stripe prices');
 
     if (!lock) {
       return;

@@ -359,7 +359,7 @@ export class CopilotResolver {
       user.id
     );
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
     }
@@ -387,7 +387,7 @@ export class CopilotResolver {
       user.id
     );
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
     }
@@ -418,7 +418,7 @@ export class CopilotResolver {
       return new NotFoundException('Session not found');
     }
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
     }
@@ -439,7 +439,7 @@ export class CopilotResolver {
     options: CreateChatMessageInput
   ) {
     const lockFlag = `${COPILOT_LOCKER}:message:${user?.id}:${options.sessionId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
     }

@@ -38,7 +38,7 @@ export class CustomSetupController {
       throw new PasswordRequired();
     }
 
-    await using lock = await this.mutex.lock('createFirstAdmin');
+    await using lock = await this.mutex.acquire('createFirstAdmin');
 
     if (!lock) {
       throw new InternalServerError();

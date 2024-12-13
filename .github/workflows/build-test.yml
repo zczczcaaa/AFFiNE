@@ -304,6 +304,7 @@ jobs:
       NODE_ENV: test
       DISTRIBUTION: web
       DATABASE_URL: postgresql://affine:affine@localhost:5432/affine
+      REDIS_SERVER_HOST: localhost
     services:
       postgres:
         image: postgres
@@ -316,6 +317,10 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
       mailer:
         image: mailhog/mailhog
         ports:
@@ -379,6 +384,7 @@ jobs:
       NODE_ENV: test
       DISTRIBUTION: web
       DATABASE_URL: postgresql://affine:affine@localhost:5432/affine
+      REDIS_SERVER_HOST: localhost
     services:
       postgres:
         image: postgres
@@ -391,6 +397,10 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
       mailer:
         image: mailhog/mailhog
         ports:
@@ -461,6 +471,7 @@ jobs:
       DISTRIBUTION: web
       DATABASE_URL: postgresql://affine:affine@localhost:5432/affine
       IN_CI_TEST: true
+      REDIS_SERVER_HOST: localhost
     strategy:
       fail-fast: false
       matrix:
@@ -480,6 +491,10 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
     steps:
       - uses: actions/checkout@v4
 
@@ -532,6 +547,7 @@ jobs:
     env:
       DISTRIBUTION: web
       DATABASE_URL: postgresql://affine:affine@localhost:5432/affine
+      REDIS_SERVER_HOST: localhost
       IN_CI_TEST: true
     strategy:
       fail-fast: false
@@ -566,6 +582,10 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
       mailer:
         image: mailhog/mailhog
         ports:

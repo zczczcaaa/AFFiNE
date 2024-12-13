@@ -80,7 +80,7 @@ export class TeamWorkspaceResolver {
 
     // lock to prevent concurrent invite
     const lockFlag = `invite:${workspaceId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest();
     }
@@ -231,7 +231,7 @@ export class TeamWorkspaceResolver {
     try {
       // lock to prevent concurrent invite and grant
       const lockFlag = `invite:${workspaceId}`;
-      await using lock = await this.mutex.lock(lockFlag);
+      await using lock = await this.mutex.acquire(lockFlag);
       if (!lock) {
         return new TooManyRequest();
       }
@@ -281,7 +281,7 @@ export class TeamWorkspaceResolver {
     try {
       // lock to prevent concurrent invite and grant
       const lockFlag = `invite:${workspaceId}`;
-      await using lock = await this.mutex.lock(lockFlag);
+      await using lock = await this.mutex.acquire(lockFlag);
       if (!lock) {
         return new TooManyRequest();
       }

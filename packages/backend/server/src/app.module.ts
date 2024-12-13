@@ -19,6 +19,7 @@ import { MailModule } from './base/mailer';
 import { MetricsModule } from './base/metrics';
 import { MutexModule } from './base/mutex';
 import { PrismaModule } from './base/prisma';
+import { RedisModule } from './base/redis';
 import { RuntimeModule } from './base/runtime';
 import { StorageProviderModule } from './base/storage';
 import { RateLimiterModule } from './base/throttler';
@@ -42,6 +43,7 @@ export const FunctionalityModules = [
   ConfigModule.forRoot(),
   RuntimeModule,
   EventModule,
+  RedisModule,
   CacheModule,
   MutexModule,
   PrismaModule,

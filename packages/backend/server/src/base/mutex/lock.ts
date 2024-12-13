@@ -17,7 +17,3 @@ export class Lock implements AsyncDisposable {
     await this.release();
   }
 }
-
-export interface Locker {
-  lock(owner: string, key: string): Promise<Lock>;
-}

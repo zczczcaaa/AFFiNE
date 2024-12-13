@@ -1,8 +1,13 @@
-import { Redis } from 'ioredis';
+import Redis from 'ioredis';
 
-import type { Cache, CacheSetOptions } from '../../base/cache/def';
+export interface CacheSetOptions {
+  /**
+   * in milliseconds
+   */
+  ttl?: number;
+}
 
-export class RedisCache implements Cache {
+export class CacheProvider {
   constructor(private readonly redis: Redis) {}
 
   // standard operation

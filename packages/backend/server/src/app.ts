@@ -1,4 +1,3 @@
-import { Type } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
@@ -9,7 +8,7 @@ import {
   CloudThrottlerGuard,
   GlobalExceptionFilter,
 } from './base';
-import { SocketIoAdapter, SocketIoAdapterImpl } from './base/websocket';
+import { SocketIoAdapter } from './base/websocket';
 import { AuthGuard } from './core/auth';
 import { ENABLED_FEATURES } from './core/config/server-feature';
 import { serverTimingAndCache } from './middleware/timing';
@@ -44,13 +43,6 @@ export async function createApp() {
   app.use(cookieParser());
 
   if (AFFiNE.flavor.sync) {
-    const SocketIoAdapter = app.get<Type<SocketIoAdapter>>(
-      SocketIoAdapterImpl,
-      {
-        strict: false,
-      }
-    );
-
     const adapter = new SocketIoAdapter(app);
     app.useWebSocketAdapter(adapter);
   }

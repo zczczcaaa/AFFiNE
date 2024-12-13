@@ -175,7 +175,7 @@ export class PgUserspaceDocStorageAdapter extends DocStorageAdapter {
     workspaceId: string,
     docId: string
   ) {
-    const lock = await this.mutex.lock(`userspace:${workspaceId}:${docId}`);
+    const lock = await this.mutex.acquire(`userspace:${workspaceId}:${docId}`);
 
     if (!lock) {
       throw new Error('Too many concurrent writings');

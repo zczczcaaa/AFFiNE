@@ -399,7 +399,7 @@ export class WorkspaceResolver {
     try {
       // lock to prevent concurrent invite and grant
       const lockFlag = `invite:${workspaceId}`;
-      await using lock = await this.mutex.lock(lockFlag);
+      await using lock = await this.mutex.acquire(lockFlag);
       if (!lock) {
         return new TooManyRequest();
       }
@@ -524,7 +524,7 @@ export class WorkspaceResolver {
     @Args('sendAcceptMail', { nullable: true }) sendAcceptMail: boolean
   ) {
     const lockFlag = `invite:${workspaceId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest();
     }

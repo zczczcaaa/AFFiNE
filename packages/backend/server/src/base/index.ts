@@ -20,7 +20,7 @@ export * from './guard';
 export { CryptoHelper, URLHelper } from './helpers';
 export { MailService } from './mailer';
 export { CallMetric, metrics } from './metrics';
-export { type ILocker, Lock, Locker, Mutex, RequestMutex } from './mutex';
+export { Lock, Locker, Mutex, RequestMutex } from './mutex';
 export {
   GatewayErrorWrapper,
   getOptionalModuleMetadata,

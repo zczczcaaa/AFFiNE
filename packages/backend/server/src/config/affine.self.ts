@@ -58,13 +58,6 @@ AFFiNE.use('copilot', {
     apiKey: '',
   },
 });
-AFFiNE.use('redis', {
-  host: env.REDIS_SERVER_HOST,
-  db: 0,
-  port: 6379,
-  username: env.REDIS_SERVER_USER,
-  password: env.REDIS_SERVER_PASSWORD,
-});
 AFFiNE.use('payment', {
   stripe: {
     keys: {

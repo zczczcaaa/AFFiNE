@@ -6,7 +6,7 @@ import type { Request } from 'express';
 
 import { GraphqlContext } from '../graphql';
 import { retryable } from '../utils/promise';
-import { Locker } from './local-lock';
+import { Locker } from './locker';
 
 export const MUTEX_RETRY = 5;
 export const MUTEX_WAIT = 100;
@@ -26,7 +26,7 @@ export class Mutex {
    * ```typescript
    * {
    *   // lock is acquired here
-   *   await using lock = await mutex.lock('resource-key');
+   *   await using lock = await mutex.acquire('resource-key');
    *   if (lock) {
    *     // do something
    *   } else {
@@ -38,7 +38,7 @@ export class Mutex {
    * @param key resource key
    * @returns LockGuard
    */
-  async lock(key: string, owner: string = 'global') {
+  async acquire(key: string, owner: string = 'global') {
     try {
       return await retryable(
         () => this.locker.lock(owner, key),
@@ -83,7 +83,7 @@ export class RequestMutex extends Mutex {
     return id;
   }
 
-  override lock(key: string) {
-    return super.lock(key, this.getId());
+  override acquire(key: string) {
+    return super.acquire(key, this.getId());
   }
 }
