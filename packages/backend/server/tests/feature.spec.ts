@@ -4,7 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 
-import { Config, ConfigModule } from '../src/base/config';
+import { Runtime } from '../src/base';
 import { AuthService } from '../src/core/auth/service';
 import {
   FeatureManagementService,
@@ -26,15 +26,7 @@ const test = ava as TestFn<{
 
 test.beforeEach(async t => {
   const { app } = await createTestingApp({
-    imports: [
-      ConfigModule.forRoot({
-        server: {
-          host: 'example.org',
-          https: true,
-        },
-      }),
-      FeatureModule,
-    ],
+    imports: [FeatureModule],
     providers: [WorkspaceResolver],
     tapModule: module => {
       module
@@ -43,8 +35,8 @@ test.beforeEach(async t => {
     },
   });
 
-  const config = app.get(Config);
-  await config.runtime.set('flags/earlyAccessControl', true);
+  const runtime = app.get(Runtime);
+  await runtime.set('flags/earlyAccessControl', true);
   t.context.app = app;
   t.context.auth = app.get(AuthService);
   t.context.feature = app.get(FeatureService);

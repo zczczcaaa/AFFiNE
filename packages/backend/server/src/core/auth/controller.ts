@@ -20,6 +20,7 @@ import {
   InternalServerError,
   InvalidEmail,
   InvalidEmailToken,
+  Runtime,
   SignUpForbidden,
   Throttle,
   URLHelper,
@@ -57,7 +58,8 @@ export class AuthController {
     private readonly auth: AuthService,
     private readonly user: UserService,
     private readonly token: TokenService,
-    private readonly config: Config
+    private readonly config: Config,
+    private readonly runtime: Runtime
   ) {
     if (config.node.dev) {
       // set DNS servers in dev mode
@@ -159,12 +161,12 @@ export class AuthController {
     // send email magic link
     const user = await this.user.findUserByEmail(email);
     if (!user) {
-      const allowSignup = await this.config.runtime.fetch('auth/allowSignup');
+      const allowSignup = await this.runtime.fetch('auth/allowSignup');
       if (!allowSignup) {
         throw new SignUpForbidden();
       }
 
-      const requireEmailDomainVerification = await this.config.runtime.fetch(
+      const requireEmailDomainVerification = await this.runtime.fetch(
         'auth/requireEmailDomainVerification'
       );
       if (requireEmailDomainVerification) {

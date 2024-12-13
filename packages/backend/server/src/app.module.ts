@@ -19,6 +19,7 @@ import { MailModule } from './base/mailer';
 import { MetricsModule } from './base/metrics';
 import { MutexModule } from './base/mutex';
 import { PrismaModule } from './base/prisma';
+import { RuntimeModule } from './base/runtime';
 import { StorageProviderModule } from './base/storage';
 import { RateLimiterModule } from './base/throttler';
 import { WebSocketModule } from './base/websocket';
@@ -39,6 +40,7 @@ import { ENABLED_PLUGINS } from './plugins/registry';
 
 export const FunctionalityModules = [
   ConfigModule.forRoot(),
+  RuntimeModule,
   EventModule,
   CacheModule,
   MutexModule,
@@ -74,11 +76,13 @@ function filterOptionalModule(
 
     if (nonMetRequirements.length) {
       const name = 'module' in module ? module.module.name : module.name;
-      new Logger(name).warn(
-        `${name} is not enabled because of the required configuration is not satisfied.`,
-        'Unsatisfied configuration:',
-        ...nonMetRequirements.map(config => `  AFFiNE.${config}`)
-      );
+      if (!config.node.test) {
+        new Logger(name).warn(
+          `${name} is not enabled because of the required configuration is not satisfied.`,
+          'Unsatisfied configuration:',
+          ...nonMetRequirements.map(config => `  AFFiNE.${config}`)
+        );
+      }
       return null;
     }
   }

@@ -12,11 +12,11 @@ import { Socket } from 'socket.io';
 import {
   AlreadyInSpace,
   CallMetric,
-  Config,
   DocNotFound,
   GatewayErrorWrapper,
   metrics,
   NotInSpace,
+  Runtime,
   SpaceAccessDenied,
   VersionRejected,
 } from '../../base';
@@ -139,7 +139,7 @@ export class SpaceSyncGateway
   private connectionCount = 0;
 
   constructor(
-    private readonly config: Config,
+    private readonly runtime: Runtime,
     private readonly permissions: PermissionService,
     private readonly workspace: PgWorkspaceDocStorageAdapter,
     private readonly userspace: PgUserspaceDocStorageAdapter
@@ -175,7 +175,7 @@ export class SpaceSyncGateway
   }
 
   async assertVersion(client: Socket, version?: string) {
-    const shouldCheckClientVersion = await this.config.runtime.fetch(
+    const shouldCheckClientVersion = await this.runtime.fetch(
       'flags/syncClientVersionCheck'
     );
     if (

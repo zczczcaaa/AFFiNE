@@ -8,11 +8,14 @@ import {
 import { PrismaClient } from '@prisma/client';
 import { difference, keyBy } from 'lodash-es';
 
-import { Cache } from '../../cache';
-import { InvalidRuntimeConfigType, RuntimeConfigNotFound } from '../../error';
-import { defer } from '../../utils/promise';
-import { defaultRuntimeConfig, runtimeConfigType } from '../register';
-import { AppRuntimeConfigModules, FlattenedAppRuntimeConfig } from '../types';
+import { Cache } from '../cache';
+import { defaultRuntimeConfig, runtimeConfigType } from '../config/register';
+import {
+  AppRuntimeConfigModules,
+  FlattenedAppRuntimeConfig,
+} from '../config/types';
+import { InvalidRuntimeConfigType, RuntimeConfigNotFound } from '../error';
+import { defer } from '../utils/promise';
 
 function validateConfigType<K extends keyof FlattenedAppRuntimeConfig>(
   key: K,

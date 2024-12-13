@@ -3,7 +3,6 @@ import { merge } from 'lodash-es';
 
 import { AFFiNEConfig } from './def';
 import { Config } from './provider';
-import { Runtime } from './runtime/service';
 
 export * from './def';
 export * from './default';
@@ -17,10 +16,10 @@ function createConfigProvider(
 ): FactoryProvider<Config> {
   return {
     provide: Config,
-    useFactory: (runtime: Runtime) => {
-      return Object.freeze(merge({}, globalThis.AFFiNE, override, { runtime }));
+    useFactory: () => {
+      return Object.freeze(merge({}, globalThis.AFFiNE, override));
     },
-    inject: [Runtime],
+    inject: [],
   };
 }
 
@@ -31,10 +30,8 @@ export class ConfigModule {
     return {
       global: true,
       module: ConfigModule,
-      providers: [provider, Runtime],
+      providers: [provider],
       exports: [provider],
     };
   };
 }
-
-export { Runtime };

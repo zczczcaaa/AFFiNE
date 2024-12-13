@@ -1,10 +1,10 @@
-import { OnEvent } from '../../event';
-import { Payload } from '../../event/def';
-import { FlattenedAppRuntimeConfig } from '../types';
+import { FlattenedAppRuntimeConfig } from '../config/types';
+import { OnEvent } from '../event';
+import { Payload } from '../event/def';
 
-declare module '../../event/def' {
+declare module '../event/def' {
   interface EventDefinitions {
-    runtimeConfig: {
+    runtime: {
       [K in keyof FlattenedAppRuntimeConfig]: {
         changed: Payload<FlattenedAppRuntimeConfig[K]>;
       };
@@ -18,5 +18,5 @@ declare module '../../event/def' {
 export const OnRuntimeConfigChange_DO_NOT_USE = (
   nameWithModule: keyof FlattenedAppRuntimeConfig
 ) => {
-  return OnEvent(`runtimeConfig.${nameWithModule}.changed`);
+  return OnEvent(`runtime.${nameWithModule}.changed`);
 };

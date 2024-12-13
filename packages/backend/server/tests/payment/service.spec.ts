@@ -7,8 +7,8 @@ import Sinon from 'sinon';
 import Stripe from 'stripe';
 
 import { AppModule } from '../../src/app.module';
-import { EventEmitter } from '../../src/base';
-import { Config, ConfigModule, Runtime } from '../../src/base/config';
+import { EventEmitter, Runtime } from '../../src/base';
+import { ConfigModule } from '../../src/base/config';
 import { CurrentUser } from '../../src/core/auth';
 import { AuthService } from '../../src/core/auth/service';
 import {
@@ -543,8 +543,8 @@ test('should get correct pro plan price for checking out', async t => {
   // any user, lifetime recurring
   {
     feature.isEarlyAccessUser.resolves(false);
-    const config = app.get(Config);
-    await config.runtime.set('plugins.payment/showLifetimePrice', true);
+    const runtime = app.get(Runtime);
+    await runtime.set('plugins.payment/showLifetimePrice', true);
 
     await service.checkout(
       {

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { Config, type EventPayload, OnEvent } from '../../base';
+import { type EventPayload, OnEvent, Runtime } from '../../base';
 import { UserService } from '../user/service';
 import { FeatureService } from './service';
 import { FeatureType } from './types';
@@ -19,7 +19,7 @@ export class FeatureManagementService {
   constructor(
     private readonly feature: FeatureService,
     private readonly user: UserService,
-    private readonly config: Config
+    private readonly runtime: Runtime
   ) {}
 
   // ======== Admin ========
@@ -95,7 +95,7 @@ export class FeatureManagementService {
     email: string,
     type: EarlyAccessType = EarlyAccessType.App
   ) {
-    const earlyAccessControlEnabled = await this.config.runtime.fetch(
+    const earlyAccessControlEnabled = await this.runtime.fetch(
       'flags/earlyAccessControl'
     );
 

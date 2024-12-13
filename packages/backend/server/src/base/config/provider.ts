@@ -1,6 +1,5 @@
 import { ApplyType } from '../utils/types';
 import { AFFiNEConfig } from './def';
-import type { Runtime } from './runtime/service';
 
 /**
  * @example
@@ -14,6 +13,4 @@ import type { Runtime } from './runtime/service';
  *   }
  * }
  */
-export class Config extends ApplyType<AFFiNEConfig>() {
-  runtime!: Runtime;
-}
+export class Config extends ApplyType<AFFiNEConfig>() {}
