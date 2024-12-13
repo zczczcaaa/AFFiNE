@@ -25,50 +25,44 @@ const AcceptInvite = ({
 }: {
   inviteInfo: GetInviteInfoQuery['getInviteInfo'];
 }) => {
-  const authService = useService(AuthService);
-  const isRevalidating = useLiveData(authService.session.isRevalidating$);
-  const loginStatus = useLiveData(authService.session.status$);
-
-  useEffect(() => {
-    authService.session.revalidate();
-  }, [authService]);
-
-  const { jumpToSignIn } = useNavigateHelper();
   const { jumpToPage } = useNavigateHelper();
 
   const openWorkspace = useCallback(() => {
     jumpToPage(inviteInfo.workspace.id, 'all', RouteLogic.REPLACE);
   }, [inviteInfo.workspace.id, jumpToPage]);
 
+  return (
+    <AcceptInvitePage inviteInfo={inviteInfo} onOpenWorkspace={openWorkspace} />
+  );
+};
+
+export const Component = () => {
+  const authService = useService(AuthService);
+  const isRevalidating = useLiveData(authService.session.isRevalidating$);
+  const loginStatus = useLiveData(authService.session.status$);
+  const params = useParams<{ inviteId: string }>();
+
+  useEffect(() => {
+    authService.session.revalidate();
+  }, [authService]);
+
+  const { jumpToSignIn } = useNavigateHelper();
+
   useEffect(() => {
     if (loginStatus === 'unauthenticated' && !isRevalidating) {
       // We can not pass function to navigate state, so we need to save it in atom
-      jumpToSignIn(
-        `/workspace/${inviteInfo.workspace.id}/all`,
-        RouteLogic.REPLACE
-      );
+      jumpToSignIn(`/invite/${params.inviteId}`, RouteLogic.REPLACE);
     }
-  }, [
-    inviteInfo.workspace.id,
-    isRevalidating,
-    jumpToSignIn,
-    loginStatus,
-    openWorkspace,
-  ]);
+  }, [isRevalidating, jumpToSignIn, loginStatus, params.inviteId]);
 
   if (loginStatus === 'authenticated') {
-    return (
-      <AcceptInvitePage
-        inviteInfo={inviteInfo}
-        onOpenWorkspace={openWorkspace}
-      />
-    );
+    return <Middle />;
   }
 
   return null;
 };
 
-export const Component = () => {
+export const Middle = () => {
   const graphqlService = useService(GraphQLService);
   const params = useParams<{ inviteId: string }>();
   const navigateHelper = useNavigateHelper();
