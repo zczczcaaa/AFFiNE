@@ -51,7 +51,7 @@
     "@vitejs/plugin-react-swc": "^3.7.2",
     "builder-util-runtime": "^9.2.10",
     "cross-env": "^7.0.3",
-    "electron": "^33.0.0",
+    "electron": "^33.3.0",
     "electron-log": "^5.2.4",
     "electron-squirrel-startup": "1.0.1",
     "electron-window-state": "^5.0.3",
