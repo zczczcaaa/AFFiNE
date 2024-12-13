@@ -105,8 +105,6 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
     const count = await this.db.workspaceUserPermission.count({
       where: {
         workspaceId: args.workspaceId,
-        // @TODO(darksky): replace with [status: WorkspaceUserPermissionStatus.Accepted]
-        accepted: true,
       },
     });
 
