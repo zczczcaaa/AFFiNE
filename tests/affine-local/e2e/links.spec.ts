@@ -271,6 +271,8 @@ test('allow switching to embed view when linking to the other document with mode
 
   // Card
   await page.locator('affine-embed-linked-doc-block').click();
+  // refocus
+  await page.locator('affine-embed-linked-doc-block').click();
   await page.getByLabel('Switch view').click();
 
   await clickable(linkToInlineBtn);
@@ -787,6 +789,9 @@ test.describe('Customize linked doc title and description', () => {
     const embedLink = page.locator('affine-embed-synced-doc-block');
     const embedTitle = embedLink.locator('.affine-embed-synced-doc-title');
     const embedToolbar = page.locator('affine-embed-card-toolbar');
+
+    // refocus the page
+    await embedLink.click();
 
     await embedLink.click();
 
