@@ -16,16 +16,12 @@ export function fuzzyMatch(
   query: string,
   matchInitial?: boolean
 ) {
-  const pureName = name
-    .trim()
-    .toLowerCase()
-    .split('')
+  const pureName = [...name.trim().toLowerCase()]
     .filter(char => char !== ' ')
     .join('');
 
   const regex = new RegExp(
-    query
-      .split('')
+    [...query]
       .filter(char => char !== ' ')
       .map(item => `${escapeRegExp(item)}.*`)
       .join(''),

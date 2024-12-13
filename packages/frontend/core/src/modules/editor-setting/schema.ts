@@ -32,4 +32,5 @@ export const EditorSettingSchema = BSEditorSettingSchema.merge(
   AffineEditorSettingSchema
 );
 
+// eslint-disable-next-line no-redeclare
 export type EditorSettingSchema = z.infer<typeof EditorSettingSchema>;

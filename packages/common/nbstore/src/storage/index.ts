@@ -1,7 +1,7 @@
 import EventEmitter2 from 'eventemitter2';
 
 import type { ConnectionStatus } from '../connection';
-import { type Storage, type StorageType } from '../storage';
+import { type Storage, type StorageType } from './storage';
 import type { BlobStorage } from './blob';
 import type { DocStorage } from './doc';
 import type { SyncStorage } from './sync';

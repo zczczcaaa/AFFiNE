@@ -14,7 +14,11 @@ import {
 } from './services/old/adapter';
 import { FavoriteStore } from './stores/favorite';
 
-export { FavoriteSupportType, isFavoriteSupportType } from './constant';
+export {
+  FavoriteSupportType,
+  type FavoriteSupportTypeUnion,
+  isFavoriteSupportType,
+} from './constant';
 export type { FavoriteList } from './entities/favorite-list';
 export { FavoriteService } from './services/favorite';
 export {

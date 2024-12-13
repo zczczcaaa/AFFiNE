@@ -9,6 +9,8 @@ import { WorkspaceDB, type WorkspaceDBWithTables } from '../entities/db';
 import {
   AFFiNE_WORKSPACE_DB_SCHEMA,
   AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA,
+  type AFFiNEWorkspaceDbSchema,
+  type AFFiNEWorkspaceUserdataDbSchema,
 } from '../schema';
 
 const WorkspaceDBClient = createORMClient(AFFiNE_WORKSPACE_DB_SCHEMA);
@@ -17,10 +19,10 @@ const WorkspaceUserdataDBClient = createORMClient(
 );
 
 export class WorkspaceDBService extends Service {
-  db: WorkspaceDBWithTables<AFFiNE_WORKSPACE_DB_SCHEMA>;
+  db: WorkspaceDBWithTables<AFFiNEWorkspaceDbSchema>;
   userdataDBPool = new ObjectPool<
     string,
-    WorkspaceDB<AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA>
+    WorkspaceDB<AFFiNEWorkspaceUserdataDbSchema>
   >({
     onDangling() {
       return false; // never release
@@ -30,7 +32,7 @@ export class WorkspaceDBService extends Service {
   constructor(private readonly workspaceService: WorkspaceService) {
     super();
     this.db = this.framework.createEntity(
-      WorkspaceDB<AFFiNE_WORKSPACE_DB_SCHEMA>,
+      WorkspaceDB<AFFiNEWorkspaceDbSchema>,
       {
         db: new WorkspaceDBClient(
           new YjsDBAdapter(AFFiNE_WORKSPACE_DB_SCHEMA, {
@@ -52,7 +54,7 @@ export class WorkspaceDBService extends Service {
         storageDocId: tableName =>
           `db$${this.workspaceService.workspace.id}$${tableName}`,
       }
-    ) as WorkspaceDBWithTables<AFFiNE_WORKSPACE_DB_SCHEMA>;
+    ) as WorkspaceDBWithTables<AFFiNEWorkspaceDbSchema>;
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -60,11 +62,11 @@ export class WorkspaceDBService extends Service {
     // __local__ for local workspace
     const userdataDb = this.userdataDBPool.get(userId);
     if (userdataDb) {
-      return userdataDb.obj as WorkspaceDBWithTables<AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA>;
+      return userdataDb.obj as WorkspaceDBWithTables<AFFiNEWorkspaceUserdataDbSchema>;
     }
 
     const newDB = this.framework.createEntity(
-      WorkspaceDB<AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA>,
+      WorkspaceDB<AFFiNEWorkspaceUserdataDbSchema>,
       {
         db: new WorkspaceUserdataDBClient(
           new YjsDBAdapter(AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA, {
@@ -89,7 +91,7 @@ export class WorkspaceDBService extends Service {
     );
 
     this.userdataDBPool.put(userId, newDB);
-    return newDB as WorkspaceDBWithTables<AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA>;
+    return newDB as WorkspaceDBWithTables<AFFiNEWorkspaceUserdataDbSchema>;
   }
 
   static isDBDocId(docId: string) {

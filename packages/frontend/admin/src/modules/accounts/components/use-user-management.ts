@@ -53,7 +53,7 @@ export const useCreateUser = () => {
         toast.error('Failed to update account: ' + (e as Error).message);
       }
     },
-    [createAccount, revalidate]
+    [createAccount, revalidate, updateAccountFeatures]
   );
 
   return { creating: creating || !!error, create };
@@ -99,7 +99,7 @@ export const useUpdateUser = () => {
         toast.error('Failed to update account: ' + (e as Error).message);
       }
     },
-    [revalidate, updateAccount]
+    [revalidate, updateAccount, updateAccountFeatures]
   );
 
   return { updating: updating || !!error, update };

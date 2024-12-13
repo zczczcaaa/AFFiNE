@@ -236,4 +236,5 @@ export const AFFINE_FLAGS = {
   },
 } satisfies { [key in string]: FlagInfo };
 
+// eslint-disable-next-line no-redeclare
 export type AFFINE_FLAGS = typeof AFFINE_FLAGS;

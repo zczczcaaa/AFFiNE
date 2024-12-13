@@ -6,7 +6,7 @@ import { LiveData, Service } from '@toeverything/infra';
 import { defaultsDeep } from 'lodash-es';
 import { Observable } from 'rxjs';
 
-import type { FavoriteSupportType } from '../../constant';
+import type { FavoriteSupportTypeUnion } from '../../constant';
 import type { FavoriteService } from '../favorite';
 import {
   PagePropertyType,
@@ -192,7 +192,7 @@ export class MigrationFavoriteItemsAdapter extends Service {
   }
 }
 
-type CompatibleFavoriteSupportType = FavoriteSupportType;
+type CompatibleFavoriteSupportType = FavoriteSupportTypeUnion;
 
 /**
  * A service written for compatibility,with the same API as old FavoriteItemsAdapter.

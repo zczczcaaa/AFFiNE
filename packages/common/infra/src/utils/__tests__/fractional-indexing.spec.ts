@@ -25,7 +25,6 @@ test('fractional-indexing', () => {
 
       if (set.has(s1) || set.has(s2) || s1 === s2) {
         throw new Error('Duplicate key, ' + set.size + ', ' + s1 + ', ' + s2);
-        break;
       }
       set.add(s1);
       set.add(s2);

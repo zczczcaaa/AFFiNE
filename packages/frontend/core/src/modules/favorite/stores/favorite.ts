@@ -3,11 +3,11 @@ import { LiveData, Store } from '@toeverything/infra';
 import { map } from 'rxjs';
 
 import { AuthService, type WorkspaceServerService } from '../../cloud';
-import type { FavoriteSupportType } from '../constant';
+import type { FavoriteSupportTypeUnion } from '../constant';
 import { isFavoriteSupportType } from '../constant';
 
 export interface FavoriteRecord {
-  type: FavoriteSupportType;
+  type: FavoriteSupportTypeUnion;
   id: string;
   index: string;
 }
@@ -58,7 +58,7 @@ export class FavoriteStore extends Store {
   }
 
   addFavorite(
-    type: FavoriteSupportType,
+    type: FavoriteSupportTypeUnion,
     id: string,
     index: string
   ): FavoriteRecord {
@@ -70,17 +70,17 @@ export class FavoriteStore extends Store {
     return this.toRecord(raw) as FavoriteRecord;
   }
 
-  reorderFavorite(type: FavoriteSupportType, id: string, index: string) {
+  reorderFavorite(type: FavoriteSupportTypeUnion, id: string, index: string) {
     const db = this.userdataDB$.value;
     db.favorite.update(this.encodeKey(type, id), { index });
   }
 
-  removeFavorite(type: FavoriteSupportType, id: string) {
+  removeFavorite(type: FavoriteSupportTypeUnion, id: string) {
     const db = this.userdataDB$.value;
     db.favorite.delete(this.encodeKey(type, id));
   }
 
-  watchFavorite(type: FavoriteSupportType, id: string) {
+  watchFavorite(type: FavoriteSupportTypeUnion, id: string) {
     const db = this.userdataDB$.value;
     return LiveData.from<FavoriteRecord | undefined>(
       db.favorite
@@ -112,7 +112,7 @@ export class FavoriteStore extends Store {
    * @returns null if key is invalid
    */
   private parseKey(key: string): {
-    type: FavoriteSupportType;
+    type: FavoriteSupportTypeUnion;
     id: string;
   } | null {
     const [type, id] = key.split(':');
@@ -122,10 +122,10 @@ export class FavoriteStore extends Store {
     if (!isFavoriteSupportType(type)) {
       return null;
     }
-    return { type: type as FavoriteSupportType, id };
+    return { type: type as FavoriteSupportTypeUnion, id };
   }
 
-  private encodeKey(type: FavoriteSupportType, id: string) {
+  private encodeKey(type: FavoriteSupportTypeUnion, id: string) {
     return `${type}:${id}`;
   }
 }

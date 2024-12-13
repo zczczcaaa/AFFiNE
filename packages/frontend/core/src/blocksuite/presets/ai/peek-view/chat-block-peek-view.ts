@@ -6,8 +6,8 @@ import {
   DocModeProvider,
   type EdgelessRootService,
   TelemetryProvider,
+  NotificationProvider,
 } from '@blocksuite/affine/blocks';
-import { NotificationProvider } from '@blocksuite/affine/blocks';
 import {
   type AIChatBlockModel,
   type ChatMessage,

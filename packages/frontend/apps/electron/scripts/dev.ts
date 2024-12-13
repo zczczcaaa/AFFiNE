@@ -80,7 +80,9 @@ async function watchLayers() {
                 console.log(`[layers] has changed, [re]launching electron...`);
                 spawnOrReloadElectron();
               } else {
-                buildContextPromise.then(resolve);
+                buildContextPromise.then(resolve).catch(e => {
+                  console.error(e);
+                });
                 initialBuild = true;
               }
             });
@@ -88,9 +90,13 @@ async function watchLayers() {
         },
       ],
     });
-    buildContextPromise.then(async buildContext => {
-      await buildContext.watch();
-    });
+    buildContextPromise
+      .then(buildContext => {
+        return buildContext.watch();
+      })
+      .catch(e => {
+        console.error(e);
+      });
   });
 }
 

@@ -30,14 +30,12 @@ export const AFFiNE_WORKSPACE_DB_SCHEMA = {
     // we will keep deleted properties in the database, for override legacy data
   },
 } as const satisfies DBSchemaBuilder;
-export type AFFiNE_WORKSPACE_DB_SCHEMA = typeof AFFiNE_WORKSPACE_DB_SCHEMA;
+export type AFFiNEWorkspaceDbSchema = typeof AFFiNE_WORKSPACE_DB_SCHEMA;
 
-export type DocProperties = ORMEntity<
-  AFFiNE_WORKSPACE_DB_SCHEMA['docProperties']
->;
+export type DocProperties = ORMEntity<AFFiNEWorkspaceDbSchema['docProperties']>;
 
 export type DocCustomPropertyInfo = ORMEntity<
-  AFFiNE_WORKSPACE_DB_SCHEMA['docCustomPropertyInfo']
+  AFFiNEWorkspaceDbSchema['docCustomPropertyInfo']
 >;
 
 export const AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA = {
@@ -46,5 +44,5 @@ export const AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA = {
     index: f.string(),
   },
 } as const satisfies DBSchemaBuilder;
-export type AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA =
+export type AFFiNEWorkspaceUserdataDbSchema =
   typeof AFFiNE_WORKSPACE_USERDATA_DB_SCHEMA;

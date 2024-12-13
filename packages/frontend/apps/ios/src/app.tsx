@@ -86,10 +86,14 @@ framework.impl(ValidatorProvider, {
 });
 framework.impl(VirtualKeyboardProvider, {
   addEventListener: (event, callback) => {
-    Keyboard.addListener(event as any, callback as any);
+    Keyboard.addListener(event as any, callback as any).catch(e => {
+      console.error(e);
+    });
   },
   removeAllListeners: () => {
-    Keyboard.removeAllListeners();
+    Keyboard.removeAllListeners().catch(e => {
+      console.error(e);
+    });
   },
 });
 framework.impl(NavigationGestureProvider, {
@@ -145,6 +149,8 @@ CapacitorApp.addListener('appUrlOpen', ({ url }) => {
         .catch(console.error);
     }
   }
+}).catch(e => {
+  console.error(e);
 });
 
 export function App() {

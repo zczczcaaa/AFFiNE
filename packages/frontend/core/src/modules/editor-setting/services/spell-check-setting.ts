@@ -9,7 +9,7 @@ import { LiveData, Service } from '@toeverything/infra';
 import type { DesktopApiService } from '../../desktop-api';
 import type { I18n } from '../../i18n';
 
-const SPELL_CHECK_SETTING_KEY: SpellCheckStateKey = 'spellCheckState';
+const SPELL_CHECK_SETTING_KEY: typeof SpellCheckStateKey = 'spellCheckState';
 
 export class SpellCheckSettingService extends Service {
   constructor(

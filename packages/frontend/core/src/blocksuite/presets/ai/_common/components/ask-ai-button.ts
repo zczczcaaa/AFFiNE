@@ -4,8 +4,9 @@ import { type EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AIItemGroupConfig,
   EdgelessRootService,
+  createLitPortal,
+  HoverController,
 } from '@blocksuite/affine/blocks';
-import { createLitPortal, HoverController } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { flip, offset } from '@floating-ui/dom';
 import { css, html, LitElement, nothing } from 'lit';

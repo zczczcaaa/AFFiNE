@@ -24,8 +24,9 @@ import {
   type WorkspaceFlavoursProvider,
   type WorkspaceMetadata,
   type WorkspaceProfileInfo,
+  effect,
+  getAFFiNEWorkspaceSchema,
 } from '@toeverything/infra';
-import { effect, getAFFiNEWorkspaceSchema } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import { EMPTY, map, mergeMap, Observable, switchMap } from 'rxjs';

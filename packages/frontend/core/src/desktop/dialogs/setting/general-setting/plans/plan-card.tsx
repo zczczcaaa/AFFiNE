@@ -11,8 +11,6 @@ import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import {
   type CreateCheckoutSessionInput,
   SubscriptionRecurring,
-} from '@affine/graphql';
-import {
   SubscriptionPlan,
   SubscriptionStatus,
   SubscriptionVariant,

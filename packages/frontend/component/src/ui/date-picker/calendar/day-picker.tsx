@@ -97,7 +97,7 @@ export const DayPicker = memo(function DayPicker(
       const focused = document.activeElement;
 
       // check if focused is a date cell
-      if (!focused?.hasAttribute('data-is-date-cell')) return;
+      if (!(focused as HTMLElement | null)?.dataset.isDateCell) return;
       if (e.shiftKey) return;
 
       e.preventDefault();

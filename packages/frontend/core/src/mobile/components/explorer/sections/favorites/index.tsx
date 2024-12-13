@@ -3,7 +3,7 @@ import {
   ExplorerService,
   ExplorerTreeRoot,
 } from '@affine/core/modules/explorer';
-import type { FavoriteSupportType } from '@affine/core/modules/favorite';
+import type { FavoriteSupportTypeUnion } from '@affine/core/modules/favorite';
 import { FavoriteService } from '@affine/core/modules/favorite';
 import { useI18n } from '@affine/i18n';
 import {
@@ -73,7 +73,7 @@ export const FavoriteNode = ({
 }: {
   favorite: {
     id: string;
-    type: FavoriteSupportType;
+    type: FavoriteSupportTypeUnion;
   };
 }) => {
   return favorite.type === 'doc' ? (

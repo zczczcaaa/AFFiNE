@@ -8,7 +8,7 @@ import {
   DropEffect,
   ExplorerTreeRoot,
 } from '@affine/core/modules/explorer/views/tree';
-import type { FavoriteSupportType } from '@affine/core/modules/favorite';
+import type { FavoriteSupportTypeUnion } from '@affine/core/modules/favorite';
 import {
   FavoriteService,
   isFavoriteSupportType,
@@ -97,7 +97,7 @@ export const ExplorerFavorites = () => {
 
   const handleOnChildrenDrop = useCallback(
     (
-      favorite: { id: string; type: FavoriteSupportType },
+      favorite: { id: string; type: FavoriteSupportTypeUnion },
       data: DropTargetDropEvent<AffineDNDData>
     ) => {
       if (
@@ -220,12 +220,12 @@ const ExplorerFavoriteNode = ({
 }: {
   favorite: {
     id: string;
-    type: FavoriteSupportType;
+    type: FavoriteSupportTypeUnion;
   };
   onDrop: (
     favorite: {
       id: string;
-      type: FavoriteSupportType;
+      type: FavoriteSupportTypeUnion;
     },
     data: DropTargetDropEvent<AffineDNDData>
   ) => void;

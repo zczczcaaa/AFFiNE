@@ -6,8 +6,6 @@ import {
   type AffineSlashSubMenu,
   type AIItemConfig,
   DocModeProvider,
-} from '@blocksuite/affine/blocks';
-import {
   AFFINE_AI_PANEL_WIDGET,
   AffineSlashMenuWidget,
   AIStarIcon,

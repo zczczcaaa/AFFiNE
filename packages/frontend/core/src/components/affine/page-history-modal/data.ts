@@ -236,6 +236,7 @@ export function revertUpdate(
       } else if (type === 'Array') {
         return snapshotDoc.getArray(key);
       }
+      // eslint-disable-next-line array-callback-return
       throw new Error('Unknown type');
     })
   );

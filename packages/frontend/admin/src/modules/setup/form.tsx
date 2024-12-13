@@ -6,6 +6,7 @@ import {
   CarouselItem,
 } from '@affine/admin/components/ui/carousel';
 import { validateEmailAndPassword } from '@affine/admin/utils';
+import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -120,7 +121,7 @@ export const Form = () => {
     }
   }, [emailValue, passwordValue, refreshServerConfig]);
 
-  const onNext = useCallback(async () => {
+  const onNext = useAsyncCallback(async () => {
     if (isCreateAdminStep) {
       if (
         !validateEmailAndPassword(

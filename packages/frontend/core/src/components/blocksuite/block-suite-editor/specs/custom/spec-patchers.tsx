@@ -27,12 +27,12 @@ import { DebugLogger } from '@affine/debug';
 import { track } from '@affine/track';
 import {
   type BlockService,
+  BlockServiceWatcher,
   BlockViewIdentifier,
   ConfigIdentifier,
   type ExtensionType,
   type WidgetComponent,
 } from '@blocksuite/affine/block-std';
-import { BlockServiceWatcher } from '@blocksuite/affine/block-std';
 import type {
   AffineReference,
   DocMode,

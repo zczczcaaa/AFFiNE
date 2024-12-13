@@ -4,8 +4,9 @@ import {
   type FrameBlockModel,
   ImageBlockModel,
   type SurfaceBlockComponent,
+  BlocksUtils,
+  EdgelessRootService,
 } from '@blocksuite/affine/blocks';
-import { BlocksUtils, EdgelessRootService } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
 import {
   type BlockModel,
