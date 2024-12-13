@@ -12,6 +12,7 @@ import * as styles from './detail.css';
 export const DetailHeader = ({ collection }: { collection: Collection }) => {
   return (
     <PageHeader
+      className={styles.header}
       back
       suffix={
         <MobileMenu items={<AllDocsMenu />}>

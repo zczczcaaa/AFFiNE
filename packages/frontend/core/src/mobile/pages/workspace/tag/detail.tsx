@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom';
 import { TagDetail } from '../../../views';
 
 export const Component = () => {
-  useThemeColorV2('layer/background/secondary');
+  useThemeColorV2('layer/background/mobile/primary');
   const params = useParams();
   const tagId = params.tagId;
 

@@ -14,7 +14,7 @@ import { AppTabs } from '../../../components';
 import { CollectionDetail } from '../../../views';
 
 export const Component = () => {
-  useThemeColorV2('layer/background/secondary');
+  useThemeColorV2('layer/background/mobile/primary');
   const { collectionService, globalContextService, workspaceService } =
     useServices({
       WorkspaceService,

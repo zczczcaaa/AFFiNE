@@ -12,6 +12,7 @@ export const TagDetailHeader = ({ tag }: { tag: Tag }) => {
   const color = useLiveData(tag.color$);
   return (
     <PageHeader
+      className={styles.header}
       back
       suffix={
         <MobileMenu items={<AllDocsMenu />}>
