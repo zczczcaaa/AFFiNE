@@ -61,7 +61,7 @@ const WorkspaceList = ({
   const toggleWorkspace = useCallback(
     (id: string) => {
       if (id !== currentWorkspace.id) {
-        jumpToPage(id, 'all');
+        jumpToPage(id, 'home');
       }
       onClose?.();
     },

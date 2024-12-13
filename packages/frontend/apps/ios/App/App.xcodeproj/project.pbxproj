@@ -163,8 +163,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
 			buildPhases = (
-				C4C97C6A2D0300E100BC2AD1 /* Build Rust */,
 				6634F4EFEBD30273BCE97C65 /* [CP] Check Pods Manifest.lock */,
+				C4C97C6A2D0300E100BC2AD1 /* Build Rust */,
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
