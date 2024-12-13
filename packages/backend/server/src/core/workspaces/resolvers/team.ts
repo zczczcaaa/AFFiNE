@@ -18,7 +18,7 @@ import {
   RequestMutex,
   TooManyRequest,
   URLHelper,
-} from '../../../fundamentals';
+} from '../../../base';
 import { CurrentUser } from '../../auth';
 import { Permission, PermissionService } from '../../permission';
 import { QuotaManagementService } from '../../quota';

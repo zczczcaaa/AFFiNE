@@ -4,14 +4,14 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
 
-import { AuthGuard } from './core/auth';
-import { ENABLED_FEATURES } from './core/config/server-feature';
 import {
   CacheInterceptor,
   CloudThrottlerGuard,
   GlobalExceptionFilter,
-} from './fundamentals';
-import { SocketIoAdapter, SocketIoAdapterImpl } from './fundamentals/websocket';
+} from './base';
+import { SocketIoAdapter, SocketIoAdapterImpl } from './base/websocket';
+import { AuthGuard } from './core/auth';
+import { ENABLED_FEATURES } from './core/config/server-feature';
 import { serverTimingAndCache } from './middleware/timing';
 
 export async function createApp() {

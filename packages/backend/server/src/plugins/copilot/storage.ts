@@ -2,7 +2,6 @@ import { createHash } from 'node:crypto';
 
 import { Injectable } from '@nestjs/common';
 
-import { QuotaManagementService } from '../../core/quota';
 import {
   type BlobInputType,
   BlobQuotaExceeded,
@@ -12,7 +11,8 @@ import {
   type StorageProvider,
   StorageProviderFactory,
   URLHelper,
-} from '../../fundamentals';
+} from '../../base';
+import { QuotaManagementService } from '../../core/quota';
 
 @Injectable()
 export class CopilotStorage {

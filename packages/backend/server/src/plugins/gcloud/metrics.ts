@@ -9,8 +9,8 @@ import {
 } from '@opentelemetry/sdk-metrics';
 import { SpanExporter } from '@opentelemetry/sdk-trace-node';
 
-import { OptionalModule } from '../../fundamentals';
-import { OpentelemetryFactory } from '../../fundamentals/metrics';
+import { OptionalModule } from '../../base';
+import { OpentelemetryFactory } from '../../base/metrics';
 
 export class GCloudOpentelemetryFactory extends OpentelemetryFactory {
   override getResource(): Resource {

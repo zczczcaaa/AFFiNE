@@ -11,7 +11,7 @@ import {
   CopilotProviderSideError,
   metrics,
   UserFriendlyError,
-} from '../../../fundamentals';
+} from '../../../base';
 import {
   CopilotCapability,
   CopilotChatOptions,

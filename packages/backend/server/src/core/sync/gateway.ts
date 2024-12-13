@@ -19,7 +19,7 @@ import {
   NotInSpace,
   SpaceAccessDenied,
   VersionRejected,
-} from '../../fundamentals';
+} from '../../base';
 import { CurrentUser } from '../auth';
 import {
   DocStorageAdapter,

@@ -6,8 +6,8 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import type { Request } from 'express';
 import Stripe from 'stripe';
 
+import { Config, InternalServerError } from '../../base';
 import { Public } from '../../core/auth';
-import { Config, InternalServerError } from '../../fundamentals';
 
 @Controller('/api/stripe')
 export class StripeWebhookController {

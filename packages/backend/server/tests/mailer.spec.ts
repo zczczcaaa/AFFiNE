@@ -4,8 +4,8 @@ import ava from 'ava';
 import Sinon from 'sinon';
 
 import { AppModule } from '../src/app.module';
+import { MailService } from '../src/base/mailer';
 import { FeatureManagementService } from '../src/core/features';
-import { MailService } from '../src/fundamentals/mailer';
 import { createTestingApp, createWorkspace, inviteUser, signUp } from './utils';
 const test = ava as TestFn<{
   app: INestApplication;

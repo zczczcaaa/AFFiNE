@@ -13,7 +13,7 @@ import {
 import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
-import type { FileUpload } from '../../../fundamentals';
+import type { FileUpload } from '../../../base';
 import {
   AlreadyInSpace,
   Cache,
@@ -30,7 +30,7 @@ import {
   TooManyRequest,
   UserFriendlyError,
   UserNotFound,
-} from '../../../fundamentals';
+} from '../../../base';
 import { CurrentUser, Public } from '../../auth';
 import { type Editor, PgWorkspaceDocStorageAdapter } from '../../doc';
 import { Permission, PermissionService } from '../../permission';

@@ -8,9 +8,9 @@ import type { TestFn } from 'ava';
 import ava from 'ava';
 
 import { AppModule } from '../src/app.module';
+import { MailService } from '../src/base/mailer';
 import { AuthService } from '../src/core/auth/service';
 import { UserService } from '../src/core/user';
-import { MailService } from '../src/fundamentals/mailer';
 import {
   acceptInviteById,
   createTestingApp,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-import { CannotDeleteAllAdminAccount } from '../../fundamentals';
+import { CannotDeleteAllAdminAccount } from '../../base';
 import { WorkspaceType } from '../workspaces/types';
 import { FeatureConfigType, getFeature } from './feature';
 import { FeatureKind, FeatureType } from './types';

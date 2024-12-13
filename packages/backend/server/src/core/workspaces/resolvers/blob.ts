@@ -12,8 +12,8 @@ import {
 } from '@nestjs/graphql';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
-import type { FileUpload } from '../../../fundamentals';
-import { BlobQuotaExceeded, CloudThrottlerGuard } from '../../../fundamentals';
+import type { FileUpload } from '../../../base';
+import { BlobQuotaExceeded, CloudThrottlerGuard } from '../../../base';
 import { CurrentUser } from '../../auth';
 import { Permission, PermissionService } from '../../permission';
 import { QuotaManagementService } from '../../quota';

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { Config, type EventPayload, OnEvent } from '../../fundamentals';
+import { Config, type EventPayload, OnEvent } from '../../base';
 import { UserService } from '../user/service';
 import { FeatureService } from './service';
 import { FeatureType } from './types';

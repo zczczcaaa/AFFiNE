@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
+import type { EventPayload } from '../../base';
 import { PermissionService } from '../../core/permission';
 import { QuotaManagementService, QuotaType } from '../../core/quota';
-import type { EventPayload } from '../../fundamentals';
 
 @Injectable()
 export class TeamQuotaOverride {

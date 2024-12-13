@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Redis as IORedis, RedisOptions } from 'ioredis';
 
-import { Config } from '../../fundamentals/config';
+import { Config } from '../../base/config';
 
 class Redis extends IORedis implements OnModuleDestroy, OnModuleInit {
   logger = new Logger(Redis.name);

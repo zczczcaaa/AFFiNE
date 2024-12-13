@@ -7,10 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { config } from 'dotenv';
 
-import {
-  applyEnvToConfig,
-  getAFFiNEConfigModifier,
-} from './fundamentals/config';
+import { applyEnvToConfig, getAFFiNEConfigModifier } from './base/config';
 
 const PROJECT_CONFIG_PATH = join(fileURLToPath(import.meta.url), '../config');
 const CUSTOM_CONFIG_PATH = `${homedir()}/.affine/config`;

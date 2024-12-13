@@ -6,7 +6,7 @@ import type { Application } from 'express';
 import { static as serveStatic } from 'express';
 import isMobile from 'is-mobile';
 
-import { Config } from '../../fundamentals';
+import { Config } from '../../base';
 import { SetupMiddleware } from './setup';
 
 @Injectable()

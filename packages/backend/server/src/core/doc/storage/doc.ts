@@ -9,7 +9,7 @@ import {
   UndoManager,
 } from 'yjs';
 
-import { CallMetric } from '../../../fundamentals';
+import { CallMetric } from '../../../base';
 import { Connection } from './connection';
 import { SingletonLocker } from './lock';
 

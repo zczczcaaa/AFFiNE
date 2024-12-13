@@ -7,7 +7,7 @@ import {
   InternalServerError,
   Mutex,
   PasswordRequired,
-} from '../../fundamentals';
+} from '../../base';
 import { AuthService, Public } from '../auth';
 import { ServerService } from '../config';
 import { UserService } from '../user/service';

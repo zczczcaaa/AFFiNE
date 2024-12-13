@@ -1,6 +1,6 @@
 import { pick } from 'lodash-es';
 
-import { PrismaTransaction } from '../../fundamentals';
+import { PrismaTransaction } from '../../base';
 import { formatDate, formatSize, Quota, QuotaSchema } from './types';
 
 const QuotaCache = new Map<number, QuotaConfig>();

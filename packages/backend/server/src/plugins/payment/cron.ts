@@ -3,7 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaClient } from '@prisma/client';
 
-import { EventEmitter, type EventPayload } from '../../fundamentals';
+import { EventEmitter, type EventPayload } from '../../base';
 import {
   SubscriptionPlan,
   SubscriptionRecurring,

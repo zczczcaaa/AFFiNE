@@ -10,7 +10,7 @@ import {
   OnEvent,
   WrongSignInCredentials,
   WrongSignInMethod,
-} from '../../fundamentals';
+} from '../../base';
 import { PermissionService } from '../permission';
 import { Quota_FreePlanV1_1 } from '../quota/schema';
 import { validators } from '../utils/validators';

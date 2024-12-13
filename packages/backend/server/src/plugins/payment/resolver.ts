@@ -18,15 +18,15 @@ import { GraphQLJSONObject } from 'graphql-scalars';
 import { groupBy } from 'lodash-es';
 import { z } from 'zod';
 
-import { CurrentUser, Public } from '../../core/auth';
-import { Permission, PermissionService } from '../../core/permission';
-import { UserType } from '../../core/user';
-import { WorkspaceType } from '../../core/workspaces';
 import {
   AccessDenied,
   FailedToCheckout,
   WorkspaceIdRequiredToUpdateTeamSubscription,
-} from '../../fundamentals';
+} from '../../base';
+import { CurrentUser, Public } from '../../core/auth';
+import { Permission, PermissionService } from '../../core/permission';
+import { UserType } from '../../core/user';
+import { WorkspaceType } from '../../core/workspaces';
 import { Invoice, Subscription, WorkspaceSubscriptionManager } from './manager';
 import { CheckoutParams, SubscriptionService } from './service';
 import {

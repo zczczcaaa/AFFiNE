@@ -1,6 +1,6 @@
 import { RedisOptions } from 'ioredis';
 
-import { defineStartupConfig, ModuleConfig } from '../../fundamentals/config';
+import { defineStartupConfig, ModuleConfig } from '../../base/config';
 
 declare module '../config' {
   interface PluginsConfig {

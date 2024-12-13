@@ -9,10 +9,10 @@ import type { Response } from 'supertest';
 import supertest from 'supertest';
 
 import { AppModule, FunctionalityModules } from '../../src/app.module';
+import { Config, GlobalExceptionFilter } from '../../src/base';
+import { GqlModule } from '../../src/base/graphql';
 import { AuthGuard, AuthModule } from '../../src/core/auth';
 import { UserFeaturesInit1698652531198 } from '../../src/data/migrations/1698652531198-user-features-init';
-import { Config, GlobalExceptionFilter } from '../../src/fundamentals';
-import { GqlModule } from '../../src/fundamentals/graphql';
 
 export type PermissionEnum = 'Owner' | 'Admin' | 'Write' | 'Read';
 

@@ -6,12 +6,12 @@ import type { Request } from 'express';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 
-import { TokenService, TokenType } from '../../core/auth/token';
 import {
   CaptchaVerificationFailed,
   Config,
   verifyChallengeResponse,
-} from '../../fundamentals';
+} from '../../base';
+import { TokenService, TokenType } from '../../core/auth/token';
 import { CaptchaConfig } from './types';
 
 const validator = z

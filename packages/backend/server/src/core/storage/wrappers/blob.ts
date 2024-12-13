@@ -12,7 +12,7 @@ import {
   PutObjectMetadata,
   type StorageProvider,
   StorageProviderFactory,
-} from '../../../fundamentals';
+} from '../../../base';
 
 @Injectable()
 export class WorkspaceBlobStorage {

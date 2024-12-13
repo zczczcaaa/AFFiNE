@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { InvalidEmail, InvalidPasswordLength } from '../../fundamentals';
+import { InvalidEmail, InvalidPasswordLength } from '../../base';
 
 export function assertValidEmail(email: string) {
   const result = z.string().email().safeParse(email);

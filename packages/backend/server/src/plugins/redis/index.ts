@@ -4,9 +4,9 @@ import { Global, Provider, Type } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
 
-import { Cache, Locker, SessionCache } from '../../fundamentals';
-import { ThrottlerStorage } from '../../fundamentals/throttler';
-import { SocketIoAdapterImpl } from '../../fundamentals/websocket';
+import { Cache, Locker, SessionCache } from '../../base';
+import { ThrottlerStorage } from '../../base/throttler';
+import { SocketIoAdapterImpl } from '../../base/websocket';
 import { Plugin } from '../registry';
 import { RedisCache } from './cache';
 import { CacheRedis, SessionRedis, SocketIoRedis } from './instances';

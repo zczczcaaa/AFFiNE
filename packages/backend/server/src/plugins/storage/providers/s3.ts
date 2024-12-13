@@ -19,7 +19,7 @@ import {
   PutObjectMetadata,
   StorageProvider,
   toBuffer,
-} from '../../../fundamentals/storage';
+} from '../../../base/storage';
 import type { S3StorageConfig } from '../config';
 
 export class S3StorageProvider implements StorageProvider {

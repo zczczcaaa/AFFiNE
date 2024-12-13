@@ -9,7 +9,7 @@ import {
   PrismaTransaction,
   SpaceAccessDenied,
   SpaceOwnerNotFound,
-} from '../../fundamentals';
+} from '../../base';
 import { FeatureKind } from '../features/types';
 import { QuotaType } from '../quota/types';
 import { Permission, PublicPageMode } from './types';

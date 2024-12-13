@@ -5,10 +5,6 @@ import Stripe from 'stripe';
 import { z } from 'zod';
 
 import {
-  EarlyAccessType,
-  FeatureManagementService,
-} from '../../../core/features';
-import {
   Config,
   EventEmitter,
   InternalServerError,
@@ -16,7 +12,11 @@ import {
   SubscriptionAlreadyExists,
   SubscriptionPlanNotFound,
   URLHelper,
-} from '../../../fundamentals';
+} from '../../../base';
+import {
+  EarlyAccessType,
+  FeatureManagementService,
+} from '../../../core/features';
 import {
   CouponType,
   KnownStripeInvoice,

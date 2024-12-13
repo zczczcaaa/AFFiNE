@@ -7,7 +7,7 @@ import {
   Config,
   mergeUpdatesInApplyWay as yotcoMergeUpdates,
   metrics,
-} from '../../fundamentals';
+} from '../../base';
 import { PermissionService } from '../permission';
 import { QuotaService } from '../quota';
 import { DocStorageOptions as IDocStorageOptions } from './storage';

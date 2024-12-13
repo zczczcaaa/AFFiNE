@@ -2,7 +2,7 @@ import assert from 'node:assert';
 
 import { Injectable, Logger } from '@nestjs/common';
 
-import { AFFiNEConfig, Config } from '../../../fundamentals';
+import { AFFiNEConfig, Config } from '../../../base';
 import { CopilotStartupConfigurations } from '../config';
 import {
   CapabilityToCopilotProvider,

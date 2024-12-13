@@ -8,6 +8,20 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { get } from 'lodash-es';
 
 import { AppController } from './app.controller';
+import { getOptionalModuleMetadata } from './base';
+import { CacheModule } from './base/cache';
+import { AFFiNEConfig, ConfigModule, mergeConfigOverride } from './base/config';
+import { ErrorModule } from './base/error';
+import { EventModule } from './base/event';
+import { GqlModule } from './base/graphql';
+import { HelpersModule } from './base/helpers';
+import { MailModule } from './base/mailer';
+import { MetricsModule } from './base/metrics';
+import { MutexModule } from './base/mutex';
+import { PrismaModule } from './base/prisma';
+import { StorageProviderModule } from './base/storage';
+import { RateLimiterModule } from './base/throttler';
+import { WebSocketModule } from './base/websocket';
 import { AuthModule } from './core/auth';
 import { ADD_ENABLED_FEATURES, ServerConfigModule } from './core/config';
 import { DocStorageModule } from './core/doc';
@@ -20,24 +34,6 @@ import { StorageModule } from './core/storage';
 import { SyncModule } from './core/sync';
 import { UserModule } from './core/user';
 import { WorkspaceModule } from './core/workspaces';
-import { getOptionalModuleMetadata } from './fundamentals';
-import { CacheModule } from './fundamentals/cache';
-import {
-  AFFiNEConfig,
-  ConfigModule,
-  mergeConfigOverride,
-} from './fundamentals/config';
-import { ErrorModule } from './fundamentals/error';
-import { EventModule } from './fundamentals/event';
-import { GqlModule } from './fundamentals/graphql';
-import { HelpersModule } from './fundamentals/helpers';
-import { MailModule } from './fundamentals/mailer';
-import { MetricsModule } from './fundamentals/metrics';
-import { MutexModule } from './fundamentals/mutex';
-import { PrismaModule } from './fundamentals/prisma';
-import { StorageProviderModule } from './fundamentals/storage';
-import { RateLimiterModule } from './fundamentals/throttler';
-import { WebSocketModule } from './fundamentals/websocket';
 import { REGISTERED_PLUGINS } from './plugins';
 import { ENABLED_PLUGINS } from './plugins/registry';
 

@@ -9,7 +9,7 @@ import {
   Config,
   getRequestResponseFromContext,
   GuardProvider,
-} from '../../fundamentals';
+} from '../../base';
 import { CaptchaService } from './service';
 
 @Injectable()

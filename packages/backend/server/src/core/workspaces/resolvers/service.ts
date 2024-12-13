@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { getStreamAsBuffer } from 'get-stream';
 
-import { Cache, MailService } from '../../../fundamentals';
+import { Cache, MailService } from '../../../base';
 import { DocContentService } from '../../doc-renderer';
 import { PermissionService } from '../../permission';
 import { WorkspaceBlobStorage } from '../../storage';

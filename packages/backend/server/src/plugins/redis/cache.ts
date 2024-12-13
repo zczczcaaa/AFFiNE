@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-import type { Cache, CacheSetOptions } from '../../fundamentals/cache/def';
+import type { Cache, CacheSetOptions } from '../../base/cache/def';
 
 export class RedisCache implements Cache {
   constructor(private readonly redis: Redis) {}

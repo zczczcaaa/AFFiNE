@@ -4,6 +4,7 @@ import { INestApplication } from '@nestjs/common';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 
+import { Config, ConfigModule } from '../src/base/config';
 import { AuthService } from '../src/core/auth/service';
 import {
   FeatureManagementService,
@@ -12,7 +13,6 @@ import {
   FeatureType,
 } from '../src/core/features';
 import { WorkspaceResolver } from '../src/core/workspaces/resolvers';
-import { Config, ConfigModule } from '../src/fundamentals/config';
 import { createTestingApp } from './utils';
 import { WorkspaceResolverMock } from './utils/feature';
 

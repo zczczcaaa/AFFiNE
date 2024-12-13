@@ -1,7 +1,7 @@
 import type { User, Workspace } from '@prisma/client';
 import Stripe from 'stripe';
 
-import type { Payload } from '../../fundamentals/event/def';
+import type { Payload } from '../../base/event/def';
 
 export enum SubscriptionRecurring {
   Monthly = 'monthly',
@@ -49,7 +49,7 @@ export enum CouponType {
   ProEarlyAccessAIOneYearFree = 'ai_pro_ea_one_year_free',
 }
 
-declare module '../../fundamentals/event/def' {
+declare module '../../base/event/def' {
   interface UserEvents {
     subscription: {
       activated: Payload<{

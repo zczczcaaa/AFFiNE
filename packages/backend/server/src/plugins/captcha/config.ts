@@ -2,7 +2,7 @@ import {
   defineRuntimeConfig,
   defineStartupConfig,
   ModuleConfig,
-} from '../../fundamentals/config';
+} from '../../base/config';
 import { CaptchaConfig } from './types';
 
 declare module '../config' {
@@ -16,7 +16,7 @@ declare module '../config' {
   }
 }
 
-declare module '../../fundamentals/guard' {
+declare module '../../base/guard' {
   interface RegisterGuardName {
     captcha: 'captcha';
   }

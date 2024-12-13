@@ -12,7 +12,7 @@ import {
 import { RuntimeConfig, RuntimeConfigType } from '@prisma/client';
 import { GraphQLJSON, GraphQLJSONObject } from 'graphql-scalars';
 
-import { Config, URLHelper } from '../../fundamentals';
+import { Config, URLHelper } from '../../base';
 import { Public } from '../auth';
 import { Admin } from '../common';
 import { FeatureType } from '../features';

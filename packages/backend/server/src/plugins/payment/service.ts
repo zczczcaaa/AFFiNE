@@ -4,9 +4,6 @@ import { PrismaClient } from '@prisma/client';
 import Stripe from 'stripe';
 import { z } from 'zod';
 
-import { CurrentUser } from '../../core/auth';
-import { FeatureManagementService } from '../../core/features';
-import { UserService } from '../../core/user';
 import {
   ActionForbidden,
   CantUpdateOnetimePaymentSubscription,
@@ -25,7 +22,10 @@ import {
   SubscriptionPlanNotFound,
   UnsupportedSubscriptionPlan,
   UserNotFound,
-} from '../../fundamentals';
+} from '../../base';
+import { CurrentUser } from '../../core/auth';
+import { FeatureManagementService } from '../../core/features';
+import { UserService } from '../../core/user';
 import {
   CheckoutParams,
   Invoice,

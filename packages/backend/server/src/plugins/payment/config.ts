@@ -4,7 +4,7 @@ import {
   defineRuntimeConfig,
   defineStartupConfig,
   ModuleConfig,
-} from '../../fundamentals/config';
+} from '../../base/config';
 
 export interface PaymentStartupConfig {
   stripe?: {

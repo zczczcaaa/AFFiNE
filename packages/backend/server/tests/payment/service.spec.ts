@@ -7,14 +7,14 @@ import Sinon from 'sinon';
 import Stripe from 'stripe';
 
 import { AppModule } from '../../src/app.module';
+import { EventEmitter } from '../../src/base';
+import { Config, ConfigModule, Runtime } from '../../src/base/config';
 import { CurrentUser } from '../../src/core/auth';
 import { AuthService } from '../../src/core/auth/service';
 import {
   EarlyAccessType,
   FeatureManagementService,
 } from '../../src/core/features';
-import { EventEmitter } from '../../src/fundamentals';
-import { Config, ConfigModule, Runtime } from '../../src/fundamentals/config';
 import { SubscriptionService } from '../../src/plugins/payment/service';
 import {
   CouponType,

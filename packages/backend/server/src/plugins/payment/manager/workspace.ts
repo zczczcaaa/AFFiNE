@@ -11,7 +11,7 @@ import {
   SubscriptionAlreadyExists,
   SubscriptionPlanNotFound,
   URLHelper,
-} from '../../../fundamentals';
+} from '../../../base';
 import {
   KnownStripeInvoice,
   KnownStripePrice,

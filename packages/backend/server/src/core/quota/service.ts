@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-import type { EventPayload } from '../../fundamentals';
-import { OnEvent, PrismaTransaction } from '../../fundamentals';
+import type { EventPayload } from '../../base';
+import { OnEvent, PrismaTransaction } from '../../base';
 import { FeatureManagementService } from '../features/management';
 import { FeatureKind } from '../features/types';
 import { QuotaConfig } from './quota';

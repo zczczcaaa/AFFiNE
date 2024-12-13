@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Command } from 'ioredis';
 
-import { ILocker, Lock } from '../../fundamentals';
+import { ILocker, Lock } from '../../base';
 import { SessionRedis } from './instances';
 
 // === atomic mutex lock ===

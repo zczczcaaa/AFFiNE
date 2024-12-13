@@ -16,7 +16,7 @@ import {
   type FileUpload,
   Throttle,
   UserNotFound,
-} from '../../fundamentals';
+} from '../../base';
 import { Public } from '../auth/guard';
 import { sessionUser } from '../auth/service';
 import { CurrentUser } from '../auth/session';

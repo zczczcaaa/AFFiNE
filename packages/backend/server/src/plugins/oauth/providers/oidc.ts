@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { z } from 'zod';
 
-import { Config, URLHelper } from '../../../fundamentals';
+import { Config, URLHelper } from '../../../base';
 import {
   OAuthOIDCProviderConfig,
   OAuthProviderName,

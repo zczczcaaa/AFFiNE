@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { MemberQuotaExceeded } from '../../fundamentals';
+import { MemberQuotaExceeded } from '../../base';
 import { FeatureService, FeatureType } from '../features';
 import { PermissionService } from '../permission';
 import { WorkspaceBlobStorage } from '../storage';

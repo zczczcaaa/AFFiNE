@@ -2,7 +2,7 @@ import { PrismaClient, UserStripeCustomer } from '@prisma/client';
 import Stripe from 'stripe';
 import { z } from 'zod';
 
-import { UserNotFound } from '../../../fundamentals';
+import { UserNotFound } from '../../../base';
 import { ScheduleManager } from '../schedule';
 import {
   encodeLookupKey,

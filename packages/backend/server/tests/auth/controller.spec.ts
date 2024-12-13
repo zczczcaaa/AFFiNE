@@ -4,11 +4,11 @@ import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
 import request from 'supertest';
 
+import { MailService } from '../../src/base';
 import { AuthModule, CurrentUser } from '../../src/core/auth';
 import { AuthService } from '../../src/core/auth/service';
 import { FeatureModule } from '../../src/core/features';
 import { UserModule, UserService } from '../../src/core/user';
-import { MailService } from '../../src/fundamentals';
 import { createTestingApp, getSession, sessionCookie } from '../utils';
 
 const test = ava as TestFn<{

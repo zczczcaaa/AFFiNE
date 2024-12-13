@@ -1,4 +1,4 @@
-import { defineStartupConfig, ModuleConfig } from '../../fundamentals/config';
+import { defineStartupConfig, ModuleConfig } from '../../base/config';
 
 export interface ServerStartupConfigurations {
   /**
@@ -24,7 +24,7 @@ export interface ServerStartupConfigurations {
   path: string;
 }
 
-declare module '../../fundamentals/config' {
+declare module '../../base/config' {
   interface AppConfig {
     server: ModuleConfig<ServerStartupConfigurations>;
   }

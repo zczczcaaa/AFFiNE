@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-import { Mutex } from '../../../fundamentals';
+import { Mutex } from '../../../base';
 import { DocStorageOptions } from '../options';
 import { DocRecord, DocStorageAdapter } from '../storage';
 

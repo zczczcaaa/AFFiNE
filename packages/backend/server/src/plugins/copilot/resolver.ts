@@ -19,10 +19,6 @@ import { AiPromptRole } from '@prisma/client';
 import { GraphQLJSON, SafeIntResolver } from 'graphql-scalars';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
-import { CurrentUser } from '../../core/auth';
-import { Admin } from '../../core/common';
-import { PermissionService } from '../../core/permission';
-import { UserType } from '../../core/user';
 import {
   CallMetric,
   CopilotFailedToCreateMessage,
@@ -30,7 +26,11 @@ import {
   RequestMutex,
   Throttle,
   TooManyRequest,
-} from '../../fundamentals';
+} from '../../base';
+import { CurrentUser } from '../../core/auth';
+import { Admin } from '../../core/common';
+import { PermissionService } from '../../core/permission';
+import { UserType } from '../../core/user';
 import { PromptService } from './prompt';
 import { ChatSessionService } from './session';
 import { CopilotStorage } from './storage';

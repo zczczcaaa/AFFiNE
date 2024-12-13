@@ -24,7 +24,7 @@ import {
   Throttle,
   URLHelper,
   UseNamedGuard,
-} from '../../fundamentals';
+} from '../../base';
 import { UserService } from '../user';
 import { validators } from '../utils/validators';
 import { Public } from './guard';
