@@ -6,14 +6,11 @@ import {
 import { createPageModeSpecs } from '@affine/core/components/blocksuite/block-suite-editor/specs/page';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { BlockStdScope } from '@blocksuite/affine/block-std';
+import type { DNDAPIExtension } from '@blocksuite/affine/blocks';
 import { DndApiExtensionIdentifier } from '@blocksuite/affine/blocks';
-import {
-  DocCollection,
-  nanoid,
-  type SliceSnapshot,
-} from '@blocksuite/affine/store';
+import { type SliceSnapshot } from '@blocksuite/affine/store';
 import type { DocsService, WorkspaceService } from '@toeverything/infra';
-import { getAFFiNEWorkspaceSchema, Service } from '@toeverything/infra';
+import { Service } from '@toeverything/infra';
 
 import { resolveLinkToDoc } from '../../navigation';
 
@@ -54,21 +51,23 @@ export class DndService extends Service {
     source: ExternalDragPayload
   ) => Entity | null)[] = [];
 
-  readonly blocksuiteDndAPI = (() => {
-    const collection = new DocCollection({
-      schema: getAFFiNEWorkspaceSchema(),
-    });
-    collection.meta.initialize();
+  private _blocksuiteDndAPI: DNDAPIExtension | null = null;
+
+  get blocksuiteDndAPI() {
+    if (this._blocksuiteDndAPI) {
+      return this._blocksuiteDndAPI;
+    }
+
+    const collection = this.workspaceService.workspace.docCollection;
     const doc = collection.createDoc();
     const std = new BlockStdScope({
       doc,
       extensions: createPageModeSpecs(this.framework),
     });
-    this.disposables.push(() => {
-      collection.dispose();
-    });
-    return std.get(DndApiExtensionIdentifier);
-  })();
+    const dndAPI = std.get(DndApiExtensionIdentifier);
+    this._blocksuiteDndAPI = dndAPI;
+    return dndAPI;
+  }
 
   fromExternalData: fromExternalData<AffineDNDData> = (
     args: ExternalGetDataFeedbackArgs,
@@ -114,32 +113,19 @@ export class DndService extends Service {
       return {};
     }
 
-    // todo: use blocksuite provided api to generate snapshot
-    const snapshotSlice: SliceSnapshot = {
-      content: [
-        {
-          children: [],
-          flavour: 'affine:embed-linked-doc',
-          type: 'block',
-          id: nanoid(),
-          props: {
-            pageId: normalData.entity.id,
-          },
-        },
-      ],
-      type: 'slice',
-      pageId: nanoid(),
-      pageVersion: 1,
-      workspaceId: this.workspaceService.workspace.id,
-      workspaceVersion: 2,
-    };
+    const snapshotSlice = this.blocksuiteDndAPI.fromEntity({
+      docId: normalData.entity.id,
+      flavour: 'affine:embed-linked-doc',
+    });
 
-    const serialized = JSON.stringify(snapshotSlice);
+    if (!snapshotSlice) {
+      return {};
+    }
 
-    const html = `<div data-blocksuite-snapshot="${encodeURIComponent(serialized)}"></div>`;
+    const encoded = this.blocksuiteDndAPI.encodeSnapshot(snapshotSlice);
 
     return {
-      'text/html': html,
+      [this.blocksuiteDndAPI.mimeType]: encoded,
     };
   };
 
@@ -171,15 +157,11 @@ export class DndService extends Service {
   private readonly resolveBlocksuiteExternalData = (
     source: ExternalDragPayload
   ): Entity | null => {
-    const fakeDataTransfer = new Proxy(new DataTransfer(), {
-      get(target, prop) {
-        if (prop === 'getData') {
-          return (type: string) => source.getStringData(type);
-        }
-        return target[prop as keyof DataTransfer];
-      },
-    });
-    const snapshot = this.blocksuiteDndAPI.decodeSnapshot(fakeDataTransfer);
+    const encoded = source.getStringData(this.blocksuiteDndAPI.mimeType);
+    if (!encoded) {
+      return null;
+    }
+    const snapshot = this.blocksuiteDndAPI.decodeSnapshot(encoded);
     if (!snapshot) {
       return null;
     }

@@ -80,7 +80,7 @@ export async function getContentFromSlice(
     collection: host.std.doc.collection,
     middlewares: [titleMiddleware, embedSyncedDocMiddleware('content')],
   });
-  const snapshot = await job.sliceToSnapshot(slice);
+  const snapshot = job.sliceToSnapshot(slice);
   if (!snapshot) {
     return '';
   }
@@ -99,7 +99,7 @@ export async function getPlainTextFromSlice(host: EditorHost, slice: Slice) {
     collection: host.std.doc.collection,
     middlewares: [titleMiddleware],
   });
-  const snapshot = await job.sliceToSnapshot(slice);
+  const snapshot = job.sliceToSnapshot(slice);
   if (!snapshot) {
     return '';
   }
