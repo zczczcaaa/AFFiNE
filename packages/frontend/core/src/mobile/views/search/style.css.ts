@@ -1,13 +1,21 @@
-import { footnoteRegular, title3Regular } from '@toeverything/theme/typography';
+import {
+  bodyEmphasized,
+  footnoteRegular,
+  title3Regular,
+} from '@toeverything/theme/typography';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 export const searchHeader = style({
   padding: 16,
-  paddingLeft: 8,
   display: 'flex',
   alignItems: 'center',
-  gap: 4,
+  gap: 12,
+});
+export const searchCancel = style({
+  height: 44,
+  padding: '0px 4px',
+  color: cssVarV2.button.primary,
 });
 export const searchInput = style({
   width: 0,
@@ -33,7 +41,7 @@ export const resBlock = style({
   },
 });
 export const resBlockTitle = style([
-  title3Regular,
+  bodyEmphasized,
   {
     padding: '0 16px',
     color: cssVarV2('text/primary'),

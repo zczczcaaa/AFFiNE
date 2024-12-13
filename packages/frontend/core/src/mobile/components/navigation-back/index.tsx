@@ -19,6 +19,7 @@ export interface NavigationBackButtonProps extends IconButtonProps {
 export const NavigationBackButton = ({
   icon,
   backAction,
+  children,
   style: propsStyle,
   ...otherProps
 }: NavigationBackButtonProps) => {
@@ -41,6 +42,8 @@ export const NavigationBackButton = ({
   }, [isInsideModal, navigationGesture]);
 
   const style = useMemo(() => ({ padding: 10, ...propsStyle }), [propsStyle]);
+
+  if (children) return children;
 
   return (
     <IconButton
