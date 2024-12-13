@@ -49,11 +49,6 @@
   "commitMessageTopic": "{{depName}} version",
   "ignoreDeps": [],
   "postUpdateOptions": ["yarnDedupeHighest"],
-  "postUpgradeTasks": {
-    "commands": ["lint:prettier:fix"],
-    "fileFilters": ["yarn.lock", "**/*.{js,jsx,mjs,ts,tsx,yml,yaml}"],
-    "executionMode": "update"
-  },
   "lockFileMaintenance": {
     "enabled": true,
     "extends": ["schedule:weekly"]
