@@ -765,7 +765,6 @@ __metadata:
     "@napi-rs/cli": "npm:3.0.0-alpha.64"
     lib0: "npm:^0.2.93"
     nx: "npm:^20.0.3"
-    nx-cloud: "npm:^19.1.0"
     tiktoken: "npm:^1.0.15"
     tinybench: "npm:^3.0.0"
     yjs: "patch:yjs@npm%3A13.6.18#~/.yarn/patches/yjs-npm-13.6.18-ad0d5f7c43.patch"
