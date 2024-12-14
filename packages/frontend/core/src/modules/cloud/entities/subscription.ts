@@ -1,8 +1,8 @@
 import {
+  SubscriptionPlan,
   type SubscriptionQuery,
   SubscriptionRecurring,
   SubscriptionVariant,
-  SubscriptionPlan,
 } from '@affine/graphql';
 import {
   backoffRetry,

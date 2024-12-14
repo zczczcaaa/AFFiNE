@@ -8,7 +8,6 @@ import type React from 'react';
 
 const DEV_MODE = process.env.NODE_ENV !== 'production';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DistributiveOmit<T, K extends string | number | symbol> = T extends any
   ? K extends keyof T
     ? Omit<T, K>
@@ -38,7 +37,6 @@ export type WebComponentProps<I extends HTMLElement> = React.DetailedHTMLProps<
 > &
   ElementProps<I>;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type EmptyObject = {};
 
 /**

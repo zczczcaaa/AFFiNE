@@ -1,11 +1,11 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
+  BlocksUtils,
   type CopilotTool,
+  EdgelessRootService,
   type FrameBlockModel,
   ImageBlockModel,
   type SurfaceBlockComponent,
-  BlocksUtils,
-  EdgelessRootService,
 } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
 import {

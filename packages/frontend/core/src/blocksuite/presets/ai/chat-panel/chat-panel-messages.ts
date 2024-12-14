@@ -276,11 +276,14 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         : nothing} `;
   }
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    const res = await AIProvider.userInfo;
-    this.avatarUrl = res?.avatarUrl ?? '';
+    Promise.resolve(AIProvider.userInfo)
+      .then(res => {
+        this.avatarUrl = res?.avatarUrl ?? '';
+      })
+      .catch(console.error);
     this.disposables.add(
       AIProvider.slots.userInfo.on(userInfo => {
         const { status, error } = this.chatContextValue;

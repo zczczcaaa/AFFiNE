@@ -1,14 +1,14 @@
 import {
+  AFFINE_AI_PANEL_WIDGET,
   type AffineAIPanelWidget,
   type AffineSlashMenuActionItem,
   type AffineSlashMenuContext,
   type AffineSlashMenuItem,
+  AffineSlashMenuWidget,
   type AffineSlashSubMenu,
   type AIItemConfig,
-  DocModeProvider,
-  AFFINE_AI_PANEL_WIDGET,
-  AffineSlashMenuWidget,
   AIStarIcon,
+  DocModeProvider,
   MoreHorizontalIcon,
 } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';

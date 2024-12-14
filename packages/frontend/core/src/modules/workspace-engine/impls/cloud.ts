@@ -10,8 +10,10 @@ import {
   type BlobStorage,
   catchErrorInto,
   type DocStorage,
+  effect,
   exhaustMapSwitchUntilChanged,
   fromPromise,
+  getAFFiNEWorkspaceSchema,
   type GlobalState,
   LiveData,
   ObjectPool,
@@ -24,8 +26,6 @@ import {
   type WorkspaceFlavoursProvider,
   type WorkspaceMetadata,
   type WorkspaceProfileInfo,
-  effect,
-  getAFFiNEWorkspaceSchema,
 } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { nanoid } from 'nanoid';

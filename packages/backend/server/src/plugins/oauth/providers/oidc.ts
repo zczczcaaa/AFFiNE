@@ -178,6 +178,7 @@ export class OIDCProvider
     super();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   override async onModuleInit() {
     const config = this.optionalConfig as OAuthOIDCProviderConfig;
     if (config && config.issuer && config.clientId && config.clientSecret) {

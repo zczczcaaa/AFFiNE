@@ -57,7 +57,6 @@ export class WorkspaceDBService extends Service {
     ) as WorkspaceDBWithTables<AFFiNEWorkspaceDbSchema>;
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
   userdataDB(userId: (string & {}) | '__local__') {
     // __local__ for local workspace
     const userdataDb = this.userdataDBPool.get(userId);

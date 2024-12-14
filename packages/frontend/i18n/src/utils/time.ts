@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import { type I18nInstance, I18n } from '../i18next';
+import { I18n, type I18nInstance } from '../i18next';
 
 export type TimeUnit =
   | 'second'

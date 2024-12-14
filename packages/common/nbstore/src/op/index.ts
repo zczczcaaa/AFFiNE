@@ -28,8 +28,8 @@ export class SpaceStorageClient extends OpClient<SpaceStorageOps> {
     await this.call('disconnect');
   }
 
-  override async destroy() {
-    await this.call('destroy');
+  override destroy() {
+    this.call('destroy').catch(console.error);
     super.destroy();
   }
 
@@ -46,8 +46,8 @@ export class SpaceStorageWorkerClient extends SpaceStorageClient {
     this.worker = worker;
   }
 
-  override async destroy() {
-    await super.destroy();
+  override destroy() {
+    super.destroy();
     this.worker.terminate();
   }
 }

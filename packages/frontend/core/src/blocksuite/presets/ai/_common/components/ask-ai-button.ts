@@ -3,8 +3,8 @@ import './ask-ai-panel';
 import { type EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AIItemGroupConfig,
-  EdgelessRootService,
   createLitPortal,
+  EdgelessRootService,
   HoverController,
 } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';

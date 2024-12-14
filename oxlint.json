@@ -10,6 +10,7 @@
     "import/named": "allow",
     "no-await-in-loop": "allow",
     "promise/no-callback-in-promise": "allow",
+    "typescript/ban-types": "allow",
 
     "array-callback-return": "error",
     "constructor-super": "error",
@@ -99,7 +100,6 @@
     "typescript/prefer-for-of": "error",
     "typescript/no-unsafe-declaration-merging": "error",
     "typescript/no-unnecessary-type-constraint": "error",
-    "typescript/ban-types": "error",
     "typescript/no-this-alias": [
       "error",
       {

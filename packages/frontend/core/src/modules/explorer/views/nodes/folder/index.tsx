@@ -712,7 +712,6 @@ const ExplorerFolderNodeFolder = ({
   }, [additionalOperations, folderOperations]);
 
   const childrenOperations = useCallback(
-    // eslint-disable-next-line @typescript-eslint/ban-types
     (type: string, node: FolderNode) => {
       if (type === 'doc' || type === 'collection' || type === 'tag') {
         return [

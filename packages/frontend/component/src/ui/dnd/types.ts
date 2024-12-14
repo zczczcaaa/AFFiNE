@@ -51,6 +51,5 @@ export type toExternalData<D extends DNDData> = (
     | 'text/plain'
     | 'text/html'
     | 'Files'
-    // eslint-disable-next-line @typescript-eslint/ban-types
     | (string & {})]?: string;
 };

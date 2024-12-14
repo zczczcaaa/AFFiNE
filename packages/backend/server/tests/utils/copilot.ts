@@ -100,7 +100,7 @@ export class MockCopilotTestProvider
     // make some time gap for history test case
     await sleep(100);
     const result = 'generate text to text stream';
-    for await (const message of result) {
+    for (const message of result) {
       yield message;
       if (options.signal?.aborted) {
         break;

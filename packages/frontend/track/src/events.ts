@@ -294,8 +294,6 @@ const PageEvents = {
       property: ['addProperty'],
     },
   },
-  // remove when type added
-  // eslint-disable-next-line @typescript-eslint/ban-types
   edgeless: {},
   workspace: {
     $: {
@@ -316,18 +314,12 @@ const PageEvents = {
       ],
     },
   },
-  // remove when type added
-  // eslint-disable-next-line @typescript-eslint/ban-types
   collection: {
     docList: {
       docMenu: ['removeOrganizeItem'],
     },
   },
-  // remove when type added
-  // eslint-disable-next-line @typescript-eslint/ban-types
   tag: {},
-  // remove when type added
-  // eslint-disable-next-line @typescript-eslint/ban-types
   trash: {},
   subscriptionLanding: {
     $: {

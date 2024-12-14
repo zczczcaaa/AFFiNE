@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import type { DocMode } from '@blocksuite/affine/blocks';
 import type { WorkspaceMetadata } from '@toeverything/infra';
 

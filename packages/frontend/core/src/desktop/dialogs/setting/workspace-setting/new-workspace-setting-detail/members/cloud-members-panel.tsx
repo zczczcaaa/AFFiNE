@@ -107,10 +107,10 @@ export const CloudWorkspaceMembersPanel = ({
     return success;
   }, [permissionService.permission, workspaceShareSettingService.sharePreview]);
 
-  const onInviteBatchConfirm = useCallback<
-    InviteTeamMemberModalProps['onConfirm']
-  >(
-    async ({ emails }) => {
+  const onInviteBatchConfirm = useAsyncCallback(
+    async ({
+      emails,
+    }: Parameters<InviteTeamMemberModalProps['onConfirm']>[0]) => {
       setIsMutating(true);
       const success = await permissionService.permission.inviteMembers(
         emails,
