@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@googleapis/androidpublisher": "^22.0.0",
-    "@oxc-node/core": "^0.0.15"
+    "@oxc-node/core": "^0.0.16"
   },
   "devDependencies": {
     "@types/node": "^20.17.10",
