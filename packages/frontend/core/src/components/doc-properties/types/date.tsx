@@ -26,7 +26,12 @@ export const DateValue = ({ value, onChange }: PropertyValueProps) => {
   const { parsedValue, displayValue } = useParsedDate(value);
 
   return (
-    <Menu items={<DatePicker value={parsedValue} onChange={onChange} />}>
+    <Menu
+      contentOptions={{
+        style: BUILD_CONFIG.isMobileEdition ? { padding: '15px 20px' } : {},
+      }}
+      items={<DatePicker value={parsedValue} onChange={onChange} />}
+    >
       <PropertyValue
         className={parsedValue ? '' : styles.empty}
         isEmpty={!parsedValue}
