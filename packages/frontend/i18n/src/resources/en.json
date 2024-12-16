@@ -487,6 +487,7 @@
   "com.affine.error.retry": "Refresh",
   "com.affine.error.unexpected-error.title": "Something is wrong...",
   "com.affine.expired.page.subtitle": "Please request a new reset password link.",
+  "com.affine.expired.page.new-subtitle": "Please request a new link.",
   "com.affine.expired.page.title": "This link has expired...",
   "com.affine.export.error.message": "Please try it again later.",
   "com.affine.export.error.title": "Export failed due to an unexpected error",

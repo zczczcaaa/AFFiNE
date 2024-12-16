@@ -2,7 +2,9 @@ import { AcceptInvitePage } from '@affine/component/member-components';
 import type { GetInviteInfoQuery } from '@affine/graphql';
 import {
   acceptInviteByInviteIdMutation,
+  ErrorNames,
   getInviteInfoQuery,
+  UserFriendlyError,
 } from '@affine/graphql';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useEffect, useState } from 'react';
@@ -103,9 +105,19 @@ export const Middle = () => {
         inviteInfo: res.getInviteInfo,
       });
       return;
-    })().catch(err => {
-      // TODO: handle error
-      console.error(err);
+    })().catch(error => {
+      const userFriendlyError = UserFriendlyError.fromAnyError(error);
+      console.error(userFriendlyError);
+      if (userFriendlyError.name === ErrorNames.ALREADY_IN_SPACE) {
+        return navigateHelper.jumpToIndex();
+      }
+      if (
+        userFriendlyError.name === ErrorNames.USER_NOT_FOUND ||
+        userFriendlyError.name === ErrorNames.SPACE_OWNER_NOT_FOUND
+      ) {
+        return navigateHelper.jumpToExpired();
+      }
+      return navigateHelper.jumpTo404();
     });
   }, [graphqlService, navigateHelper, params.inviteId]);
 
