@@ -70,6 +70,8 @@ class TestingWorkspaceLocalProvider implements WorkspaceFlavourProvider {
     const list = this.workspaceListStore.get<WorkspaceMetadata[]>('list') ?? [];
     this.workspaceListStore.set('list', [...list, meta]);
 
+    docCollection.dispose();
+
     return { id, flavour: 'local' };
   }
   workspaces$ = LiveData.from<WorkspaceMetadata[]>(
@@ -93,6 +95,8 @@ class TestingWorkspaceLocalProvider implements WorkspaceFlavourProvider {
     });
 
     applyUpdate(bs.doc, data);
+
+    bs.dispose();
 
     return {
       name: bs.meta.name,

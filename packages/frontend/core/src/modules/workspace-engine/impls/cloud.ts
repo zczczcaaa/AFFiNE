@@ -30,7 +30,7 @@ import {
 import { isEqual } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import { EMPTY, map, mergeMap, Observable, switchMap } from 'rxjs';
-import { applyUpdate, encodeStateAsUpdate } from 'yjs';
+import { encodeStateAsUpdate } from 'yjs';
 
 import type { Server, ServersService } from '../../cloud';
 import {
@@ -48,6 +48,7 @@ import { CloudBlobStorage } from './engine/blob-cloud';
 import { StaticBlobStorage } from './engine/blob-static';
 import { CloudDocEngineServer } from './engine/doc-cloud';
 import { CloudStaticDocStorage } from './engine/doc-cloud-static';
+import { getWorkspaceProfileWorker } from './out-worker';
 
 const getCloudWorkspaceCacheKey = (serverId: string) => {
   if (serverId === 'affine-cloud') {
@@ -123,20 +124,24 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
       },
     });
 
-    // apply initial state
-    await initial(docCollection, blobStorage, docStorage);
+    try {
+      // apply initial state
+      await initial(docCollection, blobStorage, docStorage);
 
-    // save workspace to local storage, should be vary fast
-    await docStorage.doc.set(
-      workspaceId,
-      encodeStateAsUpdate(docCollection.doc)
-    );
-    for (const subdocs of docCollection.doc.getSubdocs()) {
-      await docStorage.doc.set(subdocs.guid, encodeStateAsUpdate(subdocs));
+      // save workspace to local storage, should be vary fast
+      await docStorage.doc.set(
+        workspaceId,
+        encodeStateAsUpdate(docCollection.doc)
+      );
+      for (const subdocs of docCollection.doc.getSubdocs()) {
+        await docStorage.doc.set(subdocs.guid, encodeStateAsUpdate(subdocs));
+      }
+
+      this.revalidate();
+      await this.waitForLoaded();
+    } finally {
+      docCollection.dispose();
     }
-
-    this.revalidate();
-    await this.waitForLoaded();
 
     return {
       id: workspaceId,
@@ -229,7 +234,7 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
     const docStorage = this.storageProvider.getDocStorage(id);
     // download root doc
     const localData = await docStorage.doc.get(id);
-    const cloudData = await cloudStorage.pull(id);
+    const cloudData = (await cloudStorage.pull(id))?.data;
 
     const info = await this.getWorkspaceInfo(id, signal);
 
@@ -241,17 +246,16 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
       };
     }
 
-    const bs = new DocCollection({
-      id,
-      schema: getAFFiNEWorkspaceSchema(),
-    });
+    const client = getWorkspaceProfileWorker();
 
-    if (localData) applyUpdate(bs.doc, localData);
-    if (cloudData) applyUpdate(bs.doc, cloudData.data);
+    const result = await client.call(
+      'renderWorkspaceProfile',
+      [localData, cloudData].filter(Boolean) as Uint8Array[]
+    );
 
     return {
-      name: bs.meta.name,
-      avatar: bs.meta.avatar,
+      name: result.name,
+      avatar: result.avatar,
       isOwner: info.isOwner,
       isAdmin: info.isAdmin,
       isTeam: info.workspace.team,

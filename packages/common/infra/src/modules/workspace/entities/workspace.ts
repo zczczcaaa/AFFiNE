@@ -82,4 +82,8 @@ export class Workspace extends Entity {
     }),
     undefined
   );
+
+  override dispose(): void {
+    this.docCollection.dispose();
+  }
 }

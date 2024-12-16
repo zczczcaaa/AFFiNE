@@ -48,16 +48,16 @@ export class EventBus {
     this.listeners[event.id].push(listener);
     const off = this.parent?.on(event, listener);
     return () => {
-      this.off(event, listener);
       off?.();
+      this.off(event.id, listener);
     };
   }
 
-  off<T>(event: FrameworkEvent<T>, listener: (event: T) => void) {
-    if (!this.listeners[event.id]) {
+  private off(eventId: string, listener: (event: any) => void) {
+    if (!this.listeners[eventId]) {
       return;
     }
-    this.listeners[event.id] = this.listeners[event.id].filter(
+    this.listeners[eventId] = this.listeners[eventId].filter(
       l => l !== listener
     );
   }
@@ -75,6 +75,15 @@ export class EventBus {
         console.error(e);
       }
     });
+  }
+
+  dispose(): void {
+    for (const eventId of Object.keys(this.listeners)) {
+      for (const listener of this.listeners[eventId]) {
+        this.parent?.off(eventId, listener);
+      }
+    }
+    this.listeners = {};
   }
 }
 

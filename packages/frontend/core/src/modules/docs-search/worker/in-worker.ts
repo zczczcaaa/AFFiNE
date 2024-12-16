@@ -105,6 +105,11 @@ const bookmarkFlavours = new Set([
   'affine:embed-loom',
 ]);
 
+const markdownPreviewDocCollection = new DocCollection({
+  id: 'indexer',
+  schema: blocksuiteSchema,
+});
+
 function generateMarkdownPreviewBuilder(
   yRootDoc: YDoc,
   workspaceId: string,
@@ -164,10 +169,7 @@ function generateMarkdownPreviewBuilder(
 
   const markdownAdapter = new MarkdownAdapter(
     new Job({
-      collection: new DocCollection({
-        id: 'indexer',
-        schema: blocksuiteSchema,
-      }),
+      collection: markdownPreviewDocCollection,
       middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
     })
   );
@@ -875,6 +877,7 @@ async function crawlingDocData({
         {
           id: docId,
           doc: Document.from<DocIndexSchema>(docId, {
+            docId,
             title: docTitle,
             summary,
           }),

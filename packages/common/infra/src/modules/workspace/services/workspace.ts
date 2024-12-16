@@ -10,4 +10,8 @@ export class WorkspaceService extends Service {
     }
     return this._workspace;
   }
+
+  override dispose(): void {
+    this._workspace?.dispose();
+  }
 }

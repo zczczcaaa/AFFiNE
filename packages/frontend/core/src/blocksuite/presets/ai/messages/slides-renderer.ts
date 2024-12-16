@@ -54,6 +54,8 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
 
   private _doc!: Doc;
 
+  private _docCollection: DocCollection | null = null;
+
   @query('editor-host')
   private accessor _editorHost!: EditorHost;
 
@@ -233,6 +235,12 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
 
     doc.resetHistory();
     this._doc = doc;
+    this._docCollection = collection;
+  }
+
+  override disconnectedCallback(): void {
+    this._docCollection?.dispose();
+    super.disconnectedCallback();
   }
 }
 

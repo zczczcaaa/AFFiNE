@@ -1,6 +1,7 @@
 import { defineSchema } from '@toeverything/infra';
 
 export const docIndexSchema = defineSchema({
+  docId: 'String',
   title: 'FullText',
   // summary of the doc, used for preview
   summary: { type: 'String', index: false },

@@ -18,12 +18,13 @@ import {
 import { isEqual } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import { Observable } from 'rxjs';
-import { applyUpdate, encodeStateAsUpdate } from 'yjs';
+import { encodeStateAsUpdate } from 'yjs';
 
 import { DesktopApiService } from '../../desktop-api';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { StaticBlobStorage } from './engine/blob-static';
+import { getWorkspaceProfileWorker } from './out-worker';
 
 export const LOCAL_WORKSPACE_LOCAL_STORAGE_KEY = 'affine-local-workspace';
 const LOCAL_WORKSPACE_CHANGED_BROADCAST_CHANNEL_KEY =
@@ -97,20 +98,24 @@ class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
       blobSources: { main: blobStorage },
     });
 
-    // apply initial state
-    await initial(docCollection, blobStorage, docStorage);
+    try {
+      // apply initial state
+      await initial(docCollection, blobStorage, docStorage);
 
-    // save workspace to local storage, should be vary fast
-    await docStorage.doc.set(id, encodeStateAsUpdate(docCollection.doc));
-    for (const subdocs of docCollection.doc.getSubdocs()) {
-      await docStorage.doc.set(subdocs.guid, encodeStateAsUpdate(subdocs));
+      // save workspace to local storage, should be vary fast
+      await docStorage.doc.set(id, encodeStateAsUpdate(docCollection.doc));
+      for (const subdocs of docCollection.doc.getSubdocs()) {
+        await docStorage.doc.set(subdocs.guid, encodeStateAsUpdate(subdocs));
+      }
+
+      // save workspace id to local storage
+      setLocalWorkspaceIds(ids => [...ids, id]);
+
+      // notify all browser tabs, so they can update their workspace list
+      this.notifyChannel.postMessage(id);
+    } finally {
+      docCollection.dispose();
     }
-
-    // save workspace id to local storage
-    setLocalWorkspaceIds(ids => [...ids, id]);
-
-    // notify all browser tabs, so they can update their workspace list
-    this.notifyChannel.postMessage(id);
 
     return { id, flavour: 'local' };
   }
@@ -158,16 +163,16 @@ class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
       };
     }
 
-    const bs = new DocCollection({
-      id,
-      schema: getAFFiNEWorkspaceSchema(),
-    });
+    const client = getWorkspaceProfileWorker();
 
-    if (localData) applyUpdate(bs.doc, localData);
+    const result = await client.call(
+      'renderWorkspaceProfile',
+      [localData].filter(Boolean) as Uint8Array[]
+    );
 
     return {
-      name: bs.meta.name,
-      avatar: bs.meta.avatar,
+      name: result.name,
+      avatar: result.avatar,
       isOwner: true,
     };
   }

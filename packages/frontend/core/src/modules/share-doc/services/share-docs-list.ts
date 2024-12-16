@@ -12,4 +12,8 @@ export class ShareDocsListService extends Service {
     this.workspaceService.workspace.flavour !== 'local'
       ? this.framework.createEntity(ShareDocsList)
       : null;
+
+  override dispose(): void {
+    this.shareDocs?.dispose();
+  }
 }

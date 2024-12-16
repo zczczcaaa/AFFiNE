@@ -317,9 +317,7 @@ function pageMetaToListItemProp(
     pageId: item.id,
     pageIds,
     title: <PageTitle id={item.id} />,
-    preview: (
-      <PagePreview docCollection={props.docCollection} pageId={item.id} />
-    ),
+    preview: <PagePreview pageId={item.id} />,
     createDate: new Date(item.createDate),
     updatedDate: item.updatedDate ? new Date(item.updatedDate) : undefined,
     to: props.rowAsLink && !props.selectable ? `/${item.id}` : undefined,

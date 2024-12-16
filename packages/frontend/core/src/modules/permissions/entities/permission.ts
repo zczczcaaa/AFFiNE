@@ -159,4 +159,8 @@ export class WorkspacePermission extends Entity {
       permission
     );
   }
+
+  override dispose(): void {
+    this.revalidate.unsubscribe();
+  }
 }

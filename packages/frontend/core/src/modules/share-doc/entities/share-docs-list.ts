@@ -66,4 +66,8 @@ export class ShareDocsList extends Entity {
       )
     )
   );
+
+  override dispose(): void {
+    this.revalidate.unsubscribe();
+  }
 }

@@ -632,10 +632,31 @@ export class DocsSearchService extends Service {
       );
   }
 
-  async getDocTitle(docId: string) {
-    const doc = await this.indexer.docIndex.get(docId);
-    const title = doc?.get('title');
-    return typeof title === 'string' ? title : title?.[0];
+  watchDocSummary(docId: string) {
+    return this.indexer.docIndex
+      .search$(
+        {
+          type: 'match',
+          field: 'docId',
+          match: docId,
+        },
+        {
+          fields: ['summary'],
+          pagination: {
+            limit: 1,
+          },
+        }
+      )
+      .pipe(
+        map(({ nodes }) => {
+          const node = nodes.at(0);
+          return (
+            (typeof node?.fields.summary === 'string'
+              ? node?.fields.summary
+              : node?.fields.summary[0]) ?? null
+          );
+        })
+      );
   }
 
   override dispose(): void {

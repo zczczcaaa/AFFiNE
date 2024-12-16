@@ -49,7 +49,7 @@ export class WorkspaceRepositoryService extends Service {
       return {
         workspace,
         dispose: () => {
-          workspace.dispose();
+          workspace.scope.dispose();
         },
       };
     }

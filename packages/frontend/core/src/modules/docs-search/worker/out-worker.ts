@@ -95,8 +95,8 @@ export async function createWorker(abort: AbortSignal) {
       });
     },
     dispose: () => {
-      worker.terminate();
       terminateAbort.abort(MANUALLY_STOP);
+      worker.terminate();
     },
   };
 }

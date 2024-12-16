@@ -194,6 +194,7 @@ export async function markDownToDoc(
   const collection = new DocCollection({
     schema,
   });
+  collection.awarenessStore.awareness.destroy();
   collection.meta.initialize();
   const middlewares = [defaultImageProxyMiddleware];
   if (additionalMiddlewares) {
