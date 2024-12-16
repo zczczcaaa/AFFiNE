@@ -79,9 +79,6 @@ declare module '../../base/event/def' {
         recurring: SubscriptionRecurring;
       }>;
     };
-    members: {
-      updated: Payload<{ workspaceId: Workspace['id']; count: number }>;
-    };
   }
 }
 

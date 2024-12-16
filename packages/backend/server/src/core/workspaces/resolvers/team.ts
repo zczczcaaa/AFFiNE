@@ -123,7 +123,7 @@ export class TeamWorkspaceResolver {
         // after user click the invite link, we can check again and reject if charge failed
         if (sendInviteMail) {
           try {
-            await this.workspaceService.sendInviteMail(ret.inviteId, email);
+            await this.workspaceService.sendInviteMail(ret.inviteId);
             ret.sentSuccess = true;
           } catch (e) {
             this.logger.warn(
@@ -253,8 +253,9 @@ export class TeamWorkspaceResolver {
           );
 
           if (result) {
-            // send approve mail
-            await this.workspaceService.sendReviewApproveEmail(result);
+            this.event.emit('workspace.members.requestApproved', {
+              inviteId: result,
+            });
           }
           return result;
         }
@@ -314,22 +315,27 @@ export class TeamWorkspaceResolver {
     }
   }
 
-  @OnEvent('workspace.team.reviewRequest')
-  async onReviewRequest({
-    inviteIds,
-  }: EventPayload<'workspace.team.reviewRequest'>) {
+  @OnEvent('workspace.members.reviewRequested')
+  async onReviewRequested({
+    inviteId,
+  }: EventPayload<'workspace.members.reviewRequested'>) {
     // send review request mail to owner and admin
-    for (const inviteId of inviteIds) {
-      await this.workspaceService.sendReviewRequestMail(inviteId);
-    }
+    await this.workspaceService.sendReviewRequestedMail(inviteId);
   }
 
-  @OnEvent('workspace.team.declineRequest')
+  @OnEvent('workspace.members.requestDeclined')
   async onDeclineRequest({
-    workspaceId,
-    inviteeId,
-  }: EventPayload<'workspace.team.declineRequest'>) {
+    inviteId,
+  }: EventPayload<'workspace.members.requestDeclined'>) {
     // send decline mail
-    await this.workspaceService.sendReviewDeclinedEmail(workspaceId, inviteeId);
+    await this.workspaceService.sendReviewDeclinedEmail(inviteId);
+  }
+
+  @OnEvent('workspace.members.requestApproved')
+  async onApproveRequest({
+    inviteId,
+  }: EventPayload<'workspace.members.requestApproved'>) {
+    // send approve mail
+    await this.workspaceService.sendReviewApproveEmail(inviteId);
   }
 }

@@ -6,18 +6,10 @@ import { groupBy } from 'lodash-es';
 import {
   DocAccessDenied,
   EventEmitter,
-  PrismaTransaction,
   SpaceAccessDenied,
   SpaceOwnerNotFound,
 } from '../../base';
-import { FeatureKind } from '../features/types';
-import { QuotaType } from '../quota/types';
 import { Permission, PublicPageMode } from './types';
-
-const NeedUpdateStatus = new Set<WorkspaceMemberStatus>([
-  WorkspaceMemberStatus.NeedMoreSeat,
-  WorkspaceMemberStatus.NeedMoreSeatAndReview,
-]);
 
 @Injectable()
 export class PermissionService {
@@ -377,21 +369,6 @@ export class PermissionService {
       .then(p => p.id);
   }
 
-  private async isTeamWorkspace(tx: PrismaTransaction, workspaceId: string) {
-    return await tx.workspaceFeature
-      .count({
-        where: {
-          workspaceId,
-          activated: true,
-          feature: {
-            feature: QuotaType.TeamPlanV1,
-            type: FeatureKind.Feature,
-          },
-        },
-      })
-      .then(count => count > 0);
-  }
-
   async acceptWorkspaceInvitation(
     invitationId: string,
     workspaceId: string,
@@ -410,91 +387,94 @@ export class PermissionService {
   }
 
   async refreshSeatStatus(workspaceId: string, memberLimit: number) {
-    const [pending, underReview] = await this.prisma.$transaction(async tx => {
+    const usedCount = await this.prisma.workspaceUserPermission.count({
+      where: { workspaceId, status: WorkspaceMemberStatus.Accepted },
+    });
+
+    const availableCount = memberLimit - usedCount;
+
+    if (availableCount <= 0) {
+      return;
+    }
+
+    await this.prisma.$transaction(async tx => {
       const members = await tx.workspaceUserPermission.findMany({
-        where: { workspaceId },
-        select: { userId: true, status: true, updatedAt: true },
+        select: { id: true, status: true },
+        where: {
+          workspaceId,
+          status: {
+            in: [
+              WorkspaceMemberStatus.NeedMoreSeat,
+              WorkspaceMemberStatus.NeedMoreSeatAndReview,
+            ],
+          },
+        },
+        orderBy: { createdAt: 'asc' },
       });
-      const memberCount = members.filter(
-        m => m.status === WorkspaceMemberStatus.Accepted
-      ).length;
-      const needChange = members
-        .filter(m => NeedUpdateStatus.has(m.status))
-        .toSorted((a, b) => Number(a.updatedAt) - Number(b.updatedAt))
-        .slice(0, memberLimit - memberCount);
+
+      const needChange = members.slice(0, availableCount);
       const { NeedMoreSeat, NeedMoreSeatAndReview } = groupBy(
         needChange,
         m => m.status
       );
-      const inviteByMail = NeedMoreSeat?.map(m => m.userId) ?? [];
-      await tx.workspaceUserPermission.updateMany({
-        where: { workspaceId, userId: { in: inviteByMail } },
-        data: { status: WorkspaceMemberStatus.Pending },
-      });
-      const inviteByLink = NeedMoreSeatAndReview?.map(m => m.userId) ?? [];
-      await tx.workspaceUserPermission.updateMany({
-        where: { workspaceId, userId: { in: inviteByLink } },
-        data: { status: WorkspaceMemberStatus.UnderReview },
-      });
 
-      const pending = await tx.workspaceUserPermission
-        .findMany({
-          where: {
-            workspaceId,
-            userId: { in: inviteByLink },
-            status: WorkspaceMemberStatus.Pending,
-          },
-          select: { id: true, user: { select: { email: true } } },
-        })
-        .then(r => r.map(m => ({ inviteId: m.id, email: m.user.email })));
-      const underReview = await tx.workspaceUserPermission
-        .findMany({
-          where: {
-            workspaceId,
-            userId: { in: inviteByLink },
-            status: WorkspaceMemberStatus.UnderReview,
-          },
-          select: { id: true },
-        })
-        .then(r => ({ inviteIds: r.map(m => m.id) }));
-      return [pending, underReview] as const;
+      const toPendings = NeedMoreSeat ?? [];
+      if (toPendings.length > 0) {
+        await tx.workspaceUserPermission.updateMany({
+          where: { id: { in: toPendings.map(m => m.id) } },
+          data: { status: WorkspaceMemberStatus.Pending },
+        });
+      }
+
+      const toUnderReviewUserIds = NeedMoreSeatAndReview ?? [];
+      if (toUnderReviewUserIds.length > 0) {
+        await tx.workspaceUserPermission.updateMany({
+          where: { id: { in: toUnderReviewUserIds.map(m => m.id) } },
+          data: { status: WorkspaceMemberStatus.UnderReview },
+        });
+      }
+
+      return [toPendings, toUnderReviewUserIds] as const;
     });
-    this.event.emit('workspace.team.seatAvailable', pending);
-    this.event.emit('workspace.team.reviewRequest', underReview);
   }
 
   async revokeWorkspace(workspaceId: string, user: string) {
-    return await this.prisma.$transaction(async tx => {
-      const result = await tx.workspaceUserPermission.deleteMany({
-        where: {
-          workspaceId,
-          userId: user,
-          // We shouldn't revoke owner permission
-          // should auto deleted by workspace/user delete cascading
-          type: { not: Permission.Owner },
-        },
-      });
-
-      const success = result.count > 0;
-
-      if (success) {
-        const isTeam = await this.isTeamWorkspace(tx, workspaceId);
-        if (isTeam) {
-          const count = await tx.workspaceUserPermission.count({
-            where: { workspaceId },
-          });
-          this.event.emit('workspace.members.updated', {
-            workspaceId,
-            count,
-          });
-          this.event.emit('workspace.team.declineRequest', {
-            workspaceId,
-            inviteeId: user,
-          });
-        }
-      }
-      return success;
+    const permission = await this.prisma.workspaceUserPermission.findUnique({
+      where: { workspaceId_userId: { workspaceId, userId: user } },
     });
+
+    // We shouldn't revoke owner permission
+    // should auto deleted by workspace/user delete cascading
+    if (!permission || permission.type === Permission.Owner) {
+      return false;
+    }
+
+    await this.prisma.workspaceUserPermission.deleteMany({
+      where: {
+        workspaceId,
+        userId: user,
+      },
+    });
+
+    const count = await this.prisma.workspaceUserPermission.count({
+      where: { workspaceId },
+    });
+
+    this.event.emit('workspace.members.updated', {
+      workspaceId,
+      count,
+    });
+
+    if (
+      permission.status === 'UnderReview' ||
+      permission.status === 'NeedMoreSeatAndReview'
+    ) {
+      this.event.emit('workspace.members.requestDeclined', {
+        inviteId: permission.id,
+      });
+    }
+
+    return true;
   }
   /// End regin: workspace permission
 

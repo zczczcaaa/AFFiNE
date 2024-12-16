@@ -3,13 +3,11 @@ import type { Snapshot, User, Workspace } from '@prisma/client';
 import { Flatten, Payload } from './types';
 
 export interface WorkspaceEvents {
-  team: {
-    seatAvailable: Payload<{ inviteId: string; email: string }[]>;
-    reviewRequest: Payload<{ inviteIds: string[] }>;
-    declineRequest: Payload<{
-      workspaceId: Workspace['id'];
-      inviteeId: User['id'];
-    }>;
+  members: {
+    reviewRequested: Payload<{ inviteId: string }>;
+    requestDeclined: Payload<{ inviteId: string }>;
+    requestApproved: Payload<{ inviteId: string }>;
+    updated: Payload<{ workspaceId: Workspace['id']; count: number }>;
   };
   deleted: Payload<Workspace['id']>;
   blob: {

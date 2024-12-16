@@ -432,7 +432,7 @@ export class WorkspaceResolver {
       );
       if (sendInviteMail) {
         try {
-          await this.workspaceService.sendInviteMail(inviteId, email);
+          await this.workspaceService.sendInviteMail(inviteId);
         } catch (e) {
           const ret = await this.permissions.revokeWorkspace(
             workspaceId,
@@ -567,8 +567,8 @@ export class WorkspaceResolver {
         } else {
           const inviteId = await this.permissions.grant(workspaceId, user.id);
           if (isTeam) {
-            this.event.emit('workspace.team.reviewRequest', {
-              inviteIds: [inviteId],
+            this.event.emit('workspace.members.reviewRequested', {
+              inviteId,
             });
           }
           // invite by link need admin to approve
