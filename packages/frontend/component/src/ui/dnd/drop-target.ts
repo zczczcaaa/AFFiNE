@@ -231,9 +231,13 @@ export const useDropTarget = <D extends DNDData = DNDData>(
 
   const dropTargetOptions = useMemo(() => {
     const wrappedCanDrop = dropTargetGet(options.canDrop, options);
+    let _element: HTMLElement | null = null;
     return {
       get element() {
-        return dropTargetRef.current;
+        if (!_element) {
+          _element = dropTargetRef.current;
+        }
+        return _element;
       },
       canDrop: wrappedCanDrop
         ? (args: DropTargetGetFeedback<D>) => {
