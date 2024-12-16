@@ -281,7 +281,7 @@ export const BlocksuiteDocEditor = forwardRef<
 
   return (
     <>
-      <div className={styles.affineDocViewport} style={{ height: '100%' }}>
+      <div className={styles.affineDocViewport}>
         {!isJournal ? (
           <adapted.DocTitle doc={page} ref={onTitleRef} />
         ) : (
@@ -351,9 +351,9 @@ export const BlocksuiteEdgelessEditor = forwardRef<
   }, []);
 
   return (
-    <>
+    <div className={styles.affineEdgelessDocViewport}>
       <adapted.EdgelessEditor ref={onDocRef} doc={page} specs={specs} />
       {portals}
-    </>
+    </div>
   );
 });
