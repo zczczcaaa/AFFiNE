@@ -42,7 +42,7 @@ export const inputWrapper = style({
       borderColor: cssVar('warningColor'),
     },
     '&.default': {
-      borderColor: cssVar('borderColor'),
+      borderColor: cssVarV2.layer.insideBorder.blackBorder,
     },
     '&.default:is(:focus-within, :focus, :focus-visible)': {
       borderColor: cssVarV2('button/primary'),
