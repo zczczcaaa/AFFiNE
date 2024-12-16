@@ -1,32 +1,19 @@
-import type {
-  Chain,
-  EditorHost,
-  InitCommandCtx,
-} from '@blocksuite/affine/block-std';
+import type { Chain, InitCommandCtx } from '@blocksuite/affine/block-std';
 import {
   type AIItemGroupConfig,
   type AISubItemConfig,
-  EDGELESS_ELEMENT_TOOLBAR_WIDGET,
-  type EdgelessElementToolbarWidget,
   matchFlavours,
 } from '@blocksuite/affine/blocks';
-import type { TemplateResult } from 'lit';
 
 import { actionToHandler } from '../actions/doc-handler';
-import { actionToHandler as edgelessActionToHandler } from '../actions/edgeless-handler';
 import {
   imageFilterStyles,
   imageProcessingTypes,
   textTones,
   translateLangs,
 } from '../actions/types';
-import { getAIPanel } from '../ai-panel';
 import { AIProvider } from '../provider';
-import {
-  getSelectedImagesAsBlobs,
-  getSelectedTextContent,
-  getSelections,
-} from '../utils/selection-utils';
+import { getAIPanelWidget } from '../utils/ai-widgets';
 import {
   AIDoneIcon,
   AIImageIcon,
@@ -71,7 +58,7 @@ export function createImageFilterSubItem(
   return imageFilterStyles.map(style => {
     return {
       type: style,
-      handler: edgelessHandler(
+      handler: actionToHandler(
         'filterImage',
         AIImageIconWithAnimation,
         {
@@ -89,7 +76,7 @@ export function createImageProcessingSubItem(
   return imageProcessingTypes.map(type => {
     return {
       type,
-      handler: edgelessHandler(
+      handler: actionToHandler(
         'processImage',
         AIImageIconWithAnimation,
         {
@@ -224,59 +211,6 @@ const DraftAIGroup: AIItemGroupConfig = {
   ],
 };
 
-// actions that initiated from a note in edgeless mode
-// 1. when running in doc mode, call requestRunInEdgeless (let affine to show toast)
-// 2. when running in edgeless mode
-//    a. get selected in the note and let the edgeless action to handle it
-//    b. insert the result using the note shape
-function edgelessHandler<T extends keyof BlockSuitePresets.AIActions>(
-  id: T,
-  generatingIcon: TemplateResult<1>,
-  variants?: Omit<
-    Parameters<BlockSuitePresets.AIActions[T]>[0],
-    keyof BlockSuitePresets.AITextActionOptions
-  >,
-  trackerOptions?: BlockSuitePresets.TrackerOptions
-) {
-  return (host: EditorHost) => {
-    if (host.doc.root?.id === undefined) return;
-    const edgeless = (
-      host.view.getWidget(
-        EDGELESS_ELEMENT_TOOLBAR_WIDGET,
-        host.doc.root.id
-      ) as EdgelessElementToolbarWidget
-    )?.edgeless;
-
-    if (!edgeless) {
-      AIProvider.slots.requestRunInEdgeless.emit({ host });
-    } else {
-      const selectedElements = edgeless.service.selection.selectedElements;
-      if (!selectedElements.length) return;
-
-      return edgelessActionToHandler(
-        id,
-        generatingIcon,
-        variants,
-        async () => {
-          const selections = getSelections(host);
-          const [markdown, attachments] = await Promise.all([
-            getSelectedTextContent(host),
-            getSelectedImagesAsBlobs(host),
-          ]);
-          // for now if there are more than one selected blocks, we will not omit the attachments
-          const sendAttachments =
-            selections?.selectedBlocks?.length === 1 && attachments.length > 0;
-          return {
-            attachments: sendAttachments ? attachments : undefined,
-            input: sendAttachments ? '' : markdown,
-          };
-        },
-        trackerOptions
-      )(host);
-    }
-  };
-}
-
 const ReviewWIthAIGroup: AIItemGroupConfig = {
   name: 'review with ai',
   items: [
@@ -353,7 +287,7 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
       name: 'Generate an image',
       icon: AIImageIcon,
       showWhen: textBlockShowWhen,
-      handler: edgelessHandler('createImage', AIImageIconWithAnimation),
+      handler: actionToHandler('createImage', AIImageIconWithAnimation),
     },
     {
       name: 'Generate outline',
@@ -365,13 +299,13 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
       name: 'Brainstorm ideas with mind map',
       icon: AIMindMapIcon,
       showWhen: textBlockShowWhen,
-      handler: edgelessHandler('brainstormMindmap', AIPenIconWithAnimation),
+      handler: actionToHandler('brainstormMindmap', AIPenIconWithAnimation),
     },
     {
       name: 'Generate presentation',
       icon: AIPresentationIcon,
       showWhen: textBlockShowWhen,
-      handler: edgelessHandler('createSlides', AIPresentationIconWithAnimation),
+      handler: actionToHandler('createSlides', AIPresentationIconWithAnimation),
       beta: true,
     },
     {
@@ -379,7 +313,7 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
       icon: MakeItRealIcon,
       beta: true,
       showWhen: textBlockShowWhen,
-      handler: edgelessHandler('makeItReal', MakeItRealIconWithAnimation),
+      handler: actionToHandler('makeItReal', MakeItRealIconWithAnimation),
     },
     {
       name: 'Find actions',
@@ -398,7 +332,7 @@ const OthersAIGroup: AIItemGroupConfig = {
       name: 'Continue with AI',
       icon: CommentIcon,
       handler: host => {
-        const panel = getAIPanel(host);
+        const panel = getAIPanelWidget(host);
         AIProvider.slots.requestOpenWithChat.emit({
           host,
           autoSelect: true,
@@ -411,7 +345,7 @@ const OthersAIGroup: AIItemGroupConfig = {
       name: 'Open AI Chat',
       icon: ChatWithAIIcon,
       handler: host => {
-        const panel = getAIPanel(host);
+        const panel = getAIPanelWidget(host);
         AIProvider.slots.requestOpenWithChat.emit({
           host,
           appendCard: true,
@@ -422,7 +356,7 @@ const OthersAIGroup: AIItemGroupConfig = {
   ],
 };
 
-export const AIItemGroups: AIItemGroupConfig[] = [
+export const pageAIGroups: AIItemGroupConfig[] = [
   ReviewWIthAIGroup,
   EditAIGroup,
   GenerateWithAIGroup,
@@ -455,7 +389,7 @@ export function buildAIImageItemGroups(): AIItemGroupConfig[] {
           name: 'Generate an image',
           icon: AIImageIcon,
           showWhen: () => true,
-          handler: edgelessHandler(
+          handler: actionToHandler(
             'createImage',
             AIImageIconWithAnimation,
             undefined,

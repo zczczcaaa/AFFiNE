@@ -57,6 +57,11 @@ const cardsStyles = css`
       font-size: 14px;
       font-weight: 400;
       color: var(--affine-text-secondary-color);
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 `;

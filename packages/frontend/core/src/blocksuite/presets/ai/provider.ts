@@ -119,8 +119,6 @@ export class AIProvider {
     }>(),
     requestLogin: new Slot<{ host: EditorHost }>(),
     requestUpgradePlan: new Slot<{ host: EditorHost }>(),
-    // when an action is requested to run in edgeless mode (show a toast in affine)
-    requestRunInEdgeless: new Slot<{ host: EditorHost }>(),
     // stream of AI actions triggered by users
     actions: new Slot<{
       action: keyof BlockSuitePresets.AIActions;
@@ -311,7 +309,6 @@ export class AIProvider {
         options: BlockSuitePresets.AIForkChatSessionOptions
       ) => string | Promise<string>;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       AIProvider.instance.provideAction(id as any, action as any);
     }
   }

@@ -11,19 +11,17 @@ import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import { getAIPanel } from '../ai-panel';
 import { PPTBuilder } from '../slides/index';
+import { getAIPanelWidget } from '../utils/ai-widgets';
+import type { AIContext } from '../utils/context';
 
 export const createSlidesRenderer: (
   host: EditorHost,
-  ctx: {
-    get: () => Record<string, unknown>;
-    set: (data: Record<string, unknown>) => void;
-  }
+  ctx: AIContext
 ) => AffineAIPanelWidgetConfig['answerRenderer'] = (host, ctx) => {
   return (answer, state) => {
     if (state === 'generating') {
-      const panel = getAIPanel(host);
+      const panel = getAIPanelWidget(host);
       panel.generatingElement?.updateLoadingProgress(2);
       return nothing;
     }
@@ -77,7 +75,7 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
     requestAnimationFrame(() => {
       if (!this._editorHost) return;
       PPTBuilder(this._editorHost)
-        .process(this.text)
+        ?.process(this.text)
         .then(res => {
           if (res && this.ctx) {
             this.ctx.set({
@@ -85,7 +83,7 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
               images: res.images,
             });
             // refresh loading menu item
-            getAIPanel(this.host)
+            getAIPanelWidget(this.host)
               .shadowRoot?.querySelector('ai-panel-answer')
               ?.requestUpdate();
           }

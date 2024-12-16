@@ -6,7 +6,7 @@ import {
 } from '@blocksuite/affine/blocks';
 import { html, type TemplateResult } from 'lit';
 
-import { AIItemGroups } from '../../_common/config';
+import { pageAIGroups } from '../../_common/config';
 
 export function setupFormatBarAIEntry(formatBar: AffineFormatBarWidget) {
   toolbarDefaultConfig(formatBar);
@@ -18,7 +18,7 @@ export function setupFormatBarAIEntry(formatBar: AffineFormatBarWidget) {
           return html`
             <ask-ai-toolbar-button
               .host=${formatBar.host}
-              .actionGroups=${AIItemGroups}
+              .actionGroups=${pageAIGroups}
             ></ask-ai-toolbar-button>
           `;
         },

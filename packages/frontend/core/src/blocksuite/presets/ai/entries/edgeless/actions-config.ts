@@ -45,8 +45,8 @@ import {
   textTones,
   translateLangs,
 } from '../../actions/types';
-import { getAIPanel } from '../../ai-panel';
 import { AIProvider } from '../../provider';
+import { getAIPanelWidget } from '../../utils/ai-widgets';
 import { mindMapToMarkdown } from '../../utils/edgeless';
 import { canvasToBlob, randomSeed } from '../../utils/image';
 import {
@@ -105,7 +105,7 @@ const othersGroup: AIItemGroupConfig = {
       icon: CommentIcon,
       showWhen: () => true,
       handler: host => {
-        const panel = getAIPanel(host);
+        const panel = getAIPanelWidget(host);
         AIProvider.slots.requestOpenWithChat.emit({
           host,
           mode: 'edgeless',
@@ -120,7 +120,7 @@ const othersGroup: AIItemGroupConfig = {
       icon: ChatWithAIIcon,
       showWhen: () => true,
       handler: host => {
-        const panel = getAIPanel(host);
+        const panel = getAIPanelWidget(host);
         AIProvider.slots.requestOpenWithChat.emit({
           host,
           mode: 'edgeless',
@@ -286,7 +286,7 @@ const generateGroup: AIItemGroupConfig = {
           const selectedElements = getCopilotSelectedElems(host);
           const len = selectedElements.length;
 
-          const aiPanel = getAIPanel(host);
+          const aiPanel = getAIPanelWidget(host);
           // text to image
           // from user input
           if (len === 0) {
@@ -297,7 +297,7 @@ const generateGroup: AIItemGroupConfig = {
             };
           }
 
-          let content = (ctx.get()['content'] as string) || '';
+          let content = ctx.get().content || '';
 
           // from user input
           if (content.length === 0) {
@@ -419,7 +419,7 @@ const generateGroup: AIItemGroupConfig = {
 
           // from user input
           if (selectedElements.length === 0) {
-            const aiPanel = getAIPanel(host);
+            const aiPanel = getAIPanelWidget(host);
             const content = aiPanel.inputText?.trim();
             if (!content) return;
             return {
@@ -438,7 +438,7 @@ const generateGroup: AIItemGroupConfig = {
           if (f + i + n + s + e === 0) {
             return;
           }
-          let content = (ctx.get()['content'] as string) || '';
+          let content = ctx.get().content || '';
 
           // single note, text
           if (
@@ -455,7 +455,7 @@ const generateGroup: AIItemGroupConfig = {
 
           // from user input
           if (content.length === 0) {
-            const aiPanel = getAIPanel(host);
+            const aiPanel = getAIPanelWidget(host);
             content = aiPanel.inputText?.trim() || '';
           }
 
@@ -521,7 +521,7 @@ const generateGroup: AIItemGroupConfig = {
   ],
 };
 
-export const edgelessActionGroups = [
+export const edgelessAIGroups: AIItemGroupConfig[] = [
   reviewGroup,
   editGroup,
   generateGroup,

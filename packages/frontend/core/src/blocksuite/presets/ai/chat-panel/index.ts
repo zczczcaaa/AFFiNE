@@ -159,7 +159,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   };
 
   private readonly _scrollToEnd = () => {
-    requestAnimationFrame(() => this._chatMessages.value?.scrollToEnd());
+    this._chatMessages.value?.scrollToEnd();
   };
 
   private readonly _cleanupHistories = async () => {
@@ -200,7 +200,15 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       _changedProperties.has('chatContextValue') &&
       this.chatContextValue.status !== 'idle'
     ) {
-      setTimeout(this._scrollToEnd, 500);
+      if (this.chatContextValue.status === 'transmitting') {
+        this._scrollToEnd();
+      } else if (
+        this.chatContextValue.status === 'loading' ||
+        this.chatContextValue.status === 'error' ||
+        this.chatContextValue.status === 'success'
+      ) {
+        setTimeout(this._scrollToEnd, 500);
+      }
     }
   }
 

@@ -14,12 +14,12 @@ import {
 import { assertExists } from '@blocksuite/affine/global/utils';
 import { html } from 'lit';
 
-import { AIItemGroups } from '../../_common/config';
+import { pageAIGroups } from '../../_common/config';
 import { handleInlineAskAIAction } from '../../actions/doc-handler';
 import { AIProvider } from '../../provider';
 
 export function setupSlashMenuAIEntry(slashMenu: AffineSlashMenuWidget) {
-  const AIItems = AIItemGroups.map(group => group.items).flat();
+  const AIItems = pageAIGroups.map(group => group.items).flat();
 
   const iconWrapper = (icon: AIItemConfig['icon']) => {
     return html`<div style="color: var(--affine-primary-color)">

@@ -368,6 +368,18 @@ test.describe('chat with block', () => {
     return answer.innerText();
   };
 
+  const collectCanvasAnswer = async (page: Page, tagName: string) => {
+    // wait ai response
+    await page.waitForSelector(
+      'affine-ai-panel-widget .response-list-container',
+      { timeout: 5 * ONE_MINUTE }
+    );
+    const answer = await page.waitForSelector(
+      `affine-ai-panel-widget ai-panel-answer ${tagName}`
+    );
+    return answer;
+  };
+
   const collectImageAnswer = async (page: Page, timeout = TEN_SECONDS) => {
     // wait ai response
     await page.waitForSelector(
@@ -431,6 +443,10 @@ test.describe('chat with block', () => {
       'Generate headings',
       'Generate outline',
       'Find actions',
+      'Generate an image',
+      'Brainstorm ideas with mind map',
+      'Generate presentation',
+      'Make it real',
       // draft with ai
       'Write an article about this',
       'Write a tweet about this',
@@ -446,7 +462,31 @@ test.describe('chat with block', () => {
             `.ai-item-${option.replaceAll(' ', '-').toLowerCase()}`
           )
           .then(i => i.click());
-        expect(await collectTextAnswer(page)).toBeTruthy();
+
+        if (option === 'Generate an image') {
+          const mindmap = await collectCanvasAnswer(page, '.ai-answer-image');
+          expect(mindmap).toBeTruthy();
+        } else if (option === 'Brainstorm ideas with mind map') {
+          const mindmap = await collectCanvasAnswer(
+            page,
+            'mini-mindmap-preview'
+          );
+          expect(mindmap).toBeTruthy();
+        } else if (option === 'Generate presentation') {
+          const presentation = await collectCanvasAnswer(
+            page,
+            'ai-slides-renderer'
+          );
+          expect(presentation).toBeTruthy();
+        } else if (option === 'Make it real') {
+          const makeItReal = await collectCanvasAnswer(
+            page,
+            '.ai-answer-iframe'
+          );
+          expect(makeItReal).toBeTruthy();
+        } else {
+          expect(await collectTextAnswer(page)).toBeTruthy();
+        }
       });
     }
   });

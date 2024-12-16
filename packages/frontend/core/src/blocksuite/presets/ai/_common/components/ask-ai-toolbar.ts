@@ -9,8 +9,8 @@ import { flip, offset } from '@floating-ui/dom';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { getAIPanel } from '../../ai-panel';
 import { AIProvider } from '../../provider';
+import { getAIPanelWidget } from '../../utils/ai-widgets';
 import { extractContext } from '../../utils/extract';
 
 export class AskAIToolbarButton extends WithDisposable(LitElement) {
@@ -33,7 +33,7 @@ export class AskAIToolbarButton extends WithDisposable(LitElement) {
   accessor actionGroups!: AIItemGroupConfig[];
 
   private readonly _onItemClick = () => {
-    const aiPanel = getAIPanel(this.host);
+    const aiPanel = getAIPanelWidget(this.host);
     aiPanel.restoreSelection();
     this._clearAbortController();
   };
@@ -45,7 +45,7 @@ export class AskAIToolbarButton extends WithDisposable(LitElement) {
 
   private readonly _openAIPanel = () => {
     this._clearAbortController();
-    const aiPanel = getAIPanel(this.host);
+    const aiPanel = getAIPanelWidget(this.host);
     this._abortController = new AbortController();
     this._panelRoot = createLitPortal({
       template: html`
@@ -69,7 +69,7 @@ export class AskAIToolbarButton extends WithDisposable(LitElement) {
   private readonly _generateAnswer: AffineAIPanelWidgetConfig['generateAnswer'] =
     ({ finish, input }) => {
       finish('success');
-      const aiPanel = getAIPanel(this.host);
+      const aiPanel = getAIPanelWidget(this.host);
       aiPanel.discard();
       AIProvider.slots.requestOpenWithChat.emit({ host: this.host });
       extractContext(this.host)
@@ -80,7 +80,7 @@ export class AskAIToolbarButton extends WithDisposable(LitElement) {
     };
 
   private readonly _onClick = () => {
-    const aiPanel = getAIPanel(this.host);
+    const aiPanel = getAIPanelWidget(this.host);
     if (!aiPanel.config) return;
     aiPanel.config.generateAnswer = this._generateAnswer;
     aiPanel.config.inputCallback = text => {

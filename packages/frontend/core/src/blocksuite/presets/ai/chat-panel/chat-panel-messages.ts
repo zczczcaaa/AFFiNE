@@ -398,15 +398,13 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   }
 
   scrollToEnd() {
-    this.updateComplete
-      .then(() => {
-        if (!this.messagesContainer) return;
-        this.messagesContainer.scrollTo({
-          top: this.messagesContainer.scrollHeight,
-          behavior: 'smooth',
-        });
-      })
-      .catch(console.error);
+    requestAnimationFrame(() => {
+      if (!this.messagesContainer) return;
+      this.messagesContainer.scrollTo({
+        top: this.messagesContainer.scrollHeight,
+        behavior: 'smooth',
+      });
+    });
   }
 
   retry = async () => {
