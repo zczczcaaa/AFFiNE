@@ -118,7 +118,10 @@ export class TeamWorkspaceResolver {
             ? WorkspaceMemberStatus.NeedMoreSeat
             : WorkspaceMemberStatus.Pending
         );
-        if (!needMoreSeat && sendInviteMail) {
+        // NOTE: we always send email even seat not enough
+        // because at this moment we cannot know whether the seat increase charge was successful
+        // after user click the invite link, we can check again and reject if charge failed
+        if (sendInviteMail) {
           try {
             await this.workspaceService.sendInviteMail(ret.inviteId, email);
             ret.sentSuccess = true;
@@ -308,14 +311,6 @@ export class TeamWorkspaceResolver {
     } catch (e) {
       this.logger.error('failed to invite user', e);
       return new TooManyRequest();
-    }
-  }
-
-  @OnEvent('workspace.team.seatAvailable')
-  async onSeatAvailable(payload: EventPayload<'workspace.team.seatAvailable'>) {
-    // send invite mail when seat is available for NeedMoreSeat member
-    for (const { inviteId, email } of payload) {
-      await this.workspaceService.sendInviteMail(inviteId, email);
     }
   }
 

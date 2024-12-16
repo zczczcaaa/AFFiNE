@@ -215,23 +215,24 @@ const MemberItem = ({
 };
 
 const getMemberStatus = (member: Member): I18nString => {
-  if (member.status === WorkspaceMemberStatus.Pending) {
-    return 'Pending';
-  } else if (member.status === WorkspaceMemberStatus.UnderReview) {
-    return 'Under-Review';
-  } else if (member.status === WorkspaceMemberStatus.Accepted) {
-    switch (member.permission) {
-      case Permission.Owner:
-        return 'Workspace Owner';
-      case Permission.Admin:
-        return 'Admin';
-      case Permission.Write:
-        return 'Collaborator';
-      default:
-        return 'Member';
-    }
-  } else {
-    return 'Need-More-Seats';
+  switch (member.status) {
+    case WorkspaceMemberStatus.NeedMoreSeat:
+    case WorkspaceMemberStatus.NeedMoreSeatAndReview:
+    case WorkspaceMemberStatus.Pending:
+      return 'Pending';
+    case WorkspaceMemberStatus.UnderReview:
+      return 'Under-Review';
+    case WorkspaceMemberStatus.Accepted:
+      switch (member.permission) {
+        case Permission.Owner:
+          return 'Workspace Owner';
+        case Permission.Admin:
+          return 'Admin';
+        case Permission.Write:
+          return 'Collaborator';
+        default:
+          return 'Member';
+      }
   }
 };
 

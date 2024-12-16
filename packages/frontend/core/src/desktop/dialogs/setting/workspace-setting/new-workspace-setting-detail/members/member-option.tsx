@@ -181,7 +181,11 @@ export const MemberOptions = ({
         onClick: handleRevoke,
         show:
           (isAdmin || isOwner) &&
-          member.status === WorkspaceMemberStatus.Pending,
+          [
+            WorkspaceMemberStatus.NeedMoreSeat,
+            WorkspaceMemberStatus.NeedMoreSeatAndReview,
+            WorkspaceMemberStatus.Pending,
+          ].includes(member.status),
       },
       {
         label: t['com.affine.payment.member.team.remove'](),
