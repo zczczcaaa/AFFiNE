@@ -286,6 +286,18 @@ export async function chatWithImages(
   return chatWithText(app, userToken, sessionId, messageId, '/images');
 }
 
+export async function unsplashSearch(
+  app: INestApplication,
+  userToken: string,
+  params: Record<string, string> = {}
+) {
+  const query = new URLSearchParams(params);
+  const res = await request(app.getHttpServer())
+    .get(`/api/copilot/unsplash/photos?${query}`)
+    .auth(userToken, { type: 'bearer' });
+  return res;
+}
+
 export function sse2array(eventSource: string) {
   const blocks = eventSource.replace(/^\n(.*?)\n$/, '$1').split(/\n\n+/);
   return blocks.map(block =>

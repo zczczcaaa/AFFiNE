@@ -466,8 +466,8 @@ export class CopilotController {
     }
   }
 
-  @CallMetric('ai', 'unsplash')
   @Get('/unsplash/photos')
+  @CallMetric('ai', 'unsplash')
   async unsplashPhotos(
     @Req() req: Request,
     @Res() res: Response,

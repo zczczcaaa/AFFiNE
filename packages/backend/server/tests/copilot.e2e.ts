@@ -40,6 +40,7 @@ import {
   MockCopilotTestProvider,
   sse2array,
   textToEventStream,
+  unsplashSearch,
 } from './utils/copilot';
 
 const test = ava as TestFn<{
@@ -62,6 +63,7 @@ test.beforeEach(async t => {
             fal: {
               apiKey: '1',
             },
+            unsplashKey: process.env.UNSPLASH_ACCESS_KEY || '1',
           },
         },
       }),
@@ -644,4 +646,11 @@ test('should reject request that user have not permission', async t => {
       'should not list history created by another user'
     );
   }
+});
+
+test('should be able to search image from unsplash', async t => {
+  const { app } = t.context;
+
+  const resp = await unsplashSearch(app, token);
+  t.not(resp.status, 404, 'route should be exists');
 });
