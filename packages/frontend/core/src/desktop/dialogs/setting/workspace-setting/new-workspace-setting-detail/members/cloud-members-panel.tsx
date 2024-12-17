@@ -66,6 +66,10 @@ export const CloudWorkspaceMembersPanel = ({
     permissionService.permission.revalidate();
   }, [permissionService]);
 
+  useEffect(() => {
+    membersService.members.revalidate();
+  }, [membersService]);
+
   const workspaceQuotaService = useService(WorkspaceQuotaService);
   useEffect(() => {
     workspaceQuotaService.quota.revalidate();

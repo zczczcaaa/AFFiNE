@@ -100,7 +100,11 @@ export const UpgradeToTeam = ({ recurring }: { recurring: string | null }) => {
             },
           }}
         >
-          <MenuTrigger className={styles.menuTrigger} tooltip={menuTriggerText}>
+          <MenuTrigger
+            className={styles.menuTrigger}
+            tooltip={menuTriggerText}
+            data-selected={!!selectedWorkspace}
+          >
             {menuTriggerText}
           </MenuTrigger>
         </Menu>

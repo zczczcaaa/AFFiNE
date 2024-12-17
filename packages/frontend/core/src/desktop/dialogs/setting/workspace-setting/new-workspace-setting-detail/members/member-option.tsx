@@ -174,7 +174,8 @@ export const MemberOptions = ({
         onClick: handleDecline,
         show:
           (isAdmin || isOwner) &&
-          member.status === WorkspaceMemberStatus.UnderReview,
+          (member.status === WorkspaceMemberStatus.UnderReview ||
+            member.status === WorkspaceMemberStatus.NeedMoreSeatAndReview),
       },
       {
         label: t['com.affine.payment.member.team.revoke'](),
@@ -207,7 +208,8 @@ export const MemberOptions = ({
         onClick: handleChangeToAdmin,
         show:
           isOwner &&
-          member.permission === Permission.Write &&
+          member.permission !== Permission.Owner &&
+          member.permission !== Permission.Admin &&
           member.status === WorkspaceMemberStatus.Accepted,
       },
       {

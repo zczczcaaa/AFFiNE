@@ -18,6 +18,11 @@ export const menuTrigger = style({
   fontSize: cssVar('fontBase'),
   fontWeight: 500,
   color: cssVarV2('text/placeholder'),
+  selectors: {
+    '&[data-selected="true"]': {
+      color: cssVarV2('text/primary'),
+    },
+  },
 });
 
 export const upgradeButton = style({

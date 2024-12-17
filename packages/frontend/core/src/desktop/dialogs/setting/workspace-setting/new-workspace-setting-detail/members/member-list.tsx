@@ -125,6 +125,7 @@ const MemberItem = ({
   const show = isOwner && currentAccount.id !== member.id;
 
   const handleOpenAssignModal = useCallback(() => {
+    setInputValue('');
     setOpen(true);
   }, []);
 

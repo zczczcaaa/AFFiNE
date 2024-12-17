@@ -10,6 +10,7 @@ import { AIIsland } from '@affine/core/desktop/components/ai-island';
 import { AppContainer } from '@affine/core/desktop/components/app-container';
 import { WorkspaceDialogs } from '@affine/core/desktop/dialogs';
 import { PeekViewManagerModal } from '@affine/core/modules/peek-view';
+import { QuotaCheck } from '@affine/core/modules/quota';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import {
   LiveData,
@@ -31,7 +32,10 @@ export const WorkspaceLayout = function WorkspaceLayout({
       {currentWorkspace?.flavour === 'local' ? (
         <LocalQuotaModal />
       ) : (
-        <CloudQuotaModal />
+        <>
+          <CloudQuotaModal />
+          <QuotaCheck workspaceMeta={currentWorkspace.meta} />
+        </>
       )}
       <AiLoginRequiredModal />
       <WorkspaceSideEffects />

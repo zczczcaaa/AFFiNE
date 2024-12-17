@@ -122,6 +122,7 @@ const TeamCard = () => {
   const expiration = teamSubscription?.canceledAt;
   const nextBillingDate = teamSubscription?.nextBillAt;
   const recurring = teamSubscription?.recurring;
+  const endDate = teamSubscription?.end;
 
   const description = useMemo(() => {
     if (recurring === SubscriptionRecurring.Yearly) {
@@ -138,22 +139,22 @@ const TeamCard = () => {
   }, [recurring, t]);
 
   const expirationDate = useMemo(() => {
-    if (expiration) {
+    if (expiration && endDate) {
       return t[
         'com.affine.settings.workspace.billing.team-workspace.not-renewed'
       ]({
-        date: new Date(expiration).toLocaleDateString(),
+        date: new Date(endDate).toLocaleDateString(),
       });
     }
-    if (nextBillingDate) {
+    if (nextBillingDate && endDate) {
       return t[
         'com.affine.settings.workspace.billing.team-workspace.next-billing-date'
       ]({
-        date: new Date(nextBillingDate).toLocaleDateString(),
+        date: new Date(endDate).toLocaleDateString(),
       });
     }
     return '';
-  }, [expiration, nextBillingDate, t]);
+  }, [endDate, expiration, nextBillingDate, t]);
 
   const amount = teamSubscription
     ? teamPrices && workspaceMemberCount

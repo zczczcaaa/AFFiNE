@@ -80,9 +80,6 @@ export class WorkspacePermission extends Entity {
     permission: Permission,
     sendInviteMail?: boolean
   ) {
-    if (!this.isAdmin$.value && !this.isOwner$.value) {
-      throw new Error('User has no permission to invite members');
-    }
     return await this.store.inviteMember(
       this.workspaceService.workspace.id,
       email,
@@ -92,9 +89,6 @@ export class WorkspacePermission extends Entity {
   }
 
   async inviteMembers(emails: string[], sendInviteMail?: boolean) {
-    if (!this.isAdmin$.value && !this.isOwner$.value) {
-      throw new Error('User has no permission to invite members');
-    }
     return await this.store.inviteBatch(
       this.workspaceService.workspace.id,
       emails,
@@ -103,9 +97,6 @@ export class WorkspacePermission extends Entity {
   }
 
   async generateInviteLink(expireTime: WorkspaceInviteLinkExpireTime) {
-    if (!this.isAdmin$.value && !this.isOwner$.value) {
-      throw new Error('User has no permission to generate invite link');
-    }
     return await this.store.generateInviteLink(
       this.workspaceService.workspace.id,
       expireTime
@@ -113,18 +104,12 @@ export class WorkspacePermission extends Entity {
   }
 
   async revokeInviteLink() {
-    if (!this.isAdmin$.value && !this.isOwner$.value) {
-      throw new Error('User has no permission to revoke invite link');
-    }
     return await this.store.revokeInviteLink(
       this.workspaceService.workspace.id
     );
   }
 
   async revokeMember(userId: string) {
-    if (!this.isAdmin$.value && !this.isOwner$.value) {
-      throw new Error('User has no permission to revoke members');
-    }
     return await this.store.revokeMemberPermission(
       this.workspaceService.workspace.id,
       userId
@@ -140,9 +125,6 @@ export class WorkspacePermission extends Entity {
   }
 
   async approveMember(userId: string) {
-    if (!this.isAdmin$.value && !this.isOwner$.value) {
-      throw new Error('User has no permission to accept invite');
-    }
     return await this.store.approveMember(
       this.workspaceService.workspace.id,
       userId
@@ -150,9 +132,6 @@ export class WorkspacePermission extends Entity {
   }
 
   async adjustMemberPermission(userId: string, permission: Permission) {
-    if (!this.isAdmin$.value) {
-      throw new Error('User has no permission to adjust member permissions');
-    }
     return await this.store.adjustMemberPermission(
       this.workspaceService.workspace.id,
       userId,
