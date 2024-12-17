@@ -81,6 +81,9 @@ export const InviteTeamMemberModal = ({
       onOpenChange={setOpen}
       title={t['com.affine.payment.member.team.invite.title']()}
       cancelText={t['com.affine.inviteModal.button.cancel']()}
+      cancelButtonOptions={{
+        variant: 'secondary',
+      }}
       contentOptions={{
         ['data-testid' as string]: 'invite-modal',
         style: {

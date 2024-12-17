@@ -288,7 +288,11 @@ const ImportCSV = ({ onImport }: { onImport: (file: File) => void }) => {
 
   return (
     <Upload accept="text/csv" fileChange={onImport}>
-      <Button className={styles.importButton} prefix={<ExportIcon />}>
+      <Button
+        className={styles.importButton}
+        prefix={<ExportIcon />}
+        variant="secondary"
+      >
         {t['com.affine.payment.member.team.invite.import-csv']()}
       </Button>
     </Upload>

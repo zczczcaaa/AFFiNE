@@ -1,5 +1,6 @@
 import { Button } from '@affine/component';
 import { AuthPageContainer } from '@affine/component/auth-components';
+import { getSubscriptionInfo } from '@affine/core/components/hooks/affine/use-subscription-notify';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { Trans, useI18n } from '@affine/i18n';
 import { useCallback } from 'react';
@@ -15,15 +16,26 @@ import * as styles from './styles.css';
 export const Component = () => {
   const t = useI18n();
   const [params] = useSearchParams();
+  const subscriptionInfo = getSubscriptionInfo(params);
 
-  const { jumpToIndex, jumpToOpenInApp } = useNavigateHelper();
-  const openAffine = useCallback(() => {
+  const { jumpToPage, jumpToOpenInApp, jumpToIndex } = useNavigateHelper();
+  const openWorkspace = useCallback(() => {
     if (params.get('schema')) {
       jumpToOpenInApp('bring-to-front');
     } else {
+      if (subscriptionInfo.workspaceId) {
+        jumpToPage(subscriptionInfo.workspaceId, 'all');
+        return;
+      }
       jumpToIndex();
     }
-  }, [jumpToIndex, jumpToOpenInApp, params]);
+  }, [
+    jumpToIndex,
+    jumpToOpenInApp,
+    jumpToPage,
+    params,
+    subscriptionInfo.workspaceId,
+  ]);
 
   const subtitle = (
     <div className={styles.leftContentText}>
@@ -49,8 +61,8 @@ export const Component = () => {
       title={t['com.affine.payment.upgrade-success-page.title']()}
       subtitle={subtitle}
     >
-      <Button variant="primary" size="extraLarge" onClick={openAffine}>
-        {t['com.affine.other-page.nav.open-affine']()}
+      <Button variant="primary" size="extraLarge" onClick={openWorkspace}>
+        {t['Visit Workspace']()}
       </Button>
     </AuthPageContainer>
   );

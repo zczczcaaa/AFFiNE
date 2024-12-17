@@ -196,6 +196,7 @@ const UpgradeDialog = ({
           className={styles.upgradeButtonInDialog}
           recurring={currentRecurring}
           plan={SubscriptionPlan.Team}
+          workspaceId={workspaceId}
           onCheckoutSuccess={onClose}
           checkoutInput={{
             args: {

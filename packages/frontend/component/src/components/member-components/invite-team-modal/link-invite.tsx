@@ -150,13 +150,13 @@ export const LinkInvite = ({
         />
         {invitationLink ? (
           <>
-            <Button onClick={onCopy}>
+            <Button onClick={onCopy} variant="secondary">
               {t['com.affine.payment.member.team.invite.copy']()}
             </Button>
             <IconButton icon={<CloseIcon />} onClick={onReset} />
           </>
         ) : (
-          <Button onClick={onGenerate}>
+          <Button onClick={onGenerate} variant="secondary">
             {t['com.affine.payment.member.team.invite.generate']()}
           </Button>
         )}

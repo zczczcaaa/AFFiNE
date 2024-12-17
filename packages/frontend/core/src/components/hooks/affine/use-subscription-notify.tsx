@@ -46,7 +46,8 @@ export const getDowngradeQuestionnaireLink = (info: TypeFormInfo) =>
 export const generateSubscriptionCallbackLink = (
   account: AuthAccountInfo | null,
   plan: SubscriptionPlan,
-  recurring: SubscriptionRecurring
+  recurring: SubscriptionRecurring,
+  workspaceId?: string
 ) => {
   if (account === null) {
     throw new Error('Account is required');
@@ -69,7 +70,22 @@ export const generateSubscriptionCallbackLink = (
     account.id,
     account.email,
     account.info?.name ?? '',
+    workspaceId ?? '',
   ].join(separator);
 
   return `${baseUrl}?info=${encodeURIComponent(query)}`;
+};
+
+export const getSubscriptionInfo = (searchParams: URLSearchParams) => {
+  const decodedInfo = decodeURIComponent(searchParams.get('info') || '');
+  const [plan, recurring, accountId, email, name, workspaceId] =
+    decodedInfo.split(separator);
+  return {
+    plan: plan as SubscriptionPlan,
+    recurring: recurring as SubscriptionRecurring,
+    accountId,
+    email,
+    name: name.replaceAll(recoverSeparator, separator),
+    workspaceId,
+  };
 };

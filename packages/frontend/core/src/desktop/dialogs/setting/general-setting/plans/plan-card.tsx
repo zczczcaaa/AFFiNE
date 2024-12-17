@@ -272,6 +272,7 @@ export const Upgrade = ({
   className,
   recurring,
   plan,
+  workspaceId,
   children,
   checkoutInput,
   onCheckoutSuccess,
@@ -280,6 +281,7 @@ export const Upgrade = ({
 }: ButtonProps & {
   recurring: SubscriptionRecurring;
   plan: SubscriptionPlan;
+  workspaceId?: string;
   checkoutInput?: Partial<CreateCheckoutSessionInput>;
   onBeforeCheckout?: () => void;
   onCheckoutSuccess?: () => void;
@@ -304,11 +306,18 @@ export const Upgrade = ({
       successCallbackLink: generateSubscriptionCallbackLink(
         authService.session.account$.value,
         plan,
-        recurring
+        recurring,
+        workspaceId
       ),
       ...checkoutInput,
     }),
-    [authService.session.account$.value, checkoutInput, plan, recurring]
+    [
+      authService.session.account$.value,
+      checkoutInput,
+      plan,
+      recurring,
+      workspaceId,
+    ]
   );
 
   return (
