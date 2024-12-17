@@ -3,7 +3,7 @@ import EventEmitter2 from 'eventemitter2';
 import type { ConnectionStatus } from '../connection';
 import type { BlobStorage } from './blob';
 import type { DocStorage } from './doc';
-import { type Storage, type StorageType } from './storage';
+import type { Storage, StorageType } from './storage';
 import type { SyncStorage } from './sync';
 
 type Storages = DocStorage | BlobStorage | SyncStorage;
@@ -22,7 +22,10 @@ export class SpaceStorage {
   tryGet<T extends StorageType>(
     type: T
   ): Extract<Storages, { storageType: T }> | undefined {
-    return this.storages.get(type) as Extract<Storages, { storageType: T }>;
+    return this.storages.get(type) as unknown as Extract<
+      Storages,
+      { storageType: T }
+    >;
   }
 
   get<T extends StorageType>(type: T): Extract<Storages, { storageType: T }> {

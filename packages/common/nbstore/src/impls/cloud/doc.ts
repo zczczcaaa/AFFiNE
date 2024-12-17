@@ -1,4 +1,3 @@
-import { noop } from 'lodash-es';
 import type { SocketOptions } from 'socket.io-client';
 
 import { share } from '../../connection';
@@ -33,7 +32,9 @@ export class CloudDocStorage extends DocStorage<CloudDocStorageOptions> {
     await super.connect();
     this.connection.onStatusChanged(status => {
       if (status === 'connected') {
-        this.join().catch(noop);
+        this.join().catch(err => {
+          console.error('doc storage join failed', err);
+        });
         this.socket.on('space:broadcast-doc-update', this.onServerUpdate);
       }
     });

@@ -1,10 +1,10 @@
 import type { BlobRecord, BlobStorage } from '../storage';
-import type { BlobSyncEngine } from '../sync/blob';
+import type { BlobSync } from '../sync/blob';
 
 export class BlobFrontend {
   constructor(
     readonly storage: BlobStorage,
-    readonly sync?: BlobSyncEngine
+    readonly sync?: BlobSync
   ) {}
 
   get(blobId: string) {

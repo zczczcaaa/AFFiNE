@@ -34,7 +34,7 @@ export class IDBConnection extends Connection<{
           this.setStatus('error', new Error('Blocked by other tabs.'));
         },
       }),
-      channel: new BroadcastChannel(this.dbName),
+      channel: new BroadcastChannel('idb:' + this.dbName),
     };
   }
 

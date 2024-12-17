@@ -1,7 +1,7 @@
 import type { DocStorage, SyncStorage } from '../../storage';
 import { DocSyncPeer } from './peer';
 
-export class DocSyncEngine {
+export class DocSync {
   private readonly peers: DocSyncPeer[];
   private abort: AbortController | null = null;
 

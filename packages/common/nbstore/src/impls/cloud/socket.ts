@@ -29,6 +29,19 @@ interface ServerEvents {
     timestamp: number;
     editor: string;
   };
+
+  'space:collect-awareness': {
+    spaceType: string;
+    spaceId: string;
+    docId: string;
+  };
+
+  'space:broadcast-awareness-update': {
+    spaceType: string;
+    spaceId: string;
+    docId: string;
+    awarenessUpdate: string;
+  };
 }
 
 interface ClientEvents {
@@ -47,6 +60,19 @@ interface ClientEvents {
     { clientId: string },
   ];
   'space:leave-awareness': {
+    spaceType: string;
+    spaceId: string;
+    docId: string;
+  };
+
+  'space:update-awareness': {
+    spaceType: string;
+    spaceId: string;
+    docId: string;
+    awarenessUpdate: string;
+  };
+
+  'space:load-awarenesses': {
     spaceType: string;
     spaceId: string;
     docId: string;

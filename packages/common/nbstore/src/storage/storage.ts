@@ -1,7 +1,7 @@
 import type { Connection } from '../connection';
 
 export type SpaceType = 'workspace' | 'userspace';
-export type StorageType = 'blob' | 'doc' | 'sync';
+export type StorageType = 'blob' | 'doc' | 'sync' | 'awareness';
 
 export interface StorageOptions {
   peer: string;

@@ -3,7 +3,7 @@ import { difference } from 'lodash-es';
 import type { BlobRecord, BlobStorage } from '../../storage';
 import { MANUALLY_STOP, throwIfAborted } from '../../utils/throw-if-aborted';
 
-export class BlobSyncEngine {
+export class BlobSync {
   private abort: AbortController | null = null;
 
   constructor(

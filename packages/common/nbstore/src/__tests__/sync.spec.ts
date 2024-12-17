@@ -9,7 +9,7 @@ import {
   IndexedDBSyncStorage,
 } from '../impls/idb';
 import { SpaceStorage } from '../storage';
-import { SyncEngine } from '../sync';
+import { Sync } from '../sync';
 import { expectYjsEqual } from './utils';
 
 test('doc', async () => {
@@ -53,7 +53,7 @@ test('doc', async () => {
     bin: update,
   });
 
-  const sync = new SyncEngine(peerA, [peerB, peerC]);
+  const sync = new Sync(peerA, [peerB, peerC]);
   sync.start();
 
   await new Promise(resolve => setTimeout(resolve, 1000));
@@ -143,7 +143,7 @@ test('blob', async () => {
   await peerB.connect();
   await peerC.connect();
 
-  const sync = new SyncEngine(peerA, [peerB, peerC]);
+  const sync = new Sync(peerA, [peerB, peerC]);
   sync.start();
 
   await new Promise(resolve => setTimeout(resolve, 1000));

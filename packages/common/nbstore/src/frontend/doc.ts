@@ -9,7 +9,7 @@ import {
 } from 'yjs';
 
 import type { DocRecord, DocStorage } from '../storage';
-import type { DocSyncEngine } from '../sync/doc';
+import type { DocSync } from '../sync/doc';
 import { AsyncPriorityQueue } from '../utils/async-priority-queue';
 import { isEmptyUpdate } from '../utils/is-empty-update';
 import { throwIfAborted } from '../utils/throw-if-aborted';
@@ -56,7 +56,7 @@ export class DocFrontend {
 
   constructor(
     private readonly storage: DocStorage,
-    private readonly sync: DocSyncEngine | null,
+    private readonly sync: DocSync | null,
     readonly options: DocFrontendOptions = {}
   ) {}
 

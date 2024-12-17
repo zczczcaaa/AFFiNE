@@ -1,10 +1,10 @@
 import type { BlobStorage, DocStorage, SpaceStorage } from '../storage';
-import { BlobSyncEngine } from './blob';
-import { DocSyncEngine } from './doc';
+import { BlobSync } from './blob';
+import { DocSync } from './doc';
 
-export class SyncEngine {
-  private readonly doc: DocSyncEngine | null;
-  private readonly blob: BlobSyncEngine | null;
+export class Sync {
+  private readonly doc: DocSync | null;
+  private readonly blob: BlobSync | null;
 
   constructor(
     readonly local: SpaceStorage,
@@ -16,7 +16,7 @@ export class SyncEngine {
 
     this.doc =
       doc && sync
-        ? new DocSyncEngine(
+        ? new DocSync(
             doc,
             sync,
             peers
@@ -25,7 +25,7 @@ export class SyncEngine {
           )
         : null;
     this.blob = blob
-      ? new BlobSyncEngine(
+      ? new BlobSync(
           blob,
           peers
             .map(peer => peer.tryGet('blob'))
