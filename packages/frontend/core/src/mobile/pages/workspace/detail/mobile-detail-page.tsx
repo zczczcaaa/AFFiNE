@@ -205,7 +205,7 @@ const DetailPageImpl = () => {
           )}
         >
           {/* Add a key to force rerender when page changed, to avoid error boundary persisting. */}
-          <AffineErrorBoundary key={doc.id}>
+          <AffineErrorBoundary key={doc.id} className={styles.errorBoundary}>
             <PageDetailEditor onLoad={onLoad} />
           </AffineErrorBoundary>
         </div>

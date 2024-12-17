@@ -80,6 +80,10 @@ export const affineDocViewport = style({
   },
 });
 
+export const errorBoundary = style({
+  flex: 1,
+});
+
 export const scrollbar = style({
   marginRight: '4px',
 });
