@@ -1,6 +1,7 @@
 import { IconButton, Menu } from '@affine/component';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { JournalService } from '@affine/core/modules/journal';
+import { WorkbenchLink } from '@affine/core/modules/workbench';
 import { useI18n } from '@affine/i18n';
 import { EditIcon, TodayIcon } from '@blocksuite/icons/rc';
 import type { DocRecord } from '@toeverything/infra';
@@ -58,7 +59,7 @@ const ConflictItem = ({ docRecord }: { docRecord: DocRecord }) => {
   const title = i18n.t(titleMeta);
 
   return (
-    <div className={styles.docItem}>
+    <WorkbenchLink className={styles.docItem} to={`/${docId}`}>
       <TodayIcon className={styles.icon} />
       <div className={styles.content}>
         <div className={styles.title}>{title}</div>
@@ -69,6 +70,6 @@ const ConflictItem = ({ docRecord }: { docRecord: DocRecord }) => {
       <Menu items={<ResolveConflictOperations docRecord={docRecord} />}>
         <IconButton className={styles.edit} icon={<EditIcon />} />
       </Menu>
-    </div>
+    </WorkbenchLink>
   );
 };

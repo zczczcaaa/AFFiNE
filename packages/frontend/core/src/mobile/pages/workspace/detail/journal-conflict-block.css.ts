@@ -38,6 +38,7 @@ export const docItem = style({
   display: 'flex',
   gap: 8,
   alignItems: 'center',
+  color: 'unset',
 });
 export const icon = style({
   fontSize: 20,
