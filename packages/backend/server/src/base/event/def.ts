@@ -5,7 +5,10 @@ import { Flatten, Payload } from './types';
 export interface WorkspaceEvents {
   members: {
     reviewRequested: Payload<{ inviteId: string }>;
-    requestDeclined: Payload<{ inviteId: string }>;
+    requestDeclined: Payload<{
+      userId: User['id'];
+      workspaceId: Workspace['id'];
+    }>;
     requestApproved: Payload<{ inviteId: string }>;
     updated: Payload<{ workspaceId: Workspace['id']; count: number }>;
   };

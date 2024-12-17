@@ -674,7 +674,7 @@ test('should be able to emit events', async t => {
       event.emit.lastCall.args,
       [
         'workspace.members.requestDeclined',
-        { inviteId: memberInvite.inviteId },
+        { userId: user.id, workspaceId: tws.id },
       ],
       'should emit review requested event'
     );

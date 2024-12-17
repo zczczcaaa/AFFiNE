@@ -334,10 +334,16 @@ export class TeamWorkspaceResolver {
 
   @OnEvent('workspace.members.requestDeclined')
   async onDeclineRequest({
-    inviteId,
+    userId,
+    workspaceId,
   }: EventPayload<'workspace.members.requestDeclined'>) {
+    const user = await this.users.findUserById(userId);
+    const workspace = await this.workspaceService.getWorkspaceInfo(workspaceId);
     // send decline mail
-    await this.workspaceService.sendReviewDeclinedEmail(inviteId);
+    await this.workspaceService.sendReviewDeclinedEmail(
+      user?.email,
+      workspace.name
+    );
   }
 
   @OnEvent('workspace.members.requestApproved')

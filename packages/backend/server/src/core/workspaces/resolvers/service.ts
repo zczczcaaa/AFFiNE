@@ -159,14 +159,12 @@ export class WorkspaceService {
     await this.mailer.sendReviewApproveEmail(target.email, target.workspace);
   }
 
-  async sendReviewDeclinedEmail(inviteId: string) {
-    const target = await this.getInviteeEmailTarget(inviteId);
-
-    if (!target) {
-      return;
-    }
-
-    await this.mailer.sendReviewDeclinedEmail(target.email, target.workspace);
+  async sendReviewDeclinedEmail(
+    email: string | undefined,
+    workspaceName: string
+  ) {
+    if (!email) return;
+    await this.mailer.sendReviewDeclinedEmail(email, { name: workspaceName });
   }
 
   private async getInviteeEmailTarget(inviteId: string) {

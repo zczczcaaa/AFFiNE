@@ -470,7 +470,8 @@ export class PermissionService {
       permission.status === 'NeedMoreSeatAndReview'
     ) {
       this.event.emit('workspace.members.requestDeclined', {
-        inviteId: permission.id,
+        userId: user,
+        workspaceId,
       });
     }
 
