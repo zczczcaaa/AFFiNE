@@ -69,6 +69,8 @@ export default tseslint.config(
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
+      // covered by TypeScript
+      'no-dupe-args': 'off',
       // the following rules are disabled because they are covered by oxlint
       'array-callback-return': 'off',
       'constructor-super': 'off',
