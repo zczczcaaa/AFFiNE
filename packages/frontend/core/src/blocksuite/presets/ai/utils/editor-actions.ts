@@ -105,6 +105,7 @@ export const replace = async (
   );
 
   if (textSelection) {
+    host.std.command.exec('deleteText', { textSelection });
     const { snapshot, job } = await markdownToSnapshot(content, host);
     await job.snapshotToSlice(
       snapshot,
