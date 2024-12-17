@@ -11,8 +11,7 @@
     "tools/*",
     "docs/reference",
     "tools/@types/*",
-    "tests/*",
-    "tests/affine-legacy/*"
+    "tests/*"
   ],
   "engines": {
     "node": "<21.0.0"
@@ -24,7 +23,6 @@
     "build:electron": "yarn nx build @affine/electron",
     "build:server-native": "yarn nx run-many -t build -p @affine/server-native",
     "start:web-static": "yarn workspace @affine/web static-server",
-    "serve:test-static": "yarn exec serve tests/fixtures --cors -p 8081",
     "lint:eslint": "cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" eslint --report-unused-disable-directives-severity=off . --cache",
     "lint:eslint:fix": "yarn lint:eslint --fix",
     "lint:prettier": "prettier --ignore-unknown --cache --check .",

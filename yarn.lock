@@ -19,54 +19,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@affine-legacy/0.6.1-beta.1@workspace:tests/affine-legacy/0.6.1-beta.1":
-  version: 0.0.0-use.local
-  resolution: "@affine-legacy/0.6.1-beta.1@workspace:tests/affine-legacy/0.6.1-beta.1"
-  dependencies:
-    "@affine-test/kit": "workspace:*"
-    "@playwright/test": "npm:=1.49.1"
-    express: "npm:^4.21.2"
-    http-proxy-middleware: "npm:^3.0.3"
-    serve: "npm:^14.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@affine-legacy/0.7.0-canary.18@workspace:tests/affine-legacy/0.7.0-canary.18":
-  version: 0.0.0-use.local
-  resolution: "@affine-legacy/0.7.0-canary.18@workspace:tests/affine-legacy/0.7.0-canary.18"
-  dependencies:
-    "@affine-test/kit": "workspace:*"
-    "@playwright/test": "npm:=1.49.1"
-    express: "npm:^4.21.2"
-    http-proxy-middleware: "npm:^3.0.3"
-    serve: "npm:^14.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@affine-legacy/0.8.0-canary.7@workspace:tests/affine-legacy/0.8.0-canary.7":
-  version: 0.0.0-use.local
-  resolution: "@affine-legacy/0.8.0-canary.7@workspace:tests/affine-legacy/0.8.0-canary.7"
-  dependencies:
-    "@affine-test/kit": "workspace:*"
-    "@playwright/test": "npm:=1.49.1"
-    express: "npm:^4.21.2"
-    http-proxy-middleware: "npm:^3.0.3"
-    serve: "npm:^14.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@affine-legacy/0.8.4@workspace:tests/affine-legacy/0.8.4":
-  version: 0.0.0-use.local
-  resolution: "@affine-legacy/0.8.4@workspace:tests/affine-legacy/0.8.4"
-  dependencies:
-    "@affine-test/kit": "workspace:*"
-    "@playwright/test": "npm:=1.49.1"
-    express: "npm:^4.21.2"
-    http-proxy-middleware: "npm:^3.0.3"
-    serve: "npm:^14.2.4"
-  languageName: unknown
-  linkType: soft
-
 "@affine-test/affine-cloud-copilot@workspace:tests/affine-cloud-copilot":
   version: 0.0.0-use.local
   resolution: "@affine-test/affine-cloud-copilot@workspace:tests/affine-cloud-copilot"
@@ -122,12 +74,6 @@ __metadata:
   dependencies:
     "@affine-test/kit": "workspace:*"
     "@playwright/test": "npm:=1.49.1"
-  languageName: unknown
-  linkType: soft
-
-"@affine-test/fixtures@workspace:*, @affine-test/fixtures@workspace:tests/fixtures":
-  version: 0.0.0-use.local
-  resolution: "@affine-test/fixtures@workspace:tests/fixtures"
   languageName: unknown
   linkType: soft
 
@@ -13780,7 +13726,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@toeverything/infra@workspace:packages/common/infra"
   dependencies:
-    "@affine-test/fixtures": "workspace:*"
     "@affine/debug": "workspace:*"
     "@affine/env": "workspace:*"
     "@affine/templates": "workspace:*"

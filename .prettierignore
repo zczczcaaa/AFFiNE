@@ -16,7 +16,6 @@ packages/backend/server/src/base/error/errors.gen.ts
 packages/frontend/i18n/src/i18n-generated.ts
 packages/frontend/i18n/src/i18n-completenesses.json
 packages/frontend/graphql/src/graphql/index.ts
-tests/affine-legacy/**/static
 .yarnrc.yml
 packages/frontend/templates/*.gen.ts
 packages/frontend/templates/onboarding

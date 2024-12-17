@@ -232,7 +232,7 @@ test('image preview should be shown', async ({ page, browser }) => {
   const title = getBlockSuiteEditorTitle(page);
   await title.click();
   await page.keyboard.press('Enter');
-  await importImage(page, 'http://localhost:8081/large-image.png');
+  await importImage(page, 'large-image.png');
 
   // enable share page and copy page link
   await enableShare(page);

@@ -8,10 +8,5 @@
     "outDir": "lib",
     "noEmit": false
   },
-  "include": ["vite.config.ts"],
-  "references": [
-    {
-      "path": "../../../tests/fixtures"
-    }
-  ]
+  "include": ["vite.config.ts"]
 }

@@ -66,7 +66,6 @@
       "@affine/graphql": ["./packages/frontend/graphql/src"],
       "@affine/electron/scripts/*": ["./packages/frontend/electron/scripts/*"],
       "@affine-test/kit/*": ["./tests/kit/*"],
-      "@affine-test/fixtures/*": ["./tests/fixtures/*"],
       "@toeverything/infra": ["./packages/common/infra/src"],
       "@affine/native": ["./packages/frontend/native/index.d.ts"],
       "@affine/native/*": ["./packages/frontend/native/*"],
@@ -153,22 +152,10 @@
       "path": "./tests/affine-mobile"
     },
     {
-      "path": "./tests/affine-legacy/0.7.0-canary.18"
-    },
-    {
-      "path": "./tests/affine-legacy/0.8.0-canary.7"
-    },
-    {
       "path": "./tests/affine-cloud"
     },
     {
       "path": "./tests/affine-desktop"
-    },
-    {
-      "path": "./tests/affine-legacy/0.8.4"
-    },
-    {
-      "path": "./tests/affine-legacy/0.6.1-beta.1"
     },
     // Others
     {
