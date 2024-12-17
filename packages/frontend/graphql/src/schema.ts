@@ -273,6 +273,7 @@ export type ErrorDataUnion =
   | InvalidHistoryTimestampDataType
   | InvalidPasswordLengthDataType
   | InvalidRuntimeConfigTypeDataType
+  | MemberNotFoundInSpaceDataType
   | MissingOauthQueryParameterDataType
   | NotInSpaceDataType
   | RuntimeConfigNotFoundDataType
@@ -334,6 +335,7 @@ export enum ErrorNames {
   INVALID_SUBSCRIPTION_PARAMETERS = 'INVALID_SUBSCRIPTION_PARAMETERS',
   LINK_EXPIRED = 'LINK_EXPIRED',
   MAILER_SERVICE_IS_NOT_CONFIGURED = 'MAILER_SERVICE_IS_NOT_CONFIGURED',
+  MEMBER_NOT_FOUND_IN_SPACE = 'MEMBER_NOT_FOUND_IN_SPACE',
   MEMBER_QUOTA_EXCEEDED = 'MEMBER_QUOTA_EXCEEDED',
   MISSING_OAUTH_QUERY_PARAMETER = 'MISSING_OAUTH_QUERY_PARAMETER',
   NOT_FOUND = 'NOT_FOUND',
@@ -539,6 +541,11 @@ export interface ManageUserInput {
   email?: InputMaybe<Scalars['String']['input']>;
   /** User name */
   name?: InputMaybe<Scalars['String']['input']>;
+}
+
+export interface MemberNotFoundInSpaceDataType {
+  __typename?: 'MemberNotFoundInSpaceDataType';
+  spaceId: Scalars['String']['output'];
 }
 
 export interface MissingOauthQueryParameterDataType {

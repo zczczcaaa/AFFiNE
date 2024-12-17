@@ -65,6 +65,34 @@ export async function inviteUsers(
   return res.body.data.inviteBatch;
 }
 
+export async function getInviteLink(
+  app: INestApplication,
+  token: string,
+  workspaceId: string
+): Promise<{ link: string; expireTime: string }> {
+  const res = await request(app.getHttpServer())
+    .post(gql)
+    .auth(token, { type: 'bearer' })
+    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+    .send({
+      query: `
+          query {
+            workspace(id: "${workspaceId}") {
+              inviteLink {
+                link
+                expireTime
+              }
+            }
+          }
+          `,
+    })
+    .expect(200);
+  if (res.body.errors) {
+    throw new Error(res.body.errors[0].message);
+  }
+  return res.body.data.workspace.inviteLink;
+}
+
 export async function createInviteLink(
   app: INestApplication,
   token: string,
@@ -92,6 +120,29 @@ export async function createInviteLink(
   return res.body.data.createInviteLink;
 }
 
+export async function revokeInviteLink(
+  app: INestApplication,
+  token: string,
+  workspaceId: string
+): Promise<boolean> {
+  const res = await request(app.getHttpServer())
+    .post(gql)
+    .auth(token, { type: 'bearer' })
+    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+    .send({
+      query: `
+            mutation {
+              revokeInviteLink(workspaceId: "${workspaceId}")
+            }
+          `,
+    })
+    .expect(200);
+  if (res.body.errors) {
+    throw new Error(res.body.errors[0].message);
+  }
+  return res.body.data.revokeInviteLink;
+}
+
 export async function acceptInviteById(
   app: INestApplication,
   workspaceId: string,
@@ -117,6 +168,32 @@ export async function acceptInviteById(
     });
   }
   return res.body.data.acceptInviteById;
+}
+
+export async function approveMember(
+  app: INestApplication,
+  token: string,
+  workspaceId: string,
+  userId: string
+): Promise<string> {
+  const res = await request(app.getHttpServer())
+    .post(gql)
+    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+    .auth(token, { type: 'bearer' })
+    .send({
+      query: `
+          mutation {
+            approveMember(workspaceId: "${workspaceId}", userId: "${userId}")
+          }
+          `,
+    })
+    .expect(200);
+  if (res.body.errors) {
+    throw new Error(res.body.errors[0].message, {
+      cause: res.body.errors[0].cause,
+    });
+  }
+  return res.body.data.approveMember;
 }
 
 export async function leaveWorkspace(
@@ -161,6 +238,11 @@ export async function revokeUser(
           `,
     })
     .expect(200);
+  if (res.body.errors) {
+    throw new Error(res.body.errors[0].message, {
+      cause: res.body.errors[0].cause,
+    });
+  }
   return res.body.data.revoke;
 }
 

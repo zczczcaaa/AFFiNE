@@ -347,6 +347,11 @@ export const USER_FRIENDLY_ERRORS = {
     args: { spaceId: 'string' },
     message: ({ spaceId }) => `Space ${spaceId} not found.`,
   },
+  member_not_found_in_space: {
+    type: 'action_forbidden',
+    args: { spaceId: 'string' },
+    message: ({ spaceId }) => `Member not found in Space ${spaceId}.`,
+  },
   not_in_space: {
     type: 'action_forbidden',
     args: { spaceId: 'string' },

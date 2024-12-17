@@ -13,7 +13,7 @@ import {
   Cache,
   EventEmitter,
   type EventPayload,
-  NotInSpace,
+  MemberNotFoundInSpace,
   OnEvent,
   RequestMutex,
   TooManyRequest,
@@ -152,7 +152,16 @@ export class TeamWorkspaceResolver {
     description: 'invite link for workspace',
     nullable: true,
   })
-  async inviteLink(@Parent() workspace: WorkspaceType) {
+  async inviteLink(
+    @Parent() workspace: WorkspaceType,
+    @CurrentUser() user: CurrentUser
+  ) {
+    await this.permissions.checkWorkspace(
+      workspace.id,
+      user.id,
+      Permission.Admin
+    );
+
     const cacheId = `workspace:inviteLink:${workspace.id}`;
     const id = await this.cache.get<{ inviteId: string }>(cacheId);
     if (id) {
@@ -261,7 +270,7 @@ export class TeamWorkspaceResolver {
         }
         return new TooManyRequest();
       } else {
-        return new NotInSpace({ spaceId: workspaceId });
+        return new MemberNotFoundInSpace({ spaceId: workspaceId });
       }
     } catch (e) {
       this.logger.error('failed to invite user', e);
@@ -307,7 +316,7 @@ export class TeamWorkspaceResolver {
 
         return result;
       } else {
-        return new NotInSpace({ spaceId: workspaceId });
+        return new MemberNotFoundInSpace({ spaceId: workspaceId });
       }
     } catch (e) {
       this.logger.error('failed to invite user', e);

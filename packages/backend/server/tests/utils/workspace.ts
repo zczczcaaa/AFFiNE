@@ -71,7 +71,7 @@ export async function getWorkspace(
       query: `
             query {
               workspace(id: "${workspaceId}") {
-                id, members(skip: ${skip}, take: ${take}) { id, name, email, permission, inviteId }
+                id, members(skip: ${skip}, take: ${take}) { id, name, email, permission, inviteId, status }
               }
             }
           `,
