@@ -102,30 +102,35 @@ export const DocCard = forwardRef<HTMLAnchorElement, DocCardProps>(
         data-visible={visible}
         {...attrs}
       >
-        <header className={styles.head} data-testid="doc-card-header">
-          <h3 className={styles.title}>{title}</h3>
-          <IconButton
-            aria-label="favorite"
-            icon={
-              <IsFavoriteIcon onClick={toggleFavorite} favorite={favorited} />
-            }
-          />
-        </header>
-        <main className={styles.content} style={contentStyle}>
-          {visible && (
-            <PagePreview
-              fallback={
-                <>
-                  <Skeleton />
-                  <Skeleton width={'60%'} />
-                </>
-              }
-              pageId={meta.id}
-              emptyFallback={<div className={styles.contentEmpty}>Empty</div>}
-            />
-          )}
-        </main>
-        {showTags ? <DocCardTags docId={meta.id} rows={2} /> : null}
+        {visible && (
+          <>
+            <header className={styles.head} data-testid="doc-card-header">
+              <h3 className={styles.title}>{title}</h3>
+              <IconButton
+                aria-label="favorite"
+                icon={
+                  <IsFavoriteIcon
+                    onClick={toggleFavorite}
+                    favorite={favorited}
+                  />
+                }
+              />
+            </header>
+            <main className={styles.content} style={contentStyle}>
+              <PagePreview
+                fallback={
+                  <>
+                    <Skeleton />
+                    <Skeleton width={'60%'} />
+                  </>
+                }
+                pageId={meta.id}
+                emptyFallback={<div className={styles.contentEmpty}>Empty</div>}
+              />
+            </main>
+            {showTags ? <DocCardTags docId={meta.id} rows={2} /> : null}
+          </>
+        )}
       </WorkbenchLink>
     );
   }
