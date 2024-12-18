@@ -129,15 +129,17 @@ export const BlockSuiteEditor = (props: EditorProps) => {
       setIsLoading(false);
       return;
     }
-    const disposable = props.page.slots.rootAdded.once(() => {
-      setIsLoading(false);
-    });
-    window.setTimeout(() => {
+    const timer = setTimeout(() => {
       disposable.dispose();
       setError(new NoPageRootError(props.page));
     }, 20 * 1000);
+    const disposable = props.page.slots.rootAdded.once(() => {
+      setIsLoading(false);
+      clearTimeout(timer);
+    });
     return () => {
       disposable.dispose();
+      clearTimeout(timer);
     };
   }, [props.page]);
 
