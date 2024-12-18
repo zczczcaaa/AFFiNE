@@ -587,6 +587,7 @@ __metadata:
     "@types/react": "npm:^19.0.1"
     "@types/react-dom": "npm:^19.0.2"
     cross-env: "npm:^7.0.3"
+    next-themes: "npm:^0.4.4"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
     react-router-dom: "npm:^6.28.0"

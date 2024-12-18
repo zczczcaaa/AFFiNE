@@ -27,7 +27,7 @@ import { I18n } from '@affine/i18n';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Haptics } from '@capacitor/haptics';
-import { Keyboard } from '@capacitor/keyboard';
+import { Keyboard, KeyboardStyle } from '@capacitor/keyboard';
 import {
   Framework,
   FrameworkRoot,
@@ -35,7 +35,8 @@ import {
   GlobalContextService,
   LifecycleService,
 } from '@toeverything/infra';
-import { Suspense } from 'react';
+import { useTheme } from 'next-themes';
+import { Suspense, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
 import { configureFetchProvider } from './fetch';
@@ -171,12 +172,32 @@ CapacitorApp.addListener('appUrlOpen', ({ url }) => {
   console.error(e);
 });
 
+const KeyboardThemeProvider = () => {
+  const { resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    Keyboard.setStyle({
+      style:
+        resolvedTheme === 'dark'
+          ? KeyboardStyle.Dark
+          : resolvedTheme === 'light'
+            ? KeyboardStyle.Light
+            : KeyboardStyle.Default,
+    }).catch(e => {
+      console.error(`Failed to set keyboard style: ${e}`);
+    });
+  }, [resolvedTheme]);
+
+  return null;
+};
+
 export function App() {
   return (
     <Suspense>
       <FrameworkRoot framework={frameworkProvider}>
         <I18nProvider>
           <AffineContext store={getCurrentStore()}>
+            <KeyboardThemeProvider />
             <ModalConfigProvider>
               <RouterProvider
                 fallbackElement={<AppFallback />}
