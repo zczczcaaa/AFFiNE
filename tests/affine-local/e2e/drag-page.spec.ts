@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-dom-node-dataset */
 import { test } from '@affine-test/kit/playwright';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
@@ -244,15 +243,7 @@ test('drag a page link in editor to favourites', async ({ page }) => {
   );
 });
 
-async function enableNewDND(page: Page) {
-  await page.evaluate(() => {
-    // @ts-expect-error
-    window.currentEditor.doc.awarenessStore.setFlag('enable_new_dnd', true);
-  });
-}
-
 test('drag a page card block to another page', async ({ page }) => {
-  await enableNewDND(page);
   await clickNewPageButton(page);
   await page.waitForTimeout(500);
   await page.keyboard.press('Enter');
@@ -303,7 +294,6 @@ test('drag a page card block to another page', async ({ page }) => {
 });
 
 test('drag a favourite page into blocksuite', async ({ page }) => {
-  await enableNewDND(page);
   await clickNewPageButton(page, 'hi from page');
   await page.getByTestId('pin-button').click();
   const pageId = getCurrentDocIdFromUrl(page);

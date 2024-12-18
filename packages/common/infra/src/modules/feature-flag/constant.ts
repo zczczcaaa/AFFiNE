@@ -23,8 +23,8 @@ export const AFFINE_FLAGS = {
       'com.affine.settings.workspace.experimental-features.enable-new-dnd.name',
     description:
       'com.affine.settings.workspace.experimental-features.enable-new-dnd.description',
-    configurable: isCanaryBuild,
-    defaultState: false,
+    configurable: false,
+    defaultState: true,
   },
   enable_database_full_width: {
     category: 'blocksuite',
