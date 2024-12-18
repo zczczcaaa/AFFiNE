@@ -1,6 +1,6 @@
 import { remove } from 'lodash-es';
 import { nanoid } from 'nanoid';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { diffUpdate, encodeStateVectorFromUpdate, mergeUpdates } from 'yjs';
 
 import type { DocStorage, SyncStorage } from '../../storage';
@@ -41,6 +41,19 @@ interface Status {
   jobDocQueue: AsyncPriorityQueue;
   jobMap: Map<string, Job[]>;
   remoteClocks: ClockMap;
+  syncing: boolean;
+  retrying: boolean;
+  errorMessage: string | null;
+}
+
+interface PeerState {
+  total: number;
+  syncing: number;
+  retrying: boolean;
+  errorMessage: string | null;
+}
+
+interface PeerDocState {
   syncing: boolean;
   retrying: boolean;
   errorMessage: string | null;
@@ -100,6 +113,50 @@ export class DocSyncPeer {
     errorMessage: null,
   };
   private readonly statusUpdatedSubject$ = new Subject<string | true>();
+
+  peerState$ = new Observable<PeerState>(subscribe => {
+    const next = () => {
+      if (!this.status.syncing) {
+        // if syncing = false, jobMap is empty
+        subscribe.next({
+          total: this.status.docs.size,
+          syncing: this.status.docs.size,
+          retrying: this.status.retrying,
+          errorMessage: this.status.errorMessage,
+        });
+      } else {
+        const syncing = this.status.jobMap.size;
+        subscribe.next({
+          total: this.status.docs.size,
+          syncing: syncing,
+          retrying: this.status.retrying,
+          errorMessage: this.status.errorMessage,
+        });
+      }
+    };
+    next();
+    return this.statusUpdatedSubject$.subscribe(() => {
+      next();
+    });
+  });
+
+  docState$(docId: string) {
+    return new Observable<PeerDocState>(subscribe => {
+      const next = () => {
+        subscribe.next({
+          syncing:
+            !this.status.connectedDocs.has(docId) ||
+            this.status.jobMap.has(docId),
+          retrying: this.status.retrying,
+          errorMessage: this.status.errorMessage,
+        });
+      };
+      next();
+      return this.statusUpdatedSubject$.subscribe(updatedId => {
+        if (updatedId === true || updatedId === docId) next();
+      });
+    });
+  }
 
   private readonly jobs = createJobErrorCatcher({
     connect: async (docId: string, signal?: AbortSignal) => {

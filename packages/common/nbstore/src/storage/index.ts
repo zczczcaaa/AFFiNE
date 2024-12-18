@@ -1,12 +1,13 @@
 import EventEmitter2 from 'eventemitter2';
 
 import type { ConnectionStatus } from '../connection';
+import type { AwarenessStorage } from './awareness';
 import type { BlobStorage } from './blob';
 import type { DocStorage } from './doc';
 import type { Storage, StorageType } from './storage';
 import type { SyncStorage } from './sync';
 
-type Storages = DocStorage | BlobStorage | SyncStorage;
+type Storages = DocStorage | BlobStorage | SyncStorage | AwarenessStorage;
 
 export class SpaceStorage {
   protected readonly storages: Map<StorageType, Storage> = new Map();
