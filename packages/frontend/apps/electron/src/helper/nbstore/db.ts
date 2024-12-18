@@ -33,8 +33,14 @@ export class NativeDBConnection extends Connection<NativeDocStorage> {
     return conn;
   }
 
-  override async doDisconnect(conn: NativeDocStorage) {
-    await conn.close();
-    logger.info('[nbstore] connection closed', this.shareId);
+  override doDisconnect(conn: NativeDocStorage) {
+    conn
+      .close()
+      .then(() => {
+        logger.info('[nbstore] connection closed', this.shareId);
+      })
+      .catch(err => {
+        logger.error('[nbstore] connection close failed', this.shareId, err);
+      });
   }
 }

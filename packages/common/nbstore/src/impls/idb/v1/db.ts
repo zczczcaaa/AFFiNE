@@ -28,7 +28,7 @@ export class DocIDBConnection extends Connection<IDBPDatabase<DocDBSchema>> {
     });
   }
 
-  override async doDisconnect(conn: IDBPDatabase<DocDBSchema>) {
+  override doDisconnect(conn: IDBPDatabase<DocDBSchema>) {
     conn.close();
   }
 }
@@ -57,7 +57,7 @@ export class BlobIDBConnection extends Connection<IDBPDatabase<BlobDBSchema>> {
     });
   }
 
-  override async doDisconnect(conn: IDBPDatabase<BlobDBSchema>) {
+  override doDisconnect(conn: IDBPDatabase<BlobDBSchema>) {
     conn.close();
   }
 }

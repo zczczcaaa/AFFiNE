@@ -42,15 +42,6 @@ export class SpaceStorageConsumer extends SpaceStorage {
     });
     this.consumer.register('connect', this.connect.bind(this));
     this.consumer.register('disconnect', this.disconnect.bind(this));
-    this.consumer.register('connection', () => {
-      return new Observable(subscriber => {
-        subscriber.add(
-          this.on('connection', payload => {
-            subscriber.next(payload);
-          })
-        );
-      });
-    });
     this.consumer.register('destroy', this.destroy.bind(this));
   }
 

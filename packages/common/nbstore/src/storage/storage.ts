@@ -102,11 +102,15 @@ export abstract class Storage<Opts extends StorageOptions = StorageOptions> {
 
   constructor(public readonly options: Opts) {}
 
-  async connect() {
-    await this.connection.connect();
+  connect() {
+    this.connection.connect();
   }
 
-  async disconnect() {
-    await this.connection.disconnect();
+  disconnect() {
+    this.connection.disconnect();
+  }
+
+  async waitForConnected() {
+    await this.connection.waitForConnected();
   }
 }

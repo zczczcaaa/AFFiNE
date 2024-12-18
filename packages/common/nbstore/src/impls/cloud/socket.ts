@@ -184,7 +184,7 @@ export class SocketConnection extends Connection<Socket> {
     return conn;
   }
 
-  override async doDisconnect(conn: Socket) {
+  override doDisconnect(conn: Socket) {
     conn.close();
   }
 

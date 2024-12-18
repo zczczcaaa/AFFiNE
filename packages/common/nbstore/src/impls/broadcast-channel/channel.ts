@@ -12,7 +12,7 @@ export class BroadcastChannelConnection extends Connection<BroadcastChannel> {
     return new BroadcastChannel(this.channelName);
   }
 
-  override async doDisconnect() {
+  override doDisconnect() {
     this.close();
   }
 

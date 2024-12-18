@@ -11,12 +11,10 @@ export function share<T extends Connection<any>>(conn: T): T {
   const existing = CONNECTIONS.get(conn.shareId);
 
   if (existing) {
-    existing.ref();
     return existing as T;
   }
 
   CONNECTIONS.set(conn.shareId, conn);
-  conn.ref();
 
   return conn;
 }

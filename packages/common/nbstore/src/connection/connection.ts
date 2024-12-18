@@ -1,4 +1,5 @@
 import EventEmitter2 from 'eventemitter2';
+import { throttle } from 'lodash-es';
 
 export type ConnectionStatus =
   | 'idle'
@@ -13,6 +14,8 @@ export abstract class Connection<T = any> {
   private _status: ConnectionStatus = 'idle';
   protected error?: Error;
   private refCount = 0;
+  private _enableAutoReconnect = false;
+  private connectingAbort?: AbortController;
 
   constructor() {
     this.autoReconnect();
@@ -45,7 +48,7 @@ export abstract class Connection<T = any> {
   }
 
   protected setStatus(status: ConnectionStatus, error?: Error) {
-    const shouldEmit = status !== this._status && error !== this.error;
+    const shouldEmit = status !== this._status || error !== this.error;
     this._status = status;
     this.error = error;
     if (shouldEmit) {
@@ -53,45 +56,56 @@ export abstract class Connection<T = any> {
     }
   }
 
-  abstract doConnect(): Promise<T>;
-  abstract doDisconnect(conn: T): Promise<void>;
+  protected abstract doConnect(signal?: AbortSignal): Promise<T>;
+  protected abstract doDisconnect(conn: T): void;
 
-  ref() {
-    this.refCount++;
-  }
-
-  deref() {
-    this.refCount = Math.max(0, this.refCount - 1);
-  }
-
-  async connect() {
+  private innerConnect() {
     if (this.status === 'idle' || this.status === 'error') {
+      this._enableAutoReconnect = true;
       this.setStatus('connecting');
-      try {
-        this._inner = await this.doConnect();
-        this.setStatus('connected');
-      } catch (error) {
-        this.setStatus('error', error as any);
-      }
+      this.connectingAbort = new AbortController();
+      this.doConnect(this.connectingAbort.signal)
+        .then(value => {
+          if (!this.connectingAbort?.signal.aborted) {
+            this.setStatus('connected');
+            this._inner = value;
+          } else {
+            try {
+              this.doDisconnect(value);
+            } catch (error) {
+              console.error('failed to disconnect', error);
+            }
+          }
+        })
+        .catch(error => {
+          if (!this.connectingAbort?.signal.aborted) {
+            this.setStatus('error', error as any);
+          }
+        });
     }
   }
 
-  async disconnect() {
-    this.deref();
-    if (this.refCount > 0) {
-      return;
+  connect() {
+    this.refCount++;
+    if (this.refCount === 1) {
+      this.innerConnect();
     }
+  }
 
-    if (this.status === 'connected') {
+  disconnect() {
+    this.refCount--;
+    if (this.refCount === 0) {
+      this._enableAutoReconnect = false;
+      this.connectingAbort?.abort();
       try {
         if (this._inner) {
-          await this.doDisconnect(this._inner);
-          this._inner = null;
+          this.doDisconnect(this._inner);
         }
-        this.setStatus('closed');
       } catch (error) {
-        this.setStatus('error', error as any);
+        console.error('failed to disconnect', error);
       }
+      this.setStatus('closed');
+      this._inner = null;
     }
   }
 
@@ -99,9 +113,15 @@ export abstract class Connection<T = any> {
     // TODO:
     //   - maximum retry count
     //   - dynamic sleep time (attempt < 3 ? 1s : 1min)?
-    this.onStatusChanged(() => {
-      this.connect().catch(() => {});
-    });
+    this.onStatusChanged(
+      throttle(() => {
+        () => {
+          if (this._enableAutoReconnect) {
+            this.innerConnect();
+          }
+        };
+      }, 1000)
+    );
   }
 
   waitForConnected(signal?: AbortSignal) {
@@ -146,6 +166,6 @@ export class DummyConnection extends Connection<undefined> {
   }
 
   doDisconnect() {
-    return Promise.resolve(undefined);
+    return;
   }
 }

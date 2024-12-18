@@ -4,13 +4,7 @@ import {
   type DocUpdate,
 } from '@affine/nbstore';
 
-import type { MainEventRegister } from '../type';
-import {
-  type ConnectionStatus,
-  ensureStorage,
-  getStorage,
-  onConnectionChanged,
-} from './storage';
+import { ensureStorage, getStorage } from './storage';
 
 export const nbstoreHandlers = {
   connect: async (id: string) => {
@@ -21,7 +15,7 @@ export const nbstoreHandlers = {
     const store = getStorage(id);
 
     if (store) {
-      await store.disconnect();
+      store.disconnect();
       // The store may be shared with other tabs, so we don't delete it from cache
       // the underlying connection will handle the close correctly
       // STORE_CACHE.delete(`${spaceType}:${spaceId}`);
@@ -132,12 +126,3 @@ export const nbstoreHandlers = {
     return store.get('sync').clearClocks();
   },
 };
-
-export const nbstoreEvents = {
-  onConnectionStatusChanged: (fn: (payload: ConnectionStatus) => void) => {
-    const sub = onConnectionChanged(fn);
-    return () => {
-      sub.unsubscribe();
-    };
-  },
-} satisfies Record<string, MainEventRegister>;

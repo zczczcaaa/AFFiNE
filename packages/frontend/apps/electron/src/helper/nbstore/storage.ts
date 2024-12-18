@@ -1,10 +1,4 @@
-import {
-  parseUniversalId,
-  SpaceStorage,
-  type SpaceType,
-  type StorageType,
-} from '@affine/nbstore';
-import { Subject } from 'rxjs';
+import { parseUniversalId, SpaceStorage } from '@affine/nbstore';
 import { applyUpdate, Doc as YDoc } from 'yjs';
 
 import { logger } from '../logger';
@@ -57,28 +51,14 @@ export class SqliteSpaceStorage extends SpaceStorage {
 }
 
 const STORE_CACHE = new Map<string, SqliteSpaceStorage>();
-export interface ConnectionStatus {
-  peer: string;
-  spaceType: SpaceType;
-  spaceId: string;
-  storage: StorageType;
-  status: string;
-  error?: Error;
-}
-const CONNECTION$ = new Subject<ConnectionStatus>();
 
 process.on('beforeExit', () => {
-  CONNECTION$.complete();
   STORE_CACHE.forEach(store => {
     store.destroy().catch(err => {
       logger.error('[nbstore] destroy store failed', err);
     });
   });
 });
-
-export function onConnectionChanged(fn: (payload: ConnectionStatus) => void) {
-  return CONNECTION$.subscribe({ next: fn });
-}
 
 export function getStorage(universalId: string) {
   return STORE_CACHE.get(universalId);
@@ -101,24 +81,9 @@ export async function ensureStorage(universalId: string) {
       new SqliteSyncStorage(opts),
     ]);
 
-    store.on('connection', ({ storage, status, error }) => {
-      CONNECTION$.next({
-        peer,
-        spaceType: type,
-        spaceId: id,
-        storage,
-        status,
-        error,
-      });
-      logger.info(
-        `[nbstore] status changed: ${status}, spaceType: ${type}, spaceId: ${id}, storage: ${storage}`
-      );
-      if (error) {
-        logger.error(`[nbstore] connection error: ${error}`);
-      }
-    });
+    store.connect();
 
-    await store.connect();
+    await store.waitForConnected();
 
     STORE_CACHE.set(universalId, store);
   }

@@ -24,29 +24,38 @@ export class CloudDocStorage extends DocStorage<CloudDocStorageOptions> {
     new SocketConnection(this.peer, this.options.socketOptions)
   );
 
+  private disposeConnectionStatusListener?: () => void;
+
   private get socket() {
     return this.connection.inner;
   }
 
-  override async connect(): Promise<void> {
-    await super.connect();
-    this.connection.onStatusChanged(status => {
-      if (status === 'connected') {
-        this.join().catch(err => {
-          console.error('doc storage join failed', err);
-        });
-        this.socket.on('space:broadcast-doc-update', this.onServerUpdate);
-      }
-    });
+  override connect() {
+    if (!this.disposeConnectionStatusListener) {
+      this.disposeConnectionStatusListener = this.connection.onStatusChanged(
+        status => {
+          if (status === 'connected') {
+            this.join().catch(err => {
+              console.error('doc storage join failed', err);
+            });
+            this.socket.on('space:broadcast-doc-update', this.onServerUpdate);
+          }
+        }
+      );
+    }
+    super.connect();
   }
 
-  override async disconnect(): Promise<void> {
+  override disconnect() {
+    if (this.disposeConnectionStatusListener) {
+      this.disposeConnectionStatusListener();
+    }
     this.socket.emit('space:leave', {
       spaceType: this.spaceType,
       spaceId: this.spaceId,
     });
     this.socket.off('space:broadcast-doc-update', this.onServerUpdate);
-    await super.connect();
+    super.disconnect();
   }
 
   async join() {

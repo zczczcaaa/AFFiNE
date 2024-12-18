@@ -1,6 +1,5 @@
 import EventEmitter2 from 'eventemitter2';
 
-import type { ConnectionStatus } from '../connection';
 import type { AwarenessStorage } from './awareness';
 import type { BlobStorage } from './blob';
 import type { DocStorage } from './doc';
@@ -39,59 +38,27 @@ export class SpaceStorage {
     return storage as Extract<Storages, { storageType: T }>;
   }
 
-  async connect() {
-    await Promise.allSettled(
-      Array.from(this.storages.values()).map(async storage => {
-        // FIXME: multiple calls will register multiple listeners
-        this.disposables.add(
-          storage.connection.onStatusChanged((status, error) => {
-            this.event.emit('connection', {
-              storage: storage.storageType,
-              status,
-              error,
-            });
-          })
-        );
-        await storage.connect();
-      })
+  connect() {
+    Array.from(this.storages.values()).forEach(storage => {
+      storage.connect();
+    });
+  }
+
+  disconnect() {
+    Array.from(this.storages.values()).forEach(storage => {
+      storage.disconnect();
+    });
+  }
+
+  async waitForConnected() {
+    await Promise.all(
+      Array.from(this.storages.values()).map(storage =>
+        storage.waitForConnected()
+      )
     );
-  }
-
-  async disconnect() {
-    await Promise.allSettled(
-      Array.from(this.storages.values()).map(async storage => {
-        await storage.disconnect();
-      })
-    );
-  }
-
-  on(
-    event: 'connection',
-    cb: (payload: {
-      storage: StorageType;
-      status: ConnectionStatus;
-      error?: Error;
-    }) => void
-  ): () => void {
-    this.event.on(event, cb);
-    return () => {
-      this.event.off(event, cb);
-    };
-  }
-
-  off(
-    event: 'connection',
-    cb: (payload: {
-      storage: StorageType;
-      status: ConnectionStatus;
-      error?: Error;
-    }) => void
-  ): void {
-    this.event.off(event, cb);
   }
 
   async destroy() {
-    await this.disconnect();
     this.disposables.forEach(disposable => disposable());
     this.event.removeAllListeners();
     this.storages.clear();

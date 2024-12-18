@@ -1,6 +1,6 @@
-import { apis, events } from '@affine/electron-api';
+import { apis } from '@affine/electron-api';
 
-import { Connection, type ConnectionStatus } from '../../connection';
+import { Connection } from '../../connection';
 import { type SpaceType, universalId } from '../../storage';
 
 type NativeDBApis = NonNullable<typeof apis>['nbstore'] extends infer APIs
@@ -27,7 +27,6 @@ export class NativeDBConnection extends Connection<void> {
     }
 
     this.apis = this.bindApis(apis.nbstore);
-    this.listenToConnectionEvents();
   }
 
   override get shareId(): string {
@@ -63,21 +62,9 @@ export class NativeDBConnection extends Connection<void> {
     await this.apis.connect();
   }
 
-  override async doDisconnect() {
-    await this.apis.close();
-  }
-
-  private listenToConnectionEvents() {
-    events?.nbstore.onConnectionStatusChanged(
-      ({ peer, spaceType, spaceId, status, error }) => {
-        if (
-          peer === this.peer &&
-          spaceType === this.type &&
-          spaceId === this.id
-        ) {
-          this.setStatus(status as ConnectionStatus, error);
-        }
-      }
-    );
+  override doDisconnect() {
+    this.apis.close().catch(err => {
+      console.error('NativeDBConnection close failed', err);
+    });
   }
 }

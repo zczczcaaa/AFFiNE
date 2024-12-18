@@ -23,7 +23,9 @@ test('doc', async () => {
     type: 'workspace',
   });
 
-  await docStorage.connect();
+  docStorage.connect();
+
+  await docStorage.waitForConnected();
 
   const frontend1 = new DocFrontend(docStorage, null);
   frontend1.start();
@@ -66,8 +68,11 @@ test('awareness', async () => {
     type: 'workspace',
   });
 
-  await storage1.connect();
-  await storage2.connect();
+  storage1.connect();
+  storage2.connect();
+
+  await storage1.waitForConnected();
+  await storage2.waitForConnected();
 
   // peer a
   const docA = new YDoc({ guid: 'test-doc' });

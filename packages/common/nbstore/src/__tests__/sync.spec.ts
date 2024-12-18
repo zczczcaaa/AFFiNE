@@ -44,9 +44,13 @@ test('doc', async () => {
   const peerB = new SpaceStorage([peerBDoc]);
   const peerC = new SpaceStorage([peerCDoc]);
 
-  await peerA.connect();
-  await peerB.connect();
-  await peerC.connect();
+  peerA.connect();
+  peerB.connect();
+  peerC.connect();
+
+  await peerA.waitForConnected();
+  await peerB.waitForConnected();
+  await peerC.waitForConnected();
 
   await peerA.get('doc').pushDocUpdate({
     docId: 'doc1',
@@ -121,6 +125,18 @@ test('blob', async () => {
     type: 'workspace',
   });
 
+  const peerA = new SpaceStorage([a]);
+  const peerB = new SpaceStorage([b]);
+  const peerC = new SpaceStorage([c]);
+
+  peerA.connect();
+  peerB.connect();
+  peerC.connect();
+
+  await peerA.waitForConnected();
+  await peerB.waitForConnected();
+  await peerC.waitForConnected();
+
   await a.set({
     key: 'test',
     data: new Uint8Array([1, 2, 3, 4]),
@@ -134,14 +150,6 @@ test('blob', async () => {
     mime: 'text/plain',
     createdAt: new Date(100),
   });
-
-  const peerA = new SpaceStorage([a]);
-  const peerB = new SpaceStorage([b]);
-  const peerC = new SpaceStorage([c]);
-
-  await peerA.connect();
-  await peerB.connect();
-  await peerC.connect();
 
   const sync = new Sync(peerA, [peerB, peerC]);
   sync.start();

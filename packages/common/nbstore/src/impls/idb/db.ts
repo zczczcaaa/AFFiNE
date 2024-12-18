@@ -25,7 +25,8 @@ export class IDBConnection extends Connection<{
         blocking: () => {
           // if, for example, an tab with newer version is opened, this function will be called.
           // we should close current connection to allow the new version to upgrade the db.
-          this.close(
+          this.setStatus(
+            'closed',
             new Error('Blocking a new version. Closing the connection.')
           );
         },
@@ -38,13 +39,11 @@ export class IDBConnection extends Connection<{
     };
   }
 
-  override async doDisconnect() {
-    this.close();
-  }
-
-  private close(error?: Error) {
-    this.maybeConnection?.channel.close();
-    this.maybeConnection?.db.close();
-    this.setStatus('closed', error);
+  override doDisconnect(db: {
+    db: IDBPDatabase<DocStorageSchema>;
+    channel: BroadcastChannel;
+  }) {
+    db.channel.close();
+    db.db.close();
   }
 }

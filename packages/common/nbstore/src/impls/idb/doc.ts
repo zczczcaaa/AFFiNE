@@ -1,4 +1,3 @@
-import { share } from '../../connection';
 import {
   type DocClock,
   type DocClocks,
@@ -17,7 +16,7 @@ interface ChannelMessage {
 }
 
 export class IndexedDBDocStorage extends DocStorage {
-  readonly connection = share(new IDBConnection(this.options));
+  readonly connection = new IDBConnection(this.options);
 
   get db() {
     return this.connection.inner.db;

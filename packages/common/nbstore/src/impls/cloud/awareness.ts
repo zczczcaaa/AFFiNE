@@ -25,10 +25,6 @@ export class CloudAwarenessStorage extends AwarenessStorage<CloudAwarenessStorag
     return this.connection.inner;
   }
 
-  override async connect(): Promise<void> {
-    await super.connect();
-  }
-
   override async update(record: AwarenessRecord): Promise<void> {
     const encodedUpdate = await uint8ArrayToBase64(record.bin);
     this.socket.emit('space:update-awareness', {
@@ -44,6 +40,7 @@ export class CloudAwarenessStorage extends AwarenessStorage<CloudAwarenessStorag
     onUpdate: (update: AwarenessRecord, origin?: string) => void,
     onCollect: () => AwarenessRecord
   ): () => void {
+    // TODO: handle disconnect
     // leave awareness
     const leave = () => {
       this.socket.emit('space:leave-awareness', {
