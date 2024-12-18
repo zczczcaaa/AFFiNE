@@ -102,6 +102,30 @@ export const MemberList = ({
   );
 };
 
+const getShouldShow = ({
+  member,
+  currentAccountId,
+  isOwner,
+  isAdmin,
+}: {
+  member: Member;
+  currentAccountId: string;
+  isOwner: boolean;
+  isAdmin: boolean;
+}) => {
+  if (
+    member.id === currentAccountId ||
+    member.permission === Permission.Owner
+  ) {
+    return false;
+  } else if (isOwner) {
+    return true;
+  } else if (isAdmin) {
+    return member.permission !== Permission.Admin;
+  }
+  return false;
+};
+
 const MemberItem = ({
   member,
   isOwner,
@@ -122,7 +146,16 @@ const MemberItem = ({
   const permission = useService(WorkspacePermissionService).permission;
   const isEquals = workspaceName === inputValue;
 
-  const show = isOwner && currentAccount.id !== member.id;
+  const show = useMemo(
+    () =>
+      getShouldShow({
+        member,
+        currentAccountId: currentAccount.id,
+        isOwner,
+        isAdmin,
+      }),
+    [member, currentAccount, isOwner, isAdmin]
+  );
 
   const handleOpenAssignModal = useCallback(() => {
     setInputValue('');

@@ -42,11 +42,6 @@ export class Subscription extends Entity {
       ? subscriptions.find(sub => sub.plan === SubscriptionPlan.AI)
       : null
   );
-  team$ = this.subscription$.map(subscriptions =>
-    subscriptions
-      ? subscriptions.find(sub => sub.plan === SubscriptionPlan.Team)
-      : null
-  );
   isBeliever$ = this.pro$.map(
     sub => sub?.recurring === SubscriptionRecurring.Lifetime
   );

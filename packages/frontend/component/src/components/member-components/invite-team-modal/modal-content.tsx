@@ -15,7 +15,7 @@ export const ModalContent = ({
   inviteEmail,
   setInviteEmail,
   inviteMethod,
-  onInviteMethodChange,
+  // onInviteMethodChange,
   handleConfirm,
   isMutating,
   isValidEmail,
@@ -48,7 +48,7 @@ export const ModalContent = ({
       <RadioGroup
         width={'100%'}
         value={inviteMethod}
-        onChange={onInviteMethodChange}
+        // onChange={onInviteMethodChange}
         items={[
           {
             label: (
@@ -65,7 +65,7 @@ export const ModalContent = ({
             label: (
               <RadioItem
                 icon={<LinkIcon className={styles.iconStyle} />}
-                label={t['com.affine.payment.member.team.invite.invite-link']()}
+                label={`${t['com.affine.payment.member.team.invite.invite-link']()}(Coming soon)`}
               />
             ),
             value: 'link',
