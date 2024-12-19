@@ -100,6 +100,9 @@ export const ExplorerTagNode = ({
           track.$.navigationPanel.tags.tagDoc({
             control: 'drag',
           });
+          track.$.navigationPanel.tags.drop({
+            type: data.source.data.entity.type,
+          });
         } else {
           toast(t['com.affine.rootAppSidebar.tag.doc-only']());
         }

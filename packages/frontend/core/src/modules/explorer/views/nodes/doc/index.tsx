@@ -138,6 +138,9 @@ export const ExplorerDocNode = ({
           track.$.navigationPanel.docs.linkDoc({
             control: 'drag',
           });
+          track.$.navigationPanel.docs.drop({
+            type: data.source.data.entity.type,
+          });
         } else {
           toast(t['com.affine.rootAppSidebar.doc.link-doc-only']());
         }
@@ -169,6 +172,9 @@ export const ExplorerDocNode = ({
         await docsService.addLinkedDoc(docId, data.source.data.entity.id);
         track.$.navigationPanel.docs.linkDoc({
           control: 'drag',
+        });
+        track.$.navigationPanel.docs.drop({
+          type: data.source.data.entity.type,
         });
       } else {
         toast(t['com.affine.rootAppSidebar.doc.link-doc-only']());

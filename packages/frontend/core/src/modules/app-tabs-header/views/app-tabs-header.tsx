@@ -219,6 +219,11 @@ const WorkbenchTab = ({
           'text/uri-list': urls.join('\n'),
         };
       },
+      onDragStart: () => {
+        track.$.appTabsHeader.$.dragStart({
+          type: 'tab',
+        });
+      },
     };
   }, [dnd, workbench.basename, workbench.id, workbench.views]);
 

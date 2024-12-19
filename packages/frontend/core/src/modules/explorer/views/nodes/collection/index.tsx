@@ -125,6 +125,9 @@ export const ExplorerCollectionNode = ({
             target: 'doc',
             control: 'drag',
           });
+          track.$.navigationPanel.collections.drop({
+            type: data.source.data.entity.type,
+          });
         }
       } else {
         onDrop?.(data);

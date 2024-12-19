@@ -80,7 +80,10 @@ export interface AffineDNDData extends DNDData {
           docId: string;
         }
       | {
-          at: 'external'; // for blocksuite or external apps
+          at: 'blocksuite-editor';
+        }
+      | {
+          at: 'external'; // for external apps
         };
   };
   dropTarget:

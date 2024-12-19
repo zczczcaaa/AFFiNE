@@ -4,7 +4,11 @@ import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/elem
 import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview';
 import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source';
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
-import type { DropTargetRecord } from '@atlaskit/pragmatic-drag-and-drop/types';
+import type {
+  BaseEventPayload,
+  DropTargetRecord,
+  ElementDragType,
+} from '@atlaskit/pragmatic-drag-and-drop/types';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOM, { flushSync } from 'react-dom';
 
@@ -20,6 +24,10 @@ import {
 export interface DraggableOptions<D extends DNDData = DNDData> {
   data?: DraggableGet<D['draggable']>;
   toExternalData?: toExternalData<D>;
+  onDragStart?: (data: BaseEventPayload<ElementDragType>) => void;
+  onDrag?: (data: BaseEventPayload<ElementDragType>) => void;
+  onDrop?: (data: BaseEventPayload<ElementDragType>) => void;
+  onDropTargetChange?: (data: BaseEventPayload<ElementDragType>) => void;
   canDrag?: DraggableGet<boolean>;
   disableDragPreview?: boolean;
   dragPreviewPosition?: DraggableDragPreviewPosition;
@@ -126,8 +134,9 @@ export const useDraggable = <D extends DNDData = DNDData>(
         if (dragRef.current) {
           dragRef.current.dataset['dragging'] = 'true';
         }
+        options.onDragStart?.(args);
       },
-      onDrop: () => {
+      onDrop: args => {
         if (enableDragging.current) {
           setDragging(false);
         }
@@ -148,6 +157,7 @@ export const useDraggable = <D extends DNDData = DNDData>(
         if (dragRef.current) {
           delete dragRef.current.dataset['dragging'];
         }
+        options.onDrop?.(args);
       },
       onDrag: args => {
         if (enableDraggingPosition.current) {
@@ -163,11 +173,13 @@ export const useDraggable = <D extends DNDData = DNDData>(
             outWindow: prev.outWindow,
           }));
         }
+        options.onDrag?.(args);
       },
       onDropTargetChange(args) {
         if (enableDropTarget.current) {
           setDropTarget(args.location.current.dropTargets);
         }
+        options.onDropTargetChange?.(args);
       },
       onGenerateDragPreview({ nativeSetDragImage, source, location }) {
         if (options.disableDragPreview) {

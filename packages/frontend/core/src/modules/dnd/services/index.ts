@@ -38,7 +38,15 @@ export class DndService extends Service {
         if (source.types.includes(type)) {
           const stringData = source.getStringData(type);
           if (stringData) {
-            return resolver(stringData);
+            const entity = resolver(stringData);
+            if (entity) {
+              return {
+                entity,
+                from: {
+                  at: 'external',
+                },
+              };
+            }
           }
         }
         return null;
@@ -48,7 +56,7 @@ export class DndService extends Service {
 
   private readonly resolvers: ((
     source: ExternalDragPayload
-  ) => Entity | null)[] = [];
+  ) => AffineDNDData['draggable'] | null)[] = [];
 
   getBlocksuiteDndAPI(sourceDocId?: string) {
     const collection = this.workspaceService.workspace.docCollection;
@@ -74,29 +82,23 @@ export class DndService extends Service {
     if (!isDropEvent) {
       return {};
     }
-    const from: AffineDNDData['draggable']['from'] = {
-      at: 'external',
-    };
 
-    let entity: Entity | null = null;
+    let resolved: AffineDNDData['draggable'] | null = null;
 
     // in the order of the resolvers instead of the order of the types
     for (const resolver of this.resolvers) {
       const candidate = resolver(args.source);
       if (candidate) {
-        entity = candidate;
+        resolved = candidate;
         break;
       }
     }
 
-    if (!entity) {
+    if (!resolved) {
       return {}; // no resolver can handle this data
     }
 
-    return {
-      from,
-      entity,
-    };
+    return resolved;
   };
 
   toExternalData: toExternalData<AffineDNDData> = (args, data) => {
@@ -160,7 +162,7 @@ export class DndService extends Service {
 
   private readonly resolveBlocksuiteExternalData = (
     source: ExternalDragPayload
-  ): Entity | null => {
+  ): AffineDNDData['draggable'] | null => {
     const dndAPI = this.getBlocksuiteDndAPI();
     if (!dndAPI) {
       return null;
@@ -173,7 +175,16 @@ export class DndService extends Service {
     if (!snapshot) {
       return null;
     }
-    return this.resolveBlockSnapshot(snapshot);
+    const entity = this.resolveBlockSnapshot(snapshot);
+    if (!entity) {
+      return null;
+    }
+    return {
+      entity,
+      from: {
+        at: 'blocksuite-editor',
+      },
+    };
   };
 
   private readonly resolveHTML: EntityResolver = html => {

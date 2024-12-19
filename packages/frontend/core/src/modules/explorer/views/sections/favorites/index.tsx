@@ -73,6 +73,9 @@ export const ExplorerFavorites = () => {
           type: data.source.data.entity.type,
           on: true,
         });
+        track.$.navigationPanel.favorites.drop({
+          type: data.source.data.entity.type,
+        });
         explorerSection.setCollapsed(false);
       }
     },
@@ -140,6 +143,9 @@ export const ExplorerFavorites = () => {
           track.$.navigationPanel.organize.toggleFavorite({
             type: data.source.data.entity.type,
             on: true,
+          });
+          track.$.navigationPanel.favorites.drop({
+            type: data.source.data.entity.type,
           });
         } else {
           return; // not supported

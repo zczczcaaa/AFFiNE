@@ -86,6 +86,8 @@ type OrganizeEvents =
   | FolderEvents
   | TagEvents
   | FavoriteEvents;
+
+type DNDEvents = 'dragStart' | 'drag' | 'drop';
 // END SECTION
 
 // SECTION: cloud events
@@ -127,7 +129,8 @@ type UserEvents =
   | ShareEvents
   | AuthEvents
   | AccountEvents
-  | PaymentEvents;
+  | PaymentEvents
+  | DNDEvents;
 interface PageDivision {
   [page: string]: {
     [segment: string]: {
@@ -209,12 +212,18 @@ const PageEvents = {
         'openInNewTab',
         'openInSplitView',
         'toggleFavorite',
+        'drop',
       ],
-      docs: ['createDoc', 'deleteDoc', 'linkDoc'],
-      collections: ['createDoc', 'addDocToCollection', 'removeOrganizeItem'],
-      folders: ['createDoc'],
-      tags: ['createDoc', 'tagDoc'],
-      favorites: ['createDoc'],
+      docs: ['createDoc', 'deleteDoc', 'linkDoc', 'drop'],
+      collections: [
+        'createDoc',
+        'addDocToCollection',
+        'removeOrganizeItem',
+        'drop',
+      ],
+      folders: ['createDoc', 'drop'],
+      tags: ['createDoc', 'tagDoc', 'drop'],
+      favorites: ['createDoc', 'drop'],
       migrationData: ['openMigrationDataHelp'],
       bottomButtons: [
         'downloadApp',
@@ -248,9 +257,10 @@ const PageEvents = {
       aiAction: ['viewPlans'],
     },
     appTabsHeader: {
-      $: ['tabAction'],
+      $: ['tabAction', 'dragStart'],
     },
     header: {
+      $: ['dragStart'],
       actions: [
         'createDoc',
         'createWorkspace',
@@ -423,6 +433,8 @@ export type EventArgs = {
   editProperty: { type: string };
   addProperty: { type: string; control: 'at menu' | 'property list' };
   linkDoc: { type: string; journal: boolean };
+  drop: { type: string };
+  dragStart: { type: string };
 };
 
 // for type checking

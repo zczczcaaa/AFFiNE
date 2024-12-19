@@ -241,6 +241,11 @@ const ExplorerFolderNodeFolder = ({
 
   const handleDropOnFolder = useCallback(
     (data: DropTargetDropEvent<AffineDNDData>) => {
+      if (data.source.data.entity?.type) {
+        track.$.navigationPanel.folders.drop({
+          type: data.source.data.entity.type,
+        });
+      }
       if (data.treeInstruction?.type === 'make-child') {
         if (data.source.data.entity?.type === 'folder') {
           if (
@@ -313,6 +318,11 @@ const ExplorerFolderNodeFolder = ({
 
   const handleDropOnPlaceholder = useCallback(
     (data: DropTargetDropEvent<AffineDNDData>) => {
+      if (data.source.data.entity?.type) {
+        track.$.navigationPanel.folders.drop({
+          type: data.source.data.entity.type,
+        });
+      }
       if (data.source.data.entity?.type === 'folder') {
         if (
           node.id === data.source.data.entity.id ||
@@ -352,6 +362,11 @@ const ExplorerFolderNodeFolder = ({
     (data: DropTargetDropEvent<AffineDNDData>, dropAtNode?: FolderNode) => {
       if (!dropAtNode || !dropAtNode.id) {
         return;
+      }
+      if (data.source.data.entity?.type) {
+        track.$.navigationPanel.folders.drop({
+          type: data.source.data.entity.type,
+        });
       }
       if (
         data.treeInstruction?.type === 'reorder-above' ||
