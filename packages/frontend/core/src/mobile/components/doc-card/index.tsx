@@ -8,7 +8,6 @@ import {
   WorkbenchLink,
   type WorkbenchLinkProps,
 } from '@affine/core/modules/workbench';
-import { useI18n } from '@affine/i18n';
 import type { DocMeta } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
@@ -48,13 +47,9 @@ export const DocCard = forwardRef<HTMLAnchorElement, DocCardProps>(
     outerRef
   ) {
     const containerRef = useRef<HTMLAnchorElement | null>(null);
-    const t = useI18n();
     const favAdapter = useService(CompatibleFavoriteItemsAdapter);
     const docDisplayService = useService(DocDisplayMetaService);
-    const titleInfo = useLiveData(docDisplayService.title$(meta.id));
-    const title =
-      typeof titleInfo === 'string' ? titleInfo : t[titleInfo.i18nKey]();
-
+    const title = useLiveData(docDisplayService.title$(meta.id));
     const favorited = useLiveData(favAdapter.isFavorite$(meta.id, 'doc'));
 
     const toggleFavorite = useCatchEventCallback(

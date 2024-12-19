@@ -312,7 +312,6 @@ export function patchDocModeService(
       return (mode || DEFAULT_MODE) as DocMode;
     };
     onPrimaryModeChange = (handler: (mode: DocMode) => void, id?: string) => {
-      // eslint-disable-next-line rxjs/finnish
       const mode$ = id
         ? docsService.list.primaryMode$(id)
         : docService.doc.primaryMode$;

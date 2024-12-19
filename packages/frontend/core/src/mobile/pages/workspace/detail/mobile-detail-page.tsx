@@ -15,7 +15,7 @@ import { EditorService } from '@affine/core/modules/editor';
 import { JournalService } from '@affine/core/modules/journal';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
-import { i18nTime, useI18n } from '@affine/i18n';
+import { i18nTime } from '@affine/i18n';
 import {
   BookmarkBlockService,
   customImageProxyMiddleware,
@@ -240,14 +240,11 @@ const MobileDetailPage = ({
   pageId: string;
   date?: string;
 }) => {
-  const t = useI18n();
   const docDisplayMetaService = useService(DocDisplayMetaService);
   const journalService = useService(JournalService);
   const workbench = useService(WorkbenchService).workbench;
   const [showTitle, setShowTitle] = useState(checkShowTitle);
-  const titleInfo = useLiveData(docDisplayMetaService.title$(pageId));
-  const title =
-    typeof titleInfo === 'string' ? titleInfo : t[titleInfo.i18nKey]();
+  const title = useLiveData(docDisplayMetaService.title$(pageId));
 
   const allJournalDates = useLiveData(journalService.allJournalDates$);
 

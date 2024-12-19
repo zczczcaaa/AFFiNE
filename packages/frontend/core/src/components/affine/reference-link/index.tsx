@@ -3,7 +3,6 @@ import { JournalService } from '@affine/core/modules/journal';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
 import { useInsidePeekView } from '@affine/core/modules/peek-view/view/modal-container';
 import { WorkbenchLink } from '@affine/core/modules/workbench';
-import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import type { DocCollection } from '@blocksuite/affine/store';
@@ -30,7 +29,7 @@ import * as styles from './styles.css';
 interface AffinePageReferenceProps {
   pageId: string;
   params?: URLSearchParams;
-  title?: string | null; // title alias
+  title?: string; // title alias
   className?: string;
   Icon?: ComponentType;
   onClick?: (e: MouseEvent) => void;
@@ -44,7 +43,6 @@ function AffinePageReferenceInner({
 }: AffinePageReferenceProps) {
   const docDisplayMetaService = useService(DocDisplayMetaService);
   const docsService = useService(DocsService);
-  const i18n = useI18n();
 
   let referenceWithMode: DocMode | null = null;
   let referenceToNode = false;
@@ -74,17 +72,9 @@ function AffinePageReferenceInner({
 
   const notFound = !useLiveData(docsService.list.doc$(pageId));
 
-  const docTitle = useLiveData(
-    docDisplayMetaService.title$(pageId, { reference: true })
+  title = useLiveData(
+    docDisplayMetaService.title$(pageId, { title, reference: true })
   );
-
-  if (notFound) {
-    title = i18n.t('com.affine.notFoundPage.title');
-  }
-
-  if (!title) {
-    title = i18n.t(docTitle);
-  }
 
   return (
     <span className={notFound ? styles.notFound : ''}>

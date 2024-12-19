@@ -5,6 +5,7 @@ import {
   WorkspaceScope,
 } from '@toeverything/infra';
 
+import { I18nService } from '../i18n';
 import { JournalService } from '../journal';
 import { DocDisplayMetaService } from './services/doc-display-meta';
 
@@ -17,5 +18,6 @@ export function configureDocDisplayMetaModule(framework: Framework) {
       JournalService,
       DocsService,
       FeatureFlagService,
+      I18nService,
     ]);
 }

@@ -31,6 +31,7 @@ import { LiveData, Service } from '@toeverything/infra';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 
+import type { I18nService } from '../../i18n';
 import type { JournalService } from '../../journal';
 
 type IconType = 'rc' | 'lit';
@@ -52,6 +53,7 @@ interface DocDisplayIconOptions<T extends IconType> {
 }
 interface DocDisplayTitleOptions {
   originalTitle?: string;
+  title?: string; // title alias
   reference?: boolean;
   /**
    * @default true
@@ -90,7 +92,8 @@ export class DocDisplayMetaService extends Service {
   constructor(
     private readonly journalService: JournalService,
     private readonly docsService: DocsService,
-    private readonly featureFlagService: FeatureFlagService
+    private readonly featureFlagService: FeatureFlagService,
+    private readonly i18nService: I18nService
   ) {
     super();
   }
@@ -149,7 +152,7 @@ export class DocDisplayMetaService extends Service {
 
       // journal icon
       const journalDate = this._toDayjs(
-        this.journalService.journalDate$(docId).value
+        get(this.journalService.journalDate$(docId))
       );
       if (journalDate) {
         return this.getJournalIcon(journalDate, options);
@@ -178,31 +181,48 @@ export class DocDisplayMetaService extends Service {
 
   title$(docId: string, options?: DocDisplayTitleOptions) {
     return LiveData.computed(get => {
+      const enableEmojiIcon =
+        get(this.featureFlagService.flags.enable_emoji_doc_icon.$) &&
+        options?.enableEmojiIcon !== false;
+      const lng = get(this.i18nService.i18n.currentLanguageKey$);
       const doc = get(this.docsService.list.doc$(docId));
-      const docTitle = doc ? get(doc.title$) : undefined;
 
+      // title alias
+      if (options?.title) {
+        return enableEmojiIcon
+          ? extractEmojiIcon(options.title).rest
+          : options.title;
+      }
+
+      if (!doc) {
+        return this.i18nService.i18n.i18next.t(
+          'com.affine.notFoundPage.title',
+          { lng }
+        );
+      }
+
+      // journal title
       const journalDateString = get(this.journalService.journalDate$(docId));
-
-      // journal
       if (journalDateString) {
         return i18nTime(journalDateString, { absolute: { accuracy: 'day' } });
       }
 
+      // original title
       if (options?.originalTitle) return options.originalTitle;
 
+      const docTitle = get(doc.title$);
+
       // empty title
-      if (!docTitle) return { i18nKey: 'Untitled' } as const;
+      if (!docTitle) {
+        return this.i18nService.i18n.i18next.t('Untitled', { lng });
+      }
 
       // reference
       if (options?.reference) return docTitle;
 
-      // check emoji
-      const enableEmojiIcon =
-        get(this.featureFlagService.flags.enable_emoji_doc_icon.$) &&
-        options?.enableEmojiIcon !== false;
+      // emoji icon
       if (enableEmojiIcon) {
-        const { rest } = extractEmojiIcon(docTitle);
-        return rest;
+        return extractEmojiIcon(docTitle).rest;
       }
 
       // default

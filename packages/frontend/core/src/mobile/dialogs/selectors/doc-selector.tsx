@@ -19,11 +19,9 @@ const DocIcon = ({ docId }: { docId: string }) => {
 };
 
 const DocLabel = ({ docId }: { docId: string }) => {
-  const t = useI18n();
   const docDisplayMetaService = useService(DocDisplayMetaService);
   const label = useLiveData(docDisplayMetaService.title$(docId));
-
-  return typeof label === 'string' ? label : t[label.i18nKey]();
+  return label;
 };
 
 export const DocSelectorDialog = ({
