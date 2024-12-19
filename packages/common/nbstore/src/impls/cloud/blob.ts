@@ -16,7 +16,11 @@ export class CloudBlobStorage extends BlobStorage {
   override async get(key: string) {
     const res = await fetch(
       this.options.peer + '/api/workspaces/' + this.spaceId + '/blobs/' + key,
-      { cache: 'default' }
+      {
+        headers: {
+          'x-affine-version': BUILD_CONFIG.appVersion,
+        },
+      }
     );
 
     if (!res.ok) {

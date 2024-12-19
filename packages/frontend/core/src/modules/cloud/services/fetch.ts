@@ -54,6 +54,10 @@ export class FetchService extends Service {
       .fetch(new URL(input, this.serverService.server.serverMetadata.baseUrl), {
         ...init,
         signal: abortController.signal,
+        headers: {
+          ...init?.headers,
+          'x-affine-version': BUILD_CONFIG.appVersion,
+        },
       })
       .catch(err => {
         logger.debug('network error', err);
