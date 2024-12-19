@@ -6,7 +6,6 @@ import {
 import { createPageModeSpecs } from '@affine/core/components/blocksuite/block-suite-editor/specs/page';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { BlockStdScope } from '@blocksuite/affine/block-std';
-import type { DNDAPIExtension } from '@blocksuite/affine/blocks';
 import { DndApiExtensionIdentifier } from '@blocksuite/affine/blocks';
 import { type SliceSnapshot } from '@blocksuite/affine/store';
 import type { DocsService, WorkspaceService } from '@toeverything/infra';
@@ -51,21 +50,20 @@ export class DndService extends Service {
     source: ExternalDragPayload
   ) => Entity | null)[] = [];
 
-  private _blocksuiteDndAPI: DNDAPIExtension | null = null;
+  getBlocksuiteDndAPI(sourceDocId?: string) {
+    const collection = this.workspaceService.workspace.docCollection;
+    sourceDocId ??= collection.docs.keys().next().value;
+    const doc = sourceDocId ? collection.getDoc(sourceDocId) : null;
 
-  get blocksuiteDndAPI() {
-    if (this._blocksuiteDndAPI) {
-      return this._blocksuiteDndAPI;
+    if (!doc) {
+      return null;
     }
 
-    const collection = this.workspaceService.workspace.docCollection;
-    const doc = collection.createDoc();
     const std = new BlockStdScope({
       doc,
       extensions: createPageModeSpecs(this.framework),
     });
     const dndAPI = std.get(DndApiExtensionIdentifier);
-    this._blocksuiteDndAPI = dndAPI;
     return dndAPI;
   }
 
@@ -113,7 +111,13 @@ export class DndService extends Service {
       return {};
     }
 
-    const snapshotSlice = this.blocksuiteDndAPI.fromEntity({
+    const dndAPI = this.getBlocksuiteDndAPI(normalData.entity.id);
+
+    if (!dndAPI) {
+      return {};
+    }
+
+    const snapshotSlice = dndAPI.fromEntity({
       docId: normalData.entity.id,
       flavour: 'affine:embed-linked-doc',
     });
@@ -122,10 +126,10 @@ export class DndService extends Service {
       return {};
     }
 
-    const encoded = this.blocksuiteDndAPI.encodeSnapshot(snapshotSlice);
+    const encoded = dndAPI.encodeSnapshot(snapshotSlice);
 
     return {
-      [this.blocksuiteDndAPI.mimeType]: encoded,
+      [dndAPI.mimeType]: encoded,
     };
   };
 
@@ -157,11 +161,15 @@ export class DndService extends Service {
   private readonly resolveBlocksuiteExternalData = (
     source: ExternalDragPayload
   ): Entity | null => {
-    const encoded = source.getStringData(this.blocksuiteDndAPI.mimeType);
+    const dndAPI = this.getBlocksuiteDndAPI();
+    if (!dndAPI) {
+      return null;
+    }
+    const encoded = source.getStringData(dndAPI.mimeType);
     if (!encoded) {
       return null;
     }
-    const snapshot = this.blocksuiteDndAPI.decodeSnapshot(encoded);
+    const snapshot = dndAPI.decodeSnapshot(encoded);
     if (!snapshot) {
       return null;
     }
