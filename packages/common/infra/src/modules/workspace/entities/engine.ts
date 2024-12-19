@@ -37,7 +37,10 @@ export class WorkspaceEngine extends Entity<{
     this.eventBus.emit(WorkspaceEngineBeforeStart, this);
     this.doc.start();
     this.awareness.connect(this.workspaceService.workspace.awareness);
-    this.blob.start();
+    if (!BUILD_CONFIG.isMobileEdition) {
+      // currently, blob synchronization consumes a lot of memory and is temporarily disabled on mobile devices.
+      this.blob.start();
+    }
   }
 
   canGracefulStop() {
