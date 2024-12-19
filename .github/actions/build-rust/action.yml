@@ -7,9 +7,6 @@ inputs:
   package:
     description: 'Package to build'
     required: true
-  nx_token:
-    description: 'Nx Cloud access token'
-    required: false
 
 runs:
   using: 'composite'
@@ -49,7 +46,6 @@ runs:
     - name: Build
       shell: bash
       run: |
-        yarn workspace ${{ inputs.package }} nx build ${{ inputs.package }} --verbose -- --target ${{ inputs.target }} --use-napi-cross
+        yarn workspace ${{ inputs.package }} build --target ${{ inputs.target }} --use-napi-cross
       env:
-        NX_CLOUD_ACCESS_TOKEN: ${{ inputs.nx_token }}
         DEBUG: 'napi:*'

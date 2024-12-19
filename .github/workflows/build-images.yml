@@ -7,9 +7,6 @@ on:
         type: string
         required: true
 
-env:
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-
 permissions:
   contents: 'write'
   id-token: 'write'
@@ -50,7 +47,7 @@ jobs:
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
       - name: Build Core
-        run: yarn nx build @affine/web --skip-nx-cache
+        run: yarn workspace @affine/web build
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -83,7 +80,7 @@ jobs:
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
       - name: Build Admin
-        run: yarn nx build @affine/admin --skip-nx-cache
+        run: yarn workspace @affine/admin build
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -115,7 +112,7 @@ jobs:
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
       - name: Build Mobile
-        run: yarn nx build @affine/mobile --skip-nx-cache
+        run: yarn workspace @affine/mobile build
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -163,7 +160,6 @@ jobs:
         with:
           target: ${{ matrix.targets.name }}
           package: '@affine/server-native'
-          nx_token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       - name: Upload ${{ matrix.targets.file }}
         uses: actions/upload-artifact@v4
         with:

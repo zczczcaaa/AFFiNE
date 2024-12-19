@@ -19,7 +19,6 @@ env:
   AFFINE_ENV: dev
   COVERAGE: true
   MACOSX_DEPLOYMENT_TARGET: '10.13'
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
   DEPLOYMENT_TYPE: affine
 
@@ -195,7 +194,7 @@ jobs:
           path: ./packages/frontend/native
 
       - name: Unit Test
-        run: yarn nx test:coverage @affine/monorepo
+        run: yarn test:coverage
 
       - name: Upload unit test coverage results
         uses: codecov/codecov-action@v5
@@ -238,7 +237,6 @@ jobs:
         with:
           target: ${{ matrix.spec.target }}
           package: '@affine/native'
-          nx_token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       - name: Upload ${{ steps.filename.outputs.filename }}
         uses: actions/upload-artifact@v4
         with:
@@ -263,7 +261,6 @@ jobs:
         with:
           target: 'x86_64-unknown-linux-gnu'
           package: '@affine/server-native'
-          nx_token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       - name: Upload server-native.node
         uses: actions/upload-artifact@v4
         with:

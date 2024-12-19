@@ -46,17 +46,16 @@ Please refer to `Build Native Dependencies` section in [BUILDING.md](./BUILDING.
 On Mac & Linux
 
 ```shell
-BUILD_TYPE=canary SKIP_NX_CACHE=1 yarn workspace @affine/electron generate-assets
+BUILD_TYPE=canary yarn workspace @affine/electron generate-assets
 ```
 
 On Windows (powershell)
 
 ```powershell
 $env:BUILD_TYPE="canary"
-$env:SKIP_NX_CACHE=1
 $env:DISTRIBUTION=desktop
 $env:SKIP_WEB_BUILD=1
-yarn build --skip-nx-cache
+yarn build
 ```
 
 ### 2. Re-config yarn, clean up the node_modules and reinstall the dependencies

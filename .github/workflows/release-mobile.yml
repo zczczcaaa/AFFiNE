@@ -68,7 +68,7 @@ jobs:
       - name: Setup @sentry/cli
         uses: ./.github/actions/setup-sentry
       - name: Build Mobile
-        run: yarn nx build @affine/ios --skip-nx-cache
+        run: yarn workspace @affine/ios build
         env:
           PUBLIC_PATH: '/'
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
@@ -78,7 +78,6 @@ jobs:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_RELEASE: ${{ steps.version.outputs.APP_VERSION }}
           RELEASE_VERSION: ${{ steps.version.outputs.APP_VERSION }}
-          SKIP_NX_CACHE: 'true'
       - name: Upload ios artifact
         uses: actions/upload-artifact@v4
         with:
@@ -102,7 +101,7 @@ jobs:
       - name: Setup @sentry/cli
         uses: ./.github/actions/setup-sentry
       - name: Build Mobile
-        run: yarn nx build @affine/android --skip-nx-cache
+        run: yarn workspace @affine/android build
         env:
           PUBLIC_PATH: '/'
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
@@ -112,7 +111,6 @@ jobs:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_RELEASE: ${{ steps.version.outputs.APP_VERSION }}
           RELEASE_VERSION: ${{ steps.version.outputs.APP_VERSION }}
-          SKIP_NX_CACHE: 'true'
       - name: Upload android artifact
         uses: actions/upload-artifact@v4
         with:

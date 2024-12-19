@@ -60,7 +60,6 @@ jobs:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_RELEASE: ${{ steps.version.outputs.APP_VERSION }}
           RELEASE_VERSION: ${{ steps.version.outputs.APP_VERSION }}
-          SKIP_NX_CACHE: 'true'
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
 
       - name: Upload web artifact
@@ -117,7 +116,6 @@ jobs:
         with:
           target: ${{ matrix.spec.target }}
           package: '@affine/native'
-          nx_token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       - uses: actions/download-artifact@v4
         with:
           name: web
@@ -233,7 +231,6 @@ jobs:
         with:
           target: ${{ matrix.spec.target }}
           package: '@affine/native'
-          nx_token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       - uses: actions/download-artifact@v4
         with:
           name: web
