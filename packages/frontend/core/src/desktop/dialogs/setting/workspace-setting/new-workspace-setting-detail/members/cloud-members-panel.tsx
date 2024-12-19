@@ -81,18 +81,15 @@ export const CloudWorkspaceMembersPanel = ({
   const plan = useLiveData(
     subscriptionService.subscription.pro$.map(s => s?.plan)
   );
-  const isLimited =
-    workspaceQuota && workspaceQuota.memberLimit
-      ? workspaceQuota.memberCount >= workspaceQuota.memberLimit
-      : null;
 
   const t = useI18n();
 
-  const [open, setOpen] = useState(false);
+  const [openInvite, setOpenInvite] = useState(false);
+  const [openMemberLimit, setOpenMemberLimit] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
 
-  const openModal = useCallback(() => {
-    setOpen(true);
+  const openInviteModal = useCallback(() => {
+    setOpenInvite(true);
   }, []);
 
   const onGenerateInviteLink = useCallback(
@@ -116,21 +113,51 @@ export const CloudWorkspaceMembersPanel = ({
       emails,
     }: Parameters<InviteTeamMemberModalProps['onConfirm']>[0]) => {
       setIsMutating(true);
-      const success = await permissionService.permission.inviteMembers(
-        emails,
+      const uniqueEmails = deduplicateEmails(emails);
+      if (
+        !isTeam &&
+        workspaceQuota &&
+        uniqueEmails.length >
+          workspaceQuota.memberLimit - workspaceQuota.memberCount
+      ) {
+        setOpenMemberLimit(true);
+        setIsMutating(false);
+        return;
+      }
+      const results = await permissionService.permission.inviteMembers(
+        uniqueEmails,
         true
       );
-      if (success) {
-        notify.success({
-          title: t['Invitation sent'](),
-          message: t['Invitation sent hint'](),
+      const unSuccessInvites = results.reduce<string[]>((acc, result) => {
+        if (!result.sentSuccess) {
+          acc.push(result.email);
+        }
+        return acc;
+      }, []);
+      if (results) {
+        notify({
+          title: t['com.affine.payment.member.team.invite.notify.title']({
+            successCount: (
+              uniqueEmails.length - unSuccessInvites.length
+            ).toString(),
+            failedCount: unSuccessInvites.length.toString(),
+          }),
+          message: <NotifyMessage unSuccessInvites={unSuccessInvites} />,
         });
-        setOpen(false);
+        setOpenInvite(false);
         membersService.members.revalidate();
+        workspaceQuotaService.quota.revalidate();
       }
       setIsMutating(false);
     },
-    [membersService.members, permissionService.permission, t]
+    [
+      isTeam,
+      membersService.members,
+      permissionService.permission,
+      t,
+      workspaceQuota,
+      workspaceQuotaService.quota,
+    ]
   );
 
   const onImportCSV = useAsyncCallback(
@@ -209,29 +236,28 @@ export const CloudWorkspaceMembersPanel = ({
       <SettingRow name={title} desc={desc} spreadCol={!!isOwner}>
         {isOwner ? (
           <>
-            <Button onClick={openModal}>{t['Invite Members']()}</Button>
-            {isLimited && !isTeam ? (
+            <Button onClick={openInviteModal}>{t['Invite Members']()}</Button>
+            {!isTeam ? (
               <MemberLimitModal
                 isFreePlan={!plan}
-                open={open}
+                open={openMemberLimit}
                 plan={workspaceQuota.humanReadable.name ?? ''}
                 quota={workspaceQuota.humanReadable.memberLimit ?? ''}
-                setOpen={setOpen}
+                setOpen={setOpenMemberLimit}
                 onConfirm={handleUpgradeConfirm}
               />
-            ) : (
-              <InviteTeamMemberModal
-                open={open}
-                setOpen={setOpen}
-                onConfirm={onInviteBatchConfirm}
-                isMutating={isMutating}
-                copyTextToClipboard={copyTextToClipboard}
-                onGenerateInviteLink={onGenerateInviteLink}
-                onRevokeInviteLink={onRevokeInviteLink}
-                importCSV={<ImportCSV onImport={onImportCSV} />}
-                invitationLink={inviteLink}
-              />
-            )}
+            ) : null}
+            <InviteTeamMemberModal
+              open={openInvite}
+              setOpen={setOpenInvite}
+              onConfirm={onInviteBatchConfirm}
+              isMutating={isMutating}
+              copyTextToClipboard={copyTextToClipboard}
+              onGenerateInviteLink={onGenerateInviteLink}
+              onRevokeInviteLink={onRevokeInviteLink}
+              importCSV={<ImportCSV onImport={onImportCSV} />}
+              invitationLink={inviteLink}
+            />
           </>
         ) : null}
       </SettingRow>
@@ -240,6 +266,27 @@ export const CloudWorkspaceMembersPanel = ({
         <MemberList isOwner={!!isOwner} isAdmin={!!isAdmin} />
       </div>
     </>
+  );
+};
+
+const NotifyMessage = ({
+  unSuccessInvites,
+}: {
+  unSuccessInvites: string[];
+}) => {
+  const t = useI18n();
+
+  if (unSuccessInvites.length === 0) {
+    return t['Invitation sent hint']();
+  }
+
+  return (
+    <div>
+      {t['com.affine.payment.member.team.invite.notify.fail-message']()}
+      {unSuccessInvites.map((email, index) => (
+        <div key={`${index}:${email}`}>{email}</div>
+      ))}
+    </div>
   );
 };
 
@@ -298,3 +345,16 @@ const ImportCSV = ({ onImport }: { onImport: (file: File) => void }) => {
     </Upload>
   );
 };
+
+function deduplicateEmails(emails: string[]): string[] {
+  const seenEmails = new Set<string>();
+  return emails.filter(email => {
+    const lowerCaseEmail = email.trim().toLowerCase();
+    if (seenEmails.has(lowerCaseEmail)) {
+      return false;
+    } else {
+      seenEmails.add(lowerCaseEmail);
+      return true;
+    }
+  });
+}
