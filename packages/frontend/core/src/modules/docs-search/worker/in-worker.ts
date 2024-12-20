@@ -433,7 +433,8 @@ function unindentMarkdown(markdown: string) {
         current = current.trimStart();
       } else {
         // For subsequent list items, maintain relative indentation
-        current = ' '.repeat(indent - baseIndent) + current.trimStart();
+        current =
+          ' '.repeat(Math.max(0, indent - baseIndent)) + current.trimStart();
       }
     }
 
