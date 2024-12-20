@@ -1,13 +1,13 @@
 import {
+  BasicSyncStorage,
   type DocClock,
   type DocClocks,
   share,
-  SyncStorage,
 } from '@affine/nbstore';
 
 import { NativeDBConnection } from './db';
 
-export class SqliteSyncStorage extends SyncStorage {
+export class SqliteSyncStorage extends BasicSyncStorage {
   override connection = share(
     new NativeDBConnection(this.peer, this.spaceType, this.spaceId)
   );

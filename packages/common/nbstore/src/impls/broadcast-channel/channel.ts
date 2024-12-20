@@ -1,7 +1,7 @@
-import { Connection } from '../../connection';
+import { AutoReconnectConnection } from '../../connection';
 import type { StorageOptions } from '../../storage';
 
-export class BroadcastChannelConnection extends Connection<BroadcastChannel> {
+export class BroadcastChannelConnection extends AutoReconnectConnection<BroadcastChannel> {
   readonly channelName = `channel:${this.opts.peer}:${this.opts.type}:${this.opts.id}`;
 
   constructor(private readonly opts: StorageOptions) {

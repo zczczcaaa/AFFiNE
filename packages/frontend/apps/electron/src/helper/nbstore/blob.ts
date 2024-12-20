@@ -1,8 +1,8 @@
-import { type BlobRecord, BlobStorage, share } from '@affine/nbstore';
+import { type BlobRecord, BlobStorageBase, share } from '@affine/nbstore';
 
 import { NativeDBConnection } from './db';
 
-export class SqliteBlobStorage extends BlobStorage {
+export class SqliteBlobStorage extends BlobStorageBase {
   override connection = share(
     new NativeDBConnection(this.peer, this.spaceType, this.spaceId)
   );

@@ -4,7 +4,10 @@ import {
   type SocketOptions,
 } from 'socket.io-client';
 
-import { Connection, type ConnectionStatus } from '../../connection';
+import {
+  AutoReconnectConnection,
+  type ConnectionStatus,
+} from '../../connection';
 
 // TODO(@forehalo): use [UserFriendlyError]
 interface EventError {
@@ -150,7 +153,7 @@ export function base64ToUint8Array(base64: string) {
   return new Uint8Array(binaryArray);
 }
 
-export class SocketConnection extends Connection<Socket> {
+export class SocketConnection extends AutoReconnectConnection<Socket> {
   manager = new SocketIOManager(this.endpoint, {
     autoConnect: false,
     transports: ['websocket'],

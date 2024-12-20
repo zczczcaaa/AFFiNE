@@ -8,7 +8,20 @@ export type ConnectionStatus =
   | 'error'
   | 'closed';
 
-export abstract class Connection<T = any> {
+export interface Connection<T = any> {
+  readonly status: ConnectionStatus;
+  readonly inner: T;
+  connect(): void;
+  disconnect(): void;
+  waitForConnected(signal?: AbortSignal): Promise<void>;
+  onStatusChanged(
+    cb: (status: ConnectionStatus, error?: Error) => void
+  ): () => void;
+}
+
+export abstract class AutoReconnectConnection<T = any>
+  implements Connection<T>
+{
   private readonly event = new EventEmitter2();
   private _inner: T | null = null;
   private _status: ConnectionStatus = 'idle';
@@ -160,12 +173,22 @@ export abstract class Connection<T = any> {
   };
 }
 
-export class DummyConnection extends Connection<undefined> {
-  doConnect() {
-    return Promise.resolve(undefined);
-  }
+export class DummyConnection implements Connection<undefined> {
+  readonly status: ConnectionStatus = 'connected';
+  readonly inner: undefined;
 
-  doDisconnect() {
+  connect(): void {
     return;
+  }
+  disconnect(): void {
+    return;
+  }
+  waitForConnected(_signal?: AbortSignal): Promise<void> {
+    return Promise.resolve();
+  }
+  onStatusChanged(
+    _cb: (status: ConnectionStatus, error?: Error) => void
+  ): () => void {
+    return () => {};
   }
 }

@@ -37,7 +37,7 @@ interface DocFrontendOptions {
 }
 
 export class DocFrontend {
-  private readonly uniqueId = `frontend:${this.storage.peer}:${nanoid()}`;
+  private readonly uniqueId = `frontend:${nanoid()}`;
 
   private readonly prioritySettings = new Map<string, number>();
 
@@ -88,7 +88,6 @@ export class DocFrontend {
         }),
       ]);
 
-      // eslint-disable-next-line no-constant-condition
       while (true) {
         throwIfAborted(signal);
         const docId = await this.status.jobDocQueue.asyncPop(signal);

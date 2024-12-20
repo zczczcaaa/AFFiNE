@@ -1,8 +1,8 @@
 import { share } from '../../connection';
-import { type DocClock, SyncStorage } from '../../storage';
+import { BasicSyncStorage, type DocClock } from '../../storage';
 import { NativeDBConnection } from './db';
 
-export class SqliteSyncStorage extends SyncStorage {
+export class SqliteSyncStorage extends BasicSyncStorage {
   override connection = share(
     new NativeDBConnection(this.peer, this.spaceType, this.spaceId)
   );

@@ -1,11 +1,15 @@
 import { share } from '../../../connection';
-import { type DocRecord, DocStorage, type DocUpdate } from '../../../storage';
+import {
+  type DocRecord,
+  DocStorageBase,
+  type DocUpdate,
+} from '../../../storage';
 import { DocIDBConnection } from './db';
 
 /**
  * @deprecated readonly
  */
-export class IndexedDBV1DocStorage extends DocStorage {
+export class IndexedDBV1DocStorage extends DocStorageBase {
   readonly connection = share(new DocIDBConnection());
 
   get db() {

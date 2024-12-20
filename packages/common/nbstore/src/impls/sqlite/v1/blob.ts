@@ -1,13 +1,13 @@
 import { apis } from '@affine/electron-api';
 
-import { DummyConnection, share } from '../../../connection';
-import { BlobStorage } from '../../../storage';
+import { DummyConnection } from '../../../connection';
+import { BlobStorageBase } from '../../../storage';
 
 /**
  * @deprecated readonly
  */
-export class SqliteV1BlobStorage extends BlobStorage {
-  override connection = share(new DummyConnection());
+export class SqliteV1BlobStorage extends BlobStorageBase {
+  override connection = new DummyConnection();
 
   get db() {
     if (!apis) {

@@ -1,10 +1,10 @@
 import { type IDBPDatabase, openDB } from 'idb';
 
-import { Connection } from '../../connection';
+import { AutoReconnectConnection } from '../../connection';
 import type { StorageOptions } from '../../storage';
 import { type DocStorageSchema, migrator } from './schema';
 
-export class IDBConnection extends Connection<{
+export class IDBConnection extends AutoReconnectConnection<{
   db: IDBPDatabase<DocStorageSchema>;
   channel: BroadcastChannel;
 }> {

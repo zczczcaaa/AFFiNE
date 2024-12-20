@@ -7,16 +7,31 @@ import {
 } from '@affine/graphql';
 
 import { DummyConnection } from '../../connection';
-import { type BlobRecord, BlobStorage } from '../../storage';
+import {
+  type BlobRecord,
+  BlobStorageBase,
+  type BlobStorageOptions,
+} from '../../storage';
 
-export class CloudBlobStorage extends BlobStorage {
-  private readonly gql = gqlFetcherFactory(this.options.peer + '/graphql');
+interface CloudBlobStorageOptions extends BlobStorageOptions {
+  apiBaseUrl: string;
+}
+
+export class CloudBlobStorage extends BlobStorageBase<CloudBlobStorageOptions> {
+  private readonly gql = gqlFetcherFactory(
+    this.options.apiBaseUrl + '/graphql'
+  );
   override connection = new DummyConnection();
 
   override async get(key: string) {
     const res = await fetch(
-      this.options.peer + '/api/workspaces/' + this.spaceId + '/blobs/' + key,
+      this.options.apiBaseUrl +
+        '/api/workspaces/' +
+        this.spaceId +
+        '/blobs/' +
+        key,
       {
+        cache: 'default',
         headers: {
           'x-affine-version': BUILD_CONFIG.appVersion,
         },

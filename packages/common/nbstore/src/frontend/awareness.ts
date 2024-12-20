@@ -51,10 +51,10 @@ export class AwarenessFrontend {
       applyAwarenessUpdate(awareness, update.bin, origin);
     };
     const handleSyncCollect = () => {
-      return {
+      return Promise.resolve({
         docId: awareness.doc.guid,
         bin: encodeAwarenessUpdate(awareness, [awareness.clientID]),
-      };
+      });
     };
     const unsubscribe = this.sync.subscribeUpdate(
       awareness.doc.guid,

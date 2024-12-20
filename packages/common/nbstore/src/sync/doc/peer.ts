@@ -92,7 +92,7 @@ export class DocSyncPeer {
   /**
    * random unique id for recognize self in "update" event
    */
-  private readonly uniqueId = `sync:${this.local.peer}:${this.remote.peer}:${nanoid()}`;
+  private readonly uniqueId = `sync:${this.local.universalId}:${this.remote.universalId}:${nanoid()}`;
   private readonly prioritySettings = new Map<string, number>();
 
   constructor(
@@ -435,7 +435,6 @@ export class DocSyncPeer {
   };
 
   async mainLoop(signal?: AbortSignal) {
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
         await this.retryLoop(signal);
@@ -594,12 +593,12 @@ export class DocSyncPeer {
       }
 
       // begin to process jobs
-      // eslint-disable-next-line no-constant-condition
+
       while (true) {
         throwIfAborted(signal);
 
         const docId = await this.status.jobDocQueue.asyncPop(signal);
-        // eslint-disable-next-line no-constant-condition
+
         while (true) {
           // batch process jobs for the same doc
           const jobs = this.status.jobMap.get(docId);

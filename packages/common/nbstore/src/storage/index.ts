@@ -40,20 +40,20 @@ export class SpaceStorage {
 
   connect() {
     Array.from(this.storages.values()).forEach(storage => {
-      storage.connect();
+      storage.connection.connect();
     });
   }
 
   disconnect() {
     Array.from(this.storages.values()).forEach(storage => {
-      storage.disconnect();
+      storage.connection.disconnect();
     });
   }
 
-  async waitForConnected() {
+  async waitForConnected(signal?: AbortSignal) {
     await Promise.all(
       Array.from(this.storages.values()).map(storage =>
-        storage.waitForConnected()
+        storage.connection.waitForConnected(signal)
       )
     );
   }
@@ -65,6 +65,7 @@ export class SpaceStorage {
   }
 }
 
+export * from './awareness';
 export * from './blob';
 export * from './doc';
 export * from './history';

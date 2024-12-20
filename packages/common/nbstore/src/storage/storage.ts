@@ -80,7 +80,18 @@ export function parseUniversalId(id: string) {
   return result as any;
 }
 
-export abstract class Storage<Opts extends StorageOptions = StorageOptions> {
+export interface Storage {
+  readonly storageType: StorageType;
+  readonly connection: Connection;
+  readonly peer: string;
+  readonly spaceType: string;
+  readonly spaceId: string;
+  readonly universalId: string;
+}
+
+export abstract class StorageBase<Opts extends StorageOptions = StorageOptions>
+  implements Storage
+{
   abstract readonly storageType: StorageType;
   abstract readonly connection: Connection;
 
@@ -101,16 +112,4 @@ export abstract class Storage<Opts extends StorageOptions = StorageOptions> {
   }
 
   constructor(public readonly options: Opts) {}
-
-  connect() {
-    this.connection.connect();
-  }
-
-  disconnect() {
-    this.connection.disconnect();
-  }
-
-  async waitForConnected() {
-    await this.connection.waitForConnected();
-  }
 }

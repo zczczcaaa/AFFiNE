@@ -1,13 +1,13 @@
 import path from 'node:path';
 
 import { DocStorage as NativeDocStorage } from '@affine/native';
-import { Connection, type SpaceType } from '@affine/nbstore';
+import { AutoReconnectConnection, type SpaceType } from '@affine/nbstore';
 import fs from 'fs-extra';
 
 import { logger } from '../logger';
 import { getSpaceDBPath } from '../workspace/meta';
 
-export class NativeDBConnection extends Connection<NativeDocStorage> {
+export class NativeDBConnection extends AutoReconnectConnection<NativeDocStorage> {
   constructor(
     private readonly peer: string,
     private readonly type: SpaceType,

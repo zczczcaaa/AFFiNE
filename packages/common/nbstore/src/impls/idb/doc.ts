@@ -2,7 +2,7 @@ import {
   type DocClock,
   type DocClocks,
   type DocRecord,
-  DocStorage,
+  DocStorageBase,
   type DocStorageOptions,
   type DocUpdate,
 } from '../../storage';
@@ -15,7 +15,7 @@ interface ChannelMessage {
   origin?: string;
 }
 
-export class IndexedDBDocStorage extends DocStorage {
+export class IndexedDBDocStorage extends DocStorageBase {
   readonly connection = new IDBConnection(this.options);
 
   get db() {

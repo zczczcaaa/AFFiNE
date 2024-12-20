@@ -4,7 +4,7 @@ import { diffUpdate, encodeStateVectorFromUpdate, mergeUpdates } from 'yjs';
 import { isEmptyUpdate } from '../utils/is-empty-update';
 import type { Locker } from './lock';
 import { SingletonLocker } from './lock';
-import { Storage, type StorageOptions } from './storage';
+import { type Storage, StorageBase, type StorageOptions } from './storage';
 
 export interface DocClock {
   docId: string;
@@ -37,17 +37,67 @@ export interface DocStorageOptions extends StorageOptions {
   mergeUpdates?: (updates: Uint8Array[]) => Promise<Uint8Array> | Uint8Array;
 }
 
-export abstract class DocStorage<
-  Opts extends DocStorageOptions = DocStorageOptions,
-> extends Storage<Opts> {
+export interface DocStorage extends Storage {
+  readonly storageType: 'doc';
+
+  /**
+   * Get a doc record with latest binary.
+   */
+  getDoc(docId: string): Promise<DocRecord | null>;
+  /**
+   * Get a yjs binary diff with the given state vector.
+   */
+  getDocDiff(docId: string, state?: Uint8Array): Promise<DocDiff | null>;
+  /**
+   * Push updates into storage
+   *
+   * @param origin - Internal identifier to recognize the source in the "update" event. Will not be stored or transferred.
+   */
+  pushDocUpdate(update: DocUpdate, origin?: string): Promise<DocClock>;
+
+  /**
+   * Get the timestamp of the latest update of a doc.
+   */
+  getDocTimestamp(docId: string): Promise<DocClock | null>;
+
+  /**
+   * Get all docs timestamps info. especially for useful in sync process.
+   */
+  getDocTimestamps(after?: Date): Promise<DocClocks>;
+
+  /**
+   * Delete a specific doc data with all snapshots and updates
+   */
+  deleteDoc(docId: string): Promise<void>;
+
+  /**
+   * Subscribe on doc updates emitted from storage itself.
+   *
+   * NOTE:
+   *
+   *   There is not always update emitted from storage itself.
+   *
+   *   For example, in Sqlite storage, the update will only come from user's updating on docs,
+   *   in other words, the update will never somehow auto generated in storage internally.
+   *
+   *   But for Cloud storage, there will be updates broadcasted from other clients,
+   *   so the storage will emit updates to notify the client to integrate them.
+   */
+  subscribeDocUpdate(
+    callback: (update: DocRecord, origin?: string) => void
+  ): () => void;
+}
+
+export abstract class DocStorageBase<
+    Opts extends DocStorageOptions = DocStorageOptions,
+  >
+  extends StorageBase<Opts>
+  implements DocStorage
+{
   private readonly event = new EventEmitter2();
   override readonly storageType = 'doc';
   protected readonly locker: Locker = new SingletonLocker();
 
-  // REGION: open apis by Op system
-  /**
-   * Get a doc record with latest binary.
-   */
   async getDoc(docId: string) {
     await using _lock = await this.lockDocForUpdate(docId);
 
@@ -78,9 +128,6 @@ export abstract class DocStorage<
     return snapshot;
   }
 
-  /**
-   * Get a yjs binary diff with the given state vector.
-   */
   async getDocDiff(docId: string, state?: Uint8Array) {
     const doc = await this.getDoc(docId);
 
@@ -96,41 +143,14 @@ export abstract class DocStorage<
     };
   }
 
-  /**
-   * Push updates into storage
-   *
-   * @param origin - Internal identifier to recognize the source in the "update" event. Will not be stored or transferred.
-   */
   abstract pushDocUpdate(update: DocUpdate, origin?: string): Promise<DocClock>;
 
-  /**
-   * Get the timestamp of the latest update of a doc.
-   */
   abstract getDocTimestamp(docId: string): Promise<DocClock | null>;
 
-  /**
-   * Get all docs timestamps info. especially for useful in sync process.
-   */
   abstract getDocTimestamps(after?: Date): Promise<DocClocks>;
 
-  /**
-   * Delete a specific doc data with all snapshots and updates
-   */
   abstract deleteDoc(docId: string): Promise<void>;
 
-  /**
-   * Subscribe on doc updates emitted from storage itself.
-   *
-   * NOTE:
-   *
-   *   There is not always update emitted from storage itself.
-   *
-   *   For example, in Sqlite storage, the update will only come from user's updating on docs,
-   *   in other words, the update will never somehow auto generated in storage internally.
-   *
-   *   But for Cloud storage, there will be updates broadcasted from other clients,
-   *   so the storage will emit updates to notify the client to integrate them.
-   */
   subscribeDocUpdate(callback: (update: DocRecord, origin?: string) => void) {
     this.event.on('update', callback);
 
@@ -138,7 +158,6 @@ export abstract class DocStorage<
       this.event.off('update', callback);
     };
   }
-  // ENDREGION
 
   // REGION: api for internal usage
   protected on(

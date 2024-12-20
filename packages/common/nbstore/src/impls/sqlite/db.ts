@@ -1,6 +1,6 @@
 import { apis } from '@affine/electron-api';
 
-import { Connection } from '../../connection';
+import { AutoReconnectConnection } from '../../connection';
 import { type SpaceType, universalId } from '../../storage';
 
 type NativeDBApis = NonNullable<typeof apis>['nbstore'] extends infer APIs
@@ -13,7 +13,7 @@ type NativeDBApis = NonNullable<typeof apis>['nbstore'] extends infer APIs
     }
   : never;
 
-export class NativeDBConnection extends Connection<void> {
+export class NativeDBConnection extends AutoReconnectConnection<void> {
   readonly apis: NativeDBApis;
 
   constructor(

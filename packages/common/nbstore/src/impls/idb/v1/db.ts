@@ -1,6 +1,6 @@
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb';
 
-import { Connection } from '../../../connection';
+import { AutoReconnectConnection } from '../../../connection';
 
 export interface DocDBSchema extends DBSchema {
   workspace: {
@@ -15,7 +15,9 @@ export interface DocDBSchema extends DBSchema {
   };
 }
 
-export class DocIDBConnection extends Connection<IDBPDatabase<DocDBSchema>> {
+export class DocIDBConnection extends AutoReconnectConnection<
+  IDBPDatabase<DocDBSchema>
+> {
   override get shareId() {
     return 'idb(old):affine-local';
   }
@@ -40,7 +42,9 @@ export interface BlobDBSchema extends DBSchema {
   };
 }
 
-export class BlobIDBConnection extends Connection<IDBPDatabase<BlobDBSchema>> {
+export class BlobIDBConnection extends AutoReconnectConnection<
+  IDBPDatabase<BlobDBSchema>
+> {
   constructor(private readonly workspaceId: string) {
     super();
   }

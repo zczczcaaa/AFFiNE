@@ -1,7 +1,7 @@
-import type { Connection } from './connection';
+import type { AutoReconnectConnection } from './connection';
 
-const CONNECTIONS: Map<string, Connection<any>> = new Map();
-export function share<T extends Connection<any>>(conn: T): T {
+const CONNECTIONS: Map<string, AutoReconnectConnection<any>> = new Map();
+export function share<T extends AutoReconnectConnection<any>>(conn: T): T {
   if (!conn.shareId) {
     throw new Error(
       `Connection ${conn.constructor.name} is not shareable.\nIf you want to make it shareable, please override [shareId].`

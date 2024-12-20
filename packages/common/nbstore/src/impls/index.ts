@@ -1,5 +1,10 @@
 import type { Storage } from '../storage';
-import { CloudBlobStorage, CloudDocStorage } from './cloud';
+import { BroadcastChannelAwarenessStorage } from './broadcast-channel/awareness';
+import {
+  CloudAwarenessStorage,
+  CloudBlobStorage,
+  CloudDocStorage,
+} from './cloud';
 import {
   IndexedDBBlobStorage,
   IndexedDBDocStorage,
@@ -13,6 +18,7 @@ const idb: StorageConstructor[] = [
   IndexedDBDocStorage,
   IndexedDBBlobStorage,
   IndexedDBSyncStorage,
+  BroadcastChannelAwarenessStorage,
 ];
 
 const idbv1: StorageConstructor[] = [
@@ -20,7 +26,11 @@ const idbv1: StorageConstructor[] = [
   IndexedDBV1BlobStorage,
 ];
 
-const cloud: StorageConstructor[] = [CloudDocStorage, CloudBlobStorage];
+const cloud: StorageConstructor[] = [
+  CloudDocStorage,
+  CloudBlobStorage,
+  CloudAwarenessStorage,
+];
 
 export const storages: StorageConstructor[] = cloud.concat(idbv1, idb);
 

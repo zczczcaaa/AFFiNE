@@ -8,7 +8,7 @@ import { AwarenessFrontend } from '../frontend/awareness';
 import { DocFrontend } from '../frontend/doc';
 import { BroadcastChannelAwarenessStorage } from '../impls/broadcast-channel/awareness';
 import { IndexedDBDocStorage } from '../impls/idb';
-import { AwarenessSync } from '../sync/awareness';
+import { AwarenessSyncImpl } from '../sync/awareness';
 import { expectYjsEqual } from './utils';
 
 test('doc', async () => {
@@ -23,9 +23,9 @@ test('doc', async () => {
     type: 'workspace',
   });
 
-  docStorage.connect();
+  docStorage.connection.connect();
 
-  await docStorage.waitForConnected();
+  await docStorage.connection.waitForConnected();
 
   const frontend1 = new DocFrontend(docStorage, null);
   frontend1.start();
@@ -68,11 +68,11 @@ test('awareness', async () => {
     type: 'workspace',
   });
 
-  storage1.connect();
-  storage2.connect();
+  storage1.connection.connect();
+  storage2.connection.connect();
 
-  await storage1.waitForConnected();
-  await storage2.waitForConnected();
+  await storage1.connection.waitForConnected();
+  await storage2.connection.waitForConnected();
 
   // peer a
   const docA = new YDoc({ guid: 'test-doc' });
@@ -90,13 +90,13 @@ test('awareness', async () => {
   const awarenessC = new Awareness(docC);
 
   {
-    const sync = new AwarenessSync(storage1, [storage2]);
+    const sync = new AwarenessSyncImpl(storage1, [storage2]);
     const frontend = new AwarenessFrontend(sync);
     frontend.connect(awarenessA);
     frontend.connect(awarenessB);
   }
   {
-    const sync = new AwarenessSync(storage2, [storage1]);
+    const sync = new AwarenessSyncImpl(storage2, [storage1]);
     const frontend = new AwarenessFrontend(sync);
     frontend.connect(awarenessC);
   }

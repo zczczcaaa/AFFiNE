@@ -6,7 +6,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./op": "./src/op/index.ts",
+    "./worker": "./src/worker/index.ts",
     "./idb": "./src/impls/idb/index.ts",
     "./idb/v1": "./src/impls/idb/v1/index.ts",
     "./cloud": "./src/impls/cloud/index.ts",

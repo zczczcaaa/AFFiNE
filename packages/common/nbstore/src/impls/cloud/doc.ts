@@ -1,10 +1,14 @@
-import type { SocketOptions } from 'socket.io-client';
+import type { Socket, SocketOptions } from 'socket.io-client';
 
-import { share } from '../../connection';
+import {
+  type Connection,
+  type ConnectionStatus,
+  share,
+} from '../../connection';
 import {
   type DocClock,
   type DocClocks,
-  DocStorage,
+  DocStorageBase,
   type DocStorageOptions,
   type DocUpdate,
 } from '../../storage';
@@ -17,61 +21,12 @@ import {
 
 interface CloudDocStorageOptions extends DocStorageOptions {
   socketOptions: SocketOptions;
+  serverBaseUrl: string;
 }
 
-export class CloudDocStorage extends DocStorage<CloudDocStorageOptions> {
-  connection = share(
-    new SocketConnection(this.peer, this.options.socketOptions)
-  );
-
-  private disposeConnectionStatusListener?: () => void;
-
-  private get socket() {
+export class CloudDocStorage extends DocStorageBase<CloudDocStorageOptions> {
+  get socket() {
     return this.connection.inner;
-  }
-
-  override connect() {
-    if (!this.disposeConnectionStatusListener) {
-      this.disposeConnectionStatusListener = this.connection.onStatusChanged(
-        status => {
-          if (status === 'connected') {
-            this.join().catch(err => {
-              console.error('doc storage join failed', err);
-            });
-            this.socket.on('space:broadcast-doc-update', this.onServerUpdate);
-          }
-        }
-      );
-    }
-    super.connect();
-  }
-
-  override disconnect() {
-    if (this.disposeConnectionStatusListener) {
-      this.disposeConnectionStatusListener();
-    }
-    this.socket.emit('space:leave', {
-      spaceType: this.spaceType,
-      spaceId: this.spaceId,
-    });
-    this.socket.off('space:broadcast-doc-update', this.onServerUpdate);
-    super.disconnect();
-  }
-
-  async join() {
-    try {
-      const res = await this.socket.emitWithAck('space:join', {
-        spaceType: this.spaceType,
-        spaceId: this.spaceId,
-        clientVersion: BUILD_CONFIG.appVersion,
-      });
-
-      if ('error' in res) {
-        this.connection.setStatus('closed', new Error(res.error.message));
-      }
-    } catch (e) {
-      this.connection.setStatus('error', e as Error);
-    }
   }
 
   onServerUpdate: ServerEventsMap['space:broadcast-doc-update'] = message => {
@@ -87,6 +42,11 @@ export class CloudDocStorage extends DocStorage<CloudDocStorageOptions> {
       });
     }
   };
+
+  readonly connection = new CloudDocStorageConnection(
+    this.options,
+    this.onServerUpdate
+  );
 
   override async getDocSnapshot(docId: string) {
     const response = await this.socket.emitWithAck('space:load-doc', {
@@ -205,5 +165,86 @@ export class CloudDocStorage extends DocStorage<CloudDocStorageOptions> {
   }
   protected async markUpdatesMerged() {
     return 0;
+  }
+}
+
+class CloudDocStorageConnection implements Connection<Socket> {
+  connection = share(
+    new SocketConnection(
+      `${this.options.serverBaseUrl}/`,
+      this.options.socketOptions
+    )
+  );
+
+  private disposeConnectionStatusListener?: () => void;
+
+  private get socket() {
+    return this.connection.inner;
+  }
+
+  constructor(
+    private readonly options: CloudDocStorageOptions,
+    private readonly onServerUpdate: ServerEventsMap['space:broadcast-doc-update']
+  ) {}
+
+  get status() {
+    return this.connection.status;
+  }
+
+  get inner() {
+    return this.connection.inner;
+  }
+
+  connect(): void {
+    if (!this.disposeConnectionStatusListener) {
+      this.disposeConnectionStatusListener = this.connection.onStatusChanged(
+        status => {
+          if (status === 'connected') {
+            this.join().catch(err => {
+              console.error('doc storage join failed', err);
+            });
+            this.socket.on('space:broadcast-doc-update', this.onServerUpdate);
+          }
+        }
+      );
+    }
+    return this.connection.connect();
+  }
+
+  async join() {
+    try {
+      const res = await this.socket.emitWithAck('space:join', {
+        spaceType: this.options.type,
+        spaceId: this.options.id,
+        clientVersion: BUILD_CONFIG.appVersion,
+      });
+
+      if ('error' in res) {
+        this.connection.setStatus('closed', new Error(res.error.message));
+      }
+    } catch (e) {
+      this.connection.setStatus('error', e as Error);
+    }
+  }
+
+  disconnect() {
+    if (this.disposeConnectionStatusListener) {
+      this.disposeConnectionStatusListener();
+    }
+    this.socket.emit('space:leave', {
+      spaceType: this.options.type,
+      spaceId: this.options.id,
+    });
+    this.socket.off('space:broadcast-doc-update', this.onServerUpdate);
+    this.connection.disconnect();
+  }
+
+  waitForConnected(signal?: AbortSignal): Promise<void> {
+    return this.connection.waitForConnected(signal);
+  }
+  onStatusChanged(
+    cb: (status: ConnectionStatus, error?: Error) => void
+  ): () => void {
+    return this.connection.onStatusChanged(cb);
   }
 }

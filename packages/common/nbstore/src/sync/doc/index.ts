@@ -17,7 +17,13 @@ export interface DocSyncDocState {
   errorMessage: string | null;
 }
 
-export class DocSync {
+export interface DocSync {
+  readonly state$: Observable<DocSyncState>;
+  docState$(docId: string): Observable<DocSyncDocState>;
+  addPriority(id: string, priority: number): () => void;
+}
+
+export class DocSyncImpl implements DocSync {
   private readonly peers: DocSyncPeer[] = this.remotes.map(
     remote => new DocSyncPeer(this.local, this.sync, remote)
   );

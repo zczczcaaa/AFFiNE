@@ -1,4 +1,4 @@
-import { Storage, type StorageOptions } from './storage';
+import { type Storage, StorageBase, type StorageOptions } from './storage';
 
 export interface BlobStorageOptions extends StorageOptions {}
 
@@ -16,9 +16,25 @@ export interface ListedBlobRecord {
   createdAt?: Date;
 }
 
-export abstract class BlobStorage<
-  Options extends BlobStorageOptions = BlobStorageOptions,
-> extends Storage<Options> {
+export interface BlobStorage extends Storage {
+  readonly storageType: 'blob';
+  get(key: string, signal?: AbortSignal): Promise<BlobRecord | null>;
+  set(blob: BlobRecord, signal?: AbortSignal): Promise<void>;
+  delete(
+    key: string,
+    permanently: boolean,
+    signal?: AbortSignal
+  ): Promise<void>;
+  release(signal?: AbortSignal): Promise<void>;
+  list(signal?: AbortSignal): Promise<ListedBlobRecord[]>;
+}
+
+export abstract class BlobStorageBase<
+    Options extends BlobStorageOptions = BlobStorageOptions,
+  >
+  extends StorageBase<Options>
+  implements BlobStorage
+{
   override readonly storageType = 'blob';
 
   abstract get(key: string, signal?: AbortSignal): Promise<BlobRecord | null>;

@@ -1,14 +1,14 @@
 import {
   type DocClocks,
   type DocRecord,
-  DocStorage,
+  DocStorageBase,
   type DocUpdate,
   share,
 } from '@affine/nbstore';
 
 import { NativeDBConnection } from './db';
 
-export class SqliteDocStorage extends DocStorage {
+export class SqliteDocStorage extends DocStorageBase {
   override connection = share(
     new NativeDBConnection(this.peer, this.spaceType, this.spaceId)
   );

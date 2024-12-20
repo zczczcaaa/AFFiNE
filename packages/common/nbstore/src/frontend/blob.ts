@@ -17,7 +17,7 @@ export class BlobFrontend {
     return this.sync ? this.sync.uploadBlob(blob) : this.storage.set(blob);
   }
 
-  addPriority(id: string, priority: number) {
-    return this.sync?.addPriority(id, priority);
+  addPriority(_id: string, _priority: number) {
+    // not support yet
   }
 }

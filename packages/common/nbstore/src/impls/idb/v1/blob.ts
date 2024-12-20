@@ -1,11 +1,11 @@
 import { share } from '../../../connection';
-import { BlobStorage, type ListedBlobRecord } from '../../../storage';
+import { BlobStorageBase, type ListedBlobRecord } from '../../../storage';
 import { BlobIDBConnection } from './db';
 
 /**
  * @deprecated readonly
  */
-export class IndexedDBV1BlobStorage extends BlobStorage {
+export class IndexedDBV1BlobStorage extends BlobStorageBase {
   readonly connection = share(new BlobIDBConnection(this.spaceId));
 
   get db() {

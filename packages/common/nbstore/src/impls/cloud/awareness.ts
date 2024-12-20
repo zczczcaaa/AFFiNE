@@ -3,7 +3,7 @@ import type { SocketOptions } from 'socket.io-client';
 import { share } from '../../connection';
 import {
   type AwarenessRecord,
-  AwarenessStorage,
+  AwarenessStorageBase,
   type AwarenessStorageOptions,
 } from '../../storage/awareness';
 import {
@@ -16,7 +16,7 @@ interface CloudAwarenessStorageOptions extends AwarenessStorageOptions {
   socketOptions: SocketOptions;
 }
 
-export class CloudAwarenessStorage extends AwarenessStorage<CloudAwarenessStorageOptions> {
+export class CloudAwarenessStorage extends AwarenessStorageBase<CloudAwarenessStorageOptions> {
   connection = share(
     new SocketConnection(this.peer, this.options.socketOptions)
   );
@@ -38,7 +38,7 @@ export class CloudAwarenessStorage extends AwarenessStorage<CloudAwarenessStorag
   override subscribeUpdate(
     id: string,
     onUpdate: (update: AwarenessRecord, origin?: string) => void,
-    onCollect: () => AwarenessRecord
+    onCollect: () => Promise<AwarenessRecord | null>
   ): () => void {
     // TODO: handle disconnect
     // leave awareness
@@ -92,14 +92,16 @@ export class CloudAwarenessStorage extends AwarenessStorage<CloudAwarenessStorag
         docId === id
       ) {
         (async () => {
-          const record = onCollect();
-          const encodedUpdate = await uint8ArrayToBase64(record.bin);
-          this.socket.emit('space:update-awareness', {
-            spaceType: this.spaceType,
-            spaceId: this.spaceId,
-            docId: record.docId,
-            awarenessUpdate: encodedUpdate,
-          });
+          const record = await onCollect();
+          if (record) {
+            const encodedUpdate = await uint8ArrayToBase64(record.bin);
+            this.socket.emit('space:update-awareness', {
+              spaceType: this.spaceType,
+              spaceId: this.spaceId,
+              docId: record.docId,
+              awarenessUpdate: encodedUpdate,
+            });
+          }
         })().catch(err => console.error('awareness upload failed', err));
       }
     };

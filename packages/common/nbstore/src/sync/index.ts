@@ -1,19 +1,23 @@
 import { combineLatest, map, type Observable, of } from 'rxjs';
 
-import type { BlobStorage, DocStorage, SpaceStorage } from '../storage';
-import type { AwarenessStorage } from '../storage/awareness';
-import { AwarenessSync } from './awareness';
-import { BlobSync } from './blob';
-import { DocSync, type DocSyncState } from './doc';
+import type {
+  AwarenessStorage,
+  BlobStorage,
+  DocStorage,
+  SpaceStorage,
+} from '../storage';
+import { AwarenessSyncImpl } from './awareness';
+import { BlobSyncImpl } from './blob';
+import { DocSyncImpl, type DocSyncState } from './doc';
 
 export interface SyncState {
   doc?: DocSyncState;
 }
 
 export class Sync {
-  readonly doc: DocSync | null;
-  readonly blob: BlobSync | null;
-  readonly awareness: AwarenessSync | null;
+  readonly doc: DocSyncImpl | null;
+  readonly blob: BlobSyncImpl | null;
+  readonly awareness: AwarenessSyncImpl | null;
 
   readonly state$: Observable<SyncState>;
 
@@ -28,7 +32,7 @@ export class Sync {
 
     this.doc =
       doc && sync
-        ? new DocSync(
+        ? new DocSyncImpl(
             doc,
             sync,
             peers
@@ -37,7 +41,7 @@ export class Sync {
           )
         : null;
     this.blob = blob
-      ? new BlobSync(
+      ? new BlobSyncImpl(
           blob,
           peers
             .map(peer => peer.tryGet('blob'))
@@ -45,7 +49,7 @@ export class Sync {
         )
       : null;
     this.awareness = awareness
-      ? new AwarenessSync(
+      ? new AwarenessSyncImpl(
           awareness,
           peers
             .map(peer => peer.tryGet('awareness'))

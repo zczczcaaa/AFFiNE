@@ -1,13 +1,17 @@
 import { apis } from '@affine/electron-api';
 
-import { DummyConnection, share } from '../../../connection';
-import { type DocRecord, DocStorage, type DocUpdate } from '../../../storage';
+import { DummyConnection } from '../../../connection';
+import {
+  type DocRecord,
+  DocStorageBase,
+  type DocUpdate,
+} from '../../../storage';
 
 /**
  * @deprecated readonly
  */
-export class SqliteV1DocStorage extends DocStorage {
-  override connection = share(new DummyConnection());
+export class SqliteV1DocStorage extends DocStorageBase {
+  override connection = new DummyConnection();
 
   get db() {
     if (!apis) {

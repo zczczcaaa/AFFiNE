@@ -1,12 +1,12 @@
 import { share } from '../../connection';
 import {
   type BlobRecord,
-  BlobStorage,
+  BlobStorageBase,
   type ListedBlobRecord,
 } from '../../storage';
 import { IDBConnection } from './db';
 
-export class IndexedDBBlobStorage extends BlobStorage {
+export class IndexedDBBlobStorage extends BlobStorageBase {
   readonly connection = share(new IDBConnection(this.options));
 
   get db() {
