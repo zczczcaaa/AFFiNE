@@ -28,7 +28,7 @@ import {
 const NOS = 'none';
 
 export class RoughGenerator {
-  private config: Config;
+  private readonly config: Config;
 
   defaultOptions: ResolvedOptions = {
     maxRandomnessOffset: 2,

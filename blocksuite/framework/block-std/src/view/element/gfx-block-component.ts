@@ -108,13 +108,13 @@ export abstract class GfxBlockComponent<
     const parent = this.parentElement;
 
     if (this.hasUpdated || !parent || !('scheduleUpdateChildren' in parent)) {
-      super.scheduleUpdate();
+      return super.scheduleUpdate();
     } else {
       await (parent.scheduleUpdateChildren as (id: string) => Promise<void>)(
         this.model.id
       );
 
-      super.scheduleUpdate();
+      return super.scheduleUpdate();
     }
   }
 
@@ -207,13 +207,13 @@ export function toGfxBlockComponent<
       const parent = this.parentElement;
 
       if (this.hasUpdated || !parent || !('scheduleUpdateChildren' in parent)) {
-        super.scheduleUpdate();
+        return super.scheduleUpdate();
       } else {
         await (parent.scheduleUpdateChildren as (id: string) => Promise<void>)(
           this.model.id
         );
 
-        super.scheduleUpdate();
+        return super.scheduleUpdate();
       }
     }
 

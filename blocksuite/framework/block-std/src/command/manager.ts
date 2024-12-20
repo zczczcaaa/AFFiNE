@@ -128,9 +128,9 @@ import type {
 export class CommandManager extends LifeCycleWatcher {
   static override readonly key = 'commandManager';
 
-  private _commands = new Map<string, Command>();
+  private readonly _commands = new Map<string, Command>();
 
-  private _createChain = (
+  private readonly _createChain = (
     methods: Record<BlockSuite.CommandName, unknown>,
     _cmds: Command[]
   ): Chain => {
@@ -239,7 +239,7 @@ export class CommandManager extends LifeCycleWatcher {
     } as Chain;
   };
 
-  private _getCommandCtx = (): InitCommandCtx => {
+  private readonly _getCommandCtx = (): InitCommandCtx => {
     return {
       std: this.std,
     };

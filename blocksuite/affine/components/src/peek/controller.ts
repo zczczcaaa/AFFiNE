@@ -4,7 +4,7 @@ import { PeekViewProvider } from './service.js';
 import type { PeekableClass, PeekViewService } from './type.js';
 
 export class PeekableController<T extends PeekableClass> {
-  private _getPeekViewService = (): PeekViewService | null => {
+  private readonly _getPeekViewService = (): PeekViewService | null => {
     return this.target.std.getOptional(PeekViewProvider);
   };
 
@@ -25,7 +25,7 @@ export class PeekableController<T extends PeekableClass> {
   }
 
   constructor(
-    private target: T,
-    private enable?: (e: T) => boolean
+    private readonly target: T,
+    private readonly enable?: (e: T) => boolean
   ) {}
 }

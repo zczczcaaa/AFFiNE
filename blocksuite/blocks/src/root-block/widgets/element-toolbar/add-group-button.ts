@@ -16,7 +16,7 @@ export class EdgelessAddGroupButton extends WithDisposable(LitElement) {
     }
   `;
 
-  private _createGroup = () => {
+  private readonly _createGroup = () => {
     this.edgeless.service.createGroupFromSelected();
   };
 

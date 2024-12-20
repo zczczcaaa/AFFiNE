@@ -20,7 +20,7 @@ type DocOptions = {
 };
 
 export class Doc {
-  private _runQuery = (block: Block) => {
+  private readonly _runQuery = (block: Block) => {
     runQuery(this._query, block);
   };
 

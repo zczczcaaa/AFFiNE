@@ -45,17 +45,17 @@ export class MenuInput extends MenuFocusable {
     }
   `;
 
-  private onCompositionEnd = () => {
+  private readonly onCompositionEnd = () => {
     this.data.onChange?.(this.inputRef.value);
   };
 
-  private onInput = (e: InputEvent) => {
+  private readonly onInput = (e: InputEvent) => {
     e.stopPropagation();
     if (e.isComposing) return;
     this.data.onChange?.(this.inputRef.value);
   };
 
-  private onKeydown = (e: KeyboardEvent) => {
+  private readonly onKeydown = (e: KeyboardEvent) => {
     e.stopPropagation();
     if (e.isComposing) return;
     if (e.key === 'Escape') {
@@ -71,7 +71,7 @@ export class MenuInput extends MenuFocusable {
     }
   };
 
-  private stopPropagation = (e: Event) => {
+  private readonly stopPropagation = (e: Event) => {
     e.stopPropagation();
   };
 
@@ -140,17 +140,17 @@ export class MobileMenuInput extends MenuFocusable {
     }
   `;
 
-  private onCompositionEnd = () => {
+  private readonly onCompositionEnd = () => {
     this.data.onChange?.(this.inputRef.value);
   };
 
-  private onInput = (e: InputEvent) => {
+  private readonly onInput = (e: InputEvent) => {
     e.stopPropagation();
     if (e.isComposing) return;
     this.data.onChange?.(this.inputRef.value);
   };
 
-  private stopPropagation = (e: Event) => {
+  private readonly stopPropagation = (e: Event) => {
     e.stopPropagation();
   };
 

@@ -216,7 +216,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ['packages/**/*.{ts,tsx}', 'tools/cli/**/*.{ts,tsx}'],
+    files: [
+      'packages/**/*.{ts,tsx}',
+      'tools/cli/**/*.{ts,tsx}',
+      'blocksuite/**/*.{ts,tsx}',
+    ],
     rules: {
       '@typescript-eslint/no-floating-promises': [
         'error',
@@ -279,6 +283,21 @@ export default tseslint.config(
   },
   {
     files: ['packages/frontend/apps/electron/scripts/**/*'],
+    rules: {
+      'import-x/no-extraneous-dependencies': 'off',
+    },
+  },
+  {
+    files: ['blocksuite/**/*.{ts,tsx}'],
+    rules: {
+      'rxjs/finnish': 'off',
+    },
+  },
+  {
+    files: [
+      'blocksuite/tests-legacy/**/*.{ts,tsx}',
+      'blocksuite/**/__tests__/**/*.{ts,tsx}',
+    ],
     rules: {
       'import-x/no-extraneous-dependencies': 'off',
     },

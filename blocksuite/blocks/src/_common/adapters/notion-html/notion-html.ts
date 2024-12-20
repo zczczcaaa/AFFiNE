@@ -54,7 +54,7 @@ type NotionHtmlToDocSnapshotPayload = {
 type NotionHtmlToBlockSnapshotPayload = NotionHtmlToDocSnapshotPayload;
 
 export class NotionHtmlAdapter extends BaseAdapter<NotionHtml> {
-  private _traverseNotionHtml = async (
+  private readonly _traverseNotionHtml = async (
     html: HtmlAST,
     snapshot: BlockSnapshot,
     assets?: AssetsManager,

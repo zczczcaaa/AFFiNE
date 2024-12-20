@@ -30,7 +30,7 @@ import {
 } from '../utils.js';
 
 export class PointerEventWatcher {
-  private _canEditing = (noteBlock: BlockComponent) => {
+  private readonly _canEditing = (noteBlock: BlockComponent) => {
     if (noteBlock.doc.id !== this.widget.doc.id) return false;
 
     if (this.widget.mode === 'page') return true;
@@ -50,7 +50,7 @@ export class PointerEventWatcher {
    * Should select the block and show slash menu if current block is not selected
    * Should clear selection if current block is the first selected block
    */
-  private _clickHandler: UIEventHandler = ctx => {
+  private readonly _clickHandler: UIEventHandler = ctx => {
     if (!this.widget.isHoverDragHandleVisible) return;
 
     const state = ctx.get('pointerState');
@@ -90,7 +90,7 @@ export class PointerEventWatcher {
   };
 
   // Need to consider block padding and scale
-  private _getTopWithBlockComponent = (block: BlockComponent) => {
+  private readonly _getTopWithBlockComponent = (block: BlockComponent) => {
     const computedStyle = getComputedStyle(block);
     const { top } = block.getBoundingClientRect();
     const paddingTop =
@@ -102,7 +102,7 @@ export class PointerEventWatcher {
     );
   };
 
-  private _containerStyle = computed(() => {
+  private readonly _containerStyle = computed(() => {
     const draggingAreaRect = this.widget.draggingAreaRect.value;
     if (!draggingAreaRect) return null;
 
@@ -135,7 +135,7 @@ export class PointerEventWatcher {
     };
   });
 
-  private _grabberStyle = computed(() => {
+  private readonly _grabberStyle = computed(() => {
     const scaleInNote = this.widget.scaleInNote.value;
     return {
       width: `${DRAG_HANDLE_GRABBER_WIDTH * scaleInNote}px`,
@@ -151,7 +151,7 @@ export class PointerEventWatcher {
    * When pointer move on block, should show drag handle
    * And update hover block id and path
    */
-  private _pointerMoveOnBlock = (state: PointerEventState) => {
+  private readonly _pointerMoveOnBlock = (state: PointerEventState) => {
     if (this.widget.isTopLevelDragHandleVisible) return;
 
     const point = new Point(state.raw.x, state.raw.y);
@@ -190,7 +190,7 @@ export class PointerEventWatcher {
     }
   };
 
-  private _pointerOutHandler: UIEventHandler = ctx => {
+  private readonly _pointerOutHandler: UIEventHandler = ctx => {
     const state = ctx.get('pointerState');
     state.raw.preventDefault();
 
@@ -214,57 +214,60 @@ export class PointerEventWatcher {
     }
   };
 
-  private _throttledPointerMoveHandler = throttle<UIEventHandler>(ctx => {
-    if (
-      this.widget.doc.readonly ||
-      this.widget.dragging ||
-      !this.widget.isConnected
-    ) {
-      this.widget.hide();
-      return;
-    }
-    if (this.widget.isTopLevelDragHandleVisible) return;
+  private readonly _throttledPointerMoveHandler = throttle<UIEventHandler>(
+    ctx => {
+      if (
+        this.widget.doc.readonly ||
+        this.widget.dragging ||
+        !this.widget.isConnected
+      ) {
+        this.widget.hide();
+        return;
+      }
+      if (this.widget.isTopLevelDragHandleVisible) return;
 
-    const state = ctx.get('pointerState');
-    const { target } = state.raw;
-    const element = captureEventTarget(target);
-    // When pointer not on block or on dragging, should do nothing
-    if (!element) return;
+      const state = ctx.get('pointerState');
+      const { target } = state.raw;
+      const element = captureEventTarget(target);
+      // When pointer not on block or on dragging, should do nothing
+      if (!element) return;
 
-    // When pointer on drag handle, should do nothing
-    if (element.closest('.affine-drag-handle-container')) return;
+      // When pointer on drag handle, should do nothing
+      if (element.closest('.affine-drag-handle-container')) return;
 
-    // When pointer out of note block hover area or inside database, should hide drag handle
-    const point = new Point(state.raw.x, state.raw.y);
+      // When pointer out of note block hover area or inside database, should hide drag handle
+      const point = new Point(state.raw.x, state.raw.y);
 
-    const closestNoteBlock = getClosestNoteBlock(
-      this.widget.host,
-      this.widget.rootComponent,
-      point
-    ) as NoteBlockComponent | null;
-
-    this.widget.noteScale.value =
-      this.widget.mode === 'page'
-        ? 1
-        : (closestNoteBlock?.model.edgeless.scale ?? 1);
-
-    if (
-      closestNoteBlock &&
-      this._canEditing(closestNoteBlock) &&
-      !isOutOfNoteBlock(
+      const closestNoteBlock = getClosestNoteBlock(
         this.widget.host,
-        closestNoteBlock,
-        point,
-        this.widget.scaleInNote.peek()
-      )
-    ) {
-      this._pointerMoveOnBlock(state);
-      return true;
-    }
+        this.widget.rootComponent,
+        point
+      ) as NoteBlockComponent | null;
 
-    this.widget.hide();
-    return false;
-  }, 1000 / 60);
+      this.widget.noteScale.value =
+        this.widget.mode === 'page'
+          ? 1
+          : (closestNoteBlock?.model.edgeless.scale ?? 1);
+
+      if (
+        closestNoteBlock &&
+        this._canEditing(closestNoteBlock) &&
+        !isOutOfNoteBlock(
+          this.widget.host,
+          closestNoteBlock,
+          point,
+          this.widget.scaleInNote.peek()
+        )
+      ) {
+        this._pointerMoveOnBlock(state);
+        return true;
+      }
+
+      this.widget.hide();
+      return false;
+    },
+    1000 / 60
+  );
 
   // Multiple blocks: drag handle should show on the vertical middle of all blocks
   showDragHandleOnHoverBlock = () => {

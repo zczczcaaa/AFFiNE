@@ -91,7 +91,7 @@ export class FramePanelBody extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private _clearDocDisposables = () => {
+  private readonly _clearDocDisposables = () => {
     this._docDisposables?.dispose();
     this._docDisposables = null;
   };
@@ -99,7 +99,7 @@ export class FramePanelBody extends SignalWatcher(
   /**
    * click at blank area to clear selection
    */
-  private _clickBlank = (e: MouseEvent) => {
+  private readonly _clickBlank = (e: MouseEvent) => {
     e.stopPropagation();
     // check if click at frame-card, if not, set this._selected to empty
     if (
@@ -126,7 +126,7 @@ export class FramePanelBody extends SignalWatcher(
 
   private _lastEdgelessRootId = '';
 
-  private _selectFrame = (e: SelectEvent) => {
+  private readonly _selectFrame = (e: SelectEvent) => {
     const { selected, id, multiselect } = e.detail;
 
     if (!selected) {
@@ -144,7 +144,7 @@ export class FramePanelBody extends SignalWatcher(
     });
   };
 
-  private _updateFrameItems = () => {
+  private readonly _updateFrameItems = () => {
     this._frameItems = this.frames.map((frame, idx) => ({
       frame,
       frameIndex: frame.presentationIndex ?? frame.index,

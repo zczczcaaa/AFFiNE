@@ -112,7 +112,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     }
   `;
 
-  private _convertToCardView = () => {
+  private readonly _convertToCardView = () => {
     if (this._isCardView) {
       return;
     }
@@ -162,7 +162,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     this._doc.deleteBlock(this.model);
   };
 
-  private _convertToEmbedView = () => {
+  private readonly _convertToEmbedView = () => {
     if (this._isEmbedView) {
       return;
     }
@@ -217,7 +217,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     this._doc.deleteBlock(this.model);
   };
 
-  private _copyUrl = () => {
+  private readonly _copyUrl = () => {
     let url!: ReturnType<GenerateDocUrlService['generateDocUrl']>;
 
     if ('url' in this.model) {
@@ -241,7 +241,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
 
   private _embedOptions: EmbedOptions | null = null;
 
-  private _getScale = () => {
+  private readonly _getScale = () => {
     if ('scale' in this.model) {
       return this.model.scale ?? 1;
     } else if (isEmbedHtmlBlock(this.model)) {
@@ -252,11 +252,11 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     return bound.h / EMBED_CARD_HEIGHT[this.model.style];
   };
 
-  private _open = () => {
+  private readonly _open = () => {
     this._blockComponent?.open();
   };
 
-  private _openEditPopup = (e: MouseEvent) => {
+  private readonly _openEditPopup = (e: MouseEvent) => {
     e.stopPropagation();
 
     if (isEmbedHtmlBlock(this.model)) return;
@@ -277,12 +277,12 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     });
   };
 
-  private _peek = () => {
+  private readonly _peek = () => {
     if (!this._blockComponent) return;
     peek(this._blockComponent);
   };
 
-  private _setCardStyle = (style: EmbedCardStyle) => {
+  private readonly _setCardStyle = (style: EmbedCardStyle) => {
     const bounds = Bound.deserialize(this.model.xywh);
     bounds.w = EMBED_CARD_WIDTH[style];
     bounds.h = EMBED_CARD_HEIGHT[style];
@@ -295,7 +295,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     });
   };
 
-  private _setEmbedScale = (scale: number) => {
+  private readonly _setEmbedScale = (scale: number) => {
     if (isEmbedHtmlBlock(this.model)) return;
 
     const bound = Bound.deserialize(this.model.xywh);
@@ -320,7 +320,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     });
   };
 
-  private _toggleCardScaleSelector = (e: Event) => {
+  private readonly _toggleCardScaleSelector = (e: Event) => {
     const opened = (e as CustomEvent<boolean>).detail;
     if (!opened) return;
 
@@ -329,7 +329,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     });
   };
 
-  private _toggleCardStyleSelector = (e: Event) => {
+  private readonly _toggleCardStyleSelector = (e: Event) => {
     const opened = (e as CustomEvent<boolean>).detail;
     if (!opened) return;
 
@@ -338,7 +338,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     });
   };
 
-  private _toggleViewSelector = (e: Event) => {
+  private readonly _toggleViewSelector = (e: Event) => {
     const opened = (e as CustomEvent<boolean>).detail;
     if (!opened) return;
 
@@ -347,7 +347,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     });
   };
 
-  private _trackViewSelected = (type: string) => {
+  private readonly _trackViewSelected = (type: string) => {
     track(this.std, this.model, this._viewType, 'SelectedView', {
       control: 'select view',
       type: `${type} view`,

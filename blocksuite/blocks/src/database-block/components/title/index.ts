@@ -70,29 +70,29 @@ export class DatabaseTitle extends WithDisposable(ShadowlessElement) {
     }
   `;
 
-  private compositionEnd = () => {
+  private readonly compositionEnd = () => {
     this.titleText.replace(0, this.titleText.length, this.input.value);
   };
 
-  private onBlur = () => {
+  private readonly onBlur = () => {
     this.isFocus = false;
   };
 
-  private onFocus = () => {
+  private readonly onFocus = () => {
     this.isFocus = true;
     if (this.database?.viewSelection$?.value) {
       this.database?.setSelection(undefined);
     }
   };
 
-  private onInput = (e: InputEvent) => {
+  private readonly onInput = (e: InputEvent) => {
     this.text = this.input.value;
     if (!e.isComposing) {
       this.titleText.replace(0, this.titleText.length, this.input.value);
     }
   };
 
-  private onKeyDown = (event: KeyboardEvent) => {
+  private readonly onKeyDown = (event: KeyboardEvent) => {
     event.stopPropagation();
     if (event.key === 'Enter' && !event.isComposing) {
       event.preventDefault();

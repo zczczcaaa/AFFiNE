@@ -188,11 +188,11 @@ export class StarterDebugMenu extends ShadowlessElement {
     }
   `;
 
-  private _darkModeChange = (e: MediaQueryListEvent) => {
+  private readonly _darkModeChange = (e: MediaQueryListEvent) => {
     this._setThemeMode(!!e.matches);
   };
 
-  private _handleDocsPanelClose = () => {
+  private readonly _handleDocsPanelClose = () => {
     this.leftSidePanel.toggle(this.docsPanel);
   };
 

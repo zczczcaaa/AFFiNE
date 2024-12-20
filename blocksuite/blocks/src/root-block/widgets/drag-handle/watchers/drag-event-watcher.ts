@@ -44,7 +44,7 @@ import { surfaceRefToEmbed } from '../middleware/surface-ref-to-embed.js';
 import { containBlock, includeTextSelection } from '../utils.js';
 
 export class DragEventWatcher {
-  private _computeEdgelessBound = (
+  private readonly _computeEdgelessBound = (
     x: number,
     y: number,
     width: number,
@@ -70,19 +70,19 @@ export class DragEventWatcher {
     );
   };
 
-  private _createDropIndicator = () => {
+  private readonly _createDropIndicator = () => {
     if (!this.widget.dropIndicator) {
       this.widget.dropIndicator = new DropIndicator();
       this.widget.rootComponent.append(this.widget.dropIndicator);
     }
   };
 
-  private _dragEndHandler: UIEventHandler = () => {
+  private readonly _dragEndHandler: UIEventHandler = () => {
     this.widget.clearRaf();
     this.widget.hide(true);
   };
 
-  private _dragMoveHandler: UIEventHandler = ctx => {
+  private readonly _dragMoveHandler: UIEventHandler = ctx => {
     if (
       this.widget.isHoverDragHandleVisible ||
       this.widget.isTopLevelDragHandleVisible
@@ -104,7 +104,7 @@ export class DragEventWatcher {
   /**
    * When start dragging, should set dragging elements and create drag preview
    */
-  private _dragStartHandler: UIEventHandler = ctx => {
+  private readonly _dragStartHandler: UIEventHandler = ctx => {
     const state = ctx.get('dndState');
     // If not click left button to start dragging, should do nothing
     const { button } = state.raw;
@@ -115,14 +115,14 @@ export class DragEventWatcher {
     return this._onDragStart(state);
   };
 
-  private _dropHandler = (context: UIEventStateContext) => {
+  private readonly _dropHandler = (context: UIEventStateContext) => {
     this._onDrop(context);
     this._std.selection.setGroup('gfx', []);
     this.widget.clearRaf();
     this.widget.hide(true);
   };
 
-  private _onDragMove = (state: DndEventState) => {
+  private readonly _onDragMove = (state: DndEventState) => {
     this.widget.clearRaf();
 
     this.widget.rafID = requestAnimationFrame(() => {
@@ -132,7 +132,7 @@ export class DragEventWatcher {
     return true;
   };
 
-  private _onDragStart = (state: DndEventState) => {
+  private readonly _onDragStart = (state: DndEventState) => {
     // Get current hover block element by path
     const hoverBlock = this.widget.anchorBlockComponent.peek();
     if (!hoverBlock) return false;
@@ -234,7 +234,7 @@ export class DragEventWatcher {
     return true;
   };
 
-  private _onDrop = (context: UIEventStateContext) => {
+  private readonly _onDrop = (context: UIEventStateContext) => {
     const state = context.get('dndState');
 
     const event = state.raw;
@@ -280,7 +280,7 @@ export class DragEventWatcher {
     this._deserializeData(state, parent.id, index).catch(console.error);
   };
 
-  private _onDropNoteOnNote = (
+  private readonly _onDropNoteOnNote = (
     snapshot: SliceSnapshot,
     parent?: string,
     index?: number
@@ -305,7 +305,7 @@ export class DragEventWatcher {
       .catch(console.error);
   };
 
-  private _onDropOnEdgelessCanvas = (context: UIEventStateContext) => {
+  private readonly _onDropOnEdgelessCanvas = (context: UIEventStateContext) => {
     const state = context.get('dndState');
     // If drop a note, should do nothing
     const snapshot = this._deserializeSnapshot(state);
@@ -405,7 +405,7 @@ export class DragEventWatcher {
     this._deserializeData(state, newNoteId).catch(console.error);
   };
 
-  private _startDragging = (
+  private readonly _startDragging = (
     blocks: BlockComponent[],
     state: DndEventState,
     dragPreviewEl?: HTMLElement,
@@ -435,7 +435,7 @@ export class DragEventWatcher {
     this._serializeData(slice, state);
   };
 
-  private _trackLinkedDocCreated = (id: string) => {
+  private readonly _trackLinkedDocCreated = (id: string) => {
     const isNewBlock = !this._std.doc.hasBlock(id);
     if (!isNewBlock) {
       return;

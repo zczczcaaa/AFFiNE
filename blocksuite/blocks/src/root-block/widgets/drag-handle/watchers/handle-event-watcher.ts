@@ -6,14 +6,14 @@ import {
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 
 export class HandleEventWatcher {
-  private _onDragHandlePointerDown = () => {
+  private readonly _onDragHandlePointerDown = () => {
     if (!this.widget.isHoverDragHandleVisible || !this.widget.anchorBlockId)
       return;
 
     this.widget.dragHoverRect = this.widget.draggingAreaRect.value;
   };
 
-  private _onDragHandlePointerEnter = () => {
+  private readonly _onDragHandlePointerEnter = () => {
     const container = this.widget.dragHandleContainer;
     const grabber = this.widget.dragHandleGrabber;
     if (!container || !grabber) return;
@@ -42,7 +42,7 @@ export class HandleEventWatcher {
     }
   };
 
-  private _onDragHandlePointerLeave = () => {
+  private readonly _onDragHandlePointerLeave = () => {
     this.widget.isDragHandleHovered = false;
     this.widget.dragHoverRect = null;
 
@@ -53,7 +53,7 @@ export class HandleEventWatcher {
     this.widget.pointerEventWatcher.showDragHandleOnHoverBlock();
   };
 
-  private _onDragHandlePointerUp = () => {
+  private readonly _onDragHandlePointerUp = () => {
     if (!this.widget.isHoverDragHandleVisible) return;
     this.widget.dragHoverRect = null;
   };

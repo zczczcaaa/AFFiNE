@@ -155,14 +155,14 @@ export class BlockModel<
   Props extends object = object,
   PropsSignal extends object = SignaledProps<Props>,
 > extends MagicProps()<PropsSignal> {
-  private _children = signal<string[]>([]);
+  private readonly _children = signal<string[]>([]);
 
   /**
    * @deprecated use doc instead
    */
   page!: Doc;
 
-  private _childModels = computed(() => {
+  private readonly _childModels = computed(() => {
     const value: BlockModel[] = [];
     this._children.value.forEach(id => {
       const block = this.page.getBlock$(id);
@@ -173,9 +173,9 @@ export class BlockModel<
     return value;
   });
 
-  private _onCreated: Disposable;
+  private readonly _onCreated: Disposable;
 
-  private _onDeleted: Disposable;
+  private readonly _onDeleted: Disposable;
 
   childMap = computed(() =>
     this._children.value.reduce((map, id, index) => {

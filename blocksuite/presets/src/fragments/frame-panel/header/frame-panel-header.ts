@@ -105,14 +105,14 @@ export const AFFINE_FRAME_PANEL_HEADER = 'affine-frame-panel-header';
 export class FramePanelHeader extends WithDisposable(LitElement) {
   static override styles = styles;
 
-  private _clearEdgelessDisposables = () => {
+  private readonly _clearEdgelessDisposables = () => {
     this._edgelessDisposables?.dispose();
     this._edgelessDisposables = null;
   };
 
   private _edgelessDisposables: DisposableGroup | null = null;
 
-  private _enterPresentationMode = () => {
+  private readonly _enterPresentationMode = () => {
     if (!this._edgelessRootService) {
       this.editorHost.std.get(DocModeProvider).setEditorMode('edgeless');
     }
@@ -131,7 +131,7 @@ export class FramePanelHeader extends WithDisposable(LitElement) {
 
   private _navigatorMode: NavigatorMode = 'fit';
 
-  private _setEdgelessDisposables = () => {
+  private readonly _setEdgelessDisposables = () => {
     if (!this._edgelessRootService) return;
 
     this._clearEdgelessDisposables();

@@ -151,7 +151,7 @@ export class MindmapElementModel extends GfxGroupLikeElementModel<MindmapElement
 
   private _queuedLayout = false;
 
-  private _stashedNode = new Set<string>();
+  private readonly _stashedNode = new Set<string>();
 
   private _tree!: MindmapRoot;
 

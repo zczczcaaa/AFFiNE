@@ -57,9 +57,9 @@ export function onMenuOpen(listener: MenuOpenListener) {
 export class Menu {
   private _cleanupFns: Array<() => void> = [];
 
-  private _currentFocused$ = signal<MenuFocusable>();
+  private readonly _currentFocused$ = signal<MenuFocusable>();
 
-  private _subMenu$ = signal<Menu>();
+  private readonly _subMenu$ = signal<Menu>();
 
   closed = false;
 

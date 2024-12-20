@@ -43,7 +43,7 @@ export class EdgelessBrushToolButton extends EdgelessToolbarToolMixin(
     }
   `;
 
-  private _color$ = computed(() => {
+  private readonly _color$ = computed(() => {
     const theme = this.edgeless.std.get(ThemeProvider).theme$.value;
     return this.edgeless.std
       .get(ThemeProvider)

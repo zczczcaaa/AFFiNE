@@ -84,18 +84,18 @@ export class AffineAIPanelWidget extends WidgetComponent {
 
   private _answer: string | null = null;
 
-  private _cancelCallback = () => {
+  private readonly _cancelCallback = () => {
     this.focus();
   };
 
-  private _clearDiscardModal = () => {
+  private readonly _clearDiscardModal = () => {
     if (this._discardModalAbort) {
       this._discardModalAbort.abort();
       this._discardModalAbort = null;
     }
   };
 
-  private _clickOutside = () => {
+  private readonly _clickOutside = () => {
     switch (this.state) {
       case 'hidden':
         return;
@@ -112,21 +112,21 @@ export class AffineAIPanelWidget extends WidgetComponent {
     }
   };
 
-  private _discardCallback = () => {
+  private readonly _discardCallback = () => {
     this.hide();
     this.config?.discardCallback?.();
   };
 
   private _discardModalAbort: AbortController | null = null;
 
-  private _inputFinish = (text: string) => {
+  private readonly _inputFinish = (text: string) => {
     this._inputText = text;
     this.generate();
   };
 
   private _inputText: string | null = null;
 
-  private _onDocumentClick = (e: MouseEvent) => {
+  private readonly _onDocumentClick = (e: MouseEvent) => {
     if (
       this.state !== 'hidden' &&
       e.target !== this &&
@@ -139,7 +139,7 @@ export class AffineAIPanelWidget extends WidgetComponent {
     return false;
   };
 
-  private _onKeyDown = (event: KeyboardEvent) => {
+  private readonly _onKeyDown = (event: KeyboardEvent) => {
     event.stopPropagation();
     const { state } = this;
     if (state !== 'generating' && state !== 'input') {
@@ -157,7 +157,7 @@ export class AffineAIPanelWidget extends WidgetComponent {
     }
   };
 
-  private _resetAbortController = () => {
+  private readonly _resetAbortController = () => {
     if (this.state === 'generating') {
       this._abortController.abort();
     }

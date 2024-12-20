@@ -15,7 +15,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
 
   private _isComposing = false;
 
-  private _isRangeCompletelyInRoot = (range: Range) => {
+  private readonly _isRangeCompletelyInRoot = (range: Range) => {
     if (range.commonAncestorContainer.ownerDocument !== document) return false;
 
     const rootElement = this.editor.rootElement;
@@ -38,7 +38,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
     }
   };
 
-  private _onBeforeInput = (event: InputEvent) => {
+  private readonly _onBeforeInput = (event: InputEvent) => {
     const range = this.editor.rangeService.getNativeRange();
     if (
       this.editor.isReadonly ||
@@ -119,7 +119,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
     this.editor.slots.inputting.emit();
   };
 
-  private _onClick = (event: MouseEvent) => {
+  private readonly _onClick = (event: MouseEvent) => {
     // select embed element when click on it
     if (event.target instanceof Node && isInEmbedElement(event.target)) {
       const selection = document.getSelection();
@@ -138,7 +138,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
     }
   };
 
-  private _onCompositionEnd = async (event: CompositionEvent) => {
+  private readonly _onCompositionEnd = async (event: CompositionEvent) => {
     this._isComposing = false;
     if (!this.editor.rootElement.isConnected) return;
 
@@ -179,7 +179,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
     this.editor.slots.inputting.emit();
   };
 
-  private _onCompositionStart = () => {
+  private readonly _onCompositionStart = () => {
     this._isComposing = true;
     // embeds is not editable and it will break IME
     const embeds = this.editor.rootElement.querySelectorAll(
@@ -197,7 +197,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
     }
   };
 
-  private _onCompositionUpdate = () => {
+  private readonly _onCompositionUpdate = () => {
     if (!this.editor.rootElement.isConnected) return;
 
     const range = this.editor.rangeService.getNativeRange();
@@ -211,7 +211,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
     this.editor.slots.inputting.emit();
   };
 
-  private _onKeyDown = (event: KeyboardEvent) => {
+  private readonly _onKeyDown = (event: KeyboardEvent) => {
     const inlineRange = this.editor.getInlineRange();
     if (!inlineRange) return;
 
@@ -270,7 +270,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
     }
   };
 
-  private _onSelectionChange = () => {
+  private readonly _onSelectionChange = () => {
     const rootElement = this.editor.rootElement;
     const previousInlineRange = this.editor.getInlineRange();
     if (this._isComposing) {

@@ -60,7 +60,7 @@ export class RichText extends WithDisposable(ShadowlessElement) {
 
   private _inlineEditor: AffineInlineEditor | null = null;
 
-  private _onCopy = (e: ClipboardEvent) => {
+  private readonly _onCopy = (e: ClipboardEvent) => {
     const inlineEditor = this.inlineEditor;
     if (!inlineEditor) return;
 
@@ -77,7 +77,7 @@ export class RichText extends WithDisposable(ShadowlessElement) {
     e.stopPropagation();
   };
 
-  private _onCut = (e: ClipboardEvent) => {
+  private readonly _onCut = (e: ClipboardEvent) => {
     const inlineEditor = this.inlineEditor;
     if (!inlineEditor) return;
 
@@ -99,7 +99,7 @@ export class RichText extends WithDisposable(ShadowlessElement) {
     e.stopPropagation();
   };
 
-  private _onPaste = (e: ClipboardEvent) => {
+  private readonly _onPaste = (e: ClipboardEvent) => {
     const inlineEditor = this.inlineEditor;
     if (!inlineEditor) return;
 
@@ -121,14 +121,18 @@ export class RichText extends WithDisposable(ShadowlessElement) {
     e.stopPropagation();
   };
 
-  private _onStackItemAdded = (event: { stackItem: RichTextStackItem }) => {
+  private readonly _onStackItemAdded = (event: {
+    stackItem: RichTextStackItem;
+  }) => {
     const inlineRange = this.inlineEditor?.getInlineRange();
     if (inlineRange) {
       event.stackItem.meta.set('richtext-v-range', inlineRange);
     }
   };
 
-  private _onStackItemPopped = (event: { stackItem: RichTextStackItem }) => {
+  private readonly _onStackItemPopped = (event: {
+    stackItem: RichTextStackItem;
+  }) => {
     const inlineRange = event.stackItem.meta.get('richtext-v-range');
     if (inlineRange && this.inlineEditor?.isValidInlineRange(inlineRange)) {
       this.inlineEditor?.setInlineRange(inlineRange);

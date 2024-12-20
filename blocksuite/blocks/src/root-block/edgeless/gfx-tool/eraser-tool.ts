@@ -30,9 +30,9 @@ export class EraserTool extends BaseTool {
 
   private _eraserPoints: IVec[] = [];
 
-  private _eraseTargets = new Set<BlockSuite.EdgelessModel>();
+  private readonly _eraseTargets = new Set<BlockSuite.EdgelessModel>();
 
-  private _loop = () => {
+  private readonly _loop = () => {
     const now = Date.now();
     const elapsed = now - this._timestamp;
 
@@ -62,7 +62,7 @@ export class EraserTool extends BaseTool {
     this._timer = requestAnimationFrame(this._loop);
   };
 
-  private _overlay = new EraserOverlay(this.gfx);
+  private readonly _overlay = new EraserOverlay(this.gfx);
 
   private _prevEraserPoint: IVec = [0, 0];
 

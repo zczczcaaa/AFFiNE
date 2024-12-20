@@ -7,7 +7,7 @@ import type { BlockOptions, YBlock } from './types.js';
 export * from './types.js';
 
 export class Block {
-  private _syncController: SyncController;
+  private readonly _syncController: SyncController;
 
   blockViewType: BlockViewType = BlockViewType.Display;
 

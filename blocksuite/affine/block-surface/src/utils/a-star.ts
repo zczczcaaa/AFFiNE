@@ -33,24 +33,27 @@ function pointAlmostEqual(a: IVec3, b: IVec3): boolean {
 }
 
 export class AStarRunner {
-  private _cameFrom = new Map<IVec3, { from: IVec3[]; indexs: number[] }>();
+  private readonly _cameFrom = new Map<
+    IVec3,
+    { from: IVec3[]; indexs: number[] }
+  >();
 
   private _complete = false;
 
-  private _costSoFar = new Map<IVec3, number[]>();
+  private readonly _costSoFar = new Map<IVec3, number[]>();
 
   private _current: IVec3 | null = null;
 
-  private _diagonalCount = new Map<IVec3, number[]>();
+  private readonly _diagonalCount = new Map<IVec3, number[]>();
 
   private _frontier!: PriorityQueue<
     IVec3,
     [diagonalCount: number, pointPriority: number, distCost: number]
   >;
 
-  private _graph: Graph<IVec3>;
+  private readonly _graph: Graph<IVec3>;
 
-  private _pointPriority = new Map<IVec3, number[]>();
+  private readonly _pointPriority = new Map<IVec3, number[]>();
 
   get path() {
     const result: IVec3[] = [];
@@ -72,9 +75,9 @@ export class AStarRunner {
 
   constructor(
     points: IVec3[],
-    private _sp: IVec3,
-    private _ep: IVec3,
-    private _originalSp: IVec3,
+    private readonly _sp: IVec3,
+    private readonly _ep: IVec3,
+    private readonly _originalSp: IVec3,
     private _originalEp: IVec3,
     blocks: Bound[] = [],
     expandBlocks: Bound[] = []

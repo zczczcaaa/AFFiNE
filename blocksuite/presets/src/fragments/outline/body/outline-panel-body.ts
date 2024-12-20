@@ -120,7 +120,7 @@ export class OutlinePanelBody extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private _activeHeadingId$ = signal<string | null>(null);
+  private readonly _activeHeadingId$ = signal<string | null>(null);
 
   private _changedFlag = false;
 

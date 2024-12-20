@@ -24,7 +24,7 @@ export class AffineCodeToolbarWidget extends WidgetComponent<
 
   private _isActivated = false;
 
-  private _setHoverController = () => {
+  private readonly _setHoverController = () => {
     this._hoverController = null;
     this._hoverController = new HoverController(
       this,

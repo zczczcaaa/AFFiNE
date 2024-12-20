@@ -60,15 +60,15 @@ export class MobileKanbanGroup extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private clickAddCard = () => {
+  private readonly clickAddCard = () => {
     this.view.addCard('end', this.group.key);
   };
 
-  private clickAddCardInStart = () => {
+  private readonly clickAddCardInStart = () => {
     this.view.addCard('start', this.group.key);
   };
 
-  private clickGroupOptions = (e: MouseEvent) => {
+  private readonly clickGroupOptions = (e: MouseEvent) => {
     const ele = e.currentTarget as HTMLElement;
     popFilterableSimpleMenu(popupTargetFromElement(ele), [
       menu.group({

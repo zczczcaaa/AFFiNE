@@ -18,7 +18,7 @@ import { ClipboardAdapter } from './adapter.js';
 import { copyMiddleware, pasteMiddleware } from './middlewares/index.js';
 
 export class PageClipboard {
-  private _copySelected = (onCopy?: () => void) => {
+  private readonly _copySelected = (onCopy?: () => void) => {
     return this._std.command
       .chain()
       .with({ onCopy })

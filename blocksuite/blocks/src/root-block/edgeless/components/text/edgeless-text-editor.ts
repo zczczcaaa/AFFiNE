@@ -69,7 +69,7 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
 
   private _keeping = false;
 
-  private _updateRect = () => {
+  private readonly _updateRect = () => {
     const edgeless = this.edgeless;
     const element = this.element;
 

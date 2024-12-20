@@ -40,7 +40,10 @@ export class GfxElementModelView<
 {
   static type: string;
 
-  private _handlers = new Map<keyof EventsHandlerMap, ((evt: any) => void)[]>();
+  private readonly _handlers = new Map<
+    keyof EventsHandlerMap,
+    ((evt: any) => void)[]
+  >();
 
   private _isConnected = true;
 

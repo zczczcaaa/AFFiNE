@@ -14,8 +14,8 @@ export class MatcherCreator<Data, Type extends TypeInstance = TypeInstance> {
 
 export class Matcher<Data, Type extends TypeInstance = TypeInstance> {
   constructor(
-    private list: MatcherData<Data, Type>[],
-    private _match: (type: Type, target: TypeInstance) => boolean = (
+    private readonly list: MatcherData<Data, Type>[],
+    private readonly _match: (type: Type, target: TypeInstance) => boolean = (
       type,
       target
     ) => typeSystem.unify(target, type)

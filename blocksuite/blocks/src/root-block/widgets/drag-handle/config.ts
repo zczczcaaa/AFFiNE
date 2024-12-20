@@ -31,7 +31,7 @@ export type DropResult = {
 };
 
 export class DragHandleOptionsRunner {
-  private optionMap = new Map<DragHandleOption, number>();
+  private readonly optionMap = new Map<DragHandleOption, number>();
 
   get options(): DragHandleOption[] {
     return Array.from(this.optionMap.keys());

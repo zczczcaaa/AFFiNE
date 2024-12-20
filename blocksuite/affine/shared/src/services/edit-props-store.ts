@@ -78,9 +78,9 @@ function customizer(_target: unknown, source: unknown) {
 export class EditPropsStore extends LifeCycleWatcher {
   static override key = 'EditPropsStore';
 
-  private _disposables = new DisposableGroup();
+  private readonly _disposables = new DisposableGroup();
 
-  private innerProps$: Signal<DeepPartial<LastProps>> = signal({});
+  private readonly innerProps$: Signal<DeepPartial<LastProps>> = signal({});
 
   lastProps$: Signal<LastProps>;
 

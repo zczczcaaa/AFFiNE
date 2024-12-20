@@ -34,7 +34,7 @@ export const SurfaceBlockSchema = defineBlockSchema({
 export type SurfaceMiddleware = (surface: SurfaceBlockModel) => () => void;
 
 export class SurfaceBlockModel extends BaseSurfaceModel {
-  private _disposables: DisposableGroup = new DisposableGroup();
+  private readonly _disposables: DisposableGroup = new DisposableGroup();
 
   override _init() {
     this._extendElement(elementsCtorMap);

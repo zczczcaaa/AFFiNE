@@ -63,14 +63,14 @@ export class DataViewRenderer extends SignalWatcher(
     }
   `;
 
-  private _view = createRef<{
+  private readonly _view = createRef<{
     expose: DataViewInstance;
   }>();
 
   @property({ attribute: false })
   accessor config!: DataViewRendererConfig;
 
-  private currentViewId$ = computed(() => {
+  private readonly currentViewId$ = computed(() => {
     return this.config.dataSource.viewManager.currentViewId$.value;
   });
 
@@ -218,7 +218,7 @@ declare global {
 }
 
 export class DataView {
-  private _ref = createRef<DataViewRenderer>();
+  private readonly _ref = createRef<DataViewRenderer>();
 
   get expose() {
     return this._ref.value?.view?.expose;

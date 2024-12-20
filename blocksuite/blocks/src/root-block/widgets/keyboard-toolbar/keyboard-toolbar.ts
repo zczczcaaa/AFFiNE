@@ -90,7 +90,7 @@ export class AffineKeyboardToolbar extends SignalWatcher(
 
   private readonly _path$ = signal<number[]>([]);
 
-  private scrollCurrentBlockIntoView = () => {
+  private readonly scrollCurrentBlockIntoView = () => {
     const { std } = this.rootComponent;
     std.command
       .chain()

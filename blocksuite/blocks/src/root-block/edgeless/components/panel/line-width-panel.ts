@@ -107,7 +107,10 @@ export class EdgelessLineWidthPanel extends WithDisposable(LitElement) {
 
   private _dragConfig: DragConfig | null = null;
 
-  private _getDragHandlePosition = (e: PointerEvent, config: DragConfig) => {
+  private readonly _getDragHandlePosition = (
+    e: PointerEvent,
+    config: DragConfig
+  ) => {
     const x = e.clientX;
     const { boundLeft, bottomLineWidth, stepWidth, containerWidth } = config;
 
@@ -128,7 +131,7 @@ export class EdgelessLineWidthPanel extends WithDisposable(LitElement) {
     return dragHandlerPosition;
   };
 
-  private _onPointerDown = (e: PointerEvent) => {
+  private readonly _onPointerDown = (e: PointerEvent) => {
     e.preventDefault();
     if (this.disable) return;
     const { left, width } = this._lineWidthPanel.getBoundingClientRect();
@@ -142,7 +145,7 @@ export class EdgelessLineWidthPanel extends WithDisposable(LitElement) {
     this._onPointerMove(e);
   };
 
-  private _onPointerMove = (e: PointerEvent) => {
+  private readonly _onPointerMove = (e: PointerEvent) => {
     e.preventDefault();
     if (!this._dragConfig) return;
     const dragHandlerPosition = this._getDragHandlePosition(
@@ -154,7 +157,7 @@ export class EdgelessLineWidthPanel extends WithDisposable(LitElement) {
     this._updateIconsColor();
   };
 
-  private _onPointerOut = (e: PointerEvent) => {
+  private readonly _onPointerOut = (e: PointerEvent) => {
     // If the pointer is out of the line width panel
     // Stop dragging and update the selected size by nearest size.
     e.preventDefault();
@@ -167,7 +170,7 @@ export class EdgelessLineWidthPanel extends WithDisposable(LitElement) {
     this._dragConfig = null;
   };
 
-  private _onPointerUp = (e: PointerEvent) => {
+  private readonly _onPointerUp = (e: PointerEvent) => {
     e.preventDefault();
     if (!this._dragConfig) return;
     const dragHandlerPosition = this._getDragHandlePosition(
@@ -178,7 +181,7 @@ export class EdgelessLineWidthPanel extends WithDisposable(LitElement) {
     this._dragConfig = null;
   };
 
-  private _updateIconsColor = () => {
+  private readonly _updateIconsColor = () => {
     if (!this._dragHandle.offsetParent) {
       requestConnectedFrame(() => this._updateIconsColor(), this);
       return;

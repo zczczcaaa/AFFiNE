@@ -23,7 +23,7 @@ export class EmbedOptionService
   extends Extension
   implements EmbedOptionProvider
 {
-  private _embedBlockRegistry = new Set<EmbedOptions>();
+  private readonly _embedBlockRegistry = new Set<EmbedOptions>();
 
   getEmbedBlockOptions = (url: string): EmbedOptions | null => {
     const entries = this._embedBlockRegistry.entries();

@@ -140,7 +140,7 @@ export class KanbanDragController implements ReactiveController {
     return scrollContainer;
   }
 
-  constructor(private host: DataViewKanban) {
+  constructor(private readonly host: DataViewKanban) {
     this.host.addController(this);
   }
 

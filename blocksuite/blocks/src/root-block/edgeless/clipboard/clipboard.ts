@@ -123,9 +123,9 @@ interface BlockConfig {
 }
 
 export class EdgelessClipboardController extends PageClipboard {
-  private _blockConfigs: BlockConfig[] = [];
+  private readonly _blockConfigs: BlockConfig[] = [];
 
-  private _initEdgelessClipboard = () => {
+  private readonly _initEdgelessClipboard = () => {
     this.host.handleEvent(
       'copy',
       ctx => {
@@ -156,7 +156,7 @@ export class EdgelessClipboardController extends PageClipboard {
     );
   };
 
-  private _onCopy = async (
+  private readonly _onCopy = async (
     _context: UIEventStateContext,
     surfaceSelection: SurfaceSelection[]
   ) => {
@@ -184,7 +184,7 @@ export class EdgelessClipboardController extends PageClipboard {
     });
   };
 
-  private _onCut = async (_context: UIEventStateContext) => {
+  private readonly _onCut = async (_context: UIEventStateContext) => {
     const { surfaceSelections, selectedElements } = this.selectionManager;
 
     if (selectedElements.length === 0) return;
@@ -214,7 +214,7 @@ export class EdgelessClipboardController extends PageClipboard {
     });
   };
 
-  private _onPaste = async (_context: UIEventStateContext) => {
+  private readonly _onPaste = async (_context: UIEventStateContext) => {
     if (
       document.activeElement instanceof HTMLInputElement ||
       document.activeElement instanceof HTMLTextAreaElement

@@ -239,7 +239,8 @@ export class SurfaceRefBlockComponent extends BlockComponent<
 
   private _previewDoc: Doc | null = null;
 
-  private _previewSpec = SpecProvider.getInstance().getSpec('edgeless:preview');
+  private readonly _previewSpec =
+    SpecProvider.getInstance().getSpec('edgeless:preview');
 
   private _referencedModel: BlockSuite.EdgelessModel | null = null;
 
@@ -459,7 +460,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<
     class FrameGroupViewWatcher extends LifeCycleWatcher {
       static override readonly key = 'surface-ref-group-view-watcher';
 
-      private _disposable = new DisposableGroup();
+      private readonly _disposable = new DisposableGroup();
 
       override mounted() {
         const edgelessService = this.std.get(EdgelessRootService);

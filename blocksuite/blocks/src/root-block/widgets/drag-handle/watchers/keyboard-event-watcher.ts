@@ -3,7 +3,7 @@ import type { UIEventHandler } from '@blocksuite/block-std';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 
 export class KeyboardEventWatcher {
-  private _keyboardHandler: UIEventHandler = ctx => {
+  private readonly _keyboardHandler: UIEventHandler = ctx => {
     if (!this.widget.dragging || !this.widget.dragPreview) {
       return;
     }

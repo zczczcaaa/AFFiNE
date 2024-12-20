@@ -89,7 +89,7 @@ export class ReferenceAliasPopup extends SignalWatcher(
     }
   `;
 
-  private _onSave = () => {
+  private readonly _onSave = () => {
     const title = this.title$.value.trim();
     if (!title) {
       this.remove();
@@ -103,7 +103,7 @@ export class ReferenceAliasPopup extends SignalWatcher(
     this.remove();
   };
 
-  private _updateTitle = (e: InputEvent) => {
+  private readonly _updateTitle = (e: InputEvent) => {
     const target = e.target as HTMLInputElement;
     const value = target.value;
     this.title$.value = value;

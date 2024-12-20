@@ -218,7 +218,7 @@ export class ASTWalker<ONode extends object, TNode extends object | never> {
 
   private _leave: WalkerFn<ONode, TNode> | undefined;
 
-  private _visit = async (o: NodeProps<ONode>) => {
+  private readonly _visit = async (o: NodeProps<ONode>) => {
     if (!o.node) return;
     this.context._skipChildrenNum = 0;
     this.context._skip = false;
@@ -277,7 +277,7 @@ export class ASTWalker<ONode extends object, TNode extends object | never> {
     }
   };
 
-  private context: ASTWalkerContext<TNode>;
+  private readonly context: ASTWalkerContext<TNode>;
 
   setEnter = (fn: WalkerFn<ONode, TNode>) => {
     this._enter = fn;

@@ -124,7 +124,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
     }
   `;
 
-  private _style$ = computed(() => {
+  private readonly _style$ = computed(() => {
     const { style } =
       this.edgeless.std.get(EditPropsStore).lastProps$.value.mindmap;
     return style;

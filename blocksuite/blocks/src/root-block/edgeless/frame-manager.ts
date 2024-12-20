@@ -37,7 +37,7 @@ export class FrameOverlay extends Overlay {
 
   private _innerElements = new Set<GfxModel>();
 
-  private _prevXYWH: SerializedXYWH | null = null;
+  private readonly _prevXYWH: SerializedXYWH | null = null;
 
   private get _frameManager() {
     return this.gfx.std.get(
@@ -132,7 +132,7 @@ export class FrameOverlay extends Overlay {
 export class EdgelessFrameManager extends GfxExtension {
   static override key = 'frame-manager';
 
-  private _disposable = new DisposableGroup();
+  private readonly _disposable = new DisposableGroup();
 
   /**
    * Get all sorted frames by presentation orderer,

@@ -59,7 +59,7 @@ export class KanbanCell extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private _cell = createRef<DataViewCellLifeCycle>();
+  private readonly _cell = createRef<DataViewCellLifeCycle>();
 
   selectCurrentCell = (editing: boolean) => {
     const selectionView = this.closest(

@@ -45,7 +45,7 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
 
   private readonly _linkedDocGroup$ = signal<LinkedMenuGroup[]>([]);
 
-  private _renderGroup = (group: LinkedMenuGroup) => {
+  private readonly _renderGroup = (group: LinkedMenuGroup) => {
     let items = resolveSignal(group.items);
 
     const isOverflow = !!group.maxDisplay && items.length > group.maxDisplay;
@@ -90,7 +90,7 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
     </button>`;
   };
 
-  private _scrollInputToTop = () => {
+  private readonly _scrollInputToTop = () => {
     const { inlineEditor } = this.context;
     const { scrollContainer, scrollTopOffset } = this.context.config.mobile;
 

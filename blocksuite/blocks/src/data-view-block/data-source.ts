@@ -24,9 +24,12 @@ export type BlockQueryDataSourceConfig = {
 
 // @ts-expect-error FIXME: ts error
 export class BlockQueryDataSource extends DataSourceBase {
-  private columnMetaMap = new Map<string, PropertyMetaConfig<any, any, any>>();
+  private readonly columnMetaMap = new Map<
+    string,
+    PropertyMetaConfig<any, any, any>
+  >();
 
-  private meta: BlockMeta;
+  private readonly meta: BlockMeta;
 
   blockMap = new Map<string, Block>();
 
@@ -60,8 +63,8 @@ export class BlockQueryDataSource extends DataSourceBase {
   }
 
   constructor(
-    private host: EditorHost,
-    private block: DataViewBlockModel,
+    private readonly host: EditorHost,
+    private readonly block: DataViewBlockModel,
     config: BlockQueryDataSourceConfig
   ) {
     super();

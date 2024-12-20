@@ -100,7 +100,7 @@ export class SurfaceBlockComponent extends BlockComponent<
 
   private _cachedViewport = new Bound();
 
-  private _initThemeObserver = () => {
+  private readonly _initThemeObserver = () => {
     const theme = this.std.get(ThemeProvider);
     this.disposables.add(theme.theme$.subscribe(() => this.requestUpdate()));
   };

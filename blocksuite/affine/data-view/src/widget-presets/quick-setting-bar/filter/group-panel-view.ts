@@ -184,7 +184,7 @@ export class FilterGroupView extends SignalWatcher(ShadowlessElement) {
     }
   `;
 
-  private _addNew = (e: MouseEvent) => {
+  private readonly _addNew = (e: MouseEvent) => {
     if (this.isMaxDepth) {
       this.onChange({
         ...this.filterGroup.value,
@@ -202,7 +202,7 @@ export class FilterGroupView extends SignalWatcher(ShadowlessElement) {
     });
   };
 
-  private _selectOp = (event: MouseEvent) => {
+  private readonly _selectOp = (event: MouseEvent) => {
     popFilterableSimpleMenu(
       popupTargetFromElement(event.currentTarget as HTMLElement),
       [
@@ -228,7 +228,7 @@ export class FilterGroupView extends SignalWatcher(ShadowlessElement) {
     );
   };
 
-  private _setFilter = (index: number, filter: Filter) => {
+  private readonly _setFilter = (index: number, filter: Filter) => {
     this.onChange({
       ...this.filterGroup.value,
       conditions: this.filterGroup.value.conditions.map((v, i) =>
@@ -237,7 +237,7 @@ export class FilterGroupView extends SignalWatcher(ShadowlessElement) {
     });
   };
 
-  private opMap = {
+  private readonly opMap = {
     and: 'And',
     or: 'Or',
   };

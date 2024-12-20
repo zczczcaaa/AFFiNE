@@ -162,7 +162,7 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
 
   private _autoCompleteOverlay!: AutoCompleteOverlay;
 
-  private _onPointerDown = (e: PointerEvent, type: Direction) => {
+  private readonly _onPointerDown = (e: PointerEvent, type: Direction) => {
     const { service } = this.edgeless;
     const viewportRect = service.viewport.boundingClientRect;
     const start = service.viewport.toModelCoord(

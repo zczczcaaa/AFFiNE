@@ -127,7 +127,7 @@ export class AIPanelError extends WithDisposable(LitElement) {
     }
   `;
 
-  private _getResponseGroup = () => {
+  private readonly _getResponseGroup = () => {
     let responseGroup: AIItemGroupConfig[] = [];
     const errorType = this.config.error?.type;
     if (errorType && errorType !== AIErrorType.GeneralNetworkError) {

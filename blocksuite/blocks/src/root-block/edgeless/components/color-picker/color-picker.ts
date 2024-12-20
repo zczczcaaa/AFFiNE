@@ -49,7 +49,7 @@ export class EdgelessColorPicker extends SignalWatcher(
 
   #alphaRect = new DOMRect();
 
-  #editAlpha = (e: InputEvent) => {
+  readonly #editAlpha = (e: InputEvent) => {
     const target = e.target as HTMLInputElement;
     const orignalValue = target.value;
     let value = orignalValue.trim().replace(/[^0-9]/, '');
@@ -71,7 +71,7 @@ export class EdgelessColorPicker extends SignalWatcher(
     this.#pick();
   };
 
-  #editHex = (e: KeyboardEvent) => {
+  readonly #editHex = (e: KeyboardEvent) => {
     e.stopPropagation();
 
     const target = e.target as HTMLInputElement;

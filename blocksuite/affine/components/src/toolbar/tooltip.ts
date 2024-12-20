@@ -125,7 +125,7 @@ export class Tooltip extends LitElement {
 
   private _hoverController!: HoverController;
 
-  private _setUpHoverController = () => {
+  private readonly _setUpHoverController = () => {
     this._hoverController = new HoverController(
       this,
       () => {

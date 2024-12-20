@@ -64,7 +64,7 @@ export class SmoothCorner extends LitElement {
     }
   `;
 
-  private _resizeObserver: ResizeObserver | null = null;
+  private readonly _resizeObserver: ResizeObserver | null = null;
 
   get _path() {
     return getFigmaSquircleSvgPath({

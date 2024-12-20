@@ -140,13 +140,13 @@ export class OutlineViewer extends SignalWatcher(WithDisposable(LitElement)) {
     }
   `;
 
-  private _activeHeadingId$ = signal<string | null>(null);
+  private readonly _activeHeadingId$ = signal<string | null>(null);
 
   private _highlightMaskDisposable = () => {};
 
   private _lockActiveHeadingId = false;
 
-  private _scrollPanel = () => {
+  private readonly _scrollPanel = () => {
     this._activeItem?.scrollIntoView({
       behavior: 'instant',
       block: 'center',

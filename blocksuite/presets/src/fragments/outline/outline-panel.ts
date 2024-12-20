@@ -55,7 +55,7 @@ export const AFFINE_OUTLINE_PANEL = 'affine-outline-panel';
 export class OutlinePanel extends SignalWatcher(WithDisposable(LitElement)) {
   static override styles = styles;
 
-  private _setNoticeVisibility = (visibility: boolean) => {
+  private readonly _setNoticeVisibility = (visibility: boolean) => {
     this._noticeVisible = visibility;
   };
 
@@ -64,12 +64,12 @@ export class OutlinePanel extends SignalWatcher(WithDisposable(LitElement)) {
     enableSorting: false,
   };
 
-  private _toggleNotesSorting = () => {
+  private readonly _toggleNotesSorting = () => {
     this._enableNotesSorting = !this._enableNotesSorting;
     this._updateAndSaveSettings({ enableSorting: this._enableNotesSorting });
   };
 
-  private _toggleShowPreviewIcon = (on: boolean) => {
+  private readonly _toggleShowPreviewIcon = (on: boolean) => {
     this._showPreviewIcon = on;
     this._updateAndSaveSettings({ showIcons: on });
   };

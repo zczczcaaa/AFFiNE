@@ -34,11 +34,11 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
     }
   `;
 
-  private _abortController = new AbortController();
+  private readonly _abortController = new AbortController();
 
   private _remoteColorManager: RemoteColorManager | null = null;
 
-  private _remoteSelections = computed(() => {
+  private readonly _remoteSelections = computed(() => {
     const status = this.doc.awarenessStore.getStates();
     return [...this.std.selection.remoteSelections.entries()].map(
       ([id, selections]) => {
@@ -51,7 +51,7 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
     );
   });
 
-  private _resizeObserver: ResizeObserver = new ResizeObserver(() => {
+  private readonly _resizeObserver: ResizeObserver = new ResizeObserver(() => {
     this.requestUpdate();
   });
 

@@ -139,9 +139,9 @@ export abstract class SingleViewBase<
   ViewData extends DataViewDataType = DataViewDataType,
 > implements SingleView
 {
-  private searchString = signal('');
+  private readonly searchString = signal('');
 
-  private traitMap = new Map<symbol, unknown>();
+  private readonly traitMap = new Map<symbol, unknown>();
 
   data$ = computed(() => {
     return this.dataSource.viewDataGet(this.id) as ViewData | undefined;

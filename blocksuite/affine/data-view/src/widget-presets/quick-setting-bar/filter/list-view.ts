@@ -77,7 +77,7 @@ export class FilterBar extends SignalWatcher(ShadowlessElement) {
     }
   `;
 
-  private _setFilter = (index: number, filter: Filter) => {
+  private readonly _setFilter = (index: number, filter: Filter) => {
     this.onChange({
       ...this.filterGroup.value,
       conditions: this.filterGroup.value.conditions.map((v, i) =>
@@ -86,7 +86,7 @@ export class FilterBar extends SignalWatcher(ShadowlessElement) {
     });
   };
 
-  private addFilter = (e: MouseEvent) => {
+  private readonly addFilter = (e: MouseEvent) => {
     const element = popupTargetFromElement(e.target as HTMLElement);
     popCreateFilter(element, {
       vars: this.vars,
@@ -103,7 +103,7 @@ export class FilterBar extends SignalWatcher(ShadowlessElement) {
     });
   };
 
-  private expandGroup = (position: PopupTarget, i: number) => {
+  private readonly expandGroup = (position: PopupTarget, i: number) => {
     if (this.filterGroup.value.conditions[i]?.type !== 'group') {
       return;
     }

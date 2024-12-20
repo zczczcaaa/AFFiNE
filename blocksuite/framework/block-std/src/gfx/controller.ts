@@ -35,7 +35,7 @@ import { Viewport } from './viewport.js';
 export class GfxController extends LifeCycleWatcher {
   static override key = gfxControllerKey;
 
-  private _disposables: DisposableGroup = new DisposableGroup();
+  private readonly _disposables: DisposableGroup = new DisposableGroup();
 
   private _surface: SurfaceBlockModel | null = null;
 

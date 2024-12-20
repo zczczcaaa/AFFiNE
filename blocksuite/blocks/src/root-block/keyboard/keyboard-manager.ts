@@ -11,7 +11,7 @@ import {
 } from '../../_common/utils/render-linked-doc.js';
 
 export class PageKeyboardManager {
-  private _handleDelete = () => {
+  private readonly _handleDelete = () => {
     const blockSelections = this._currentSelection.filter(sel =>
       sel.is('block')
     );
@@ -117,16 +117,18 @@ export class PageKeyboardManager {
 
     const doc = rootComponent.host.doc;
     const autofill = getTitleFromSelectedModels(selectedModels);
-    void promptDocTitle(rootComponent.host, autofill).then(title => {
-      if (title === null) return;
-      convertSelectedBlocksToLinkedDoc(
-        this.rootComponent.std,
-        doc,
-        draftedModels,
-        title
-      ).catch(console.error);
-      notifyDocCreated(rootComponent.host, doc);
-    });
+    promptDocTitle(rootComponent.host, autofill)
+      .then(title => {
+        if (title === null) return;
+        convertSelectedBlocksToLinkedDoc(
+          this.rootComponent.std,
+          doc,
+          draftedModels,
+          title
+        ).catch(console.error);
+        notifyDocCreated(rootComponent.host, doc);
+      })
+      .catch(console.error);
   }
 
   private _deleteBlocksBySelection(selections: BlockSelection[]) {

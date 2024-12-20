@@ -64,16 +64,19 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
   @query('.edgeless-background')
   accessor background!: HTMLDivElement;
 
-  private _refreshLayerViewport = requestThrottledConnectedFrame(() => {
-    const { zoom, translateX, translateY } = this.service.viewport;
-    const { gap } = getBackgroundGrid(zoom, true);
+  private readonly _refreshLayerViewport = requestThrottledConnectedFrame(
+    () => {
+      const { zoom, translateX, translateY } = this.service.viewport;
+      const { gap } = getBackgroundGrid(zoom, true);
 
-    this.background.style.setProperty(
-      'background-position',
-      `${translateX}px ${translateY}px`
-    );
-    this.background.style.setProperty('background-size', `${gap}px ${gap}px`);
-  }, this);
+      this.background.style.setProperty(
+        'background-position',
+        `${translateX}px ${translateY}px`
+      );
+      this.background.style.setProperty('background-size', `${gap}px ${gap}px`);
+    },
+    this
+  );
 
   private _resizeObserver: ResizeObserver | null = null;
 

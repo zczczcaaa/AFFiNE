@@ -45,7 +45,7 @@ export class EdgelessScalePanel extends LitElement {
     }
   `;
 
-  private _onKeydown = (e: KeyboardEvent) => {
+  private readonly _onKeydown = (e: KeyboardEvent) => {
     e.stopPropagation();
 
     if (e.key === 'Enter' && !e.isComposing) {

@@ -16,7 +16,7 @@ type JsonAreaData = string[][];
 const TEXT = 'text/plain';
 
 export class TableClipboardController implements ReactiveController {
-  private _onCopy = (
+  private readonly _onCopy = (
     tableSelection: TableViewSelectionWithType,
     isCut = false
   ) => {
@@ -72,11 +72,11 @@ export class TableClipboardController implements ReactiveController {
     return true;
   };
 
-  private _onCut = (tableSelection: TableViewSelectionWithType) => {
+  private readonly _onCut = (tableSelection: TableViewSelectionWithType) => {
     this._onCopy(tableSelection, true);
   };
 
-  private _onPaste = async (_context: UIEventStateContext) => {
+  private readonly _onPaste = async (_context: UIEventStateContext) => {
     const event = _context.get('clipboardState').raw;
     event.stopPropagation();
     const view = this.host;

@@ -15,7 +15,7 @@ export class RangeBinding {
     | ((event: CompositionEvent) => Promise<void>)
     | null = null;
 
-  private _computePath = (modelId: string) => {
+  private readonly _computePath = (modelId: string) => {
     const block = this.host.std.doc.getBlock(modelId)?.model;
     if (!block) return [];
 
@@ -29,7 +29,7 @@ export class RangeBinding {
     return path;
   };
 
-  private _onBeforeInput = (event: InputEvent) => {
+  private readonly _onBeforeInput = (event: InputEvent) => {
     const selection = this.selectionManager.find('text');
     if (!selection) return;
 
@@ -85,7 +85,7 @@ export class RangeBinding {
     this.selectionManager.setGroup('note', [newSelection]);
   };
 
-  private _onCompositionEnd = (event: CompositionEvent) => {
+  private readonly _onCompositionEnd = (event: CompositionEvent) => {
     if (this._compositionStartCallback) {
       event.preventDefault();
       event.stopPropagation();
@@ -94,7 +94,7 @@ export class RangeBinding {
     }
   };
 
-  private _onCompositionStart = () => {
+  private readonly _onCompositionStart = () => {
     const selection = this.selectionManager.find('text');
     if (!selection) return;
 
@@ -166,7 +166,7 @@ export class RangeBinding {
     };
   };
 
-  private _onNativeSelectionChanged = async () => {
+  private readonly _onNativeSelectionChanged = async () => {
     if (this.isComposing) return;
     if (!this.host) return; // Unstable when switching views, card <-> embed
 
@@ -246,7 +246,7 @@ export class RangeBinding {
     this.rangeManager?.syncRangeToTextSelection(range, isRangeReversed);
   };
 
-  private _onStdSelectionChanged = (selections: BaseSelection[]) => {
+  private readonly _onStdSelectionChanged = (selections: BaseSelection[]) => {
     const text =
       selections.find((selection): selection is TextSelection =>
         selection.is('text')

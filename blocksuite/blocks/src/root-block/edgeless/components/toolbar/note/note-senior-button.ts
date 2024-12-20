@@ -125,7 +125,7 @@ export class EdgelessNoteSeniorButton extends EdgelessToolbarToolMixin(
     }
   `;
 
-  private _noteBg$ = computed(() => {
+  private readonly _noteBg$ = computed(() => {
     return this.edgeless.std
       .get(ThemeProvider)
       .generateColorProperty(
@@ -134,7 +134,7 @@ export class EdgelessNoteSeniorButton extends EdgelessToolbarToolMixin(
       );
   });
 
-  private _states = ['childFlavour', 'childType', 'tip'] as const;
+  private readonly _states = ['childFlavour', 'childType', 'tip'] as const;
 
   override enableActiveBackground = true;
 

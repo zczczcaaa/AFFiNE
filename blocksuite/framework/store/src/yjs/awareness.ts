@@ -32,9 +32,9 @@ export interface AwarenessEvent<
 }
 
 export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
-  private _flags: Signal<Flags>;
+  private readonly _flags: Signal<Flags>;
 
-  private _onAwarenessChange = (diff: {
+  private readonly _onAwarenessChange = (diff: {
     added: number[];
     removed: number[];
     updated: number[];

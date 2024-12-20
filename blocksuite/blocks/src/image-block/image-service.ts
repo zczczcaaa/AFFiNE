@@ -28,7 +28,7 @@ export class ImageBlockService extends BlockService {
 
   static setImageProxyURL = setImageProxyMiddlewareURL;
 
-  private _fileDropOptions: FileDropOptions = {
+  private readonly _fileDropOptions: FileDropOptions = {
     flavour: this.flavour,
     onDrop: async ({ files, targetModel, place, point }) => {
       const imageFiles = files.filter(file => file.type.startsWith('image/'));

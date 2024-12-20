@@ -8,7 +8,7 @@ export class Zip {
 
   private finalized = false;
 
-  private zip = new fflate.Zip((err, chunk, final) => {
+  private readonly zip = new fflate.Zip((err, chunk, final) => {
     if (!err) {
       const temp = new Uint8Array(this.compressed.length + chunk.length);
       temp.set(this.compressed);

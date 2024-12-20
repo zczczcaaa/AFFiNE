@@ -27,7 +27,7 @@ export class EdgelessNoteToolButton extends QuickToolMixin(LitElement) {
 
   private _noteMenu: MenuPopper<EdgelessNoteMenu> | null = null;
 
-  private _states = ['childFlavour', 'childType', 'tip'] as const;
+  private readonly _states = ['childFlavour', 'childType', 'tip'] as const;
 
   override type: GfxToolsFullOptionValue['type'] = 'affine:note';
 

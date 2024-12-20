@@ -44,12 +44,12 @@ function notEqual<K extends keyof BrushProps>(key: K, value: BrushProps[K]) {
 }
 
 export class EdgelessChangeBrushButton extends WithDisposable(LitElement) {
-  private _setBrushColor = ({ detail: color }: ColorEvent) => {
+  private readonly _setBrushColor = ({ detail: color }: ColorEvent) => {
     this._setBrushProp('color', color);
     this._selectedColor = color;
   };
 
-  private _setLineWidth = ({ detail: lineWidth }: LineWidthEvent) => {
+  private readonly _setLineWidth = ({ detail: lineWidth }: LineWidthEvent) => {
     this._setBrushProp('lineWidth', lineWidth);
     this._selectedSize = lineWidth;
   };

@@ -96,7 +96,7 @@ export class KanbanGroup extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private clickAddCard = () => {
+  private readonly clickAddCard = () => {
     const id = this.view.addCard('end', this.group.key);
     requestAnimationFrame(() => {
       const kanban = this.closest('affine-data-view-kanban');
@@ -114,7 +114,7 @@ export class KanbanGroup extends SignalWatcher(
     });
   };
 
-  private clickAddCardInStart = () => {
+  private readonly clickAddCardInStart = () => {
     const id = this.view.addCard('start', this.group.key);
     requestAnimationFrame(() => {
       const kanban = this.closest('affine-data-view-kanban');
@@ -132,7 +132,7 @@ export class KanbanGroup extends SignalWatcher(
     });
   };
 
-  private clickGroupOptions = (e: MouseEvent) => {
+  private readonly clickGroupOptions = (e: MouseEvent) => {
     const ele = e.currentTarget as HTMLElement;
     popFilterableSimpleMenu(popupTargetFromElement(ele), [
       menu.action({

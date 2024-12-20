@@ -30,7 +30,7 @@ export class AffineLink extends ShadowlessElement {
   private _identified: boolean = false;
 
   // see https://github.com/toeverything/AFFiNE/issues/1540
-  private _onMouseUp = () => {
+  private readonly _onMouseUp = () => {
     const anchorElement = this.querySelector('a');
     if (!anchorElement || !anchorElement.isContentEditable) return;
     anchorElement.contentEditable = 'false';
@@ -58,7 +58,7 @@ export class AffineLink extends ShadowlessElement {
     refNodeSlotsProvider.docLinkClicked.emit(referenceInfo);
   };
 
-  private _whenHover = new HoverController(
+  private readonly _whenHover = new HoverController(
     this,
     ({ abortController }) => {
       if (this.block?.doc.readonly) {

@@ -125,7 +125,7 @@ export class KanbanCard extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private clickEdit = (e: MouseEvent) => {
+  private readonly clickEdit = (e: MouseEvent) => {
     e.stopPropagation();
     const selection = this.getSelection();
     if (selection) {
@@ -133,7 +133,7 @@ export class KanbanCard extends SignalWatcher(
     }
   };
 
-  private clickMore = (e: MouseEvent) => {
+  private readonly clickMore = (e: MouseEvent) => {
     e.stopPropagation();
     const selection = this.getSelection();
     const ele = e.currentTarget as HTMLElement;
@@ -156,7 +156,7 @@ export class KanbanCard extends SignalWatcher(
     }
   };
 
-  private contextMenu = (e: MouseEvent) => {
+  private readonly contextMenu = (e: MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     const selection = this.getSelection();

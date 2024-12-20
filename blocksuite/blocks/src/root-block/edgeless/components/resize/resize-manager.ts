@@ -64,13 +64,13 @@ export class HandleResizeManager {
 
   private _locked = false;
 
-  private _onDragEnd: DragEndHandler;
+  private readonly _onDragEnd: DragEndHandler;
 
-  private _onDragStart: DragStartHandler;
+  private readonly _onDragStart: DragStartHandler;
 
-  private _onResizeMove: ResizeMoveHandler;
+  private readonly _onResizeMove: ResizeMoveHandler;
 
-  private _onRotateMove: RotateMoveHandler;
+  private readonly _onRotateMove: RotateMoveHandler;
 
   private _origin: { x: number; y: number } = { x: 0, y: 0 };
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   ConnectorUtils,
   OverlayIdentifier,
@@ -79,14 +78,14 @@ export class DefaultTool extends BaseTool {
 
   private _autoPanTimer: number | null = null;
 
-  private _clearDisposable = () => {
+  private readonly _clearDisposable = () => {
     if (this._disposables) {
       this._disposables.dispose();
       this._disposables = null;
     }
   };
 
-  private _clearSelectingState = () => {
+  private readonly _clearSelectingState = () => {
     this._stopAutoPanning();
     this._clearDisposable();
 
@@ -110,13 +109,13 @@ export class DefaultTool extends BaseTool {
 
   private _lock = false;
 
-  private _panViewport = (delta: IVec) => {
+  private readonly _panViewport = (delta: IVec) => {
     this._accumulateDelta[0] += delta[0];
     this._accumulateDelta[1] += delta[1];
     this.gfx.viewport.applyDeltaCenter(delta[0], delta[1]);
   };
 
-  private _pendingUpdates = new Map<
+  private readonly _pendingUpdates = new Map<
     GfxBlockModel | GfxPrimitiveElementModel,
     Partial<GfxBlockModel>
   >();
@@ -139,7 +138,7 @@ export class DefaultTool extends BaseTool {
     endY: number;
   } = null;
 
-  private _startAutoPanning = (delta: IVec) => {
+  private readonly _startAutoPanning = (delta: IVec) => {
     this._panViewport(delta);
     this._updateSelectingState(delta);
     this._stopAutoPanning();
@@ -150,7 +149,7 @@ export class DefaultTool extends BaseTool {
     }, 30);
   };
 
-  private _stopAutoPanning = () => {
+  private readonly _stopAutoPanning = () => {
     if (this._autoPanTimer) {
       clearTimeout(this._autoPanTimer);
       this._autoPanTimer = null;
@@ -159,7 +158,7 @@ export class DefaultTool extends BaseTool {
 
   private _toBeMoved: GfxModel[] = [];
 
-  private _updateSelectingState = (delta: IVec = [0, 0]) => {
+  private readonly _updateSelectingState = (delta: IVec = [0, 0]) => {
     const { gfx } = this;
 
     if (gfx.keyboard.spaceKey$.peek() && this._selectionRectTransition) {
@@ -943,6 +942,7 @@ export class DefaultTool extends BaseTool {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   override async dragStart(e: PointerEventState) {
     if (this.edgelessSelectionManager.editing) return;
     // Determine the drag type based on the current state and event

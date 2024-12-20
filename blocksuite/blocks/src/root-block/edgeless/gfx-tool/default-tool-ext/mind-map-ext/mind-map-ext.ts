@@ -36,7 +36,7 @@ type DragMindMapCtx = {
 };
 
 export class MindMapExt extends DefaultToolExt {
-  private _responseAreaUpdated = new Set<MindmapElementModel>();
+  private readonly _responseAreaUpdated = new Set<MindmapElementModel>();
 
   override supportedDragTypes: DefaultModeDragType[] = [
     DefaultModeDragType.ContentMoving,

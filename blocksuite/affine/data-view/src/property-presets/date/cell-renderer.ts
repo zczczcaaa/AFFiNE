@@ -66,7 +66,7 @@ export class DateCellEditing extends BaseCellRenderer<number> {
 
   private _prevPortalAbortController: AbortController | null = null;
 
-  private openDatePicker = () => {
+  private readonly openDatePicker = () => {
     if (
       this._prevPortalAbortController &&
       !this._prevPortalAbortController.signal.aborted
@@ -168,7 +168,7 @@ height: 46px;
     }
   };
 
-  private updateValue = () => {
+  private readonly updateValue = () => {
     const tempValue = this.tempValue$.value;
     const currentValue = this.value;
 

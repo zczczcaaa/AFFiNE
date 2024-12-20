@@ -61,7 +61,7 @@ export class ThemeService extends Extension {
     return isInsideEdgelessEditor(this.std.host) ? this.edgeless$ : this.app$;
   }
 
-  constructor(private std: BlockStdScope) {
+  constructor(private readonly std: BlockStdScope) {
     super();
     const extension = this.std.getOptional(ThemeExtensionIdentifier);
     this.app$ = extension?.getAppTheme?.() || getThemeObserver().theme$;
@@ -172,7 +172,7 @@ export class ThemeService extends Extension {
 }
 
 export class ThemeObserver {
-  private observer: MutationObserver;
+  private readonly observer: MutationObserver;
 
   theme$ = signal(ColorScheme.Light);
 

@@ -28,7 +28,7 @@ export class SelectCellEditing extends BaseCellRenderer<
   string,
   SelectPropertyData
 > {
-  private popTagSelect = () => {
+  private readonly popTagSelect = () => {
     const value = signal(this._value);
     this._disposables.add({
       dispose: popTagSelect(

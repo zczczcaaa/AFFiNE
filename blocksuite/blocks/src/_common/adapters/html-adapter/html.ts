@@ -51,11 +51,11 @@ type HtmlToSliceSnapshotPayload = {
 };
 
 export class HtmlAdapter extends BaseAdapter<Html> {
-  private _astToHtml = (ast: Root) => {
+  private readonly _astToHtml = (ast: Root) => {
     return unified().use(rehypeStringify).stringify(ast);
   };
 
-  private _traverseHtml = async (
+  private readonly _traverseHtml = async (
     html: HtmlAST,
     snapshot: BlockSnapshot,
     assets?: AssetsManager
@@ -108,7 +108,7 @@ export class HtmlAdapter extends BaseAdapter<Html> {
     return walker.walk(html, snapshot);
   };
 
-  private _traverseSnapshot = async (
+  private readonly _traverseSnapshot = async (
     snapshot: BlockSnapshot,
     html: HtmlAST,
     assets?: AssetsManager

@@ -15,7 +15,7 @@ import {
 } from '../utils.js';
 
 export class RectHelper {
-  private _getHoveredBlocks = (): BlockComponent[] => {
+  private readonly _getHoveredBlocks = (): BlockComponent[] => {
     if (!this.widget.isHoverDragHandleVisible || !this.widget.anchorBlockId)
       return [];
 

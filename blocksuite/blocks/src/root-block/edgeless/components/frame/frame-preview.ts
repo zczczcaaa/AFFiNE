@@ -61,12 +61,12 @@ const styles = css`
 export class FramePreview extends WithDisposable(ShadowlessElement) {
   static override styles = styles;
 
-  private _clearFrameDisposables = () => {
+  private readonly _clearFrameDisposables = () => {
     this._frameDisposables?.dispose();
     this._frameDisposables = null;
   };
 
-  private _docFilter: Query = {
+  private readonly _docFilter: Query = {
     mode: 'loose',
     match: [
       {
@@ -80,9 +80,10 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
 
   private _previewDoc: Doc | null = null;
 
-  private _previewSpec = SpecProvider.getInstance().getSpec('edgeless:preview');
+  private readonly _previewSpec =
+    SpecProvider.getInstance().getSpec('edgeless:preview');
 
-  private _updateFrameViewportWH = () => {
+  private readonly _updateFrameViewportWH = () => {
     const [, , w, h] = deserializeXYWH(this.frame.xywh);
 
     let scale = 1;

@@ -11,7 +11,7 @@ import { DragPreview } from '../components/drag-preview.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 
 export class PreviewHelper {
-  private _calculatePreviewOffset = (
+  private readonly _calculatePreviewOffset = (
     blocks: BlockComponent[],
     state: DndEventState
   ) => {
@@ -20,7 +20,7 @@ export class PreviewHelper {
     return previewOffset;
   };
 
-  private _calculateQuery = (selectedIds: string[]): Query => {
+  private readonly _calculateQuery = (selectedIds: string[]): Query => {
     const ids: Array<{ id: string; viewType: BlockViewType }> = selectedIds.map(
       id => ({
         id,

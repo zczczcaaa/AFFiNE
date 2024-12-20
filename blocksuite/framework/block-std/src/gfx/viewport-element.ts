@@ -46,7 +46,7 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
     }
   `;
 
-  private _hideOutsideBlock = requestThrottledConnectedFrame(() => {
+  private readonly _hideOutsideBlock = requestThrottledConnectedFrame(() => {
     if (this.getModelsInViewport && this.host) {
       const host = this.host;
       const modelsInViewport = this.getModelsInViewport();
@@ -77,12 +77,12 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
 
   private _lastVisibleModels?: Set<GfxBlockElementModel>;
 
-  private _pendingChildrenUpdates: {
+  private readonly _pendingChildrenUpdates: {
     id: string;
     resolve: () => void;
   }[] = [];
 
-  private _refreshViewport = requestThrottledConnectedFrame(() => {
+  private readonly _refreshViewport = requestThrottledConnectedFrame(() => {
     this._hideOutsideBlock();
   }, this);
 

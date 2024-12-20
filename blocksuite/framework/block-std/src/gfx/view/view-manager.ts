@@ -15,11 +15,11 @@ import {
 export class ViewManager extends GfxExtension {
   static override key = 'viewManager';
 
-  private _disposable = new DisposableGroup();
+  private readonly _disposable = new DisposableGroup();
 
-  private _viewCtorMap = new Map<string, typeof GfxElementModelView>();
+  private readonly _viewCtorMap = new Map<string, typeof GfxElementModelView>();
 
-  private _viewMap = new Map<string, GfxElementModelView>();
+  private readonly _viewMap = new Map<string, GfxElementModelView>();
 
   constructor(gfx: GfxController) {
     super(gfx);

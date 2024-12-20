@@ -42,7 +42,7 @@ export class SelectGroupView extends BaseGroup<
     }
   `;
 
-  private _click = (e: MouseEvent) => {
+  private readonly _click = (e: MouseEvent) => {
     if (this.readonly) {
       return;
     }

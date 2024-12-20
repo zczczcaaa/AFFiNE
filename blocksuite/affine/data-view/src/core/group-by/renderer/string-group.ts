@@ -21,7 +21,7 @@ export class StringGroupView extends BaseGroup<NonNullable<unknown>, string> {
     }
   `;
 
-  private _click = () => {
+  private readonly _click = () => {
     if (this.readonly) {
       return;
     }

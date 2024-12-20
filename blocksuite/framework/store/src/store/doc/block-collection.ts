@@ -47,27 +47,27 @@ export class BlockCollection {
 
   private readonly _docCRUD: DocCRUD;
 
-  private _docMap = {
+  private readonly _docMap = {
     undefined: new Map<string, Doc>(),
     true: new Map<string, Doc>(),
     false: new Map<string, Doc>(),
   };
 
   // doc/space container.
-  private _handleYEvents = (events: Y.YEvent<YBlock | Y.Text>[]) => {
+  private readonly _handleYEvents = (events: Y.YEvent<YBlock | Y.Text>[]) => {
     events.forEach(event => this._handleYEvent(event));
   };
 
   private _history!: Y.UndoManager;
 
-  private _historyObserver = () => {
+  private readonly _historyObserver = () => {
     this._updateCanUndoRedoSignals();
     this.slots.historyUpdated.emit();
   };
 
   private readonly _idGenerator: IdGenerator;
 
-  private _initSubDoc = () => {
+  private readonly _initSubDoc = () => {
     let subDoc = this.rootDoc.spaces.get(this.id);
     if (!subDoc) {
       subDoc = new Y.Doc({
@@ -86,9 +86,13 @@ export class BlockCollection {
 
   private _loaded!: boolean;
 
-  private _onLoadSlot = new Slot();
+  private readonly _onLoadSlot = new Slot();
 
-  private _onSubdocEvent = ({ loaded }: { loaded: Set<Y.Doc> }): void => {
+  private readonly _onSubdocEvent = ({
+    loaded,
+  }: {
+    loaded: Set<Y.Doc>;
+  }): void => {
     const result = Array.from(loaded).find(
       doc => doc.guid === this._ySpaceDoc.guid
     );
@@ -105,7 +109,7 @@ export class BlockCollection {
 
   private _shouldTransact = true;
 
-  private _updateCanUndoRedoSignals = () => {
+  private readonly _updateCanUndoRedoSignals = () => {
     const canRedo = this.readonly ? false : this._history.canRedo();
     const canUndo = this.readonly ? false : this._history.canUndo();
     if (this._canRedo$.peek() !== canRedo) {

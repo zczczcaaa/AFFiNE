@@ -39,7 +39,7 @@ export class EdgelessConnectorToolButton extends QuickToolMixin(
     }
   `;
 
-  private _mode$ = computed(() => {
+  private readonly _mode$ = computed(() => {
     return this.edgeless.std.get(EditPropsStore).lastProps$.value.connector
       .mode;
   });

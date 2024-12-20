@@ -128,7 +128,7 @@ export class TableDragController implements ReactiveController {
     return position;
   };
 
-  constructor(private host: DataViewTable) {
+  constructor(private readonly host: DataViewTable) {
     this.host.addController(this);
   }
 

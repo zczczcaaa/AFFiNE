@@ -23,7 +23,7 @@ export class MobileTableHeader extends SignalWatcher(
     }
   `;
 
-  private _onAddColumn = () => {
+  private readonly _onAddColumn = () => {
     if (this.readonly) return;
     this.tableViewManager.propertyAdd('end');
     this.editLastColumnTitle();

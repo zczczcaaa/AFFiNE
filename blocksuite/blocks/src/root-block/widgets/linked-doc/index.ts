@@ -68,7 +68,7 @@ export class AffineLinkedDocWidget extends WidgetComponent<
 
   private _inlineEditor: AffineInlineEditor | null = null;
 
-  private _observeInputRects = () => {
+  private readonly _observeInputRects = () => {
     if (!this._inlineEditor) return;
 
     const updateInputRects = () => {

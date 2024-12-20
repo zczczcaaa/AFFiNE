@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable import-x/no-extraneous-dependencies */
 import path from 'node:path';
 
 import { init, parse } from 'es-module-lexer';

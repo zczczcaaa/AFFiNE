@@ -14,7 +14,7 @@ export class EdgelessAddFrameButton extends WithDisposable(LitElement) {
     }
   `;
 
-  private _createFrame = () => {
+  private readonly _createFrame = () => {
     const frame = this.edgeless.service.frame.createFrameOnSelected();
     if (!frame) return;
     this.edgeless.std

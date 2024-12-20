@@ -18,20 +18,20 @@ export interface SelectionConstructor {
 export class SelectionManager extends LifeCycleWatcher {
   static override readonly key = 'selectionManager';
 
-  private _id: string;
+  private readonly _id: string;
 
-  private _itemAdded = (event: { stackItem: StackItem }) => {
+  private readonly _itemAdded = (event: { stackItem: StackItem }) => {
     event.stackItem.meta.set('selection-state', this.value);
   };
 
-  private _itemPopped = (event: { stackItem: StackItem }) => {
+  private readonly _itemPopped = (event: { stackItem: StackItem }) => {
     const selection = event.stackItem.meta.get('selection-state');
     if (selection) {
       this.set(selection as BaseSelection[]);
     }
   };
 
-  private _jsonToSelection = (json: Record<string, unknown>) => {
+  private readonly _jsonToSelection = (json: Record<string, unknown>) => {
     const ctor = this._selectionConstructors[json.type as string];
     if (!ctor) {
       throw new BlockSuiteError(
@@ -42,11 +42,13 @@ export class SelectionManager extends LifeCycleWatcher {
     return ctor.fromJSON(json);
   };
 
-  private _remoteSelections = signal<Map<number, BaseSelection[]>>(new Map());
+  private readonly _remoteSelections = signal<Map<number, BaseSelection[]>>(
+    new Map()
+  );
 
   private _selectionConstructors: Record<string, SelectionConstructor> = {};
 
-  private _selections = signal<BaseSelection[]>([]);
+  private readonly _selections = signal<BaseSelection[]>([]);
 
   disposables = new DisposableGroup();
 

@@ -70,7 +70,7 @@ export class TextCellEditing extends BaseCellRenderer<string> {
     }
   `;
 
-  private _keydown = (e: KeyboardEvent) => {
+  private readonly _keydown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.isComposing) {
       this._setValue();
       setTimeout(() => {
@@ -79,7 +79,7 @@ export class TextCellEditing extends BaseCellRenderer<string> {
     }
   };
 
-  private _setValue = (str: string = this._inputEle.value) => {
+  private readonly _setValue = (str: string = this._inputEle.value) => {
     this._inputEle.value = `${this.value ?? ''}`;
     this.onChange(str);
   };

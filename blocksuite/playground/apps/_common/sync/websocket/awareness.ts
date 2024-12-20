@@ -11,7 +11,10 @@ import type { WebSocketMessage } from './types';
 type AwarenessChanges = Record<'added' | 'updated' | 'removed', number[]>;
 
 export class WebSocketAwarenessSource implements AwarenessSource {
-  private _onAwareness = (changes: AwarenessChanges, origin: unknown) => {
+  private readonly _onAwareness = (
+    changes: AwarenessChanges,
+    origin: unknown
+  ) => {
     if (origin === 'remote') return;
 
     const changedClients = Object.values(changes).reduce((res, cur) =>
@@ -31,7 +34,7 @@ export class WebSocketAwarenessSource implements AwarenessSource {
     );
   };
 
-  private _onWebSocket = (event: MessageEvent<string>) => {
+  private readonly _onWebSocket = (event: MessageEvent<string>) => {
     const data = JSON.parse(event.data) as WebSocketMessage;
 
     if (data.channel !== 'awareness') return;

@@ -44,11 +44,11 @@ export type ExportOptions = {
   imageProxyEndpoint: string;
 };
 export class ExportManager {
-  private _exportOptions: ExportOptions = {
+  private readonly _exportOptions: ExportOptions = {
     imageProxyEndpoint: DEFAULT_IMAGE_PROXY_ENDPOINT,
   };
 
-  private _replaceRichTextWithSvgElement = (element: HTMLElement) => {
+  private readonly _replaceRichTextWithSvgElement = (element: HTMLElement) => {
     const richList = Array.from(element.querySelectorAll('.inline-editor'));
     richList.forEach(rich => {
       const svgEle = this._elementToSvgElement(

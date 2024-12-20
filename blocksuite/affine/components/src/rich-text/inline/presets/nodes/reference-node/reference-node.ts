@@ -68,7 +68,7 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
     }
   `;
 
-  private _updateRefMeta = (doc: Doc) => {
+  private readonly _updateRefMeta = (doc: Doc) => {
     const refAttribute = this.delta.attributes?.reference;
     if (!refAttribute) {
       return;
@@ -88,7 +88,7 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
   @state()
   accessor refMeta: DocMeta | undefined = undefined;
 
-  private _whenHover: HoverController = new HoverController(
+  private readonly _whenHover: HoverController = new HoverController(
     this,
     ({ abortController }) => {
       if (

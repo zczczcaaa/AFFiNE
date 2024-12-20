@@ -176,7 +176,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
     }
   `;
 
-  private _setFontFamily = (fontFamily: FontFamily) => {
+  private readonly _setFontFamily = (fontFamily: FontFamily) => {
     const currentFontWeight = getMostCommonFontWeight(this.elements);
     const fontWeight = TextUtils.isFontWeightSupported(
       fontFamily,
@@ -199,7 +199,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
     });
   };
 
-  private _setFontSize = (fontSize: number) => {
+  private readonly _setFontSize = (fontSize: number) => {
     const props = { fontSize };
     this.elements.forEach(element => {
       this.service.updateElement(element.id, buildProps(element, props));
@@ -207,7 +207,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
     });
   };
 
-  private _setFontWeightAndStyle = (
+  private readonly _setFontWeightAndStyle = (
     fontWeight: FontWeight,
     fontStyle: FontStyle
   ) => {
@@ -218,21 +218,23 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
     });
   };
 
-  private _setTextAlign = (textAlign: TextAlign) => {
+  private readonly _setTextAlign = (textAlign: TextAlign) => {
     const props = { textAlign };
     this.elements.forEach(element => {
       this.service.updateElement(element.id, buildProps(element, props));
     });
   };
 
-  private _setTextColor = ({ detail: color }: ColorEvent) => {
+  private readonly _setTextColor = ({ detail: color }: ColorEvent) => {
     const props = { color };
     this.elements.forEach(element => {
       this.service.updateElement(element.id, buildProps(element, props));
     });
   };
 
-  private _updateElementBound = (element: BlockSuite.EdgelessTextModelType) => {
+  private readonly _updateElementBound = (
+    element: BlockSuite.EdgelessTextModelType
+  ) => {
     const elementType = this.elementType;
     if (elementType === 'text' && element instanceof TextElementModel) {
       // the change of font family will change the bound of the text

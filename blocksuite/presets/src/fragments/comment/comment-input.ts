@@ -41,11 +41,11 @@ export class CommentInput extends WithDisposable(ShadowlessElement) {
     }
   `;
 
-  private _cancel = () => {
+  private readonly _cancel = () => {
     this.remove();
   };
 
-  private _submit = (textSelection: TextSelection) => {
+  private readonly _submit = (textSelection: TextSelection) => {
     const deltas = this._editor.inlineEditor?.yTextDeltas;
     if (!deltas) {
       this.remove();

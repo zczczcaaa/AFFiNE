@@ -100,7 +100,7 @@ export class DataViewKanban extends DataViewBase<
 > {
   static override styles = styles;
 
-  private dragController = new KanbanDragController(this);
+  private readonly dragController = new KanbanDragController(this);
 
   clipboardController = new KanbanClipboardController(this);
 

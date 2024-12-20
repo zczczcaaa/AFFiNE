@@ -27,15 +27,15 @@ function arrayAlmostEqual(point: IVec | IVec3, point2: IVec | IVec3) {
 }
 
 export class Graph<V extends IVec | IVec3 = IVec> {
-  private _xMap = new Map<number, V[]>();
+  private readonly _xMap = new Map<number, V[]>();
 
-  private _yMap = new Map<number, V[]>();
+  private readonly _yMap = new Map<number, V[]>();
 
   constructor(
-    private points: V[],
-    private blocks: Bound[] = [],
-    private expandedBlocks: Bound[] = [],
-    private excludedPoints: V[] = []
+    private readonly points: V[],
+    private readonly blocks: Bound[] = [],
+    private readonly expandedBlocks: Bound[] = [],
+    private readonly excludedPoints: V[] = []
   ) {
     const xMap = this._xMap;
     const yMap = this._yMap;

@@ -43,7 +43,7 @@ export class DatabaseCellContainer extends SignalWatcher(
     }
   `;
 
-  private _cell = createRef<DataViewCellLifeCycle>();
+  private readonly _cell = createRef<DataViewCellLifeCycle>();
 
   @property({ attribute: false })
   accessor column!: TableColumn;

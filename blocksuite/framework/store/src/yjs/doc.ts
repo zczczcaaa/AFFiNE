@@ -10,7 +10,7 @@ export type BlockSuiteDocAllowedValue =
 export type BlockSuiteDocData = Record<string, BlockSuiteDocAllowedValue>;
 
 export class BlockSuiteDoc extends Y.Doc {
-  private _spaces: Y.Map<Y.Doc> = this.getMap('spaces');
+  private readonly _spaces: Y.Map<Y.Doc> = this.getMap('spaces');
 
   get spaces() {
     return this._spaces;

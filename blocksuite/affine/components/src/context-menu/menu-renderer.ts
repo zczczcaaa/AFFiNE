@@ -83,13 +83,13 @@ export class MenuComponent
     }
   `;
 
-  private _clickContainer = (e: MouseEvent) => {
+  private readonly _clickContainer = (e: MouseEvent) => {
     e.stopPropagation();
     this.focusInput();
     this.menu.closeSubMenu();
   };
 
-  private searchRef = createRef<HTMLInputElement>();
+  private readonly searchRef = createRef<HTMLInputElement>();
 
   override firstUpdated() {
     const input = this.searchRef.value;

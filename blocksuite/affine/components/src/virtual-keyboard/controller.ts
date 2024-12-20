@@ -13,13 +13,13 @@ export type VirtualKeyboardControllerConfig = {
 };
 
 export class VirtualKeyboardController implements ReactiveController {
-  private _disposables = new DisposableGroup();
+  private readonly _disposables = new DisposableGroup();
 
   private readonly _keyboardHeight$ = signal(0);
 
   private readonly _keyboardOpened$ = signal(false);
 
-  private _storeInitialInputElementAttributes = () => {
+  private readonly _storeInitialInputElementAttributes = () => {
     const { inputElement } = this.config;
     if (navigator.virtualKeyboard) {
       const { overlaysContent } = navigator.virtualKeyboard;

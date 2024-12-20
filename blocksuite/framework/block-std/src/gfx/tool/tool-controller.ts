@@ -83,15 +83,15 @@ export const eventTarget = Symbol('eventTarget');
 export class ToolController extends GfxExtension {
   static override key = 'ToolController';
 
-  private _builtInHookSlot = new Slot<BuiltInSlotContext>();
+  private readonly _builtInHookSlot = new Slot<BuiltInSlotContext>();
 
-  private _disposableGroup = new DisposableGroup();
+  private readonly _disposableGroup = new DisposableGroup();
 
-  private _toolOption$ = new Signal<GfxToolsFullOptionValue>(
+  private readonly _toolOption$ = new Signal<GfxToolsFullOptionValue>(
     {} as GfxToolsFullOptionValue
   );
 
-  private _tools = new Map<string, BaseTool>();
+  private readonly _tools = new Map<string, BaseTool>();
 
   readonly currentToolName$ = new Signal<keyof GfxToolsMap>();
 

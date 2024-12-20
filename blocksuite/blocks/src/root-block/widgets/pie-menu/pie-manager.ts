@@ -12,7 +12,7 @@ import type { PieMenuSchema } from './base.js';
 export class PieManager {
   private static registeredSchemas: Record<string, PieMenuSchema> = {};
 
-  private static schemas = new Set<PieMenuSchema>();
+  private static readonly schemas = new Set<PieMenuSchema>();
 
   static settings = {
     /**

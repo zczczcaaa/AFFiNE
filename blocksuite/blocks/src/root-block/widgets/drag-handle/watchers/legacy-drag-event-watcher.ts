@@ -30,11 +30,11 @@ import {
 } from '../utils.js';
 
 export class LegacyDragEventWatcher {
-  private _changeCursorToGrabbing = () => {
+  private readonly _changeCursorToGrabbing = () => {
     document.documentElement.classList.add('affine-drag-preview-grabbing');
   };
 
-  private _createDropIndicator = () => {
+  private readonly _createDropIndicator = () => {
     if (!this.widget.dropIndicator) {
       this.widget.dropIndicator = new DropIndicator();
       this.widget.rootComponent.append(this.widget.dropIndicator);
@@ -44,7 +44,7 @@ export class LegacyDragEventWatcher {
   /**
    * When drag end, should move blocks to drop position
    */
-  private _dragEndHandler: UIEventHandler = ctx => {
+  private readonly _dragEndHandler: UIEventHandler = ctx => {
     this.widget.clearRaf();
     if (!this.widget.dragging || !this.widget.dragPreview) return false;
     if (this.widget.draggingElements.length === 0 || this.widget.doc.readonly) {
@@ -96,7 +96,7 @@ export class LegacyDragEventWatcher {
    * Update indicator position
    * Update drop block id
    */
-  private _dragMoveHandler: UIEventHandler = ctx => {
+  private readonly _dragMoveHandler: UIEventHandler = ctx => {
     if (
       this.widget.isHoverDragHandleVisible ||
       this.widget.isTopLevelDragHandleVisible
@@ -130,7 +130,7 @@ export class LegacyDragEventWatcher {
   /**
    * When start dragging, should set dragging elements and create drag preview
    */
-  private _dragStartHandler: UIEventHandler = ctx => {
+  private readonly _dragStartHandler: UIEventHandler = ctx => {
     const state = ctx.get('pointerState');
     // If not click left button to start dragging, should do nothing
     const { button } = state.raw;
@@ -156,7 +156,7 @@ export class LegacyDragEventWatcher {
     return this._onDragStart(state);
   };
 
-  private _onDragEnd = (state: PointerEventState) => {
+  private readonly _onDragEnd = (state: PointerEventState) => {
     const targetBlockId = this.widget.dropBlockId;
     const dropType = this.widget.dropType;
     const draggingElements = this.widget.draggingElements;
@@ -306,7 +306,7 @@ export class LegacyDragEventWatcher {
     return true;
   };
 
-  private _onDragMove = (state: PointerEventState) => {
+  private readonly _onDragMove = (state: PointerEventState) => {
     this.widget.clearRaf();
 
     this.widget.rafID = requestAnimationFrame(() => {
@@ -318,7 +318,7 @@ export class LegacyDragEventWatcher {
     return true;
   };
 
-  private _onDragStart = (state: PointerEventState) => {
+  private readonly _onDragStart = (state: PointerEventState) => {
     // Get current hover block element by path
     const hoverBlock = this.widget.anchorBlockComponent.peek();
     if (!hoverBlock) return false;
@@ -432,7 +432,7 @@ export class LegacyDragEventWatcher {
     return true;
   };
 
-  private _startDragging = (
+  private readonly _startDragging = (
     blocks: BlockComponent[],
     state: PointerEventState,
     dragPreviewEl?: HTMLElement,

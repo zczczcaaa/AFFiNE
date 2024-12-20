@@ -17,7 +17,7 @@ export class ReactiveYArray extends BaseReactiveYData<
   unknown[],
   YArray<unknown>
 > {
-  private _observer = (event: YArrayEvent<unknown>) => {
+  private readonly _observer = (event: YArrayEvent<unknown>) => {
     this._onObserve(event, () => {
       let retain = 0;
       event.changes.delta.forEach(change => {
@@ -159,7 +159,7 @@ export class ReactiveYArray extends BaseReactiveYData<
 }
 
 export class ReactiveYMap extends BaseReactiveYData<UnRecord, YMap<unknown>> {
-  private _observer = (event: YMapEvent<unknown>) => {
+  private readonly _observer = (event: YMapEvent<unknown>) => {
     this._onObserve(event, () => {
       event.keysChanged.forEach(key => {
         const type = event.changes.keys.get(key);

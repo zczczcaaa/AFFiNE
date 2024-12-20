@@ -47,7 +47,7 @@ export class LanguageListButton extends WithDisposable(
 
   private _abortController?: AbortController;
 
-  private _clickLangBtn = () => {
+  private readonly _clickLangBtn = () => {
     if (this.blockComponent.doc.readonly) return;
     if (this._abortController) {
       // Close the language list if it's already opened.

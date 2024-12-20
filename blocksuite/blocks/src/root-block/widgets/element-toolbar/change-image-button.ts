@@ -9,12 +9,12 @@ import { downloadImageBlob } from '../../../image-block/utils.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 
 export class EdgelessChangeImageButton extends WithDisposable(LitElement) {
-  private _download = () => {
+  private readonly _download = () => {
     if (!this._blockComponent) return;
     downloadImageBlob(this._blockComponent).catch(console.error);
   };
 
-  private _showCaption = () => {
+  private readonly _showCaption = () => {
     this._blockComponent?.captionEditor?.show();
   };
 

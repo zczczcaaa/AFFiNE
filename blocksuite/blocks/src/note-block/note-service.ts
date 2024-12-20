@@ -22,7 +22,7 @@ export class NoteBlockService extends BlockService {
 
   private _anchorSel: BlockSelection | null = null;
 
-  private _bindMoveBlockHotKey = () => {
+  private readonly _bindMoveBlockHotKey = () => {
     return moveBlockConfigs.reduce(
       (acc, config) => {
         const keys = config.hotkey.reduce(
@@ -46,7 +46,7 @@ export class NoteBlockService extends BlockService {
     );
   };
 
-  private _bindQuickActionHotKey = () => {
+  private readonly _bindQuickActionHotKey = () => {
     return quickActionConfig
       .filter(config => config.hotkey)
       .reduce(
@@ -65,7 +65,7 @@ export class NoteBlockService extends BlockService {
       );
   };
 
-  private _bindTextConversionHotKey = () => {
+  private readonly _bindTextConversionHotKey = () => {
     return textConversionConfigs
       .filter(item => item.hotkey)
       .reduce(
@@ -131,7 +131,7 @@ export class NoteBlockService extends BlockService {
 
   private _focusBlock: BlockComponent | null = null;
 
-  private _getClosestNoteByBlockId = (blockId: string) => {
+  private readonly _getClosestNoteByBlockId = (blockId: string) => {
     const doc = this._std.doc;
     let parent = doc.getBlock(blockId)?.model ?? null;
     while (parent) {
@@ -143,7 +143,7 @@ export class NoteBlockService extends BlockService {
     return null;
   };
 
-  private _onArrowDown = (ctx: UIEventStateContext) => {
+  private readonly _onArrowDown = (ctx: UIEventStateContext) => {
     const event = ctx.get('defaultState').event;
 
     const [result] = this._std.command
@@ -240,7 +240,7 @@ export class NoteBlockService extends BlockService {
     return result;
   };
 
-  private _onArrowUp = (ctx: UIEventStateContext) => {
+  private readonly _onArrowUp = (ctx: UIEventStateContext) => {
     const event = ctx.get('defaultState').event;
 
     const [result] = this._std.command
@@ -336,7 +336,7 @@ export class NoteBlockService extends BlockService {
     return result;
   };
 
-  private _onBlockShiftDown = (cmd: BlockSuite.CommandChain) => {
+  private readonly _onBlockShiftDown = (cmd: BlockSuite.CommandChain) => {
     return cmd
       .getBlockSelections()
       .inline<'currentSelectionPath' | 'anchorBlock'>((ctx, next) => {
@@ -376,7 +376,7 @@ export class NoteBlockService extends BlockService {
       .selectBlocksBetween({ tail: true });
   };
 
-  private _onBlockShiftUp = (cmd: BlockSuite.CommandChain) => {
+  private readonly _onBlockShiftUp = (cmd: BlockSuite.CommandChain) => {
     return cmd
       .getBlockSelections()
       .inline<'currentSelectionPath' | 'anchorBlock'>((ctx, next) => {
@@ -414,7 +414,7 @@ export class NoteBlockService extends BlockService {
       .selectBlocksBetween({ tail: false });
   };
 
-  private _onEnter = (ctx: UIEventStateContext) => {
+  private readonly _onEnter = (ctx: UIEventStateContext) => {
     const event = ctx.get('defaultState').event;
     const [result] = this._std.command
       .chain()
@@ -461,7 +461,7 @@ export class NoteBlockService extends BlockService {
     return result;
   };
 
-  private _onEsc = () => {
+  private readonly _onEsc = () => {
     const [result] = this._std.command
       .chain()
       .getBlockSelections()
@@ -482,7 +482,7 @@ export class NoteBlockService extends BlockService {
     return result;
   };
 
-  private _onSelectAll: UIEventHandler = ctx => {
+  private readonly _onSelectAll: UIEventHandler = ctx => {
     const selection = this._std.selection;
     const block = selection.find('block');
     if (!block) {
@@ -506,7 +506,7 @@ export class NoteBlockService extends BlockService {
     });
   };
 
-  private _onShiftArrowDown = () => {
+  private readonly _onShiftArrowDown = () => {
     const [result] = this._std.command
       .chain()
       .try(cmd => [
@@ -518,7 +518,7 @@ export class NoteBlockService extends BlockService {
     return result;
   };
 
-  private _onShiftArrowUp = () => {
+  private readonly _onShiftArrowUp = () => {
     const [result] = this._std.command
       .chain()
       .try(cmd => [
@@ -530,7 +530,7 @@ export class NoteBlockService extends BlockService {
     return result;
   };
 
-  private _reset = () => {
+  private readonly _reset = () => {
     this._anchorSel = null;
     this._focusBlock = null;
   };

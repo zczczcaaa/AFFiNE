@@ -10,9 +10,9 @@ import { RoughGenerator } from './generator.js';
 import type { Point } from './geometry.js';
 
 export class RoughSVG {
-  private gen: RoughGenerator;
+  private readonly gen: RoughGenerator;
 
-  private svg: SVGSVGElement;
+  private readonly svg: SVGSVGElement;
 
   get generator(): RoughGenerator {
     return this.gen;

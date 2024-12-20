@@ -53,7 +53,7 @@ export class MobileTableColumnHeader extends SignalWatcher(
     }
   `;
 
-  private _clickColumn = () => {
+  private readonly _clickColumn = () => {
     if (this.tableViewManager.readonly$.value) {
       return;
     }

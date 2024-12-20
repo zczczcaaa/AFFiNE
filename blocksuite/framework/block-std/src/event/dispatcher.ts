@@ -80,17 +80,17 @@ export class UIEventDispatcher extends LifeCycleWatcher {
 
   private _active = false;
 
-  private _clipboardControl: ClipboardControl;
+  private readonly _clipboardControl: ClipboardControl;
 
   private _handlersMap = Object.fromEntries(
     eventNames.map((name): [EventName, Array<EventHandlerRunner>] => [name, []])
   ) as Record<EventName, Array<EventHandlerRunner>>;
 
-  private _keyboardControl: KeyboardControl;
+  private readonly _keyboardControl: KeyboardControl;
 
-  private _pointerControl: PointerControl;
+  private readonly _pointerControl: PointerControl;
 
-  private _rangeControl: RangeControl;
+  private readonly _rangeControl: RangeControl;
 
   bindHotkey = (...args: Parameters<KeyboardControl['bindHotkey']>) =>
     this._keyboardControl.bindHotkey(...args);

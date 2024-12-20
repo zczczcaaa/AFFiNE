@@ -67,7 +67,7 @@ export class AttachmentEmbedService extends Extension {
     return this.configs.values();
   }
 
-  constructor(private configs: Map<string, AttachmentEmbedConfig>) {
+  constructor(private readonly configs: Map<string, AttachmentEmbedConfig>) {
     super();
   }
 

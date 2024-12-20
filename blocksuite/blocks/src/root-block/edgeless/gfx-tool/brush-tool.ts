@@ -19,7 +19,7 @@ export class BrushTool extends BaseTool {
 
   private _lastPopLength = 0;
 
-  private _pressureSupportedPointerIds = new Set<number>();
+  private readonly _pressureSupportedPointerIds = new Set<number>();
 
   private _straightLineType: 'horizontal' | 'vertical' | null = null;
 

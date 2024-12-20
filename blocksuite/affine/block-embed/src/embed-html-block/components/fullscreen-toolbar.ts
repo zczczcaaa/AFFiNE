@@ -68,7 +68,7 @@ export class EmbedHtmlFullscreenToolbar extends LitElement {
     }
   `;
 
-  private _popSettings = () => {
+  private readonly _popSettings = () => {
     this._popperVisible = true;
     popMenu(popupTargetFromElement(this._fullScreenToolbarContainer), {
       options: {

@@ -82,7 +82,7 @@ export class EmbedCardToolbar extends WidgetComponent<
 
   private _abortController = new AbortController();
 
-  private _copyUrl = () => {
+  private readonly _copyUrl = () => {
     const model = this.focusModel;
     if (!model) return;
 
@@ -109,7 +109,7 @@ export class EmbedCardToolbar extends WidgetComponent<
 
   private _embedOptions: EmbedOptions | null = null;
 
-  private _openEditPopup = (e: MouseEvent) => {
+  private readonly _openEditPopup = (e: MouseEvent) => {
     e.stopPropagation();
 
     const model = this.focusModel;
@@ -126,12 +126,12 @@ export class EmbedCardToolbar extends WidgetComponent<
     });
   };
 
-  private _resetAbortController = () => {
+  private readonly _resetAbortController = () => {
     this._abortController.abort();
     this._abortController = new AbortController();
   };
 
-  private _showCaption = () => {
+  private readonly _showCaption = () => {
     const focusBlock = this.focusBlock;
     if (!focusBlock) {
       return;
@@ -151,7 +151,7 @@ export class EmbedCardToolbar extends WidgetComponent<
     });
   };
 
-  private _toggleCardStyleSelector = (e: Event) => {
+  private readonly _toggleCardStyleSelector = (e: Event) => {
     const opened = (e as CustomEvent<boolean>).detail;
     if (!opened) return;
 
@@ -163,7 +163,7 @@ export class EmbedCardToolbar extends WidgetComponent<
     });
   };
 
-  private _toggleViewSelector = (e: Event) => {
+  private readonly _toggleViewSelector = (e: Event) => {
     const opened = (e as CustomEvent<boolean>).detail;
     if (!opened) return;
 
@@ -175,7 +175,7 @@ export class EmbedCardToolbar extends WidgetComponent<
     });
   };
 
-  private _trackViewSelected = (type: string) => {
+  private readonly _trackViewSelected = (type: string) => {
     const model = this.focusModel;
     if (!model) return;
 

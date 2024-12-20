@@ -56,20 +56,20 @@ const defaultCoordinates: Coordinates = {
 };
 
 export class DndContext {
-  private dragMove = (coordinates: Coordinates) => {
+  private readonly dragMove = (coordinates: Coordinates) => {
     this.activationCoordinates$.value = coordinates;
     this.autoScroll();
   };
 
-  private droppableNodes$ = signal<DroppableNodes>(new Map());
+  private readonly droppableNodes$ = signal<DroppableNodes>(new Map());
 
-  private initialCoordinates$ = signal<Coordinates>();
+  private readonly initialCoordinates$ = signal<Coordinates>();
 
-  private initScrollOffset$ = signal(defaultCoordinates);
+  private readonly initScrollOffset$ = signal(defaultCoordinates);
 
-  private session$ = signal<DndSession>();
+  private readonly session$ = signal<DndSession>();
 
-  private startSession = (
+  private readonly startSession = (
     id: UniqueIdentifier,
     activeNode: HTMLElement,
     sessionCreator: DndSessionCreator
@@ -96,7 +96,7 @@ export class DndContext {
 
   activationCoordinates$ = signal<Coordinates>();
 
-  private translate$ = computed(() => {
+  private readonly translate$ = computed(() => {
     const init = this.initialCoordinates$.value;
     const current = this.activationCoordinates$.value;
     if (!init || !current) {

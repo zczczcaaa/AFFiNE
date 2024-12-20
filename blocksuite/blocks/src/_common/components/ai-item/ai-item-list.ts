@@ -48,7 +48,7 @@ export class AIItemList extends WithDisposable(LitElement) {
 
   private _activeSubMenuItem: AIItemConfig | null = null;
 
-  private _closeSubMenu = () => {
+  private readonly _closeSubMenu = () => {
     if (this._abortController) {
       this._abortController.abort();
       this._abortController = null;
@@ -56,11 +56,11 @@ export class AIItemList extends WithDisposable(LitElement) {
     this._activeSubMenuItem = null;
   };
 
-  private _itemClassName = (item: AIItemConfig) => {
+  private readonly _itemClassName = (item: AIItemConfig) => {
     return 'ai-item-' + item.name.split(' ').join('-').toLocaleLowerCase();
   };
 
-  private _openSubMenu = (item: AIItemConfig) => {
+  private readonly _openSubMenu = (item: AIItemConfig) => {
     if (!item.subItem || item.subItem.length === 0) {
       this._closeSubMenu();
       return;

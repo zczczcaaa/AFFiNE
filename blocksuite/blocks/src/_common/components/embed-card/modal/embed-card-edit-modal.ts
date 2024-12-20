@@ -144,11 +144,11 @@ export class EmbedCardEditModal extends SignalWatcher(
 
   private _blockComponent: BlockComponent | null = null;
 
-  private _hide = () => {
+  private readonly _hide = () => {
     this.remove();
   };
 
-  private _onKeydown = (e: KeyboardEvent) => {
+  private readonly _onKeydown = (e: KeyboardEvent) => {
     e.stopPropagation();
     if (e.key === 'Enter' && !(e.isComposing || e.shiftKey)) {
       this._onSave();
@@ -159,7 +159,7 @@ export class EmbedCardEditModal extends SignalWatcher(
     }
   };
 
-  private _onReset = () => {
+  private readonly _onReset = () => {
     const blockComponent = this._blockComponent;
 
     if (!blockComponent) {
@@ -186,7 +186,7 @@ export class EmbedCardEditModal extends SignalWatcher(
     this.remove();
   };
 
-  private _onSave = () => {
+  private readonly _onSave = () => {
     const blockComponent = this._blockComponent;
 
     if (!blockComponent) {
@@ -224,12 +224,12 @@ export class EmbedCardEditModal extends SignalWatcher(
     this.remove();
   };
 
-  private _updateDescription = (e: InputEvent) => {
+  private readonly _updateDescription = (e: InputEvent) => {
     const target = e.target as HTMLTextAreaElement;
     this.description$.value = target.value;
   };
 
-  private _updateTitle = (e: InputEvent) => {
+  private readonly _updateTitle = (e: InputEvent) => {
     const target = e.target as HTMLInputElement;
     this.title$.value = target.value;
   };

@@ -205,7 +205,7 @@ export class RichTextCellEditing extends BaseCellRenderer<Text> {
     }
   `;
 
-  private _handleKeyDown = (event: KeyboardEvent) => {
+  private readonly _handleKeyDown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') {
       if (event.key === 'Tab') {
         event.preventDefault();
@@ -274,12 +274,12 @@ export class RichTextCellEditing extends BaseCellRenderer<Text> {
     }
   };
 
-  private _initYText = (text?: string) => {
+  private readonly _initYText = (text?: string) => {
     const yText = new Text(text);
     this.onChange(yText);
   };
 
-  private _onSoftEnter = () => {
+  private readonly _onSoftEnter = () => {
     if (this.value && this.inlineEditor) {
       const inlineRange = this.inlineEditor.getInlineRange();
       assertExists(inlineRange);

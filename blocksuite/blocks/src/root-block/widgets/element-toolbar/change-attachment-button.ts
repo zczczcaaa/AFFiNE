@@ -23,11 +23,11 @@ import { attachmentViewToggleMenu } from '../../../attachment-block/index.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 
 export class EdgelessChangeAttachmentButton extends WithDisposable(LitElement) {
-  private _download = () => {
+  private readonly _download = () => {
     this._block?.download();
   };
 
-  private _setCardStyle = (style: EmbedCardStyle) => {
+  private readonly _setCardStyle = (style: EmbedCardStyle) => {
     const bounds = Bound.deserialize(this.model.xywh);
     bounds.w = EMBED_CARD_WIDTH[style];
     bounds.h = EMBED_CARD_HEIGHT[style];
@@ -35,7 +35,7 @@ export class EdgelessChangeAttachmentButton extends WithDisposable(LitElement) {
     this.model.doc.updateBlock(this.model, { style, xywh });
   };
 
-  private _showCaption = () => {
+  private readonly _showCaption = () => {
     this._block?.captionEditor?.show();
   };
 

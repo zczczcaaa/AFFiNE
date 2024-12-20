@@ -22,11 +22,11 @@ import { embedCardModalStyles } from './styles.js';
 export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
   static override styles = embedCardModalStyles;
 
-  private _onCancel = () => {
+  private readonly _onCancel = () => {
     this.remove();
   };
 
-  private _onConfirm = () => {
+  private readonly _onConfirm = () => {
     const url = this.input.value;
 
     if (!isValidUrl(url)) {
@@ -91,7 +91,7 @@ export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
     this.remove();
   };
 
-  private _onDocumentKeydown = (e: KeyboardEvent) => {
+  private readonly _onDocumentKeydown = (e: KeyboardEvent) => {
     e.stopPropagation();
     if (e.key === 'Enter' && !e.isComposing) {
       this._onConfirm();

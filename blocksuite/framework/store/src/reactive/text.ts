@@ -16,9 +16,9 @@ export type DeltaOperation = {
 export type OnTextChange = (data: Y.Text) => void;
 
 export class Text {
-  private _deltas$: Signal<DeltaOperation[]>;
+  private readonly _deltas$: Signal<DeltaOperation[]>;
 
-  private _length$: Signal<number>;
+  private readonly _length$: Signal<number>;
 
   private _onChange?: OnTextChange;
 

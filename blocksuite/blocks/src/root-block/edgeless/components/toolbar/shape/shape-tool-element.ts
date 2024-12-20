@@ -67,7 +67,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     }
   `;
 
-  private _addShape = (coord: Coord, padding: Coord) => {
+  private readonly _addShape = (coord: Coord, padding: Coord) => {
     const width = 100;
     const height = 100;
     const { x: edgelessX, y: edgelessY } =
@@ -85,7 +85,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     });
   };
 
-  private _onDragEnd = async (coord: Coord) => {
+  private readonly _onDragEnd = async (coord: Coord) => {
     if (this._startCoord.x === coord.x && this._startCoord.y === coord.y) {
       this.handleClick();
       this._dragging = false;
@@ -118,7 +118,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     }
   };
 
-  private _onDragMove = (coord: Coord) => {
+  private readonly _onDragMove = (coord: Coord) => {
     if (!this._dragging) {
       return;
     }
@@ -153,7 +153,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     this._isOutside = isOut;
   };
 
-  private _onDragStart = (coord: Coord) => {
+  private readonly _onDragStart = (coord: Coord) => {
     this._startCoord = { x: coord.x, y: coord.y };
     if (this.order !== 1) {
       return;
@@ -162,20 +162,20 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     this._shapeElement.classList.add('dragging');
   };
 
-  private _onMouseMove = (event: MouseEvent) => {
+  private readonly _onMouseMove = (event: MouseEvent) => {
     if (!this._dragging) {
       return;
     }
     this._onDragMove({ x: event.clientX, y: event.clientY });
   };
 
-  private _onMouseUp = (event: MouseEvent) => {
+  private readonly _onMouseUp = (event: MouseEvent) => {
     this._onDragEnd({ x: event.clientX, y: event.clientY }).catch(
       console.error
     );
   };
 
-  private _onTouchEnd = (event: TouchEvent) => {
+  private readonly _onTouchEnd = (event: TouchEvent) => {
     if (!event.changedTouches.length) return;
 
     this._onDragEnd({
@@ -185,7 +185,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     }).catch(console.error);
   };
 
-  private _touchMove = (event: TouchEvent) => {
+  private readonly _touchMove = (event: TouchEvent) => {
     if (!this._dragging) {
       return;
     }
@@ -195,7 +195,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     });
   };
 
-  private _transformMap: TransformMap = {
+  private readonly _transformMap: TransformMap = {
     z1: { x: 0, y: 5, scale: 1.1, origin: '50% 100%' },
     z2: { x: -15, y: 0, scale: 0.75, origin: '20% 20%' },
     z3: { x: 15, y: 0, scale: 0.75, origin: '80% 20%' },

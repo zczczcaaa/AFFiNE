@@ -95,7 +95,7 @@ export class NumberCellEditing extends BaseCellRenderer<
     }
   `;
 
-  private _getFormattedString = (value: number) => {
+  private readonly _getFormattedString = (value: number) => {
     const enableNewFormatting =
       this.view.featureFlags$.value.enable_number_formatting;
     const decimals = this.property.data$.value.decimal ?? 0;
@@ -106,7 +106,7 @@ export class NumberCellEditing extends BaseCellRenderer<
       : value.toString();
   };
 
-  private _keydown = (e: KeyboardEvent) => {
+  private readonly _keydown = (e: KeyboardEvent) => {
     const ctrlKey = IS_MAC ? e.metaKey : e.ctrlKey;
 
     if (e.key.toLowerCase() === 'z' && ctrlKey) {
@@ -121,7 +121,7 @@ export class NumberCellEditing extends BaseCellRenderer<
     }
   };
 
-  private _setValue = (str: string = this._inputEle.value) => {
+  private readonly _setValue = (str: string = this._inputEle.value) => {
     if (!str) {
       this.onChange(undefined);
       return;

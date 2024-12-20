@@ -172,7 +172,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
     }
   `;
 
-  private _updateLabels = () => {
+  private readonly _updateLabels = () => {
     const service = this.service;
     if (!service.doc.root) return;
 

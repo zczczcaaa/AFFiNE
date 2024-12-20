@@ -112,7 +112,7 @@ export class EdgelessElementToolbarWidget extends WidgetComponent<
     }
   `;
 
-  private _quickConnect = ({ x, y }: MouseEvent) => {
+  private readonly _quickConnect = ({ x, y }: MouseEvent) => {
     const element = this.selection.selectedElements[0];
     const point = this.edgeless.service.viewport.toViewCoordFromClientCoord([
       x,
@@ -127,7 +127,9 @@ export class EdgelessElementToolbarWidget extends WidgetComponent<
     ctc.quickConnect(point, element);
   };
 
-  private _updateOnSelectedChange = (element: string | { id: string }) => {
+  private readonly _updateOnSelectedChange = (
+    element: string | { id: string }
+  ) => {
     const id = typeof element === 'string' ? element : element.id;
 
     if (this.isConnected && !this._dragging && this.selection.has(id)) {

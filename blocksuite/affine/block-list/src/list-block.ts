@@ -36,7 +36,7 @@ export class ListBlockComponent extends CaptionedBlockComponent<
 
   private _inlineRangeProvider: InlineRangeProvider | null = null;
 
-  private _onClickIcon = (e: MouseEvent) => {
+  private readonly _onClickIcon = (e: MouseEvent) => {
     e.stopPropagation();
 
     if (this.model.type === 'toggle') {

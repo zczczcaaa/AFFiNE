@@ -11,7 +11,10 @@ import type { BaseTextAttributes } from '../utils/base-attributes.js';
 import { deltaInsertsToChunks } from '../utils/delta-convert.js';
 
 export class RenderService<TextAttributes extends BaseTextAttributes> {
-  private _onYTextChange = (_: Y.YTextEvent, transaction: Y.Transaction) => {
+  private readonly _onYTextChange = (
+    _: Y.YTextEvent,
+    transaction: Y.Transaction
+  ) => {
     this.editor.slots.textChange.emit();
 
     const yText = this.editor.yText;

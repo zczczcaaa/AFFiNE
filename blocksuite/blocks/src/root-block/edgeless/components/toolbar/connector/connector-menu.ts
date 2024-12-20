@@ -97,7 +97,7 @@ export class EdgelessConnectorMenu extends EdgelessToolbarToolMixin(
     }
   `;
 
-  private _props$ = computed(() => {
+  private readonly _props$ = computed(() => {
     const { mode, stroke, strokeWidth } =
       this.edgeless.std.get(EditPropsStore).lastProps$.value.connector;
     return { mode, stroke, strokeWidth };

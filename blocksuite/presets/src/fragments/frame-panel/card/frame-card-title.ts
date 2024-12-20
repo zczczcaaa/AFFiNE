@@ -59,12 +59,12 @@ export const AFFINE_FRAME_CARD_TITLE = 'affine-frame-card-title';
 export class FrameCardTitle extends WithDisposable(ShadowlessElement) {
   static override styles = styles;
 
-  private _clearTitleDisposables = () => {
+  private readonly _clearTitleDisposables = () => {
     this._titleDisposables?.dispose();
     this._titleDisposables = null;
   };
 
-  private _mountTitleEditor = (e: MouseEvent) => {
+  private readonly _mountTitleEditor = (e: MouseEvent) => {
     e.stopPropagation();
 
     const titleEditor = new FrameCardTitleEditor();
@@ -78,7 +78,7 @@ export class FrameCardTitle extends WithDisposable(ShadowlessElement) {
 
   private _titleDisposables: DisposableGroup | null = null;
 
-  private _updateElement = () => {
+  private readonly _updateElement = () => {
     this.requestUpdate();
   };
 

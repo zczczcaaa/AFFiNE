@@ -388,7 +388,7 @@ export abstract class GfxGroupLikeElementModel<
 {
   private _childIds: string[] = [];
 
-  private _mutex = createMutex();
+  private readonly _mutex = createMutex();
 
   abstract children: Y.Map<any>;
 

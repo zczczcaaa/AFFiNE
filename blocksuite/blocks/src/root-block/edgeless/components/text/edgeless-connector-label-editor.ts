@@ -67,7 +67,7 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
 
   private _resizeObserver: ResizeObserver | null = null;
 
-  private _updateLabelRect = () => {
+  private readonly _updateLabelRect = () => {
     const { connector, edgeless } = this;
     if (!connector || !edgeless) return;
 

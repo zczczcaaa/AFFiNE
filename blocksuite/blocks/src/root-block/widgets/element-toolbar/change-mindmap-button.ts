@@ -155,7 +155,7 @@ export class EdgelessChangeMindmapLayoutPanel extends LitElement {
 }
 
 export class EdgelessChangeMindmapButton extends WithDisposable(LitElement) {
-  private _updateLayoutType = (layoutType: LayoutType) => {
+  private readonly _updateLayoutType = (layoutType: LayoutType) => {
     this.edgeless.std.get(EditPropsStore).recordLastProps('mindmap', {
       layoutType,
     });
@@ -166,7 +166,7 @@ export class EdgelessChangeMindmapButton extends WithDisposable(LitElement) {
     this.layoutType = layoutType;
   };
 
-  private _updateStyle = (style: MindmapStyle) => {
+  private readonly _updateStyle = (style: MindmapStyle) => {
     this.edgeless.std.get(EditPropsStore).recordLastProps('mindmap', { style });
     this._mindmaps.forEach(element => (element.style = style));
   };

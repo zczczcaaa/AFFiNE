@@ -137,16 +137,18 @@ export const quickActionConfig: QuickActionConfig[] = [
 
       const doc = host.doc;
       const autofill = getTitleFromSelectedModels(selectedModels);
-      void promptDocTitle(host, autofill).then(title => {
-        if (title === null) return;
-        convertSelectedBlocksToLinkedDoc(
-          host.std,
-          doc,
-          draftedModels,
-          title
-        ).catch(console.error);
-        notifyDocCreated(host, doc);
-      });
+      promptDocTitle(host, autofill)
+        .then(title => {
+          if (title === null) return;
+          convertSelectedBlocksToLinkedDoc(
+            host.std,
+            doc,
+            draftedModels,
+            title
+          ).catch(console.error);
+          notifyDocCreated(host, doc);
+        })
+        .catch(console.error);
     },
   },
 ];

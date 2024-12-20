@@ -16,7 +16,7 @@ import type { RootBlockComponent } from './types.js';
 export abstract class RootService extends BlockService {
   static override readonly flavour = RootBlockSchema.model.flavour;
 
-  private _fileDropOptions: FileDropOptions = {
+  private readonly _fileDropOptions: FileDropOptions = {
     flavour: this.flavour,
   };
 

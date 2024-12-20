@@ -29,7 +29,7 @@ import {
 export class TableSelectionController implements ReactiveController {
   private _tableViewSelection?: TableViewSelectionWithType;
 
-  private getFocusCellContainer = () => {
+  private readonly getFocusCellContainer = () => {
     if (
       !this._tableViewSelection ||
       this._tableViewSelection.selectionType !== 'area'

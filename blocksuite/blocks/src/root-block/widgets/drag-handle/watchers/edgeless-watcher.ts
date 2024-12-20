@@ -24,7 +24,9 @@ import {
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 
 export class EdgelessWatcher {
-  private _handleEdgelessToolUpdated = (newTool: GfxToolsFullOptionValue) => {
+  private readonly _handleEdgelessToolUpdated = (
+    newTool: GfxToolsFullOptionValue
+  ) => {
     if (newTool.type === 'default') {
       this.checkTopLevelBlockSelection();
     } else {
@@ -32,7 +34,7 @@ export class EdgelessWatcher {
     }
   };
 
-  private _handleEdgelessViewPortUpdated = ({
+  private readonly _handleEdgelessViewPortUpdated = ({
     zoom,
     center,
   }: {
@@ -60,7 +62,7 @@ export class EdgelessWatcher {
     }
   };
 
-  private _showDragHandleOnTopLevelBlocks = async () => {
+  private readonly _showDragHandleOnTopLevelBlocks = async () => {
     if (this.widget.mode === 'page') return;
     const { edgelessRoot } = this;
     await edgelessRoot.surface.updateComplete;
@@ -99,13 +101,13 @@ export class EdgelessWatcher {
     this.widget.isTopLevelDragHandleVisible = true;
   };
 
-  private _updateDragHoverRectTopLevelBlock = () => {
+  private readonly _updateDragHoverRectTopLevelBlock = () => {
     if (!this.widget.dragHoverRect) return;
 
     this.widget.dragHoverRect = this.hoverAreaRectTopLevelBlock;
   };
 
-  private _updateDragPreviewOnViewportUpdate = () => {
+  private readonly _updateDragPreviewOnViewportUpdate = () => {
     if (this.widget.dragPreview && this.widget.lastDragPointerState) {
       this.updateDragPreviewPosition(this.widget.lastDragPointerState);
     }

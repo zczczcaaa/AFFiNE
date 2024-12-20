@@ -5,7 +5,7 @@ import { diffUpdate, encodeStateVectorFromUpdate, mergeUpdates } from 'yjs';
 import type { WebSocketMessage } from './types';
 
 export class WebSocketDocSource implements DocSource {
-  private _onMessage = (event: MessageEvent<string>) => {
+  private readonly _onMessage = (event: MessageEvent<string>) => {
     const data = JSON.parse(event.data) as WebSocketMessage;
 
     if (data.channel !== 'doc') return;

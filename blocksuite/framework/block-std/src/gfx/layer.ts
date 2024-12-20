@@ -71,7 +71,7 @@ export type Layer = BlockLayer | CanvasLayer;
 export class LayerManager {
   static INITIAL_INDEX = 'a0';
 
-  private _disposable = new DisposableGroup();
+  private readonly _disposable = new DisposableGroup();
 
   blocks: GfxBlockElementModel[] = [];
 
@@ -100,7 +100,7 @@ export class LayerManager {
   };
 
   constructor(
-    private _doc: Doc,
+    private readonly _doc: Doc,
     private _surface: SurfaceBlockModel | null,
     options: {
       watch: boolean;

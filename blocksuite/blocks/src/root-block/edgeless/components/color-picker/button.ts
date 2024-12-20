@@ -17,7 +17,7 @@ import { keepColor, preprocessColor } from './utils.js';
 type Type = 'normal' | 'custom';
 
 export class EdgelessColorPickerButton extends WithDisposable(LitElement) {
-  #select = (e: ColorEvent) => {
+  readonly #select = (e: ColorEvent) => {
     this.#pick({ palette: e.detail });
   };
 

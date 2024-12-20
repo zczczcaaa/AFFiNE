@@ -84,7 +84,7 @@ export class AIPanelInput extends WithDisposable(LitElement) {
     }
   `;
 
-  private _onInput = () => {
+  private readonly _onInput = () => {
     this.textarea.style.height = 'auto';
     this.textarea.style.height = this.textarea.scrollHeight + 'px';
 
@@ -99,14 +99,14 @@ export class AIPanelInput extends WithDisposable(LitElement) {
     }
   };
 
-  private _onKeyDown = (e: KeyboardEvent) => {
+  private readonly _onKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
       this._sendToAI();
     }
   };
 
-  private _sendToAI = () => {
+  private readonly _sendToAI = () => {
     const value = this.textarea.value.trim();
     if (value.length === 0) return;
 

@@ -50,7 +50,7 @@ import { styles } from './styles.js';
 export class ReferencePopup extends WithDisposable(LitElement) {
   static override styles = styles;
 
-  private _copyLink = () => {
+  private readonly _copyLink = () => {
     const url = this.std
       .getOptional(GenerateDocUrlProvider)
       ?.generateDocUrl(this.referenceInfo.pageId, this.referenceInfo.params);
@@ -65,13 +65,13 @@ export class ReferencePopup extends WithDisposable(LitElement) {
     track(this.std, 'CopiedLink', { control: 'copy link' });
   };
 
-  private _openDoc = () => {
+  private readonly _openDoc = () => {
     this.std
       .getOptional(RefNodeSlotsProvider)
       ?.docLinkClicked.emit(this.referenceInfo);
   };
 
-  private _openEditPopup = (e: MouseEvent) => {
+  private readonly _openEditPopup = (e: MouseEvent) => {
     e.stopPropagation();
 
     if (document.body.querySelector('reference-alias-popup')) {
@@ -102,14 +102,14 @@ export class ReferencePopup extends WithDisposable(LitElement) {
     track(std, 'OpenedAliasPopup', { control: 'edit' });
   };
 
-  private _toggleViewSelector = (e: Event) => {
+  private readonly _toggleViewSelector = (e: Event) => {
     const opened = (e as CustomEvent<boolean>).detail;
     if (!opened) return;
 
     track(this.std, 'OpenedViewSelector', { control: 'switch view' });
   };
 
-  private _trackViewSelected = (type: string) => {
+  private readonly _trackViewSelected = (type: string) => {
     track(this.std, 'SelectedView', {
       control: 'select view',
       type: `${type} view`,

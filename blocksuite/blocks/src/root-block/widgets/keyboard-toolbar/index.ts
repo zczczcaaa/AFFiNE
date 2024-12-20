@@ -16,7 +16,7 @@ export class AffineKeyboardToolbarWidget extends WidgetComponent<
   RootBlockModel,
   PageRootBlockComponent
 > {
-  private _close = (blur: boolean) => {
+  private readonly _close = (blur: boolean) => {
     if (blur) {
       if (document.activeElement === this._docTitle) {
         this._docTitle?.blur();

@@ -45,7 +45,7 @@ export class MobileDataViewTable extends DataViewBase<
     }
   `;
 
-  private _addRow = (
+  private readonly _addRow = (
     tableViewManager: TableSingleView,
     position: InsertToPosition | number
   ) => {

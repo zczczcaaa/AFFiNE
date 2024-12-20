@@ -26,7 +26,7 @@ import { addSiblingAttachmentBlocks } from './utils.js';
 export class AttachmentBlockService extends BlockService {
   static override readonly flavour = AttachmentBlockSchema.model.flavour;
 
-  private _fileDropOptions: FileDropOptions = {
+  private readonly _fileDropOptions: FileDropOptions = {
     flavour: this.flavour,
     onDrop: async ({ files, targetModel, place, point }) => {
       if (!files.length) return false;

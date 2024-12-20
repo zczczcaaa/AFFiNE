@@ -71,7 +71,7 @@ export class EdgelessNavigatorSettingButton extends WithDisposable(LitElement) {
     typeof createButtonPopper
   > | null = null;
 
-  private _onBlackBackgroundChange = (checked: boolean) => {
+  private readonly _onBlackBackgroundChange = (checked: boolean) => {
     this.blackBackground = checked;
     this.edgeless.slots.navigatorSettingUpdated.emit({
       blackBackground: this.blackBackground,

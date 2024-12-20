@@ -588,12 +588,14 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         );
         const dataViewModel = rootComponent.doc.getBlock(id)!;
 
-        Promise.resolve().then(() => {
-          const dataView = rootComponent.std.view.getBlock(
-            dataViewModel.id
-          ) as DataViewBlockComponent | null;
-          dataView?.dataSource.viewManager.viewAdd('table');
-        });
+        Promise.resolve()
+          .then(() => {
+            const dataView = rootComponent.std.view.getBlock(
+              dataViewModel.id
+            ) as DataViewBlockComponent | null;
+            dataView?.dataSource.viewManager.viewAdd('table');
+          })
+          .catch(console.error);
         tryRemoveEmptyLine(model);
       },
     },

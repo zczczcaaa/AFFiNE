@@ -35,7 +35,7 @@ export class KanbanHeader extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private clickGroup = (e: MouseEvent) => {
+  private readonly clickGroup = (e: MouseEvent) => {
     const groupTrait = this.view.traitGet(groupTraitKey);
     if (!groupTrait) {
       return;

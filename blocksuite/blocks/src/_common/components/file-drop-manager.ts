@@ -31,13 +31,13 @@ export type FileDropOptions = {
 export class FileDropManager {
   private static _dropResult: DropResult | null = null;
 
-  private _blockService: BlockService;
+  private readonly _blockService: BlockService;
 
-  private _fileDropOptions: FileDropOptions;
+  private readonly _fileDropOptions: FileDropOptions;
 
-  private _indicator!: DragIndicator;
+  private readonly _indicator!: DragIndicator;
 
-  private _onDrop = (event: DragEvent) => {
+  private readonly _onDrop = (event: DragEvent) => {
     this._indicator.rect = null;
 
     const { onDrop } = this._fileDropOptions;

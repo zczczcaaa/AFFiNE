@@ -39,7 +39,7 @@ export class TableSingleView extends SingleViewBase<TableViewData> {
     return result;
   });
 
-  private computedColumns$ = computed(() => {
+  private readonly computedColumns$ = computed(() => {
     return this.propertiesWithoutFilter$.value.map(id => {
       const column = this.propertyGet(id);
       return {
@@ -51,19 +51,19 @@ export class TableSingleView extends SingleViewBase<TableViewData> {
     });
   });
 
-  private filter$ = computed(() => {
+  private readonly filter$ = computed(() => {
     return this.data$.value?.filter ?? emptyFilterGroup;
   });
 
-  private groupBy$ = computed(() => {
+  private readonly groupBy$ = computed(() => {
     return this.data$.value?.groupBy;
   });
 
-  private sortList$ = computed(() => {
+  private readonly sortList$ = computed(() => {
     return this.data$.value?.sort;
   });
 
-  private sortManager = this.traitSet(
+  private readonly sortManager = this.traitSet(
     sortTraitKey,
     new SortManager(this.sortList$, this, {
       setSortList: sortList => {
@@ -385,7 +385,7 @@ export class TableColumn extends PropertyBase {
   }
 
   constructor(
-    private tableView: TableSingleView,
+    private readonly tableView: TableSingleView,
     columnId: string
   ) {
     super(tableView as SingleView, columnId);

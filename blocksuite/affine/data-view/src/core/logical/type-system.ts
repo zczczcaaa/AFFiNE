@@ -32,7 +32,7 @@ const getMap2 = <T>(
 };
 
 export class TypeSystem {
-  private _unify: Unify = (
+  private readonly _unify: Unify = (
     ctx: TypeVarContext,
     left: TypeInstance | undefined,
     right: TypeInstance | undefined

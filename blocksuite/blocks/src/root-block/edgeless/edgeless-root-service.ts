@@ -56,7 +56,7 @@ import {
 export class EdgelessRootService extends RootService implements SurfaceContext {
   static override readonly flavour = RootBlockSchema.model.flavour;
 
-  private _surface: SurfaceBlockModel;
+  private readonly _surface: SurfaceBlockModel;
 
   elementRenderers: Record<string, ElementRenderer> = elementRenderers;
 

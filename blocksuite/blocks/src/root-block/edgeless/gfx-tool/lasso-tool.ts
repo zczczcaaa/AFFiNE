@@ -68,7 +68,7 @@ export class LassoTool extends BaseTool<LassoToolOption> {
 
   private _lastPoint: IVec = [0, 0];
 
-  private _loop = () => {
+  private readonly _loop = () => {
     const path =
       this.activatedOption.mode === LassoMode.FreeHand
         ? CommonUtils.getSvgPathFromStroke(this._lassoPoints)
@@ -79,7 +79,7 @@ export class LassoTool extends BaseTool<LassoToolOption> {
     this._raf = requestAnimationFrame(this._loop);
   };
 
-  private _overlay = new LassoOverlay(this.gfx);
+  private readonly _overlay = new LassoOverlay(this.gfx);
 
   private _raf = 0;
 

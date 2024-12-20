@@ -34,7 +34,7 @@ export class SortManager {
   constructor(
     readonly sort$: ReadonlySignal<Sort | undefined>,
     readonly view: SingleView,
-    private ops: {
+    private readonly ops: {
       setSortList: (sortList: Sort) => void;
     }
   ) {}

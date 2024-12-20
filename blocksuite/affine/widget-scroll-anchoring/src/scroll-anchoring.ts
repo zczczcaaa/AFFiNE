@@ -54,9 +54,11 @@ export class AffineScrollAnchoringWidget extends WidgetComponent {
 
   #listened = false;
 
-  #requestUpdateFn = () => this.requestUpdate();
+  readonly #requestUpdateFn = () => this.requestUpdate();
 
-  #resizeObserver: ResizeObserver = new ResizeObserver(this.#requestUpdateFn);
+  readonly #resizeObserver: ResizeObserver = new ResizeObserver(
+    this.#requestUpdateFn
+  );
 
   anchor$ = signal<Anchor | null>(null);
 

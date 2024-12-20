@@ -1,7 +1,7 @@
 class RandomPicker<T> {
   private _copyArray: T[];
 
-  private _originalArray: T[];
+  private readonly _originalArray: T[];
 
   constructor(array: T[]) {
     this._originalArray = [...array];

@@ -19,7 +19,7 @@ export class DatabaseColumnHeader extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private _onAddColumn = (e: MouseEvent) => {
+  private readonly _onAddColumn = (e: MouseEvent) => {
     if (this.readonly) return;
     this.tableViewManager.propertyAdd('end');
     const ele = e.currentTarget as HTMLElement;

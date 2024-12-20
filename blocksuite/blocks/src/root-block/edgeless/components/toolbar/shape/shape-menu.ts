@@ -59,12 +59,12 @@ export class EdgelessShapeMenu extends SignalWatcher(
     }
   `;
 
-  private _shapeName$: Signal<ShapeName> = signal(ShapeType.Rect);
+  private readonly _shapeName$: Signal<ShapeName> = signal(ShapeType.Rect);
 
   @property({ attribute: false })
   accessor edgeless!: EdgelessRootBlockComponent;
 
-  private _props$ = computed(() => {
+  private readonly _props$ = computed(() => {
     const shapeName: ShapeName = this._shapeName$.value;
     const { shapeStyle, fillColor, strokeColor, radius } =
       this.edgeless.std.get(EditPropsStore).lastProps$.value[
@@ -79,7 +79,7 @@ export class EdgelessShapeMenu extends SignalWatcher(
     };
   });
 
-  private _setFillColor = (fillColor: ShapeFillColor) => {
+  private readonly _setFillColor = (fillColor: ShapeFillColor) => {
     const filled = !isTransparent(fillColor);
     let strokeColor = fillColor.replace(
       SHAPE_COLOR_PREFIX,
@@ -101,7 +101,7 @@ export class EdgelessShapeMenu extends SignalWatcher(
     this.onChange(shapeName);
   };
 
-  private _setShapeStyle = (shapeStyle: ShapeStyle) => {
+  private readonly _setShapeStyle = (shapeStyle: ShapeStyle) => {
     const { shapeName } = this._props$.value;
     this.edgeless.std
       .get(EditPropsStore)

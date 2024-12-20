@@ -6,7 +6,7 @@ export class ViewStore extends LifeCycleWatcher {
 
   private readonly _blockMap = new Map<string, BlockComponent>();
 
-  private _fromId = (
+  private readonly _fromId = (
     blockId: string | undefined | null
   ): BlockComponent | null => {
     const id = blockId ?? this.std.doc.root?.id;

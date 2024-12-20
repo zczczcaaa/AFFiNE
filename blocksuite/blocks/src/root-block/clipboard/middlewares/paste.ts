@@ -57,7 +57,7 @@ const findLast = (snapshot: SliceSnapshot): BlockSnapshot | null => {
 };
 
 class PointState {
-  private _blockFromPath = (path: string) => {
+  private readonly _blockFromPath = (path: string) => {
     const block = this.std.view.getBlock(path);
     assertExists(block);
     return block;
@@ -88,7 +88,7 @@ class PointState {
 }
 
 class PasteTr {
-  private _getDeltas = () => {
+  private readonly _getDeltas = () => {
     const firstTextSnapshot = this._textFromSnapshot(this.firstSnapshot!);
     const lastTextSnapshot = this._textFromSnapshot(this.lastSnapshot!);
     const fromDelta = this.pointState.text.sliceToDelta(
@@ -111,7 +111,7 @@ class PasteTr {
     };
   };
 
-  private _mergeCode = () => {
+  private readonly _mergeCode = () => {
     const deltas: DeltaOperation[] = [{ retain: this.pointState.point.index }];
     this.snapshot.content.forEach((blockSnapshot, i) => {
       if (blockSnapshot.props.text) {
@@ -126,7 +126,7 @@ class PasteTr {
     this.snapshot.content = [];
   };
 
-  private _mergeMultiple = () => {
+  private readonly _mergeMultiple = () => {
     this._updateFlavour();
 
     const { lastTextSnapshot, toDelta, firstDelta, lastDelta } =
@@ -152,7 +152,7 @@ class PasteTr {
     lastTextSnapshot.delta = [...lastDelta, ...toDelta];
   };
 
-  private _mergeSingle = () => {
+  private readonly _mergeSingle = () => {
     this._updateFlavour();
     const { firstDelta } = this._getDeltas();
     const { index, length } = this.pointState.point;
@@ -172,14 +172,14 @@ class PasteTr {
     this._updateSnapshot();
   };
 
-  private _textFromSnapshot = (snapshot: BlockSnapshot) => {
+  private readonly _textFromSnapshot = (snapshot: BlockSnapshot) => {
     return (snapshot.props.text ?? { delta: [] }) as Record<
       'delta',
       DeltaOperation[]
     >;
   };
 
-  private _updateSnapshot = () => {
+  private readonly _updateSnapshot = () => {
     if (this.snapshot.content.length === 0) {
       this.firstSnapshot = this.lastSnapshot = undefined;
       return;
@@ -192,7 +192,7 @@ class PasteTr {
 
   private readonly firstSnapshotIsPlainText: boolean;
 
-  private lastIndex: number;
+  private readonly lastIndex: number;
 
   private lastSnapshot?: BlockSnapshot;
 

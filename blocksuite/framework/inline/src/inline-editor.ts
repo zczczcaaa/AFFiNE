@@ -140,7 +140,7 @@ export class InlineEditor<
     return this._rootElement;
   }
 
-  private _inlineRangeProviderOverride = false;
+  private readonly _inlineRangeProviderOverride: boolean;
   get inlineRangeProviderOverride() {
     return this._inlineRangeProviderOverride;
   }
@@ -220,6 +220,7 @@ export class InlineEditor<
       inlineRangeProvider,
       vLineRenderer = null,
     } = ops;
+    this._inlineRangeProviderOverride = false;
     this.yText = yText;
     this.isEmbed = isEmbed;
     this.vLineRenderer = vLineRenderer;

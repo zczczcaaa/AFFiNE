@@ -67,7 +67,7 @@ export class TableGroup extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private clickAddRow = () => {
+  private readonly clickAddRow = () => {
     this.view.rowAdd('end', this.group?.key);
     requestAnimationFrame(() => {
       const selectionController = this.viewEle.selectionController;
@@ -85,7 +85,7 @@ export class TableGroup extends SignalWatcher(
     });
   };
 
-  private clickAddRowInStart = () => {
+  private readonly clickAddRowInStart = () => {
     this.view.rowAdd('start', this.group?.key);
     requestAnimationFrame(() => {
       const selectionController = this.viewEle.selectionController;
@@ -103,7 +103,7 @@ export class TableGroup extends SignalWatcher(
     });
   };
 
-  private clickGroupOptions = (e: MouseEvent) => {
+  private readonly clickGroupOptions = (e: MouseEvent) => {
     const group = this.group;
     if (!group) {
       return;
@@ -128,7 +128,7 @@ export class TableGroup extends SignalWatcher(
     ]);
   };
 
-  private renderGroupHeader = () => {
+  private readonly renderGroupHeader = () => {
     if (!this.group) {
       return null;
     }

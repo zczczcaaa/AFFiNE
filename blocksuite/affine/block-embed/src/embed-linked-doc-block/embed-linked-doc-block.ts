@@ -48,7 +48,7 @@ import { getEmbedLinkedDocIcons } from './utils.js';
 export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinkedDocModel> {
   static override styles = styles;
 
-  private _load = async () => {
+  private readonly _load = async () => {
     const {
       loading = true,
       isError = false,
@@ -103,7 +103,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
     }
   };
 
-  private _selectBlock = () => {
+  private readonly _selectBlock = () => {
     const selectionManager = this.host.selection;
     const blockSelection = selectionManager.create('block', {
       blockId: this.blockId,
@@ -111,7 +111,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
     selectionManager.setGroup('note', [blockSelection]);
   };
 
-  private _setDocUpdatedAt = () => {
+  private readonly _setDocUpdatedAt = () => {
     const meta = this.doc.collection.meta.getDocMeta(this.model.pageId);
     if (meta) {
       const date = meta.updatedDate || meta.createDate;

@@ -209,28 +209,30 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
 
         const doc = host.doc;
         const autofill = getTitleFromSelectedModels(selectedModels);
-        void promptDocTitle(host, autofill).then(async title => {
-          if (title === null) return;
-          await convertSelectedBlocksToLinkedDoc(
-            host.std,
-            doc,
-            draftedModels,
-            title
-          );
-          notifyDocCreated(host, doc);
-          host.std.getOptional(TelemetryProvider)?.track('DocCreated', {
-            control: 'create linked doc',
-            page: 'doc editor',
-            module: 'format toolbar',
-            type: 'embed-linked-doc',
-          });
-          host.std.getOptional(TelemetryProvider)?.track('LinkedDocCreated', {
-            control: 'create linked doc',
-            page: 'doc editor',
-            module: 'format toolbar',
-            type: 'embed-linked-doc',
-          });
-        });
+        promptDocTitle(host, autofill)
+          .then(async title => {
+            if (title === null) return;
+            await convertSelectedBlocksToLinkedDoc(
+              host.std,
+              doc,
+              draftedModels,
+              title
+            );
+            notifyDocCreated(host, doc);
+            host.std.getOptional(TelemetryProvider)?.track('DocCreated', {
+              control: 'create linked doc',
+              page: 'doc editor',
+              module: 'format toolbar',
+              type: 'embed-linked-doc',
+            });
+            host.std.getOptional(TelemetryProvider)?.track('LinkedDocCreated', {
+              control: 'create linked doc',
+              page: 'doc editor',
+              module: 'format toolbar',
+              type: 'embed-linked-doc',
+            });
+          })
+          .catch(console.error);
       },
       showWhen: chain => {
         const [_, ctx] = chain

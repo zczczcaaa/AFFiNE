@@ -88,28 +88,30 @@ export class AffineEditorContainer
     }
   `;
 
-  private _doc = signal<Doc>();
+  private readonly _doc = signal<Doc>();
 
-  private _edgelessSpecs = signal<ExtensionType[]>(EdgelessEditorBlockSpecs);
+  private readonly _edgelessSpecs = signal<ExtensionType[]>(
+    EdgelessEditorBlockSpecs
+  );
 
-  private _mode = signal<DocMode>('page');
+  private readonly _mode = signal<DocMode>('page');
 
-  private _pageSpecs = signal<ExtensionType[]>(PageEditorBlockSpecs);
+  private readonly _pageSpecs = signal<ExtensionType[]>(PageEditorBlockSpecs);
 
-  private _specs = computed(() =>
+  private readonly _specs = computed(() =>
     this._mode.value === 'page'
       ? this._pageSpecs.value
       : this._edgelessSpecs.value
   );
 
-  private _std = computed(() => {
+  private readonly _std = computed(() => {
     return new BlockStdScope({
       doc: this.doc,
       extensions: this._specs.value,
     });
   });
 
-  private _editorTemplate = computed(() => {
+  private readonly _editorTemplate = computed(() => {
     return this._std.value.render();
   });
 

@@ -35,7 +35,7 @@ export class BlockComponent<
   @consume({ context: stdContext })
   accessor std!: BlockStdScope;
 
-  private _selected = computed(() => {
+  private readonly _selected = computed(() => {
     const selection = this.std.selection.value.find(selection => {
       return selection.blockId === this.model?.id;
     });

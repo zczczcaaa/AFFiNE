@@ -106,7 +106,7 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<
     }
   `;
 
-  private _clickDatabaseOps = (e: MouseEvent) => {
+  private readonly _clickDatabaseOps = (e: MouseEvent) => {
     const options = this.optionsConfig.configure(this.model, {
       items: [
         menu.input({
@@ -156,9 +156,9 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<
 
   private _dataSource?: DatabaseBlockDataSource;
 
-  private dataView = new DataView();
+  private readonly dataView = new DataView();
 
-  private renderTitle = (dataViewMethod: DataViewInstance) => {
+  private readonly renderTitle = (dataViewMethod: DataViewInstance) => {
     const addRow = () => dataViewMethod.addRow?.('start');
     return html` <affine-database-title
       style="overflow: hidden"

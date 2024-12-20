@@ -77,7 +77,7 @@ export abstract class MindmapStyleGetter {
 }
 
 export class StyleOne extends MindmapStyleGetter {
-  private _colorOrders = [
+  private readonly _colorOrders = [
     LineColor.Purple,
     LineColor.Magenta,
     LineColor.Orange,
@@ -188,7 +188,7 @@ export class StyleOne extends MindmapStyleGetter {
 export const styleOne = new StyleOne();
 
 export class StyleTwo extends MindmapStyleGetter {
-  private _colorOrders = [
+  private readonly _colorOrders = [
     ShapeFillColor.Blue,
     '#7ae2d5',
     ShapeFillColor.Yellow,
@@ -298,7 +298,11 @@ export class StyleTwo extends MindmapStyleGetter {
 export const styleTwo = new StyleTwo();
 
 export class StyleThree extends MindmapStyleGetter {
-  private _strokeColor = [LineColor.Yellow, LineColor.Green, LineColor.Teal];
+  private readonly _strokeColor = [
+    LineColor.Yellow,
+    LineColor.Green,
+    LineColor.Teal,
+  ];
 
   readonly root = {
     radius: 10,
@@ -402,7 +406,7 @@ export class StyleThree extends MindmapStyleGetter {
 export const styleThree = new StyleThree();
 
 export class StyleFour extends MindmapStyleGetter {
-  private _colors = [
+  private readonly _colors = [
     ShapeFillColor.Purple,
     ShapeFillColor.Magenta,
     ShapeFillColor.Orange,

@@ -16,7 +16,7 @@ export const AFFINE_FRAME_TITLE_EDITOR = 'affine-frame-card-title-editor';
 export class FrameCardTitleEditor extends WithDisposable(ShadowlessElement) {
   static override styles = styles;
 
-  private _isComposing = false;
+  private readonly _isComposing = false;
 
   get inlineEditor() {
     return this.richText.inlineEditor;

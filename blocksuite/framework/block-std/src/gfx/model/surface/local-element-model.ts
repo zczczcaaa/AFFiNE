@@ -39,7 +39,7 @@ export function prop<V, T extends GfxLocalElementModel>() {
 }
 
 export abstract class GfxLocalElementModel implements GfxCompatibleInterface {
-  private _mutex: mutex.mutex = mutex.createMutex();
+  private readonly _mutex: mutex.mutex = mutex.createMutex();
 
   protected _local = new Map<string | symbol, unknown>();
 

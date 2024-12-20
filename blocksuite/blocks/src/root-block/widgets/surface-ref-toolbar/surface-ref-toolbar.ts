@@ -42,7 +42,7 @@ export class AffineSurfaceRefToolbar extends WidgetComponent<
   moreGroups: MenuItemGroup<SurfaceRefToolbarContext>[] =
     cloneGroups(BUILT_IN_GROUPS);
 
-  private _hoverController = new HoverController(
+  private readonly _hoverController = new HoverController(
     this,
     ({ abortController }) => {
       const surfaceRefBlock = this.block;

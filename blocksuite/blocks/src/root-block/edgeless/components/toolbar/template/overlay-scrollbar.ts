@@ -50,7 +50,7 @@ export class OverlayScrollbar extends LitElement {
     }
   `;
 
-  private _disposable = new DisposableGroup();
+  private readonly _disposable = new DisposableGroup();
 
   private _handleVisible = false;
 

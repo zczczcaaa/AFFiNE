@@ -68,6 +68,6 @@ export function getMonthMatrix(maybeDate: MaybeDate) {
 }
 
 export function clamp(num1: number, num2: number, value: number) {
-  const [min, max] = [num1, num2].sort();
+  const [min, max] = [num1, num2].sort((a, b) => a - b);
   return Math.min(Math.max(value, min), max);
 }

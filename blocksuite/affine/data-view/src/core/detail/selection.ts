@@ -49,7 +49,7 @@ export class DetailSelection {
     }
   }
 
-  constructor(private viewEle: RecordDetail) {}
+  constructor(private readonly viewEle: RecordDetail) {}
 
   blur(selection: DetailViewSelection) {
     const container = this.getFocusCellContainer(selection);

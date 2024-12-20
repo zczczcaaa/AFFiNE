@@ -229,7 +229,7 @@ export class EdgelessToolbarWidget extends WidgetComponent<
   @state()
   accessor containerWidth = 1920;
 
-  private _onContainerResize = debounce(({ w }: { w: number }) => {
+  private readonly _onContainerResize = debounce(({ w }: { w: number }) => {
     if (!this.isConnected) return;
 
     this.slots.resize.emit({ w, h: TOOLBAR_HEIGHT });
@@ -262,17 +262,17 @@ export class EdgelessToolbarWidget extends WidgetComponent<
 
   private _resizeObserver: ResizeObserver | null = null;
 
-  private _slotsProvider = new ContextProvider(this, {
+  private readonly _slotsProvider = new ContextProvider(this, {
     context: edgelessToolbarSlotsContext,
     initialValue: { resize: new Slot() } satisfies EdgelessToolbarSlots,
   });
 
-  private _themeProvider = new ContextProvider(this, {
+  private readonly _themeProvider = new ContextProvider(this, {
     context: edgelessToolbarThemeContext,
     initialValue: ColorScheme.Light,
   });
 
-  private _toolbarProvider = new ContextProvider(this, {
+  private readonly _toolbarProvider = new ContextProvider(this, {
     context: edgelessToolbarContext,
     initialValue: this,
   });

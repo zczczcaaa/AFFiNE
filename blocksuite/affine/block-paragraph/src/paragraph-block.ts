@@ -34,13 +34,13 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
 > {
   static override styles = paragraphBlockStyles;
 
-  private _composing = signal(false);
+  private readonly _composing = signal(false);
 
-  private _displayPlaceholder = signal(false);
+  private readonly _displayPlaceholder = signal(false);
 
   private _inlineRangeProvider: InlineRangeProvider | null = null;
 
-  private _isInDatabase = () => {
+  private readonly _isInDatabase = () => {
     let parent = this.parentElement;
     while (parent && parent !== document.body) {
       if (parent.tagName.toLowerCase() === 'affine-database') {

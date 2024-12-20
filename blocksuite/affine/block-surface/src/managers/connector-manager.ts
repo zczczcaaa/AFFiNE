@@ -1149,7 +1149,7 @@ export class PathGenerator {
 
 export class ConnectorPathGenerator extends PathGenerator {
   constructor(
-    private options: {
+    private readonly options: {
       getElementById: (id: string) => GfxModel | null;
     }
   ) {

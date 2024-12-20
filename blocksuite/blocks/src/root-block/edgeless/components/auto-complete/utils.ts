@@ -80,7 +80,7 @@ export class AutoCompleteTextOverlay extends AutoCompleteTargetOverlay {
 }
 
 export class AutoCompleteNoteOverlay extends AutoCompleteTargetOverlay {
-  private _background: string;
+  private readonly _background: string;
 
   constructor(gfx: GfxController, xywh: XYWH, background: string) {
     super(gfx, xywh);
@@ -110,7 +110,7 @@ export class AutoCompleteNoteOverlay extends AutoCompleteTargetOverlay {
 }
 
 export class AutoCompleteFrameOverlay extends AutoCompleteTargetOverlay {
-  private _strokeColor;
+  private readonly _strokeColor;
 
   constructor(gfx: GfxController, xywh: XYWH, strokeColor: string) {
     super(gfx, xywh);
@@ -151,7 +151,7 @@ export class AutoCompleteFrameOverlay extends AutoCompleteTargetOverlay {
 }
 
 export class AutoCompleteShapeOverlay extends Overlay {
-  private _shape: Shape;
+  private readonly _shape: Shape;
 
   constructor(
     gfx: GfxController,

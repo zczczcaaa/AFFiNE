@@ -33,7 +33,7 @@ export class EdgelessLassoToolButton extends QuickToolMixin(
     }
   `;
 
-  private _changeTool = () => {
+  private readonly _changeTool = () => {
     const tool = this.edgelessTool;
     if (tool.type !== 'lasso') {
       this.setEdgelessTool({ type: 'lasso', mode: this.curMode });

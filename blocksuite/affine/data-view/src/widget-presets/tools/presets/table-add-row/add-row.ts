@@ -19,7 +19,7 @@ const styles = css`
 export class DataViewHeaderToolsAddRow extends WidgetBase {
   static override styles = styles;
 
-  private _onAddNewRecord = () => {
+  private readonly _onAddNewRecord = () => {
     if (this.readonly) return;
     this.viewMethods.addRow?.('start');
   };

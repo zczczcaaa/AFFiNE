@@ -15,7 +15,7 @@ import { handleLayout } from '../utils/mindmap/utils.js';
 export class MindMapView extends GfxElementModelView<MindmapElementModel> {
   static override type = 'mindmap';
 
-  private _collapseButtons = new Map<string, LocalShapeElementModel>();
+  private readonly _collapseButtons = new Map<string, LocalShapeElementModel>();
 
   private _hoveredState = new Map<
     string,

@@ -23,13 +23,13 @@ noop(PieNodeChild);
 export const AFFINE_PIE_MENU_WIDGET = 'affine-pie-menu-widget';
 
 export class AffinePieMenuWidget extends WidgetComponent {
-  private _handleCursorPos = (ctx: UIEventStateContext) => {
+  private readonly _handleCursorPos = (ctx: UIEventStateContext) => {
     const ev = ctx.get('pointerState');
     const { x, y } = ev.point;
     this.mouse = [x, y];
   };
 
-  private _handleKeyUp = (ctx: UIEventStateContext) => {
+  private readonly _handleKeyUp = (ctx: UIEventStateContext) => {
     if (!this.currentMenu) return;
     const ev = ctx.get('keyboardState');
     const { trigger } = this.currentMenu.schema;

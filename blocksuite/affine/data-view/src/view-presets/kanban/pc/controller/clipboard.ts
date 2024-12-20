@@ -5,7 +5,7 @@ import type { KanbanViewSelectionWithType } from '../../types.js';
 import type { DataViewKanban } from '../kanban-view.js';
 
 export class KanbanClipboardController implements ReactiveController {
-  private _onCopy = (
+  private readonly _onCopy = (
     _context: UIEventStateContext,
     _kanbanSelection: KanbanViewSelectionWithType
   ) => {
@@ -13,7 +13,7 @@ export class KanbanClipboardController implements ReactiveController {
     return true;
   };
 
-  private _onPaste = (_context: UIEventStateContext) => {
+  private readonly _onPaste = (_context: UIEventStateContext) => {
     // todo
     return true;
   };

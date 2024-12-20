@@ -32,7 +32,7 @@ export class LinkedDocPopover extends SignalWatcher(
 ) {
   static override styles = linkedDocPopoverStyles;
 
-  private _abort = () => {
+  private readonly _abort = () => {
     // remove popover dom
     this.context.close();
     // clear input query
@@ -43,9 +43,9 @@ export class LinkedDocPopover extends SignalWatcher(
     );
   };
 
-  private _expanded = new Map<string, boolean>();
+  private readonly _expanded = new Map<string, boolean>();
 
-  private _updateLinkedDocGroup = async () => {
+  private readonly _updateLinkedDocGroup = async () => {
     const query = this._query;
     if (this._updateLinkedDocGroupAbortController) {
       this._updateLinkedDocGroupAbortController.abort();

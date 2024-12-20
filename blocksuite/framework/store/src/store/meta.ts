@@ -36,7 +36,7 @@ export type DocCollectionMetaState = {
 };
 
 export class DocCollectionMeta {
-  private _handleDocCollectionMetaEvents = (
+  private readonly _handleDocCollectionMetaEvents = (
     events: Y.YEvent<Y.Array<unknown> | Y.Text | Y.Map<unknown>>[]
   ) => {
     events.forEach(e => {

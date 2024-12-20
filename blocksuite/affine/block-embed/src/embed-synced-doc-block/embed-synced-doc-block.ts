@@ -55,7 +55,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
   // Caches total bounds, includes all blocks and elements.
   private _cachedBounds: Bound | null = null;
 
-  private _initEdgelessFitEffect = () => {
+  private readonly _initEdgelessFitEffect = () => {
     const fitToContent = () => {
       if (this.isPageMode) return;
 
@@ -99,7 +99,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       .catch(() => {});
   };
 
-  private _pageFilter: Query = {
+  private readonly _pageFilter: Query = {
     mode: 'loose',
     match: [
       {

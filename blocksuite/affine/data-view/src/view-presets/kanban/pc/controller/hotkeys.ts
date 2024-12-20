@@ -7,7 +7,7 @@ export class KanbanHotkeysController implements ReactiveController {
     return !!this.host.selectionController.selection;
   }
 
-  constructor(private host: DataViewKanban) {
+  constructor(private readonly host: DataViewKanban) {
     this.host.addController(this);
   }
 

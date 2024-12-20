@@ -11,7 +11,7 @@ import { KeyboardEventState } from '../state/index.js';
 import { EventScopeSourceType, EventSourceState } from '../state/source.js';
 
 export class KeyboardControl {
-  private _down = (event: KeyboardEvent) => {
+  private readonly _down = (event: KeyboardEvent) => {
     if (!this._shouldTrigger(event)) {
       return;
     }
@@ -25,7 +25,7 @@ export class KeyboardControl {
     );
   };
 
-  private _shouldTrigger = (event: KeyboardEvent) => {
+  private readonly _shouldTrigger = (event: KeyboardEvent) => {
     if (event.isComposing) {
       return false;
     }
@@ -41,7 +41,7 @@ export class KeyboardControl {
     return true;
   };
 
-  private _up = (event: KeyboardEvent) => {
+  private readonly _up = (event: KeyboardEvent) => {
     if (!this._shouldTrigger(event)) {
       return;
     }
@@ -58,7 +58,7 @@ export class KeyboardControl {
 
   private composition = false;
 
-  constructor(private _dispatcher: UIEventDispatcher) {}
+  constructor(private readonly _dispatcher: UIEventDispatcher) {}
 
   private _createContext(event: Event, keyboardState: KeyboardEventState) {
     return UIEventStateContext.from(

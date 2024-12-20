@@ -18,19 +18,19 @@ import {
 export class PieNode extends WithDisposable(LitElement) {
   static override styles = pieNodeStyles;
 
-  private _handleChildNodeClick = () => {
+  private readonly _handleChildNodeClick = () => {
     this.select();
     if (isCommandNode(this.model)) this.menu.close();
   };
 
-  private _handleGoBack = () => {
+  private readonly _handleGoBack = () => {
     // If the node is not active and if it is hovered then we can go back to that node
     if (this.menu.activeNode !== this) {
       this.menu.popSelectionChainTo(this);
     }
   };
 
-  private _onPointerAngleUpdated = (angle: number | null) => {
+  private readonly _onPointerAngleUpdated = (angle: number | null) => {
     this._rotatorAngle = angle;
     this.menu.activeNode.requestUpdate();
 

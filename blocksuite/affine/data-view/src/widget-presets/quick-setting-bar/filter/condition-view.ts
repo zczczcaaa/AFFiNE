@@ -82,13 +82,13 @@ export class FilterConditionView extends SignalWatcher(ShadowlessElement) {
     }
   `;
 
-  private onClickButton = (evt: Event) => {
+  private readonly onClickButton = (evt: Event) => {
     this.popConditionEdit(
       popupTargetFromElement(evt.currentTarget as HTMLElement)
     );
   };
 
-  private popConditionEdit = (target: PopupTarget) => {
+  private readonly popConditionEdit = (target: PopupTarget) => {
     const type = this.leftVar$.value?.type;
     if (!type) {
       return;

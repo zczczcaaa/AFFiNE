@@ -4,7 +4,7 @@ import type { PatternFiller, RenderHelper } from './filler-interface.js';
 import { polygonHachureLines } from './scan-line-hachure.js';
 
 export class HachureFiller implements PatternFiller {
-  private helper: RenderHelper;
+  private readonly helper: RenderHelper;
 
   constructor(helper: RenderHelper) {
     this.helper = helper;

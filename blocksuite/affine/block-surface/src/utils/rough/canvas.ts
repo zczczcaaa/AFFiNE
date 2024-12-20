@@ -9,11 +9,11 @@ import { RoughGenerator } from './generator.js';
 import type { Point } from './geometry.js';
 
 export class RoughCanvas {
-  private canvas: HTMLCanvasElement;
+  private readonly canvas: HTMLCanvasElement;
 
-  private ctx: CanvasRenderingContext2D;
+  private readonly ctx: CanvasRenderingContext2D;
 
-  private gen: RoughGenerator;
+  private readonly gen: RoughGenerator;
 
   get generator(): RoughGenerator {
     return this.gen;

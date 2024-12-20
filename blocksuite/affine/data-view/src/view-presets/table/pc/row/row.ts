@@ -114,7 +114,7 @@ export class TableRow extends SignalWatcher(WithDisposable(ShadowlessElement)) {
     }
   `;
 
-  private _clickDragHandler = () => {
+  private readonly _clickDragHandler = () => {
     if (this.view.readonly$.value) {
       return;
     }

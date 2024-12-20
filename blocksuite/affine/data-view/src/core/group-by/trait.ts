@@ -103,7 +103,7 @@ export class GroupTrait {
     return groupMap;
   });
 
-  private _groupsDataList$ = computed(() => {
+  private readonly _groupsDataList$ = computed(() => {
     const groupMap = this.groupDataMap$.value;
     if (!groupMap) {
       return;
@@ -143,9 +143,9 @@ export class GroupTrait {
   }
 
   constructor(
-    private groupBy$: ReadonlySignal<GroupBy | undefined>,
+    private readonly groupBy$: ReadonlySignal<GroupBy | undefined>,
     public view: SingleView,
-    private ops: {
+    private readonly ops: {
       groupBySet: (groupBy: GroupBy | undefined) => void;
       sortGroup: (keys: string[]) => string[];
       sortRow: (groupKey: string, rowIds: string[]) => string[];

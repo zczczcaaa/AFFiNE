@@ -54,9 +54,9 @@ export class DatePicker extends WithDisposable(LitElement) {
   /** current active month */
   private _cursor = new Date();
 
-  private _maxYear = 2099;
+  private readonly _maxYear = 2099;
 
-  private _minYear = 1970;
+  private readonly _minYear = 1970;
 
   get _cardStyle() {
     return {

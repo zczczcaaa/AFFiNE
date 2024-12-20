@@ -87,14 +87,14 @@ export class DatabaseNumberFormatBar extends WithDisposable(LitElement) {
     }
   `;
 
-  private _decrementDecimalPlaces = () => {
+  private readonly _decrementDecimalPlaces = () => {
     this.column.dataUpdate(data => ({
       decimal: Math.max(((data.decimal as number) ?? 0) - 1, 0),
     }));
     this.requestUpdate();
   };
 
-  private _incrementDecimalPlaces = () => {
+  private readonly _incrementDecimalPlaces = () => {
     this.column.dataUpdate(data => ({
       decimal: Math.min(((data.decimal as number) ?? 0) + 1, 8),
     }));

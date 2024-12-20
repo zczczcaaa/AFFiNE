@@ -192,8 +192,8 @@ export class MouseSession implements DndSession {
 
   constructor(
     event: Event,
-    private sessionProps: DndSessionProps,
-    private props: MouseSensorProps
+    private readonly sessionProps: DndSessionProps,
+    private readonly props: MouseSensorProps
   ) {
     this.initialCoordinates = getEventCoordinates(event) ?? defaultCoordinates;
     this.attach();

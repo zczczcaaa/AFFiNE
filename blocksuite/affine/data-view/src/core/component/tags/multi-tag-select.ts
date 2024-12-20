@@ -150,7 +150,7 @@ class TagManager {
     return this.ops.value;
   }
 
-  constructor(private ops: TagManagerOptions) {}
+  constructor(private readonly ops: TagManagerOptions) {}
 
   deleteTag(id: string) {
     this.ops.onChange(this.value.value.filter(item => item !== id));
@@ -180,7 +180,7 @@ export class MultiTagSelect extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private _clickItemOption = (e: MouseEvent, id: string) => {
+  private readonly _clickItemOption = (e: MouseEvent, id: string) => {
     e.stopPropagation();
     const option = this.options.value.find(v => v.id === id);
     if (!option) {
@@ -235,11 +235,11 @@ export class MultiTagSelect extends SignalWatcher(
     });
   };
 
-  private _onInput = (event: KeyboardEvent) => {
+  private readonly _onInput = (event: KeyboardEvent) => {
     this.tagManager.text.value = (event.target as HTMLInputElement).value;
   };
 
-  private _onInputKeydown = (event: KeyboardEvent) => {
+  private readonly _onInputKeydown = (event: KeyboardEvent) => {
     event.stopPropagation();
     const inputValue = this.text.value.trim();
     if (event.key === 'Backspace' && inputValue === '') {
@@ -257,9 +257,9 @@ export class MultiTagSelect extends SignalWatcher(
     }
   };
 
-  private tagManager = new TagManager(this);
+  private readonly tagManager = new TagManager(this);
 
-  private selectedTag$ = computed(() => {
+  private readonly selectedTag$ = computed(() => {
     return this.tagManager.filteredOptions$.value[this.selectedIndex];
   });
 

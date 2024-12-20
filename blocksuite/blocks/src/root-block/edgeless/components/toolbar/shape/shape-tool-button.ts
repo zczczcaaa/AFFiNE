@@ -23,14 +23,14 @@ export class EdgelessShapeToolButton extends EdgelessToolbarToolMixin(
     }
   `;
 
-  private _handleShapeClick = (shape: DraggableShape) => {
+  private readonly _handleShapeClick = (shape: DraggableShape) => {
     this.setEdgelessTool(this.type, {
       shapeName: shape.name,
     });
     if (!this.popper) this._toggleMenu();
   };
 
-  private _handleWrapperClick = () => {
+  private readonly _handleWrapperClick = () => {
     if (this.tryDisposePopper()) return;
 
     this.setEdgelessTool(this.type, {

@@ -109,7 +109,7 @@ export class RecordField extends SignalWatcher(
     }
   `;
 
-  private _cell = createRef<DataViewCellLifeCycle>();
+  private readonly _cell = createRef<DataViewCellLifeCycle>();
 
   _click = (e: MouseEvent) => {
     e.stopPropagation();

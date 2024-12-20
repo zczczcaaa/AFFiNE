@@ -205,7 +205,7 @@ export class HeaderAreaTextCell extends BaseTextCell {
 }
 
 export class HeaderAreaTextCellEditing extends BaseTextCell {
-  private _onCopy = (e: ClipboardEvent) => {
+  private readonly _onCopy = (e: ClipboardEvent) => {
     const inlineEditor = this.inlineEditor;
     assertExists(inlineEditor);
 
@@ -222,7 +222,7 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
     e.stopPropagation();
   };
 
-  private _onCut = (e: ClipboardEvent) => {
+  private readonly _onCut = (e: ClipboardEvent) => {
     const inlineEditor = this.inlineEditor;
     assertExists(inlineEditor);
 
@@ -244,7 +244,7 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
     e.stopPropagation();
   };
 
-  private _onPaste = (e: ClipboardEvent) => {
+  private readonly _onPaste = (e: ClipboardEvent) => {
     const inlineEditor = this.inlineEditor;
     const inlineRange = inlineEditor?.getInlineRange();
     if (!inlineRange) return;

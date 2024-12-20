@@ -6,7 +6,7 @@ type PriorityQueueNode<T, K> = {
 export class PriorityQueue<T, K> {
   heap: PriorityQueueNode<T, K>[] = [];
 
-  constructor(private _compare: (a: K, b: K) => number) {}
+  constructor(private readonly _compare: (a: K, b: K) => number) {}
 
   bubbleDown(): void {
     let index = 0;

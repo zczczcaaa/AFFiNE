@@ -14,7 +14,7 @@ type ChannelMessage =
     };
 
 export class BroadcastChannelDocSource implements DocSource {
-  private _onMessage = (event: MessageEvent<ChannelMessage>) => {
+  private readonly _onMessage = (event: MessageEvent<ChannelMessage>) => {
     if (event.data.type === 'init') {
       for (const [docId, data] of this.docMap) {
         this.channel.postMessage({

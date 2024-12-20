@@ -78,7 +78,7 @@ function getMostCommonBackground(
 }
 
 export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
-  private _setBorderRadius = (borderRadius: number) => {
+  private readonly _setBorderRadius = (borderRadius: number) => {
     this.notes.forEach(note => {
       const props = {
         edgeless: {
@@ -92,7 +92,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     });
   };
 
-  private _setNoteScale = (scale: number) => {
+  private readonly _setNoteScale = (scale: number) => {
     this.notes.forEach(note => {
       this.doc.updateBlock(note, () => {
         const bound = Bound.deserialize(note.xywh);

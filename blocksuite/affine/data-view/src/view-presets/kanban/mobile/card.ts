@@ -91,7 +91,7 @@ export class MobileKanbanCard extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private clickCenterPeek = (e: MouseEvent) => {
+  private readonly clickCenterPeek = (e: MouseEvent) => {
     e.stopPropagation();
     this.dataViewEle.openDetailPanel({
       view: this.view,
@@ -99,7 +99,7 @@ export class MobileKanbanCard extends SignalWatcher(
     });
   };
 
-  private clickMore = (e: MouseEvent) => {
+  private readonly clickMore = (e: MouseEvent) => {
     e.stopPropagation();
     popCardMenu(
       popupTargetFromElement(e.currentTarget as HTMLElement),

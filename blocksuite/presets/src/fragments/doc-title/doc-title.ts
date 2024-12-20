@@ -59,7 +59,7 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
     }
   `;
 
-  private _onTitleKeyDown = (event: KeyboardEvent) => {
+  private readonly _onTitleKeyDown = (event: KeyboardEvent) => {
     if (event.isComposing || this.doc.readonly) return;
     const hasContent = !this.doc.isEmpty;
 
@@ -83,7 +83,7 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
     }
   };
 
-  private _updateTitleInMeta = () => {
+  private readonly _updateTitleInMeta = () => {
     this.doc.collection.setDocMeta(this.doc.id, {
       title: this._rootModel.title.toString(),
     });

@@ -10,7 +10,7 @@ export class TableHotkeysController implements ReactiveController {
     return this.host.selectionController;
   }
 
-  constructor(private host: DataViewTable) {
+  constructor(private readonly host: DataViewTable) {
     this.host.addController(this);
   }
 

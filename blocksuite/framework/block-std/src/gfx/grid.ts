@@ -66,16 +66,22 @@ const typeFilters = {
 type FilterFunc = (model: GfxModel | GfxLocalElementModel) => boolean;
 
 export class GridManager {
-  private _elementToGrids = new Map<
+  private readonly _elementToGrids = new Map<
     GfxModel | GfxLocalElementModel,
     Set<Set<GfxModel | GfxLocalElementModel>>
   >();
 
-  private _externalElementToGrids = new Map<GfxModel, Set<Set<GfxModel>>>();
+  private readonly _externalElementToGrids = new Map<
+    GfxModel,
+    Set<Set<GfxModel>>
+  >();
 
-  private _externalGrids = new Map<string, Set<GfxModel>>();
+  private readonly _externalGrids = new Map<string, Set<GfxModel>>();
 
-  private _grids = new Map<string, Set<GfxModel | GfxLocalElementModel>>();
+  private readonly _grids = new Map<
+    string,
+    Set<GfxModel | GfxLocalElementModel>
+  >();
 
   get isEmpty() {
     return this._grids.size === 0;

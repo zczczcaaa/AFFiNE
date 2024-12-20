@@ -63,14 +63,14 @@ export class DatabaseHeaderColumn extends SignalWatcher(
     }
   `;
 
-  private _clickColumn = () => {
+  private readonly _clickColumn = () => {
     if (this.tableViewManager.readonly$.value) {
       return;
     }
     this.popMenu();
   };
 
-  private _clickTypeIcon = (event: MouseEvent) => {
+  private readonly _clickTypeIcon = (event: MouseEvent) => {
     if (this.tableViewManager.readonly$.value) {
       return;
     }
@@ -96,7 +96,7 @@ export class DatabaseHeaderColumn extends SignalWatcher(
     });
   };
 
-  private _contextMenu = (e: MouseEvent) => {
+  private readonly _contextMenu = (e: MouseEvent) => {
     if (this.tableViewManager.readonly$.value) {
       return;
     }
@@ -104,7 +104,7 @@ export class DatabaseHeaderColumn extends SignalWatcher(
     this.popMenu(e.currentTarget as HTMLElement);
   };
 
-  private _enterWidthDragBar = () => {
+  private readonly _enterWidthDragBar = () => {
     if (this.tableViewManager.readonly$.value) {
       return;
     }
@@ -115,13 +115,13 @@ export class DatabaseHeaderColumn extends SignalWatcher(
     this.drawWidthDragBar();
   };
 
-  private _leaveWidthDragBar = () => {
+  private readonly _leaveWidthDragBar = () => {
     cancelAnimationFrame(this.drawWidthDragBarTask);
     this.drawWidthDragBarTask = 0;
     getVerticalIndicator().remove();
   };
 
-  private drawWidthDragBar = () => {
+  private readonly drawWidthDragBar = () => {
     const rect = getTableGroupRect(this);
     if (!rect) {
       return;
@@ -136,7 +136,7 @@ export class DatabaseHeaderColumn extends SignalWatcher(
 
   private drawWidthDragBarTask = 0;
 
-  private widthDragBar = createRef();
+  private readonly widthDragBar = createRef();
 
   editTitle = () => {
     this._clickColumn();

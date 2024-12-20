@@ -32,7 +32,7 @@ const { toDegree, toRadian } = CommonUtils;
 export class PieMenu extends WithDisposable(LitElement) {
   static override styles = pieMenuStyles;
 
-  private _handleKeyDown = (ev: KeyboardEvent) => {
+  private readonly _handleKeyDown = (ev: KeyboardEvent) => {
     const { key } = ev;
     if (key === 'Escape') {
       return this.abortController.abort();
@@ -49,7 +49,7 @@ export class PieMenu extends WithDisposable(LitElement) {
     }
   };
 
-  private _handlePointerMove = (ev: PointerEvent) => {
+  private readonly _handlePointerMove = (ev: PointerEvent) => {
     const { clientX, clientY } = ev;
 
     const { ACTIVATE_THRESHOLD_MIN } = PieManager.settings;
@@ -73,7 +73,7 @@ export class PieMenu extends WithDisposable(LitElement) {
 
   private _openSubmenuTimeout?: NodeJS.Timeout;
 
-  private selectChildWithIndex = (index: number) => {
+  private readonly selectChildWithIndex = (index: number) => {
     const activeNode = this.activeNode;
     if (!activeNode || isNaN(index)) return;
 

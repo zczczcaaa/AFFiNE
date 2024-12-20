@@ -20,13 +20,13 @@ import {
 } from '../../../edgeless/utils/query.js';
 
 export class ElementToolbarMoreMenuContext extends MenuContext {
-  #empty = true;
+  readonly #empty: boolean;
 
-  #includedFrame = false;
+  readonly #includedFrame: boolean;
 
-  #multiple = false;
+  readonly #multiple: boolean;
 
-  #single = false;
+  readonly #single: boolean;
 
   edgeless!: EdgelessRootBlockComponent;
 

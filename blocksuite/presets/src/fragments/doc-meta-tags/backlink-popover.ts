@@ -79,10 +79,10 @@ export class BacklinkButton extends WithDisposable(LitElement) {
     ${scrollbarStyle('.backlink-popover .group')}
   `;
 
-  private _backlinks: BacklinkData[];
+  private readonly _backlinks: BacklinkData[];
 
   // Handle click outside
-  private _onClickAway = (e: Event) => {
+  private readonly _onClickAway = (e: Event) => {
     if (e.target === this) return;
     if (!this._showPopover) return;
     this._showPopover = false;

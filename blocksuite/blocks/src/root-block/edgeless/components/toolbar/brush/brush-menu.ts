@@ -36,7 +36,7 @@ export class EdgelessBrushMenu extends EdgelessToolbarToolMixin(
     }
   `;
 
-  private _props$ = computed(() => {
+  private readonly _props$ = computed(() => {
     const { color, lineWidth } =
       this.edgeless.std.get(EditPropsStore).lastProps$.value.brush;
     return {

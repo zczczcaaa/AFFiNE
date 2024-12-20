@@ -49,7 +49,7 @@ export class LinkPopup extends WithDisposable(LitElement) {
 
   private _bodyOverflowStyle = '';
 
-  private _createTemplate = () => {
+  private readonly _createTemplate = () => {
     this.updateComplete
       .then(() => {
         this.linkInput?.focus();
@@ -74,14 +74,14 @@ export class LinkPopup extends WithDisposable(LitElement) {
     `;
   };
 
-  private _delete = () => {
+  private readonly _delete = () => {
     if (this.inlineEditor.isValidInlineRange(this.targetInlineRange)) {
       this.inlineEditor.deleteText(this.targetInlineRange);
     }
     this.abortController.abort();
   };
 
-  private _edit = () => {
+  private readonly _edit = () => {
     if (!this.host) return;
 
     this.type = 'edit';
@@ -89,7 +89,7 @@ export class LinkPopup extends WithDisposable(LitElement) {
     track(this.host.std, 'OpenedAliasPopup', { control: 'edit' });
   };
 
-  private _editTemplate = () => {
+  private readonly _editTemplate = () => {
     this.updateComplete
       .then(() => {
         if (
@@ -139,7 +139,7 @@ export class LinkPopup extends WithDisposable(LitElement) {
 
   private _embedOptions: EmbedOptions | null = null;
 
-  private _openLink = () => {
+  private readonly _openLink = () => {
     if (this.openLink) {
       this.openLink();
       return;
@@ -154,7 +154,7 @@ export class LinkPopup extends WithDisposable(LitElement) {
     this.abortController.abort();
   };
 
-  private _removeLink = () => {
+  private readonly _removeLink = () => {
     if (this.inlineEditor.isValidInlineRange(this.targetInlineRange)) {
       this.inlineEditor.formatText(this.targetInlineRange, {
         link: null,
@@ -163,7 +163,7 @@ export class LinkPopup extends WithDisposable(LitElement) {
     this.abortController.abort();
   };
 
-  private _toggleViewSelector = (e: Event) => {
+  private readonly _toggleViewSelector = (e: Event) => {
     if (!this.host) return;
 
     const opened = (e as CustomEvent<boolean>).detail;
@@ -172,7 +172,7 @@ export class LinkPopup extends WithDisposable(LitElement) {
     track(this.host.std, 'OpenedViewSelector', { control: 'switch view' });
   };
 
-  private _trackViewSelected = (type: string) => {
+  private readonly _trackViewSelected = (type: string) => {
     if (!this.host) return;
 
     track(this.host.std, 'SelectedView', {
@@ -181,7 +181,7 @@ export class LinkPopup extends WithDisposable(LitElement) {
     });
   };
 
-  private _viewTemplate = () => {
+  private readonly _viewTemplate = () => {
     if (!this.currentLink) return;
 
     this._embedOptions =

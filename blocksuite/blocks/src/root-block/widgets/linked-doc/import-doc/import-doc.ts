@@ -30,10 +30,10 @@ export class ImportDoc extends WithDisposable(LitElement) {
   static override styles = styles;
 
   constructor(
-    private collection: DocCollection,
-    private onSuccess?: OnSuccessHandler,
-    private onFail?: OnFailHandler,
-    private abortController = new AbortController()
+    private readonly collection: DocCollection,
+    private readonly onSuccess?: OnSuccessHandler,
+    private readonly onFail?: OnFailHandler,
+    private readonly abortController = new AbortController()
   ) {
     super();
 

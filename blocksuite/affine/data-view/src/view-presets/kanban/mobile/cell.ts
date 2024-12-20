@@ -51,7 +51,7 @@ export class MobileKanbanCell extends SignalWatcher(
 ) {
   static override styles = styles;
 
-  private _cell = createRef<DataViewCellLifeCycle>();
+  private readonly _cell = createRef<DataViewCellLifeCycle>();
 
   isEditing$ = computed(() => {
     const selection = this.kanban?.props.selection$.value;

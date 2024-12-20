@@ -21,7 +21,7 @@ export class EdgelessCopilotToolbarEntry extends WithDisposable(LitElement) {
     }
   `;
 
-  private _onClick = () => {
+  private readonly _onClick = () => {
     this.onClick?.();
     this._showCopilotPanel();
   };

@@ -31,7 +31,7 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
     }
   `;
 
-  private _resizeObserver = new ResizeObserver(() => {
+  private readonly _resizeObserver = new ResizeObserver(() => {
     if (this.doc.readonly) {
       return;
     }

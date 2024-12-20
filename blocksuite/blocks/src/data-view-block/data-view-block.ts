@@ -92,7 +92,7 @@ export class DataViewBlockComponent extends CaptionedBlockComponent<DataViewBloc
     }
   `;
 
-  private _clickDatabaseOps = (e: MouseEvent) => {
+  private readonly _clickDatabaseOps = (e: MouseEvent) => {
     popMenu(popupTargetFromElement(e.currentTarget as HTMLElement), {
       options: {
         items: [
@@ -136,7 +136,7 @@ export class DataViewBlockComponent extends CaptionedBlockComponent<DataViewBloc
 
   private _dataSource?: DataSource;
 
-  private dataView = new DataView();
+  private readonly dataView = new DataView();
 
   _bindHotkey: DataViewProps['bindHotkey'] = hotkeys => {
     return {

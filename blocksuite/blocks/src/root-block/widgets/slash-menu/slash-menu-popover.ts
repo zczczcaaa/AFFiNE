@@ -46,7 +46,7 @@ type InnerSlashMenuContext = SlashMenuContext & {
 export class SlashMenu extends WithDisposable(LitElement) {
   static override styles = styles;
 
-  private _handleClickItem = (item: SlashMenuActionItem) => {
+  private readonly _handleClickItem = (item: SlashMenuActionItem) => {
     // Need to remove the search string
     // We must to do clean the slash string before we do the action
     // Otherwise, the action may change the model and cause the slash string to be changed
@@ -64,7 +64,7 @@ export class SlashMenu extends WithDisposable(LitElement) {
       .catch(console.error);
   };
 
-  private _initItemPathMap = () => {
+  private readonly _initItemPathMap = () => {
     const traverse = (item: SlashMenuStaticItem, path: number[]) => {
       this._itemPathMap.set(item, [...path]);
       if (isSubMenuItem(item)) {
@@ -79,13 +79,13 @@ export class SlashMenu extends WithDisposable(LitElement) {
 
   private _innerSlashMenuContext!: InnerSlashMenuContext;
 
-  private _itemPathMap = new Map<SlashMenuItem, number[]>();
+  private readonly _itemPathMap = new Map<SlashMenuItem, number[]>();
 
   private _queryState: 'off' | 'on' | 'no_result' = 'off';
 
-  private _startRange = this.inlineEditor.getInlineRange();
+  private readonly _startRange = this.inlineEditor.getInlineRange();
 
-  private _updateFilteredItems = () => {
+  private readonly _updateFilteredItems = () => {
     const query = this._query;
     if (query === null) {
       this.abortController.abort();
@@ -152,8 +152,8 @@ export class SlashMenu extends WithDisposable(LitElement) {
   }
 
   constructor(
-    private inlineEditor: AffineInlineEditor,
-    private abortController = new AbortController()
+    private readonly inlineEditor: AffineInlineEditor,
+    private readonly abortController = new AbortController()
   ) {
     super();
   }
@@ -301,7 +301,7 @@ export class SlashMenu extends WithDisposable(LitElement) {
 export class InnerSlashMenu extends WithDisposable(LitElement) {
   static override styles = styles;
 
-  private _closeSubMenu = () => {
+  private readonly _closeSubMenu = () => {
     this._subMenuAbortController?.abort();
     this._subMenuAbortController = null;
     this._currentSubMenu = null;
@@ -309,7 +309,7 @@ export class InnerSlashMenu extends WithDisposable(LitElement) {
 
   private _currentSubMenu: SlashSubMenu | null = null;
 
-  private _openSubMenu = (item: SlashSubMenu) => {
+  private readonly _openSubMenu = (item: SlashSubMenu) => {
     if (item === this._currentSubMenu) return;
 
     const itemElement = this.shadowRoot?.querySelector(
@@ -351,7 +351,7 @@ export class InnerSlashMenu extends WithDisposable(LitElement) {
     subMenuElement.focus();
   };
 
-  private _renderActionItem = (item: SlashMenuActionItem) => {
+  private readonly _renderActionItem = (item: SlashMenuActionItem) => {
     const { name, icon, description, tooltip, customTemplate } = item;
 
     const hover = item === this._activeItem;
@@ -387,11 +387,11 @@ export class InnerSlashMenu extends WithDisposable(LitElement) {
     </icon-button>`;
   };
 
-  private _renderGroupItem = (item: SlashMenuGroupDivider) => {
+  private readonly _renderGroupItem = (item: SlashMenuGroupDivider) => {
     return html`<div class="slash-menu-group-name">${item.groupName}</div>`;
   };
 
-  private _renderItem = (item: SlashMenuStaticItem) => {
+  private readonly _renderItem = (item: SlashMenuStaticItem) => {
     if (isGroupDivider(item)) return this._renderGroupItem(item);
     else if (isActionItem(item)) return this._renderActionItem(item);
     else if (isSubMenuItem(item)) return this._renderSubMenuItem(item);
@@ -402,7 +402,7 @@ export class InnerSlashMenu extends WithDisposable(LitElement) {
     }
   };
 
-  private _renderSubMenuItem = (item: SlashSubMenu) => {
+  private readonly _renderSubMenuItem = (item: SlashSubMenu) => {
     const { name, icon, description } = item;
 
     const hover = item === this._activeItem;

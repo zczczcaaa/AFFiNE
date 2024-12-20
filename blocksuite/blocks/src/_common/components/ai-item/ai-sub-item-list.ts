@@ -45,7 +45,7 @@ export class AISubItemList extends WithDisposable(LitElement) {
     ${menuItemStyles}
   `;
 
-  private _handleClick = (subItem: AISubItemConfig) => {
+  private readonly _handleClick = (subItem: AISubItemConfig) => {
     this.onClick?.();
     if (subItem.handler) {
       // TODO: add parameters to ai handler

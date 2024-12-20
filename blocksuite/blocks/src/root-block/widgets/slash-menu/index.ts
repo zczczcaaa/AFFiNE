@@ -108,7 +108,9 @@ export const AFFINE_SLASH_MENU_WIDGET = 'affine-slash-menu-widget';
 export class AffineSlashMenuWidget extends WidgetComponent {
   static DEFAULT_CONFIG = defaultSlashMenuConfig;
 
-  private _getInlineEditor = (evt: KeyboardEvent | CompositionEvent) => {
+  private readonly _getInlineEditor = (
+    evt: KeyboardEvent | CompositionEvent
+  ) => {
     if (evt.target instanceof HTMLElement) {
       const editor = (
         evt.target.closest('.inline-editor') as {
@@ -129,7 +131,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
     return getInlineEditorByModel(this.host, model);
   };
 
-  private _handleInput = (
+  private readonly _handleInput = (
     inlineEditor: InlineEditor,
     isCompositionEnd: boolean
   ) => {
@@ -192,7 +194,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
     });
   };
 
-  private _onCompositionEnd = (ctx: UIEventStateContext) => {
+  private readonly _onCompositionEnd = (ctx: UIEventStateContext) => {
     const event = ctx.get('defaultState').event as CompositionEvent;
 
     if (
@@ -208,7 +210,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
     this._handleInput(inlineEditor, true);
   };
 
-  private _onKeyDown = (ctx: UIEventStateContext) => {
+  private readonly _onKeyDown = (ctx: UIEventStateContext) => {
     const eventState = ctx.get('keyboardState');
     const event = eventState.raw;
 

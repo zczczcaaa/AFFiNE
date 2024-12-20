@@ -82,7 +82,7 @@ export class LinkCell extends BaseCellRenderer<string> {
     }
   `;
 
-  private _onClick = (event: Event) => {
+  private readonly _onClick = (event: Event) => {
     event.stopPropagation();
     const value = this.value ?? '';
 
@@ -102,7 +102,7 @@ export class LinkCell extends BaseCellRenderer<string> {
     }
   };
 
-  private _onEdit = (e: Event) => {
+  private readonly _onEdit = (e: Event) => {
     e.stopPropagation();
     this.selectCurrentCell(true);
   };
@@ -199,13 +199,13 @@ export class LinkCellEditing extends BaseCellRenderer<string> {
     }
   `;
 
-  private _focusEnd = () => {
+  private readonly _focusEnd = () => {
     const end = this._container.value.length;
     this._container.focus();
     this._container.setSelectionRange(end, end);
   };
 
-  private _onKeydown = (e: KeyboardEvent) => {
+  private readonly _onKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.isComposing) {
       this._setValue();
       setTimeout(() => {
@@ -214,7 +214,7 @@ export class LinkCellEditing extends BaseCellRenderer<string> {
     }
   };
 
-  private _setValue = (value: string = this._container.value) => {
+  private readonly _setValue = (value: string = this._container.value) => {
     let url = value;
     if (isValidUrl(value)) {
       url = normalizeUrl(value);

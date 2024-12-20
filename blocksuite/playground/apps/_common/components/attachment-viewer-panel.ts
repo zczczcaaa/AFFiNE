@@ -112,13 +112,13 @@ export class AttachmentViewerPanel extends SignalWatcher(
     }
   `;
 
-  #cursor = signal<number>(0);
+  readonly #cursor = signal<number>(0);
 
-  #docInfo = signal<DocInfo | null>(null);
+  readonly #docInfo = signal<DocInfo | null>(null);
 
-  #fileInfo = signal<FileInfo | null>(null);
+  readonly #fileInfo = signal<FileInfo | null>(null);
 
-  #state = signal<State>(State.Connecting);
+  readonly #state = signal<State>(State.Connecting);
 
   #worker: Worker | null = null;
 

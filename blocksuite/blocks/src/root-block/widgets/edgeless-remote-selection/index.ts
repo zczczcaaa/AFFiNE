@@ -81,14 +81,16 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
 
   private _remoteColorManager: RemoteColorManager | null = null;
 
-  private _updateOnElementChange = (element: string | { id: string }) => {
+  private readonly _updateOnElementChange = (
+    element: string | { id: string }
+  ) => {
     const id = typeof element === 'string' ? element : element.id;
 
     if (this.isConnected && this.selection.hasRemote(id))
       this._updateRemoteRects();
   };
 
-  private _updateRemoteCursor = () => {
+  private readonly _updateRemoteCursor = () => {
     const remoteCursors: EdgelessRemoteSelectionWidget['_remoteCursors'] =
       new Map();
     const status = this.doc.awarenessStore.getStates();
@@ -106,7 +108,7 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
     this._remoteCursors = remoteCursors;
   };
 
-  private _updateRemoteRects = () => {
+  private readonly _updateRemoteRects = () => {
     const { selection, block } = this;
     const remoteSelectionsMap = selection.remoteSurfaceSelectionsMap;
     const remoteRects: EdgelessRemoteSelectionWidget['_remoteRects'] =
@@ -148,7 +150,7 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
     this._remoteRects = remoteRects;
   };
 
-  private _updateTransform = requestThrottledConnectedFrame(() => {
+  private readonly _updateTransform = requestThrottledConnectedFrame(() => {
     const { translateX, translateY, zoom } = this.edgeless.service.viewport;
 
     this.style.setProperty('--v-zoom', `${zoom}`);

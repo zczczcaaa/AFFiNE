@@ -60,10 +60,10 @@ export function onlyContainImgElement(
 export class Clipboard extends LifeCycleWatcher {
   static override readonly key = 'clipboard';
 
-  private _adapterMap: AdapterMap = new Map();
+  private readonly _adapterMap: AdapterMap = new Map();
 
   // Need to be cloned to a map for later use
-  private _getDataByType = (clipboardData: DataTransfer) => {
+  private readonly _getDataByType = (clipboardData: DataTransfer) => {
     const data = new Map<string, string | File[]>();
     for (const type of clipboardData.types) {
       if (type === 'Files') {
@@ -105,7 +105,7 @@ export class Clipboard extends LifeCycleWatcher {
     };
   };
 
-  private _getSnapshotByPriority = async (
+  private readonly _getSnapshotByPriority = async (
     getItem: (type: string) => string | File[],
     doc: Doc,
     parent?: string,

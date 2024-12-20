@@ -79,7 +79,7 @@ export class KanbanSelectionController implements ReactiveController {
     return this.host.props.view;
   }
 
-  constructor(private host: DataViewKanban) {
+  constructor(private readonly host: DataViewKanban) {
     this.host.addController(this);
   }
 

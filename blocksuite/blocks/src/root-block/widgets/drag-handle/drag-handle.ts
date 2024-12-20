@@ -58,16 +58,18 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
 
   private _anchorModelDisposables: DisposableGroup | null = null;
 
-  private _dragEventWatcher = new DragEventWatcher(this);
+  private readonly _dragEventWatcher = new DragEventWatcher(this);
 
-  private _getBlockView = (blockId: string) => {
+  private readonly _getBlockView = (blockId: string) => {
     return this.host.view.getBlock(blockId);
   };
 
   /**
    * When dragging, should update indicator position and target drop block id
    */
-  private _getDropResult = (state: DndEventState): DropResult | null => {
+  private readonly _getDropResult = (
+    state: DndEventState
+  ): DropResult | null => {
     const point = new Point(state.raw.x, state.raw.y);
     const closestBlock = getClosestBlockByPoint(
       this.host,
@@ -137,22 +139,22 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
     return dropIndicator;
   };
 
-  private _handleEventWatcher = new HandleEventWatcher(this);
+  private readonly _handleEventWatcher = new HandleEventWatcher(this);
 
-  private _keyboardEventWatcher = new KeyboardEventWatcher(this);
+  private readonly _keyboardEventWatcher = new KeyboardEventWatcher(this);
 
-  private _legacyDragEventWatcher = new LegacyDragEventWatcher(this);
+  private readonly _legacyDragEventWatcher = new LegacyDragEventWatcher(this);
 
-  private _pageWatcher = new PageWatcher(this);
+  private readonly _pageWatcher = new PageWatcher(this);
 
-  private _removeDropIndicator = () => {
+  private readonly _removeDropIndicator = () => {
     if (this.dropIndicator) {
       this.dropIndicator.remove();
       this.dropIndicator = null;
     }
   };
 
-  private _reset = () => {
+  private readonly _reset = () => {
     this.draggingElements = [];
     this.dropBlockId = '';
     this.dropType = null;
@@ -173,17 +175,17 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
     this._resetCursor();
   };
 
-  private _resetCursor = () => {
+  private readonly _resetCursor = () => {
     document.documentElement.classList.remove('affine-drag-preview-grabbing');
   };
 
-  private _resetDropResult = () => {
+  private readonly _resetDropResult = () => {
     this.dropBlockId = '';
     this.dropType = null;
     if (this.dropIndicator) this.dropIndicator.rect = null;
   };
 
-  private _updateDropResult = (dropResult: DropResult | null) => {
+  private readonly _updateDropResult = (dropResult: DropResult | null) => {
     if (!this.dropIndicator) return;
     this.dropBlockId = dropResult?.dropBlockId ?? '';
     this.dropType = dropResult?.dropType ?? null;

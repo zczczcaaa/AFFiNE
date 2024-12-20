@@ -451,7 +451,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
 
   private _dragEndCallback: (() => void)[] = [];
 
-  private _initSelectedSlot = () => {
+  private readonly _initSelectedSlot = () => {
     this._propDisposables.forEach(disposable => disposable.dispose());
     this._propDisposables = [];
 
@@ -466,7 +466,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     });
   };
 
-  private _onDragEnd = () => {
+  private readonly _onDragEnd = () => {
     this.slots.dragEnd.emit();
 
     this.doc.transact(() => {
@@ -488,7 +488,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     this.frameOverlay.clear();
   };
 
-  private _onDragMove = (
+  private readonly _onDragMove = (
     newBounds: Map<
       string,
       {
@@ -561,7 +561,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     });
   };
 
-  private _onDragRotate = (center: IPoint, delta: number) => {
+  private readonly _onDragRotate = (center: IPoint, delta: number) => {
     this.slots.dragRotate.emit();
 
     const { selection } = this;
@@ -606,7 +606,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     this._updateMode();
   };
 
-  private _onDragStart = () => {
+  private readonly _onDragStart = () => {
     this.slots.dragStart.emit();
 
     const rotation = this._resizeManager.rotation;
@@ -651,9 +651,9 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
 
   private _propDisposables: Disposable[] = [];
 
-  private _resizeManager: HandleResizeManager;
+  private readonly _resizeManager: HandleResizeManager;
 
-  private _updateCursor = (
+  private readonly _updateCursor = (
     dragging: boolean,
     options?: {
       type: 'resize' | 'rotate';
@@ -711,7 +711,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     this.gfx.cursor$.value = cursor;
   };
 
-  private _updateMode = () => {
+  private readonly _updateMode = () => {
     if (this._cursorRotate) {
       this._mode = 'rotate';
       return;
@@ -738,7 +738,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     }
   };
 
-  private _updateOnElementChange = (
+  private readonly _updateOnElementChange = (
     element: string | { id: string },
     fromRemote: boolean = false
   ) => {
@@ -754,7 +754,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     }
   };
 
-  private _updateOnSelectionChange = () => {
+  private readonly _updateOnSelectionChange = () => {
     this._initSelectedSlot();
     this._updateSelectedRect();
     this._updateResizeManagerState(true);
@@ -763,7 +763,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     this._updateMode();
   };
 
-  private _updateOnViewportChange = () => {
+  private readonly _updateOnViewportChange = () => {
     if (this.selection.empty) {
       return;
     }
@@ -775,7 +775,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
   /**
    * @param refresh indicate whether to completely refresh the state of resize manager, otherwise only update the position
    */
-  private _updateResizeManagerState = (refresh: boolean) => {
+  private readonly _updateResizeManagerState = (refresh: boolean) => {
     const {
       _resizeManager,
       _selectedRect,
@@ -813,7 +813,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     borderStyle: 'solid',
   };
 
-  private _updateSelectedRect = requestThrottledConnectedFrame(() => {
+  private readonly _updateSelectedRect = requestThrottledConnectedFrame(() => {
     const { zoom, selection, gfx } = this;
 
     const elements = selection.selectedElements;

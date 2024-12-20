@@ -50,7 +50,7 @@ type MarkdownToSliceSnapshotPayload = {
 };
 
 export class MarkdownAdapter extends BaseAdapter<Markdown> {
-  private _traverseMarkdown = (
+  private readonly _traverseMarkdown = (
     markdown: MarkdownAST,
     snapshot: BlockSnapshot,
     assets?: AssetsManager
@@ -105,7 +105,7 @@ export class MarkdownAdapter extends BaseAdapter<Markdown> {
     return walker.walk(markdown, snapshot);
   };
 
-  private _traverseSnapshot = async (
+  private readonly _traverseSnapshot = async (
     snapshot: BlockSnapshot,
     markdown: MarkdownAST,
     assets?: AssetsManager

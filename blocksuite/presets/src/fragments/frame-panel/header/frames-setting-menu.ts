@@ -72,14 +72,14 @@ export const AFFINE_FRAMES_SETTING_MENU = 'affine-frames-setting-menu';
 export class FramesSettingMenu extends WithDisposable(LitElement) {
   static override styles = styles;
 
-  private _onBlackBackgroundChange = (checked: boolean) => {
+  private readonly _onBlackBackgroundChange = (checked: boolean) => {
     this.blackBackground = checked;
     this._edgelessRootService?.slots.navigatorSettingUpdated.emit({
       blackBackground: this.blackBackground,
     });
   };
 
-  private _onFillScreenChange = (checked: boolean) => {
+  private readonly _onFillScreenChange = (checked: boolean) => {
     this.fillScreen = checked;
     this._edgelessRootService?.slots.navigatorSettingUpdated.emit({
       fillScreen: this.fillScreen,
@@ -87,7 +87,7 @@ export class FramesSettingMenu extends WithDisposable(LitElement) {
     this._editPropsStore.setStorage('presentFillScreen', this.fillScreen);
   };
 
-  private _onHideToolBarChange = (checked: boolean) => {
+  private readonly _onHideToolBarChange = (checked: boolean) => {
     this.hideToolbar = checked;
     this._edgelessRootService?.slots.navigatorSettingUpdated.emit({
       hideToolbar: this.hideToolbar,

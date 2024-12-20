@@ -60,7 +60,7 @@ export class AffinePageDraggingAreaWidget extends WidgetComponent<
 
   private _rafID = 0;
 
-  private _updateDraggingArea = (
+  private readonly _updateDraggingArea = (
     state: PointerEventState,
     shouldAutoScroll: boolean
   ) => {

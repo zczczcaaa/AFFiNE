@@ -42,9 +42,9 @@ type RendererOptions = {
 export class CanvasRenderer {
   private _container!: HTMLElement;
 
-  private _disposables = new DisposableGroup();
+  private readonly _disposables = new DisposableGroup();
 
-  private _overlays = new Set<Overlay>();
+  private readonly _overlays = new Set<Overlay>();
 
   private _refreshRafId: number | null = null;
 
