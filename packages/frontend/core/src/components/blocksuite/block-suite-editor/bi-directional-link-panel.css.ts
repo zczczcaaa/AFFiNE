@@ -79,6 +79,10 @@ export const link = style({
   alignItems: 'center',
   gap: '4px',
   whiteSpace: 'nowrap',
+  borderRadius: '4px',
+  ':hover': {
+    backgroundColor: cssVarV2('layer/background/hoverOverlay'),
+  },
 });
 
 globalStyle(`${link} .affine-reference-title`, {
@@ -88,19 +92,22 @@ globalStyle(`${link} .affine-reference-title`, {
 export const linkPreviewContainer = style({
   display: 'flex',
   flexDirection: 'column',
+  gap: '12px',
+  marginTop: '4px',
+  marginBottom: '16px',
 });
 
 export const linkPreview = style({
-  border: `1px solid ${cssVarV2('layer/insideBorder/border')}`,
+  border: `0.5px solid ${cssVarV2('backlinks/blockBorder')}`,
   borderRadius: '8px',
   padding: '8px',
-  marginBottom: '8px',
   color: cssVarV2('text/primary'),
   vars: {
     [cssVar('fontFamily')]: cssVar('fontSansFamily'),
   },
+  backgroundColor: cssVarV2('backlinks/blockBackgroundColor'),
   ':hover': {
-    backgroundColor: cssVarV2('layer/background/hoverOverlay'),
+    backgroundColor: cssVarV2('backlinks/blockHover'),
   },
 });
 
