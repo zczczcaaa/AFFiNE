@@ -1844,7 +1844,6 @@ export type GetMembersByWorkspaceIdQuery = {
       avatarUrl: string | null;
       permission: Permission;
       inviteId: string;
-      accepted: boolean;
       emailVerified: boolean | null;
       status: WorkspaceMemberStatus;
     }>;

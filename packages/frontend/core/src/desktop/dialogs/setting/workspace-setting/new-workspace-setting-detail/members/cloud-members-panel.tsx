@@ -62,6 +62,7 @@ export const CloudWorkspaceMembersPanel = ({
   const permissionService = useService(WorkspacePermissionService);
   const isOwner = useLiveData(permissionService.permission.isOwner$);
   const isAdmin = useLiveData(permissionService.permission.isAdmin$);
+  const isOwnerOrAdmin = isOwner || isAdmin;
   useEffect(() => {
     permissionService.permission.revalidate();
   }, [permissionService]);
@@ -233,8 +234,8 @@ export const CloudWorkspaceMembersPanel = ({
 
   return (
     <>
-      <SettingRow name={title} desc={desc} spreadCol={!!isOwner}>
-        {isOwner ? (
+      <SettingRow name={title} desc={desc} spreadCol={!!isOwnerOrAdmin}>
+        {isOwnerOrAdmin ? (
           <>
             <Button onClick={openInviteModal}>{t['Invite Members']()}</Button>
             {!isTeam ? (

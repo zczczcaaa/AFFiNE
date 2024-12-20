@@ -193,14 +193,17 @@ export const MemberOptions = ({
         label: t['com.affine.payment.member.team.remove'](),
         onClick: handleRemove,
         show:
-          (isAdmin || isOwner) &&
-          member.status === WorkspaceMemberStatus.Accepted,
+          (isOwner && member.status === WorkspaceMemberStatus.Accepted) ||
+          (isAdmin &&
+            member.status === WorkspaceMemberStatus.Accepted &&
+            member.permission !== Permission.Owner &&
+            member.permission !== Permission.Admin),
       },
       {
         label: t['com.affine.payment.member.team.change.collaborator'](),
         onClick: handleChangeToCollaborator,
         show:
-          (isAdmin || isOwner) &&
+          isOwner &&
           member.status === WorkspaceMemberStatus.Accepted &&
           member.permission === Permission.Admin,
       },

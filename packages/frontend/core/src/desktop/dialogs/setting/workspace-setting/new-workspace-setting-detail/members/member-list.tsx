@@ -210,7 +210,7 @@ const MemberItem = ({
       </div>
       <div
         className={clsx(styles.roleOrStatus, {
-          pending: !member.accepted,
+          pending: member.status !== WorkspaceMemberStatus.Accepted,
         })}
       >
         {t.t(memberStatus)}

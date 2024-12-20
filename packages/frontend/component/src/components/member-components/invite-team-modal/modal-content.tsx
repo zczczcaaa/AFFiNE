@@ -69,6 +69,9 @@ export const ModalContent = ({
               />
             ),
             value: 'link',
+            style: {
+              cursor: 'not-allowed',
+            },
           },
         ]}
       />

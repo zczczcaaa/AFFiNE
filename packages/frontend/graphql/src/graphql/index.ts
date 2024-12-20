@@ -469,7 +469,6 @@ query getMembersByWorkspaceId($workspaceId: String!, $skip: Int!, $take: Int!) {
       avatarUrl
       permission
       inviteId
-      accepted
       emailVerified
       status
     }
