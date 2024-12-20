@@ -116,7 +116,7 @@ function generateMarkdownPreviewBuilder(
   blocks: BlockDocumentInfo[]
 ) {
   function yblockToDraftModal(yblock: YBlock): DraftModel | null {
-    const flavour = yblock.get('sys:flavour');
+    const flavour = yblock.get('sys:flavour') as string;
     const blockSchema = blocksuiteSchema.flavourSchemaMap.get(flavour);
     if (!blockSchema) {
       return null;
@@ -131,7 +131,7 @@ function generateMarkdownPreviewBuilder(
 
     return {
       ...props,
-      id: yblock.get('sys:id'),
+      id: yblock.get('sys:id') as string,
       flavour,
       children: [],
       role: blockSchema.model.role,

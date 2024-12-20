@@ -157,6 +157,10 @@
     {
       "path": "./tests/affine-desktop"
     },
+    // Blocksuite
+    {
+      "path": "./blocksuite"
+    },
     // Others
     {
       "path": "./tsconfig.node.json"

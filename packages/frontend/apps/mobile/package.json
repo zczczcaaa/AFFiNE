@@ -13,7 +13,7 @@
     "@affine/component": "workspace:*",
     "@affine/core": "workspace:*",
     "@affine/i18n": "workspace:*",
-    "@blocksuite/affine": "0.19.5",
+    "@blocksuite/affine": "workspace:*",
     "@blocksuite/icons": "2.1.75",
     "@sentry/react": "^8.44.0",
     "react": "^19.0.0",

@@ -1,0 +1,78 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "useDefineForClassFields": false,
+    "module": "NodeNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "skipLibCheck": true,
+    "incremental": true,
+    "composite": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./framework/block-std"
+    },
+    {
+      "path": "./framework/store"
+    },
+    {
+      "path": "./framework/global"
+    },
+    {
+      "path": "./framework/inline"
+    },
+    {
+      "path": "./blocks"
+    },
+    {
+      "path": "./presets"
+    },
+    {
+      "path": "./affine/all"
+    },
+    {
+      "path": "./affine/block-embed"
+    },
+    {
+      "path": "./affine/block-list"
+    },
+    {
+      "path": "./affine/block-paragraph"
+    },
+    {
+      "path": "./affine/block-surface"
+    },
+    {
+      "path": "./affine/components"
+    },
+    {
+      "path": "./affine/data-view"
+    },
+    {
+      "path": "./affine/model"
+    },
+    {
+      "path": "./affine/shared"
+    },
+    {
+      "path": "./affine/widget-scroll-anchoring"
+    }
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "compilerOptions": {
+      "noUnusedLocals": false,
+      "noUnusedParameters": false,
+      "noImplicitReturns": false
+    }
+  }
+}

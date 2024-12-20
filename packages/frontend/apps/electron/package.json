@@ -30,7 +30,7 @@
     "@affine/i18n": "workspace:*",
     "@affine/native": "workspace:*",
     "@affine/nbstore": "workspace:*",
-    "@blocksuite/affine": "0.19.5",
+    "@blocksuite/affine": "workspace:*",
     "@electron-forge/cli": "^7.6.0",
     "@electron-forge/core": "^7.6.0",
     "@electron-forge/core-utils": "^7.6.0",

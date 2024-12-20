@@ -1,4 +1,6 @@
 // This file should has not side effect
+// oxlint-disable-next-line
+// @ts-ignore FIXME: typecheck error
 import type { DocCollection } from '@blocksuite/affine/store';
 
 declare global {

@@ -108,7 +108,12 @@
     ],
     "typescript/prefer-as-const": "error",
     "typescript/no-var-requires": "error",
-    "typescript/no-namespace": "error",
+    "typescript/no-namespace": [
+      "error",
+      {
+        "allowDeclarations": true
+      }
+    ],
     "typescript/ban-ts-comment": [
       "error",
       {
@@ -180,6 +185,14 @@
             "ts-check": false
           }
         ]
+      }
+    },
+    {
+      "files": ["blocksuite/**/*.ts"],
+      "rules": {
+        "eslint/eqeqeq": "off",
+        "typescript/no-non-null-assertion": "off",
+        "unicorn/prefer-array-some": "off"
       }
     }
   ]
