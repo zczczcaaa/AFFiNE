@@ -194,6 +194,15 @@
         "typescript/no-non-null-assertion": "off",
         "unicorn/prefer-array-some": "off"
       }
+    },
+    {
+      "files": ["blocksuite/tests-legacy/**/*.ts"],
+      "rules": {
+        "typescript/ban-ts-comment": "off",
+        "unicorn/prefer-dom-node-dataset": "off",
+        "typescript/consistent-type-imports": "off",
+        "no-cycle": "off"
+      }
     }
   ]
 }

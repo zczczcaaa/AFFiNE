@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite --host",
     "dev:hmr": "WC_HMR=1 vite",
-    "build": "tsc && nx vite:build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -40,6 +40,8 @@
     "@types/micromatch": "^4.0.9",
     "graphql": "^16.9.0",
     "magic-string": "^0.30.11",
+    "vite": "^6.0.3",
+    "vite-plugin-istanbul": "^6.0.2",
     "vite-plugin-wasm": "^3.3.0",
     "vite-plugin-web-components-hmr": "^0.1.3"
   }

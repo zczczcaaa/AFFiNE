@@ -26,3 +26,5 @@ packages/backend/native/index.d.ts
 packages/frontend/native/index.d.ts
 packages/frontend/native/index.js
 compose.yaml
+
+blocksuite/tests-legacy/snapshots
