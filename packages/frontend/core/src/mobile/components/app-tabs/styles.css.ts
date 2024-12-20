@@ -14,9 +14,16 @@ export const appTabs = style({
 
   width: '100dvw',
 
-  position: 'fixed',
-  bottom: -2,
   zIndex: 1,
+
+  marginBottom: -2,
+  selectors: {
+    '&[data-fixed="true"]': {
+      position: 'fixed',
+      bottom: -2,
+      marginBottom: 0,
+    },
+  },
 });
 export const appTabsInner = style({
   display: 'flex',

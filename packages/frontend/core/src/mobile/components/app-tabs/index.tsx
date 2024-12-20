@@ -10,15 +10,23 @@ import { type AppTabLink, tabs } from './data';
 import * as styles from './styles.css';
 import { TabItem } from './tab-item';
 
-export const AppTabs = ({ background }: { background?: string }) => {
+export const AppTabs = ({
+  background,
+  fixed = true,
+}: {
+  background?: string;
+  fixed?: boolean;
+}) => {
   const virtualKeyboardService = useService(VirtualKeyboardService);
   const virtualKeyboardVisible = useLiveData(virtualKeyboardService.show$);
 
-  return createPortal(
+  const tab = (
     <SafeArea
+      id="app-tabs"
       bottom
       className={styles.appTabs}
       bottomOffset={2}
+      data-fixed={fixed}
       style={{
         ...assignInlineVars({
           [styles.appTabsBackground]: background,
@@ -26,7 +34,7 @@ export const AppTabs = ({ background }: { background?: string }) => {
         visibility: virtualKeyboardVisible ? 'hidden' : 'visible',
       }}
     >
-      <ul className={styles.appTabsInner} id="app-tabs" role="tablist">
+      <ul className={styles.appTabsInner} role="tablist">
         {tabs.map(tab => {
           if ('to' in tab) {
             return <AppTabLink route={tab} key={tab.key} />;
@@ -39,9 +47,10 @@ export const AppTabs = ({ background }: { background?: string }) => {
           }
         })}
       </ul>
-    </SafeArea>,
-    document.body
+    </SafeArea>
   );
+
+  return fixed ? createPortal(tab, document.body) : tab;
 };
 
 const AppTabLink = ({ route }: { route: AppTabLink }) => {

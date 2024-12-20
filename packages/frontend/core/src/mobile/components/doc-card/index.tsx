@@ -1,4 +1,4 @@
-import { IconButton, observeIntersection, Skeleton } from '@affine/component';
+import { IconButton, Skeleton } from '@affine/component';
 import { useCatchEventCallback } from '@affine/core/components/hooks/use-catch-event-hook';
 import { PagePreview } from '@affine/core/components/page-list/page-content-preview';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
@@ -11,14 +11,7 @@ import {
 import type { DocMeta } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
-import {
-  forwardRef,
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { forwardRef, type ReactNode, useMemo, useRef } from 'react';
 
 import * as styles from './styles.css';
 import { DocCardTags } from './tag';
@@ -66,20 +59,6 @@ export const DocCard = forwardRef<HTMLAnchorElement, DocCardProps>(
       return { height: `${rows * 18}px` };
     }, [autoHeightById, meta.id]);
 
-    const [visible, setVisible] = useState(false);
-
-    useEffect(() => {
-      if (!containerRef.current) return;
-
-      const dispose = observeIntersection(containerRef.current, entry => {
-        setVisible(entry.isIntersecting);
-      });
-
-      return () => {
-        dispose();
-      };
-    }, []);
-
     return (
       <WorkbenchLink
         to={`/${meta.id}`}
@@ -94,38 +73,30 @@ export const DocCard = forwardRef<HTMLAnchorElement, DocCardProps>(
         className={clsx(styles.card, className)}
         data-testid="doc-card"
         data-doc-id={meta.id}
-        data-visible={visible}
         {...attrs}
       >
-        {visible && (
-          <>
-            <header className={styles.head} data-testid="doc-card-header">
-              <h3 className={styles.title}>{title}</h3>
-              <IconButton
-                aria-label="favorite"
-                icon={
-                  <IsFavoriteIcon
-                    onClick={toggleFavorite}
-                    favorite={favorited}
-                  />
-                }
-              />
-            </header>
-            <main className={styles.content} style={contentStyle}>
-              <PagePreview
-                fallback={
-                  <>
-                    <Skeleton />
-                    <Skeleton width={'60%'} />
-                  </>
-                }
-                pageId={meta.id}
-                emptyFallback={<div className={styles.contentEmpty}>Empty</div>}
-              />
-            </main>
-            {showTags ? <DocCardTags docId={meta.id} rows={2} /> : null}
-          </>
-        )}
+        <header className={styles.head} data-testid="doc-card-header">
+          <h3 className={styles.title}>{title}</h3>
+          <IconButton
+            aria-label="favorite"
+            icon={
+              <IsFavoriteIcon onClick={toggleFavorite} favorite={favorited} />
+            }
+          />
+        </header>
+        <main className={styles.content} style={contentStyle}>
+          <PagePreview
+            fallback={
+              <>
+                <Skeleton />
+                <Skeleton width={'60%'} />
+              </>
+            }
+            pageId={meta.id}
+            emptyFallback={<div className={styles.contentEmpty}>Empty</div>}
+          />
+        </main>
+        {showTags ? <DocCardTags docId={meta.id} rows={2} /> : null}
       </WorkbenchLink>
     );
   }

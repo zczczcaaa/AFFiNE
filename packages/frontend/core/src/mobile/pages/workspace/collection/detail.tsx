@@ -10,7 +10,6 @@ import {
 import { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { AppTabs } from '../../../components';
 import { CollectionDetail } from '../../../views';
 
 export const Component = () => {
@@ -68,10 +67,5 @@ export const Component = () => {
     return null;
   }
 
-  return (
-    <>
-      <CollectionDetail collection={collection} />
-      <AppTabs />
-    </>
-  );
+  return <CollectionDetail collection={collection} />;
 };

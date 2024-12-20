@@ -1,13 +1,10 @@
 import { EmptyDocs } from '@affine/core/components/affine/empty';
 import { useBlockSuiteDocMeta } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import {
-  type ItemGroupDefinition,
   type ItemGroupProps,
   useAllDocDisplayProperties,
   useFilteredPageMetas,
-  usePageItemGroupDefinitions,
 } from '@affine/core/components/page-list';
-import { itemsToItemGroups } from '@affine/core/components/page-list/items-to-item-group';
 import type { Tag } from '@affine/core/modules/tag';
 import type { Collection, Filter } from '@affine/env/filter';
 import type { DocMeta } from '@blocksuite/affine/store';
@@ -19,7 +16,7 @@ import { useMemo } from 'react';
 import * as styles from './list.css';
 import { MasonryDocs } from './masonry';
 
-const DocGroup = ({ group }: { group: ItemGroupProps<DocMeta> }) => {
+export const DocGroup = ({ group }: { group: ItemGroupProps<DocMeta> }) => {
   const [properties] = useAllDocDisplayProperties();
   const showTags = properties.displayProperties.tags;
 
@@ -53,6 +50,7 @@ export const AllDocList = ({
   tag,
   filters = [],
 }: AllDocListProps) => {
+  const [properties] = useAllDocDisplayProperties();
   const workspace = useService(WorkspaceService).workspace;
   const allPageMetas = useBlockSuiteDocMeta(workspace.docCollection);
 
@@ -72,22 +70,29 @@ export const AllDocList = ({
     return filteredPageMetas;
   }, [filteredPageMetas, tag, tagPageIds]);
 
-  const groupDefs =
-    usePageItemGroupDefinitions() as ItemGroupDefinition<DocMeta>[];
+  // const groupDefs =
+  //   usePageItemGroupDefinitions() as ItemGroupDefinition<DocMeta>[];
 
-  const groups = useMemo(() => {
-    return itemsToItemGroups(finalPageMetas ?? [], groupDefs);
-  }, [finalPageMetas, groupDefs]);
+  // const groups = useMemo(() => {
+  //   return itemsToItemGroups(finalPageMetas ?? [], groupDefs);
+  // }, [finalPageMetas, groupDefs]);
 
-  if (!groups.length) {
+  if (!finalPageMetas.length) {
     return <EmptyDocs absoluteCenter tagId={tag?.id} />;
   }
 
+  // return (
+  //   <div className={styles.groups}>
+  //     {groups.map(group => (
+  //       <DocGroup key={group.id} group={group} />
+  //     ))}
+  //   </div>
+  // );
+
   return (
-    <div className={styles.groups}>
-      {groups.map(group => (
-        <DocGroup key={group.id} group={group} />
-      ))}
-    </div>
+    <MasonryDocs
+      items={finalPageMetas}
+      showTags={properties.displayProperties.tags}
+    />
   );
 };
