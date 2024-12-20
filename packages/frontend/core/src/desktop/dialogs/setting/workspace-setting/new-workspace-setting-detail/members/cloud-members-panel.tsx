@@ -75,7 +75,7 @@ export const CloudWorkspaceMembersPanel = ({
   useEffect(() => {
     workspaceQuotaService.quota.revalidate();
   }, [workspaceQuotaService]);
-  const isLoading = useLiveData(workspaceQuotaService.quota.isLoading$);
+  const isLoading = useLiveData(workspaceQuotaService.quota.isRevalidating$);
   const error = useLiveData(workspaceQuotaService.quota.error$);
   const workspaceQuota = useLiveData(workspaceQuotaService.quota.quota$);
   const subscriptionService = useService(SubscriptionService);

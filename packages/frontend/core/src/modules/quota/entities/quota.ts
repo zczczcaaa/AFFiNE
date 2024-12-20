@@ -25,7 +25,7 @@ const logger = new DebugLogger('affine:workspace-permission');
 
 export class WorkspaceQuota extends Entity {
   quota$ = new LiveData<QuotaType | null>(null);
-  isLoading$ = new LiveData(false);
+  isRevalidating$ = new LiveData(false);
   error$ = new LiveData<any>(null);
 
   /** Used storage in bytes */
@@ -106,18 +106,26 @@ export class WorkspaceQuota extends Entity {
           catchErrorInto(this.error$, error => {
             logger.error('Failed to fetch workspace quota', error);
           }),
-          onStart(() => this.isLoading$.setValue(true)),
-          onComplete(() => this.isLoading$.setValue(false))
+          onStart(() => this.isRevalidating$.setValue(true)),
+          onComplete(() => this.isRevalidating$.setValue(false))
         );
       }
     )
   );
 
+  waitForRevalidation(signal?: AbortSignal) {
+    this.revalidate();
+    return this.isRevalidating$.waitFor(
+      isRevalidating => !isRevalidating,
+      signal
+    );
+  }
+
   reset() {
     this.quota$.next(null);
     this.used$.next(null);
     this.error$.next(null);
-    this.isLoading$.next(false);
+    this.isRevalidating$.next(false);
   }
 
   override dispose(): void {

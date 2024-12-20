@@ -7,10 +7,10 @@ import { WorkspaceQuotaService } from '@affine/core/modules/quota';
 import { type I18nString, useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
-import bytes from 'bytes';
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useMemo } from 'react';
 
+import { useAsyncCallback } from '../../hooks/affine-async-hooks';
 import * as styles from './cloud-quota-modal.css';
 
 export const CloudQuotaModal = () => {
@@ -66,22 +66,32 @@ export const CloudQuotaModal = () => {
     }
   }, [userQuota, isOwner, workspaceQuota, t]);
 
+  const onAbortLargeBlob = useAsyncCallback(
+    async (blob: Blob) => {
+      // wait for quota revalidation
+      await workspaceQuotaService.quota.waitForRevalidation();
+      if (
+        blob.size > (workspaceQuotaService.quota.quota$.value?.blobLimit ?? 0)
+      ) {
+        setOpen(true);
+      }
+    },
+    [setOpen, workspaceQuotaService]
+  );
+
   useEffect(() => {
     if (!workspaceQuota) {
       return;
     }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    currentWorkspace.engine.blob.singleBlobSizeLimit = bytes.parse(
-      workspaceQuota.blobLimit.toString()
-    )!;
 
-    const disposable = currentWorkspace.engine.blob.onAbortLargeBlob.on(() => {
-      setOpen(true);
-    });
+    currentWorkspace.engine.blob.singleBlobSizeLimit = workspaceQuota.blobLimit;
+
+    const disposable =
+      currentWorkspace.engine.blob.onAbortLargeBlob.on(onAbortLargeBlob);
     return () => {
       disposable?.dispose();
     };
-  }, [currentWorkspace.engine.blob, setOpen, workspaceQuota]);
+  }, [currentWorkspace.engine.blob, onAbortLargeBlob, workspaceQuota]);
 
   return (
     <ConfirmModal

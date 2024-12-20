@@ -29,7 +29,7 @@ export const StorageProgress = () => {
   ).permission;
   const workspaceQuotaService = useService(WorkspaceQuotaService).quota;
   const isTeam = useLiveData(workspacePermissionService.isTeam$);
-  const isLoading = useLiveData(workspaceQuotaService.isLoading$);
+  const isLoading = useLiveData(workspaceQuotaService.isRevalidating$);
   const usedFormatted = useLiveData(workspaceQuotaService.usedFormatted$);
   const maxFormatted = useLiveData(workspaceQuotaService.maxFormatted$);
   const percent = useLiveData(workspaceQuotaService.percent$);
