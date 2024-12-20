@@ -55,7 +55,7 @@ export type ImagePeekViewInfo = {
 
 export type AttachmentPeekViewInfo = {
   type: 'attachment';
-  docRef: DocReferenceInfo;
+  docRef: DocReferenceInfo & { filetype?: string };
 };
 
 export type AIChatBlockPeekViewInfo = {
@@ -173,6 +173,7 @@ function resolvePeekInfoFromPeekTarget(
           docRef: {
             docId: blockModel.doc.id,
             blockIds: [blockModel.id],
+            filetype: blockModel.type,
           },
         };
       } else if (isImageBlockModel(blockModel)) {

@@ -116,6 +116,15 @@ type PaymentEvents =
   | 'confirmResumingSubscription';
 // END SECTION
 
+// SECTION: attachment
+type AttachmentEvents =
+  | 'openAttachmentInFullscreen'
+  | 'openAttachmentInNewTab'
+  | 'openAttachmentInPeekView'
+  | 'openAttachmentInSplitView'
+  | 'openPDFRendererFail';
+// END SECTION
+
 type UserEvents =
   | GeneralEvents
   | AppEvents
@@ -130,7 +139,8 @@ type UserEvents =
   | AuthEvents
   | AccountEvents
   | PaymentEvents
-  | DNDEvents;
+  | DNDEvents
+  | AttachmentEvents;
 interface PageDivision {
   [page: string]: {
     [segment: string]: {
@@ -284,6 +294,15 @@ const PageEvents = {
       importModal: ['open'],
       snapshot: ['import', 'export'],
     },
+    attachment: {
+      $: [
+        'openAttachmentInFullscreen',
+        'openAttachmentInNewTab',
+        'openAttachmentInPeekView',
+        'openAttachmentInSplitView',
+        'openPDFRendererFail',
+      ],
+    },
   },
   doc: {
     editor: {
@@ -351,6 +370,10 @@ type OrganizeItemArgs =
 type PaymentEventArgs = {
   plan: string;
   recurring: string;
+};
+
+type AttachmentEventArgs = {
+  type: string; // file type
 };
 
 type TabActionControlType =
@@ -435,6 +458,10 @@ export type EventArgs = {
   linkDoc: { type: string; journal: boolean };
   drop: { type: string };
   dragStart: { type: string };
+  openAttachmentInFullscreen: AttachmentEventArgs;
+  openAttachmentInNewTab: AttachmentEventArgs;
+  openAttachmentInPeekView: AttachmentEventArgs;
+  openAttachmentInSplitView: AttachmentEventArgs;
 };
 
 // for type checking

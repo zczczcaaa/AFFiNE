@@ -17,6 +17,7 @@ import {
   Scroller,
   ScrollSeekPlaceholder,
 } from '@affine/core/modules/pdf/views';
+import track from '@affine/track';
 import type { AttachmentBlockModel } from '@blocksuite/affine/blocks';
 import { CollapseIcon, ExpandIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
@@ -201,6 +202,12 @@ const PDFViewerInner = ({ pdf, state }: PDFViewerInnerProps) => {
 
 function PDFViewerStatus({ pdf }: { pdf: PDF }) {
   const state = useLiveData(pdf.state$);
+
+  useEffect(() => {
+    if (state.status !== PDFStatus.Error) return;
+
+    track.$.attachment.$.openPDFRendererFail();
+  }, [state]);
 
   if (state?.status !== PDFStatus.Opened) {
     return <LoadingSvg />;
