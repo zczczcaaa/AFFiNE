@@ -45,7 +45,7 @@ export const tagsEditorSelectedTags = style({
   gap: '4px',
   flexWrap: 'wrap',
   padding: '10px 12px',
-  backgroundColor: cssVar('hoverColor'),
+  backgroundColor: cssVarV2('input/background'),
   minHeight: 42,
   selectors: {
     [`${tagsEditorRootMobile} &`]: {
@@ -66,7 +66,7 @@ export const searchInput = style({
   color: 'inherit',
   backgroundColor: 'transparent',
   '::placeholder': {
-    color: cssVar('placeholderColor'),
+    color: cssVarV2('text/placeholder'),
   },
 });
 

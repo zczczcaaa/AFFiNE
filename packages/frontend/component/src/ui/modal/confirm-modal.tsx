@@ -87,6 +87,11 @@ export const ConfirmModal = ({
             onClick={onCancel}
             data-testid="confirm-modal-cancel"
             {...cancelButtonOptions}
+            variant={
+              cancelButtonOptions?.variant
+                ? cancelButtonOptions.variant
+                : 'secondary'
+            }
           >
             {cancelText}
           </Button>

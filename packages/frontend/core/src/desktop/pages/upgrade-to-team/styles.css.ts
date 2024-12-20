@@ -73,7 +73,6 @@ export const itemContent = style({
   fontSize: cssVar('fontSm'),
   fontWeight: 500,
   lineHeight: '22px',
-  color: cssVarV2('text/emphasis'),
 });
 
 export const itemIcon = style({
