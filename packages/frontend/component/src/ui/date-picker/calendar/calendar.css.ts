@@ -46,18 +46,18 @@ export const focusInteractive = style([
   basicInteractive,
   {
     selectors: {
-      '&::before': {
+      ':not([data-mobile="true"]) &::before': {
         opacity: 0,
         boxShadow: `0 0 0 2px ${cssVar('brandColor')}`,
       },
-      '&::after': {
+      ':not([data-mobile="true"]) &::after': {
         border: '1px solid transparent',
       },
 
-      '&:focus-visible::before': {
+      ':not([data-mobile="true"]) &:focus-visible::before': {
         opacity: 0.5,
       },
-      '&:focus-visible::after': {
+      ':not([data-mobile="true"]) &:focus-visible::after': {
         borderColor: cssVar('brandColor'),
       },
     },
