@@ -209,6 +209,10 @@ jobs:
       - build-native
     env:
       DISTRIBUTION: web
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -225,7 +229,7 @@ jobs:
           path: ./packages/frontend/native
 
       - name: Unit Test
-        run: yarn test:coverage
+        run: yarn test:coverage --shard=${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: Upload unit test coverage results
         uses: codecov/codecov-action@v5
