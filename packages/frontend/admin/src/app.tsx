@@ -1,20 +1,5 @@
 import { Toaster } from '@affine/admin/components/ui/sonner';
-import {
-  configureCloudModule,
-  DefaultServerService,
-} from '@affine/core/modules/cloud';
-import { configureLocalStorageStateStorageImpls } from '@affine/core/modules/storage';
-import { configureUrlModule } from '@affine/core/modules/url';
 import { wrapCreateBrowserRouter } from '@sentry/react';
-import {
-  configureGlobalContextModule,
-  configureGlobalStorageModule,
-  configureLifecycleModule,
-  Framework,
-  FrameworkRoot,
-  FrameworkScope,
-  LifecycleService,
-} from '@toeverything/infra';
 import { useEffect } from 'react';
 import {
   createBrowserRouter as reactRouterCreateBrowserRouter,
@@ -124,38 +109,18 @@ export const router = _createBrowserRouter(
   }
 );
 
-const framework = new Framework();
-configureLifecycleModule(framework);
-configureLocalStorageStateStorageImpls(framework);
-configureGlobalStorageModule(framework);
-configureGlobalContextModule(framework);
-configureUrlModule(framework);
-configureCloudModule(framework);
-const frameworkProvider = framework.provider();
-
-// setup application lifecycle events, and emit application start event
-window.addEventListener('focus', () => {
-  frameworkProvider.get(LifecycleService).applicationFocus();
-});
-frameworkProvider.get(LifecycleService).applicationStart();
-const serverService = frameworkProvider.get(DefaultServerService);
-
 export const App = () => {
   return (
-    <FrameworkRoot framework={frameworkProvider}>
-      <FrameworkScope scope={serverService.server.scope}>
-        <TooltipProvider>
-          <SWRConfig
-            value={{
-              revalidateOnFocus: false,
-              revalidateOnMount: false,
-            }}
-          >
-            <RouterProvider router={router} />
-          </SWRConfig>
-          <Toaster />
-        </TooltipProvider>
-      </FrameworkScope>
-    </FrameworkRoot>
+    <TooltipProvider>
+      <SWRConfig
+        value={{
+          revalidateOnFocus: false,
+          revalidateOnMount: false,
+        }}
+      >
+        <RouterProvider router={router} />
+      </SWRConfig>
+      <Toaster />
+    </TooltipProvider>
   );
 };
