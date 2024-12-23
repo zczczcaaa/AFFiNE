@@ -90,6 +90,16 @@ export class GroupElementModel extends GfxGroupLikeElementModel<GroupElementProp
     return result as SerializedGroupElement;
   }
 
+  override lock(): void {
+    super.lock();
+    this.showTitle = false;
+  }
+
+  override unlock(): void {
+    super.unlock();
+    this.showTitle = true;
+  }
+
   @observe(
     // use `GroupElementModel` type in decorator will cause playwright error
     (_, instance: GfxGroupLikeElementModel<GroupElementProps>, transaction) => {
