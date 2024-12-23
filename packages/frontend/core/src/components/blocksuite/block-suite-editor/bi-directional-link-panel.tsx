@@ -12,6 +12,7 @@ import {
 import { toURLSearchParams } from '@affine/core/modules/navigation';
 import { WorkbenchLink } from '@affine/core/modules/workbench';
 import { useI18n } from '@affine/i18n';
+import track from '@affine/track';
 import type { JobMiddleware } from '@blocksuite/affine/store';
 import { ToggleExpandIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
@@ -93,8 +94,16 @@ const CollapsibleSection = ({
     docId,
     linkDocId
   );
+
+  const handleToggle = useCallback(() => {
+    setOpen(!open);
+    track.doc.biDirectionalLinksPanel.$.toggle({
+      type: open ? 'collapse' : 'expand',
+    });
+  }, [open, setOpen]);
+
   return (
-    <Collapsible.Root open={open} onOpenChange={setOpen}>
+    <Collapsible.Root open={open} onOpenChange={handleToggle}>
       <Collapsible.Trigger className={styles.link}>
         {title}
         {length ? (
@@ -197,6 +206,9 @@ export const BiDirectionalLinkPanel = () => {
 
   const handleClickShow = useCallback(() => {
     setShow(!show);
+    track.doc.biDirectionalLinksPanel.$.toggle({
+      type: show ? 'collapse' : 'expand',
+    });
   }, [show, setShow]);
 
   const textRendererOptions = useMemo(() => {
@@ -243,7 +255,14 @@ export const BiDirectionalLinkPanel = () => {
             {backlinkGroups.map(linkGroup => (
               <CollapsibleSection
                 key={linkGroup.docId}
-                title={<AffinePageReference pageId={linkGroup.docId} />}
+                title={
+                  <AffinePageReference
+                    pageId={linkGroup.docId}
+                    onClick={() => {
+                      track.doc.biDirectionalLinksPanel.backlinkTitle.navigate();
+                    }}
+                  />
+                }
                 length={linkGroup.links.length}
                 docId={docService.doc.id}
                 linkDocId={linkGroup.docId}
@@ -289,6 +308,9 @@ export const BiDirectionalLinkPanel = () => {
                         to={to}
                         key={link.blockId}
                         className={styles.linkPreview}
+                        onClick={() => {
+                          track.doc.biDirectionalLinksPanel.backlinkPreview.navigate();
+                        }}
                       >
                         {edgelessLink ? (
                           <>

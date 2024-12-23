@@ -322,6 +322,11 @@ const PageEvents = {
     sidepanel: {
       property: ['addProperty'],
     },
+    biDirectionalLinksPanel: {
+      $: ['toggle'],
+      backlinkTitle: ['toggle', 'navigate'],
+      backlinkPreview: ['navigate'],
+    },
   },
   edgeless: {},
   workspace: {
