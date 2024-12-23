@@ -12,6 +12,7 @@ import type { BlockPlainTextAdapterMatcher } from '@blocksuite/affine-shared/ada
 
 import { bookmarkBlockPlainTextAdapterMatcher } from '../../../bookmark-block/adapters/plain-text.js';
 import { codeBlockPlainTextAdapterMatcher } from '../../../code-block/adapters/plain-text.js';
+import { databaseBlockPlainTextAdapterMatcher } from '../../../database-block/adapters/plain-text.js';
 import { dividerBlockPlainTextAdapterMatcher } from '../../../divider-block/adapters/plain-text.js';
 import { latexBlockPlainTextAdapterMatcher } from '../../../latex-block/adapters/plain-text.js';
 
@@ -29,4 +30,5 @@ export const defaultBlockPlainTextAdapterMatchers: BlockPlainTextAdapterMatcher[
     embedLinkedDocBlockPlainTextAdapterMatcher,
     embedSyncedDocBlockPlainTextAdapterMatcher,
     latexBlockPlainTextAdapterMatcher,
+    databaseBlockPlainTextAdapterMatcher,
   ];
