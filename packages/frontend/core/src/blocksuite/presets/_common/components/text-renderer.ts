@@ -195,6 +195,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
       if (latestAnswer && schema) {
         markDownToDoc(schema, latestAnswer, this.options.additionalMiddlewares)
           .then(doc => {
+            this.disposeDoc();
             this._doc = doc.blockCollection.getDoc({
               query: this._query,
             });
@@ -232,9 +233,15 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
     }
   }
 
+  private disposeDoc() {
+    this._doc?.dispose();
+    this._doc?.collection.dispose();
+  }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
     this._clearTimer();
+    this.disposeDoc();
   }
 
   override render() {

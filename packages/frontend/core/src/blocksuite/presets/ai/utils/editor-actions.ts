@@ -150,5 +150,7 @@ export const copyText = async (host: EditorHost, text: string) => {
     .flatMap(model => model.children);
   const slice = Slice.fromModels(previewDoc, models);
   await host.std.clipboard.copySlice(slice);
+  previewDoc.dispose();
+  previewDoc.collection.dispose();
   return true;
 };

@@ -98,6 +98,7 @@ export const linkPreviewContainer = style({
 });
 
 export const linkPreview = style({
+  cursor: 'default',
   border: `0.5px solid ${cssVarV2('backlinks/blockBorder')}`,
   borderRadius: '8px',
   padding: '8px',
@@ -109,6 +110,10 @@ export const linkPreview = style({
   ':hover': {
     backgroundColor: cssVarV2('backlinks/blockHover'),
   },
+});
+
+globalStyle(`${linkPreview} *`, {
+  cursor: 'default',
 });
 
 export const linkPreviewRenderer = style({
