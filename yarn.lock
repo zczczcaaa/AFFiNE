@@ -791,7 +791,7 @@ __metadata:
     graphql: "npm:^16.9.0"
     graphql-scalars: "npm:^1.24.0"
     graphql-upload: "npm:^17.0.0"
-    html-validate: "npm:^8.27.0"
+    html-validate: "npm:^9.0.0"
     ioredis: "npm:^5.4.1"
     is-mobile: "npm:^5.0.0"
     keyv: "npm:^5.2.2"
@@ -23014,9 +23014,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-validate@npm:^8.27.0":
-  version: 8.29.0
-  resolution: "html-validate@npm:8.29.0"
+"html-validate@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "html-validate@npm:9.0.0"
   dependencies:
     "@html-validate/stylish": "npm:^4.1.0"
     "@sidvind/better-ajv-errors": "npm:3.0.1"
@@ -23041,8 +23041,8 @@ __metadata:
     vitest:
       optional: true
   bin:
-    html-validate: bin/html-validate.js
-  checksum: 10/4b730067ed9ccd8c1a38a452495f13bdc16bd2bbecbc8166546f66ed8e25ca7e82e7a8245d73caad886fc3b11b3ccecd347b463c4280556c45a979eb07b6462d
+    html-validate: bin/html-validate.mjs
+  checksum: 10/56f7fe8404aee38428ebf130b4793ca5eeec8f55e562109c368717015f6ec5a706c2376759c2eb212802aa01a918a55bdd168894d9473989e1fe65f001bd991c
   languageName: node
   linkType: hard
 
