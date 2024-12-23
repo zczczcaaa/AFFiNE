@@ -160,7 +160,7 @@ export class Text {
         'Failed to insert text! Index or length out of range, index: ' +
           index +
           ', length: ' +
-          length +
+          content.length +
           ', text length: ' +
           this._yText.length
       );
