@@ -18,18 +18,19 @@ import {
 } from '@blocksuite/icons/lit';
 import type { DocMeta } from '@blocksuite/store';
 import { signal } from '@preact/signals-core';
-import type { DocsService, WorkspaceService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
 import type { WorkspaceDialogService } from '../../dialogs';
+import type { DocsService } from '../../doc';
 import type { DocDisplayMetaService } from '../../doc-display-meta';
 import type { DocsSearchService } from '../../docs-search';
 import type { EditorSettingService } from '../../editor-setting';
 import { type JournalService, suggestJournalDate } from '../../journal';
 import type { RecentDocsService } from '../../quicksearch';
+import type { WorkspaceService } from '../../workspace';
 
 const MAX_DOCS = 3;
 const LOAD_CHUNK = 100;

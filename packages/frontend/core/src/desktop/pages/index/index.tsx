@@ -1,4 +1,5 @@
 import { DesktopApiService } from '@affine/core/modules/desktop-api';
+import { WorkspacesService } from '@affine/core/modules/workspace';
 import {
   buildShowcaseWorkspace,
   createFirstAppData,
@@ -7,7 +8,6 @@ import {
   useLiveData,
   useService,
   useServiceOptional,
-  WorkspacesService,
 } from '@toeverything/infra';
 import {
   type ReactNode,

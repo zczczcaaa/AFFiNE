@@ -1,13 +1,13 @@
 import { Skeleton } from '@affine/component';
-import { WorkspaceAvatar } from '@affine/component/workspace-avatar';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
+import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
 import { DoneIcon } from '@blocksuite/icons/rc';
-import { type WorkspaceMetadata } from '@toeverything/infra';
 import clsx from 'clsx';
 import type { HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 
+import { WorkspaceAvatar } from '../../workspace-avatar';
 import * as styles from './styles.css';
 
 export const PureWorkspaceCard = forwardRef<

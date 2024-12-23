@@ -1,11 +1,13 @@
 import { toast, useConfirmModal } from '@affine/component';
 import { useBlockSuiteDocMeta } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import { CollectionService } from '@affine/core/modules/collection';
+import { DocsService } from '@affine/core/modules/doc';
 import type { Tag } from '@affine/core/modules/tag';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import type { Collection, Filter } from '@affine/env/filter';
 import { Trans, useI18n } from '@affine/i18n';
 import type { DocMeta } from '@blocksuite/affine/store';
-import { DocsService, useService, WorkspaceService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ListFloatingToolbar } from '../components/list-floating-toolbar';

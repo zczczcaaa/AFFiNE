@@ -5,6 +5,7 @@ import type {
   WORKSPACE_DIALOG_SCHEMA,
 } from '@affine/core/modules/dialogs';
 import { UrlService } from '@affine/core/modules/url';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { DebugLogger } from '@affine/debug';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
@@ -24,7 +25,7 @@ import {
   PageIcon,
   ZipIcon,
 } from '@blocksuite/icons/rc';
-import { useService, WorkspaceService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import {

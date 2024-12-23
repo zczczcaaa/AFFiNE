@@ -4,23 +4,22 @@ import type {
   BlobStorage,
   DocStorage,
   FrameworkProvider,
-  WorkspaceEngineProvider,
-  WorkspaceFlavourProvider,
-  WorkspaceFlavoursProvider,
-  WorkspaceMetadata,
-  WorkspaceProfileInfo,
 } from '@toeverything/infra';
-import {
-  getAFFiNEWorkspaceSchema,
-  LiveData,
-  Service,
-} from '@toeverything/infra';
+import { LiveData, Service } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import { Observable } from 'rxjs';
 import { encodeStateAsUpdate } from 'yjs';
 
 import { DesktopApiService } from '../../desktop-api';
+import {
+  getAFFiNEWorkspaceSchema,
+  type WorkspaceEngineProvider,
+  type WorkspaceFlavourProvider,
+  type WorkspaceFlavoursProvider,
+  type WorkspaceMetadata,
+  type WorkspaceProfileInfo,
+} from '../../workspace';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { StaticBlobStorage } from './engine/blob-static';

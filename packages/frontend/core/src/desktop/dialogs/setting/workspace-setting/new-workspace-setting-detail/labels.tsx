@@ -1,6 +1,7 @@
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { useEffect, useMemo } from 'react';
 

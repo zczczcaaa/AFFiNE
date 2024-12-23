@@ -1,19 +1,19 @@
-import {
-  DocsService,
-  type Framework,
-  GlobalContextService,
-  WorkspaceLocalState,
-  WorkspaceScope,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { type Framework } from '@toeverything/infra';
 
 import { CollectionService } from '../collection';
 import { WorkspaceDialogService } from '../dialogs';
-import { DocDisplayMetaService } from '../doc-display-meta/services/doc-display-meta';
+import { DocsService } from '../doc';
+import { DocDisplayMetaService } from '../doc-display-meta';
 import { DocsSearchService } from '../docs-search';
+import { GlobalContextService } from '../global-context';
 import { JournalService } from '../journal';
 import { TagService } from '../tag';
 import { WorkbenchService } from '../workbench';
+import {
+  WorkspaceLocalState,
+  WorkspaceScope,
+  WorkspaceService,
+} from '../workspace';
 import { QuickSearch } from './entities/quick-search';
 import { CollectionsQuickSearchSession } from './impls/collections';
 import { CommandsQuickSearchSession } from './impls/commands';

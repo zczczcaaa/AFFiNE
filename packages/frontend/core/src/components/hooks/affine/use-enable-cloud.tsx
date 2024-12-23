@@ -1,13 +1,10 @@
 import { notify, useConfirmModal } from '@affine/component';
 import { AuthService, ServersService } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import type { Workspace } from '@affine/core/modules/workspace';
+import { WorkspacesService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import type { Workspace } from '@toeverything/infra';
-import {
-  useLiveData,
-  useService,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
 import { useNavigateHelper } from '../use-navigate-helper';

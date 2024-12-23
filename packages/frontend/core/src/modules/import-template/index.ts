@@ -1,6 +1,7 @@
-import { type Framework, WorkspacesService } from '@toeverything/infra';
+import { type Framework } from '@toeverything/infra';
 
 import { FetchService } from '../cloud';
+import { WorkspacesService } from '../workspace';
 import { ImportTemplateDialog } from './entities/dialog';
 import { TemplateDownloader } from './entities/downloader';
 import { TemplateDownloaderService } from './services/downloader';

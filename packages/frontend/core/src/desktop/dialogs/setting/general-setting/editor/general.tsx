@@ -24,6 +24,7 @@ import {
   fontStyleOptions,
 } from '@affine/core/modules/editor-setting';
 import { SpellCheckSettingService } from '@affine/core/modules/editor-setting/services/spell-check-setting';
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import {
   type FontData,
   SystemFontFamilyService,
@@ -31,12 +32,7 @@ import {
 import { Trans, useI18n } from '@affine/i18n';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import { DoneIcon, SearchIcon } from '@blocksuite/icons/rc';
-import {
-  FeatureFlagService,
-  useLiveData,
-  useService,
-  useServices,
-} from '@toeverything/infra';
+import { useLiveData, useService, useServices } from '@toeverything/infra';
 import clsx from 'clsx';
 import {
   forwardRef,

@@ -13,17 +13,16 @@ import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hoo
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
 import { PureWorkspaceCard } from '@affine/core/components/workspace-selector/workspace-card';
 import { AuthService } from '@affine/core/modules/cloud';
+import {
+  type WorkspaceMetadata,
+  WorkspacesService,
+} from '@affine/core/modules/workspace';
 import { buildShowcaseWorkspace } from '@affine/core/utils/first-app-data';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
 import { SubscriptionPlan, SubscriptionRecurring } from '@affine/graphql';
 import { type I18nString, Trans, useI18n } from '@affine/i18n';
 import { DoneIcon, NewPageIcon } from '@blocksuite/icons/rc';
-import {
-  useLiveData,
-  useService,
-  type WorkspaceMetadata,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 

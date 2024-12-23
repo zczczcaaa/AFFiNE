@@ -1,9 +1,10 @@
 import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import type { OAuthProviderType } from '@affine/graphql';
 import { track } from '@affine/track';
-import { ApplicationFocused, OnEvent, Service } from '@toeverything/infra';
+import { OnEvent, Service } from '@toeverything/infra';
 import { distinctUntilChanged, map, skip } from 'rxjs';
 
+import { ApplicationFocused } from '../../lifecycle';
 import type { UrlService } from '../../url';
 import { type AuthAccountInfo, AuthSession } from '../entities/session';
 import { BackendError } from '../error';

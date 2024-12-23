@@ -1,9 +1,12 @@
 import { Button, Skeleton, Tooltip } from '@affine/component';
 import { Loading } from '@affine/component/ui/loading';
-import { WorkspaceAvatar } from '@affine/component/workspace-avatar';
 import { useSystemOnline } from '@affine/core/components/hooks/use-system-online';
 import { useWorkspace } from '@affine/core/components/hooks/use-workspace';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
+import type {
+  WorkspaceMetadata,
+  WorkspaceProfileInfo,
+} from '@affine/core/modules/workspace';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
 import {
   ArrowDownSmallIcon,
@@ -17,17 +20,14 @@ import {
   TeamWorkspaceIcon,
   UnsyncIcon,
 } from '@blocksuite/icons/rc';
-import {
-  useLiveData,
-  type WorkspaceMetadata,
-  type WorkspaceProfileInfo,
-} from '@toeverything/infra';
+import { useLiveData } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import clsx from 'clsx';
 import type { HTMLAttributes } from 'react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
 
 import { useCatchEventCallback } from '../../hooks/use-catch-event-hook';
+import { WorkspaceAvatar } from '../../workspace-avatar';
 import * as styles from './styles.css';
 export { PureWorkspaceCard } from './pure-workspace-card';
 

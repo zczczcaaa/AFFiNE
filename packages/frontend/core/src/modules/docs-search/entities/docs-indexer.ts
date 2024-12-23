@@ -1,20 +1,16 @@
 import { DebugLogger } from '@affine/debug';
-import type {
-  Job,
-  JobQueue,
-  WorkspaceLocalState,
-  WorkspaceService,
-} from '@toeverything/infra';
+import type { Job, JobQueue } from '@toeverything/infra';
 import {
   Entity,
   IndexedDBIndexStorage,
   IndexedDBJobQueue,
   JobRunner,
   LiveData,
-  WorkspaceDBService,
 } from '@toeverything/infra';
 import { map } from 'rxjs';
 
+import { WorkspaceDBService } from '../../db';
+import type { WorkspaceLocalState, WorkspaceService } from '../../workspace';
 import { blockIndexSchema, docIndexSchema } from '../schema';
 import { createWorker, type IndexerWorker } from '../worker/out-worker';
 

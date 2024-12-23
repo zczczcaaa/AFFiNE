@@ -10,6 +10,7 @@ import {
   FetchService,
   GraphQLService,
 } from '@affine/core/modules/cloud';
+import { type Doc, DocsService } from '@affine/core/modules/doc';
 import {
   type Editor,
   type EditorSelector,
@@ -19,6 +20,10 @@ import {
 import { PeekViewManagerModal } from '@affine/core/modules/peek-view';
 import { ShareReaderService } from '@affine/core/modules/share-doc';
 import { ViewIcon, ViewTitle } from '@affine/core/modules/workbench';
+import {
+  type Workspace,
+  WorkspacesService,
+} from '@affine/core/modules/workspace';
 import { CloudBlobStorage } from '@affine/core/modules/workspace-engine';
 import { useI18n } from '@affine/i18n';
 import {
@@ -29,16 +34,13 @@ import {
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import { DisposableGroup } from '@blocksuite/global/utils';
 import { Logo1Icon } from '@blocksuite/icons/rc';
-import type { Doc, Workspace } from '@toeverything/infra';
 import {
-  DocsService,
   EmptyBlobStorage,
   FrameworkScope,
   ReadonlyDocStorage,
   useLiveData,
   useService,
   useServices,
-  WorkspacesService,
 } from '@toeverything/infra';
 import clsx from 'clsx';
 import {

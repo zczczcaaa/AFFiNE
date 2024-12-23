@@ -14,22 +14,22 @@ import {
   GraphQLService,
 } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { useRegisterNavigationCommands } from '@affine/core/modules/navigation/view/use-register-navigation-commands';
 import { QuickSearchContainer } from '@affine/core/modules/quicksearch';
 import { WorkbenchService } from '@affine/core/modules/workbench';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import { type DocMode, ZipTransformer } from '@blocksuite/affine/blocks';
 import {
-  DocsService,
   effect,
   fromPromise,
   onStart,
   throwIfAborted,
   useService,
   useServices,
-  WorkspaceService,
 } from '@toeverything/infra';
 import { useSetAtom } from 'jotai';
 import { useEffect } from 'react';

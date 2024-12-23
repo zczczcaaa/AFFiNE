@@ -1,8 +1,8 @@
-import type { GlobalState } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 import { map, type Observable, switchMap } from 'rxjs';
 
 import type { ServersService } from '../../cloud';
+import type { GlobalState } from '../../storage';
 import { UserDBService } from '../../userspace';
 import type { EditorSettingProvider } from '../provider/editor-setting-provider';
 

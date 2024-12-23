@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 // the adapter is to bridge the workspace rootdoc & native js bindings
+import type { WorkspaceService } from '@affine/core/modules/workspace';
 import { createYProxy, type Y } from '@blocksuite/affine/store';
-import type { WorkspaceService } from '@toeverything/infra';
 import { LiveData, Service } from '@toeverything/infra';
 import { defaultsDeep } from 'lodash-es';
 import { Observable } from 'rxjs';
@@ -155,6 +154,7 @@ class WorkspacePropertiesAdapter {
   setJournalPageDateString(id: string, date: string) {
     this.ensurePageProperties(id);
     const pageProperties = this.pageProperties?.[id];
+    // oxlint-disable-next-line no-non-null-assertion
     pageProperties!.system[PageSystemPropertyId.Journal].value = date;
   }
 

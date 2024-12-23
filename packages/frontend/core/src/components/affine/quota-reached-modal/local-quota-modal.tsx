@@ -1,7 +1,8 @@
 import { ConfirmModal } from '@affine/component/ui/modal';
 import { openQuotaModalAtom } from '@affine/core/components/atoms';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import { useService, WorkspaceService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { useAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 

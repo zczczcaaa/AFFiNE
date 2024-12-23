@@ -1,5 +1,6 @@
 import { UserFeatureService } from '@affine/core/modules/cloud/services/user-feature';
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { useI18n } from '@affine/i18n';
 import {
   AppearanceIcon,
@@ -8,11 +9,7 @@ import {
   KeyboardIcon,
   PenIcon,
 } from '@blocksuite/icons/rc';
-import {
-  FeatureFlagService,
-  useLiveData,
-  useServices,
-} from '@toeverything/infra';
+import { useLiveData, useServices } from '@toeverything/infra';
 import type { ReactElement, SVGProps } from 'react';
 import { useEffect } from 'react';
 

@@ -1,6 +1,5 @@
 import { DebugLogger } from '@affine/debug';
 import type { GetWorkspaceConfigQuery, InviteLink } from '@affine/graphql';
-import type { WorkspaceService } from '@toeverything/infra';
 import {
   backoffRetry,
   catchErrorInto,
@@ -14,6 +13,7 @@ import {
 import { EMPTY, exhaustMap, mergeMap } from 'rxjs';
 
 import { isBackendError, isNetworkError } from '../../cloud';
+import type { WorkspaceService } from '../../workspace';
 import type { WorkspaceShareSettingStore } from '../stores/share-setting';
 
 type EnableAi = GetWorkspaceConfigQuery['workspace']['enableAi'];

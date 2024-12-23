@@ -2,14 +2,11 @@ import { Tabs, Tooltip } from '@affine/component';
 import { Button } from '@affine/component/ui/button';
 import { Menu } from '@affine/component/ui/menu';
 import { ShareInfoService } from '@affine/core/modules/share-doc';
+import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import type { Doc } from '@blocksuite/affine/store';
 import { LockIcon, PublishIcon } from '@blocksuite/icons/rc';
-import {
-  useLiveData,
-  useService,
-  type WorkspaceMetadata,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { forwardRef, type PropsWithChildren, type Ref, useEffect } from 'react';
 
 import * as styles from './index.css';

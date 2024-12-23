@@ -1,12 +1,10 @@
-import {
-  DocsService,
-  FeatureFlagService,
-  type Framework,
-  WorkspaceScope,
-} from '@toeverything/infra';
+import { type Framework } from '@toeverything/infra';
 
+import { DocsService } from '../doc';
+import { FeatureFlagService } from '../feature-flag';
 import { I18nService } from '../i18n';
 import { JournalService } from '../journal';
+import { WorkspaceScope } from '../workspace';
 import { DocDisplayMetaService } from './services/doc-display-meta';
 
 export { DocDisplayMetaService };

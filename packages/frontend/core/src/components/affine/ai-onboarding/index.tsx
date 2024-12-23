@@ -1,4 +1,5 @@
-import { FeatureFlagService, useService } from '@toeverything/infra';
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
+import { useService } from '@toeverything/infra';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 
 import { AIOnboardingEdgeless } from './edgeless.dialog';

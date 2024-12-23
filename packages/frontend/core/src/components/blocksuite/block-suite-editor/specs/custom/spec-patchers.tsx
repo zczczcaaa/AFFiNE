@@ -8,6 +8,7 @@ import {
   type useConfirmModal,
 } from '@affine/component';
 import { WorkspaceServerService } from '@affine/core/modules/cloud';
+import { type DocService, DocsService } from '@affine/core/modules/doc';
 import type { EditorService } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { resolveLinkToDoc } from '@affine/core/modules/navigation';
@@ -22,6 +23,7 @@ import {
 import { ExternalLinksQuickSearchSession } from '@affine/core/modules/quicksearch/impls/external-links';
 import { JournalsQuickSearchSession } from '@affine/core/modules/quicksearch/impls/journals';
 import { WorkbenchService } from '@affine/core/modules/workbench';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { isNewTabTrigger } from '@affine/core/utils';
 import { DebugLogger } from '@affine/debug';
 import { track } from '@affine/track';
@@ -62,10 +64,7 @@ import type { ReferenceParams } from '@blocksuite/affine-model';
 import {
   AIChatBlockSchema,
   type DocProps,
-  type DocService,
-  DocsService,
   type FrameworkProvider,
-  WorkspaceService,
 } from '@toeverything/infra';
 import { type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';

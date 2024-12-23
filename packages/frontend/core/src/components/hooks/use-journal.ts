@@ -1,3 +1,4 @@
+import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import {
   JOURNAL_DATE_FORMAT,
@@ -6,7 +7,7 @@ import {
 } from '@affine/core/modules/journal';
 import { i18nTime } from '@affine/i18n';
 import { track } from '@affine/track';
-import { DocsService, useService, useServices } from '@toeverything/infra';
+import { useService, useServices } from '@toeverything/infra';
 import dayjs from 'dayjs';
 import { useCallback, useMemo } from 'react';
 

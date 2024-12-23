@@ -1,6 +1,6 @@
-import type { WorkspaceService, WorkspacesService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 
+import type { WorkspaceService, WorkspacesService } from '../../workspace';
 import { WorkspacePermission } from '../entities/permission';
 import type { WorkspacePermissionStore } from '../stores/permission';
 

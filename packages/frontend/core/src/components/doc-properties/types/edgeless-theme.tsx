@@ -1,6 +1,7 @@
 import { PropertyValue, RadioGroup, type RadioItem } from '@affine/component';
+import { DocService } from '@affine/core/modules/doc';
 import { useI18n } from '@affine/i18n';
-import { DocService, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
 import * as styles from './edgeless-theme.css';

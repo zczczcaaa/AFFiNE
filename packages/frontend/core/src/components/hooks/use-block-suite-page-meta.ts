@@ -1,5 +1,7 @@
+import { DocsService } from '@affine/core/modules/doc';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import type { DocCollection, DocMeta } from '@blocksuite/affine/store';
-import { DocsService, useService, WorkspaceService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
 import { useAsyncCallback } from './affine-async-hooks';

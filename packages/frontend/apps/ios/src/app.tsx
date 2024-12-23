@@ -13,7 +13,9 @@ import {
   ValidatorProvider,
   WebSocketAuthProvider,
 } from '@affine/core/modules/cloud';
+import { GlobalContextService } from '@affine/core/modules/global-context';
 import { I18nProvider } from '@affine/core/modules/i18n';
+import { LifecycleService } from '@affine/core/modules/lifecycle';
 import { configureLocalStorageStateStorageImpls } from '@affine/core/modules/storage';
 import { PopupWindowProvider } from '@affine/core/modules/url';
 import { ClientSchemeProvider } from '@affine/core/modules/url/providers/client-schema';
@@ -28,13 +30,7 @@ import { App as CapacitorApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Haptics } from '@capacitor/haptics';
 import { Keyboard, KeyboardStyle } from '@capacitor/keyboard';
-import {
-  Framework,
-  FrameworkRoot,
-  getCurrentStore,
-  GlobalContextService,
-  LifecycleService,
-} from '@toeverything/infra';
+import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { useTheme } from 'next-themes';
 import { Suspense, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';

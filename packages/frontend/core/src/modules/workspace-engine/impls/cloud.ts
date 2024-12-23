@@ -13,19 +13,11 @@ import {
   effect,
   exhaustMapSwitchUntilChanged,
   fromPromise,
-  getAFFiNEWorkspaceSchema,
-  type GlobalState,
   LiveData,
   ObjectPool,
   onComplete,
   onStart,
   Service,
-  type Workspace,
-  type WorkspaceEngineProvider,
-  type WorkspaceFlavourProvider,
-  type WorkspaceFlavoursProvider,
-  type WorkspaceMetadata,
-  type WorkspaceProfileInfo,
 } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { nanoid } from 'nanoid';
@@ -41,6 +33,16 @@ import {
   WebSocketService,
   WorkspaceServerService,
 } from '../../cloud';
+import type { GlobalState } from '../../storage';
+import {
+  getAFFiNEWorkspaceSchema,
+  type Workspace,
+  type WorkspaceEngineProvider,
+  type WorkspaceFlavourProvider,
+  type WorkspaceFlavoursProvider,
+  type WorkspaceMetadata,
+  type WorkspaceProfileInfo,
+} from '../../workspace';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { CloudAwarenessConnection } from './engine/awareness-cloud';

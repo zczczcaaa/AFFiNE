@@ -20,11 +20,12 @@ import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorService } from '@affine/core/modules/editor';
 import { JournalService } from '@affine/core/modules/journal';
 import { ViewIcon, ViewTitle } from '@affine/core/modules/workbench';
+import type { Workspace } from '@affine/core/modules/workspace';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { Doc } from '@blocksuite/affine/store';
-import { useLiveData, useService, type Workspace } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
 import * as styles from './detail-page-header.css';

@@ -8,9 +8,11 @@ import {
 } from '@affine/component';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
+import type { DocRecord } from '@affine/core/modules/doc';
 import type { Tag } from '@affine/core/modules/tag';
 import { TagService } from '@affine/core/modules/tag';
 import { WorkbenchService } from '@affine/core/modules/workbench';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { isNewTabTrigger } from '@affine/core/utils';
 import type { Collection } from '@affine/env/filter';
 import { useI18n } from '@affine/i18n';
@@ -21,13 +23,7 @@ import {
   SearchIcon,
   ViewLayersIcon,
 } from '@blocksuite/icons/rc';
-import type { DocRecord } from '@toeverything/infra';
-import {
-  useLiveData,
-  useService,
-  useServices,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { useLiveData, useService, useServices } from '@toeverything/infra';
 import clsx from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';

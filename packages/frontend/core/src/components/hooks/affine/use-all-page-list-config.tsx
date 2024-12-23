@@ -3,10 +3,11 @@ import { useBlockSuiteDocMeta } from '@affine/core/components/hooks/use-block-su
 import { FavoriteTag } from '@affine/core/components/page-list/components/favorite-tag';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
 import { ShareDocsListService } from '@affine/core/modules/share-doc';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { PublicPageMode } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import type { DocCollection, DocMeta } from '@blocksuite/affine/store';
-import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { type ReactNode, useCallback, useEffect, useMemo } from 'react';
 
 export type AllPageListConfig = {

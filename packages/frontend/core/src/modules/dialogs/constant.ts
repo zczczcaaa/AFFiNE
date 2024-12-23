@@ -1,5 +1,6 @@
 import type { DocMode } from '@blocksuite/affine/blocks';
-import type { WorkspaceMetadata } from '@toeverything/infra';
+
+import type { WorkspaceMetadata } from '../workspace';
 
 export type SettingTab =
   | 'shortcuts'

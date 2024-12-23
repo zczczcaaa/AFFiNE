@@ -1,7 +1,8 @@
 import { PropertyValue } from '@affine/component';
+import { DocService } from '@affine/core/modules/doc';
 import { TagService } from '@affine/core/modules/tag';
 import { useI18n } from '@affine/i18n';
-import { DocService, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 
 import { TagsInlineEditor } from '../tags-inline-editor';
 import * as styles from './tags.css';

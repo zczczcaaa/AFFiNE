@@ -1,6 +1,7 @@
-import { ApplicationStarted, OnEvent, Service } from '@toeverything/infra';
+import { OnEvent, Service } from '@toeverything/infra';
 import { Manager } from 'socket.io-client';
 
+import { ApplicationStarted } from '../../lifecycle';
 import { AccountChanged } from '../events/account-changed';
 import type { WebSocketAuthProvider } from '../provider/websocket-auth';
 import type { AuthService } from './auth';

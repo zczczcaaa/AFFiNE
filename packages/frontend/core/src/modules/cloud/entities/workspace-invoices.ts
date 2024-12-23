@@ -1,5 +1,4 @@
 import type { InvoicesQuery } from '@affine/graphql';
-import type { WorkspaceService } from '@toeverything/infra';
 import {
   backoffRetry,
   catchErrorInto,
@@ -13,6 +12,7 @@ import {
 } from '@toeverything/infra';
 import { EMPTY, map, mergeMap } from 'rxjs';
 
+import type { WorkspaceService } from '../../workspace';
 import { isBackendError, isNetworkError } from '../error';
 import type { WorkspaceServerService } from '../services/workspace-server';
 import { InvoicesStore } from '../stores/invoices';

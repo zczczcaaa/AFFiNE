@@ -1,4 +1,5 @@
 import { Divider, IconButton, Tooltip } from '@affine/component';
+import { DocsService } from '@affine/core/modules/doc';
 import { generateUniqueNameInSequence } from '@affine/core/utils/unique-name';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
@@ -7,7 +8,7 @@ import {
   Content as CollapsibleContent,
   Root as CollapsibleRoot,
 } from '@radix-ui/react-collapsible';
-import { DocsService, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
 import { DocPropertyManager } from '../manager';

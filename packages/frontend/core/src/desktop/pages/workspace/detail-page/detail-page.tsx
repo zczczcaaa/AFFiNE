@@ -7,9 +7,13 @@ import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-
 import { DocPropertySidebar } from '@affine/core/components/doc-properties/sidebar';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
 import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
+import { DocService } from '@affine/core/modules/doc';
 import { EditorService } from '@affine/core/modules/editor';
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
+import { GlobalContextService } from '@affine/core/modules/global-context';
 import { RecentDocsService } from '@affine/core/modules/quicksearch';
-import { ViewService } from '@affine/core/modules/workbench/services/view';
+import { ViewService } from '@affine/core/modules/workbench';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { RefNodeSlotsProvider } from '@blocksuite/affine/blocks';
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
 import { type AffineEditorContainer } from '@blocksuite/affine/presets';
@@ -21,14 +25,10 @@ import {
   TodayIcon,
 } from '@blocksuite/icons/rc';
 import {
-  DocService,
-  FeatureFlagService,
   FrameworkScope,
-  GlobalContextService,
   useLiveData,
   useService,
   useServices,
-  WorkspaceService,
 } from '@toeverything/infra';
 import clsx from 'clsx';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';

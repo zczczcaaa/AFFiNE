@@ -5,15 +5,11 @@ import {
   PropertyName,
 } from '@affine/component';
 import { AffinePageReference } from '@affine/core/components/affine/reference-link';
+import { DocService } from '@affine/core/modules/doc';
 import { useI18n } from '@affine/i18n';
 import type { DatabaseBlockDataSource } from '@blocksuite/affine/blocks';
 import { DatabaseTableViewIcon, PageIcon } from '@blocksuite/icons/rc';
-import {
-  DocService,
-  LiveData,
-  useLiveData,
-  useService,
-} from '@toeverything/infra';
+import { LiveData, useLiveData, useService } from '@toeverything/infra';
 import { Fragment, useMemo } from 'react';
 import type { Observable } from 'rxjs';
 

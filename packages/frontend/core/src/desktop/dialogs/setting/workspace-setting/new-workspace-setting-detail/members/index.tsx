@@ -2,8 +2,9 @@ import { Button, Tooltip } from '@affine/component';
 import { SettingRow } from '@affine/component/setting-components';
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import { useService, WorkspaceService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import type { ReactElement } from 'react';
 
 import type { SettingState } from '../../../types';

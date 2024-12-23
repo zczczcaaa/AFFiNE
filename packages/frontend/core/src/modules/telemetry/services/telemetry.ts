@@ -1,13 +1,9 @@
 import { mixpanel } from '@affine/track';
-import type { GlobalContextService } from '@toeverything/infra';
-import {
-  ApplicationStarted,
-  LiveData,
-  OnEvent,
-  Service,
-} from '@toeverything/infra';
+import { LiveData, OnEvent, Service } from '@toeverything/infra';
 
 import type { AuthAccountInfo, Server, ServersService } from '../../cloud';
+import type { GlobalContextService } from '../../global-context';
+import { ApplicationStarted } from '../../lifecycle';
 
 @OnEvent(ApplicationStarted, e => e.onApplicationStart)
 export class TelemetryService extends Service {

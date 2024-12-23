@@ -4,13 +4,10 @@ import {
   useConfirmModal,
 } from '@affine/component';
 import { AuthService, ServerService } from '@affine/core/modules/cloud';
+import { GlobalContextService } from '@affine/core/modules/global-context';
+import { WorkspacesService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import {
-  GlobalContextService,
-  useLiveData,
-  useService,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
 import { useNavigateHelper } from '../use-navigate-helper';

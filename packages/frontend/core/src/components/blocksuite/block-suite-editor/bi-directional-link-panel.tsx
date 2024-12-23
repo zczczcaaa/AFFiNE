@@ -4,27 +4,29 @@ import {
   useLitPortalFactory,
 } from '@affine/component';
 import { TextRenderer } from '@affine/core/blocksuite/presets';
+import { DocService } from '@affine/core/modules/doc';
 import {
   type Backlink,
   DocLinksService,
   type Link,
 } from '@affine/core/modules/doc-link';
 import { toURLSearchParams } from '@affine/core/modules/navigation';
+import { GlobalSessionStateService } from '@affine/core/modules/storage';
 import { WorkbenchLink } from '@affine/core/modules/workbench';
+import {
+  getAFFiNEWorkspaceSchema,
+  WorkspaceService,
+} from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import type { JobMiddleware } from '@blocksuite/affine/store';
 import { ToggleExpandIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import {
-  DocService,
-  getAFFiNEWorkspaceSchema,
-  GlobalSessionStateService,
   LiveData,
   useFramework,
   useLiveData,
   useServices,
-  WorkspaceService,
 } from '@toeverything/infra';
 import React, {
   Fragment,

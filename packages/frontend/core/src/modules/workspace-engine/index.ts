@@ -1,11 +1,9 @@
-import {
-  type Framework,
-  GlobalState,
-  WorkspaceFlavoursProvider,
-} from '@toeverything/infra';
+import { type Framework } from '@toeverything/infra';
 
 import { ServersService } from '../cloud/services/servers';
 import { DesktopApiService } from '../desktop-api';
+import { GlobalState } from '../storage';
+import { WorkspaceFlavoursProvider } from '../workspace';
 import { CloudWorkspaceFlavoursProvider } from './impls/cloud';
 import { IndexedDBBlobStorage } from './impls/engine/blob-indexeddb';
 import { SqliteBlobStorage } from './impls/engine/blob-sqlite';

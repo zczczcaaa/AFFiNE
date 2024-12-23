@@ -1,10 +1,7 @@
-import {
-  DocsService,
-  type Framework,
-  WorkspaceScope,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { type Framework } from '@toeverything/infra';
 
+import { DocsService } from '../doc';
+import { WorkspaceScope, WorkspaceService } from '../workspace';
 import { DndService } from './services';
 
 export function configureDndModule(framework: Framework) {

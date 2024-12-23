@@ -1,11 +1,8 @@
-import {
-  type Framework,
-  WorkspaceDBService,
-  WorkspaceScope,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { type Framework } from '@toeverything/infra';
 
 import { WorkspaceServerService } from '../cloud';
+import { WorkspaceDBService } from '../db';
+import { WorkspaceScope, WorkspaceService } from '../workspace';
 import { FavoriteList } from './entities/favorite-list';
 import { FavoriteService } from './services/favorite';
 import {

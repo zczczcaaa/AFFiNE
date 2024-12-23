@@ -4,10 +4,12 @@ import {
   registerAffineCommand,
 } from '@affine/core/commands';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
+import { DocService } from '@affine/core/modules/doc';
 import type { Editor } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
 import { OpenInAppService } from '@affine/core/modules/open-in-app';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
@@ -17,11 +19,9 @@ import {
   PageIcon,
 } from '@blocksuite/icons/rc';
 import {
-  DocService,
   useLiveData,
   useService,
   useServiceOptional,
-  WorkspaceService,
 } from '@toeverything/infra';
 import { useSetAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';

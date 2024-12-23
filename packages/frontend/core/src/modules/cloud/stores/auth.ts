@@ -3,9 +3,9 @@ import {
   updateUserProfileMutation,
   uploadAvatarMutation,
 } from '@affine/graphql';
-import type { GlobalState } from '@toeverything/infra';
 import { Store } from '@toeverything/infra';
 
+import type { GlobalState } from '../../storage';
 import type { AuthSessionInfo } from '../entities/session';
 import type { FetchService } from '../services/fetch';
 import type { GraphQLService } from '../services/graphql';

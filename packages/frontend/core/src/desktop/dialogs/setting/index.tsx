@@ -8,13 +8,10 @@ import type {
   GLOBAL_DIALOG_SCHEMA,
 } from '@affine/core/modules/dialogs';
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
+import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
 import { Trans } from '@affine/i18n';
 import { ContactWithUsIcon } from '@blocksuite/icons/rc';
-import {
-  useLiveData,
-  useService,
-  type WorkspaceMetadata,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { debounce } from 'lodash-es';
 import {
   Suspense,

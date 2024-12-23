@@ -10,15 +10,14 @@ import {
   DefaultServerService,
   WorkspaceServerService,
 } from '@affine/core/modules/cloud';
+import { GlobalContextService } from '@affine/core/modules/global-context';
 import { PeekViewManagerModal } from '@affine/core/modules/peek-view';
-import type { Workspace, WorkspaceMetadata } from '@toeverything/infra';
-import {
-  FrameworkScope,
-  GlobalContextService,
-  useLiveData,
-  useServices,
-  WorkspacesService,
-} from '@toeverything/infra';
+import type {
+  Workspace,
+  WorkspaceMetadata,
+} from '@affine/core/modules/workspace';
+import { WorkspacesService } from '@affine/core/modules/workspace';
+import { FrameworkScope, useLiveData, useServices } from '@toeverything/infra';
 import {
   type PropsWithChildren,
   useEffect,

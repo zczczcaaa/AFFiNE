@@ -12,14 +12,10 @@ import {
   type GLOBAL_DIALOG_SCHEMA,
   GlobalDialogService,
 } from '@affine/core/modules/dialogs';
+import { WorkspacesService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { CloudWorkspaceIcon } from '@blocksuite/icons/rc';
-import {
-  FrameworkScope,
-  useLiveData,
-  useService,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { FrameworkScope, useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
 import * as styles from './dialog.css';

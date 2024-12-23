@@ -1,6 +1,5 @@
 import type { SubscriptionQuery, SubscriptionRecurring } from '@affine/graphql';
 import { SubscriptionPlan } from '@affine/graphql';
-import type { WorkspaceService } from '@toeverything/infra';
 import {
   backoffRetry,
   catchErrorInto,
@@ -14,10 +13,10 @@ import {
 } from '@toeverything/infra';
 import { EMPTY, mergeMap } from 'rxjs';
 
+import type { WorkspaceService } from '../../workspace';
 import { isBackendError, isNetworkError } from '../error';
 import type { WorkspaceServerService } from '../services/workspace-server';
 import { SubscriptionStore } from '../stores/subscription';
-
 export type SubscriptionType = NonNullable<
   SubscriptionQuery['currentUser']
 >['subscriptions'][number];

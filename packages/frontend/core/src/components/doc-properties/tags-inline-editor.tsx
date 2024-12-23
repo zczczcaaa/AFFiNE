@@ -1,12 +1,8 @@
 import { TagService, useDeleteTagConfirmModal } from '@affine/core/modules/tag';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { TagsIcon } from '@blocksuite/icons/rc';
-import {
-  LiveData,
-  useLiveData,
-  useService,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { LiveData, useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
 import { useAsyncCallback } from '../hooks/affine-async-hooks';

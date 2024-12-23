@@ -13,16 +13,13 @@ import {
   FavoriteService,
   isFavoriteSupportType,
 } from '@affine/core/modules/favorite';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { isNewTabTrigger } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { PlusIcon } from '@blocksuite/icons/rc';
-import {
-  useLiveData,
-  useServices,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { useLiveData, useServices } from '@toeverything/infra';
 import { type MouseEventHandler, useCallback } from 'react';
 
 import { ExplorerService } from '../../../services/explorer';

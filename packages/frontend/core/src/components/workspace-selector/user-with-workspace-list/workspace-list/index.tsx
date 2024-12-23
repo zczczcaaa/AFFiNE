@@ -11,6 +11,12 @@ import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-he
 import type { Server } from '@affine/core/modules/cloud';
 import { AuthService, ServersService } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { GlobalContextService } from '@affine/core/modules/global-context';
+import {
+  type WorkspaceMetadata,
+  WorkspaceService,
+  WorkspacesService,
+} from '@affine/core/modules/workspace';
 import { ServerDeploymentType } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import {
@@ -20,15 +26,11 @@ import {
   PlusIcon,
   TeamWorkspaceIcon,
 } from '@blocksuite/icons/rc';
-import type { WorkspaceMetadata } from '@toeverything/infra';
 import {
   FrameworkScope,
-  GlobalContextService,
   useLiveData,
   useService,
   useServiceOptional,
-  WorkspaceService,
-  WorkspacesService,
 } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 

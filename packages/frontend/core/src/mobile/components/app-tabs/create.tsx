@@ -1,8 +1,9 @@
 import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
 import { WorkbenchService } from '@affine/core/modules/workbench';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import track from '@affine/track';
 import { EditIcon } from '@blocksuite/icons/rc';
-import { useService, WorkspaceService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
 import type { AppTabCustomFCProps } from './data';

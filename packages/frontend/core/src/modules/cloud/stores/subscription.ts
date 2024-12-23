@@ -12,14 +12,13 @@ import {
   subscriptionQuery,
   updateSubscriptionMutation,
 } from '@affine/graphql';
-import type { GlobalCache } from '@toeverything/infra';
 import { Store } from '@toeverything/infra';
 
+import type { GlobalCache } from '../../storage';
 import type { UrlService } from '../../url';
 import type { SubscriptionType } from '../entities/subscription';
 import type { GraphQLService } from '../services/graphql';
 import type { ServerService } from '../services/server';
-
 const SUBSCRIPTION_CACHE_KEY = 'subscription:';
 
 const getDefaultSubscriptionSuccessCallbackLink = (

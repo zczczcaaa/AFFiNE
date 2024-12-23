@@ -8,11 +8,12 @@ import { Header } from '@affine/core/components/pure/header';
 import { WorkspaceModeFilterTab } from '@affine/core/components/pure/workspace-mode-filter-tab';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { WorkbenchService } from '@affine/core/modules/workbench';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { isNewTabTrigger } from '@affine/core/utils';
 import type { Filter } from '@affine/env/filter';
 import { track } from '@affine/track';
 import { PlusIcon } from '@blocksuite/icons/rc';
-import { useServices, WorkspaceService } from '@toeverything/infra';
+import { useServices } from '@toeverything/infra';
 import clsx from 'clsx';
 import { useCallback } from 'react';
 

@@ -1,13 +1,11 @@
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import type { ExtensionType } from '@blocksuite/affine/block-std';
 import {
   NoteBlockSpec,
   PageSurfaceBlockSpec,
   PageSurfaceRefBlockSpec,
 } from '@blocksuite/affine/blocks';
-import {
-  FeatureFlagService,
-  type FrameworkProvider,
-} from '@toeverything/infra';
+import { type FrameworkProvider } from '@toeverything/infra';
 
 import { AIBlockSpecs, DefaultBlockSpecs } from './common';
 import { createPageRootBlockSpec } from './custom/root-block';

@@ -7,6 +7,8 @@ import {
 } from '@affine/component';
 import { CreatePropertyMenuItems } from '@affine/core/components/doc-properties/menu/create-doc-property';
 import { DocPropertyRow } from '@affine/core/components/doc-properties/table';
+import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
+import { DocsService } from '@affine/core/modules/doc';
 import { DocDatabaseBacklinkInfo } from '@affine/core/modules/doc-info';
 import type {
   DatabaseRow,
@@ -16,13 +18,7 @@ import { DocsSearchService } from '@affine/core/modules/docs-search';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import { PlusIcon } from '@blocksuite/icons/rc';
-import {
-  type DocCustomPropertyInfo,
-  DocsService,
-  LiveData,
-  useLiveData,
-  useServices,
-} from '@toeverything/infra';
+import { LiveData, useLiveData, useServices } from '@toeverything/infra';
 import { useCallback, useMemo, useState } from 'react';
 
 import * as styles from './info-modal.css';

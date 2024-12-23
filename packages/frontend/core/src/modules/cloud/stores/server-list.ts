@@ -1,7 +1,7 @@
-import type { GlobalStateService } from '@toeverything/infra';
 import { Store } from '@toeverything/infra';
 import { map } from 'rxjs';
 
+import type { GlobalStateService } from '../../storage';
 import { BUILD_IN_SERVERS } from '../constant';
 import type { ServerConfig, ServerMetadata } from '../types';
 

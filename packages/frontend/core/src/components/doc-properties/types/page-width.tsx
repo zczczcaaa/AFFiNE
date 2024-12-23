@@ -1,7 +1,8 @@
 import { PropertyValue, RadioGroup, type RadioItem } from '@affine/component';
+import { DocService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { useI18n } from '@affine/i18n';
-import { DocService, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
 import { container } from './page-width.css';

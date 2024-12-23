@@ -12,12 +12,8 @@ import { WorkspaceDialogs } from '@affine/core/desktop/dialogs';
 import { PeekViewManagerModal } from '@affine/core/modules/peek-view';
 import { QuotaCheck } from '@affine/core/modules/quota';
 import { WorkbenchService } from '@affine/core/modules/workbench';
-import {
-  LiveData,
-  useLiveData,
-  useService,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { WorkspaceService } from '@affine/core/modules/workspace';
+import { LiveData, useLiveData, useService } from '@toeverything/infra';
 import type { PropsWithChildren } from 'react';
 
 export const WorkspaceLayout = function WorkspaceLayout({

@@ -1,8 +1,9 @@
-import type { WorkspaceDBService, WorkspaceService } from '@toeverything/infra';
 import { LiveData, Store } from '@toeverything/infra';
 import { map } from 'rxjs';
 
 import { AuthService, type WorkspaceServerService } from '../../cloud';
+import type { WorkspaceDBService } from '../../db';
+import type { WorkspaceService } from '../../workspace';
 import type { FavoriteSupportTypeUnion } from '../constant';
 import { isFavoriteSupportType } from '../constant';
 

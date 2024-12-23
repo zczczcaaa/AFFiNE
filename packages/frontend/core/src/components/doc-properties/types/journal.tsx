@@ -1,11 +1,11 @@
 import { Checkbox, DatePicker, Menu, PropertyValue } from '@affine/component';
 import { MobileJournalConflictList } from '@affine/core/mobile/pages/workspace/detail/menu/journal-conflicts';
+import { DocService } from '@affine/core/modules/doc';
 import { JournalService } from '@affine/core/modules/journal';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
 import { i18nTime, useI18n } from '@affine/i18n';
 import {
-  DocService,
   useLiveData,
   useService,
   useServiceOptional,

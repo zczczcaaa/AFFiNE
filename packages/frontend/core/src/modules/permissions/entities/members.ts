@@ -1,5 +1,4 @@
 import type { GetMembersByWorkspaceIdQuery } from '@affine/graphql';
-import type { WorkspaceService } from '@toeverything/infra';
 import {
   backoffRetry,
   catchErrorInto,
@@ -13,6 +12,7 @@ import {
 import { EMPTY, map, mergeMap, switchMap } from 'rxjs';
 
 import { isBackendError, isNetworkError } from '../../cloud';
+import type { WorkspaceService } from '../../workspace';
 import type { WorkspaceMembersStore } from '../stores/members';
 
 export type Member =

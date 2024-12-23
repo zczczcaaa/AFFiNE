@@ -1,11 +1,11 @@
 import { IconButton, Menu } from '@affine/component';
+import { type DocRecord, DocsService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { JournalService } from '@affine/core/modules/journal';
 import { WorkbenchLink } from '@affine/core/modules/workbench';
 import { useI18n } from '@affine/i18n';
 import { EditIcon, TodayIcon } from '@blocksuite/icons/rc';
-import type { DocRecord } from '@toeverything/infra';
-import { DocsService, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useMemo } from 'react';
 
 import * as styles from './journal-conflict-block.css';

@@ -1,14 +1,10 @@
 import { useConfirmModal } from '@affine/component';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { type I18nString, useI18n } from '@affine/i18n';
-import {
-  useLiveData,
-  useService,
-  type WorkspaceMetadata,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useEffect } from 'react';
 
+import { type WorkspaceMetadata, WorkspacesService } from '../../workspace';
 import { WorkspaceQuotaService } from '../services/quota';
 import * as styles from './styles.css';
 

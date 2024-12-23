@@ -1,12 +1,9 @@
 export { WorkspaceShareSettingService } from './services/share-setting';
 
-import {
-  type Framework,
-  WorkspaceScope,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { type Framework } from '@toeverything/infra';
 
 import { WorkspaceServerService } from '../cloud';
+import { WorkspaceScope, WorkspaceService } from '../workspace';
 import { WorkspaceShareSetting } from './entities/share-setting';
 import { WorkspaceShareSettingService } from './services/share-setting';
 import { WorkspaceShareSettingStore } from './stores/share-setting';

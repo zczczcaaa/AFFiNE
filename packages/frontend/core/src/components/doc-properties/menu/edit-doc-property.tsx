@@ -4,9 +4,10 @@ import {
   MenuSeparator,
   useConfirmModal,
 } from '@affine/component';
+import { DocsService } from '@affine/core/modules/doc';
 import { Trans, useI18n } from '@affine/i18n';
 import { DeleteIcon, InvisibleIcon, ViewIcon } from '@blocksuite/icons/rc';
-import { DocsService, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import {
   type KeyboardEventHandler,
   type MouseEvent,

@@ -2,8 +2,10 @@ import {
   AIEdgelessRootBlockSpec,
   AIPageRootBlockSpec,
 } from '@affine/core/blocksuite/presets/ai';
+import { DocService, DocsService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { AppThemeService } from '@affine/core/modules/theme';
 import { mixpanel } from '@affine/track';
 import {
@@ -39,12 +41,7 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import type { Container } from '@blocksuite/global/di';
 import { LinkedPageIcon, PageIcon } from '@blocksuite/icons/lit';
-import {
-  DocService,
-  DocsService,
-  FeatureFlagService,
-  type FrameworkProvider,
-} from '@toeverything/infra';
+import { type FrameworkProvider } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
 import type { Observable } from 'rxjs';
 import { combineLatest, map } from 'rxjs';

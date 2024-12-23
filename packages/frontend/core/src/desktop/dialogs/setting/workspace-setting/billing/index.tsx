@@ -17,6 +17,7 @@ import {
 } from '@affine/core/modules/cloud';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
 import { UrlService } from '@affine/core/modules/url';
+import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
 import {
   createCustomerPortalMutation,
   type InvoicesQuery,
@@ -26,12 +27,7 @@ import {
   UserFriendlyError,
 } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
-import {
-  FrameworkScope,
-  useLiveData,
-  useService,
-  type WorkspaceMetadata,
-} from '@toeverything/infra';
+import { FrameworkScope, useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

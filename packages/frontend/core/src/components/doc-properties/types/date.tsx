@@ -1,6 +1,7 @@
 import { DatePicker, Menu, PropertyValue, Tooltip } from '@affine/component';
+import { DocService } from '@affine/core/modules/doc';
 import { i18nTime, useI18n } from '@affine/i18n';
-import { DocService, useLiveData, useServices } from '@toeverything/infra';
+import { useLiveData, useServices } from '@toeverything/infra';
 
 import * as styles from './date.css';
 import type { PropertyValueProps } from './types';

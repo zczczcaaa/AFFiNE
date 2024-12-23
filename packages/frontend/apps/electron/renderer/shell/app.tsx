@@ -9,13 +9,12 @@ import {
 } from '@affine/core/modules/app-tabs-header';
 import { configureDesktopApiModule } from '@affine/core/modules/desktop-api';
 import { configureI18nModule, I18nProvider } from '@affine/core/modules/i18n';
-import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
-import { configureAppThemeModule } from '@affine/core/modules/theme';
 import {
+  configureElectronStateStorageImpls,
   configureGlobalStorageModule,
-  Framework,
-  FrameworkRoot,
-} from '@toeverything/infra';
+} from '@affine/core/modules/storage';
+import { configureAppThemeModule } from '@affine/core/modules/theme';
+import { Framework, FrameworkRoot } from '@toeverything/infra';
 
 import * as styles from './app.css';
 

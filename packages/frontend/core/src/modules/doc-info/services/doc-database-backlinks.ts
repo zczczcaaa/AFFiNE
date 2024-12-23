@@ -2,11 +2,11 @@ import {
   DatabaseBlockDataSource,
   type DatabaseBlockModel,
 } from '@blocksuite/affine/blocks';
-import type { DocsService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { combineLatest, distinctUntilChanged, map, Observable } from 'rxjs';
 
+import type { DocsService } from '../../doc';
 import type { DocsSearchService } from '../../docs-search';
 import type { DatabaseRow, DatabaseValueCell } from '../types';
 import { signalToLiveData, signalToObservable } from '../utils';

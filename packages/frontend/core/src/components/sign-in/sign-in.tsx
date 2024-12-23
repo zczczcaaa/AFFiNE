@@ -3,14 +3,11 @@ import { AuthInput, ModalHeader } from '@affine/component/auth-components';
 import { OAuth } from '@affine/core/components/affine/auth/oauth';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { AuthService, ServerService } from '@affine/core/modules/cloud';
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { ServerDeploymentType } from '@affine/graphql';
 import { Trans, useI18n } from '@affine/i18n';
 import { ArrowRightBigIcon, PublishIcon } from '@blocksuite/icons/rc';
-import {
-  FeatureFlagService,
-  useLiveData,
-  useService,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import {
   type Dispatch,

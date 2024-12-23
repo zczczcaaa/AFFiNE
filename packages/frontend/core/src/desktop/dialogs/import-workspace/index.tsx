@@ -3,11 +3,12 @@ import {
   type DialogComponentProps,
   type GLOBAL_DIALOG_SCHEMA,
 } from '@affine/core/modules/dialogs';
+import { WorkspacesService } from '@affine/core/modules/workspace';
 import { _addLocalWorkspace } from '@affine/core/modules/workspace-engine';
 import { DebugLogger } from '@affine/debug';
 import { apis } from '@affine/electron-api';
 import { useI18n } from '@affine/i18n';
-import { useService, WorkspacesService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { useLayoutEffect } from 'react';
 
 const logger = new DebugLogger('ImportWorkspaceDialog');

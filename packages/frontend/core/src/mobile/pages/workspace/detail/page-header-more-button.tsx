@@ -9,6 +9,7 @@ import { useFavorite } from '@affine/core/components/blocksuite/block-suite-head
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
 import { EditorOutlinePanel } from '@affine/core/desktop/pages/workspace/detail-page/tabs/outline';
 import { DocInfoSheet } from '@affine/core/mobile/components';
+import { DocService } from '@affine/core/modules/doc';
 import { EditorService } from '@affine/core/modules/editor';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
 import { preventDefault } from '@affine/core/utils';
@@ -21,7 +22,7 @@ import {
   PageIcon,
   TocIcon,
 } from '@blocksuite/icons/rc';
-import { DocService, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useEffect, useState } from 'react';
 
 import { JournalConflictsMenuItem } from './menu/journal-conflicts';

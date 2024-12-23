@@ -10,13 +10,14 @@ import type {
 } from '@blocksuite/affine/presets';
 import type { InlineEditor } from '@blocksuite/inline';
 import { effect } from '@preact/signals-core';
-import type { DocService, WorkspaceService } from '@toeverything/infra';
 import { Entity, LiveData } from '@toeverything/infra';
 import { defaults, isEqual, omit } from 'lodash-es';
 import { skip } from 'rxjs';
 
+import type { DocService } from '../../doc';
 import { paramsParseOptions, preprocessParams } from '../../navigation/utils';
 import type { WorkbenchView } from '../../workbench';
+import type { WorkspaceService } from '../../workspace';
 import { EditorScope } from '../scopes/editor';
 import type { EditorSelector } from '../types';
 

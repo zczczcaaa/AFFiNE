@@ -6,15 +6,18 @@ import {
   WorkspaceServerService,
 } from '@affine/core/modules/cloud';
 import { DndService } from '@affine/core/modules/dnd/services';
+import { GlobalContextService } from '@affine/core/modules/global-context';
+import {
+  type Workspace,
+  type WorkspaceMetadata,
+  WorkspacesService,
+} from '@affine/core/modules/workspace';
 import { ZipTransformer } from '@blocksuite/affine/blocks';
-import type { Workspace, WorkspaceMetadata } from '@toeverything/infra';
 import {
   FrameworkScope,
-  GlobalContextService,
   useLiveData,
   useService,
   useServices,
-  WorkspacesService,
 } from '@toeverything/infra';
 import type { PropsWithChildren, ReactElement } from 'react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -31,11 +34,11 @@ declare global {
   /**
    * @internal debug only
    */
-  // eslint-disable-next-line no-var
+  // oxlint-disable-next-line no-var
   var currentWorkspace: Workspace | undefined;
-  // eslint-disable-next-line no-var
+  // oxlint-disable-next-line no-var
   var exportWorkspaceSnapshot: (docs?: string[]) => Promise<void>;
-  // eslint-disable-next-line no-var
+  // oxlint-disable-next-line no-var
   var importWorkspaceSnapshot: () => Promise<void>;
   interface WindowEventMap {
     'affine:workspace:change': CustomEvent<{ id: string }>;

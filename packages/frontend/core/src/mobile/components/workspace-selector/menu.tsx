@@ -1,15 +1,14 @@
 import { IconButton } from '@affine/component';
-import { WorkspaceAvatar } from '@affine/component/workspace-avatar';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
-import { CloseIcon, CollaborationIcon } from '@blocksuite/icons/rc';
+import { WorkspaceAvatar } from '@affine/core/components/workspace-avatar';
 import {
-  useLiveData,
-  useService,
   type WorkspaceMetadata,
   WorkspaceService,
   WorkspacesService,
-} from '@toeverything/infra';
+} from '@affine/core/modules/workspace';
+import { CloseIcon, CollaborationIcon } from '@blocksuite/icons/rc';
+import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import { type HTMLAttributes, useCallback, useMemo } from 'react';
 

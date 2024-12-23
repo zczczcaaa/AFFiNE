@@ -1,16 +1,12 @@
 import { toURLSearchParams } from '@affine/core/modules/navigation';
 import type { ReferenceParams } from '@blocksuite/blocks';
-import type { WorkspaceService } from '@toeverything/infra';
-import {
-  fromPromise,
-  OnEvent,
-  Service,
-  WorkspaceEngineBeforeStart,
-} from '@toeverything/infra';
+import { fromPromise, OnEvent, Service } from '@toeverything/infra';
 import { isEmpty, omit } from 'lodash-es';
 import { map, type Observable, switchMap } from 'rxjs';
 import { z } from 'zod';
 
+import type { WorkspaceService } from '../../workspace';
+import { WorkspaceEngineBeforeStart } from '../../workspace';
 import { DocsIndexer } from '../entities/docs-indexer';
 
 @OnEvent(WorkspaceEngineBeforeStart, s => s.handleWorkspaceEngineBeforeStart)

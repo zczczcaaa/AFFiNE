@@ -1,13 +1,12 @@
 import { Switch } from '@affine/component';
-import { useI18n } from '@affine/i18n';
-import { ArrowRightSmallIcon } from '@blocksuite/icons/rc';
 import {
   AFFINE_FLAGS,
   FeatureFlagService,
   type Flag,
-  useLiveData,
-  useService,
-} from '@toeverything/infra';
+} from '@affine/core/modules/feature-flag';
+import { useI18n } from '@affine/i18n';
+import { ArrowRightSmallIcon } from '@blocksuite/icons/rc';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
 import { SettingGroup } from '../group';

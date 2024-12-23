@@ -1,12 +1,9 @@
 import { notify, useThemeColorV2 } from '@affine/component';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';
 import { CollectionService } from '@affine/core/modules/collection';
-import {
-  GlobalContextService,
-  useLiveData,
-  useServices,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { GlobalContextService } from '@affine/core/modules/global-context';
+import { WorkspaceService } from '@affine/core/modules/workspace';
+import { useLiveData, useServices } from '@toeverything/infra';
 import { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 

@@ -8,14 +8,11 @@ import {
   type GLOBAL_DIALOG_SCHEMA,
   GlobalDialogService,
 } from '@affine/core/modules/dialogs';
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
+import { WorkspacesService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import {
-  FeatureFlagService,
-  useLiveData,
-  useService,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
 import { buildShowcaseWorkspace } from '../../../utils/first-app-data';

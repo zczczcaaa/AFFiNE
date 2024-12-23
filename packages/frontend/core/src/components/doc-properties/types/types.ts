@@ -1,4 +1,4 @@
-import type { DocCustomPropertyInfo } from '@toeverything/infra';
+import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
 
 export interface PropertyValueProps {
   propertyInfo?: DocCustomPropertyInfo;

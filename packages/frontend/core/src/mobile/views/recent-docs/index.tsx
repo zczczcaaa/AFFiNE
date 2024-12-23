@@ -1,5 +1,6 @@
 import { useBlockSuiteDocMeta } from '@affine/core/components/hooks/use-block-suite-page-meta';
-import { useService, WorkspaceService } from '@toeverything/infra';
+import { WorkspaceService } from '@affine/core/modules/workspace';
+import { useService } from '@toeverything/infra';
 import { useMemo } from 'react';
 
 import { DocCard } from '../../components/doc-card';

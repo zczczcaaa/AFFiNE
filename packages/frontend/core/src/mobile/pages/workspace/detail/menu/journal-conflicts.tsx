@@ -6,18 +6,17 @@ import {
   useConfirmModal,
 } from '@affine/component';
 import { MoveToTrash } from '@affine/core/components/page-list';
+import {
+  type DocRecord,
+  DocService,
+  DocsService,
+} from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { JournalService } from '@affine/core/modules/journal';
 import { WorkbenchLink } from '@affine/core/modules/workbench';
 import { useI18n } from '@affine/i18n';
 import { CalendarXmarkIcon, EditIcon, TodayIcon } from '@blocksuite/icons/rc';
-import type { DocRecord } from '@toeverything/infra';
-import {
-  DocService,
-  DocsService,
-  useLiveData,
-  useService,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { type MouseEvent, useCallback, useMemo } from 'react';
 
 import * as styles from './journal-conflicts.css';

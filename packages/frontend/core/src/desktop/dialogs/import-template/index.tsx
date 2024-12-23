@@ -12,15 +12,14 @@ import {
   ImportTemplateService,
   TemplateDownloaderService,
 } from '@affine/core/modules/import-template';
+import {
+  type WorkspaceMetadata,
+  WorkspacesService,
+} from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import { AllDocsIcon } from '@blocksuite/icons/rc';
-import {
-  useLiveData,
-  useService,
-  type WorkspaceMetadata,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { useCallback, useEffect, useState } from 'react';
 

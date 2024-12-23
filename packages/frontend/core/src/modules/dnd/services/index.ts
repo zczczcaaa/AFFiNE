@@ -8,10 +8,11 @@ import type { AffineDNDData } from '@affine/core/types/dnd';
 import { BlockStdScope } from '@blocksuite/affine/block-std';
 import { DndApiExtensionIdentifier } from '@blocksuite/affine/blocks';
 import { type SliceSnapshot } from '@blocksuite/affine/store';
-import type { DocsService, WorkspaceService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 
+import type { DocsService } from '../../doc';
 import { resolveLinkToDoc } from '../../navigation';
+import type { WorkspaceService } from '../../workspace';
 
 type Entity = AffineDNDData['draggable']['entity'];
 type EntityResolver = (data: string) => Entity | null;

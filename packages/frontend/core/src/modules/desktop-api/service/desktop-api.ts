@@ -5,7 +5,7 @@ import {
   reactRouterV6BrowserTracingIntegration,
   setTags,
 } from '@sentry/react';
-import { ApplicationStarted, OnEvent, Service } from '@toeverything/infra';
+import { OnEvent, Service } from '@toeverything/infra';
 import { debounce } from 'lodash-es';
 import { useEffect } from 'react';
 import {
@@ -16,6 +16,7 @@ import {
 } from 'react-router-dom';
 
 import { AuthService, DefaultServerService, ServersService } from '../../cloud';
+import { ApplicationStarted } from '../../lifecycle';
 import type { DesktopApi } from '../entities/electron-api';
 
 @OnEvent(ApplicationStarted, e => e.setupStartListener)

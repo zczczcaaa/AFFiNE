@@ -4,8 +4,8 @@ import {
 } from '@affine/core/commands';
 import { useSharingUrl } from '@affine/core/components/hooks/affine/use-share-url';
 import { useIsActiveView } from '@affine/core/modules/workbench';
+import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
 import { track } from '@affine/track';
-import { type WorkspaceMetadata } from '@toeverything/infra';
 import { useEffect } from 'react';
 
 export function useRegisterCopyLinkCommands({

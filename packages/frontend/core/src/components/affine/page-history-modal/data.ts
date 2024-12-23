@@ -1,13 +1,14 @@
 import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import { useDocCollectionPage } from '@affine/core/components/hooks/use-block-suite-workspace-page';
 import { FetchService, GraphQLService } from '@affine/core/modules/cloud';
+import { getAFFiNEWorkspaceSchema } from '@affine/core/modules/workspace';
 import { DebugLogger } from '@affine/debug';
 import type { ListHistoryQuery } from '@affine/graphql';
 import { listHistoryQuery, recoverDocMutation } from '@affine/graphql';
 import { i18nTime } from '@affine/i18n';
 import { assertEquals } from '@blocksuite/affine/global/utils';
 import { DocCollection } from '@blocksuite/affine/store';
-import { getAFFiNEWorkspaceSchema, useService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { useEffect, useMemo } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import {
@@ -227,6 +228,7 @@ export function revertUpdate(
     snapshotStateVector
   );
   const undoManager = new UndoManager(
+    // oxlint-disable array-callback-return
     [...snapshotDoc.share.keys()].map(key => {
       const type = getMetadata(key);
       if (type === 'Text') {
@@ -236,7 +238,7 @@ export function revertUpdate(
       } else if (type === 'Array') {
         return snapshotDoc.getArray(key);
       }
-      // eslint-disable-next-line array-callback-return
+
       throw new Error('Unknown type');
     })
   );

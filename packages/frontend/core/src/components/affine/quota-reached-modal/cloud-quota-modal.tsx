@@ -4,9 +4,10 @@ import { UserQuotaService } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { type I18nString, useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useMemo } from 'react';
 

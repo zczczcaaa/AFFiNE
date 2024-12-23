@@ -13,17 +13,13 @@ import {
 import { CreatePropertyMenuItems } from '@affine/core/components/doc-properties/menu/create-doc-property';
 import { LinksRow } from '@affine/core/desktop/dialogs/doc-info/links-row';
 import { TimeRow } from '@affine/core/desktop/dialogs/doc-info/time-row';
+import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
+import { DocsService } from '@affine/core/modules/doc';
 import { DocDatabaseBacklinkInfo } from '@affine/core/modules/doc-info';
 import { DocsSearchService } from '@affine/core/modules/docs-search';
 import { useI18n } from '@affine/i18n';
 import { PlusIcon } from '@blocksuite/icons/rc';
-import {
-  type DocCustomPropertyInfo,
-  DocsService,
-  LiveData,
-  useLiveData,
-  useServices,
-} from '@toeverything/infra';
+import { LiveData, useLiveData, useServices } from '@toeverything/infra';
 import { Suspense, useCallback, useMemo, useState } from 'react';
 
 import * as styles from './doc-info.css';

@@ -6,11 +6,12 @@ import {
   useFilteredPageMetas,
 } from '@affine/core/components/page-list';
 import type { Tag } from '@affine/core/modules/tag';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import type { Collection, Filter } from '@affine/env/filter';
 import type { DocMeta } from '@blocksuite/affine/store';
 import { ToggleExpandIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
-import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useMemo } from 'react';
 
 import * as styles from './list.css';

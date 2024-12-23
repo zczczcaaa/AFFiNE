@@ -10,12 +10,15 @@ import {
   DesktopApiService,
 } from '@affine/core/modules/desktop-api';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { DocsService } from '@affine/core/modules/doc';
 import {
   configureSpellCheckSettingModule,
   EditorSettingService,
 } from '@affine/core/modules/editor-setting';
 import { configureFindInPageModule } from '@affine/core/modules/find-in-page';
+import { GlobalContextService } from '@affine/core/modules/global-context';
 import { I18nProvider } from '@affine/core/modules/i18n';
+import { LifecycleService } from '@affine/core/modules/lifecycle';
 import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
 import {
   ClientSchemeProvider,
@@ -26,6 +29,7 @@ import {
   configureDesktopWorkbenchModule,
   WorkbenchService,
 } from '@affine/core/modules/workbench';
+import { WorkspacesService } from '@affine/core/modules/workspace';
 import {
   configureBrowserWorkspaceFlavours,
   configureSqliteWorkspaceEngineStorageProvider,
@@ -33,15 +37,7 @@ import {
 import createEmotionCache from '@affine/core/utils/create-emotion-cache';
 import { apis, events } from '@affine/electron-api';
 import { CacheProvider } from '@emotion/react';
-import {
-  DocsService,
-  Framework,
-  FrameworkRoot,
-  getCurrentStore,
-  GlobalContextService,
-  LifecycleService,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
 

@@ -15,7 +15,7 @@ import {
 } from '@blocksuite/affine/store';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import type { DeltaInsert } from '@blocksuite/inline';
-import { Document, getAFFiNEWorkspaceSchema } from '@toeverything/infra';
+import { Document } from '@toeverything/infra';
 import { toHexString } from 'lib0/buffer.js';
 import { digest as lib0Digest } from 'lib0/hash/sha256';
 import { difference, uniq } from 'lodash-es';
@@ -27,6 +27,7 @@ import {
   Text as YText,
 } from 'yjs';
 
+import { getAFFiNEWorkspaceSchema } from '../../workspace/global-schema';
 import type { BlockIndexSchema, DocIndexSchema } from '../schema';
 import type {
   WorkerIngoingMessage,

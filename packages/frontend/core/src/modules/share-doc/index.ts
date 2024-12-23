@@ -3,16 +3,15 @@ export { ShareDocsListService } from './services/share-docs-list';
 export { ShareInfoService } from './services/share-info';
 export { ShareReaderService } from './services/share-reader';
 
+import { type Framework } from '@toeverything/infra';
+
+import { RawFetchProvider, WorkspaceServerService } from '../cloud';
+import { DocScope, DocService } from '../doc';
 import {
-  DocScope,
-  DocService,
-  type Framework,
   WorkspaceLocalCache,
   WorkspaceScope,
   WorkspaceService,
-} from '@toeverything/infra';
-
-import { RawFetchProvider, WorkspaceServerService } from '../cloud';
+} from '../workspace';
 import { ShareDocsList } from './entities/share-docs-list';
 import { ShareInfo } from './entities/share-info';
 import { ShareReader } from './entities/share-reader';

@@ -1,9 +1,10 @@
 import type { Tag, Tag as TagSchema } from '@affine/env/filter';
 import type { DocsPropertiesMeta } from '@blocksuite/affine/store';
-import type { WorkspaceService } from '@toeverything/infra';
 import { LiveData, Store } from '@toeverything/infra';
 import { nanoid } from 'nanoid';
 import { Observable } from 'rxjs';
+
+import type { WorkspaceService } from '../../workspace';
 
 export class TagStore extends Store {
   get properties() {

@@ -1,10 +1,11 @@
+import type { Memento } from '@toeverything/infra';
+import { Observable } from 'rxjs';
+
 import type {
   GlobalCache,
   GlobalSessionState,
   GlobalState,
-  Memento,
-} from '@toeverything/infra';
-import { Observable } from 'rxjs';
+} from '../providers/global';
 
 export class StorageMemento implements Memento {
   constructor(

@@ -1,5 +1,5 @@
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
-import type { WorkspaceMetadata } from '@toeverything/infra';
+import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
 
 import type { SettingState } from '../types';
 import { WorkspaceSettingBilling } from './billing';

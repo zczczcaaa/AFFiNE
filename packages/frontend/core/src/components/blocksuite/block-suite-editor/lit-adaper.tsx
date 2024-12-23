@@ -3,6 +3,8 @@ import {
   useConfirmModal,
   useLitPortalFactory,
 } from '@affine/component';
+import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
+import { DocService, DocsService } from '@affine/core/modules/doc';
 import type {
   DatabaseRow,
   DatabaseValueCell,
@@ -12,6 +14,7 @@ import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { JournalService } from '@affine/core/modules/journal';
 import { toURLSearchParams } from '@affine/core/modules/navigation';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import track from '@affine/track';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import {
@@ -21,14 +24,10 @@ import {
 } from '@blocksuite/affine/presets';
 import type { Doc } from '@blocksuite/affine/store';
 import {
-  type DocCustomPropertyInfo,
-  DocService,
-  DocsService,
   useFramework,
   useLiveData,
   useService,
   useServices,
-  WorkspaceService,
 } from '@toeverything/infra';
 import React, {
   forwardRef,

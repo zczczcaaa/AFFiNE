@@ -22,15 +22,12 @@ import {
   TomorrowIcon,
   YesterdayIcon,
 } from '@blocksuite/icons/rc';
-import type {
-  DocRecord,
-  DocsService,
-  FeatureFlagService,
-} from '@toeverything/infra';
 import { LiveData, Service } from '@toeverything/infra';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 
+import type { DocRecord, DocsService } from '../../doc';
+import type { FeatureFlagService } from '../../feature-flag';
 import type { I18nService } from '../../i18n';
 import type { JournalService } from '../../journal';
 

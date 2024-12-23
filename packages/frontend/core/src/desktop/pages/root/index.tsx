@@ -1,10 +1,7 @@
 import { NotificationCenter } from '@affine/component';
 import { DefaultServerService } from '@affine/core/modules/cloud';
-import {
-  FrameworkScope,
-  GlobalContextService,
-  useService,
-} from '@toeverything/infra';
+import { GlobalContextService } from '@affine/core/modules/global-context';
+import { FrameworkScope, useService } from '@toeverything/infra';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 

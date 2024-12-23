@@ -33,18 +33,12 @@ export { WorkspaceServerService } from './services/workspace-server';
 export { WorkspaceSubscriptionService } from './services/workspace-subscription';
 export type { ServerConfig } from './types';
 
-import {
-  DocScope,
-  DocService,
-  type Framework,
-  GlobalCache,
-  GlobalState,
-  GlobalStateService,
-  WorkspaceScope,
-  WorkspaceService,
-} from '@toeverything/infra';
+import { type Framework } from '@toeverything/infra';
 
+import { DocScope, DocService } from '../doc';
+import { GlobalCache, GlobalState, GlobalStateService } from '../storage';
 import { UrlService } from '../url';
+import { WorkspaceScope, WorkspaceService } from '../workspace';
 import { CloudDocMeta } from './entities/cloud-doc-meta';
 import { Invoices } from './entities/invoices';
 import { Server } from './entities/server';

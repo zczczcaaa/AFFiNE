@@ -1,6 +1,6 @@
-import type { WorkspaceService } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 
+import type { WorkspaceService } from '../../workspace';
 import { ShareDocsList } from '../entities/share-docs-list';
 
 export class ShareDocsListService extends Service {

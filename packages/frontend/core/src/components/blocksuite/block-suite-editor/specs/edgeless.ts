@@ -1,3 +1,4 @@
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { builtInTemplates as builtInEdgelessTemplates } from '@affine/templates/edgeless';
 import { builtInTemplates as builtInStickersTemplates } from '@affine/templates/stickers';
 import type { ExtensionType } from '@blocksuite/affine/block-std';
@@ -10,10 +11,7 @@ import {
   EdgelessTextBlockSpec,
   FrameBlockSpec,
 } from '@blocksuite/affine/blocks';
-import {
-  FeatureFlagService,
-  type FrameworkProvider,
-} from '@toeverything/infra';
+import { type FrameworkProvider } from '@toeverything/infra';
 
 import { AIBlockSpecs, DefaultBlockSpecs } from './common';
 import { createEdgelessRootBlockSpec } from './custom/root-block';

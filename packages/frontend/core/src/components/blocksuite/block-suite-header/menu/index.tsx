@@ -19,6 +19,7 @@ import { EditorService } from '@affine/core/modules/editor';
 import { OpenInAppService } from '@affine/core/modules/open-in-app/services';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { Doc } from '@blocksuite/affine/store';
@@ -42,7 +43,6 @@ import {
   useLiveData,
   useService,
   useServiceOptional,
-  WorkspaceService,
 } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 

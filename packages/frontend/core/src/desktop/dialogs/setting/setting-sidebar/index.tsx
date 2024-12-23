@@ -4,26 +4,24 @@ import {
 } from '@affine/component/setting-components';
 import { Avatar } from '@affine/component/ui/avatar';
 import { Tooltip } from '@affine/component/ui/tooltip';
-import { WorkspaceAvatar } from '@affine/component/workspace-avatar';
 import { UserPlanButton } from '@affine/core/components/affine/auth/user-plan-button';
 import { useCatchEventCallback } from '@affine/core/components/hooks/use-catch-event-hook';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
+import { WorkspaceAvatar } from '@affine/core/components/workspace-avatar';
 import { AuthService } from '@affine/core/modules/cloud';
 import { UserFeatureService } from '@affine/core/modules/cloud/services/user-feature';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
+import { GlobalContextService } from '@affine/core/modules/global-context';
+import {
+  type WorkspaceMetadata,
+  WorkspacesService,
+} from '@affine/core/modules/workspace';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { Logo1Icon } from '@blocksuite/icons/rc';
-import type { WorkspaceMetadata } from '@toeverything/infra';
-import {
-  GlobalContextService,
-  useLiveData,
-  useService,
-  useServices,
-  WorkspacesService,
-} from '@toeverything/infra';
+import { useLiveData, useService, useServices } from '@toeverything/infra';
 import clsx from 'clsx';
 import {
   type MouseEvent,

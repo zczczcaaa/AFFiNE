@@ -6,6 +6,7 @@ import {
   WorkspaceMembersService,
   WorkspacePermissionService,
 } from '@affine/core/modules/permissions';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import {
   Permission,
   UserFriendlyError,
@@ -17,7 +18,6 @@ import {
   useEnsureLiveData,
   useLiveData,
   useService,
-  WorkspaceService,
 } from '@toeverything/infra';
 import clsx from 'clsx';
 import { clamp } from 'lodash-es';
