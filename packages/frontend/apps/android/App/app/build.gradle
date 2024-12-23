@@ -53,8 +53,8 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
-    implementation "net.java.dev.jna:jna:5.15.0@aar"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0"
+    implementation "net.java.dev.jna:jna:5.16.0@aar"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1"
     implementation 'androidx.core:core-ktx:1.15.0'
 }
 

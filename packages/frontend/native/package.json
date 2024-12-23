@@ -33,7 +33,7 @@
     }
   },
   "devDependencies": {
-    "@napi-rs/cli": "3.0.0-alpha.64",
+    "@napi-rs/cli": "3.0.0-alpha.65",
     "@types/node": "^20.17.10",
     "ava": "^6.2.0",
     "ts-node": "^10.9.2",
