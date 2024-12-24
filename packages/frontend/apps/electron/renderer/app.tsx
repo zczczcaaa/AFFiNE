@@ -133,12 +133,9 @@ events?.applicationMenu.onNewPageAction(() => {
     .get(GlobalContextService)
     .globalContext.workspaceId.get();
   const workspacesService = frameworkProvider.get(WorkspacesService);
-  const workspaceMetadata = currentWorkspaceId
-    ? workspacesService.list.workspace$(currentWorkspaceId).value
+  const workspaceRef = currentWorkspaceId
+    ? workspacesService.openByWorkspaceId(currentWorkspaceId)
     : null;
-  const workspaceRef =
-    workspaceMetadata &&
-    workspacesService.open({ metadata: workspaceMetadata });
   if (!workspaceRef) {
     return;
   }

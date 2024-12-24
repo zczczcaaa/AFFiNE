@@ -67,6 +67,7 @@ export function configureWorkspaceModule(framework: Framework) {
     .service(WorkspaceRepositoryService, [
       WorkspaceFlavoursService,
       WorkspaceProfileService,
+      WorkspaceListService,
     ])
     .scope(WorkspaceScope)
     .service(WorkspaceService)

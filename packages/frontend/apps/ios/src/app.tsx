@@ -6,6 +6,7 @@ import { NavigationGestureProvider } from '@affine/core/mobile/modules/navigatio
 import { VirtualKeyboardProvider } from '@affine/core/mobile/modules/virtual-keyboard';
 import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
+import { AIButtonProvider } from '@affine/core/modules/ai-button';
 import {
   AuthService,
   DefaultServerService,
@@ -13,6 +14,7 @@ import {
   ValidatorProvider,
   WebSocketAuthProvider,
 } from '@affine/core/modules/cloud';
+import { DocsService } from '@affine/core/modules/doc';
 import { GlobalContextService } from '@affine/core/modules/global-context';
 import { I18nProvider } from '@affine/core/modules/i18n';
 import { LifecycleService } from '@affine/core/modules/lifecycle';
@@ -21,11 +23,18 @@ import { PopupWindowProvider } from '@affine/core/modules/url';
 import { ClientSchemeProvider } from '@affine/core/modules/url/providers/client-schema';
 import { configureIndexedDBUserspaceStorageProvider } from '@affine/core/modules/userspace';
 import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench';
+import { WorkspacesService } from '@affine/core/modules/workspace';
 import {
   configureBrowserWorkspaceFlavours,
   configureIndexedDBWorkspaceEngineStorageProvider,
 } from '@affine/core/modules/workspace-engine';
 import { I18n } from '@affine/i18n';
+import {
+  docLinkBaseURLMiddleware,
+  MarkdownAdapter,
+  titleMiddleware,
+} from '@blocksuite/affine/blocks';
+import { Job } from '@blocksuite/affine/store';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Haptics } from '@capacitor/haptics';
@@ -39,6 +48,7 @@ import { configureFetchProvider } from './fetch';
 import { ModalConfigProvider } from './modal-config';
 import { Cookie } from './plugins/cookie';
 import { Hashcash } from './plugins/hashcash';
+import { Intelligents } from './plugins/intelligents';
 import { NavigationGesture } from './plugins/navigation-gesture';
 
 const future = {
@@ -109,6 +119,15 @@ framework.impl(HapticProvider, {
   selectionChanged: () => Haptics.selectionChanged(),
   selectionEnd: () => Haptics.selectionEnd(),
 });
+framework.impl(AIButtonProvider, {
+  presentAIButton: () => {
+    return Intelligents.presentIntelligentsButton();
+  },
+  dismissAIButton: () => {
+    return Intelligents.dismissIntelligentsButton();
+  },
+});
+
 const frameworkProvider = framework.provider();
 
 // ------ some apis for native ------
@@ -124,6 +143,51 @@ const frameworkProvider = framework.provider();
 };
 (window as any).getCurrentI18nLocale = () => {
   return I18n.language;
+};
+(window as any).getCurrentDocContentInMarkdown = async () => {
+  const globalContextService = frameworkProvider.get(GlobalContextService);
+  const currentWorkspaceId =
+    globalContextService.globalContext.workspaceId.get();
+  const currentDocId = globalContextService.globalContext.docId.get();
+  const workspacesService = frameworkProvider.get(WorkspacesService);
+  const workspaceRef = currentWorkspaceId
+    ? workspacesService.openByWorkspaceId(currentWorkspaceId)
+    : null;
+  if (!workspaceRef) {
+    return;
+  }
+  const { workspace, dispose: disposeWorkspace } = workspaceRef;
+
+  const docsService = workspace.scope.get(DocsService);
+  const docRef = currentDocId ? docsService.open(currentDocId) : null;
+  if (!docRef) {
+    return;
+  }
+  const { doc, release: disposeDoc } = docRef;
+
+  try {
+    const blockSuiteDoc = doc.blockSuiteDoc;
+
+    const job = new Job({
+      collection: blockSuiteDoc.collection,
+      middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
+    });
+    const snapshot = job.docToSnapshot(blockSuiteDoc);
+
+    const adapter = new MarkdownAdapter(job);
+    if (!snapshot) {
+      return;
+    }
+
+    const markdownResult = await adapter.fromDocSnapshot({
+      snapshot,
+      assets: job.assetsManager,
+    });
+    return markdownResult.file;
+  } finally {
+    disposeDoc();
+    disposeWorkspace();
+  }
 };
 
 // setup application lifecycle events, and emit application start event

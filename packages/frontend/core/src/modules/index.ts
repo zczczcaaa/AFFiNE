@@ -1,6 +1,7 @@
 import { configureQuotaModule } from '@affine/core/modules/quota';
 import { type Framework } from '@toeverything/infra';
 
+import { configureAIButtonModule } from './ai-button';
 import { configureAppSidebarModule } from './app-sidebar';
 import { configAtMenuConfigModule } from './at-menu-config';
 import { configureCloudModule } from './cloud';
@@ -88,4 +89,5 @@ export function configureCommonModules(framework: Framework) {
   configAtMenuConfigModule(framework);
   configureDndModule(framework);
   configureCommonGlobalStorageImpls(framework);
+  configureAIButtonModule(framework);
 }
