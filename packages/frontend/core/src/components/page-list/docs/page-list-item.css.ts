@@ -72,7 +72,6 @@ globalStyle(`${root} > :last-child`, {
   paddingRight: '8px',
 });
 export const titleIconsWrapper = style({
-  width: 34,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
