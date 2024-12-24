@@ -1,3 +1,4 @@
+import type { AIError } from '@blocksuite/affine-components/ai-item';
 import {
   NotificationProvider,
   ThemeProvider,
@@ -23,7 +24,6 @@ import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 
-import type { AIError } from '../../../_common/components/index.js';
 import type { EdgelessRootService } from '../../edgeless/edgeless-root-service.js';
 import { PageRootService } from '../../page/page-root-service.js';
 import { AFFINE_FORMAT_BAR_WIDGET } from '../format-bar/format-bar.js';

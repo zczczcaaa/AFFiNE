@@ -1,4 +1,3 @@
-import { createLitPortal } from '@blocksuite/affine-components/portal';
 import {
   EditorHost,
   PropTypes,
@@ -11,12 +10,10 @@ import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { AIItem } from './ai-item.js';
-import {
-  SUBMENU_OFFSET_CROSS_AXIS,
-  SUBMENU_OFFSET_MAIN_AXIS,
-} from './const.js';
-import type { AIItemConfig, AIItemGroupConfig } from './types.js';
+import { createLitPortal } from '../portal';
+import type { AIItem } from './ai-item';
+import { SUBMENU_OFFSET_CROSS_AXIS, SUBMENU_OFFSET_MAIN_AXIS } from './const';
+import type { AIItemConfig, AIItemGroupConfig } from './types';
 
 @requiredProperties({ host: PropTypes.instanceOf(EditorHost) })
 export class AIItemList extends WithDisposable(LitElement) {

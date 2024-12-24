@@ -1,3 +1,4 @@
+import type { AIItemGroupConfig } from '@blocksuite/affine-components/ai-item';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import {
   MOUSE_BUTTON,
@@ -18,7 +19,6 @@ import { css, html, nothing } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { AIItemGroupConfig } from '../../../_common/components/ai-item/types.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import {
   AFFINE_AI_PANEL_WIDGET,

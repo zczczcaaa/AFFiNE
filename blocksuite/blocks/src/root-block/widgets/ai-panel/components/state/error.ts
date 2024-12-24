@@ -1,3 +1,7 @@
+import {
+  AIErrorType,
+  type AIItemGroupConfig,
+} from '@blocksuite/affine-components/ai-item';
 import type { EditorHost } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { baseTheme } from '@toeverything/theme';
@@ -5,10 +9,6 @@ import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 
-import {
-  AIErrorType,
-  type AIItemGroupConfig,
-} from '../../../../../_common/components/index.js';
 import type { AIPanelErrorConfig, CopyConfig } from '../../type.js';
 import { filterAIItemGroup } from '../../utils.js';
 

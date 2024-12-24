@@ -7,7 +7,6 @@ import { splitElements } from './root-block/edgeless/utils/clipboard-utils.js';
 import { isCanvasElement } from './root-block/edgeless/utils/query.js';
 
 export * from './_common/adapters/index.js';
-export * from './_common/components/ai-item/index.js';
 export { type NavigatorMode } from './_common/edgeless/frame/consts.js';
 export {
   ExportManager,
@@ -55,6 +54,16 @@ export * from '@blocksuite/affine-block-embed';
 export * from '@blocksuite/affine-block-list';
 export * from '@blocksuite/affine-block-paragraph';
 export * from '@blocksuite/affine-block-surface';
+export {
+  type AIError,
+  type AIItemConfig,
+  type AIItemGroupConfig,
+  AIItemList,
+  type AISubItemConfig,
+  GeneralNetworkError,
+  PaymentRequiredError,
+  UnauthorizedError,
+} from '@blocksuite/affine-components/ai-item';
 export { type MenuOptions } from '@blocksuite/affine-components/context-menu';
 export {
   HoverController,

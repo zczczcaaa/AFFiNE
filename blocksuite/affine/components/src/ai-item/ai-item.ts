@@ -1,4 +1,3 @@
-import { ArrowRightIcon, EnterIcon } from '@blocksuite/affine-components/icons';
 import {
   EditorHost,
   PropTypes,
@@ -8,8 +7,9 @@ import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 
-import { menuItemStyles } from './styles.js';
-import type { AIItemConfig } from './types.js';
+import { ArrowRightIcon, EnterIcon } from '../icons';
+import { menuItemStyles } from './styles';
+import type { AIItemConfig } from './types';
 
 @requiredProperties({
   host: PropTypes.instanceOf(EditorHost),

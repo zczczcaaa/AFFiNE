@@ -2,6 +2,7 @@ import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/eff
 import { effects as blockListEffects } from '@blocksuite/affine-block-list/effects';
 import { effects as blockParagraphEffects } from '@blocksuite/affine-block-paragraph/effects';
 import { effects as blockSurfaceEffects } from '@blocksuite/affine-block-surface/effects';
+import { effects as componentAiItemEffects } from '@blocksuite/affine-components/ai-item';
 import { BlockSelection } from '@blocksuite/affine-components/block-selection';
 import { BlockZeroWidth } from '@blocksuite/affine-components/block-zero-width';
 import { effects as componentCaptionEffects } from '@blocksuite/affine-components/caption';
@@ -23,14 +24,11 @@ import { effects as dataViewEffects } from '@blocksuite/data-view/effects';
 import { effects as inlineEffects } from '@blocksuite/inline/effects';
 import type { BlockModel } from '@blocksuite/store';
 
-import { AIItem } from './_common/components/ai-item/ai-item.js';
-import { AISubItemList } from './_common/components/ai-item/ai-sub-item-list.js';
 import { EmbedCardMoreMenu } from './_common/components/embed-card/embed-card-more-menu-popper.js';
 import { EmbedCardStyleMenu } from './_common/components/embed-card/embed-card-style-popper.js';
 import { EmbedCardEditCaptionEditModal } from './_common/components/embed-card/modal/embed-card-caption-edit-modal.js';
 import { EmbedCardCreateModal } from './_common/components/embed-card/modal/embed-card-create-modal.js';
 import { EmbedCardEditModal } from './_common/components/embed-card/modal/embed-card-edit-modal.js';
-import { AIItemList } from './_common/components/index.js';
 import { registerSpecs } from './_specs/register-specs.js';
 import { AttachmentEdgelessBlockComponent } from './attachment-block/attachment-edgeless-block.js';
 import {
@@ -304,6 +302,7 @@ export function effects() {
   componentToolbarEffects();
   componentDragIndicatorEffects();
   componentToggleButtonEffects();
+  componentAiItemEffects();
 
   widgetScrollAnchoringEffects();
   widgetMobileToolbarEffects();
@@ -421,7 +420,6 @@ export function effects() {
   customElements.define('smooth-corner', SmoothCorner);
   customElements.define('toggle-switch', ToggleSwitch);
   customElements.define('ai-panel-answer', AIPanelAnswer);
-  customElements.define('ai-item-list', AIItemList);
   customElements.define(
     'edgeless-eraser-tool-button',
     EdgelessEraserToolButton
@@ -430,8 +428,6 @@ export function effects() {
   customElements.define('edgeless-frame-tool-button', EdgelessFrameToolButton);
   customElements.define('ai-panel-input', AIPanelInput);
   customElements.define('ai-panel-generating', AIPanelGenerating);
-  customElements.define('ai-item', AIItem);
-  customElements.define('ai-sub-item-list', AISubItemList);
   customElements.define('edgeless-link-tool-button', EdgelessLinkToolButton);
   customElements.define('embed-card-more-menu', EmbedCardMoreMenu);
   customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);

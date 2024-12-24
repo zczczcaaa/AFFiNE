@@ -1,9 +1,8 @@
-import type { nothing, TemplateResult } from 'lit';
-
 import type {
   AIError,
   AIItemGroupConfig,
-} from '../../../_common/components/ai-item/types.js';
+} from '@blocksuite/affine-components/ai-item';
+import type { nothing, TemplateResult } from 'lit';
 
 export interface CopyConfig {
   allowed: boolean;

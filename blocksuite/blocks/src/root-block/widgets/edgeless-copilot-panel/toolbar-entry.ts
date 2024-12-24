@@ -1,3 +1,4 @@
+import type { AIItemGroupConfig } from '@blocksuite/affine-components/ai-item';
 import { AIStarIcon } from '@blocksuite/affine-components/icons';
 import type { EditorHost } from '@blocksuite/block-std';
 import { isGfxGroupCompatibleModel } from '@blocksuite/block-std/gfx';
@@ -5,7 +6,6 @@ import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { AIItemGroupConfig } from '../../../_common/components/ai-item/types.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import type { CopilotTool } from '../../edgeless/gfx-tool/copilot-tool.js';
 import { sortEdgelessElements } from '../../edgeless/utils/clone-utils.js';
