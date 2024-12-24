@@ -255,13 +255,19 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
               </div>
               ${this._renderAIOnboarding()}
             </div> `
-          : repeat(filteredItems, (item, index) => {
-              const isLast = index === filteredItems.length - 1;
-              return html`<div class="message">
-                ${this.renderAvatar(item)}
-                <div class="item-wrapper">${this.renderItem(item, isLast)}</div>
-              </div>`;
-            })}
+          : repeat(
+              filteredItems,
+              item => ('role' in item ? item.id : item.sessionId),
+              (item, index) => {
+                const isLast = index === filteredItems.length - 1;
+                return html`<div class="message">
+                  ${this.renderAvatar(item)}
+                  <div class="item-wrapper">
+                    ${this.renderItem(item, isLast)}
+                  </div>
+                </div>`;
+              }
+            )}
         <chat-cards
           .updateContext=${this.updateContext}
           .host=${this.host}
