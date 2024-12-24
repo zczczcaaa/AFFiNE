@@ -51,7 +51,11 @@ export function setupEdgelessElementToolbarAIEntry(
             AIProvider.slots.requestOpenWithChat.emit({ host: edgeless.host });
             extractContext(edgeless.host)
               .then(context => {
-                AIProvider.slots.requestSendWithChat.emit({ input, context });
+                AIProvider.slots.requestSendWithChat.emit({
+                  input,
+                  context,
+                  host: edgeless.host,
+                });
               })
               .catch(console.error);
           };

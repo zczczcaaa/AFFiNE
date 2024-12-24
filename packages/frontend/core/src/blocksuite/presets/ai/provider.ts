@@ -24,6 +24,7 @@ export interface AIChatParams {
 }
 
 export interface AISendParams {
+  host: EditorHost;
   input?: string;
   context?: Partial<ChatContextValue | null>;
 }

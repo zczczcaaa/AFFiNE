@@ -74,7 +74,11 @@ export class AskAIToolbarButton extends WithDisposable(LitElement) {
       AIProvider.slots.requestOpenWithChat.emit({ host: this.host });
       extractContext(this.host)
         .then(context => {
-          AIProvider.slots.requestSendWithChat.emit({ input, context });
+          AIProvider.slots.requestSendWithChat.emit({
+            input,
+            context,
+            host: this.host,
+          });
         })
         .catch(console.error);
     };

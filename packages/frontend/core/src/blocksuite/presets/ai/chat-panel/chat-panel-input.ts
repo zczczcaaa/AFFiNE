@@ -300,11 +300,15 @@ export class ChatPanelInput extends WithDisposable(LitElement) {
     super.connectedCallback();
 
     this._disposables.add(
-      AIProvider.slots.requestSendWithChat.on(async ({ input, context }) => {
-        context && this.updateContext(context);
-        await this.updateComplete;
-        await this.send(input);
-      })
+      AIProvider.slots.requestSendWithChat.on(
+        async ({ input, context, host }) => {
+          if (this.host === host) {
+            context && this.updateContext(context);
+            await this.updateComplete;
+            await this.send(input);
+          }
+        }
+      )
     );
   }
 
