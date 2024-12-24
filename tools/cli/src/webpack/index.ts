@@ -4,7 +4,6 @@ import { getBuildConfig } from '@affine-tools/utils/build-config';
 import { ProjectRoot } from '@affine-tools/utils/path';
 import type { Package } from '@affine-tools/utils/workspace';
 import { PerfseePlugin } from '@perfsee/webpack';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import { sentryWebpackPlugin } from '@sentry/webpack-plugin';
 import { VanillaExtractPlugin } from '@vanilla-extract/webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
@@ -207,11 +206,6 @@ export function createWebpackConfig(
                   transform: {
                     react: {
                       runtime: 'automatic',
-                      refresh: flags.mode === 'development' && {
-                        refreshReg: '$RefreshReg$',
-                        refreshSig: '$RefreshSig$',
-                        emitFullSignatures: true,
-                      },
                     },
                     useDefineForClassFields: false,
                     decoratorVersion: '2022-03',
@@ -288,11 +282,7 @@ export function createWebpackConfig(
     plugins: compact([
       IN_CI ? null : new webpack.ProgressPlugin({ percentBy: 'entries' }),
       flags.mode === 'development'
-        ? new ReactRefreshWebpackPlugin({
-            overlay: false,
-            esModule: true,
-            include: /\.tsx$/,
-          })
+        ? null
         : // todo: support multiple entry points
           new MiniCssExtractPlugin({
             filename: `[name].[contenthash:8].css`,
@@ -343,7 +333,7 @@ export function createWebpackConfig(
     devServer: {
       host: '0.0.0.0',
       allowedHosts: 'all',
-      hot: true,
+      hot: false,
       liveReload: true,
       client: {
         overlay: process.env.DISABLE_DEV_OVERLAY === 'true' ? false : undefined,

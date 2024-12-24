@@ -102,7 +102,6 @@ __metadata:
     "@clack/prompts": "npm:^0.9.0"
     "@napi-rs/simple-git": "npm:^0.1.19"
     "@perfsee/webpack": "npm:^1.13.0"
-    "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
     "@sentry/webpack-plugin": "npm:^2.22.7"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/mime-types": "npm:^2.1.4"
@@ -10470,43 +10469,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pmmmwh/react-refresh-webpack-plugin@npm:^0.5.15":
-  version: 0.5.15
-  resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.15"
-  dependencies:
-    ansi-html: "npm:^0.0.9"
-    core-js-pure: "npm:^3.23.3"
-    error-stack-parser: "npm:^2.0.6"
-    html-entities: "npm:^2.1.0"
-    loader-utils: "npm:^2.0.4"
-    schema-utils: "npm:^4.2.0"
-    source-map: "npm:^0.7.3"
-  peerDependencies:
-    "@types/webpack": 4.x || 5.x
-    react-refresh: ">=0.10.0 <1.0.0"
-    sockjs-client: ^1.4.0
-    type-fest: ">=0.17.0 <5.0.0"
-    webpack: ">=4.43.0 <6.0.0"
-    webpack-dev-server: 3.x || 4.x || 5.x
-    webpack-hot-middleware: 2.x
-    webpack-plugin-serve: 0.x || 1.x
-  peerDependenciesMeta:
-    "@types/webpack":
-      optional: true
-    sockjs-client:
-      optional: true
-    type-fest:
-      optional: true
-    webpack-dev-server:
-      optional: true
-    webpack-hot-middleware:
-      optional: true
-    webpack-plugin-serve:
-      optional: true
-  checksum: 10/d8c978654c4c6873edc3336bca87d359d3a7f32571e8404af8a3defd0e515aa34d9dc8324a9157d0220d72fb8a6a350660301c2757df964f845422a898714bc7
-  languageName: node
-  linkType: hard
-
 "@polka/url@npm:^1.0.0-next.24":
   version: 1.0.0-next.28
   resolution: "@polka/url@npm:1.0.0-next.28"
@@ -15976,15 +15938,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi-html@npm:^0.0.9":
-  version: 0.0.9
-  resolution: "ansi-html@npm:0.0.9"
-  bin:
-    ansi-html: bin/ansi-html
-  checksum: 10/3e83fae364d323d9c453f74a21aa29da68ae152e996c66de45a49a445ea362c4e2e9abce0069558239ff23e3d6ae73b5d27993d631382aa83d85f44b687e0aa1
-  languageName: node
-  linkType: hard
-
 "ansi-regex@npm:^5.0.1":
   version: 5.0.1
   resolution: "ansi-regex@npm:5.0.1"
@@ -18523,13 +18476,6 @@ __metadata:
   dependencies:
     browserslist: "npm:^4.24.2"
   checksum: 10/82d5fcb54087f1fc174283c2d30b62908edc828537574f95bb49a5b7f235bcc88ba43f37dbe470c47e17fd9bc01cbc1db905062fd96ba65ff1a03c235f288aca
-  languageName: node
-  linkType: hard
-
-"core-js-pure@npm:^3.23.3":
-  version: 3.39.0
-  resolution: "core-js-pure@npm:3.39.0"
-  checksum: 10/43922b14f9c928ec958fc444e70cfb429a21e3f842f03f67810faf29a99780fec20dc688f65ab3780d2b8a2f1ae8287464ec5adb396826e0374a4f2907b4b383
   languageName: node
   linkType: hard
 
@@ -22854,13 +22800,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-entities@npm:^2.1.0":
-  version: 2.5.2
-  resolution: "html-entities@npm:2.5.2"
-  checksum: 10/4ec12ebdf2d5ba8192c68e1aef3c1e4a4f36b29246a0a88464fe278a54517d0196d3489af46a3145c7ecacb4fc5fd50497be19eb713b810acab3f0efcf36fdc2
-  languageName: node
-  linkType: hard
-
 "html-escaper@npm:^2.0.0":
   version: 2.0.2
   resolution: "html-escaper@npm:2.0.2"
@@ -24861,7 +24800,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loader-utils@npm:^2.0.0, loader-utils@npm:^2.0.4":
+"loader-utils@npm:^2.0.0":
   version: 2.0.4
   resolution: "loader-utils@npm:2.0.4"
   dependencies:
@@ -31342,7 +31281,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:^0.7.3, source-map@npm:^0.7.4":
+"source-map@npm:^0.7.4":
   version: 0.7.4
   resolution: "source-map@npm:0.7.4"
   checksum: 10/a0f7c9b797eda93139842fd28648e868a9a03ea0ad0d9fa6602a0c1f17b7fb6a7dcca00c144476cccaeaae5042e99a285723b1a201e844ad67221bf5d428f1dc
