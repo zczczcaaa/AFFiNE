@@ -1,8 +1,5 @@
-import type {
-  DragHandleOption,
-  DropType,
-} from '@blocksuite/affine-shared/services';
-import type { Disposable, Rect } from '@blocksuite/global/utils';
+import type { DropType } from '@blocksuite/affine-shared/services';
+import type { Rect } from '@blocksuite/global/utils';
 
 export const DRAG_HANDLE_CONTAINER_HEIGHT = 24;
 export const DRAG_HANDLE_CONTAINER_WIDTH = 16;
@@ -29,51 +26,3 @@ export type DropResult = {
   dropBlockId: string;
   dropType: DropType;
 };
-
-export class DragHandleOptionsRunner {
-  private readonly optionMap = new Map<DragHandleOption, number>();
-
-  get options(): DragHandleOption[] {
-    return Array.from(this.optionMap.keys());
-  }
-
-  private _decreaseOptionCount(option: DragHandleOption) {
-    const count = this.optionMap.get(option) || 0;
-    if (count > 1) {
-      this.optionMap.set(option, count - 1);
-    } else {
-      this.optionMap.delete(option);
-    }
-  }
-
-  private _getExistingOptionWithSameFlavour(
-    option: DragHandleOption
-  ): DragHandleOption | undefined {
-    return Array.from(this.optionMap.keys()).find(
-      op => op.flavour === option.flavour
-    );
-  }
-
-  getOption(flavour: string): DragHandleOption | undefined {
-    return this.options.find(option => {
-      if (typeof option.flavour === 'string') {
-        return option.flavour === flavour;
-      } else {
-        return option.flavour.test(flavour);
-      }
-    });
-  }
-
-  register(option: DragHandleOption): Disposable {
-    const currentOption =
-      this._getExistingOptionWithSameFlavour(option) || option;
-    const count = this.optionMap.get(currentOption) || 0;
-    this.optionMap.set(currentOption, count + 1);
-
-    return {
-      dispose: () => {
-        this._decreaseOptionCount(currentOption);
-      },
-    };
-  }
-}

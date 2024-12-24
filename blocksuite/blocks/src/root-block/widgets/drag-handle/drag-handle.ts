@@ -28,7 +28,6 @@ import type { EdgelessRootService } from '../../edgeless/index.js';
 import type { DragPreview } from './components/drag-preview.js';
 import type { DropIndicator } from './components/drop-indicator.js';
 import type { DropResult } from './config.js';
-import { DragHandleOptionsRunner } from './config.js';
 import type { AFFINE_DRAG_HANDLE_WIDGET } from './consts.js';
 import { PreviewHelper } from './helpers/preview-helper.js';
 import { RectHelper } from './helpers/rect-helper.js';
@@ -288,8 +287,6 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
   lastDragPointerState: DndEventState | null = null;
 
   noteScale = signal(1);
-
-  readonly optionRunner = new DragHandleOptionsRunner();
 
   pointerEventWatcher = new PointerEventWatcher(this);
 
