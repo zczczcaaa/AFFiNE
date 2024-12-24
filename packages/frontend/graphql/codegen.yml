@@ -30,7 +30,5 @@ generates:
     plugins:
       - typescript
       - typescript-operations
-      - add:
-          content: '/* eslint-disable */'
       - ./export-gql-plugin.cjs:
           output: ./src/graphql/index.ts

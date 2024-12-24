@@ -1,4 +1,4 @@
- 
+/* oxlint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {

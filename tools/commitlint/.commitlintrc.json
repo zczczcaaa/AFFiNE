@@ -14,12 +14,9 @@
         "ios",
         "android",
         "docs",
-        "storybook",
         "component",
-        "workspace",
         "env",
         "graphql",
-        "cli",
         "hooks",
         "i18n",
         "native",
@@ -27,7 +24,8 @@
         "debug",
         "nbstore",
         "infra",
-        "editor"
+        "editor",
+        "tools"
       ]
     ]
   }

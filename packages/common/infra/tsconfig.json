@@ -15,9 +15,6 @@
     },
     {
       "path": "../../../blocksuite/affine/all"
-    },
-    {
-      "path": "./tsconfig.node.json"
     }
   ]
 }
