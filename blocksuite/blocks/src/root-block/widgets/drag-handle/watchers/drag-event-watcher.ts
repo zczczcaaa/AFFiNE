@@ -1,3 +1,4 @@
+import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
 import type { EmbedCardStyle, NoteBlockModel } from '@blocksuite/affine-model';
 import {
   EMBED_CARD_HEIGHT,
@@ -218,7 +219,27 @@ export class DragEventWatcher {
       }
     }
 
-    const blocks = this.widget.selectionHelper.selectedBlockComponents;
+    const collapsedBlock: BlockComponent[] = [];
+    const blocks = this.widget.selectionHelper.selectedBlockComponents.flatMap(
+      block => {
+        // filter out collapsed siblings
+        if (collapsedBlock.includes(block)) return [];
+
+        // if block is toggled heading, should select all siblings
+        if (
+          block instanceof ParagraphBlockComponent &&
+          block.model.type.startsWith('h') &&
+          block.model.collapsed
+        ) {
+          const collapsedSiblings = block.collapsedSiblings.flatMap(
+            sibling => this.widget.host.view.getBlock(sibling.id) ?? []
+          );
+          collapsedBlock.push(...collapsedSiblings);
+          return [block, ...collapsedSiblings];
+        }
+        return [block];
+      }
+    );
 
     // This could be skipped if we can ensure that all selected blocks are on the same level
     // Which means not selecting parent block and child block at the same time
