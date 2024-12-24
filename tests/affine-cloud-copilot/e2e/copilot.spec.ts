@@ -414,7 +414,7 @@ test.describe('chat with block', () => {
       await page.waitForTimeout(200);
       await createLocalWorkspace({ name: 'test' }, page);
       await clickNewPageButton(page);
-      await pasteTextToPageEditor(page, 'hello');
+      await pasteTextToPageEditor(page, 'Mac Mini');
     });
 
     test.beforeEach(async ({ page }) => {
