@@ -1,3 +1,4 @@
+import type { IconButton } from '@blocksuite/affine-components/icon-button';
 import { MoreHorizontalIcon } from '@blocksuite/affine-components/icons';
 import {
   getCurrentNativeRange,
@@ -13,7 +14,6 @@ import { html, LitElement, nothing } from 'lit';
 import { property, query, queryAll, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { IconButton } from '../../../_common/components/button.js';
 import {
   cleanSpecifiedTail,
   createKeydownObserver,

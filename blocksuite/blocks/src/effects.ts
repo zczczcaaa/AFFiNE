@@ -9,9 +9,12 @@ import { effects as componentContextMenuEffects } from '@blocksuite/affine-compo
 import { effects as componentDatePickerEffects } from '@blocksuite/affine-components/date-picker';
 import { effects as componentDragIndicatorEffects } from '@blocksuite/affine-components/drag-indicator';
 import { FilterableListComponent } from '@blocksuite/affine-components/filterable-list';
+import { IconButton } from '@blocksuite/affine-components/icon-button';
 import { effects as componentPortalEffects } from '@blocksuite/affine-components/portal';
 import { effects as componentRichTextEffects } from '@blocksuite/affine-components/rich-text';
+import { SmoothCorner } from '@blocksuite/affine-components/smooth-corner';
 import { effects as componentToggleButtonEffects } from '@blocksuite/affine-components/toggle-button';
+import { ToggleSwitch } from '@blocksuite/affine-components/toggle-switch';
 import { effects as componentToolbarEffects } from '@blocksuite/affine-components/toolbar';
 import { effects as widgetScrollAnchoringEffects } from '@blocksuite/affine-widget-scroll-anchoring/effects';
 import type { BlockComponent } from '@blocksuite/block-std';
@@ -22,16 +25,12 @@ import type { BlockModel } from '@blocksuite/store';
 
 import { AIItem } from './_common/components/ai-item/ai-item.js';
 import { AISubItemList } from './_common/components/ai-item/ai-sub-item-list.js';
-import { IconButton } from './_common/components/button.js';
 import { EmbedCardMoreMenu } from './_common/components/embed-card/embed-card-more-menu-popper.js';
 import { EmbedCardStyleMenu } from './_common/components/embed-card/embed-card-style-popper.js';
 import { EmbedCardEditCaptionEditModal } from './_common/components/embed-card/modal/embed-card-caption-edit-modal.js';
 import { EmbedCardCreateModal } from './_common/components/embed-card/modal/embed-card-create-modal.js';
 import { EmbedCardEditModal } from './_common/components/embed-card/modal/embed-card-edit-modal.js';
 import { AIItemList } from './_common/components/index.js';
-import { Loader } from './_common/components/loader.js';
-import { SmoothCorner } from './_common/components/smooth-corner.js';
-import { ToggleSwitch } from './_common/components/toggle-switch.js';
 import { registerSpecs } from './_specs/register-specs.js';
 import { AttachmentEdgelessBlockComponent } from './attachment-block/attachment-edgeless-block.js';
 import {
@@ -246,6 +245,7 @@ import { AFFINE_IMAGE_TOOLBAR_WIDGET } from './root-block/widgets/image-toolbar/
 import { AFFINE_INNER_MODAL_WIDGET } from './root-block/widgets/inner-modal/inner-modal.js';
 import { effects as widgetMobileToolbarEffects } from './root-block/widgets/keyboard-toolbar/effects.js';
 import { effects as widgetLinkedDocEffects } from './root-block/widgets/linked-doc/effects.js';
+import { Loader } from './root-block/widgets/linked-doc/import-doc/loader';
 import { AffineCustomModal } from './root-block/widgets/modal/custom-modal.js';
 import { AFFINE_MODAL_WIDGET } from './root-block/widgets/modal/modal.js';
 import { AFFINE_PAGE_DRAGGING_AREA_WIDGET } from './root-block/widgets/page-dragging-area/page-dragging-area.js';
