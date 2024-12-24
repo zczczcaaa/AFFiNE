@@ -1,6 +1,5 @@
 import type { ExtensionType } from '@blocksuite/block-std';
 
-import { EmbedDragHandleOption } from './common/embed-block-element.js';
 import { EmbedFigmaBlockSpec } from './embed-figma-block/index.js';
 import { EmbedGithubBlockSpec } from './embed-github-block/index.js';
 import { EmbedHtmlBlockSpec } from './embed-html-block/index.js';
@@ -10,7 +9,6 @@ import { EmbedSyncedDocBlockSpec } from './embed-synced-doc-block/index.js';
 import { EmbedYoutubeBlockSpec } from './embed-youtube-block/index.js';
 
 export const EmbedExtensions: ExtensionType[] = [
-  EmbedDragHandleOption,
   EmbedFigmaBlockSpec,
   EmbedGithubBlockSpec,
   EmbedHtmlBlockSpec,

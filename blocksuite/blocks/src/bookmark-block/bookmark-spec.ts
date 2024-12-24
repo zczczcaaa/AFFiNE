@@ -7,10 +7,7 @@ import {
 import { literal } from 'lit/static-html.js';
 
 import { BookmarkBlockAdapterExtensions } from './adapters/extension.js';
-import {
-  BookmarkBlockService,
-  BookmarkDragHandleOption,
-} from './bookmark-service.js';
+import { BookmarkBlockService } from './bookmark-service.js';
 import { commands } from './commands/index.js';
 
 export const BookmarkBlockSpec: ExtensionType[] = [
@@ -22,6 +19,5 @@ export const BookmarkBlockSpec: ExtensionType[] = [
       ? literal`affine-edgeless-bookmark`
       : literal`affine-bookmark`;
   }),
-  BookmarkDragHandleOption,
   BookmarkBlockAdapterExtensions,
 ].flat();

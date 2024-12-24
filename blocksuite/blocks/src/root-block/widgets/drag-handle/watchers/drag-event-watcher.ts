@@ -34,6 +34,7 @@ import { DropIndicator } from '../components/drop-indicator.js';
 import { AFFINE_DRAG_HANDLE_WIDGET } from '../consts.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 import { newIdCrossDoc } from '../middleware/new-id-cross-doc.js';
+import { reorderList } from '../middleware/reorder-list';
 import { surfaceRefToEmbed } from '../middleware/surface-ref-to-embed.js';
 import { containBlock, includeTextSelection } from '../utils.js';
 
@@ -537,7 +538,11 @@ export class DragEventWatcher {
     const std = this._std;
     return new Job({
       collection: std.collection,
-      middlewares: [newIdCrossDoc(std), surfaceRefToEmbed(std)],
+      middlewares: [
+        newIdCrossDoc(std),
+        reorderList(std),
+        surfaceRefToEmbed(std),
+      ],
     });
   }
 

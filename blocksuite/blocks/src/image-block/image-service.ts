@@ -1,13 +1,7 @@
 import { FileDropConfigExtension } from '@blocksuite/affine-components/drag-indicator';
 import { ImageBlockSchema, MAX_IMAGE_WIDTH } from '@blocksuite/affine-model';
+import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import {
-  DragHandleConfigExtension,
-  TelemetryProvider,
-} from '@blocksuite/affine-shared/services';
-import {
-  captureEventTarget,
-  convertDragPreviewDocToEdgeless,
-  convertDragPreviewEdgelessToDoc,
   isInsideEdgelessEditor,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
@@ -16,8 +10,6 @@ import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 
 import { setImageProxyMiddlewareURL } from '../_common/transformers/middlewares.js';
 import { addImages } from '../root-block/edgeless/utils/common.js';
-import type { ImageBlockComponent } from './image-block.js';
-import { ImageEdgelessBlockComponent } from './image-edgeless-block.js';
 import { addSiblingImageBlock } from './utils.js';
 
 // bytes.parse('2GB')
@@ -66,41 +58,6 @@ export const ImageDropOption = FileDropConfigExtension({
       return true;
     }
 
-    return false;
-  },
-});
-
-export const ImageDragHandleOption = DragHandleConfigExtension({
-  flavour: ImageBlockSchema.model.flavour,
-  edgeless: true,
-  onDragEnd: props => {
-    const { state, draggingElements } = props;
-    if (
-      draggingElements.length !== 1 ||
-      !matchFlavours(draggingElements[0].model, [
-        ImageBlockSchema.model.flavour,
-      ])
-    )
-      return false;
-
-    const blockComponent = draggingElements[0] as ImageBlockComponent;
-    const isInSurface = blockComponent instanceof ImageEdgelessBlockComponent;
-    const target = captureEventTarget(state.raw.target);
-    const isTargetEdgelessContainer =
-      target?.classList.contains('edgeless-container');
-
-    if (isInSurface) {
-      return convertDragPreviewEdgelessToDoc({
-        blockComponent,
-        ...props,
-      });
-    } else if (isTargetEdgelessContainer) {
-      return convertDragPreviewDocToEdgeless({
-        blockComponent,
-        cssSelector: '.drag-target',
-        ...props,
-      });
-    }
     return false;
   },
 });

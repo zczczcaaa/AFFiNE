@@ -109,10 +109,9 @@ test('move drag handle in nested block', async ({ page }) => {
   await expect(page.locator('.affine-drag-indicator')).toBeHidden();
   await assertRichTexts(page, ['1', '2', '22', '23', '21', '3']);
 
-  // FIXME(DND)
-  // await dragHandleFromBlockToBlockBottomById(page, '3', '8');
-  // await expect(page.locator('.affine-drag-indicator')).toBeHidden();
-  // await assertRichTexts(page, ['2', '22', '23', '21', '3', '1']);
+  await dragHandleFromBlockToBlockBottomById(page, '3', '8');
+  await expect(page.locator('.affine-drag-indicator')).toBeHidden();
+  await assertRichTexts(page, ['2', '22', '23', '21', '3', '1']);
 });
 
 test('move drag handle into another block', async ({ page }) => {

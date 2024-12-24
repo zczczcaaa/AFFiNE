@@ -9,7 +9,7 @@ import { literal } from 'lit/static-html.js';
 import { ListBlockAdapterExtensions } from './adapters/extension.js';
 import { commands } from './commands/index.js';
 import { ListKeymapExtension, ListTextKeymapExtension } from './list-keymap.js';
-import { ListBlockService, ListDragHandleOption } from './list-service.js';
+import { ListBlockService } from './list-service.js';
 
 export const ListBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:list'),
@@ -18,6 +18,5 @@ export const ListBlockSpec: ExtensionType[] = [
   BlockViewExtension('affine:list', literal`affine-list`),
   ListKeymapExtension,
   ListTextKeymapExtension,
-  ListDragHandleOption,
   ListBlockAdapterExtensions,
 ].flat();

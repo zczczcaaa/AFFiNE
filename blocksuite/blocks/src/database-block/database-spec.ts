@@ -9,7 +9,6 @@ import { literal } from 'lit/static-html.js';
 
 import { DatabaseBlockAdapterExtensions } from './adapters/extension.js';
 import { commands } from './commands.js';
-import { DatabaseDragHandleOption } from './config.js';
 import { DatabaseBlockService } from './database-service.js';
 
 export const DatabaseBlockSpec: ExtensionType[] = [
@@ -17,7 +16,6 @@ export const DatabaseBlockSpec: ExtensionType[] = [
   DatabaseBlockService,
   CommandExtension(commands),
   BlockViewExtension('affine:database', literal`affine-database`),
-  DatabaseDragHandleOption,
   DatabaseSelectionExtension,
   DatabaseBlockAdapterExtensions,
 ].flat();

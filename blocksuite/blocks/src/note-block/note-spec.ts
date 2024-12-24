@@ -11,7 +11,7 @@ import {
   EdgelessNoteBlockAdapterExtensions,
 } from './adapters/index.js';
 import { commands } from './commands/index.js';
-import { NoteBlockService, NoteDragHandleOption } from './note-service.js';
+import { NoteBlockService } from './note-service.js';
 
 export const NoteBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:note'),
@@ -26,6 +26,5 @@ export const EdgelessNoteBlockSpec: ExtensionType[] = [
   NoteBlockService,
   CommandExtension(commands),
   BlockViewExtension('affine:note', literal`affine-edgeless-note`),
-  NoteDragHandleOption,
   EdgelessNoteBlockAdapterExtensions,
 ].flat();

@@ -8,7 +8,6 @@ import { literal } from 'lit/static-html.js';
 import { AttachmentBlockNotionHtmlAdapterExtension } from './adapters/notion-html.js';
 import {
   AttachmentBlockService,
-  AttachmentDragHandleOption,
   AttachmentDropOption,
 } from './attachment-service.js';
 import {
@@ -25,7 +24,6 @@ export const AttachmentBlockSpec: ExtensionType[] = [
       : literal`affine-attachment`;
   }),
   AttachmentDropOption,
-  AttachmentDragHandleOption,
   AttachmentEmbedConfigExtension(),
   AttachmentEmbedService,
   AttachmentBlockNotionHtmlAdapterExtension,

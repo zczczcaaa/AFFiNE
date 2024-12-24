@@ -1,6 +1,4 @@
-import type { NoteBlockModel } from '@blocksuite/affine-model';
 import { NoteBlockSchema } from '@blocksuite/affine-model';
-import { DragHandleConfigExtension } from '@blocksuite/affine-shared/services';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
   type BaseSelection,
@@ -15,7 +13,6 @@ import { moveBlockConfigs } from '../_common/configs/move-block.js';
 import { quickActionConfig } from '../_common/configs/quick-action/config.js';
 import { textConversionConfigs } from '../_common/configs/text-conversion.js';
 import { onModelElementUpdated } from '../root-block/utils/callback.js';
-import { getDuplicateBlocks } from '../root-block/widgets/drag-handle/utils.js';
 
 export class NoteBlockService extends BlockService {
   static override readonly flavour = NoteBlockSchema.model.flavour;
@@ -587,56 +584,3 @@ export class NoteBlockService extends BlockService {
     });
   }
 }
-
-export const NoteDragHandleOption = DragHandleConfigExtension({
-  flavour: NoteBlockSchema.model.flavour,
-  edgeless: true,
-  onDragEnd: ({
-    draggingElements,
-    dropBlockId,
-    dropType,
-    state,
-    editorHost,
-  }) => {
-    if (
-      draggingElements.length !== 1 ||
-      !matchFlavours(draggingElements[0].model, [NoteBlockSchema.model.flavour])
-    ) {
-      return false;
-    }
-
-    if (dropType === 'in') {
-      return true;
-    }
-
-    const noteBlock = draggingElements[0].model as NoteBlockModel;
-    const targetBlock = editorHost.doc.getBlockById(dropBlockId);
-    const parentBlock = editorHost.doc.getParent(dropBlockId);
-    if (!targetBlock || !parentBlock) {
-      return true;
-    }
-
-    const altKey = state.raw.altKey;
-    if (altKey) {
-      const duplicateBlocks = getDuplicateBlocks(noteBlock.children);
-
-      const parentIndex =
-        parentBlock.children.indexOf(targetBlock) +
-        (dropType === 'after' ? 1 : 0);
-
-      editorHost.doc.addBlocks(duplicateBlocks, parentBlock, parentIndex);
-    } else {
-      editorHost.doc.moveBlocks(
-        noteBlock.children,
-        parentBlock,
-        targetBlock,
-        dropType === 'before'
-      );
-
-      editorHost.doc.deleteBlock(noteBlock);
-      editorHost.selection.setGroup('gfx', []);
-    }
-
-    return true;
-  },
-});

@@ -8,16 +8,8 @@ import {
   EMBED_CARD_MIN_WIDTH,
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
-import {
-  DocModeProvider,
-  DragHandleConfigExtension,
-} from '@blocksuite/affine-shared/services';
-import {
-  captureEventTarget,
-  convertDragPreviewDocToEdgeless,
-  convertDragPreviewEdgelessToDoc,
-} from '@blocksuite/affine-shared/utils';
-import { type BlockService, isGfxBlockComponent } from '@blocksuite/block-std';
+import { DocModeProvider } from '@blocksuite/affine-shared/services';
+import type { BlockService } from '@blocksuite/block-std';
 import type { GfxCompatibleProps } from '@blocksuite/block-std/gfx';
 import type { BlockModel } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
@@ -25,48 +17,6 @@ import { html } from 'lit';
 import { query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
-
-export const EmbedDragHandleOption = DragHandleConfigExtension({
-  flavour: /affine:embed-*/,
-  edgeless: true,
-  onDragEnd: props => {
-    const { state, draggingElements } = props;
-    if (
-      draggingElements.length !== 1 ||
-      draggingElements[0].model.flavour.match(/affine:embed-*/) === null
-    )
-      return false;
-
-    const blockComponent = draggingElements[0] as EmbedBlockComponent;
-    const isInSurface = isGfxBlockComponent(blockComponent);
-    const target = captureEventTarget(state.raw.target);
-    const isTargetEdgelessContainer =
-      target?.classList.contains('edgeless-container');
-
-    if (isInSurface) {
-      const style = blockComponent._cardStyle;
-      const targetStyle =
-        style === 'vertical' || style === 'cube' ? 'horizontal' : style;
-      return convertDragPreviewEdgelessToDoc({
-        blockComponent,
-        style: targetStyle,
-        ...props,
-      });
-    } else if (isTargetEdgelessContainer) {
-      const style = blockComponent._cardStyle;
-
-      return convertDragPreviewDocToEdgeless({
-        blockComponent,
-        cssSelector: '.embed-block-container',
-        width: EMBED_CARD_WIDTH[style],
-        height: EMBED_CARD_HEIGHT[style],
-        ...props,
-      });
-    }
-
-    return false;
-  },
-});
 
 export class EmbedBlockComponent<
   Model extends BlockModel<GfxCompatibleProps> = BlockModel<GfxCompatibleProps>,
