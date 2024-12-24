@@ -3,7 +3,10 @@ import {
   type RichText,
 } from '@blocksuite/affine-components/rich-text';
 import type { RootBlockModel } from '@blocksuite/affine-model';
-import { ParseDocUrlProvider } from '@blocksuite/affine-shared/services';
+import {
+  ParseDocUrlProvider,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import {
   getViewportElement,
   isValidUrl,
@@ -295,6 +298,14 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
           index: inlineRange.index + text.length,
           length: 0,
         });
+
+        // Track when a linked doc is created in database title column
+        std?.getOptional(TelemetryProvider)?.track('LinkedDocCreated', {
+          module: 'database title cell',
+          type: 'paste',
+          segment: 'database',
+          parentFlavour: 'affine:database',
+        });
       } else {
         inlineEditor?.insertText(inlineRange, text, {
           link: text,
@@ -390,6 +401,7 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
         this.topContenteditableElement?.host
           ? getViewportElement(this.topContenteditableElement.host)
           : null}"
+      data-parent-flavour="affine:database"
       class="data-view-header-area-rich-text can-link-doc"
     ></rich-text>`;
   }

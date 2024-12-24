@@ -22,6 +22,10 @@ export interface TelemetryEvent {
   other?: unknown;
 }
 
+export interface LinkedDocCreatedEvent extends TelemetryEvent {
+  parentFlavour?: string;
+}
+
 export interface DocCreatedEvent extends TelemetryEvent {
   page?: 'doc editor' | 'whiteboard editor';
   segment?: 'whiteboard' | 'note' | 'doc';

@@ -7,6 +7,7 @@ import type {
   DocCreatedEvent,
   ElementCreationEvent,
   ElementLockEvent,
+  LinkedDocCreatedEvent,
   MindMapCollapseEvent,
   TelemetryEvent,
 } from './types.js';
@@ -15,7 +16,7 @@ export type TelemetryEventMap = OutDatabaseAllEvents &
   LinkToolbarEvents & {
     DocCreated: DocCreatedEvent;
     Link: TelemetryEvent;
-    LinkedDocCreated: TelemetryEvent;
+    LinkedDocCreated: LinkedDocCreatedEvent;
     SplitNote: TelemetryEvent;
     CanvasElementAdded: ElementCreationEvent;
     EdgelessElementLocked: ElementLockEvent;

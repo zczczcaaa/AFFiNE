@@ -3,6 +3,7 @@ import type {
   DatabaseBlockModel,
   RootBlockModel,
 } from '@blocksuite/affine-model';
+import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import {
   createDefaultDoc,
@@ -78,6 +79,13 @@ export class NoteRenderer
             ])
           );
       }
+      // Track when a linked doc is created in database title column
+      this.host.std.getOptional(TelemetryProvider)?.track('LinkedDocCreated', {
+        segment: 'database',
+        module: 'center peek in database',
+        type: 'turn into',
+        parentFlavour: 'affine:database',
+      });
     }
   }
 
