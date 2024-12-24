@@ -259,10 +259,10 @@ test.describe('Embed synced doc', () => {
         '.affine-database-column-header.database-row'
       );
       await databaseFirstCell.click({ force: true });
-      const indicatorCount = await page
-        .locator('affine-drag-indicator')
+      const selectedCount = await page
+        .locator('.affine-embed-synced-doc-container.selected')
         .count();
-      expect(indicatorCount).toBe(1);
+      expect(selectedCount).toBe(1);
     });
   });
 });

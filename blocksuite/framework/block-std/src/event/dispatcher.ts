@@ -58,6 +58,8 @@ const eventNames = [
   'nativeDragMove',
   'nativeDragEnd',
   'nativeDrop',
+  'nativeDragOver',
+  'nativeDragLeave',
 
   ...bypassEventNames,
 ] as const;
@@ -175,12 +177,22 @@ export class UIEventDispatcher extends LifeCycleWatcher {
       this._setActive(false);
     });
     this.disposables.addFromEvent(this.host, 'dragover', () => {
+      _dragging = true;
+      this._setActive(true);
+    });
+    this.disposables.addFromEvent(this.host, 'dragenter', () => {
+      _dragging = true;
+      this._setActive(true);
+    });
+    this.disposables.addFromEvent(this.host, 'dragstart', () => {
+      _dragging = true;
       this._setActive(true);
     });
     this.disposables.addFromEvent(this.host, 'dragend', () => {
-      this._setActive(false);
+      _dragging = false;
     });
     this.disposables.addFromEvent(this.host, 'drop', () => {
+      _dragging = false;
       this._setActive(true);
     });
     this.disposables.addFromEvent(this.host, 'pointerenter', () => {

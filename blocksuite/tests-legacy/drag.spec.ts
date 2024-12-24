@@ -200,30 +200,30 @@ test('move to the last block of each level in multi-level nesting', async ({
     `${testInfo.title}_drag_3_9.json`
   );
 
+  await dragHandleFromBlockToBlockBottomById(
+    page,
+    '4',
+    '3',
+    true,
+    -(1 * BLOCK_CHILDREN_CONTAINER_PADDING_LEFT)
+  );
+  await expect(page.locator('.affine-drag-indicator')).toBeHidden();
+
+  expect(await getPageSnapshot(page, true)).toMatchSnapshot(
+    `${testInfo.title}_drag_4_3.json`
+  );
+
+  await assertRichTexts(page, ['C', 'D', 'E', 'F', 'G', 'A', 'B']);
+  await dragHandleFromBlockToBlockBottomById(
+    page,
+    '3',
+    '4',
+    true,
+    -(2 * BLOCK_CHILDREN_CONTAINER_PADDING_LEFT)
+  );
+  await expect(page.locator('.affine-drag-indicator')).toBeHidden();
+
   // FIXME(DND)
-  // await dragHandleFromBlockToBlockBottomById(
-  //   page,
-  //   '4',
-  //   '3',
-  //   true,
-  //   -(1 * BLOCK_CHILDREN_CONTAINER_PADDING_LEFT)
-  // );
-  // await expect(page.locator('.affine-drag-indicator')).toBeHidden();
-  //
-  // expect(await getPageSnapshot(page, true)).toMatchSnapshot(
-  //   `${testInfo.title}_drag_4_3.json`
-  // );
-  //
-  // await assertRichTexts(page, ['C', 'D', 'E', 'F', 'G', 'A', 'B']);
-  // await dragHandleFromBlockToBlockBottomById(
-  //   page,
-  //   '3',
-  //   '4',
-  //   true,
-  //   -(2 * BLOCK_CHILDREN_CONTAINER_PADDING_LEFT)
-  // );
-  // await expect(page.locator('.affine-drag-indicator')).toBeHidden();
-  //
   // expect(await getPageSnapshot(page, true)).toMatchSnapshot(
   //   `${testInfo.title}_drag_3_4.json`
   // );

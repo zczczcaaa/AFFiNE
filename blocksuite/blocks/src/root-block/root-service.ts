@@ -3,10 +3,6 @@ import type { BlockComponent } from '@blocksuite/block-std';
 import { BlockService } from '@blocksuite/block-std';
 
 import {
-  FileDropManager,
-  type FileDropOptions,
-} from '../_common/components/file-drop-manager.js';
-import {
   HtmlTransformer,
   MarkdownTransformer,
   ZipTransformer,
@@ -15,12 +11,6 @@ import type { RootBlockComponent } from './types.js';
 
 export abstract class RootService extends BlockService {
   static override readonly flavour = RootBlockSchema.model.flavour;
-
-  private readonly _fileDropOptions: FileDropOptions = {
-    flavour: this.flavour,
-  };
-
-  readonly fileDropManager = new FileDropManager(this, this._fileDropOptions);
 
   transformers = {
     markdown: MarkdownTransformer,
@@ -63,18 +53,6 @@ export abstract class RootService extends BlockService {
 
   override mounted() {
     super.mounted();
-
-    this.disposables.addFromEvent(
-      this.host,
-      'dragover',
-      this.fileDropManager.onDragOver
-    );
-
-    this.disposables.addFromEvent(
-      this.host,
-      'dragleave',
-      this.fileDropManager.onDragLeave
-    );
 
     this.disposables.add(
       this.std.event.add('pointerDown', ctx => {
