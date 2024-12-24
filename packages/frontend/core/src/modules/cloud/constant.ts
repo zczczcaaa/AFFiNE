@@ -33,7 +33,7 @@ export const BUILD_IN_SERVERS: (ServerMetadata & { config: ServerConfig })[] =
       ? [
           {
             id: 'affine-cloud',
-            baseUrl: 'http://localhost:8080',
+            baseUrl: location.origin,
             config: {
               serverName: 'Affine Cloud',
               features: [
