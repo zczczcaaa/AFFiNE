@@ -3347,7 +3347,7 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.payment.billing-setting.resume-subscription"](): string;
     /**
-      * `Manage your billing information and invoices.`
+      * `Manage your billing information and invoices`
       */
     ["com.affine.payment.billing-setting.subtitle"](): string;
     /**
@@ -4976,7 +4976,7 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.editorSettings.preferences.import.title"](): string;
     /**
-      * `Configure your own editor.`
+      * `Configure your own editor`
       */
     ["com.affine.settings.editorSettings.subtitle"](): string;
     /**
