@@ -1,8 +1,9 @@
-import { focusTextModel } from '@blocksuite/affine-components/rich-text';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent } from '@blocksuite/block-std';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
+
+import { focusTextModel } from '../rich-text';
 
 export class BlockZeroWidth extends LitElement {
   static override styles = css`

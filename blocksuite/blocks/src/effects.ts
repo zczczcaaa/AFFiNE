@@ -2,6 +2,8 @@ import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/eff
 import { effects as blockListEffects } from '@blocksuite/affine-block-list/effects';
 import { effects as blockParagraphEffects } from '@blocksuite/affine-block-paragraph/effects';
 import { effects as blockSurfaceEffects } from '@blocksuite/affine-block-surface/effects';
+import { BlockSelection } from '@blocksuite/affine-components/block-selection';
+import { BlockZeroWidth } from '@blocksuite/affine-components/block-zero-width';
 import { effects as componentCaptionEffects } from '@blocksuite/affine-components/caption';
 import { effects as componentContextMenuEffects } from '@blocksuite/affine-components/context-menu';
 import { effects as componentDatePickerEffects } from '@blocksuite/affine-components/date-picker';
@@ -26,12 +28,7 @@ import { EmbedCardEditCaptionEditModal } from './_common/components/embed-card/m
 import { EmbedCardCreateModal } from './_common/components/embed-card/modal/embed-card-create-modal.js';
 import { EmbedCardEditModal } from './_common/components/embed-card/modal/embed-card-edit-modal.js';
 import { FilterableListComponent } from './_common/components/filterable-list/index.js';
-import {
-  AIItemList,
-  BlockSelection,
-  BlockZeroWidth,
-  MenuDivider,
-} from './_common/components/index.js';
+import { AIItemList } from './_common/components/index.js';
 import { Loader } from './_common/components/loader.js';
 import { SmoothCorner } from './_common/components/smooth-corner.js';
 import { ToggleSwitch } from './_common/components/toggle-switch.js';
@@ -544,7 +541,6 @@ export function effects() {
   customElements.define('affine-drop-indicator', DropIndicator);
   customElements.define('mini-mindmap-root-block', MindmapRootBlock);
   customElements.define('affine-block-selection', BlockSelection);
-  customElements.define('menu-divider', MenuDivider);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
   customElements.define(
     'edgeless-toolbar-shape-draggable',

@@ -48,7 +48,9 @@
     "./drag-indicator": "./src/drag-indicator/index.ts",
     "./virtual-keyboard": "./src/virtual-keyboard/index.ts",
     "./toggle-button": "./src/toggle-button/index.ts",
-    "./notification": "./src/notification/index.ts"
+    "./notification": "./src/notification/index.ts",
+    "./block-zero-width": "./src/block-zero-width/index.ts",
+    "./block-selection": "./src/block-selection/index.ts"
   },
   "files": [
     "src",

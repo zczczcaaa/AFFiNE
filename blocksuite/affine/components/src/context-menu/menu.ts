@@ -2,23 +2,9 @@ import { IS_MOBILE } from '@blocksuite/global/env';
 import { computed, signal } from '@preact/signals-core';
 import type { TemplateResult } from 'lit';
 
-import { menuButtonItems } from './button.js';
-import { menuDynamicItems } from './dynamic.js';
 import { MenuFocusable } from './focusable.js';
-import { menuGroupItems } from './group.js';
-import { menuInputItems } from './input.js';
-// eslint-disable-next-line
-import { MenuComponent, MobileMenuComponent } from './menu-renderer.js';
-import { subMenuItems } from './sub-menu.js';
-import type { MenuComponentInterface, MenuItemRender } from './types.js';
+import type { MenuComponentInterface } from './types.js';
 
-export const menu = {
-  ...menuButtonItems,
-  ...subMenuItems,
-  ...menuInputItems,
-  ...menuGroupItems,
-  ...menuDynamicItems,
-} satisfies Record<string, MenuItemRender<never>>;
 export type MenuConfig = (
   menu: Menu,
   index: number
@@ -83,8 +69,8 @@ export class Menu {
 
   constructor(public options: MenuOptions) {
     this.menuElement = IS_MOBILE
-      ? new MobileMenuComponent()
-      : new MenuComponent();
+      ? document.createElement('affine-menu-mobile')
+      : document.createElement('affine-menu');
     this.menuElement.menu = this;
 
     // Call global menu open listeners

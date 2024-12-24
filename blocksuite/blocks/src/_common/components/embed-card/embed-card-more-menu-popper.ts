@@ -8,6 +8,7 @@ import {
 } from '@blocksuite/affine-components/icons';
 import { isPeekable, peek } from '@blocksuite/affine-components/peek';
 import { toast } from '@blocksuite/affine-components/toast';
+import { getBlockProps } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { Slice } from '@blocksuite/store';
 import { css, html, LitElement, nothing } from 'lit';
@@ -17,7 +18,6 @@ import {
   isEmbedLinkedDocBlock,
   isEmbedSyncedDocBlock,
 } from '../../../root-block/edgeless/utils/query.js';
-import { getBlockProps } from '../../utils/index.js';
 import type { EmbedBlockComponent } from './type.js';
 
 export class EmbedCardMoreMenu extends WithDisposable(LitElement) {
