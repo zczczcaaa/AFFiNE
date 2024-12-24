@@ -1,4 +1,7 @@
-import { SurfaceBlockSchema } from '@blocksuite/affine-block-surface';
+import {
+  MindMapView,
+  SurfaceBlockSchema,
+} from '@blocksuite/affine-block-surface';
 import { RootBlockSchema } from '@blocksuite/affine-model';
 import {
   DocModeService,
@@ -23,6 +26,7 @@ export const MiniMindmapSpecs: ExtensionType[] = [
   MindmapService,
   BlockViewExtension('affine:page', literal`mini-mindmap-root-block`),
   FlavourExtension('affine:surface'),
+  MindMapView,
   MindmapSurfaceBlockService,
   BlockViewExtension('affine:surface', literal`mini-mindmap-surface-block`),
 ];
