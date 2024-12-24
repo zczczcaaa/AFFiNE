@@ -1,5 +1,5 @@
 import { FileDropConfigExtension } from '@blocksuite/affine-components/drag-indicator';
-import { ImageBlockSchema } from '@blocksuite/affine-model';
+import { ImageBlockSchema, MAX_IMAGE_WIDTH } from '@blocksuite/affine-model';
 import {
   DragHandleConfigExtension,
   TelemetryProvider,
@@ -52,7 +52,9 @@ export const ImageDropOption = FileDropConfigExtension({
     if (isInsideEdgelessEditor(std.host)) {
       const gfx = std.get(GfxControllerIdentifier);
       point = gfx.viewport.toViewCoordFromClientCoord(point);
-      addImages(std, files, point).catch(console.error);
+      addImages(std, files, { point, maxWidth: MAX_IMAGE_WIDTH }).catch(
+        console.error
+      );
 
       std.getOptional(TelemetryProvider)?.track('CanvasElementAdded', {
         control: 'canvas:drop',

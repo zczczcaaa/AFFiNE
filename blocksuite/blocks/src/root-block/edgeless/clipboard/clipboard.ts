@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   CanvasElementType,
   SurfaceGroupLikeModel,
@@ -9,6 +8,7 @@ import {
   BookmarkStyles,
   DEFAULT_NOTE_HEIGHT,
   DEFAULT_NOTE_WIDTH,
+  MAX_IMAGE_WIDTH,
   ReferenceInfoSchema,
 } from '@blocksuite/affine-model';
 import {
@@ -256,7 +256,10 @@ export class EdgelessClipboardController extends PageClipboard {
 
       // when only images in clipboard, add image-blocks else add all files as attachments
       if (attachmentFiles.length === 0) {
-        await addImages(this.std, imageFiles, point);
+        await addImages(this.std, imageFiles, {
+          point,
+          maxWidth: MAX_IMAGE_WIDTH,
+        });
       } else {
         await addAttachments(this.std, [...files], point);
       }
@@ -359,7 +362,7 @@ export class EdgelessClipboardController extends PageClipboard {
 
     const svg = tryGetSvgFromClipboard(data);
     if (svg) {
-      await addImages(this.std, [svg], point);
+      await addImages(this.std, [svg], { point, maxWidth: MAX_IMAGE_WIDTH });
       return;
     }
     try {

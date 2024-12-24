@@ -1,4 +1,5 @@
 import { AttachmentIcon, LinkIcon } from '@blocksuite/affine-components/icons';
+import { MAX_IMAGE_WIDTH } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { effect } from '@preact/signals-core';
@@ -55,7 +56,9 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
   private async _addImages() {
     this._imageLoading = true;
     const imageFiles = await getImageFilesFromLocal();
-    const ids = await addImages(this.edgeless.std, imageFiles);
+    const ids = await addImages(this.edgeless.std, imageFiles, {
+      maxWidth: MAX_IMAGE_WIDTH,
+    });
     this._imageLoading = false;
     this.edgeless.gfx.tool.setTool('default');
     this.edgeless.gfx.selection.set({ elements: ids });

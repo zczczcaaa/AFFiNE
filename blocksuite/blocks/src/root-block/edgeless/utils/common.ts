@@ -118,7 +118,10 @@ export async function addAttachments(
 export async function addImages(
   std: BlockStdScope,
   files: File[],
-  point?: IVec
+  options: {
+    point?: IVec;
+    maxWidth?: number;
+  }
 ): Promise<string[]> {
   const imageFiles = [...files].filter(file => file.type.startsWith('image/'));
   if (!imageFiles.length) return [];
@@ -145,6 +148,7 @@ export async function addImages(
     return [];
   }
 
+  const { point, maxWidth } = options;
   let { x, y } = gfx.viewport.center;
   if (point) [x, y] = gfx.viewport.toModelCoord(...point);
 
@@ -166,6 +170,7 @@ export async function addImages(
       {
         size: file.size,
         xywh: bound.serialize(),
+        index: gfx.layer.generateIndex(),
       },
       gfx.surface
     );
@@ -180,17 +185,22 @@ export async function addImages(
     const imageSize = await readImageSize(file);
 
     const center = Vec.toVec(point);
-    const bound = calcBoundByOrigin(
-      center,
-      inTopLeft,
-      imageSize.width,
-      imageSize.height
-    );
+    // If maxWidth is provided, limit the width of the image to maxWidth
+    // Otherwise, use the original width
+    const width = maxWidth
+      ? Math.min(imageSize.width, maxWidth)
+      : imageSize.width;
+    const height = maxWidth
+      ? (imageSize.height / imageSize.width) * width
+      : imageSize.height;
+    const bound = calcBoundByOrigin(center, inTopLeft, width, height);
 
     std.doc.withoutTransact(() => {
       gfx.updateElement(blockId, {
         sourceId,
         ...imageSize,
+        width,
+        height,
         xywh: bound.serialize(),
       } satisfies Partial<ImageBlockProps>);
     });

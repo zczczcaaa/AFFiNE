@@ -339,7 +339,7 @@ function responseToCreateImage(host: EditorHost) {
       const [x, y] = edgelessRoot.service.viewport.toViewCoord(minX, minY);
 
       host.doc.transact(() => {
-        addImages(edgelessRoot.std, [img], [x, y])
+        addImages(edgelessRoot.std, [img], { point: [x, y] })
           .then(blockIds => {
             const imageBlockId = blockIds[0];
             const imageBlock = host.doc.getBlock(imageBlockId);
