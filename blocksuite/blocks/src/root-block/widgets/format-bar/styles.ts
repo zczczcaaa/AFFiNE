@@ -1,6 +1,5 @@
+import { scrollbarStyle } from '@blocksuite/affine-shared/styles';
 import { css } from 'lit';
-
-import { scrollbarStyle } from '../../../_common/components/utils.js';
 
 const paragraphButtonStyle = css`
   .paragraph-button-icon > svg:nth-child(2) {

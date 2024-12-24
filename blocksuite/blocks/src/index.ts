@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/triple-slash-reference */
+/* oxlint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./effects.ts" />
 import { deserializeXYWH, Point } from '@blocksuite/global/utils';
 
@@ -8,7 +8,6 @@ import { isCanvasElement } from './root-block/edgeless/utils/query.js';
 
 export * from './_common/adapters/index.js';
 export * from './_common/components/ai-item/index.js';
-export { scrollbarStyle } from './_common/components/index.js';
 export { type NavigatorMode } from './_common/edgeless/frame/consts.js';
 export {
   ExportManager,
@@ -91,6 +90,7 @@ export {
 } from '@blocksuite/affine-components/toolbar';
 export * from '@blocksuite/affine-model';
 export * from '@blocksuite/affine-shared/services';
+export { scrollbarStyle } from '@blocksuite/affine-shared/styles';
 export {
   ColorVariables,
   FontFamilyVariables,

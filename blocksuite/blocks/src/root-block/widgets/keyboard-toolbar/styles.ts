@@ -1,7 +1,6 @@
+import { scrollbarStyle } from '@blocksuite/affine-shared/styles';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { css } from 'lit';
-
-import { scrollbarStyle } from '../../../_common/components/utils.js';
 
 export const TOOLBAR_HEIGHT = 46;
 

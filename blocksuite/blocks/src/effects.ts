@@ -8,6 +8,7 @@ import { effects as componentCaptionEffects } from '@blocksuite/affine-component
 import { effects as componentContextMenuEffects } from '@blocksuite/affine-components/context-menu';
 import { effects as componentDatePickerEffects } from '@blocksuite/affine-components/date-picker';
 import { effects as componentDragIndicatorEffects } from '@blocksuite/affine-components/drag-indicator';
+import { FilterableListComponent } from '@blocksuite/affine-components/filterable-list';
 import { effects as componentPortalEffects } from '@blocksuite/affine-components/portal';
 import { effects as componentRichTextEffects } from '@blocksuite/affine-components/rich-text';
 import { effects as componentToggleButtonEffects } from '@blocksuite/affine-components/toggle-button';
@@ -27,7 +28,6 @@ import { EmbedCardStyleMenu } from './_common/components/embed-card/embed-card-s
 import { EmbedCardEditCaptionEditModal } from './_common/components/embed-card/modal/embed-card-caption-edit-modal.js';
 import { EmbedCardCreateModal } from './_common/components/embed-card/modal/embed-card-create-modal.js';
 import { EmbedCardEditModal } from './_common/components/embed-card/modal/embed-card-edit-modal.js';
-import { FilterableListComponent } from './_common/components/filterable-list/index.js';
 import { AIItemList } from './_common/components/index.js';
 import { Loader } from './_common/components/loader.js';
 import { SmoothCorner } from './_common/components/smooth-corner.js';

@@ -1,7 +1,5 @@
 import type { TemplateResult } from 'lit';
 
-export type FilterableListItemKey = string;
-
 export interface FilterableListItem<Props = unknown> {
   name: string;
   label?: string;

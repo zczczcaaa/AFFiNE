@@ -5,7 +5,7 @@ import type {
   MenuItemGroup,
 } from '@blocksuite/affine-components/toolbar';
 import { renderGroups } from '@blocksuite/affine-components/toolbar';
-import { assertExists, noop, WithDisposable } from '@blocksuite/global/utils';
+import { noop, WithDisposable } from '@blocksuite/global/utils';
 import { flip, offset } from '@floating-ui/dom';
 import { css, html, LitElement } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -68,7 +68,12 @@ export class AffineCodeToolbar extends WithDisposable(LitElement) {
 
     this._currentOpenMenu = this._popMenuAbortController;
 
-    assertExists(this._moreButton);
+    if (!this._moreButton) {
+      console.error(
+        'Failed to open more menu in code toolbar! Unexpected missing more button'
+      );
+      return;
+    }
 
     createLitPortal({
       template: html`

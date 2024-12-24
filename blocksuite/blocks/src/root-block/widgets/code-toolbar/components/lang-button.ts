@@ -1,3 +1,8 @@
+import {
+  type FilterableListItem,
+  type FilterableListOptions,
+  showPopFilterableList,
+} from '@blocksuite/affine-components/filterable-list';
 import { ArrowDownIcon } from '@blocksuite/affine-components/icons';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { noop, SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
@@ -6,11 +11,6 @@ import { property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { html } from 'lit/static-html.js';
 
-import {
-  type FilterableListItem,
-  type FilterableListOptions,
-  showPopFilterableList,
-} from '../../../../_common/components/filterable-list/index.js';
 import type { CodeBlockComponent } from '../../../../code-block/code-block.js';
 
 export class LanguageListButton extends WithDisposable(
