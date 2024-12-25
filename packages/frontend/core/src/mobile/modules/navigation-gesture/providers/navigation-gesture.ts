@@ -1,9 +1,9 @@
 import { createIdentifier } from '@toeverything/infra';
 
 export interface NavigationGestureProvider {
-  isEnabled: () => Promise<boolean>;
-  enable: () => Promise<void>;
-  disable: () => Promise<void>;
+  isEnabled: () => boolean;
+  enable: () => void;
+  disable: () => void;
 }
 
 export const NavigationGestureProvider =

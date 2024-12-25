@@ -5,8 +5,7 @@ import UIKit
 class AFFiNEViewController: CAPBridgeViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
-    // disable by default, enable manually when there is a "back" button in page-header
-    webView?.allowsBackForwardNavigationGestures = false
+    webView?.allowsBackForwardNavigationGestures = true
     navigationController?.navigationBar.isHidden = true
     extendedLayoutIncludesOpaqueBars = false
     edgesForExtendedLayout = []

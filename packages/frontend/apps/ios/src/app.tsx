@@ -49,7 +49,7 @@ import { ModalConfigProvider } from './modal-config';
 import { Cookie } from './plugins/cookie';
 import { Hashcash } from './plugins/hashcash';
 import { Intelligents } from './plugins/intelligents';
-import { NavigationGesture } from './plugins/navigation-gesture';
+import { enableNavigationGesture$ } from './web-navigation-control';
 
 const future = {
   v7_startTransition: true,
@@ -107,9 +107,9 @@ framework.impl(VirtualKeyboardProvider, {
   },
 });
 framework.impl(NavigationGestureProvider, {
-  isEnabled: () => NavigationGesture.isEnabled(),
-  enable: () => NavigationGesture.enable(),
-  disable: () => NavigationGesture.disable(),
+  isEnabled: () => enableNavigationGesture$.value,
+  enable: () => enableNavigationGesture$.next(true),
+  disable: () => enableNavigationGesture$.next(false),
 });
 framework.impl(HapticProvider, {
   impact: options => Haptics.impact(options as any),
