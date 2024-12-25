@@ -1,3 +1,9 @@
+import {
+  embedFigmaBlockNotionHtmlAdapterMatcher,
+  embedGithubBlockNotionHtmlAdapterMatcher,
+  embedLoomBlockNotionHtmlAdapterMatcher,
+  embedYoutubeBlockNotionHtmlAdapterMatcher,
+} from '@blocksuite/affine-block-embed';
 import { listBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-list';
 import { paragraphBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-paragraph';
 import type { BlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-shared/adapters';
@@ -21,6 +27,10 @@ export const defaultBlockNotionHtmlAdapterMatchers: BlockNotionHtmlAdapterMatche
     rootBlockNotionHtmlAdapterMatcher,
     bookmarkBlockNotionHtmlAdapterMatcher,
     databaseBlockNotionHtmlAdapterMatcher,
-    attachmentBlockNotionHtmlAdapterMatcher,
     latexBlockNotionHtmlAdapterMatcher,
+    embedYoutubeBlockNotionHtmlAdapterMatcher,
+    embedFigmaBlockNotionHtmlAdapterMatcher,
+    embedGithubBlockNotionHtmlAdapterMatcher,
+    embedLoomBlockNotionHtmlAdapterMatcher,
+    attachmentBlockNotionHtmlAdapterMatcher,
   ];
