@@ -1,8 +1,12 @@
+import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
 import type { Doc, DocCollection } from '@blocksuite/store';
 import { extMimeMap, Job } from '@blocksuite/store';
 
-import { HtmlAdapter } from '../adapters/html-adapter/html.js';
+import { defaultBlockHtmlAdapterMatchers } from '../adapters/html/block-matcher.js';
+import { htmlInlineToDeltaMatchers } from '../adapters/html/delta-converter/html-inline.js';
+import { inlineDeltaToHtmlAdapterMatchers } from '../adapters/html/delta-converter/inline-delta.js';
+import { HtmlAdapter } from '../adapters/html/html.js';
 import {
   defaultImageProxyMiddleware,
   docLinkBaseURLMiddleware,
@@ -22,6 +26,17 @@ type ImportHTMLZipOptions = {
   imported: Blob;
 };
 
+const container = new Container();
+[
+  ...htmlInlineToDeltaMatchers,
+  ...defaultBlockHtmlAdapterMatchers,
+  ...inlineDeltaToHtmlAdapterMatchers,
+].forEach(ext => {
+  ext.setup(container);
+});
+
+const provider = container.provider();
+
 /**
  * Exports a doc to HTML format.
  *
@@ -34,7 +49,7 @@ async function exportDoc(doc: Doc) {
     middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
   });
   const snapshot = job.docToSnapshot(doc);
-  const adapter = new HtmlAdapter(job);
+  const adapter = new HtmlAdapter(job, provider);
   if (!snapshot) {
     return;
   }
@@ -83,7 +98,7 @@ async function importHTMLToDoc({
       docLinkBaseURLMiddleware,
     ],
   });
-  const htmlAdapter = new HtmlAdapter(job);
+  const htmlAdapter = new HtmlAdapter(job, provider);
   const page = await htmlAdapter.toDoc({
     file: html,
     assets: job.assetsManager,
@@ -147,7 +162,7 @@ async function importHTMLZip({ collection, imported }: ImportHTMLZipOptions) {
       for (const [key, value] of pendingPathBlobIdMap.entries()) {
         pathBlobIdMap.set(key, value);
       }
-      const htmlAdapter = new HtmlAdapter(job);
+      const htmlAdapter = new HtmlAdapter(job, provider);
       const html = await blob.text();
       const doc = await htmlAdapter.toDoc({
         file: html,

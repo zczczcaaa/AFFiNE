@@ -1,3 +1,4 @@
+import type { ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type {
   BaseAdapter,
@@ -15,7 +16,9 @@ import { unified } from 'unified';
 
 import { LifeCycleWatcher } from '../extension/index.js';
 
-type AdapterConstructor<T extends BaseAdapter> = new (job: Job) => T;
+type AdapterConstructor<T extends BaseAdapter> =
+  | { new (job: Job): T }
+  | (new (job: Job, provider: ServiceProvider) => T);
 
 type AdapterMap = Map<
   string,
@@ -131,7 +134,7 @@ export class Clipboard extends LifeCycleWatcher {
       }
       if (item) {
         const job = this._getJob();
-        const adapterInstance = new adapter(job);
+        const adapterInstance = new adapter(job, this.std.provider);
         const payload = {
           file: item,
           assets: job.assetsManager,
@@ -274,7 +277,7 @@ export class Clipboard extends LifeCycleWatcher {
       return;
     }
     const { adapter } = adapterItem;
-    const adapterInstance = new adapter(job);
+    const adapterInstance = new adapter(job, this.std.provider);
     const result = await adapterInstance.fromSlice(slice);
     if (!result) {
       return;

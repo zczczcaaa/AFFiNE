@@ -2,6 +2,7 @@ import {
   DEFAULT_NOTE_BACKGROUND_COLOR,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
+import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
   DocSnapshot,
@@ -10,10 +11,23 @@ import type {
 import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { HtmlAdapter } from '../../_common/adapters/html-adapter/html.js';
+import { defaultBlockHtmlAdapterMatchers } from '../../_common/adapters/html/block-matcher.js';
+import { htmlInlineToDeltaMatchers } from '../../_common/adapters/html/delta-converter/html-inline.js';
+import { inlineDeltaToHtmlAdapterMatchers } from '../../_common/adapters/html/delta-converter/inline-delta.js';
+import { HtmlAdapter } from '../../_common/adapters/html/html.js';
 import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';
+
+const container = new Container();
+[
+  ...htmlInlineToDeltaMatchers,
+  ...defaultBlockHtmlAdapterMatchers,
+  ...inlineDeltaToHtmlAdapterMatchers,
+].forEach(ext => {
+  ext.setup(container);
+});
+const provider = container.provider();
 
 describe('snapshot to html', () => {
   const template = (html: string, title?: string) => {
@@ -126,7 +140,7 @@ describe('snapshot to html', () => {
       `<pre class="shiki light-plus" style="background-color:#FFFFFF;color:#000000" tabindex="0"><code><span class="line"><span style="color:#AF00DB">import</span><span style="color:#000000"> this</span></span></code></pre>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -192,7 +206,7 @@ describe('snapshot to html', () => {
       `<pre class="shiki light-plus" style="background-color:#FFFFFF;color:#000000" tabindex="0"><code><span class="line"><span>import this</span></span></code></pre>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -258,7 +272,7 @@ describe('snapshot to html', () => {
       `<pre class="shiki light-plus" style="background-color:#FFFFFF;color:#000000" tabindex="0"><code><span class="line"><span>import this</span></span></code></pre>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -444,7 +458,7 @@ describe('snapshot to html', () => {
       `<div class="affine-paragraph-block-container"><p>aaa</p><div class="affine-block-children-container" style="padding-left: 26px;"><div class="affine-paragraph-block-container"><p>bbb</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div><div class="affine-paragraph-block-container"><p>ccc</p><div class="affine-block-children-container" style="padding-left: 26px;"><div class="affine-paragraph-block-container"><p>ddd</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div><div class="affine-paragraph-block-container"><p>eee</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div><div class="affine-paragraph-block-container"><p>fff</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div></div></div><div class="affine-paragraph-block-container"><p>ggg</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div></div></div><div class="affine-paragraph-block-container"><p>hhh</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -589,7 +603,7 @@ describe('snapshot to html', () => {
       `<ul class="bulleted-list"><li class="affine-list-block-container">aaa<ul class="bulleted-list"><li class="affine-list-block-container">bbb<ul class="bulleted-list"><li class="affine-list-block-container">ccc</li></ul></li><li class="affine-list-block-container">ddd</li></ul></li><li class="affine-list-block-container">eee</li></ul>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -694,7 +708,7 @@ describe('snapshot to html', () => {
       `<ul class="bulleted-list"><li class="affine-list-block-container">aaa</li></ul><ul style="list-style-type: none; padding-inline-start: 18px;" class="todo-list"><li class="affine-list-block-container"><input type="checkbox"><label style="margin-right: 3px;"></label></input>bbb</li></ul><ul class="bulleted-list"><li class="affine-list-block-container">ccc</li></ul>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -768,7 +782,7 @@ describe('snapshot to html', () => {
       `<div class="affine-paragraph-block-container"><p>aaa <code>bbb</code> ccc</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -842,7 +856,7 @@ describe('snapshot to html', () => {
       `<div class="affine-paragraph-block-container"><p>aaa <a href="https://affine.pro/">bbb</a> ccc</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -917,7 +931,7 @@ describe('snapshot to html', () => {
       `<div class="affine-paragraph-block-container"><p>aaa<strong>bbb</strong>ccc</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -992,7 +1006,7 @@ describe('snapshot to html', () => {
       `<div class="affine-paragraph-block-container"><p>aaa<em>bbb</em>ccc</p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1069,7 +1083,7 @@ describe('snapshot to html', () => {
       `<figure class="affine-image-block-container"><img src="assets/YXXTjRmLlNyiOUnHb8nAIvUP6V7PAXhwW9F5_tc2LGs=.blob" alt="YXXTjRmLlNyiOUnHb8nAIvUP6V7PAXhwW9F5_tc2LGs=.blob" title="aaa"></figure><div class="affine-paragraph-block-container"><p></p><div class="affine-block-children-container" style="padding-left: 26px;"></div></div>`
     );
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const blobManager = new MemoryBlobCRUD();
     await blobManager.set(
       'YXXTjRmLlNyiOUnHb8nAIvUP6V7PAXhwW9F5_tc2LGs=',
@@ -1171,7 +1185,7 @@ describe('snapshot to html', () => {
           `<div class="affine-paragraph-block-container"><a href="${testCase.url}">${testCase.title}</a></div>`
         );
 
-        const htmlAdapter = new HtmlAdapter(createJob());
+        const htmlAdapter = new HtmlAdapter(createJob(), provider);
         const target = await htmlAdapter.fromBlockSnapshot({
           snapshot: blockSnapshot,
         });
@@ -1430,7 +1444,7 @@ describe('snapshot to html', () => {
     const html = template(
       '<table><thead><tr><th>Title</th><th>Status</th><th>Date</th><th>Number</th><th>Progress</th><th>MultiSelect</th><th>RichText</th><th>Link</th><th>Checkbox</th></tr></thead><tbody><tr><td>Task 1</td><td>TODO</td><td>2023-12-15</td><td>1</td><td>65</td><td>test1,test2</td><td><a href="https://google.com">test2</a></td><td>https://google.com</td><td>true</td></tr><tr><td>Task 2</td><td>In Progress</td><td>2023-12-20</td><td></td><td></td><td></td><td>test1</td><td></td><td></td></tr></tbody></table>'
     );
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1510,7 +1524,7 @@ describe('snapshot to html', () => {
     const html = template(
       '<div class="affine-paragraph-block-container"><a href="https://example.com/4T5ObMgEIMII-4Bexyta1?mode=page&#x26;blockIds=abc%2C123&#x26;elementIds=def%2C456&#x26;databaseId=deadbeef&#x26;databaseRowId=123">Test Doc</a></div>'
     );
-    const htmlAdapter = new HtmlAdapter(createJob([middleware]));
+    const htmlAdapter = new HtmlAdapter(createJob([middleware]), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
       snapshot: blockSnapShot,
     });
@@ -1896,7 +1910,7 @@ describe('snapshot to html', () => {
     await job.snapshotToDoc(syncedDocSnapshot);
     await job.snapshotToDoc(docSnapShot);
 
-    const mdAdapter = new HtmlAdapter(job);
+    const mdAdapter = new HtmlAdapter(job, provider);
     const target = await mdAdapter.fromDocSnapshot({
       snapshot: docSnapShot,
     });
@@ -1981,7 +1995,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2091,7 +2105,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2157,7 +2171,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2202,7 +2216,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2238,7 +2252,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2350,7 +2364,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2394,7 +2408,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2438,7 +2452,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2491,7 +2505,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2544,7 +2558,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });
@@ -2585,7 +2599,7 @@ describe('html to snapshot', () => {
       ],
     };
 
-    const htmlAdapter = new HtmlAdapter(createJob());
+    const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await htmlAdapter.toBlockSnapshot({
       file: html,
     });

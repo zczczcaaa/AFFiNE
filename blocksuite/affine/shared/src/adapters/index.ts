@@ -3,12 +3,14 @@ export {
   type BlockHtmlAdapterMatcher,
   BlockHtmlAdapterMatcherIdentifier,
   type Html,
+  HtmlASTToDeltaExtension,
   type HtmlASTToDeltaMatcher,
   HtmlASTToDeltaMatcherIdentifier,
   HtmlDeltaConverter,
+  InlineDeltaToHtmlAdapterExtension,
   type InlineDeltaToHtmlAdapterMatcher,
   InlineDeltaToHtmlAdapterMatcherIdentifier,
-} from './html-adapter/index.js';
+} from './html/index.js';
 export {
   BlockMarkdownAdapterExtension,
   type BlockMarkdownAdapterMatcher,

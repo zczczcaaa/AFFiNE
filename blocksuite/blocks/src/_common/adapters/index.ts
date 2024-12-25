@@ -1,6 +1,6 @@
 export * from './attachment.js';
 export * from './extension.js';
-export * from './html-adapter/html.js';
+export * from './html/html.js';
 export * from './image.js';
 export * from './markdown/index.js';
 export * from './mix-text.js';

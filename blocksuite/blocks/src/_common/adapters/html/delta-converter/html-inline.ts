@@ -1,6 +1,6 @@
-import type {
-  HtmlAST,
-  HtmlASTToDeltaMatcher,
+import {
+  type HtmlAST,
+  HtmlASTToDeltaExtension,
 } from '@blocksuite/affine-shared/adapters';
 import { collapseWhiteSpace } from 'collapse-white-space';
 import type { Element } from 'hast';
@@ -14,7 +14,7 @@ const listElementTags = new Set(['ol', 'ul']);
 const strongElementTags = new Set(['strong', 'b']);
 const italicElementTags = new Set(['i', 'em']);
 
-export const htmlTextToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlTextToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'text',
   match: ast => ast.type === 'text',
   toDelta: (ast, context) => {
@@ -33,9 +33,9 @@ export const htmlTextToDeltaMatcher: HtmlASTToDeltaMatcher = {
       : collapseWhiteSpace(ast.value);
     return value ? [{ insert: value }] : [];
   },
-};
+});
 
-export const htmlTextLikeElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlTextLikeElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'text-like-element',
   match: ast => isElement(ast) && textLikeElementTags.has(ast.tagName),
   toDelta: (ast, context) => {
@@ -46,17 +46,17 @@ export const htmlTextLikeElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
       context.toDelta(child, { trim: false })
     );
   },
-};
+});
 
-export const htmlListToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlListToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'list-element',
   match: ast => isElement(ast) && listElementTags.has(ast.tagName),
   toDelta: () => {
     return [];
   },
-};
+});
 
-export const htmlStrongElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlStrongElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'strong-element',
   match: ast => isElement(ast) && strongElementTags.has(ast.tagName),
   toDelta: (ast, context) => {
@@ -70,9 +70,9 @@ export const htmlStrongElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const htmlItalicElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlItalicElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'italic-element',
   match: ast => isElement(ast) && italicElementTags.has(ast.tagName),
   toDelta: (ast, context) => {
@@ -86,8 +86,9 @@ export const htmlItalicElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
       })
     );
   },
-};
-export const htmlCodeElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+});
+
+export const htmlCodeElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'code-element',
   match: ast => isElement(ast) && ast.tagName === 'code',
   toDelta: (ast, context) => {
@@ -101,9 +102,9 @@ export const htmlCodeElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const htmlDelElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlDelElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'del-element',
   match: ast => isElement(ast) && ast.tagName === 'del',
   toDelta: (ast, context) => {
@@ -117,9 +118,9 @@ export const htmlDelElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const htmlUnderlineElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlUnderlineElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'underline-element',
   match: ast => isElement(ast) && ast.tagName === 'u',
   toDelta: (ast, context) => {
@@ -133,9 +134,9 @@ export const htmlUnderlineElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const htmlLinkElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlLinkElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'link-element',
   match: ast => isElement(ast) && ast.tagName === 'a',
   toDelta: (ast, context) => {
@@ -194,9 +195,9 @@ export const htmlLinkElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const htmlMarkElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlMarkElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'mark-element',
   match: ast => isElement(ast) && ast.tagName === 'mark',
   toDelta: (ast, context) => {
@@ -210,17 +211,17 @@ export const htmlMarkElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const htmlBrElementToDeltaMatcher: HtmlASTToDeltaMatcher = {
+export const htmlBrElementToDeltaMatcher = HtmlASTToDeltaExtension({
   name: 'br-element',
   match: ast => isElement(ast) && ast.tagName === 'br',
   toDelta: () => {
     return [{ insert: '\n' }];
   },
-};
+});
 
-export const htmlInlineToDeltaMatchers: HtmlASTToDeltaMatcher[] = [
+export const htmlInlineToDeltaMatchers = [
   htmlTextToDeltaMatcher,
   htmlTextLikeElementToDeltaMatcher,
   htmlStrongElementToDeltaMatcher,

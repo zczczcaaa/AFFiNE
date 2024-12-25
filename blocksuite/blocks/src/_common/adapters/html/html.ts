@@ -8,9 +8,12 @@ import {
   BlockHtmlAdapterMatcherIdentifier,
   HastUtils,
   type HtmlAST,
+  HtmlASTToDeltaMatcherIdentifier,
   HtmlDeltaConverter,
+  InlineDeltaToHtmlAdapterMatcherIdentifier,
 } from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
+import type { ServiceProvider } from '@blocksuite/global/di';
 import {
   type AssetsManager,
   ASTWalker,
@@ -36,9 +39,6 @@ import rehypeStringify from 'rehype-stringify';
 import { unified } from 'unified';
 
 import { AdapterFactoryIdentifier } from '../type.js';
-import { defaultBlockHtmlAdapterMatchers } from './block-matcher.js';
-import { htmlInlineToDeltaMatchers } from './delta-converter/html-inline.js';
-import { inlineDeltaToHtmlAdapterMatchers } from './delta-converter/inline-delta.js';
 
 export type Html = string;
 
@@ -170,11 +170,20 @@ export class HtmlAdapter extends BaseAdapter<Html> {
 
   deltaConverter: HtmlDeltaConverter;
 
-  constructor(
-    job: Job,
-    readonly blockMatchers: BlockHtmlAdapterMatcher[] = defaultBlockHtmlAdapterMatchers
-  ) {
+  readonly blockMatchers: BlockHtmlAdapterMatcher[];
+
+  constructor(job: Job, provider: ServiceProvider) {
     super(job);
+    const blockMatchers = Array.from(
+      provider.getAll(BlockHtmlAdapterMatcherIdentifier).values()
+    );
+    const inlineDeltaToHtmlAdapterMatchers = Array.from(
+      provider.getAll(InlineDeltaToHtmlAdapterMatcherIdentifier).values()
+    );
+    const htmlInlineToDeltaMatchers = Array.from(
+      provider.getAll(HtmlASTToDeltaMatcherIdentifier).values()
+    );
+    this.blockMatchers = blockMatchers;
     this.deltaConverter = new HtmlDeltaConverter(
       job.adapterConfigs,
       inlineDeltaToHtmlAdapterMatchers,
@@ -373,13 +382,7 @@ export const HtmlAdapterFactoryIdentifier = AdapterFactoryIdentifier('Html');
 export const HtmlAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(HtmlAdapterFactoryIdentifier, provider => ({
-      get: (job: Job) =>
-        new HtmlAdapter(
-          job,
-          Array.from(
-            provider.getAll(BlockHtmlAdapterMatcherIdentifier).values()
-          )
-        ),
+      get: job => new HtmlAdapter(job, provider),
     }));
   },
 };

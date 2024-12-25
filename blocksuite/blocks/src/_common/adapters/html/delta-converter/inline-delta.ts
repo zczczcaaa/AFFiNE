@@ -1,10 +1,8 @@
 import { generateDocUrl } from '@blocksuite/affine-block-embed';
-import type {
-  InlineDeltaToHtmlAdapterMatcher,
-  InlineHtmlAST,
-} from '@blocksuite/affine-shared/adapters';
+import type { InlineHtmlAST } from '@blocksuite/affine-shared/adapters';
+import { InlineDeltaToHtmlAdapterExtension } from '@blocksuite/affine-shared/adapters';
 
-export const boldDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher = {
+export const boldDeltaToHtmlAdapterMatcher = InlineDeltaToHtmlAdapterExtension({
   name: 'bold',
   match: delta => !!delta.attributes?.bold,
   toAST: (_, context) => {
@@ -15,10 +13,10 @@ export const boldDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher = {
       children: [context.current],
     };
   },
-};
+});
 
-export const italicDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher =
-  {
+export const italicDeltaToHtmlAdapterMatcher =
+  InlineDeltaToHtmlAdapterExtension({
     name: 'italic',
     match: delta => !!delta.attributes?.italic,
     toAST: (_, context) => {
@@ -29,10 +27,10 @@ export const italicDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher =
         children: [context.current],
       };
     },
-  };
+  });
 
-export const strikeDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher =
-  {
+export const strikeDeltaToHtmlAdapterMatcher =
+  InlineDeltaToHtmlAdapterExtension({
     name: 'strike',
     match: delta => !!delta.attributes?.strike,
     toAST: (_, context) => {
@@ -43,10 +41,10 @@ export const strikeDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher =
         children: [context.current],
       };
     },
-  };
+  });
 
-export const inlineCodeDeltaToMarkdownAdapterMatcher: InlineDeltaToHtmlAdapterMatcher =
-  {
+export const inlineCodeDeltaToMarkdownAdapterMatcher =
+  InlineDeltaToHtmlAdapterExtension({
     name: 'inlineCode',
     match: delta => !!delta.attributes?.code,
     toAST: (_, context) => {
@@ -57,10 +55,10 @@ export const inlineCodeDeltaToMarkdownAdapterMatcher: InlineDeltaToHtmlAdapterMa
         children: [context.current],
       };
     },
-  };
+  });
 
-export const underlineDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher =
-  {
+export const underlineDeltaToHtmlAdapterMatcher =
+  InlineDeltaToHtmlAdapterExtension({
     name: 'underline',
     match: delta => !!delta.attributes?.underline,
     toAST: (_, context) => {
@@ -71,10 +69,10 @@ export const underlineDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher
         children: [context.current],
       };
     },
-  };
+  });
 
-export const referenceDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher =
-  {
+export const referenceDeltaToHtmlAdapterMatcher =
+  InlineDeltaToHtmlAdapterExtension({
     name: 'reference',
     match: delta => !!delta.attributes?.reference,
     toAST: (delta, context) => {
@@ -108,9 +106,9 @@ export const referenceDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher
 
       return hast;
     },
-  };
+  });
 
-export const linkDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher = {
+export const linkDeltaToHtmlAdapterMatcher = InlineDeltaToHtmlAdapterExtension({
   name: 'link',
   match: delta => !!delta.attributes?.link,
   toAST: (delta, _) => {
@@ -131,15 +129,14 @@ export const linkDeltaToHtmlAdapterMatcher: InlineDeltaToHtmlAdapterMatcher = {
       children: [hast],
     };
   },
-};
+});
 
-export const inlineDeltaToHtmlAdapterMatchers: InlineDeltaToHtmlAdapterMatcher[] =
-  [
-    boldDeltaToHtmlAdapterMatcher,
-    italicDeltaToHtmlAdapterMatcher,
-    strikeDeltaToHtmlAdapterMatcher,
-    underlineDeltaToHtmlAdapterMatcher,
-    inlineCodeDeltaToMarkdownAdapterMatcher,
-    referenceDeltaToHtmlAdapterMatcher,
-    linkDeltaToHtmlAdapterMatcher,
-  ];
+export const inlineDeltaToHtmlAdapterMatchers = [
+  boldDeltaToHtmlAdapterMatcher,
+  italicDeltaToHtmlAdapterMatcher,
+  strikeDeltaToHtmlAdapterMatcher,
+  underlineDeltaToHtmlAdapterMatcher,
+  inlineCodeDeltaToMarkdownAdapterMatcher,
+  referenceDeltaToHtmlAdapterMatcher,
+  linkDeltaToHtmlAdapterMatcher,
+];
