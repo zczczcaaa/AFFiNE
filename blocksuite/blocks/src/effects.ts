@@ -1,3 +1,4 @@
+import { effects as blockAttachmentEffects } from '@blocksuite/affine-block-attachment/effects';
 import { effects as blockBookmarkEffects } from '@blocksuite/affine-block-bookmark/effects';
 import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/effects';
 import { effects as blockListEffects } from '@blocksuite/affine-block-list/effects';
@@ -29,11 +30,6 @@ import { EmbedCardEditCaptionEditModal } from './_common/components/embed-card/m
 import { EmbedCardCreateModal } from './_common/components/embed-card/modal/embed-card-create-modal.js';
 import { EmbedCardEditModal } from './_common/components/embed-card/modal/embed-card-edit-modal.js';
 import { registerSpecs } from './_specs/register-specs.js';
-import { AttachmentEdgelessBlockComponent } from './attachment-block/attachment-edgeless-block.js';
-import {
-  AttachmentBlockComponent,
-  type AttachmentBlockService,
-} from './attachment-block/index.js';
 import { AffineCodeUnit } from './code-block/highlight/affine-code-unit.js';
 import {
   CodeBlockComponent,
@@ -275,6 +271,7 @@ export function effects() {
   stdEffects();
   inlineEffects();
 
+  blockAttachmentEffects();
   blockBookmarkEffects();
   blockListEffects();
   blockParagraphEffects();
@@ -322,13 +319,8 @@ export function effects() {
   );
   customElements.define('affine-edgeless-text', EdgelessTextBlockComponent);
   customElements.define('center-peek', CenterPeek);
-  customElements.define(
-    'affine-edgeless-attachment',
-    AttachmentEdgelessBlockComponent
-  );
   customElements.define('database-datasource-note-renderer', NoteRenderer);
   customElements.define('database-datasource-block-renderer', BlockRenderer);
-  customElements.define('affine-attachment', AttachmentBlockComponent);
   customElements.define('affine-latex', LatexBlockComponent);
   customElements.define('affine-page-root', PageRootBlockComponent);
   customElements.define('edgeless-note-mask', EdgelessNoteMask);
@@ -594,7 +586,6 @@ declare global {
     interface BlockServices {
       'affine:note': NoteBlockService;
       'affine:page': RootService;
-      'affine:attachment': AttachmentBlockService;
       'affine:database': DatabaseBlockService;
       'affine:image': ImageBlockService;
     }

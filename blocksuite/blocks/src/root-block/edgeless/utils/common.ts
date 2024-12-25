@@ -1,7 +1,6 @@
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
 import { toast } from '@blocksuite/affine-components/toast';
 import {
-  type AttachmentBlockProps,
   DEFAULT_NOTE_HEIGHT,
   DEFAULT_NOTE_WIDTH,
   type ImageBlockProps,
@@ -9,10 +8,6 @@ import {
   type NoteBlockModel,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '@blocksuite/affine-shared/consts';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import type { NoteChildrenFlavour } from '@blocksuite/affine-shared/types';
 import {
@@ -22,7 +17,6 @@ import {
 import type { BlockStdScope } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import {
-  Bound,
   type IPoint,
   type IVec,
   Point,
@@ -30,90 +24,9 @@ import {
   Vec,
 } from '@blocksuite/global/utils';
 
-import {
-  getFileType,
-  uploadAttachmentBlob,
-} from '../../../attachment-block/utils.js';
 import { calcBoundByOrigin, readImageSize } from '../components/utils.js';
 import { DEFAULT_NOTE_OFFSET_X, DEFAULT_NOTE_OFFSET_Y } from './consts.js';
 import { addBlock } from './crud.js';
-
-export async function addAttachments(
-  std: BlockStdScope,
-  files: File[],
-  point?: IVec
-): Promise<string[]> {
-  if (!files.length) return [];
-
-  const attachmentService = std.getService('affine:attachment');
-  const gfx = std.get(GfxControllerIdentifier);
-
-  if (!attachmentService) {
-    console.error('Attachment service not found');
-    return [];
-  }
-  const maxFileSize = attachmentService.maxFileSize;
-  const isSizeExceeded = files.some(file => file.size > maxFileSize);
-  if (isSizeExceeded) {
-    toast(
-      std.host,
-      `You can only upload files less than ${humanFileSize(
-        maxFileSize,
-        true,
-        0
-      )}`
-    );
-    return [];
-  }
-
-  let { x, y } = gfx.viewport.center;
-  if (point) [x, y] = gfx.viewport.toModelCoord(...point);
-
-  const CARD_STACK_GAP = 32;
-
-  const dropInfos: { blockId: string; file: File }[] = files.map(
-    (file, index) => {
-      const point = new Point(
-        x + index * CARD_STACK_GAP,
-        y + index * CARD_STACK_GAP
-      );
-      const center = Vec.toVec(point);
-      const bound = Bound.fromCenter(
-        center,
-        EMBED_CARD_WIDTH.cubeThick,
-        EMBED_CARD_HEIGHT.cubeThick
-      );
-      const blockId = std.doc.addBlock(
-        'affine:attachment',
-        {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          style: 'cubeThick',
-          xywh: bound.serialize(),
-        } satisfies Partial<AttachmentBlockProps>,
-        gfx.surface
-      );
-
-      return { blockId, file };
-    }
-  );
-
-  // upload file and update the attachment model
-  const uploadPromises = dropInfos.map(async ({ blockId, file }) => {
-    const filetype = await getFileType(file);
-    await uploadAttachmentBlob(std.host, blockId, file, filetype, true);
-    return blockId;
-  });
-  const blockIds = await Promise.all(uploadPromises);
-
-  gfx.selection.set({
-    elements: blockIds,
-    editing: false,
-  });
-
-  return blockIds;
-}
 
 export async function addImages(
   std: BlockStdScope,

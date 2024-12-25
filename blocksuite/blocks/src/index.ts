@@ -16,7 +16,6 @@ export * from './_common/test-utils/test-utils.js';
 export * from './_common/transformers/index.js';
 export { type AbstractEditor } from './_common/types.js';
 export * from './_specs/index.js';
-export * from './attachment-block/index.js';
 export * from './code-block/index.js';
 export * from './data-view-block/index.js';
 export * from './database-block/index.js';
@@ -49,6 +48,7 @@ export {
   MiniMindmapPreview,
 } from './surface-block/mini-mindmap/index.js';
 export * from './surface-ref-block/index.js';
+export * from '@blocksuite/affine-block-attachment';
 export * from '@blocksuite/affine-block-bookmark';
 export * from '@blocksuite/affine-block-embed';
 export * from '@blocksuite/affine-block-list';

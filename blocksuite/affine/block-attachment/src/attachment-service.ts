@@ -8,8 +8,7 @@ import {
 import { BlockService } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 
-import { addAttachments } from '../root-block/edgeless/utils/common.js';
-import { addSiblingAttachmentBlocks } from './utils.js';
+import { addAttachments, addSiblingAttachmentBlocks } from './utils.js';
 
 // bytes.parse('2GB')
 const maxFileSize = 2147483648;
@@ -30,7 +29,10 @@ export const AttachmentDropOption = FileDropConfigExtension({
 
     if (!attachmentFiles.length) return false;
 
-    if (targetModel && !matchFlavours(targetModel, ['affine:surface'])) {
+    if (
+      targetModel &&
+      !matchFlavours(targetModel, ['affine:surface' as BlockSuite.Flavour])
+    ) {
       addSiblingAttachmentBlocks(
         std.host,
         attachmentFiles,

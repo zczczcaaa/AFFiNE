@@ -7,6 +7,8 @@
   "include": [],
   "references": [
     { "path": "./blocksuite/affine/all" },
+    { "path": "./blocksuite/affine/block-attachment" },
+    { "path": "./blocksuite/affine/block-bookmark" },
     { "path": "./blocksuite/affine/block-embed" },
     { "path": "./blocksuite/affine/block-list" },
     { "path": "./blocksuite/affine/block-paragraph" },

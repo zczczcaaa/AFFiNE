@@ -14,6 +14,20 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/block-attachment',
+    name: '@blocksuite/affine-block-attachment',
+    workspaceDependencies: [
+      'blocksuite/affine/block-embed',
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+      'blocksuite/framework/inline',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/block-bookmark',
     name: '@blocksuite/affine-block-bookmark',
     workspaceDependencies: [
@@ -138,6 +152,7 @@ export const PackageList = [
     location: 'blocksuite/blocks',
     name: '@blocksuite/blocks',
     workspaceDependencies: [
+      'blocksuite/affine/block-attachment',
       'blocksuite/affine/block-bookmark',
       'blocksuite/affine/block-embed',
       'blocksuite/affine/block-list',
@@ -472,6 +487,7 @@ export const PackageList = [
 
 export type PackageName =
   | '@blocksuite/affine'
+  | '@blocksuite/affine-block-attachment'
   | '@blocksuite/affine-block-bookmark'
   | '@blocksuite/affine-block-embed'
   | '@blocksuite/affine-block-list'

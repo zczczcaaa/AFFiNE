@@ -1,3 +1,4 @@
+import { addAttachments } from '@blocksuite/affine-block-attachment';
 import { AttachmentIcon, LinkIcon } from '@blocksuite/affine-components/icons';
 import { MAX_IMAGE_WIDTH } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
@@ -14,7 +15,7 @@ import {
 } from '../../../../../_common/utils/index.js';
 import { ImageIcon } from '../../../../../image-block/styles.js';
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
-import { addAttachments, addImages } from '../../../utils/common.js';
+import { addImages } from '../../../utils/common.js';
 import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { NOTE_MENU_ITEMS } from './note-menu-config.js';

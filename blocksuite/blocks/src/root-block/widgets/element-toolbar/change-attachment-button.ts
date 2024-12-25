@@ -1,3 +1,7 @@
+import {
+  type AttachmentBlockComponent,
+  attachmentViewToggleMenu,
+} from '@blocksuite/affine-block-attachment';
 import { getEmbedCardIcons } from '@blocksuite/affine-block-embed';
 import {
   CaptionIcon,
@@ -18,8 +22,6 @@ import { property } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 
 import type { EmbedCardStyle } from '../../../_common/types.js';
-import type { AttachmentBlockComponent } from '../../../attachment-block/index.js';
-import { attachmentViewToggleMenu } from '../../../attachment-block/index.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 
 export class EdgelessChangeAttachmentButton extends WithDisposable(LitElement) {

@@ -41,6 +41,9 @@
       "path": "../affine/block-bookmark"
     },
     {
+      "path": "../affine/block-attachment"
+    },
+    {
       "path": "../affine/data-view"
     },
     {

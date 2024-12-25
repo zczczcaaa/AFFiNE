@@ -4,10 +4,10 @@ import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
-import { toGfxBlockComponent } from '@blocksuite/block-std';
+import { type BlockService, toGfxBlockComponent } from '@blocksuite/block-std';
+import type { Slot } from '@blocksuite/store';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { EdgelessRootService } from '../root-block/index.js';
 import { AttachmentBlockComponent } from './attachment-block.js';
 
 export class AttachmentEdgelessBlockComponent extends toGfxBlockComponent(
@@ -17,15 +17,20 @@ export class AttachmentEdgelessBlockComponent extends toGfxBlockComponent(
 
   override blockDraggable = false;
 
-  get rootService() {
-    return this.std.getService('affine:page') as EdgelessRootService;
+  get rootService(): null | (BlockService & { slots: Record<string, Slot> }) {
+    return this.std.getService('affine:page');
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     const rootService = this.rootService;
+    if (!rootService) {
+      console.warn('rootService is not found');
+      return;
+    }
 
+    // TODO: move root service slots to extension
     this._disposables.add(
       rootService.slots.elementResizeStart.on(() => {
         this._isResizing = true;
@@ -33,6 +38,7 @@ export class AttachmentEdgelessBlockComponent extends toGfxBlockComponent(
       })
     );
 
+    // TODO: move root service slots to extension
     this._disposables.add(
       rootService.slots.elementResizeEnd.on(() => {
         this._isResizing = false;
