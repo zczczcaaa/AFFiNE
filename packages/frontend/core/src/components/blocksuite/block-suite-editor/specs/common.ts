@@ -7,6 +7,7 @@ import { AIChatBlockSpec } from '@affine/core/blocksuite/presets/blocks/ai-chat-
 import type { ExtensionType } from '@blocksuite/affine/block-std';
 import {
   AdapterFactoryExtensions,
+  AttachmentBlockSpec,
   BookmarkBlockSpec,
   CodeBlockSpec,
   DatabaseBlockSpec,
@@ -28,8 +29,6 @@ import {
   RichTextExtensions,
 } from '@blocksuite/affine/blocks';
 
-import { CustomAttachmentBlockSpec } from './custom/attachment-block';
-
 const CommonBlockSpecs: ExtensionType[] = [
   RefNodeSlotsExtension(),
   EditPropsStore,
@@ -47,8 +46,8 @@ const CommonBlockSpecs: ExtensionType[] = [
   EmbedHtmlBlockSpec,
   EmbedSyncedDocBlockSpec,
   EmbedLinkedDocBlockSpec,
+  AttachmentBlockSpec,
   // special
-  CustomAttachmentBlockSpec,
   AdapterFactoryExtensions,
 ].flat();
 

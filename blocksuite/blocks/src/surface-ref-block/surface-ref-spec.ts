@@ -8,11 +8,9 @@ import {
 import { literal } from 'lit/static-html.js';
 
 import { commands } from './commands.js';
-import { SurfaceRefBlockService } from './surface-ref-service.js';
 
 export const PageSurfaceRefBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:surface-ref'),
-  SurfaceRefBlockService,
   CommandExtension(commands),
   BlockViewExtension('affine:surface-ref', literal`affine-surface-ref`),
   WidgetViewMapExtension('affine:surface-ref', {
@@ -22,7 +20,6 @@ export const PageSurfaceRefBlockSpec: ExtensionType[] = [
 
 export const EdgelessSurfaceRefBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:surface-ref'),
-  SurfaceRefBlockService,
   BlockViewExtension(
     'affine:surface-ref',
     literal`affine-edgeless-surface-ref`

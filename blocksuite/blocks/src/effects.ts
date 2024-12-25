@@ -271,7 +271,6 @@ import { effects as blockSurfaceRefEffects } from './surface-ref-block/effects.j
 import {
   EdgelessSurfaceRefBlockComponent,
   SurfaceRefBlockComponent,
-  type SurfaceRefBlockService,
 } from './surface-ref-block/index.js';
 import { SurfaceRefGenericBlockPortal } from './surface-ref-block/portal/generic-block.js';
 import { SurfaceRefNotePortal } from './surface-ref-block/portal/note.js';
@@ -611,7 +610,6 @@ declare global {
       'affine:bookmark': BookmarkBlockService;
       'affine:database': DatabaseBlockService;
       'affine:image': ImageBlockService;
-      'affine:surface-ref': SurfaceRefBlockService;
     }
   }
 }

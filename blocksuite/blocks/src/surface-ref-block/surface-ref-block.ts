@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   type SurfaceBlockModel,
   SurfaceElementModel,
@@ -46,7 +45,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { SpecProvider } from '../_specs/index.js';
 import type { EdgelessRootPreviewBlockComponent } from '../root-block/edgeless/edgeless-root-preview-block.js';
 import { EdgelessRootService } from '../root-block/index.js';
-import type { SurfaceRefBlockService } from './surface-ref-service.js';
 import { noContentPlaceholder } from './utils.js';
 
 const REF_LABEL_ICON = {
@@ -66,10 +64,7 @@ const NO_CONTENT_REASON = {
 } as Record<string, string>;
 
 @Peekable()
-export class SurfaceRefBlockComponent extends BlockComponent<
-  SurfaceRefBlockModel,
-  SurfaceRefBlockService
-> {
+export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockModel> {
   static override styles = css`
     .affine-surface-ref {
       position: relative;
@@ -599,8 +594,6 @@ export class SurfaceRefBlockComponent extends BlockComponent<
 
     if (!this._shouldRender) return;
 
-    const service = this.service;
-    assertExists(service, `Surface ref block must run with its service.`);
     this._initHotkey();
     this._initSpec();
     this._initReferencedModel();

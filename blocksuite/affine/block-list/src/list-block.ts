@@ -24,14 +24,10 @@ import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { correctNumberedListsOrderToPrev } from './commands/utils.js';
-import type { ListBlockService } from './list-service.js';
 import { listBlockStyles } from './styles.js';
 import { getListIcon } from './utils/get-list-icon.js';
 
-export class ListBlockComponent extends CaptionedBlockComponent<
-  ListBlockModel,
-  ListBlockService
-> {
+export class ListBlockComponent extends CaptionedBlockComponent<ListBlockModel> {
   static override styles = listBlockStyles;
 
   private _inlineRangeProvider: InlineRangeProvider | null = null;

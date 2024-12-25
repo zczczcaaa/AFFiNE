@@ -12,7 +12,6 @@ import type {
 import type { listToParagraphCommand } from './commands/list-to-paragraph.js';
 import type { splitListCommand } from './commands/split-list.js';
 import { ListBlockComponent } from './list-block.js';
-import type { ListBlockService } from './list-service.js';
 
 export function effects() {
   customElements.define('affine-list', ListBlockComponent);
@@ -20,10 +19,6 @@ export function effects() {
 
 declare global {
   namespace BlockSuite {
-    interface BlockServices {
-      'affine:list': ListBlockService;
-    }
-
     interface CommandContext {
       listConvertedId?: string;
       indentContext?: IndentContext;
