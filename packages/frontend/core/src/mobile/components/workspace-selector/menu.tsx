@@ -8,7 +8,11 @@ import {
   WorkspacesService,
 } from '@affine/core/modules/workspace';
 import { CloseIcon, CollaborationIcon } from '@blocksuite/icons/rc';
-import { useLiveData, useService } from '@toeverything/infra';
+import {
+  useLiveData,
+  useService,
+  useServiceOptional,
+} from '@toeverything/infra';
 import clsx from 'clsx';
 import { type HTMLAttributes, useCallback, useMemo } from 'react';
 
@@ -54,17 +58,17 @@ const WorkspaceList = ({
   list: WorkspaceMetadata[];
   onClose?: () => void;
 }) => {
-  const currentWorkspace = useService(WorkspaceService).workspace;
+  const currentWorkspace = useServiceOptional(WorkspaceService)?.workspace;
 
   const { jumpToPage } = useNavigateHelper();
   const toggleWorkspace = useCallback(
     (id: string) => {
-      if (id !== currentWorkspace.id) {
+      if (id !== currentWorkspace?.id) {
         jumpToPage(id, 'home');
       }
       onClose?.();
     },
-    [currentWorkspace.id, jumpToPage, onClose]
+    [currentWorkspace?.id, jumpToPage, onClose]
   );
 
   if (!list.length) return null;

@@ -5,7 +5,7 @@ import type { RouteObject } from 'react-router-dom';
 import {
   createBrowserRouter as reactRouterCreateBrowserRouter,
   redirect,
-  // eslint-disable-next-line @typescript-eslint/no-restricted-imports
+  // oxlint-disable-next-line @typescript-eslint/no-restricted-imports
   useNavigate,
 } from 'react-router-dom';
 
