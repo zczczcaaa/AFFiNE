@@ -1,3 +1,4 @@
+import { effects as blockBookmarkEffects } from '@blocksuite/affine-block-bookmark/effects';
 import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/effects';
 import { effects as blockListEffects } from '@blocksuite/affine-block-list/effects';
 import { effects as blockParagraphEffects } from '@blocksuite/affine-block-paragraph/effects';
@@ -33,13 +34,6 @@ import {
   AttachmentBlockComponent,
   type AttachmentBlockService,
 } from './attachment-block/index.js';
-import { BookmarkEdgelessBlockComponent } from './bookmark-block/bookmark-edgeless-block.js';
-import type { insertBookmarkCommand } from './bookmark-block/commands/insert-bookmark.js';
-import { BookmarkCard } from './bookmark-block/components/bookmark-card.js';
-import {
-  BookmarkBlockComponent,
-  type BookmarkBlockService,
-} from './bookmark-block/index.js';
 import { AffineCodeUnit } from './code-block/highlight/affine-code-unit.js';
 import {
   CodeBlockComponent,
@@ -281,6 +275,7 @@ export function effects() {
   stdEffects();
   inlineEffects();
 
+  blockBookmarkEffects();
   blockListEffects();
   blockParagraphEffects();
   blockEmbedEffects();
@@ -309,15 +304,10 @@ export function effects() {
   widgetCodeToolbarEffects();
 
   customElements.define('affine-database-title', DatabaseTitle);
-  customElements.define(
-    'affine-edgeless-bookmark',
-    BookmarkEdgelessBlockComponent
-  );
   customElements.define('affine-image', ImageBlockComponent);
   customElements.define('data-view-header-area-icon', IconCell);
   customElements.define('affine-database-link-cell', LinkCell);
   customElements.define('affine-database-link-cell-editing', LinkCellEditing);
-  customElements.define('affine-bookmark', BookmarkBlockComponent);
   customElements.define('affine-edgeless-image', ImageEdgelessBlockComponent);
   customElements.define('data-view-header-area-text', HeaderAreaTextCell);
   customElements.define(
@@ -497,7 +487,6 @@ export function effects() {
   customElements.define('note-display-mode-panel', NoteDisplayModePanel);
   customElements.define('edgeless-toolbar-button', EdgelessToolbarButton);
   customElements.define('frame-preview', FramePreview);
-  customElements.define('bookmark-card', BookmarkCard);
   customElements.define('presentation-toolbar', PresentationToolbar);
   customElements.define('edgeless-shape-menu', EdgelessShapeMenu);
   customElements.define('stroke-style-panel', StrokeStylePanel);
@@ -588,7 +577,6 @@ declare global {
       dedentBlocksToRoot: typeof dedentBlocksToRoot;
       dedentBlocks: typeof dedentBlocks;
       indentBlock: typeof indentBlock;
-      insertBookmark: typeof insertBookmarkCommand;
       updateBlockType: typeof updateBlockType;
       insertEdgelessText: typeof insertEdgelessTextCommand;
       dedentBlockToRoot: typeof dedentBlockToRoot;
@@ -607,7 +595,6 @@ declare global {
       'affine:note': NoteBlockService;
       'affine:page': RootService;
       'affine:attachment': AttachmentBlockService;
-      'affine:bookmark': BookmarkBlockService;
       'affine:database': DatabaseBlockService;
       'affine:image': ImageBlockService;
     }

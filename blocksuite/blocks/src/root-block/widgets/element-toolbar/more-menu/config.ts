@@ -1,3 +1,4 @@
+import type { BookmarkBlockComponent } from '@blocksuite/affine-block-bookmark';
 import type {
   EmbedFigmaBlockComponent,
   EmbedGithubBlockComponent,
@@ -31,7 +32,6 @@ import {
   promptDocTitle,
 } from '../../../../_common/utils/render-linked-doc.js';
 import type { AttachmentBlockComponent } from '../../../../attachment-block/attachment-block.js';
-import type { BookmarkBlockComponent } from '../../../../bookmark-block/bookmark-block.js';
 import type { ImageBlockComponent } from '../../../../image-block/image-block.js';
 import { duplicate } from '../../../edgeless/utils/clipboard-utils.js';
 import { getSortedCloneElements } from '../../../edgeless/utils/clone-utils.js';

@@ -1,3 +1,4 @@
+import { bookmarkBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-bookmark';
 import {
   embedFigmaBlockNotionHtmlAdapterMatcher,
   embedGithubBlockNotionHtmlAdapterMatcher,
@@ -9,7 +10,6 @@ import { paragraphBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block
 import type { BlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-shared/adapters';
 
 import { attachmentBlockNotionHtmlAdapterMatcher } from '../../../attachment-block/adapters/notion-html.js';
-import { bookmarkBlockNotionHtmlAdapterMatcher } from '../../../bookmark-block/adapters/notion-html.js';
 import { codeBlockNotionHtmlAdapterMatcher } from '../../../code-block/adapters/notion-html.js';
 import { databaseBlockNotionHtmlAdapterMatcher } from '../../../database-block/adapters/notion-html.js';
 import { dividerBlockNotionHtmlAdapterMatcher } from '../../../divider-block/adapters/notion-html.js';

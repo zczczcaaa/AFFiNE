@@ -1,3 +1,4 @@
+import { BookmarkBlockSpec } from '@blocksuite/affine-block-bookmark';
 import {
   EmbedFigmaBlockSpec,
   EmbedGithubBlockSpec,
@@ -11,7 +12,6 @@ import { ListBlockSpec } from '@blocksuite/affine-block-list';
 import { ParagraphBlockSpec } from '@blocksuite/affine-block-paragraph';
 
 import { AttachmentBlockSpec } from '../../attachment-block/attachment-spec.js';
-import { BookmarkBlockSpec } from '../../bookmark-block/bookmark-spec.js';
 import { CodeBlockSpec } from '../../code-block/code-block-spec.js';
 import { DataViewBlockSpec } from '../../data-view-block/data-view-spec.js';
 import { DatabaseBlockSpec } from '../../database-block/database-spec.js';

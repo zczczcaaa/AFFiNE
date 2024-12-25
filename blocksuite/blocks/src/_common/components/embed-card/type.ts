@@ -1,3 +1,4 @@
+import { BookmarkBlockComponent } from '@blocksuite/affine-block-bookmark';
 import {
   EmbedFigmaBlockComponent,
   EmbedGithubBlockComponent,
@@ -20,8 +21,6 @@ import {
   EmbedSyncedDocModel,
 } from '@blocksuite/affine-model';
 import type { BlockComponent } from '@blocksuite/block-std';
-
-import { BookmarkBlockComponent } from '../../../bookmark-block/bookmark-block.js';
 
 export type ExternalEmbedBlockComponent =
   | BookmarkBlockComponent

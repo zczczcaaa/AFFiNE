@@ -1,3 +1,4 @@
+import { bookmarkBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-bookmark';
 import {
   embedFigmaBlockPlainTextAdapterMatcher,
   embedGithubBlockPlainTextAdapterMatcher,
@@ -10,7 +11,6 @@ import { listBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-list'
 import { paragraphBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-paragraph';
 import type { BlockPlainTextAdapterMatcher } from '@blocksuite/affine-shared/adapters';
 
-import { bookmarkBlockPlainTextAdapterMatcher } from '../../../bookmark-block/adapters/plain-text.js';
 import { codeBlockPlainTextAdapterMatcher } from '../../../code-block/adapters/plain-text.js';
 import { databaseBlockPlainTextAdapterMatcher } from '../../../database-block/adapters/plain-text.js';
 import { dividerBlockPlainTextAdapterMatcher } from '../../../divider-block/adapters/plain-text.js';

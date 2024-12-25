@@ -9,9 +9,10 @@ import { property, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
 
-import { BOOKMARK_MIN_WIDTH } from '../root-block/edgeless/utils/consts.js';
 import type { BookmarkBlockService } from './bookmark-service.js';
 import { refreshBookmarkUrlData } from './utils.js';
+
+export const BOOKMARK_MIN_WIDTH = 450;
 
 export class BookmarkBlockComponent extends CaptionedBlockComponent<
   BookmarkBlockModel,

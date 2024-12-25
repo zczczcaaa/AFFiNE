@@ -1,3 +1,4 @@
+import { BookmarkBlockSpec } from '@blocksuite/affine-block-bookmark';
 import { EmbedExtensions } from '@blocksuite/affine-block-embed';
 import { ListBlockSpec } from '@blocksuite/affine-block-list';
 import { ParagraphBlockSpec } from '@blocksuite/affine-block-paragraph';
@@ -7,7 +8,6 @@ import type { ExtensionType } from '@blocksuite/block-std';
 
 import { AdapterFactoryExtensions } from '../_common/adapters/extension.js';
 import { AttachmentBlockSpec } from '../attachment-block/attachment-spec.js';
-import { BookmarkBlockSpec } from '../bookmark-block/bookmark-spec.js';
 import { CodeBlockSpec } from '../code-block/code-block-spec.js';
 import { DataViewBlockSpec } from '../data-view-block/data-view-spec.js';
 import { DatabaseBlockSpec } from '../database-block/database-spec.js';

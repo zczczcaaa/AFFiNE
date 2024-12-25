@@ -1,3 +1,4 @@
+import { BookmarkBlockHtmlAdapterExtension } from '@blocksuite/affine-block-bookmark';
 import {
   EmbedFigmaBlockHtmlAdapterExtension,
   EmbedGithubBlockHtmlAdapterExtension,
@@ -9,7 +10,6 @@ import {
 import { ListBlockHtmlAdapterExtension } from '@blocksuite/affine-block-list';
 import { ParagraphBlockHtmlAdapterExtension } from '@blocksuite/affine-block-paragraph';
 
-import { BookmarkBlockHtmlAdapterExtension } from '../../../bookmark-block/adapters/html.js';
 import { CodeBlockHtmlAdapterExtension } from '../../../code-block/adapters/html.js';
 import { DatabaseBlockHtmlAdapterExtension } from '../../../database-block/adapters/html.js';
 import { DividerBlockHtmlAdapterExtension } from '../../../divider-block/adapters/html.js';

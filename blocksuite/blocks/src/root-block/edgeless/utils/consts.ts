@@ -6,8 +6,6 @@ import {
   StrokeStyle,
 } from '@blocksuite/affine-model';
 
-export const BOOKMARK_MIN_WIDTH = 450;
-
 export const DEFAULT_NOTE_OFFSET_X = 30;
 export const DEFAULT_NOTE_OFFSET_Y = 40;
 export const NOTE_OVERLAY_OFFSET_X = 6;
