@@ -1,11 +1,13 @@
+import {
+  downloadImageBlob,
+  type ImageBlockComponent,
+} from '@blocksuite/affine-block-image';
 import { CaptionIcon, DownloadIcon } from '@blocksuite/affine-components/icons';
 import type { ImageBlockModel } from '@blocksuite/affine-model';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { ImageBlockComponent } from '../../../image-block/image-block.js';
-import { downloadImageBlob } from '../../../image-block/utils.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 
 export class EdgelessChangeImageButton extends WithDisposable(LitElement) {

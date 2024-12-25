@@ -1,10 +1,9 @@
+import type { ImageBlockComponent } from '@blocksuite/affine-block-image';
 import {
   getBlockProps,
   isInsidePageEditor,
 } from '@blocksuite/affine-shared/utils';
 import { assertExists } from '@blocksuite/global/utils';
-
-import type { ImageBlockComponent } from '../../../image-block/image-block.js';
 
 export function duplicate(
   block: ImageBlockComponent,

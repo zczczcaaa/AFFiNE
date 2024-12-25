@@ -80,6 +80,7 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
       );
     };
 
+    // TODO: use key map extension
     this.block.bindHotKey({
       Escape: () => {
         selection.update(selList => {
@@ -134,6 +135,7 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
 
             return next({ focusBlock: nextBlock });
           })
+          // @ts-expect-error FIXME(command): BS-2216
           .focusBlockStart()
           .run();
         return true;
@@ -159,6 +161,7 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
 
             return next({ focusBlock: prevBlock });
           })
+          // @ts-expect-error FIXME(command): BS-2216
           .focusBlockEnd()
           .run();
         return true;

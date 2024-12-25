@@ -17,6 +17,7 @@
     "@blocksuite/affine-block-attachment": "workspace:*",
     "@blocksuite/affine-block-bookmark": "workspace:*",
     "@blocksuite/affine-block-embed": "workspace:*",
+    "@blocksuite/affine-block-image": "workspace:*",
     "@blocksuite/affine-block-list": "workspace:*",
     "@blocksuite/affine-block-paragraph": "workspace:*",
     "@blocksuite/affine-block-surface": "workspace:*",

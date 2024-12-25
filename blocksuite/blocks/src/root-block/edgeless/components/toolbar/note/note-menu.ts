@@ -1,4 +1,5 @@
 import { addAttachments } from '@blocksuite/affine-block-attachment';
+import { addImages, LoadedImageIcon } from '@blocksuite/affine-block-image';
 import { AttachmentIcon, LinkIcon } from '@blocksuite/affine-components/icons';
 import { MAX_IMAGE_WIDTH } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
@@ -13,9 +14,7 @@ import {
   type NoteChildrenFlavour,
   openFileOrFiles,
 } from '../../../../../_common/utils/index.js';
-import { ImageIcon } from '../../../../../image-block/styles.js';
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
-import { addImages } from '../../../utils/common.js';
 import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 import { NOTE_MENU_ITEMS } from './note-menu-config.js';
@@ -118,7 +117,7 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
               @click=${this._addImages}
               .disabled=${this._imageLoading}
             >
-              ${ImageIcon}
+              ${LoadedImageIcon}
             </edgeless-tool-icon-button>
 
             <edgeless-tool-icon-button

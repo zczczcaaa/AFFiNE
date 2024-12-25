@@ -8,9 +8,8 @@ import {
 import { BlockService } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 
-import { setImageProxyMiddlewareURL } from '../_common/transformers/middlewares.js';
-import { addImages } from '../root-block/edgeless/utils/common.js';
-import { addSiblingImageBlock } from './utils.js';
+import { setImageProxyMiddlewareURL } from './adapters/middleware.js';
+import { addImages, addSiblingImageBlock } from './utils.js';
 
 // bytes.parse('2GB')
 const maxFileSize = 2147483648;
@@ -29,7 +28,10 @@ export const ImageDropOption = FileDropConfigExtension({
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
     if (!imageFiles.length) return false;
 
-    if (targetModel && !matchFlavours(targetModel, ['affine:surface'])) {
+    if (
+      targetModel &&
+      !matchFlavours(targetModel, ['affine:surface' as BlockSuite.Flavour])
+    ) {
       addSiblingImageBlock(
         std.host,
         imageFiles,

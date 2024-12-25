@@ -1,4 +1,5 @@
 import { addAttachments } from '@blocksuite/affine-block-attachment';
+import { addImages } from '@blocksuite/affine-block-image';
 import {
   CanvasElementType,
   SurfaceGroupLikeModel,
@@ -76,7 +77,6 @@ import {
   getSortedCloneElements,
   serializeElement,
 } from '../utils/clone-utils.js';
-import { addImages } from '../utils/common.js';
 import { deleteElements } from '../utils/crud.js';
 import {
   isAttachmentBlock,

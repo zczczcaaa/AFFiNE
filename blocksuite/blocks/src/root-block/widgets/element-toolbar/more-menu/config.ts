@@ -6,6 +6,7 @@ import type {
   EmbedLoomBlockComponent,
   EmbedYoutubeBlockComponent,
 } from '@blocksuite/affine-block-embed';
+import type { ImageBlockComponent } from '@blocksuite/affine-block-image';
 import { isPeekable, peek } from '@blocksuite/affine-components/peek';
 import type { MenuItemGroup } from '@blocksuite/affine-components/toolbar';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
@@ -32,7 +33,6 @@ import {
   notifyDocCreated,
   promptDocTitle,
 } from '../../../../_common/utils/render-linked-doc.js';
-import type { ImageBlockComponent } from '../../../../image-block/image-block.js';
 import { duplicate } from '../../../edgeless/utils/clipboard-utils.js';
 import { getSortedCloneElements } from '../../../edgeless/utils/clone-utils.js';
 import { moveConnectors } from '../../../edgeless/utils/connector.js';

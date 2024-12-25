@@ -7,7 +7,7 @@ import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { FailedImageIcon, ImageIcon, LoadingIcon } from '../styles.js';
+import { FailedImageIcon, LoadedImageIcon, LoadingIcon } from '../styles.js';
 
 export const SURFACE_IMAGE_CARD_WIDTH = 220;
 export const SURFACE_IMAGE_CARD_HEIGHT = 122;
@@ -85,7 +85,7 @@ export class ImageBlockFallbackCard extends WithDisposable(ShadowlessElement) {
       ? LoadingIcon
       : error
         ? FailedImageIcon
-        : ImageIcon;
+        : LoadedImageIcon;
 
     const titleText = loading
       ? 'Loading image...'

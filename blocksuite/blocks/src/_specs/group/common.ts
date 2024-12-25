@@ -9,6 +9,7 @@ import {
   EmbedSyncedDocBlockSpec,
   EmbedYoutubeBlockSpec,
 } from '@blocksuite/affine-block-embed';
+import { ImageBlockSpec } from '@blocksuite/affine-block-image';
 import { ListBlockSpec } from '@blocksuite/affine-block-list';
 import { ParagraphBlockSpec } from '@blocksuite/affine-block-paragraph';
 
@@ -16,7 +17,6 @@ import { CodeBlockSpec } from '../../code-block/code-block-spec.js';
 import { DataViewBlockSpec } from '../../data-view-block/data-view-spec.js';
 import { DatabaseBlockSpec } from '../../database-block/database-spec.js';
 import { DividerBlockSpec } from '../../divider-block/divider-spec.js';
-import { ImageBlockSpec } from '../../image-block/image-spec.js';
 import {
   EdgelessNoteBlockSpec,
   NoteBlockSpec,

@@ -1,3 +1,4 @@
+import type { ImageBlockComponent } from '@blocksuite/affine-block-image';
 import { HoverController } from '@blocksuite/affine-components/hover';
 import type {
   AdvancedMenuItem,
@@ -13,7 +14,6 @@ import { WidgetComponent } from '@blocksuite/block-std';
 import { limitShift, shift } from '@floating-ui/dom';
 import { html } from 'lit';
 
-import type { ImageBlockComponent } from '../../../image-block/image-block.js';
 import { MORE_GROUPS, PRIMARY_GROUPS } from './config.js';
 import { ImageToolbarContext } from './context.js';
 

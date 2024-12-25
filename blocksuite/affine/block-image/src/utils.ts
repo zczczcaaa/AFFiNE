@@ -10,11 +10,16 @@ import {
   transformModel,
   withTempBlobData,
 } from '@blocksuite/affine-shared/utils';
-import type { EditorHost } from '@blocksuite/block-std';
+import type { BlockStdScope, EditorHost } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import { Bound, type IVec, Point, Vec } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
-import { readImageSize } from '../root-block/edgeless/components/utils.js';
+import {
+  SURFACE_IMAGE_CARD_HEIGHT,
+  SURFACE_IMAGE_CARD_WIDTH,
+} from './components/image-block-fallback.js';
 import type { ImageBlockComponent } from './image-block.js';
 import type { ImageEdgelessBlockComponent } from './image-edgeless-block.js';
 
@@ -397,4 +402,140 @@ export async function turnImageIntoCardView(
     ...attachmentConvertData,
   };
   transformModel(model, 'affine:attachment', attachmentProp);
+}
+
+export function readImageSize(file: File) {
+  return new Promise<{ width: number; height: number }>(resolve => {
+    const size = { width: 0, height: 0 };
+    const img = new Image();
+
+    img.onload = () => {
+      size.width = img.width;
+      size.height = img.height;
+      URL.revokeObjectURL(img.src);
+      resolve(size);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(img.src);
+      resolve(size);
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+export async function addImages(
+  std: BlockStdScope,
+  files: File[],
+  options: {
+    point?: IVec;
+    maxWidth?: number;
+  }
+): Promise<string[]> {
+  const imageFiles = [...files].filter(file => file.type.startsWith('image/'));
+  if (!imageFiles.length) return [];
+
+  const imageService = std.getService('affine:image');
+  const gfx = std.get(GfxControllerIdentifier);
+
+  if (!imageService) {
+    console.error('Image service not found');
+    return [];
+  }
+
+  const maxFileSize = imageService.maxFileSize;
+  const isSizeExceeded = imageFiles.some(file => file.size > maxFileSize);
+  if (isSizeExceeded) {
+    toast(
+      std.host,
+      `You can only upload files less than ${humanFileSize(
+        maxFileSize,
+        true,
+        0
+      )}`
+    );
+    return [];
+  }
+
+  const { point, maxWidth } = options;
+  let { x, y } = gfx.viewport.center;
+  if (point) [x, y] = gfx.viewport.toModelCoord(...point);
+
+  const dropInfos: { point: Point; blockId: string }[] = [];
+  const IMAGE_STACK_GAP = 32;
+  const isMultipleFiles = imageFiles.length > 1;
+  const inTopLeft = isMultipleFiles ? true : false;
+
+  // create image cards without image data
+  imageFiles.forEach((file, index) => {
+    const point = new Point(
+      x + index * IMAGE_STACK_GAP,
+      y + index * IMAGE_STACK_GAP
+    );
+    const center = Vec.toVec(point);
+    const bound = calcBoundByOrigin(center, inTopLeft);
+    const blockId = std.doc.addBlock(
+      'affine:image',
+      {
+        size: file.size,
+        xywh: bound.serialize(),
+        index: gfx.layer.generateIndex(),
+      },
+      gfx.surface
+    );
+    dropInfos.push({ point, blockId });
+  });
+
+  // upload image data and update the image model
+  const uploadPromises = imageFiles.map(async (file, index) => {
+    const { point, blockId } = dropInfos[index];
+
+    const sourceId = await std.doc.blobSync.set(file);
+    const imageSize = await readImageSize(file);
+
+    const center = Vec.toVec(point);
+    // If maxWidth is provided, limit the width of the image to maxWidth
+    // Otherwise, use the original width
+    const width = maxWidth
+      ? Math.min(imageSize.width, maxWidth)
+      : imageSize.width;
+    const height = maxWidth
+      ? (imageSize.height / imageSize.width) * width
+      : imageSize.height;
+    const bound = calcBoundByOrigin(center, inTopLeft, width, height);
+
+    std.doc.withoutTransact(() => {
+      gfx.updateElement(blockId, {
+        sourceId,
+        ...imageSize,
+        width,
+        height,
+        xywh: bound.serialize(),
+      } satisfies Partial<ImageBlockProps>);
+    });
+  });
+  await Promise.all(uploadPromises);
+
+  const blockIds = dropInfos.map(info => info.blockId);
+  gfx.selection.set({
+    elements: blockIds,
+    editing: false,
+  });
+  if (isMultipleFiles) {
+    // @ts-expect-error FIXME(command): BS-2216
+    std.command.exec('autoResizeElements');
+  }
+  return blockIds;
+}
+
+export function calcBoundByOrigin(
+  point: IVec,
+  inTopLeft = false,
+  width = SURFACE_IMAGE_CARD_WIDTH,
+  height = SURFACE_IMAGE_CARD_HEIGHT
+) {
+  return inTopLeft
+    ? new Bound(point[0], point[1], width, height)
+    : Bound.fromCenter(point, width, height);
 }

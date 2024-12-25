@@ -4,10 +4,8 @@ import {
   getModelByElement,
 } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent, PointerEventState } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { assertExists } from '@blocksuite/global/utils';
-
-import type { EdgelessRootBlockComponent } from '../root-block/index.js';
-import { getClosestRootBlockComponent } from '../root-block/utils/query.js';
 
 export class ImageResizeManager {
   private _activeComponent: BlockComponent | null = null;
@@ -79,9 +77,8 @@ export class ImageResizeManager {
       rootComponent.service.std.get(DocModeProvider).getEditorMode() ===
         'edgeless'
     ) {
-      this._zoom = (
-        rootComponent as EdgelessRootBlockComponent
-      ).service.viewport.zoom;
+      const viewport = rootComponent.std.get(GfxControllerIdentifier).viewport;
+      this._zoom = viewport.zoom;
     } else {
       this._zoom = 1;
     }
@@ -96,4 +93,8 @@ export class ImageResizeManager {
       this._dragMoveTarget = 'left';
     }
   }
+}
+
+function getClosestRootBlockComponent(el: HTMLElement): BlockComponent | null {
+  return el.closest('affine-edgeless-root, affine-page-root');
 }

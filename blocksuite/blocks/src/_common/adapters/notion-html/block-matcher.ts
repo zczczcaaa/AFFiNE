@@ -6,6 +6,7 @@ import {
   embedLoomBlockNotionHtmlAdapterMatcher,
   embedYoutubeBlockNotionHtmlAdapterMatcher,
 } from '@blocksuite/affine-block-embed';
+import { imageBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-image';
 import { listBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-list';
 import { paragraphBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-paragraph';
 import type { BlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-shared/adapters';
@@ -13,7 +14,6 @@ import type { BlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-shared/ad
 import { codeBlockNotionHtmlAdapterMatcher } from '../../../code-block/adapters/notion-html.js';
 import { databaseBlockNotionHtmlAdapterMatcher } from '../../../database-block/adapters/notion-html.js';
 import { dividerBlockNotionHtmlAdapterMatcher } from '../../../divider-block/adapters/notion-html.js';
-import { imageBlockNotionHtmlAdapterMatcher } from '../../../image-block/adapters/notion-html.js';
 import { latexBlockNotionHtmlAdapterMatcher } from '../../../latex-block/adapters/notion-html.js';
 import { rootBlockNotionHtmlAdapterMatcher } from '../../../root-block/adapters/notion-html.js';
 

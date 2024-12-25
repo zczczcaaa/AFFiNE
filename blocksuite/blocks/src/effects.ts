@@ -1,6 +1,7 @@
 import { effects as blockAttachmentEffects } from '@blocksuite/affine-block-attachment/effects';
 import { effects as blockBookmarkEffects } from '@blocksuite/affine-block-bookmark/effects';
 import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/effects';
+import { effects as blockImageEffects } from '@blocksuite/affine-block-image/effects';
 import { effects as blockListEffects } from '@blocksuite/affine-block-list/effects';
 import { effects as blockParagraphEffects } from '@blocksuite/affine-block-paragraph/effects';
 import { effects as blockSurfaceEffects } from '@blocksuite/affine-block-surface/effects';
@@ -63,14 +64,6 @@ import { DividerBlockComponent } from './divider-block/index.js';
 import type { insertEdgelessTextCommand } from './edgeless-text-block/commands/insert-edgeless-text.js';
 import { EdgelessTextBlockComponent } from './edgeless-text-block/index.js';
 import { FrameBlockComponent } from './frame-block/index.js';
-import { ImageBlockFallbackCard } from './image-block/components/image-block-fallback.js';
-import { ImageBlockPageComponent } from './image-block/components/page-image-block.js';
-import { effects as blockImageEffects } from './image-block/effects.js';
-import {
-  ImageBlockComponent,
-  type ImageBlockService,
-  ImageEdgelessBlockComponent,
-} from './image-block/index.js';
 import { effects as blockLatexEffects } from './latex-block/effects.js';
 import { LatexBlockComponent } from './latex-block/index.js';
 import type { updateBlockType } from './note-block/commands/block-type.js';
@@ -301,11 +294,9 @@ export function effects() {
   widgetCodeToolbarEffects();
 
   customElements.define('affine-database-title', DatabaseTitle);
-  customElements.define('affine-image', ImageBlockComponent);
   customElements.define('data-view-header-area-icon', IconCell);
   customElements.define('affine-database-link-cell', LinkCell);
   customElements.define('affine-database-link-cell-editing', LinkCellEditing);
-  customElements.define('affine-edgeless-image', ImageEdgelessBlockComponent);
   customElements.define('data-view-header-area-text', HeaderAreaTextCell);
   customElements.define(
     'data-view-header-area-text-editing',
@@ -326,9 +317,7 @@ export function effects() {
   customElements.define('edgeless-note-mask', EdgelessNoteMask);
   customElements.define('affine-edgeless-note', EdgelessNoteBlockComponent);
   customElements.define('affine-preview-root', PreviewRootBlockComponent);
-  customElements.define('affine-page-image', ImageBlockPageComponent);
   customElements.define('affine-code', CodeBlockComponent);
-  customElements.define('affine-image-fallback-card', ImageBlockFallbackCard);
   customElements.define('mini-mindmap-preview', MiniMindmapPreview);
   customElements.define('affine-frame', FrameBlockComponent);
   customElements.define('mini-mindmap-surface-block', MindmapSurfaceBlock);
@@ -587,7 +576,6 @@ declare global {
       'affine:note': NoteBlockService;
       'affine:page': RootService;
       'affine:database': DatabaseBlockService;
-      'affine:image': ImageBlockService;
     }
   }
 }

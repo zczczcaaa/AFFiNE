@@ -1,6 +1,5 @@
+import type { ImageBlockComponent } from '@blocksuite/affine-block-image';
 import { MenuContext } from '@blocksuite/affine-components/toolbar';
-
-import type { ImageBlockComponent } from '../../../image-block/image-block.js';
 
 export class ImageToolbarContext extends MenuContext {
   override close = () => {
