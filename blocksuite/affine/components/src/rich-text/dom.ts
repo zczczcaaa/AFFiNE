@@ -86,3 +86,26 @@ export function selectTextModel(
     }),
   ]);
 }
+
+export async function onModelTextUpdated(
+  editorHost: EditorHost,
+  model: BlockModel,
+  callback?: (text: RichText) => void
+) {
+  const richText = await asyncGetRichText(editorHost, model.id);
+  if (!richText) {
+    console.error('RichText is not ready yet.');
+    return;
+  }
+  await richText.updateComplete;
+  const inlineEditor = richText.inlineEditor;
+  if (!inlineEditor) {
+    console.error('Inline editor is not ready yet.');
+    return;
+  }
+  inlineEditor.slots.renderComplete.once(() => {
+    if (callback) {
+      callback(richText);
+    }
+  });
+}

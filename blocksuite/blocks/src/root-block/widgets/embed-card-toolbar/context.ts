@@ -1,5 +1,6 @@
+import { MenuContext } from '@blocksuite/affine-components/toolbar';
+
 import type { EmbedBlockComponent } from '../../../_common/components/embed-card/type.js';
-import { MenuContext } from '../../configs/toolbar.js';
 
 export class EmbedCardToolbarContext extends MenuContext {
   override close = () => {

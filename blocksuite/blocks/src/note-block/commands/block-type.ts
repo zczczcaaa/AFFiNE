@@ -1,16 +1,15 @@
 import {
   asyncSetInlineRange,
   focusTextModel,
+  onModelTextUpdated,
 } from '@blocksuite/affine-components/rich-text';
-import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
-import type { BlockModel } from '@blocksuite/store';
-
-import { onModelTextUpdated } from '../../root-block/utils/callback.js';
 import {
+  matchFlavours,
   mergeToCodeModel,
   transformModel,
-} from '../../root-block/utils/operations/model.js';
+} from '@blocksuite/affine-shared/utils';
+import type { Command } from '@blocksuite/block-std';
+import type { BlockModel } from '@blocksuite/store';
 
 type UpdateBlockConfig = {
   flavour: BlockSuite.Flavour;
@@ -188,6 +187,9 @@ export const updateBlockType: Command<
             return;
           }
           const newId = transformModel(model, flavour, props);
+          if (!newId) {
+            return;
+          }
           const newModel = doc.getBlockById(newId);
           if (newModel) {
             newModels.push(newModel);

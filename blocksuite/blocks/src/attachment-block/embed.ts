@@ -2,15 +2,16 @@ import type {
   AttachmentBlockModel,
   ImageBlockProps,
 } from '@blocksuite/affine-model';
-import { withTempBlobData } from '@blocksuite/affine-shared/utils';
+import {
+  transformModel,
+  withTempBlobData,
+} from '@blocksuite/affine-shared/utils';
 import type { ExtensionType } from '@blocksuite/block-std';
 import { Extension } from '@blocksuite/block-std';
 import type { Container } from '@blocksuite/global/di';
 import { createIdentifier } from '@blocksuite/global/di';
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
-
-import { transformModel } from '../root-block/utils/operations/model.js';
 
 export type AttachmentEmbedConfig = {
   name: string;

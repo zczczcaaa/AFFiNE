@@ -1,5 +1,6 @@
+import type { ToolbarMoreMenuConfig } from '@blocksuite/affine-components/toolbar';
+
 import type { DatabaseOptionsConfig } from '../database-block/config.js';
-import type { ToolbarMoreMenuConfig } from './configs/index.js';
 import type { DocRemoteSelectionConfig } from './widgets/doc-remote-selection/config.js';
 import type { KeyboardToolbarConfig } from './widgets/keyboard-toolbar/config.js';
 import type { LinkedWidgetConfig } from './widgets/linked-doc/index.js';

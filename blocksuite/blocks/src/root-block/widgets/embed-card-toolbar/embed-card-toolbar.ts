@@ -1,4 +1,7 @@
-import { getDocContentWithMaxLength } from '@blocksuite/affine-block-embed';
+import {
+  getDocContentWithMaxLength,
+  getEmbedCardIcons,
+} from '@blocksuite/affine-block-embed';
 import {
   CaptionIcon,
   CenterPeekIcon,
@@ -15,6 +18,7 @@ import { isPeekable, peek } from '@blocksuite/affine-components/peek';
 import { toast } from '@blocksuite/affine-components/toast';
 import {
   cloneGroups,
+  getMoreMenuConfig,
   type MenuItem,
   type MenuItemGroup,
   renderGroups,
@@ -24,6 +28,7 @@ import {
   type AliasInfo,
   type BookmarkBlockModel,
   BookmarkStyles,
+  type EmbedCardStyle,
   type EmbedGithubModel,
   type EmbedLinkedDocModel,
   type RootBlockModel,
@@ -57,9 +62,6 @@ import {
   isEmbedCardBlockComponent,
   isInternalEmbedModel,
 } from '../../../_common/components/embed-card/type.js';
-import type { EmbedCardStyle } from '../../../_common/types.js';
-import { getEmbedCardIcons } from '../../../_common/utils/url.js';
-import { getMoreMenuConfig } from '../../configs/toolbar.js';
 import {
   isBookmarkBlock,
   isEmbedGithubBlock,

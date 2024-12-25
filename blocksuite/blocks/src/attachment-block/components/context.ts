@@ -1,4 +1,5 @@
-import { MenuContext } from '../../root-block/configs/toolbar.js';
+import { MenuContext } from '@blocksuite/affine-components/toolbar';
+
 import type { AttachmentBlockComponent } from '../attachment-block.js';
 
 export class AttachmentToolbarMoreMenuContext extends MenuContext {

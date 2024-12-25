@@ -90,6 +90,7 @@ export {
   type AdvancedMenuItem,
   type FatMenuItems,
   groupsToActions,
+  MenuContext,
   type MenuItem,
   type MenuItemGroup,
   renderActions,

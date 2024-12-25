@@ -1,3 +1,4 @@
+import { getEmbedCardIcons } from '@blocksuite/affine-block-embed';
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import { HoverController } from '@blocksuite/affine-components/hover';
 import {
@@ -20,7 +21,6 @@ import { classMap } from 'lit/directives/class-map.js';
 import { ref } from 'lit/directives/ref.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { getEmbedCardIcons } from '../_common/utils/url.js';
 import type { AttachmentBlockService } from './attachment-service.js';
 import { AttachmentOptionsTemplate } from './components/options.js';
 import { AttachmentEmbedProvider } from './embed.js';

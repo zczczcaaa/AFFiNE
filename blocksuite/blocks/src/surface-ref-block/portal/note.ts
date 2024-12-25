@@ -5,6 +5,10 @@ import {
   NoteDisplayMode,
   NoteShadow,
 } from '@blocksuite/affine-model';
+import {
+  EDGELESS_BLOCK_CHILD_BORDER_WIDTH,
+  EDGELESS_BLOCK_CHILD_PADDING,
+} from '@blocksuite/affine-shared/consts';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import {
@@ -19,11 +23,6 @@ import { css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { html } from 'lit/static-html.js';
-
-import {
-  EDGELESS_BLOCK_CHILD_BORDER_WIDTH,
-  EDGELESS_BLOCK_CHILD_PADDING,
-} from '../../_common/consts.js';
 
 export class SurfaceRefNotePortal extends WithDisposable(ShadowlessElement) {
   static override styles = css`

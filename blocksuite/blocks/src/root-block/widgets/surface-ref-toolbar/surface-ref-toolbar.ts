@@ -10,12 +10,14 @@ import {
 import { isPeekable, peek } from '@blocksuite/affine-components/peek';
 import {
   cloneGroups,
+  getMoreMenuConfig,
   type MenuItem,
   type MenuItemGroup,
   renderGroups,
   renderToolbarSeparator,
 } from '@blocksuite/affine-components/toolbar';
 import type { SurfaceRefBlockModel } from '@blocksuite/affine-model';
+import { PAGE_HEADER_HEIGHT } from '@blocksuite/affine-shared/consts';
 import { WidgetComponent } from '@blocksuite/block-std';
 import { offset, shift } from '@floating-ui/dom';
 import { html, nothing } from 'lit';
@@ -23,9 +25,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { PAGE_HEADER_HEIGHT } from '../../../_common/consts.js';
 import type { SurfaceRefBlockComponent } from '../../../surface-ref-block/index.js';
-import { getMoreMenuConfig } from '../../configs/toolbar.js';
 import { BUILT_IN_GROUPS } from './config.js';
 import { SurfaceRefToolbarContext } from './context.js';
 

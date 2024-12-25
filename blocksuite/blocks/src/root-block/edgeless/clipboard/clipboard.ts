@@ -12,6 +12,11 @@ import {
   ReferenceInfoSchema,
 } from '@blocksuite/affine-model';
 import {
+  CANVAS_EXPORT_IGNORE_TAGS,
+  EMBED_CARD_HEIGHT,
+  EMBED_CARD_WIDTH,
+} from '@blocksuite/affine-shared/consts';
+import {
   EmbedOptionProvider,
   ParseDocUrlProvider,
   TelemetryProvider,
@@ -55,11 +60,6 @@ import {
 } from '@blocksuite/store';
 import DOMPurify from 'dompurify';
 
-import {
-  CANVAS_EXPORT_IGNORE_TAGS,
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '../../../_common/consts.js';
 import { ExportManager } from '../../../_common/export-manager/export-manager.js';
 import { getRootByEditorHost } from '../../../_common/utils/query.js';
 import { ClipboardAdapter } from '../../clipboard/adapter.js';

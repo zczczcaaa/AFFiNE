@@ -1,3 +1,4 @@
+import { getEmbedCardIcons } from '@blocksuite/affine-block-embed';
 import {
   CaptionIcon,
   DownloadIcon,
@@ -5,6 +6,10 @@ import {
 } from '@blocksuite/affine-components/icons';
 import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
 import type { AttachmentBlockModel } from '@blocksuite/affine-model';
+import {
+  EMBED_CARD_HEIGHT,
+  EMBED_CARD_WIDTH,
+} from '@blocksuite/affine-shared/consts';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { Bound, WithDisposable } from '@blocksuite/global/utils';
 import type { TemplateResult } from 'lit';
@@ -12,12 +17,7 @@ import { html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '../../../_common/consts.js';
 import type { EmbedCardStyle } from '../../../_common/types.js';
-import { getEmbedCardIcons } from '../../../_common/utils/url.js';
 import type { AttachmentBlockComponent } from '../../../attachment-block/index.js';
 import { attachmentViewToggleMenu } from '../../../attachment-block/index.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';

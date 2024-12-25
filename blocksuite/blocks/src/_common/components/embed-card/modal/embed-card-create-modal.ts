@@ -1,4 +1,9 @@
 import { toast } from '@blocksuite/affine-components/toast';
+import type { EmbedCardStyle } from '@blocksuite/affine-model';
+import {
+  EMBED_CARD_HEIGHT,
+  EMBED_CARD_WIDTH,
+} from '@blocksuite/affine-shared/consts';
 import { EmbedOptionProvider } from '@blocksuite/affine-shared/services';
 import type { EditorHost } from '@blocksuite/block-std';
 import { ShadowlessElement } from '@blocksuite/block-std';
@@ -14,8 +19,6 @@ import { property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
 import type { EdgelessRootBlockComponent } from '../../../../root-block/edgeless/edgeless-root-block.js';
-import { EMBED_CARD_HEIGHT, EMBED_CARD_WIDTH } from '../../../consts.js';
-import type { EmbedCardStyle } from '../../../types.js';
 import { getRootByEditorHost, isValidUrl } from '../../../utils/index.js';
 import { embedCardModalStyles } from './styles.js';
 

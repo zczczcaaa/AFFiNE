@@ -1,9 +1,16 @@
+import type { BlockStdScope } from '@blocksuite/block-std';
 import { html, nothing } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { FatMenuItems, MenuItem, MenuItemGroup } from './types.js';
+import type { MenuContext } from './menu-context.js';
+import type {
+  FatMenuItems,
+  MenuItem,
+  MenuItemGroup,
+  ToolbarMoreMenuConfig,
+} from './types.js';
 
 export function groupsToActions<T>(
   groups: MenuItemGroup<T>[],
@@ -100,4 +107,15 @@ export function renderGroups<T>(groups: MenuItemGroup<T>[], context: T) {
 
 export function renderToolbarSeparator() {
   return html`<editor-toolbar-separator></editor-toolbar-separator>`;
+}
+
+export function getMoreMenuConfig(std: BlockStdScope): ToolbarMoreMenuConfig {
+  return {
+    configure: <T extends MenuContext>(groups: MenuItemGroup<T>[]) => groups,
+    ...(
+      std.getConfig('affine:page' as BlockSuite.ConfigKeys) as null | {
+        toolbarMoreMenu: Partial<ToolbarMoreMenuConfig>;
+      }
+    )?.toolbarMoreMenu,
+  };
 }

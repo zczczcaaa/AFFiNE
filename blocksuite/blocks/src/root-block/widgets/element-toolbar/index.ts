@@ -3,6 +3,7 @@ import { ConnectorCWithArrowIcon } from '@blocksuite/affine-components/icons';
 import {
   cloneGroups,
   darkToolbarStyles,
+  getMoreMenuConfig,
   lightToolbarStyles,
   type MenuItemGroup,
   renderToolbarSeparator,
@@ -38,7 +39,6 @@ import { property, state } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 
 import type { EmbedModel } from '../../../_common/components/embed-card/type.js';
-import { getMoreMenuConfig } from '../../configs/toolbar.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import {
   isAttachmentBlock,

@@ -1,5 +1,6 @@
+import { MenuContext } from '@blocksuite/affine-components/toolbar';
+
 import type { SurfaceRefBlockComponent } from '../../../surface-ref-block/surface-ref-block.js';
-import { MenuContext } from '../../configs/toolbar.js';
 
 export class SurfaceRefToolbarContext extends MenuContext {
   override close = () => {

@@ -14,6 +14,7 @@ export {
   EditorMenuButton,
   EditorMenuContent,
 } from './menu-button.js';
+export { MenuContext } from './menu-context.js';
 export { EditorToolbarSeparator } from './separator.js';
 export { darkToolbarStyles, lightToolbarStyles } from './styles.js';
 export { EditorToolbar } from './toolbar.js';
@@ -23,9 +24,11 @@ export type {
   FatMenuItems,
   MenuItem,
   MenuItemGroup,
+  ToolbarMoreMenuConfig,
 } from './types.js';
 export {
   cloneGroups,
+  getMoreMenuConfig,
   groupsToActions,
   renderActions,
   renderGroups,

@@ -1,6 +1,8 @@
+import {
+  EMBED_CARD_HEIGHT,
+  EMBED_CARD_WIDTH,
+} from '@blocksuite/affine-shared/consts';
 import { css } from 'lit';
-
-import { EMBED_CARD_HEIGHT, EMBED_CARD_WIDTH } from '../_common/consts.js';
 
 export const styles = css`
   .affine-attachment-card {

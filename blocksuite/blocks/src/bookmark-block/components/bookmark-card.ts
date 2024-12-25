@@ -1,3 +1,4 @@
+import { getEmbedCardIcons } from '@blocksuite/affine-block-embed';
 import { WebIcon16 } from '@blocksuite/affine-components/icons';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { getHostName } from '@blocksuite/affine-shared/utils';
@@ -8,7 +9,6 @@ import { html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
-import { getEmbedCardIcons } from '../../_common/utils/url.js';
 import type { BookmarkBlockComponent } from '../bookmark-block.js';
 import { styles } from '../styles.js';
 

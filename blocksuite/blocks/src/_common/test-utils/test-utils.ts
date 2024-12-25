@@ -1,9 +1,8 @@
-import type { BlockSnapshot, SliceSnapshot } from '@blocksuite/store';
-
 import {
   mergeToCodeModel,
   transformModel,
-} from '../../root-block/utils/operations/model.js';
+} from '@blocksuite/affine-shared/utils';
+import type { BlockSnapshot, SliceSnapshot } from '@blocksuite/store';
 
 class DocTestUtils {
   // block model operations (data layer)

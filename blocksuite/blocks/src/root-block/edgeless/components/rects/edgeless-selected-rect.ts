@@ -25,6 +25,7 @@ import {
   ShapeElementModel,
   TextElementModel,
 } from '@blocksuite/affine-model';
+import { EMBED_CARD_HEIGHT } from '@blocksuite/affine-shared/consts';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import {
   clamp,
@@ -57,7 +58,6 @@ import { state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { EMBED_CARD_HEIGHT } from '../../../../_common/consts.js';
 import { isMindmapNode } from '../../../../_common/edgeless/mindmap/index.js';
 import type { EdgelessTextBlockComponent } from '../../../../edgeless-text-block/edgeless-text-block.js';
 import { EDGELESS_TEXT_BLOCK_MIN_WIDTH } from '../../../../edgeless-text-block/edgeless-text-block.js';

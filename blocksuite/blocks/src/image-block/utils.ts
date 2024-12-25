@@ -7,6 +7,7 @@ import type {
 import {
   downloadBlob,
   humanFileSize,
+  transformModel,
   withTempBlobData,
 } from '@blocksuite/affine-shared/utils';
 import type { EditorHost } from '@blocksuite/block-std';
@@ -14,7 +15,6 @@ import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { BlockModel } from '@blocksuite/store';
 
 import { readImageSize } from '../root-block/edgeless/components/utils.js';
-import { transformModel } from '../root-block/utils/operations/model.js';
 import type { ImageBlockComponent } from './image-block.js';
 import type { ImageEdgelessBlockComponent } from './image-edgeless-block.js';
 

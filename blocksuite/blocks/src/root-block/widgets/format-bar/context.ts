@@ -1,4 +1,5 @@
-import { MenuContext } from '../../configs/toolbar.js';
+import { MenuContext } from '@blocksuite/affine-components/toolbar';
+
 import type { AffineFormatBarWidget } from './format-bar.js';
 
 export class FormatBarContext extends MenuContext {

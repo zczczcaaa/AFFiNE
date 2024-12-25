@@ -24,8 +24,6 @@ import { effects as dataViewEffects } from '@blocksuite/data-view/effects';
 import { effects as inlineEffects } from '@blocksuite/inline/effects';
 import type { BlockModel } from '@blocksuite/store';
 
-import { EmbedCardMoreMenu } from './_common/components/embed-card/embed-card-more-menu-popper.js';
-import { EmbedCardStyleMenu } from './_common/components/embed-card/embed-card-style-popper.js';
 import { EmbedCardEditCaptionEditModal } from './_common/components/embed-card/modal/embed-card-caption-edit-modal.js';
 import { EmbedCardCreateModal } from './_common/components/embed-card/modal/embed-card-create-modal.js';
 import { EmbedCardEditModal } from './_common/components/embed-card/modal/embed-card-edit-modal.js';
@@ -429,9 +427,7 @@ export function effects() {
   customElements.define('ai-panel-input', AIPanelInput);
   customElements.define('ai-panel-generating', AIPanelGenerating);
   customElements.define('edgeless-link-tool-button', EdgelessLinkToolButton);
-  customElements.define('embed-card-more-menu', EmbedCardMoreMenu);
   customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);
-  customElements.define('embed-card-style-menu', EmbedCardStyleMenu);
   customElements.define('edgeless-lasso-tool-button', EdgelessLassoToolButton);
   customElements.define('affine-filterable-list', FilterableListComponent);
   customElements.define('ai-panel-error', AIPanelError);

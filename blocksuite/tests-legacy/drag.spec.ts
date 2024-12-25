@@ -1,4 +1,4 @@
-import { BLOCK_CHILDREN_CONTAINER_PADDING_LEFT } from '@blocks/_common/consts.js';
+import { BLOCK_CHILDREN_CONTAINER_PADDING_LEFT } from '@blocksuite/affine-shared/consts';
 import { expect } from '@playwright/test';
 
 import {

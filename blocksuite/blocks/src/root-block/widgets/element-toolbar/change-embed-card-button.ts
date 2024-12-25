@@ -1,4 +1,7 @@
-import { getDocContentWithMaxLength } from '@blocksuite/affine-block-embed';
+import {
+  getDocContentWithMaxLength,
+  getEmbedCardIcons,
+} from '@blocksuite/affine-block-embed';
 import {
   CaptionIcon,
   CenterPeekIcon,
@@ -17,6 +20,10 @@ import {
   renderToolbarSeparator,
 } from '@blocksuite/affine-components/toolbar';
 import { type AliasInfo, BookmarkStyles } from '@blocksuite/affine-model';
+import {
+  EMBED_CARD_HEIGHT,
+  EMBED_CARD_WIDTH,
+} from '@blocksuite/affine-shared/consts';
 import {
   EmbedOptionProvider,
   type EmbedOptions,
@@ -42,12 +49,7 @@ import type {
   EmbedModel,
 } from '../../../_common/components/embed-card/type.js';
 import { isInternalEmbedModel } from '../../../_common/components/embed-card/type.js';
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '../../../_common/consts.js';
 import type { EmbedCardStyle } from '../../../_common/types.js';
-import { getEmbedCardIcons } from '../../../_common/utils/url.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import {
   isBookmarkBlock,

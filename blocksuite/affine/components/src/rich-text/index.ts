@@ -5,6 +5,7 @@ export {
   focusTextModel,
   getInlineEditorByModel,
   getRichTextByModel,
+  onModelTextUpdated,
   selectTextModel,
 } from './dom.js';
 export * from './effects.js';

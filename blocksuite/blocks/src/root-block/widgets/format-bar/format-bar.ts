@@ -3,6 +3,7 @@ import type { RichText } from '@blocksuite/affine-components/rich-text';
 import { isFormatSupported } from '@blocksuite/affine-components/rich-text';
 import {
   cloneGroups,
+  getMoreMenuConfig,
   type MenuItemGroup,
 } from '@blocksuite/affine-components/toolbar';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
@@ -30,7 +31,6 @@ import {
 import { html, nothing } from 'lit';
 import { query, state } from 'lit/decorators.js';
 
-import { getMoreMenuConfig } from '../../configs/toolbar.js';
 import { ConfigRenderer } from './components/config-renderer.js';
 import {
   BUILT_IN_GROUPS,

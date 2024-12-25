@@ -3,15 +3,17 @@ import type {
   AdvancedMenuItem,
   MenuItemGroup,
 } from '@blocksuite/affine-components/toolbar';
-import { cloneGroups } from '@blocksuite/affine-components/toolbar';
+import {
+  cloneGroups,
+  getMoreMenuConfig,
+} from '@blocksuite/affine-components/toolbar';
 import type { CodeBlockModel } from '@blocksuite/affine-model';
+import { PAGE_HEADER_HEIGHT } from '@blocksuite/affine-shared/consts';
 import { WidgetComponent } from '@blocksuite/block-std';
 import { limitShift, shift } from '@floating-ui/dom';
 import { html } from 'lit';
 
-import { PAGE_HEADER_HEIGHT } from '../../../_common/consts.js';
 import type { CodeBlockComponent } from '../../../code-block/code-block.js';
-import { getMoreMenuConfig } from '../../configs/toolbar.js';
 import { MORE_GROUPS, PRIMARY_GROUPS } from './config.js';
 import { CodeBlockToolbarContext } from './context.js';
 

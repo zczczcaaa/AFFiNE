@@ -6,10 +6,9 @@ import type {
   ParagraphBlockModel,
   SurfaceRefBlockModel,
 } from '@blocksuite/affine-model';
+import { DEFAULT_IMAGE_PROXY_ENDPOINT } from '@blocksuite/affine-shared/consts';
 import { assertExists } from '@blocksuite/global/utils';
 import type { DeltaOperation, JobMiddleware } from '@blocksuite/store';
-
-import { DEFAULT_IMAGE_PROXY_ENDPOINT } from '../consts.js';
 
 export const replaceIdMiddleware: JobMiddleware = ({ slots, collection }) => {
   const idMap = new Map<string, string>();

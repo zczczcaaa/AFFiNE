@@ -1,8 +1,10 @@
+import {
+  EMBED_CARD_HEIGHT,
+  EMBED_CARD_WIDTH,
+} from '@blocksuite/affine-shared/consts';
 import { unsafeCSSVar } from '@blocksuite/affine-shared/theme';
 import { baseTheme } from '@toeverything/theme';
 import { css, unsafeCSS } from 'lit';
-
-import { EMBED_CARD_HEIGHT, EMBED_CARD_WIDTH } from '../_common/consts.js';
 
 export const styles = css`
   .affine-bookmark-card {

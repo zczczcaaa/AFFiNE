@@ -8,6 +8,7 @@ import {
 import { createLitPortal } from '@blocksuite/affine-components/portal';
 import {
   cloneGroups,
+  getMoreMenuConfig,
   renderGroups,
   renderToolbarSeparator,
 } from '@blocksuite/affine-components/toolbar';
@@ -25,7 +26,6 @@ import { html, nothing } from 'lit';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { getMoreMenuConfig } from '../../root-block/configs/toolbar.js';
 import type { AttachmentBlockComponent } from '../attachment-block.js';
 import { BUILT_IN_GROUPS } from './config.js';
 import { AttachmentToolbarMoreMenuContext } from './context.js';

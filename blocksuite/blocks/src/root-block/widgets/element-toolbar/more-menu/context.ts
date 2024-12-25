@@ -1,11 +1,11 @@
 import type { SurfaceBlockComponent } from '@blocksuite/affine-block-surface';
+import { MenuContext } from '@blocksuite/affine-components/toolbar';
 import {
   GfxPrimitiveElementModel,
   type GfxSelectionManager,
 } from '@blocksuite/block-std/gfx';
 import type { BlockModel } from '@blocksuite/store';
 
-import { MenuContext } from '../../../configs/toolbar.js';
 import type { EdgelessRootBlockComponent } from '../../../edgeless/edgeless-root-block.js';
 import type { EdgelessRootService } from '../../../edgeless/edgeless-root-service.js';
 import {
