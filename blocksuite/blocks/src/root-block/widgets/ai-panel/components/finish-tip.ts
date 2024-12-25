@@ -6,13 +6,17 @@ import {
 import { NotificationProvider } from '@blocksuite/affine-shared/services';
 import type { EditorHost } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
-import { css, html, LitElement, nothing } from 'lit';
+import { baseTheme } from '@toeverything/theme';
+import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
 import type { CopyConfig } from '../type.js';
 
 export class AIFinishTip extends WithDisposable(LitElement) {
   static override styles = css`
+    :host {
+      font-family: ${unsafeCSS(baseTheme.fontSansFamily)};
+    }
     .finish-tip {
       display: flex;
       box-sizing: border-box;

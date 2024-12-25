@@ -54,6 +54,7 @@ export class AffineAIPanelWidget extends WidgetComponent {
       overflow-y: auto;
       scrollbar-width: none !important;
       z-index: var(--affine-z-index-popover);
+      --affine-font-family: var(--affine-font-sans-family);
     }
 
     .ai-panel-container {
