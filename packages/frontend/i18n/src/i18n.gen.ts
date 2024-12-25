@@ -6300,6 +6300,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.editor.at-menu.recent-docs"](): string;
     /**
+      * `Loading...`
+      */
+    ["com.affine.editor.at-menu.recent-docs.loading"](): string;
+    /**
       * `New`
       */
     ["com.affine.editor.at-menu.new-doc"](): string;

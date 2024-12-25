@@ -1,3 +1,4 @@
+import { LoadingIcon } from '@affine/core/blocksuite/presets/blocks/_common/icon';
 import { fuzzyMatch } from '@affine/core/utils/fuzzy-match';
 import { I18n, i18nTime } from '@affine/i18n';
 import track from '@affine/track';
@@ -123,6 +124,30 @@ export class AtMenuConfigService extends Service {
     const showRecent = query.trim().length === 0;
 
     (async () => {
+      const isIndexerLoading =
+        this.docsSearch.indexer.status$.value.remaining !== undefined &&
+        this.docsSearch.indexer.status$.value.remaining > 0;
+
+      if (!showRecent && isIndexerLoading) {
+        // add a loading item
+        docItems.value = [
+          {
+            key: 'loading',
+            name: I18n.t('com.affine.editor.at-menu.loading'),
+            icon: LoadingIcon,
+            action: () => {
+              // no action
+            },
+          },
+        ];
+        // wait for indexer to finish
+        await this.docsSearch.indexer.status$.waitFor(
+          status => status.remaining === 0
+        );
+        // remove the loading item
+        docItems.value = [];
+      }
+
       const docMetas = (
         showRecent
           ? this.recentDocsService.getRecentDocs()

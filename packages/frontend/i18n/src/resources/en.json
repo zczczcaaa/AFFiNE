@@ -1572,6 +1572,7 @@
   "com.affine.editor.journal-conflict.title": "Duplicate Entries in Today's Journal",
   "com.affine.editor.at-menu.link-to-doc": "Search for \"{{query}}\"",
   "com.affine.editor.at-menu.recent-docs": "Recent",
+  "com.affine.editor.at-menu.loading": "Loading...",
   "com.affine.editor.at-menu.new-doc": "New",
   "com.affine.editor.at-menu.create-page": "New \"{{name}}\" page",
   "com.affine.editor.at-menu.create-edgeless": "New \"{{name}}\" edgeless",
