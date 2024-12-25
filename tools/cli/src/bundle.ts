@@ -25,7 +25,8 @@ export class BundleCommand extends PackageCommand {
   static override paths = [['bundle'], ['webpack'], ['pack'], ['bun']];
 
   // bundle is not able to run with deps
-  override deps = false;
+  override _deps = false;
+  override waitDeps = false;
 
   dev = Option.Boolean('--dev,-d', false, {
     description: 'Run in Development mode',

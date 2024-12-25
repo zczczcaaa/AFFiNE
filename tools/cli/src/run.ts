@@ -1,12 +1,13 @@
 import { Path } from '@affine-tools/utils/path';
 import { execAsync } from '@affine-tools/utils/process';
-import type { PackageName } from '@affine-tools/utils/workspace';
+import type { Package, PackageName } from '@affine-tools/utils/workspace';
 
 import { Option, PackageCommand } from './command';
 
 interface RunScriptOptions {
   includeDependencies?: boolean;
   waitDependencies?: boolean;
+  ignoreIfNotFound?: boolean;
 }
 
 const currentDir = Path.dir(import.meta.url);
@@ -68,68 +69,97 @@ export class RunCommand extends PackageCommand {
   async execute() {
     await this.run(this.package, this.args, {
       includeDependencies: this.deps,
-      waitDependencies: true,
+      waitDependencies: this.waitDeps,
     });
   }
 
   async run(name: PackageName, args: string[], opts: RunScriptOptions = {}) {
-    opts = { includeDependencies: false, ...opts };
+    opts = {
+      includeDependencies: false,
+      waitDependencies: true,
+      ignoreIfNotFound: false,
+      ...opts,
+    };
 
     const pkg = this.workspace.getPackage(name);
-    const script = args[0];
-    const pkgScript = pkg.scripts[script];
-
-    let isPackageJsonScript = false;
-    let isAFFiNEScript = false;
+    const scriptName = args[0];
+    const pkgScript = pkg.scripts[scriptName];
 
     if (pkgScript) {
-      isPackageJsonScript = true;
-      isAFFiNEScript = pkgScript.startsWith('affine ');
+      await this.runScript(pkg, scriptName, args.slice(1), opts);
     } else {
-      isAFFiNEScript = script.startsWith('affine ');
+      await this.runCommand(pkg, scriptName, args.slice(1));
+    }
+  }
+
+  async runScript(
+    pkg: Package,
+    scriptName: string,
+    args: string[],
+    opts: RunScriptOptions = {}
+  ) {
+    const script = pkg.scripts[scriptName];
+
+    if (!script) {
+      if (opts.ignoreIfNotFound) {
+        return;
+      }
+
+      throw new Error(`Script ${scriptName} not found in ${pkg.name}`);
     }
 
-    if (isPackageJsonScript && opts.includeDependencies) {
-      this.logger.info(
-        `Running [${script}] script in dependencies of ${pkg.name}...`
-      );
-
-      await Promise.all(
+    const isAFFiNECommand = script.startsWith('affine ');
+    if (opts.includeDependencies) {
+      const depsRun = Promise.all(
         pkg.deps.map(dep => {
-          this.logger.info(`Running [${script}] script in ${dep.name}...`);
-          return this.run(dep.name, args, opts);
+          return this.runScript(
+            pkg.workspace.getPackage(dep.name),
+            scriptName,
+            args,
+            {
+              ...opts,
+              ignoreIfNotFound: true,
+            }
+          );
         })
       );
+      if (opts.waitDependencies) {
+        await depsRun;
+      } else {
+        depsRun.catch(e => {
+          this.logger.error(e);
+        });
+      }
     }
 
-    if (isPackageJsonScript) {
-      this.logger.info(`Running [${script}] script in ${pkg.name}...`);
-    }
+    args = [...script.split(' '), ...args];
 
-    if (isAFFiNEScript) {
-      await this.cli.run([
-        ...pkgScript.split(' ').slice(1),
-        ...args.slice(1),
-        '-p',
-        pkg.name,
-      ]);
+    if (isAFFiNECommand) {
+      args.shift();
+      args.push('-p', pkg.name);
     } else {
-      const script = pkgScript ?? args[0];
-      // very simple test for auto ts/mjs scripts
-      const isLoaderRequired = !ignoreLoaderScripts.some(ignore =>
-        new RegExp(ignore).test(script)
-      );
-
-      await execAsync(name, ['yarn', ...args], {
-        cwd: pkg.path.value,
-        ...(isLoaderRequired
-          ? {
-              env: {
-                NODE_OPTIONS: `--import=${currentDir.join('../register.js').toFileUrl()}`,
-              },
-            }
-          : {}),
-      });
+      args.unshift(pkg.name);
     }
+
+    await this.cli.run(args);
+  }
+
+  async runCommand(pkg: Package, scriptName: string, args: string[]) {
+    // very simple test for auto ts/mjs scripts
+    // TODO(@forehalo): bypass cross-env and fetch the next script after envs
+    const isLoaderRequired = !ignoreLoaderScripts.some(ignore =>
+      new RegExp(ignore).test(scriptName)
+    );
+
+    await execAsync(pkg.name, ['yarn', scriptName, ...args], {
+      cwd: pkg.path.value,
+      ...(isLoaderRequired
+        ? {
+            env: {
+              NODE_OPTIONS: `--import=${currentDir.join('../register.js').toFileUrl()}`,
+            },
+          }
+        : {}),
+    });
   }
 }

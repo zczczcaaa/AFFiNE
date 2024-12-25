@@ -38,9 +38,17 @@ export abstract class PackageCommand extends Command {
     );
   }
 
-  deps = Option.Boolean('--deps', false, {
+  protected _deps = Option.Boolean('--deps', false, {
     description:
       'Execute the same command in workspace dependencies, if defined.',
+  });
+
+  get deps() {
+    return this._deps;
+  }
+
+  waitDeps = Option.Boolean('--wait-deps', false, {
+    description: 'Wait for dependencies to be ready before running the command',
   });
 }
 

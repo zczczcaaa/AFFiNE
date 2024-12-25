@@ -4,11 +4,13 @@ export class BuildCommand extends PackageCommand {
   static override paths = [['build'], ['b']];
 
   async execute() {
-    const args = ['affine build', this.package];
+    const args: string[] = [];
 
     if (this.deps) {
       args.push('--deps');
     }
+
+    args.push(this.package, 'build');
 
     await this.cli.run(args);
   }
