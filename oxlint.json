@@ -11,6 +11,7 @@
     ".github",
     ".vscode",
     ".yarnrc.yml",
+    ".docker",
     ".coverage",
     ".nx/**",
     "target",

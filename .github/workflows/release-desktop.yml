@@ -437,8 +437,8 @@ jobs:
           node-version: 20
       - name: Copy Selfhost Release Files
         run: |
-          cp ./.github/deployment/self-host/compose.yaml ./release/docker-compose.yaml
-          cp ./.github/deployment/self-host/.env.example ./release/.env.example
+          cp ./.docker/selfhost/compose.yaml ./release/docker-compose.yaml
+          cp ./.docker/selfhost/.env.example ./release/.env.example
       - name: Generate Release yml
         run: |
           node ./scripts/generate-release-yml.mjs

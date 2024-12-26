@@ -4,6 +4,7 @@
 .github
 .vscode
 .yarnrc.yml
+.docker
 
 # compiled output
 .coverage
