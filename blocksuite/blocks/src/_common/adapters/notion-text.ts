@@ -1,4 +1,5 @@
 import { DEFAULT_NOTE_BACKGROUND_COLOR } from '@blocksuite/affine-model';
+import { AdapterFactoryIdentifier } from '@blocksuite/affine-shared/adapters';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import type { ExtensionType } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
@@ -15,8 +16,6 @@ import {
   nanoid,
   type SliceSnapshot,
 } from '@blocksuite/store';
-
-import { AdapterFactoryIdentifier } from './type.js';
 
 type NotionEditingStyle = {
   0: string;

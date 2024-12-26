@@ -29,6 +29,9 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.mergewith": "^4.6.2",
     "minimatch": "^10.0.1",
+    "rehype-parse": "^9.0.0",
+    "rehype-stringify": "^10.0.0",
+    "unified": "^11.0.5",
     "zod": "^3.23.8"
   },
   "exports": {

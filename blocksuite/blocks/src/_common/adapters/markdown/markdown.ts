@@ -4,6 +4,7 @@ import {
 } from '@blocksuite/affine-model';
 import {
   type AdapterContext,
+  AdapterFactoryIdentifier,
   type BlockMarkdownAdapterMatcher,
   BlockMarkdownAdapterMatcherIdentifier,
   type Markdown,
@@ -36,7 +37,6 @@ import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
 import { unified } from 'unified';
 
-import { AdapterFactoryIdentifier } from '../type.js';
 import { defaultBlockMarkdownAdapterMatchers } from './block-matcher.js';
 import { inlineDeltaToMarkdownAdapterMatchers } from './delta-converter/inline-delta.js';
 import { markdownInlineToDeltaMatchers } from './delta-converter/markdown-inline.js';

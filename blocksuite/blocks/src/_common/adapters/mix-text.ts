@@ -2,6 +2,7 @@ import {
   DEFAULT_NOTE_BACKGROUND_COLOR,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
+import { AdapterFactoryIdentifier } from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
 import type { DeltaInsert } from '@blocksuite/inline';
 import {
@@ -25,7 +26,6 @@ import {
 } from '@blocksuite/store';
 
 import { MarkdownAdapter } from './markdown/index.js';
-import { AdapterFactoryIdentifier } from './type.js';
 
 export type MixText = string;
 

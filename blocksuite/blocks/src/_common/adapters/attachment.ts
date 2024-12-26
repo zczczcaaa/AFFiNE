@@ -1,3 +1,4 @@
+import { AdapterFactoryIdentifier } from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { sha } from '@blocksuite/global/utils';
@@ -18,8 +19,6 @@ import {
   type ToBlockSnapshotPayload,
   type ToDocSnapshotPayload,
 } from '@blocksuite/store';
-
-import { AdapterFactoryIdentifier } from './type.js';
 
 export type Attachment = File[];
 

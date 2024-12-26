@@ -1,3 +1,4 @@
+import { HtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
 import type { Doc, DocCollection } from '@blocksuite/store';
@@ -6,7 +7,6 @@ import { extMimeMap, Job } from '@blocksuite/store';
 import { defaultBlockHtmlAdapterMatchers } from '../adapters/html/block-matcher.js';
 import { htmlInlineToDeltaMatchers } from '../adapters/html/delta-converter/html-inline.js';
 import { inlineDeltaToHtmlAdapterMatchers } from '../adapters/html/delta-converter/inline-delta.js';
-import { HtmlAdapter } from '../adapters/html/html.js';
 import {
   defaultImageProxyMiddleware,
   docLinkBaseURLMiddleware,

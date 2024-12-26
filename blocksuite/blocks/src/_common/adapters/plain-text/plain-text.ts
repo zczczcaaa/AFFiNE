@@ -4,6 +4,7 @@ import {
 } from '@blocksuite/affine-model';
 import {
   type AdapterContext,
+  AdapterFactoryIdentifier,
   type BlockPlainTextAdapterMatcher,
   BlockPlainTextAdapterMatcherIdentifier,
   type PlainText,
@@ -31,7 +32,6 @@ import {
   type ToDocSnapshotPayload,
 } from '@blocksuite/store';
 
-import { AdapterFactoryIdentifier } from '../type.js';
 import { defaultBlockPlainTextAdapterMatchers } from './block-matcher.js';
 import { inlineDeltaToPlainTextAdapterMatchers } from './delta-converter/inline-delta.js';
 

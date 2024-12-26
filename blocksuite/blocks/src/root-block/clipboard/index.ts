@@ -1,10 +1,10 @@
+import { HtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import type { BlockComponent, UIEventHandler } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/utils';
 import type { BlockSnapshot, Doc } from '@blocksuite/store';
 
 import {
   AttachmentAdapter,
-  HtmlAdapter,
   ImageAdapter,
   MixTextAdapter,
   NotionTextAdapter,

@@ -2,6 +2,7 @@ import {
   DEFAULT_NOTE_BACKGROUND_COLOR,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
+import { HtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
@@ -14,7 +15,6 @@ import { describe, expect, test } from 'vitest';
 import { defaultBlockHtmlAdapterMatchers } from '../../_common/adapters/html/block-matcher.js';
 import { htmlInlineToDeltaMatchers } from '../../_common/adapters/html/delta-converter/html-inline.js';
 import { inlineDeltaToHtmlAdapterMatchers } from '../../_common/adapters/html/delta-converter/inline-delta.js';
-import { HtmlAdapter } from '../../_common/adapters/html/html.js';
 import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';

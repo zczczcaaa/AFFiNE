@@ -99,6 +99,11 @@ export {
   Tooltip,
 } from '@blocksuite/affine-components/toolbar';
 export * from '@blocksuite/affine-model';
+export {
+  HtmlAdapter,
+  HtmlAdapterFactoryExtension,
+  HtmlAdapterFactoryIdentifier,
+} from '@blocksuite/affine-shared/adapters';
 export * from '@blocksuite/affine-shared/services';
 export { scrollbarStyle } from '@blocksuite/affine-shared/styles';
 export {

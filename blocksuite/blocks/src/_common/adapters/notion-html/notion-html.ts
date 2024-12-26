@@ -4,6 +4,7 @@ import {
 } from '@blocksuite/affine-model';
 import {
   type AdapterContext,
+  AdapterFactoryIdentifier,
   type BlockNotionHtmlAdapterMatcher,
   BlockNotionHtmlAdapterMatcherIdentifier,
   HastUtils,
@@ -33,8 +34,6 @@ import {
 } from '@blocksuite/store';
 import rehypeParse from 'rehype-parse';
 import { unified } from 'unified';
-
-import { AdapterFactoryIdentifier } from '../type.js';
 
 type NotionHtmlToSliceSnapshotPayload = {
   file: NotionHtml;

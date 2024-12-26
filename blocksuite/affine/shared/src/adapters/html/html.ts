@@ -2,16 +2,6 @@ import {
   DEFAULT_NOTE_BACKGROUND_COLOR,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
-import {
-  type AdapterContext,
-  type BlockHtmlAdapterMatcher,
-  BlockHtmlAdapterMatcherIdentifier,
-  HastUtils,
-  type HtmlAST,
-  HtmlASTToDeltaMatcherIdentifier,
-  HtmlDeltaConverter,
-  InlineDeltaToHtmlAdapterMatcherIdentifier,
-} from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
 import type { ServiceProvider } from '@blocksuite/global/di';
 import {
@@ -38,7 +28,21 @@ import rehypeParse from 'rehype-parse';
 import rehypeStringify from 'rehype-stringify';
 import { unified } from 'unified';
 
-import { AdapterFactoryIdentifier } from '../type.js';
+import {
+  type AdapterContext,
+  AdapterFactoryIdentifier,
+  type HtmlAST,
+} from '../types';
+import { HastUtils } from '../utils/hast';
+import {
+  type BlockHtmlAdapterMatcher,
+  BlockHtmlAdapterMatcherIdentifier,
+} from './block-adapter';
+import {
+  HtmlASTToDeltaMatcherIdentifier,
+  HtmlDeltaConverter,
+  InlineDeltaToHtmlAdapterMatcherIdentifier,
+} from './delta-converter';
 
 export type Html = string;
 
