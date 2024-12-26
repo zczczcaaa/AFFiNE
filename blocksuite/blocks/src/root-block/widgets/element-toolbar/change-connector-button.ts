@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import {
   AddTextIcon,
   ConnectorCWithArrowIcon,
@@ -222,10 +223,14 @@ const MODE_CHOOSE: [ConnectorMode, () => TemplateResult<1>][] = [
 ] as const;
 
 export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   pickColor = (event: PickColorEvent) => {
     if (event.type === 'pick') {
       this.elements.forEach(ele =>
-        this.service.updateElement(
+        this.crud.updateElement(
           ele.id,
           packColor('stroke', { ...event.detail })
         )
@@ -257,7 +262,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
     if (frontEndpointStyle === rearEndpointStyle) return;
 
     this.elements.forEach(element =>
-      this.service.updateElement(element.id, {
+      this.crud.updateElement(element.id, {
         frontEndpointStyle: rearEndpointStyle,
         rearEndpointStyle: frontEndpointStyle,
       })
@@ -286,7 +291,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
         : 'rearEndpointStyle']: style,
     };
     this.elements.forEach(element =>
-      this.service.updateElement(element.id, { ...props })
+      this.crud.updateElement(element.id, { ...props })
     );
   }
 
@@ -297,7 +302,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
     this.elements
       .filter(notEqual(key, value))
       .forEach(element =>
-        this.service.updateElement(element.id, { [key]: value })
+        this.crud.updateElement(element.id, { [key]: value })
       );
   }
 

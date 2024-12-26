@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CanvasElementType } from '@blocksuite/affine-block-surface';
 import { type MindmapStyle, TextElementModel } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
@@ -78,7 +77,7 @@ export const getMindmapRender =
       });
     }
 
-    const mindmapId = edgelessService.addElement('mindmap', {
+    const mindmapId = edgelessService.crud.addElement('mindmap', {
       style: mindmapStyle,
       children: root,
     }) as string;
@@ -113,10 +112,10 @@ export const textRender: DraggableTool['render'] = (
     });
     id = textId!;
   } else {
-    id = service.addElement(CanvasElementType.TEXT, {
+    id = service.crud.addElement(CanvasElementType.TEXT, {
       xywh: new Bound(bound.x, vCenter - h / 2, w, h).serialize(),
       text: new DocCollection.Y.Text(),
-    });
+    }) as string;
 
     edgeless.doc.captureSync();
     const textElement = edgeless.service.getElementById(id);

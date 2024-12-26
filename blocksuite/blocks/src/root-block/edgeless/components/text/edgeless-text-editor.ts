@@ -1,4 +1,8 @@
-import { CommonUtils, TextUtils } from '@blocksuite/affine-block-surface';
+import {
+  CommonUtils,
+  EdgelessCRUDIdentifier,
+  TextUtils,
+} from '@blocksuite/affine-block-surface';
 import type { RichText } from '@blocksuite/affine-components/rich-text';
 import type { TextElementModel } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
@@ -23,6 +27,10 @@ import { getSelectedRect } from '../../utils/query.js';
 const { toRadian } = CommonUtils;
 
 export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   static BORDER_WIDTH = 1;
 
   static PADDING_HORIZONTAL = 10;
@@ -137,7 +145,7 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
         break;
     }
 
-    edgeless.service.updateElement(element.id, {
+    this.crud.updateElement(element.id, {
       xywh: bound.serialize(),
     });
   };

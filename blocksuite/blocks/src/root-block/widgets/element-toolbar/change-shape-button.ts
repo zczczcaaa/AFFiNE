@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import {
   AddTextIcon,
   ChangeShapeIcon,
@@ -155,6 +156,10 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
     return this.edgeless.service;
   }
 
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   #pickColor<K extends keyof Pick<ShapeProps, 'fillColor' | 'strokeColor'>>(
     key: K
   ) {
@@ -166,7 +171,7 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
           if (key === 'fillColor' && !ele.filled) {
             Object.assign(props, { filled: true });
           }
-          this.service.updateElement(ele.id, props);
+          this.crud.updateElement(ele.id, props);
         });
         return;
       }
@@ -199,25 +204,25 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
     const filled = !isTransparent(fillColor);
     const color = this._getTextColor(fillColor);
     this.elements.forEach(ele =>
-      this.service.updateElement(ele.id, { filled, fillColor, color })
+      this.crud.updateElement(ele.id, { filled, fillColor, color })
     );
   }
 
   private _setShapeStrokeColor(strokeColor: string) {
     this.elements.forEach(ele =>
-      this.service.updateElement(ele.id, { strokeColor })
+      this.crud.updateElement(ele.id, { strokeColor })
     );
   }
 
   private _setShapeStrokeStyle(strokeStyle: StrokeStyle) {
     this.elements.forEach(ele =>
-      this.service.updateElement(ele.id, { strokeStyle })
+      this.crud.updateElement(ele.id, { strokeStyle })
     );
   }
 
   private _setShapeStrokeWidth(strokeWidth: number) {
     this.elements.forEach(ele =>
-      this.service.updateElement(ele.id, { strokeWidth })
+      this.crud.updateElement(ele.id, { strokeWidth })
     );
   }
 
@@ -226,7 +231,7 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
       shapeStyle === ShapeStyle.General ? FontFamily.Inter : FontFamily.Kalam;
 
     this.elements.forEach(ele => {
-      this.service.updateElement(ele.id, { shapeStyle, fontFamily });
+      this.crud.updateElement(ele.id, { shapeStyle, fontFamily });
     });
   }
 
@@ -257,7 +262,7 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
       this._shapePanel.slots.select.on(shapeName => {
         this.edgeless.doc.captureSync();
         this.elements.forEach(element => {
-          this.service.updateElement(element.id, {
+          this.crud.updateElement(element.id, {
             shapeType: getShapeType(shapeName),
             radius: getShapeRadius(shapeName),
           });

@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import {
   NoteIcon,
   RenameIcon,
@@ -51,10 +52,14 @@ function getMostCommonColor(
 }
 
 export class EdgelessChangeFrameButton extends WithDisposable(LitElement) {
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   pickColor = (event: PickColorEvent) => {
     if (event.type === 'pick') {
       this.frames.forEach(ele =>
-        this.service.updateElement(
+        this.crud.updateElement(
           ele.id,
           packColor('background', { ...event.detail })
         )
@@ -116,7 +121,7 @@ export class EdgelessChangeFrameButton extends WithDisposable(LitElement) {
 
   private _setFrameBackground(color: string) {
     this.frames.forEach(frame => {
-      this.service.updateElement(frame.id, { background: color });
+      this.crud.updateElement(frame.id, { background: color });
     });
   }
 

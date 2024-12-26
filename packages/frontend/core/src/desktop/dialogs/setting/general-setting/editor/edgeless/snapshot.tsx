@@ -79,7 +79,7 @@ export const EdgelessSnapshot = (props: Props) => {
     const props = editorSetting.get(keyName) as any;
     doc.awarenessStore.setReadonly(doc.blockCollection, false);
     elements.forEach(element => {
-      edgelessService.updateElement(element.id, props);
+      edgelessService.crud.updateElement(element.id, props);
     });
     doc.awarenessStore.setReadonly(doc.blockCollection, true);
   }, [editorSetting, getElements, keyName]);

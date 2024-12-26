@@ -508,7 +508,7 @@ const CREATE_AS_LINKED_DOC = {
       y = viewportCenter.y - height / 2;
     }
 
-    service.addBlock(
+    service.crud.addBlock(
       'affine:embed-linked-doc',
       {
         xywh: `[${x}, ${y}, ${width}, ${height}]`,

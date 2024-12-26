@@ -1,5 +1,6 @@
 import {
   CommonUtils,
+  EdgelessCRUDIdentifier,
   Overlay,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine-block-surface';
@@ -7,7 +8,6 @@ import type { PointerEventState } from '@blocksuite/block-std';
 import { BaseTool } from '@blocksuite/block-std/gfx';
 import { Bound, type IVec } from '@blocksuite/global/utils';
 
-import { deleteElementsV2 } from '../utils/crud.js';
 import { isTopLevelBlock } from '../utils/query.js';
 
 const { getSvgPathFromStroke, getStroke, linePolygonIntersects } = CommonUtils;
@@ -99,7 +99,9 @@ export class EraserTool extends BaseTool {
   }
 
   override dragEnd(_: PointerEventState): void {
-    deleteElementsV2(this.gfx, Array.from(this._eraseTargets));
+    this.gfx.std
+      .get(EdgelessCRUDIdentifier)
+      .deleteElements(Array.from(this._eraseTargets));
     this._reset();
     this.doc.captureSync();
   }

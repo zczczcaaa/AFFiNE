@@ -2,6 +2,7 @@ import { addAttachments } from '@blocksuite/affine-block-attachment';
 import { addImages } from '@blocksuite/affine-block-image';
 import {
   CanvasElementType,
+  EdgelessCRUDIdentifier,
   SurfaceGroupLikeModel,
   TextUtils,
 } from '@blocksuite/affine-block-surface';
@@ -329,11 +330,7 @@ export class EdgelessClipboardController extends PageClipboard {
       ).serialize();
       options.style = style;
 
-      const id = this.host.service.addBlock(
-        flavour,
-        options,
-        this.surface.model.id
-      );
+      const id = this.crud.addBlock(flavour, options, this.surface.model.id);
 
       this.std.getOptional(TelemetryProvider)?.track('CanvasElementAdded', {
         control: 'canvas:paste',
@@ -418,6 +415,10 @@ export class EdgelessClipboardController extends PageClipboard {
     return this.host.surface;
   }
 
+  private get crud() {
+    return this.std.get(EdgelessCRUDIdentifier);
+  }
+
   private get toolManager() {
     return this.host.gfx.tool;
   }
@@ -470,7 +471,7 @@ export class EdgelessClipboardController extends PageClipboard {
     if (!(await this.host.std.collection.blobSync.get(sourceId as string))) {
       return null;
     }
-    const attachmentId = this.host.service.addBlock(
+    const attachmentId = this.crud.addBlock(
       'affine:attachment',
       {
         xywh,
@@ -491,7 +492,7 @@ export class EdgelessClipboardController extends PageClipboard {
     const { xywh, style, url, caption, description, icon, image, title } =
       bookmark.props;
 
-    const bookmarkId = this.host.service.addBlock(
+    const bookmarkId = this.crud.addBlock(
       'affine:bookmark',
       {
         xywh,
@@ -581,10 +582,13 @@ export class EdgelessClipboardController extends PageClipboard {
 
     clipboardData.lockedBySelf = false;
 
-    const id = this.host.service.addElement(
+    const id = this.crud.addElement(
       clipboardData.type as CanvasElementType,
       clipboardData
     );
+    if (!id) {
+      return null;
+    }
     this.std.getOptional(TelemetryProvider)?.track('CanvasElementAdded', {
       control: 'canvas:paste',
       page: 'whiteboard editor',
@@ -624,7 +628,7 @@ export class EdgelessClipboardController extends PageClipboard {
   private _createFigmaEmbedBlock(figmaEmbed: BlockSnapshot) {
     const { xywh, style, url, caption, title, description } = figmaEmbed.props;
 
-    const embedFigmaId = this.host.service.addBlock(
+    const embedFigmaId = this.crud.addBlock(
       'affine:embed-figma',
       {
         xywh,
@@ -654,7 +658,7 @@ export class EdgelessClipboardController extends PageClipboard {
       });
     }
 
-    const frameId = this.host.service.addBlock(
+    const frameId = this.crud.addBlock(
       'affine:frame',
       {
         xywh,
@@ -687,7 +691,7 @@ export class EdgelessClipboardController extends PageClipboard {
       assignees,
     } = githubEmbed.props;
 
-    const embedGithubId = this.host.service.addBlock(
+    const embedGithubId = this.crud.addBlock(
       'affine:embed-github',
       {
         xywh,
@@ -714,7 +718,7 @@ export class EdgelessClipboardController extends PageClipboard {
   private _createHtmlEmbedBlock(htmlEmbed: BlockSnapshot) {
     const { xywh, style, caption, html, design } = htmlEmbed.props;
 
-    const embedHtmlId = this.host.service.addBlock(
+    const embedHtmlId = this.crud.addBlock(
       'affine:embed-html',
       {
         xywh,
@@ -735,7 +739,7 @@ export class EdgelessClipboardController extends PageClipboard {
     if (!(await this.host.std.collection.blobSync.get(sourceId as string))) {
       return null;
     }
-    return this.host.service.addBlock(
+    return this.crud.addBlock(
       'affine:image',
       {
         caption,
@@ -760,7 +764,7 @@ export class EdgelessClipboardController extends PageClipboard {
       description,
     });
 
-    return this.host.service.addBlock(
+    return this.crud.addBlock(
       'affine:embed-linked-doc',
       {
         xywh,
@@ -776,7 +780,7 @@ export class EdgelessClipboardController extends PageClipboard {
     const { xywh, style, url, caption, videoId, image, title, description } =
       loomEmbed.props;
 
-    const embedLoomId = this.host.service.addBlock(
+    const embedLoomId = this.crud.addBlock(
       'affine:embed-loom',
       {
         xywh,
@@ -820,7 +824,7 @@ export class EdgelessClipboardController extends PageClipboard {
       syncedDocEmbed.props;
     const referenceInfo = ReferenceInfoSchema.parse({ pageId, params });
 
-    return this.host.service.addBlock(
+    return this.crud.addBlock(
       'affine:embed-synced-doc',
       {
         xywh,
@@ -848,7 +852,7 @@ export class EdgelessClipboardController extends PageClipboard {
       creatorImage,
     } = youtubeEmbed.props;
 
-    const embedYoutubeId = this.host.service.addBlock(
+    const embedYoutubeId = this.crud.addBlock(
       'affine:embed-youtube',
       {
         xywh,
@@ -1085,7 +1089,7 @@ export class EdgelessClipboardController extends PageClipboard {
       ).serialize(),
     };
 
-    const noteId = edgeless.service.addBlock(
+    const noteId = this.crud.addBlock(
       'affine:note',
       noteProps,
       this.doc.root!.id
@@ -1101,7 +1105,7 @@ export class EdgelessClipboardController extends PageClipboard {
 
     if (typeof content === 'string') {
       TextUtils.splitIntoLines(content).forEach((line, idx) => {
-        edgeless.service.addBlock(
+        this.crud.addBlock(
           'affine:paragraph',
           { text: new DocCollection.Y.Text(line) },
           noteId,
@@ -1181,7 +1185,7 @@ export class EdgelessClipboardController extends PageClipboard {
     sortedElements.forEach(ele => {
       const newIndex = idxGenerator();
 
-      this.edgeless.service.updateElement(ele.id, {
+      this.crud.updateElement(ele.id, {
         index: newIndex,
       });
     });
@@ -1322,6 +1326,8 @@ export class EdgelessClipboardController extends PageClipboard {
           context,
           getNewXYWH(data.xywh)
         );
+
+        if (!element) continue;
 
         canvasElements.push(element);
         allElements.push(element);

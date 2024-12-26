@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { generateKeyBetweenV2 } from '@blocksuite/block-std/gfx';
 import {
   DisposableGroup,
@@ -98,6 +99,10 @@ export class EdgelessFrameOrderMenu extends SignalWatcher(
     }
   `;
 
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   private get _frames() {
     return this.edgeless.service.frames;
   }
@@ -182,7 +187,7 @@ export class EdgelessFrameOrderMenu extends SignalWatcher(
 
           const frame = this._frames[index];
 
-          this.edgeless.service.updateElement(frame.id, {
+          this.crud.updateElement(frame.id, {
             presentationIndex: generateKeyBetweenV2(before, after),
           });
           this.edgeless.doc.captureSync();

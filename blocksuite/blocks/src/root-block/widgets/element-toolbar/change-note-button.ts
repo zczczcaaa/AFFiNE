@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import {
   ExpandIcon,
   LineStyleIcon,
@@ -78,6 +79,10 @@ function getMostCommonBackground(
 }
 
 export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   private readonly _setBorderRadius = (borderRadius: number) => {
     this.notes.forEach(note => {
       const props = {
@@ -88,7 +93,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
           },
         },
       };
-      this.edgeless.service.updateElement(note.id, props);
+      this.crud.updateElement(note.id, props);
     });
   };
 
@@ -111,7 +116,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     if (event.type === 'pick') {
       this.notes.forEach(element => {
         const props = packColor('background', { ...event.detail });
-        this.edgeless.service.updateElement(element.id, props);
+        this.crud.updateElement(element.id, props);
       });
       return;
     }
@@ -142,7 +147,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
 
   private _setBackground(background: string) {
     this.notes.forEach(element => {
-      this.edgeless.service.updateElement(element.id, { background });
+      this.crud.updateElement(element.id, { background });
     });
   }
 
@@ -173,7 +178,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
       return;
     }
 
-    this.edgeless.service.updateElement(note.id, { displayMode: newMode });
+    this.crud.updateElement(note.id, { displayMode: newMode });
 
     const noteParent = this.doc.getParent(note);
     assertExists(noteParent);
@@ -208,7 +213,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
           },
         },
       };
-      this.edgeless.service.updateElement(note.id, props);
+      this.crud.updateElement(note.id, props);
     });
   }
 
@@ -222,7 +227,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
           },
         },
       };
-      this.edgeless.service.updateElement(note.id, props);
+      this.crud.updateElement(note.id, props);
     });
   }
 
@@ -236,7 +241,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
           },
         },
       };
-      this.edgeless.service.updateElement(note.id, props);
+      this.crud.updateElement(note.id, props);
     });
   }
 

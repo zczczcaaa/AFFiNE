@@ -32,3 +32,5 @@ export function normalizeWheelDeltaY(delta: number, zoom = 1) {
     Math.min(1, abs / 20);
   return newZoom;
 }
+
+export { getLastPropsKey } from './get-last-props-key';

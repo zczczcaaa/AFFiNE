@@ -1,4 +1,7 @@
-import { CanvasElementType } from '@blocksuite/affine-block-surface';
+import {
+  CanvasElementType,
+  EdgelessCRUDIdentifier,
+} from '@blocksuite/affine-block-surface';
 import {
   getShapeRadius,
   getShapeType,
@@ -67,6 +70,10 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
     }
   `;
 
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   private readonly _addShape = (coord: Coord, padding: Coord) => {
     const width = 100;
     const height = 100;
@@ -78,7 +85,7 @@ export class EdgelessShapeToolElement extends WithDisposable(LitElement) {
       coord.y - edgelessY - height * padding.y * zoom
     );
     const xywh = new Bound(modelX, modelY, width, height).serialize();
-    this.edgeless.service.addElement(CanvasElementType.SHAPE, {
+    this.crud.addElement(CanvasElementType.SHAPE, {
       shapeType: getShapeType(this.shape.name),
       xywh: xywh,
       radius: getShapeRadius(this.shape.name),

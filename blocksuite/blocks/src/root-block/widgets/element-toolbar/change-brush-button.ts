@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type {
   BrushElementModel,
   BrushProps,
@@ -57,10 +58,7 @@ export class EdgelessChangeBrushButton extends WithDisposable(LitElement) {
   pickColor = (event: PickColorEvent) => {
     if (event.type === 'pick') {
       this.elements.forEach(ele =>
-        this.service.updateElement(
-          ele.id,
-          packColor('color', { ...event.detail })
-        )
+        this.crud.updateElement(ele.id, packColor('color', { ...event.detail }))
       );
       return;
     }
@@ -93,6 +91,10 @@ export class EdgelessChangeBrushButton extends WithDisposable(LitElement) {
     return this.edgeless.surface;
   }
 
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   private _setBrushProp<K extends keyof BrushProps>(
     key: K,
     value: BrushProps[K]
@@ -101,7 +103,7 @@ export class EdgelessChangeBrushButton extends WithDisposable(LitElement) {
     this.elements
       .filter(notEqual(key, value))
       .forEach(element =>
-        this.service.updateElement(element.id, { [key]: value })
+        this.crud.updateElement(element.id, { [key]: value })
       );
   }
 

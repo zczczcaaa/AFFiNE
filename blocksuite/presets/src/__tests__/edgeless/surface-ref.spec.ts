@@ -29,20 +29,20 @@ describe('basic', () => {
     noteAId = addNote(doc, {
       index: service.generateIndex(),
     });
-    shapeAId = service.addElement('shape', {
+    shapeAId = service.crud.addElement('shape', {
       type: 'rect',
       xywh: '[0, 0, 100, 100]',
       index: service.generateIndex(),
-    });
+    })!;
     noteBId = addNote(doc, {
       index: service.generateIndex(),
     });
-    shapeBId = service.addElement('shape', {
+    shapeBId = service.crud.addElement('shape', {
       type: 'rect',
       xywh: '[100, 0, 100, 100]',
       index: service.generateIndex(),
-    });
-    frameId = service.addBlock(
+    })!;
+    frameId = service.crud.addBlock(
       'affine:frame',
       {
         xywh: '[0, 0, 800, 200]',
@@ -122,7 +122,7 @@ describe('basic', () => {
   });
 
   test('content in group should be rendered in the correct order', async () => {
-    const groupId = service.addElement('group', {
+    const groupId = service.crud.addElement('group', {
       children: {
         [shapeAId]: true,
         [shapeBId]: true,
@@ -186,14 +186,14 @@ describe('basic', () => {
   });
 
   test('group should be rendered in surface-ref viewport', async () => {
-    const groupId = service.addElement('group', {
+    const groupId = service.crud.addElement('group', {
       children: {
         [shapeAId]: true,
         [shapeBId]: true,
         [noteAId]: true,
         [noteBId]: true,
       },
-    });
+    })!;
     const surfaceRefId = doc.addBlock(
       'affine:surface-ref',
       {
@@ -247,7 +247,7 @@ describe('basic', () => {
   });
 
   test('view in edgeless mode button', async () => {
-    const groupId = service.addElement('group', {
+    const groupId = service.crud.addElement('group', {
       children: {
         [shapeAId]: true,
         [shapeBId]: true,

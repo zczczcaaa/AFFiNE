@@ -12,6 +12,7 @@ import {
   SurfaceBlockAdapterExtensions,
 } from './adapters/extension.js';
 import { commands } from './commands/index.js';
+import { EdgelessCRUDExtension } from './extensions/crud-extension.js';
 import { SurfaceBlockService } from './surface-service.js';
 import { MindMapView } from './view/mindmap.js';
 
@@ -21,6 +22,7 @@ const CommonSurfaceBlockSpec: ExtensionType[] = [
   CommandExtension(commands),
   HighlightSelectionExtension,
   MindMapView,
+  EdgelessCRUDExtension,
 ];
 
 export const PageSurfaceBlockSpec: ExtensionType[] = [

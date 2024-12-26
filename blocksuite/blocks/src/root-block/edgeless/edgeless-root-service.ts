@@ -1,4 +1,5 @@
 import {
+  EdgelessCRUDIdentifier,
   type ElementRenderer,
   elementRenderers,
   type SurfaceBlockModel,
@@ -11,7 +12,6 @@ import {
   MindmapElementModel,
   RootBlockSchema,
 } from '@blocksuite/affine-model';
-import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import { clamp } from '@blocksuite/affine-shared/utils';
 import type { BlockStdScope } from '@blocksuite/block-std';
 import type {
@@ -28,7 +28,7 @@ import {
 } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { Bound, getCommonBound } from '@blocksuite/global/utils';
-import { type BlockModel, Slot } from '@blocksuite/store';
+import { Slot } from '@blocksuite/store';
 import { effect } from '@preact/signals-core';
 
 import { getSurfaceBlock } from '../../surface-ref-block/utils.js';
@@ -43,7 +43,6 @@ import {
   replaceIdMiddleware,
 } from './services/template-middlewares.js';
 import { FIT_TO_SCREEN_PADDING } from './utils/consts.js';
-import { getLastPropsKey } from './utils/get-last-props-key.js';
 import { getCursorMode } from './utils/query.js';
 import {
   ZOOM_INITIAL,
@@ -84,29 +83,6 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
   };
 
   TemplateJob = TemplateJob;
-
-  updateElement = (id: string, props: Record<string, unknown>) => {
-    const element = this._surface.getElementById(id);
-    if (element) {
-      const key = getLastPropsKey(
-        element.type as BlockSuite.EdgelessModelKeys,
-        { ...element.yMap.toJSON(), ...props }
-      );
-      key && this.std.get(EditPropsStore).recordLastProps(key, props);
-      this._surface.updateElement(id, props);
-      return;
-    }
-
-    const block = this.doc.getBlockById(id);
-    if (block) {
-      const key = getLastPropsKey(
-        block.flavour as BlockSuite.EdgelessModelKeys,
-        { ...block.yBlock.toJSON(), ...props }
-      );
-      key && this.std.get(EditPropsStore).recordLastProps(key, props);
-      this.doc.updateBlock(block, props);
-    }
-  };
 
   get blocks(): GfxBlockModel[] {
     return this.layer.blocks;
@@ -179,6 +155,10 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
     return this.viewport.zoom;
   }
 
+  get crud() {
+    return this.std.get(EdgelessCRUDIdentifier);
+  }
+
   constructor(std: BlockStdScope, flavourProvider: { flavour: string }) {
     super(std, flavourProvider);
     const surface = getSurfaceBlock(this.doc);
@@ -216,44 +196,11 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
     );
   }
 
-  addBlock(
-    flavour: string,
-    props: Record<string, unknown>,
-    parent?: string | BlockModel,
-    parentIndex?: number
-  ) {
-    const key = getLastPropsKey(flavour as BlockSuite.EdgelessModelKeys, props);
-    if (key) {
-      props = this.std.get(EditPropsStore).applyLastProps(key, props);
-    }
-
-    const nProps = {
-      ...props,
-      index: this.generateIndex(),
-    };
-    return this.doc.addBlock(flavour as never, nProps, parent, parentIndex);
-  }
-
-  addElement<T extends Record<string, unknown>>(type: string, props: T) {
-    const key = getLastPropsKey(type as BlockSuite.EdgelessModelKeys, props);
-    if (key) {
-      props = this.std.get(EditPropsStore).applyLastProps(key, props) as T;
-    }
-
-    const nProps = {
-      ...props,
-      type,
-      index: props.index ?? this.generateIndex(),
-    };
-    const id = this._surface.addElement(nProps);
-    return id;
-  }
-
   createGroup(elements: BlockSuite.EdgelessModel[] | string[]) {
     const groups = this.elements.filter(
       el => el.type === 'group'
     ) as GroupElementModel[];
-    const groupId = this.addElement('group', {
+    const groupId = this.crud.addElement('group', {
       children: elements.reduce(
         (pre, el) => {
           const id = typeof el === 'string' ? el : el.id;
@@ -290,12 +237,15 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
 
     if (parent !== null) {
       selection.selectedElements.forEach(element => {
-        // eslint-disable-next-line unicorn/prefer-dom-node-remove
+        // oxlint-disable-next-line unicorn/prefer-dom-node-remove
         parent.removeChild(element);
       });
     }
 
     const groupId = this.createGroup(selection.selectedElements);
+    if (!groupId) {
+      return;
+    }
     const group = this.surface.getElementById(groupId);
 
     if (parent !== null && group) {
@@ -487,12 +437,12 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
     }
 
     if (parent !== null) {
-      // eslint-disable-next-line unicorn/prefer-dom-node-remove
+      // oxlint-disable-next-line unicorn/prefer-dom-node-remove
       parent.removeChild(group);
     }
 
     elements.forEach(element => {
-      // eslint-disable-next-line unicorn/prefer-dom-node-remove
+      // oxlint-disable-next-line unicorn/prefer-dom-node-remove
       group.removeChild(element);
     });
 

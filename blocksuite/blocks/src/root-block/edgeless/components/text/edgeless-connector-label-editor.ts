@@ -1,4 +1,7 @@
-import { TextUtils } from '@blocksuite/affine-block-surface';
+import {
+  EdgelessCRUDIdentifier,
+  TextUtils,
+} from '@blocksuite/affine-block-surface';
 import type { RichText } from '@blocksuite/affine-components/rich-text';
 import type { ConnectorElementModel } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
@@ -60,6 +63,10 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
     }
   `;
 
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   private _isComposition = false;
 
   private _keeping = false;
@@ -84,7 +91,7 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
       !connector.labelXYWH ||
       labelXYWH.some((p, i) => !almostEqual(p, connector.labelXYWH![i]))
     ) {
-      edgeless.service.updateElement(connector.id, {
+      this.crud.updateElement(connector.id, {
         labelXYWH,
       });
     }
@@ -172,13 +179,13 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
             const len = trimed.length;
             if (len === 0) {
               // reset
-              edgeless.service.updateElement(connector.id, {
+              this.crud.updateElement(connector.id, {
                 text: undefined,
                 labelXYWH: undefined,
                 labelOffset: undefined,
               });
             } else if (len < text.length) {
-              edgeless.service.updateElement(connector.id, {
+              this.crud.updateElement(connector.id, {
                 // @TODO: trim in Y.Text?
                 text: new DocCollection.Y.Text(trimed),
               });

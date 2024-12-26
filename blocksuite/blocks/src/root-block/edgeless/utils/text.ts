@@ -1,5 +1,6 @@
 import {
   CanvasElementType,
+  EdgelessCRUDIdentifier,
   type IModelCoord,
   TextUtils,
 } from '@blocksuite/affine-block-surface';
@@ -12,11 +13,7 @@ import { ShapeElementModel, TextElementModel } from '@blocksuite/affine-model';
 import type { PointerEventState } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { IVec } from '@blocksuite/global/utils';
-import {
-  assertExists,
-  assertInstanceOf,
-  Bound,
-} from '@blocksuite/global/utils';
+import { assertInstanceOf, Bound } from '@blocksuite/global/utils';
 import { DocCollection } from '@blocksuite/store';
 
 import { EdgelessConnectorLabelEditor } from '../components/text/edgeless-connector-label-editor.js';
@@ -77,7 +74,9 @@ export function mountShapeTextEditor(
 
   if (!shapeElement.text) {
     const text = new DocCollection.Y.Text();
-    edgeless.service.updateElement(shapeElement.id, { text });
+    edgeless.std
+      .get(EdgelessCRUDIdentifier)
+      .updateElement(shapeElement.id, { text });
   }
 
   const updatedElement = edgeless.service.getElementById(shapeElement.id);
@@ -164,13 +163,16 @@ export function addText(
       event.x,
       event.y
     );
-    const id = edgeless.service.addElement(CanvasElementType.TEXT, {
-      xywh: new Bound(modelX, modelY, 32, 32).serialize(),
-      text: new DocCollection.Y.Text(),
-    });
+    const id = edgeless.std
+      .get(EdgelessCRUDIdentifier)
+      .addElement(CanvasElementType.TEXT, {
+        xywh: new Bound(modelX, modelY, 32, 32).serialize(),
+        text: new DocCollection.Y.Text(),
+      });
+    if (!id) return;
     edgeless.doc.captureSync();
     const textElement = edgeless.service.getElementById(id);
-    assertExists(textElement);
+    if (!textElement) return;
     if (textElement instanceof TextElementModel) {
       mountTextElementEditor(textElement, edgeless);
     }
@@ -203,7 +205,7 @@ export function mountConnectorLabelEditor(
       labelXYWH = bounds.toXYWH();
     }
 
-    edgeless.service.updateElement(connector.id, {
+    edgeless.std.get(EdgelessCRUDIdentifier).updateElement(connector.id, {
       text,
       labelXYWH,
       labelOffset: { ...labelOffset },

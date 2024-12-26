@@ -361,7 +361,7 @@ export const ShapeSettings = () => {
         const { shapeType, radius } = shape;
         const shapeName = getShapeName(shapeType, radius);
         const props = editorSetting.get(`shape:${shapeName}`);
-        edgelessService.updateElement(shape.id, props);
+        edgelessService.crud.updateElement(shape.id, props);
       });
       doc.awarenessStore.setReadonly(doc.blockCollection, true);
     },

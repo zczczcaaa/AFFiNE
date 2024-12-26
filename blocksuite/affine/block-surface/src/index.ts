@@ -88,7 +88,11 @@ import {
 } from '@blocksuite/global/utils';
 import { generateKeyBetween } from 'fractional-indexing';
 
-import { generateElementId, normalizeWheelDeltaY } from './utils/index.js';
+import {
+  generateElementId,
+  getLastPropsKey,
+  normalizeWheelDeltaY,
+} from './utils';
 import {
   addTree,
   containsNode,
@@ -98,9 +102,11 @@ import {
   hideNodeConnector,
   moveNode,
   tryMoveNode,
-} from './utils/mindmap/utils.js';
-export type { Options } from './utils/rough/core.js';
-export { sortIndex } from './utils/sort.js';
+} from './utils/mindmap/utils';
+export * from './extensions';
+export { getLastPropsKey } from './utils/get-last-props-key';
+export type { Options } from './utils/rough/core';
+export { sortIndex } from './utils/sort';
 export { updateXYWH } from './utils/update-xywh.js';
 
 export const ConnectorUtils = {
@@ -129,6 +135,7 @@ export const CommonUtils = {
   getPointFromBoundsWithRotation,
   getStroke,
   getSvgPathFromStroke,
+  getLastPropsKey,
   intersects,
   isOverlap,
   isPointIn,

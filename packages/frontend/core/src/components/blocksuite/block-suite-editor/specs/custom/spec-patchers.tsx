@@ -530,7 +530,7 @@ export function patchEdgelessClipboard() {
                 rootDocId,
                 rootWorkspaceId,
               } = block.props;
-              const blockId = component.service.addBlock(
+              const blockId = component.service.crud.addBlock(
                 AIChatBlockFlavour,
                 {
                   xywh,

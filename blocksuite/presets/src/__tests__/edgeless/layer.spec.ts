@@ -45,7 +45,7 @@ describe('add new edgeless blocks or canvas elements should update layer automat
   test('add note, note, shape sequentially', async () => {
     addNote(doc);
     addNote(doc);
-    service.addElement('shape', {
+    service.crud.addElement('shape', {
       shapeType: 'rect',
     });
 
@@ -56,7 +56,7 @@ describe('add new edgeless blocks or canvas elements should update layer automat
 
   test('add note, shape, note sequentially', async () => {
     addNote(doc);
-    service.addElement('shape', {
+    service.crud.addElement('shape', {
       shapeType: 'rect',
     });
     addNote(doc);
@@ -68,7 +68,7 @@ describe('add new edgeless blocks or canvas elements should update layer automat
 
 test('delete element should update layer automatically', () => {
   const id = addNote(doc);
-  const canvasElId = service.addElement('shape', {
+  const canvasElId = service.crud.addElement('shape', {
     shapeType: 'rect',
   });
 
@@ -76,20 +76,20 @@ test('delete element should update layer automatically', () => {
 
   expect(service.layer.layers.length).toBe(1);
 
-  service.removeElement(canvasElId);
+  service.removeElement(canvasElId!);
 
   expect(service.layer.layers.length).toBe(0);
 });
 
 test('change element should update layer automatically', async () => {
   const id = addNote(doc);
-  const canvasElId = service.addElement('shape', {
+  const canvasElId = service.crud.addElement('shape', {
     shapeType: 'rect',
   });
 
   await wait();
 
-  service.updateElement(id, {
+  service.crud.updateElement(id, {
     index: service.layer.getReorderedIndex(
       service.getElementById(id)!,
       'forward'
@@ -99,9 +99,9 @@ test('change element should update layer automatically', async () => {
     'block'
   );
 
-  service.updateElement(canvasElId, {
+  service.crud.updateElement(canvasElId!, {
     index: service.layer.getReorderedIndex(
-      service.getElementById(canvasElId)!,
+      service.getElementById(canvasElId!)!,
       'forward'
     ),
   });
@@ -112,7 +112,7 @@ test('change element should update layer automatically', async () => {
 
 test('new added canvas elements should be placed in the topmost canvas layer', async () => {
   addNote(doc);
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
   });
 
@@ -130,11 +130,11 @@ test("there should be at lease one layer in canvasLayers property even there's n
 
 test('if the topmost layer is canvas layer, the length of canvasLayers array should equal to the counts of canvas layers', () => {
   addNote(doc);
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
   });
   addNote(doc);
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
   });
 
@@ -145,11 +145,11 @@ test('if the topmost layer is canvas layer, the length of canvasLayers array sho
 });
 
 test('a new layer should be created in canvasLayers prop when the topmost layer is not canvas layer', () => {
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
   });
   addNote(doc);
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
   });
   addNote(doc);
@@ -162,13 +162,13 @@ test('layer zindex should update correctly when elements changed', async () => {
   const noteId = addNote(doc);
   const note = service.getElementById(noteId);
   addNote(doc);
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
   });
-  const topShapeId = service.addElement('shape', {
+  const topShapeId = service.crud.addElement('shape', {
     shapeType: 'rect',
   });
-  const topShape = service.getElementById(topShapeId);
+  const topShape = service.getElementById(topShapeId!)!;
 
   await wait();
 
@@ -183,7 +183,7 @@ test('layer zindex should update correctly when elements changed', async () => {
 
   service.doc.captureSync();
 
-  service.updateElement(noteId, {
+  service.crud.updateElement(noteId, {
     index: service.layer.getReorderedIndex(note!, 'front'),
   });
   await wait();
@@ -198,7 +198,7 @@ test('layer zindex should update correctly when elements changed', async () => {
   };
   assert2StepState();
 
-  service.updateElement(topShapeId, {
+  service.crud.updateElement(topShapeId!, {
     index: service.layer.getReorderedIndex(topShape!, 'front'),
   });
   await wait();
@@ -235,7 +235,7 @@ test('blocks should rerender when their z-index changed', async () => {
   await wait();
   assertBlocksContent();
 
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
     index: CommonUtils.generateKeyBetween(
       service.getElementById(blocks[1])!.index,
@@ -252,19 +252,19 @@ describe('layer reorder functionality', () => {
 
   beforeEach(() => {
     ids = [
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
       addNote(doc),
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
       addNote(doc),
     ];
   });
 
   test('forward', async () => {
-    service.updateElement(ids[0], {
+    service.crud.updateElement(ids[0], {
       index: service.layer.getReorderedIndex(
         service.getElementById(ids[0])!,
         'forward'
@@ -284,7 +284,7 @@ describe('layer reorder functionality', () => {
 
     await wait();
 
-    service.updateElement(ids[1], {
+    service.crud.updateElement(ids[1], {
       index: service.layer.getReorderedIndex(
         service.getElementById(ids[1])!,
         'forward'
@@ -304,7 +304,7 @@ describe('layer reorder functionality', () => {
   });
 
   test('front', async () => {
-    service.updateElement(ids[0], {
+    service.crud.updateElement(ids[0], {
       index: service.layer.getReorderedIndex(
         service.getElementById(ids[0])!,
         'front'
@@ -319,7 +319,7 @@ describe('layer reorder functionality', () => {
       )
     ).toBe(3);
 
-    service.updateElement(ids[1], {
+    service.crud.updateElement(ids[1], {
       index: service.layer.getReorderedIndex(
         service.getElementById(ids[1])!,
         'front'
@@ -334,7 +334,7 @@ describe('layer reorder functionality', () => {
   });
 
   test('backward', async () => {
-    service.updateElement(ids[3], {
+    service.crud.updateElement(ids[3], {
       index: service.layer.getReorderedIndex(
         service.getElementById(ids[3])!,
         'backward'
@@ -354,7 +354,7 @@ describe('layer reorder functionality', () => {
 
     await wait();
 
-    service.updateElement(ids[2], {
+    service.crud.updateElement(ids[2], {
       index: service.layer.getReorderedIndex(
         service.getElementById(ids[2])!,
         'backward'
@@ -374,7 +374,7 @@ describe('layer reorder functionality', () => {
   });
 
   test('back', async () => {
-    service.updateElement(ids[3], {
+    service.crud.updateElement(ids[3], {
       index: service.layer.getReorderedIndex(
         service.getElementById(ids[3])!,
         'back'
@@ -389,7 +389,7 @@ describe('layer reorder functionality', () => {
 
     await wait();
 
-    service.updateElement(ids[2], {
+    service.crud.updateElement(ids[2], {
       index: service.layer.getReorderedIndex(
         service.getElementById(ids[2])!,
         'back'
@@ -412,7 +412,7 @@ describe('group related functionality', () => {
     const children = new DocCollection.Y.Map<boolean>();
     childIds.forEach(id => children.set(id, true));
 
-    return service.addElement('group', {
+    return service.crud.addElement('group', {
       children,
     });
   };
@@ -420,17 +420,17 @@ describe('group related functionality', () => {
   test("new added group should effect it children's layer", async () => {
     const edgeless = getDocRootBlock(doc, editor, 'edgeless');
     const elements = [
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
       addNote(doc),
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
       addNote(doc),
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
     ];
 
     await wait(0);
@@ -490,23 +490,23 @@ describe('group related functionality', () => {
 
   test("change group index should update its children's layer", () => {
     const elements = [
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
       addNote(doc),
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
       addNote(doc),
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
     ];
 
     const groupId = createGroup(
       service,
       elements.filter((_, idx) => idx !== 1 && idx !== 3)
-    );
+    )!;
     const group = service.getElementById(groupId)!;
 
     expect(service.layer.layers.length).toBe(2);
@@ -525,17 +525,17 @@ describe('group related functionality', () => {
   test('should keep relative index order of elements after group, ungroup, undo, redo', () => {
     const edgeless = getDocRootBlock(doc, editor, 'edgeless');
     const elementIds = [
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
       addNote(doc),
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
       addNote(doc),
-      service.addElement('shape', {
+      service.crud.addElement('shape', {
         shapeType: 'rect',
-      }),
+      })!,
     ];
     service.doc.captureSync();
     const elements = elementIds.map(id => service.getElementById(id)!);
@@ -549,7 +549,7 @@ describe('group related functionality', () => {
 
     expect(isKeptRelativeOrder()).toBeTruthy();
 
-    const groupId = createGroup(edgeless.service, elementIds);
+    const groupId = createGroup(edgeless.service, elementIds)!;
     expect(isKeptRelativeOrder()).toBeTruthy();
 
     service.ungroup(service.getElementById(groupId) as GroupElementModel);
@@ -577,19 +577,19 @@ describe('compare function', () => {
     const children = new DocCollection.Y.Map<boolean>();
     childIds.forEach(id => children.set(id, true));
 
-    return service.addElement('group', {
+    return service.crud.addElement('group', {
       children,
     });
   };
 
   test('compare same element', () => {
-    const shapeId = service.addElement('shape', {
+    const shapeId = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
+    })!;
     const shapeEl = service.getElementById(shapeId)!;
     expect(service.layer.compare(shapeEl, shapeEl)).toBe(SORT_ORDER.SAME);
 
-    const groupId = createGroup(service, [shapeId]);
+    const groupId = createGroup(service, [shapeId])!;
     const groupEl = service.getElementById(groupId)!;
     expect(service.layer.compare(groupEl, groupEl)).toBe(SORT_ORDER.SAME);
 
@@ -599,13 +599,13 @@ describe('compare function', () => {
   });
 
   test('compare a group and its child', () => {
-    const shapeId = service.addElement('shape', {
+    const shapeId = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
+    })!;
     const shapeEl = service.getElementById(shapeId)!;
     const noteId = addNote(doc);
     const note = service.getElementById(noteId)! as NoteBlockModel;
-    const groupId = createGroup(service, [shapeId, noteId]);
+    const groupId = createGroup(service, [shapeId, noteId])!;
     const groupEl = service.getElementById(groupId)!;
 
     expect(service.layer.compare(groupEl, shapeEl)).toBe(SORT_ORDER.BEFORE);
@@ -615,13 +615,13 @@ describe('compare function', () => {
   });
 
   test('compare two different elements', () => {
-    const shape1Id = service.addElement('shape', {
+    const shape1Id = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
+    })!;
     const shape1 = service.getElementById(shape1Id)!;
-    const shape2Id = service.addElement('shape', {
+    const shape2Id = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
+    })!;
     const shape2 = service.getElementById(shape2Id)!;
     const note1Id = addNote(doc);
 
@@ -643,12 +643,12 @@ describe('compare function', () => {
   });
 
   test('compare nested elements', () => {
-    const shape1Id = service.addElement('shape', {
+    const shape1Id = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
-    const shape2Id = service.addElement('shape', {
+    })!;
+    const shape2Id = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
+    })!;
     const note1Id = addNote(doc);
     const note2Id = addNote(doc);
     const group1Id = createGroup(service, [
@@ -656,8 +656,8 @@ describe('compare function', () => {
       shape2Id,
       note1Id,
       note2Id,
-    ]);
-    const group2Id = createGroup(service, [group1Id]);
+    ])!;
+    const group2Id = createGroup(service, [group1Id])!;
 
     const shape1 = service.getElementById(shape1Id)!;
     const shape2 = service.getElementById(shape2Id)!;
@@ -688,24 +688,24 @@ describe('compare function', () => {
   });
 
   test('compare two nested elements', () => {
-    const groupAShapeId = service.addElement('shape', {
+    const groupAShapeId = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
+    })!;
     const groupANoteId = addNote(doc);
     const groupAId = createGroup(service, [
-      createGroup(service, [groupAShapeId, groupANoteId]),
-    ]);
+      createGroup(service, [groupAShapeId, groupANoteId])!,
+    ])!;
     const groupAShape = service.getElementById(groupAShapeId)!;
     const groupANote = service.getElementById(groupANoteId)!;
     const groupA = service.getElementById(groupAId)!;
 
-    const groupBShapeId = service.addElement('shape', {
+    const groupBShapeId = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
+    })!;
     const groupBNoteId = addNote(doc);
     const groupBId = createGroup(service, [
-      createGroup(service, [groupBShapeId, groupBNoteId]),
-    ]);
+      createGroup(service, [groupBShapeId, groupBNoteId])!,
+    ])!;
     const groupBShape = service.getElementById(groupBShapeId)!;
     const groupBNote = service.getElementById(groupBNoteId)!;
     const groupB = service.getElementById(groupBId)!;
@@ -759,17 +759,17 @@ describe('compare function', () => {
 test('indexed canvas should be inserted into edgeless portal when switch to edgeless mode', async () => {
   let surface = getSurface(doc, editor);
 
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
-  });
+  })!;
 
   addNote(doc);
 
   await wait();
 
-  service.addElement('shape', {
+  service.crud.addElement('shape', {
     shapeType: 'rect',
-  });
+  })!;
 
   editor.mode = 'page';
   await wait();
@@ -855,9 +855,9 @@ describe('index generator', () => {
   let preinsertedNote: NoteBlockModel;
 
   beforeEach(() => {
-    const shapeId = service.addElement('shape', {
+    const shapeId = service.crud.addElement('shape', {
       shapeType: 'rect',
-    });
+    })!;
     const noteId = addNote(doc);
 
     preinsertedShape = service.getElementById(

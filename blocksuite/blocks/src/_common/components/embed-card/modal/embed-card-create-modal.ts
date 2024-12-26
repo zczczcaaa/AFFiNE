@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { toast } from '@blocksuite/affine-components/toast';
 import type { EmbedCardStyle } from '@blocksuite/affine-model';
 import {
@@ -71,6 +72,7 @@ export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
       }
 
       const gfx = this.host.std.get(GfxControllerIdentifier);
+      const crud = this.host.std.get(EdgelessCRUDIdentifier);
 
       const viewport = gfx.viewport;
       const surfaceModel = gfx.surface;
@@ -79,7 +81,7 @@ export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
       }
 
       const center = Vec.toVec(viewport.center);
-      edgelessRoot.service.addBlock(
+      crud.addBlock(
         flavour,
         {
           url,

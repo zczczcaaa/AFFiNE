@@ -1,8 +1,9 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
 import type { Command } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
 
-import { EdgelessRootService } from '../../root-block/edgeless/edgeless-root-service.js';
 import { getSurfaceBlock } from '../../surface-ref-block/utils.js';
 import {
   EDGELESS_TEXT_BLOCK_MIN_HEIGHT,
@@ -21,15 +22,16 @@ export const insertEdgelessTextCommand: Command<
   const { std, x, y } = ctx;
   const host = std.host;
   const doc = host.doc;
-  const edgelessService = std.getService('affine:page');
   const surface = getSurfaceBlock(doc);
-  if (!(edgelessService instanceof EdgelessRootService) || !surface) {
+  if (!surface) {
     next();
     return;
   }
+  const gfx = std.get(GfxControllerIdentifier);
+  const zoom = gfx.viewport.zoom;
+  const selection = gfx.selection;
 
-  const zoom = edgelessService.zoom;
-  const textId = edgelessService.addBlock(
+  const textId = std.get(EdgelessCRUDIdentifier).addBlock(
     'affine:edgeless-text',
     {
       xywh: new Bound(
@@ -45,13 +47,13 @@ export const insertEdgelessTextCommand: Command<
   const blockId = doc.addBlock('affine:paragraph', { type: 'text' }, textId);
   host.updateComplete
     .then(() => {
-      edgelessService.selection.set({
+      selection.set({
         elements: [textId],
         editing: true,
       });
-      const disposable = edgelessService.selection.slots.updated.on(() => {
-        const editing = edgelessService.selection.editing;
-        const id = edgelessService.selection.selectedIds[0];
+      const disposable = selection.slots.updated.on(() => {
+        const editing = selection.editing;
+        const id = selection.selectedIds[0];
         if (!editing || id !== textId) {
           const textBlock = host.view.getBlock(textId);
           if (textBlock instanceof EdgelessTextBlockComponent) {

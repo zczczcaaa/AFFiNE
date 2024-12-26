@@ -5,7 +5,10 @@ import {
   MindmapElementModel,
   NoteBlockModel,
 } from '@blocksuite/affine-model';
-import type { GfxModel } from '@blocksuite/block-std/gfx';
+import {
+  GfxControllerIdentifier,
+  type GfxModel,
+} from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
 import chunk from 'lodash.chunk';
 
@@ -15,6 +18,7 @@ const ALIGN_PADDING = 20;
 import type { Command } from '@blocksuite/block-std';
 import type { BlockModel, BlockProps } from '@blocksuite/store';
 
+import { EdgelessCRUDIdentifier } from '../extensions/crud-extension.js';
 import { updateXYWH } from '../utils/update-xywh.js';
 
 /**
@@ -25,11 +29,10 @@ export const autoArrangeElementsCommand: Command<never, never, {}> = (
   next
 ) => {
   const { updateBlock } = ctx.std.doc;
-  const rootService = ctx.std.getService('affine:page');
-  // @ts-expect-error TODO: fix after edgeless refactor
-  const elements = rootService?.selection.selectedElements;
-  // @ts-expect-error TODO: fix after edgeless refactor
-  const updateElement = rootService?.updateElement;
+  const gfx = ctx.std.get(GfxControllerIdentifier);
+
+  const elements = gfx.selection.selectedElements;
+  const { updateElement } = ctx.std.get(EdgelessCRUDIdentifier);
   if (elements && updateElement) {
     autoArrangeElements(elements, updateElement, updateBlock);
   }
@@ -44,11 +47,10 @@ export const autoResizeElementsCommand: Command<never, never, {}> = (
   next
 ) => {
   const { updateBlock } = ctx.std.doc;
-  const rootService = ctx.std.getService('affine:page');
-  // @ts-expect-error TODO: fix after edgeless refactor
-  const elements = rootService?.selection.selectedElements;
-  // @ts-expect-error TODO: fix after edgeless refactor
-  const updateElement = rootService?.updateElement;
+  const gfx = ctx.std.get(GfxControllerIdentifier);
+
+  const elements = gfx.selection.selectedElements;
+  const { updateElement } = ctx.std.get(EdgelessCRUDIdentifier);
   if (elements && updateElement) {
     autoResizeElements(elements, updateElement, updateBlock);
   }

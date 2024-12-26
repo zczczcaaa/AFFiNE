@@ -2,6 +2,7 @@ import {
   getDocContentWithMaxLength,
   getEmbedCardIcons,
 } from '@blocksuite/affine-block-embed';
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import {
   CaptionIcon,
   CenterPeekIcon,
@@ -114,6 +115,10 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     }
   `;
 
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   private readonly _convertToCardView = () => {
     if (this._isCardView) {
       return;
@@ -146,7 +151,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     bound.w = EMBED_CARD_WIDTH[targetStyle];
     bound.h = EMBED_CARD_HEIGHT[targetStyle];
 
-    const newId = this.edgeless.service.addBlock(
+    const newId = this.crud.addBlock(
       targetFlavour,
       { url, xywh: bound.serialize(), style: targetStyle, caption },
       this.edgeless.surface.model
@@ -197,7 +202,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     bound.w = EMBED_CARD_WIDTH[targetStyle];
     bound.h = EMBED_CARD_HEIGHT[targetStyle];
 
-    const newId = this.edgeless.service.addBlock(
+    const newId = this.crud.addBlock(
       flavour,
       {
         url,
@@ -206,6 +211,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
       },
       this.edgeless.surface.model
     );
+    if (!newId) return;
 
     this.std.command.exec('reassociateConnectors', {
       oldId: id,

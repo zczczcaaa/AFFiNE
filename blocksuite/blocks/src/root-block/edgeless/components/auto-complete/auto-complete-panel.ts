@@ -1,6 +1,7 @@
 import {
   CanvasElementType,
   CommonUtils,
+  EdgelessCRUDIdentifier,
 } from '@blocksuite/affine-block-surface';
 import {
   FontFamilyIcon,
@@ -137,6 +138,10 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     this.connector = connector;
   }
 
+  get crud() {
+    return this.std.get(EdgelessCRUDIdentifier);
+  }
+
   private _addFrame() {
     const bound = this._generateTarget(this.connector)?.nextBound;
     if (!bound) return;
@@ -152,7 +157,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     const { service, surfaceBlockModel } = edgeless;
     const frameMgr = service.frame;
     const frameIndex = service.frames.length + 1;
-    const id = service.addBlock(
+    const id = this.crud.addBlock(
       'affine:frame',
       {
         title: new DocCollection.Y.Text(`Frame ${frameIndex}`),
@@ -178,7 +183,6 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
 
   private _addNote() {
     const { doc } = this.edgeless;
-    const service = this.edgeless.service;
     const target = this._getTargetXYWH(
       DEFAULT_NOTE_WIDTH,
       DEFAULT_NOTE_OVERLAY_HEIGHT
@@ -186,7 +190,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     if (!target) return;
 
     const { xywh, position } = target;
-    const id = service.addBlock(
+    const id = this.crud.addBlock(
       'affine:note',
       {
         xywh: serializeXYWH(...xywh),
@@ -205,7 +209,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       id,
       position: position as [number, number],
     };
-    service.updateElement(this.connector.id, {
+    this.crud.updateElement(this.connector.id, {
       target: { id, position },
     });
     this.edgeless.service.selection.set({
@@ -223,9 +227,10 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     const { nextBound, position } = result;
     const { service } = edgeless;
     const id = createShapeElement(edgeless, currentSource, targetType);
+    if (!id) return;
 
-    service.updateElement(id, { xywh: nextBound.serialize() });
-    service.updateElement(this.connector.id, {
+    this.crud.updateElement(id, { xywh: nextBound.serialize() });
+    this.crud.updateElement(this.connector.id, {
       target: { id, position },
     });
 
@@ -260,7 +265,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       const textElement = edgelessService.getElementById(textId);
       if (!textElement) return;
 
-      edgelessService.updateElement(this.connector.id, {
+      this.crud.updateElement(this.connector.id, {
         target: { id: textId, position },
       });
       if (this.currentSource.group instanceof GroupElementModel) {
@@ -273,7 +278,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       });
       this.edgeless.doc.captureSync();
     } else {
-      const textId = edgelessService.addElement(CanvasElementType.TEXT, {
+      const textId = this.crud.addElement(CanvasElementType.TEXT, {
         xywh: bound.serialize(),
         text: new DocCollection.Y.Text(),
         textAlign: 'left',
@@ -283,10 +288,11 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         fontWeight: FontWeight.Regular,
         fontStyle: FontStyle.Normal,
       });
+      if (!textId) return;
       const textElement = edgelessService.getElementById(textId);
       assertInstanceOf(textElement, TextElementModel);
 
-      edgelessService.updateElement(this.connector.id, {
+      this.crud.updateElement(this.connector.id, {
         target: { id: textId, position },
       });
       if (this.currentSource.group instanceof GroupElementModel) {

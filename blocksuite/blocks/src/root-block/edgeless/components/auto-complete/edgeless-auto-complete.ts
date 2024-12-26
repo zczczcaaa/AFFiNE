@@ -2,6 +2,7 @@ import {
   CanvasElementType,
   type ConnectionOverlay,
   ConnectorPathGenerator,
+  EdgelessCRUDIdentifier,
   Overlay,
   OverlayIdentifier,
   type RoughCanvas,
@@ -232,12 +233,17 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
     return this.std.get(OverlayIdentifier('connection')) as ConnectionOverlay;
   }
 
+  get crud() {
+    return this.std.get(EdgelessCRUDIdentifier);
+  }
+
   private _addConnector(source: Connection, target: Connection) {
     const { edgeless } = this;
-    const id = edgeless.service.addElement(CanvasElementType.CONNECTOR, {
+    const id = this.crud.addElement(CanvasElementType.CONNECTOR, {
       source,
       target,
     });
+    if (!id) return null;
     return edgeless.service.getElementById(id) as ConnectorElementModel;
   }
 
@@ -354,6 +360,7 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
     const { doc, service } = this.edgeless;
     const bound = this._computeNextBound(type);
     const id = createEdgelessElement(this.edgeless, this.current, bound);
+    if (!id) return;
     if (isShape(this.current)) {
       const { startPosition, endPosition } = getPosition(type);
       this._addConnector(

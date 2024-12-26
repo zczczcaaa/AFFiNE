@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   ConnectorUtils,
+  EdgelessCRUDIdentifier,
   normalizeShapeBound,
   TextUtils,
 } from '@blocksuite/affine-block-surface';
@@ -176,6 +176,10 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
     }
   `;
 
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   private readonly _setFontFamily = (fontFamily: FontFamily) => {
     const currentFontWeight = getMostCommonFontWeight(this.elements);
     const fontWeight = TextUtils.isFontWeightSupported(
@@ -194,7 +198,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
 
     const props = { fontFamily, fontWeight, fontStyle };
     this.elements.forEach(element => {
-      this.service.updateElement(element.id, buildProps(element, props));
+      this.crud.updateElement(element.id, buildProps(element, props));
       this._updateElementBound(element);
     });
   };
@@ -202,7 +206,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
   private readonly _setFontSize = (fontSize: number) => {
     const props = { fontSize };
     this.elements.forEach(element => {
-      this.service.updateElement(element.id, buildProps(element, props));
+      this.crud.updateElement(element.id, buildProps(element, props));
       this._updateElementBound(element);
     });
   };
@@ -213,7 +217,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
   ) => {
     const props = { fontWeight, fontStyle };
     this.elements.forEach(element => {
-      this.service.updateElement(element.id, buildProps(element, props));
+      this.crud.updateElement(element.id, buildProps(element, props));
       this._updateElementBound(element);
     });
   };
@@ -221,14 +225,14 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
   private readonly _setTextAlign = (textAlign: TextAlign) => {
     const props = { textAlign };
     this.elements.forEach(element => {
-      this.service.updateElement(element.id, buildProps(element, props));
+      this.crud.updateElement(element.id, buildProps(element, props));
     });
   };
 
   private readonly _setTextColor = ({ detail: color }: ColorEvent) => {
     const props = { color };
     this.elements.forEach(element => {
-      this.service.updateElement(element.id, buildProps(element, props));
+      this.crud.updateElement(element.id, buildProps(element, props));
     });
   };
 
@@ -257,7 +261,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
         },
         Bound.fromXYWH(element.deserializedXYWH)
       );
-      this.service.updateElement(element.id, {
+      this.crud.updateElement(element.id, {
         xywh: newBound.serialize(),
       });
     } else if (
@@ -285,7 +289,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
         prevBounds
       );
       bounds.center = center;
-      this.service.updateElement(element.id, {
+      this.crud.updateElement(element.id, {
         labelXYWH: bounds.toXYWH(),
       });
     } else if (
@@ -296,7 +300,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
         element,
         Bound.fromXYWH(element.deserializedXYWH)
       );
-      this.service.updateElement(element.id, {
+      this.crud.updateElement(element.id, {
         xywh: newBound.serialize(),
       });
     }
@@ -307,7 +311,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
     if (event.type === 'pick') {
       this.elements.forEach(element => {
         const props = packColor('color', { ...event.detail });
-        this.service.updateElement(element.id, buildProps(element, props));
+        this.crud.updateElement(element.id, buildProps(element, props));
         this._updateElementBound(element);
       });
       return;

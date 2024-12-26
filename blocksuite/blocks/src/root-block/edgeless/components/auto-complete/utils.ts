@@ -281,11 +281,12 @@ export function createEdgelessElement(
   let element: GfxModel | null = null;
 
   if (isShape(current)) {
-    id = service.addElement(current.type, {
+    id = service.crud.addElement(current.type, {
       ...current.serialize(),
       text: new DocCollection.Y.Text(),
       xywh: bound.serialize(),
     });
+    if (!id) return null;
     element = service.getElementById(id);
   } else {
     const { doc } = edgeless;
@@ -335,11 +336,12 @@ export function createShapeElement(
   targetType: TARGET_SHAPE_TYPE
 ) {
   const service = edgeless.service;
-  const id = service.addElement('shape', {
+  const id = service.crud.addElement('shape', {
     shapeType: getShapeType(targetType),
     radius: getShapeRadius(targetType),
     text: new DocCollection.Y.Text(),
   });
+  if (!id) return null;
   const element = service.getElementById(id);
   const group = current.group;
   if (group instanceof GroupElementModel && element) {

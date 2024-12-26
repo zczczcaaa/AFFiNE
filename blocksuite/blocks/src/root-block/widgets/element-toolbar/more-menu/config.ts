@@ -9,6 +9,7 @@ import {
   promptDocTitle,
 } from '@blocksuite/affine-block-embed';
 import type { ImageBlockComponent } from '@blocksuite/affine-block-image';
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { isPeekable, peek } from '@blocksuite/affine-components/peek';
 import type { MenuItemGroup } from '@blocksuite/affine-components/toolbar';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
@@ -253,8 +254,9 @@ export const conversionsGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
         if (title === null) return;
 
         const linkedDoc = createLinkedDocFromNote(doc, element, title);
+        const crud = std.get(EdgelessCRUDIdentifier);
         // insert linked doc card
-        const cardId = service.addBlock(
+        const cardId = crud.addBlock(
           'affine:embed-synced-doc',
           {
             xywh: element.xywh,
@@ -300,15 +302,7 @@ export const conversionsGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
       icon: LinkedPageIcon({ width: '20', height: '20' }),
       label: 'Create linked doc',
       type: 'create-linked-doc',
-      action: async ({
-        doc,
-        selection,
-        service,
-        surface,
-        edgeless,
-        host,
-        std,
-      }) => {
+      action: async ({ doc, selection, surface, edgeless, host, std }) => {
         const title = await promptDocTitle(std);
         if (title === null) return;
 
@@ -318,6 +312,7 @@ export const conversionsGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
           elements,
           title
         );
+        const crud = std.get(EdgelessCRUDIdentifier);
         // delete selected elements
         doc.transact(() => {
           deleteElements(edgeless, elements);
@@ -326,7 +321,7 @@ export const conversionsGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
         const width = 364;
         const height = 390;
         const bound = getCommonBoundWithRotation(elements);
-        const cardId = service.addBlock(
+        const cardId = crud.addBlock(
           'affine:embed-linked-doc',
           {
             xywh: `[${bound.center[0] - width / 2}, ${bound.center[1] - height / 2}, ${width}, ${height}]`,

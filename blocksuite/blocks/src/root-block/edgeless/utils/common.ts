@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
 import {
   DEFAULT_NOTE_HEIGHT,
@@ -18,7 +19,6 @@ import {
 } from '@blocksuite/global/utils';
 
 import { DEFAULT_NOTE_OFFSET_X, DEFAULT_NOTE_OFFSET_Y } from './consts.js';
-import { addBlock } from './crud.js';
 
 export function addNoteAtPoint(
   std: BlockStdScope,
@@ -37,6 +37,7 @@ export function addNoteAtPoint(
   } = {}
 ) {
   const gfx = std.get(GfxControllerIdentifier);
+  const crud = std.get(EdgelessCRUDIdentifier);
   const {
     width = DEFAULT_NOTE_WIDTH,
     height = DEFAULT_NOTE_HEIGHT,
@@ -47,8 +48,7 @@ export function addNoteAtPoint(
     scale = 1,
   } = options;
   const [x, y] = gfx.viewport.toModelCoord(point.x, point.y);
-  const blockId = addBlock(
-    std,
+  const blockId = crud.addBlock(
     'affine:note',
     {
       xywh: serializeXYWH(
@@ -63,7 +63,7 @@ export function addNoteAtPoint(
     noteIndex
   );
 
-  gfx.std.getOptional(TelemetryProvider)?.track('CanvasElementAdded', {
+  std.getOptional(TelemetryProvider)?.track('CanvasElementAdded', {
     control: 'canvas:draw',
     page: 'whiteboard editor',
     module: 'toolbar',

@@ -1,4 +1,7 @@
-import { CanvasElementType } from '@blocksuite/affine-block-surface';
+import {
+  CanvasElementType,
+  EdgelessCRUDIdentifier,
+} from '@blocksuite/affine-block-surface';
 import {
   ellipseSvg,
   roundedSvg,
@@ -137,6 +140,10 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
 
   override type = 'shape' as const;
 
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   get shapeShadow() {
     return this.theme === 'dark'
       ? '0 0 7px rgba(0, 0, 0, .22)'
@@ -179,12 +186,12 @@ export class EdgelessToolbarShapeDraggable extends EdgelessToolbarToolMixin(
       onDrop: (el, bound) => {
         const xywh = bound.serialize();
         const shape = el.data;
-        const id = this.edgeless.service.addElement(CanvasElementType.SHAPE, {
+        const id = this.crud.addElement(CanvasElementType.SHAPE, {
           shapeType: getShapeType(shape.name),
           xywh,
           radius: getShapeRadius(shape.name),
         });
-
+        if (!id) return;
         this.edgeless.std
           .getOptional(TelemetryProvider)
           ?.track('CanvasElementAdded', {

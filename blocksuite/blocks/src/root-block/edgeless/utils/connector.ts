@@ -1,3 +1,5 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+
 import type { EdgelessRootService } from '../edgeless-root-service.js';
 
 /**
@@ -12,14 +14,15 @@ export function moveConnectors(
   service: EdgelessRootService
 ) {
   const connectors = service.surface.getConnectors(originId);
+  const crud = service.std.get(EdgelessCRUDIdentifier);
   connectors.forEach(connector => {
     if (connector.source.id === originId) {
-      service.updateElement(connector.id, {
+      crud.updateElement(connector.id, {
         source: { ...connector.source, id: targetId },
       });
     }
     if (connector.target.id === originId) {
-      service.updateElement(connector.id, {
+      crud.updateElement(connector.id, {
         target: { ...connector.target, id: targetId },
       });
     }

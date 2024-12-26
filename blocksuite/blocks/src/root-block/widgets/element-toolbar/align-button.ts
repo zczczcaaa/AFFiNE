@@ -1,4 +1,7 @@
-import { updateXYWH } from '@blocksuite/affine-block-surface';
+import {
+  EdgelessCRUDIdentifier,
+  updateXYWH,
+} from '@blocksuite/affine-block-surface';
 import {
   AlignBottomIcon,
   AlignDistributeHorizontallyIcon,
@@ -267,7 +270,7 @@ export class EdgelessAlignButton extends WithDisposable(LitElement) {
   }
 
   private _updateXYWH(ele: BlockSuite.EdgelessModel, bound: Bound) {
-    const { updateElement } = this.edgeless.service;
+    const { updateElement } = this.edgeless.std.get(EdgelessCRUDIdentifier);
     const { updateBlock } = this.edgeless.doc;
     updateXYWH(ele, bound, updateElement, updateBlock);
   }

@@ -1,4 +1,8 @@
-import { CommonUtils, TextUtils } from '@blocksuite/affine-block-surface';
+import {
+  CommonUtils,
+  EdgelessCRUDIdentifier,
+  TextUtils,
+} from '@blocksuite/affine-block-surface';
 import type { RichText } from '@blocksuite/affine-components/rich-text';
 import type { ShapeElementModel } from '@blocksuite/affine-model';
 import { MindmapElementModel, TextResizing } from '@blocksuite/affine-model';
@@ -24,6 +28,10 @@ import { getSelectedRect } from '../../utils/query.js';
 const { toRadian } = CommonUtils;
 
 export class EdgelessShapeTextEditor extends WithDisposable(ShadowlessElement) {
+  get crud() {
+    return this.edgeless.std.get(EdgelessCRUDIdentifier);
+  }
+
   private _keeping = false;
 
   private _lastXYWH = '';
@@ -137,7 +145,7 @@ export class EdgelessShapeTextEditor extends WithDisposable(ShadowlessElement) {
       const [modelLeftTopX, modelLeftTopY] =
         this.edgeless.service.viewport.toModelCoord(leftTopX, leftTopY);
 
-      this.edgeless.service.updateElement(this.element.id, {
+      this.crud.updateElement(this.element.id, {
         xywh: new Bound(
           modelLeftTopX,
           modelLeftTopY,
