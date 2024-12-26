@@ -25,7 +25,12 @@ export class MindMapView extends GfxElementModelView<MindmapElementModel> {
     }
   >();
 
-  private _getCollapseButton(node: MindmapNode | string) {
+  /**
+   *
+   * @param node The mindmap node or its id to get the collapse button
+   * @returns
+   */
+  getCollapseButton(node: MindmapNode | string) {
     const id = typeof node === 'string' ? node : node.id;
     return this._collapseButtons.get(`collapse-btn-${id}`);
   }
@@ -149,7 +154,7 @@ export class MindMapView extends GfxElementModelView<MindmapElementModel> {
           elm?.id &&
           this.model.children.has(elm.id)
         ) {
-          const button = this._getCollapseButton(elm.id);
+          const button = this.getCollapseButton(elm.id);
 
           if (!button) {
             return;
@@ -164,7 +169,7 @@ export class MindMapView extends GfxElementModelView<MindmapElementModel> {
 
   private _updateButtonVisibility(node: string) {
     const latestNode = this.model.getNode(node);
-    const buttonModel = this._getCollapseButton(node);
+    const buttonModel = this.getCollapseButton(node);
 
     if (!buttonModel) {
       return;

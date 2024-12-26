@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test:unit": "nx vite:test --browser.headless --run",
+    "test:unit": "vitest --browser.headless --run",
     "test:debug": "PWDEBUG=1 npx vitest"
   },
   "sideEffects": false,
@@ -37,5 +37,8 @@
     "themes",
     "!src/__tests__",
     "!dist/__tests__"
-  ]
+  ],
+  "devDependencies": {
+    "vitest": "^2.1.8"
+  }
 }

@@ -23,6 +23,10 @@ export default defineConfig(_configEnv =>
         provider: 'playwright',
         isolate: false,
         providerOptions: {},
+        viewport: {
+          width: 1024,
+          height: 768,
+        },
       },
       coverage: {
         provider: 'istanbul', // or 'c8'
