@@ -10,7 +10,7 @@ query serverConfig {
     type
     initialized
     credentialsRequirement {
-      ...CredentialsRequirement
+      ...CredentialsRequirements
     }
   }
 }

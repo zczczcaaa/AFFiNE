@@ -1660,7 +1660,7 @@ export type ForkCopilotSessionMutation = {
   forkCopilotSession: string;
 };
 
-export type CredentialsRequirementFragment = {
+export type CredentialsRequirementsFragment = {
   __typename?: 'CredentialsRequirementType';
   password: {
     __typename?: 'PasswordLimitsType';

@@ -12,8 +12,8 @@ fragment PasswordLimits on PasswordLimitsType {
   minLength
   maxLength
 }`
-export const credentialsRequirementFragment = `
-fragment CredentialsRequirement on CredentialsRequirementType {
+export const credentialsRequirementsFragment = `
+fragment CredentialsRequirements on CredentialsRequirementType {
   password {
     ...PasswordLimits
   }
@@ -33,12 +33,12 @@ query adminServerConfig {
     type
     initialized
     credentialsRequirement {
-      ...CredentialsRequirement
+      ...CredentialsRequirements
     }
     availableUserFeatures
   }
 }${passwordLimitsFragment}
-${credentialsRequirementFragment}`,
+${credentialsRequirementsFragment}`,
 };
 
 export const deleteBlobMutation = {
@@ -1062,11 +1062,11 @@ query serverConfig {
     type
     initialized
     credentialsRequirement {
-      ...CredentialsRequirement
+      ...CredentialsRequirements
     }
   }
 }${passwordLimitsFragment}
-${credentialsRequirementFragment}`,
+${credentialsRequirementsFragment}`,
 };
 
 export const setWorkspacePublicByIdMutation = {
