@@ -4,15 +4,14 @@ import {
   ElementModelAdapter,
   type ElementModelAdapterContext,
 } from '../../type.js';
-import { elementModelToPlainTextAdapterMatchers } from './elements/index.js';
-import type { ElementModelToPlainTextAdapterMatcher } from './type.js';
+import type { ElementToPlainTextAdapterMatcher } from './type.js';
 
 export class PlainTextElementModelAdapter extends ElementModelAdapter<
   string,
   TextBuffer
 > {
   constructor(
-    readonly elementModelMatchers: ElementModelToPlainTextAdapterMatcher[] = elementModelToPlainTextAdapterMatchers
+    readonly elementModelMatchers: ElementToPlainTextAdapterMatcher[]
   ) {
     super();
   }

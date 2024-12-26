@@ -1,34 +1,33 @@
-import { bookmarkBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-bookmark';
+import { BookmarkBlockPlainTextAdapterExtension } from '@blocksuite/affine-block-bookmark';
 import {
-  embedFigmaBlockPlainTextAdapterMatcher,
-  embedGithubBlockPlainTextAdapterMatcher,
-  embedLinkedDocBlockPlainTextAdapterMatcher,
-  embedLoomBlockPlainTextAdapterMatcher,
-  embedSyncedDocBlockPlainTextAdapterMatcher,
-  embedYoutubeBlockPlainTextAdapterMatcher,
+  EmbedFigmaBlockPlainTextAdapterExtension,
+  EmbedGithubBlockPlainTextAdapterExtension,
+  EmbedLinkedDocBlockPlainTextAdapterExtension,
+  EmbedLoomBlockPlainTextAdapterExtension,
+  EmbedSyncedDocBlockPlainTextAdapterExtension,
+  EmbedYoutubeBlockPlainTextAdapterExtension,
 } from '@blocksuite/affine-block-embed';
-import { latexBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-latex';
-import { listBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-list';
-import { paragraphBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-paragraph';
-import type { BlockPlainTextAdapterMatcher } from '@blocksuite/affine-shared/adapters';
+import { LatexBlockPlainTextAdapterExtension } from '@blocksuite/affine-block-latex';
+import { ListBlockPlainTextAdapterExtension } from '@blocksuite/affine-block-list';
+import { ParagraphBlockPlainTextAdapterExtension } from '@blocksuite/affine-block-paragraph';
+import type { ExtensionType } from '@blocksuite/block-std';
 
-import { codeBlockPlainTextAdapterMatcher } from '../../../code-block/adapters/plain-text.js';
-import { databaseBlockPlainTextAdapterMatcher } from '../../../database-block/adapters/plain-text.js';
-import { dividerBlockPlainTextAdapterMatcher } from '../../../divider-block/adapters/plain-text.js';
+import { CodeBlockPlainTextAdapterExtension } from '../../../code-block/adapters/plain-text.js';
+import { DatabaseBlockPlainTextAdapterExtension } from '../../../database-block/adapters/plain-text.js';
+import { DividerBlockPlainTextAdapterExtension } from '../../../divider-block/adapters/plain-text.js';
 
-export const defaultBlockPlainTextAdapterMatchers: BlockPlainTextAdapterMatcher[] =
-  [
-    paragraphBlockPlainTextAdapterMatcher,
-    listBlockPlainTextAdapterMatcher,
-    dividerBlockPlainTextAdapterMatcher,
-    codeBlockPlainTextAdapterMatcher,
-    bookmarkBlockPlainTextAdapterMatcher,
-    embedFigmaBlockPlainTextAdapterMatcher,
-    embedGithubBlockPlainTextAdapterMatcher,
-    embedLoomBlockPlainTextAdapterMatcher,
-    embedYoutubeBlockPlainTextAdapterMatcher,
-    embedLinkedDocBlockPlainTextAdapterMatcher,
-    embedSyncedDocBlockPlainTextAdapterMatcher,
-    latexBlockPlainTextAdapterMatcher,
-    databaseBlockPlainTextAdapterMatcher,
-  ];
+export const defaultBlockPlainTextAdapterMatchers: ExtensionType[] = [
+  ParagraphBlockPlainTextAdapterExtension,
+  ListBlockPlainTextAdapterExtension,
+  DividerBlockPlainTextAdapterExtension,
+  CodeBlockPlainTextAdapterExtension,
+  BookmarkBlockPlainTextAdapterExtension,
+  EmbedFigmaBlockPlainTextAdapterExtension,
+  EmbedGithubBlockPlainTextAdapterExtension,
+  EmbedLoomBlockPlainTextAdapterExtension,
+  EmbedYoutubeBlockPlainTextAdapterExtension,
+  EmbedLinkedDocBlockPlainTextAdapterExtension,
+  EmbedSyncedDocBlockPlainTextAdapterExtension,
+  LatexBlockPlainTextAdapterExtension,
+  DatabaseBlockPlainTextAdapterExtension,
+];

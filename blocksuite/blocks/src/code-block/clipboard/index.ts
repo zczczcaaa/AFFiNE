@@ -1,4 +1,7 @@
-import { HtmlAdapter } from '@blocksuite/affine-shared/adapters';
+import {
+  HtmlAdapter,
+  PlainTextAdapter,
+} from '@blocksuite/affine-shared/adapters';
 import {
   type BlockComponent,
   Clipboard,
@@ -6,7 +9,6 @@ import {
 } from '@blocksuite/block-std';
 import { assertExists, DisposableGroup } from '@blocksuite/global/utils';
 
-import { PlainTextAdapter } from '../../_common/adapters/index.js';
 import { pasteMiddleware } from '../../root-block/clipboard/middlewares/index.js';
 
 export class CodeClipboardController {

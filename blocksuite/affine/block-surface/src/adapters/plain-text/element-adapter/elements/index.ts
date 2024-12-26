@@ -5,7 +5,7 @@ import { mindmapToPlainTextAdapterMatcher } from './mindmap.js';
 import { shapeToPlainTextAdapterMatcher } from './shape.js';
 import { textToPlainTextAdapterMatcher } from './text.js';
 
-export const elementModelToPlainTextAdapterMatchers = [
+export const elementToPlainTextAdapterMatchers = [
   groupToPlainTextAdapterMatcher,
   shapeToPlainTextAdapterMatcher,
   connectorToPlainTextAdapterMatcher,

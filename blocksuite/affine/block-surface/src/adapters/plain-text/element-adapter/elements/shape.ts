@@ -1,9 +1,9 @@
 import type { MindMapTreeNode } from '../../../types/mindmap.js';
 import { getShapeText, getShapeType } from '../../../utils/text.js';
-import type { ElementModelToPlainTextAdapterMatcher } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '../type.js';
 
-export const shapeToPlainTextAdapterMatcher: ElementModelToPlainTextAdapterMatcher =
-  {
+export const shapeToPlainTextAdapterMatcher =
+  ElementToPlainTextAdapterExtension({
     name: 'shape',
     match: elementModel => elementModel.type === 'shape',
     toAST: (elementModel, context) => {
@@ -31,4 +31,4 @@ export const shapeToPlainTextAdapterMatcher: ElementModelToPlainTextAdapterMatch
       content = `${shapeType}, with text label "${text}"`;
       return { content };
     },
-  };
+  });

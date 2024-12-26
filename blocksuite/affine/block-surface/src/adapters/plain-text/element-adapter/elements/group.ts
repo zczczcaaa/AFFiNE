@@ -1,8 +1,8 @@
 import { getGroupTitle } from '../../../utils/text.js';
-import type { ElementModelToPlainTextAdapterMatcher } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '../type.js';
 
-export const groupToPlainTextAdapterMatcher: ElementModelToPlainTextAdapterMatcher =
-  {
+export const groupToPlainTextAdapterMatcher =
+  ElementToPlainTextAdapterExtension({
     name: 'group',
     match: elementModel => elementModel.type === 'group',
     toAST: elementModel => {
@@ -10,4 +10,4 @@ export const groupToPlainTextAdapterMatcher: ElementModelToPlainTextAdapterMatch
       const content = `Group, with title "${title}"`;
       return { content };
     },
-  };
+  });

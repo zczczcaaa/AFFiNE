@@ -1,7 +1,7 @@
 import { getTextElementText } from '../../../utils/text.js';
-import type { ElementModelToPlainTextAdapterMatcher } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '../type.js';
 
-export const textToPlainTextAdapterMatcher: ElementModelToPlainTextAdapterMatcher =
+export const textToPlainTextAdapterMatcher = ElementToPlainTextAdapterExtension(
   {
     name: 'text',
     match: elementModel => elementModel.type === 'text',
@@ -9,4 +9,5 @@ export const textToPlainTextAdapterMatcher: ElementModelToPlainTextAdapterMatche
       const content = getTextElementText(elementModel);
       return { content };
     },
-  };
+  }
+);

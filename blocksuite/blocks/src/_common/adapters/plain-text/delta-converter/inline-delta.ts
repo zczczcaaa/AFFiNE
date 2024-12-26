@@ -1,11 +1,12 @@
 import { generateDocUrl } from '@blocksuite/affine-block-embed';
-import type {
-  InlineDeltaToPlainTextAdapterMatcher,
-  TextBuffer,
+import {
+  InlineDeltaToPlainTextAdapterExtension,
+  type TextBuffer,
 } from '@blocksuite/affine-shared/adapters';
+import type { ExtensionType } from '@blocksuite/block-std';
 
-export const referenceDeltaMarkdownAdapterMatch: InlineDeltaToPlainTextAdapterMatcher =
-  {
+export const referenceDeltaMarkdownAdapterMatch =
+  InlineDeltaToPlainTextAdapterExtension({
     name: 'reference',
     match: delta => !!delta.attributes?.reference,
     toAST: (delta, context) => {
@@ -30,10 +31,10 @@ export const referenceDeltaMarkdownAdapterMatch: InlineDeltaToPlainTextAdapterMa
         content,
       };
     },
-  };
+  });
 
-export const linkDeltaMarkdownAdapterMatch: InlineDeltaToPlainTextAdapterMatcher =
-  {
+export const linkDeltaMarkdownAdapterMatch =
+  InlineDeltaToPlainTextAdapterExtension({
     name: 'link',
     match: delta => !!delta.attributes?.link,
     toAST: delta => {
@@ -51,10 +52,10 @@ export const linkDeltaMarkdownAdapterMatch: InlineDeltaToPlainTextAdapterMatcher
         content,
       };
     },
-  };
+  });
 
-export const latexDeltaMarkdownAdapterMatch: InlineDeltaToPlainTextAdapterMatcher =
-  {
+export const latexDeltaMarkdownAdapterMatch =
+  InlineDeltaToPlainTextAdapterExtension({
     name: 'inlineLatex',
     match: delta => !!delta.attributes?.latex,
     toAST: delta => {
@@ -68,11 +69,10 @@ export const latexDeltaMarkdownAdapterMatch: InlineDeltaToPlainTextAdapterMatche
         content: delta.attributes?.latex,
       };
     },
-  };
+  });
 
-export const inlineDeltaToPlainTextAdapterMatchers: InlineDeltaToPlainTextAdapterMatcher[] =
-  [
-    referenceDeltaMarkdownAdapterMatch,
-    linkDeltaMarkdownAdapterMatch,
-    latexDeltaMarkdownAdapterMatch,
-  ];
+export const inlineDeltaToPlainTextAdapterMatchers: ExtensionType[] = [
+  referenceDeltaMarkdownAdapterMatch,
+  linkDeltaMarkdownAdapterMatch,
+  latexDeltaMarkdownAdapterMatch,
+];

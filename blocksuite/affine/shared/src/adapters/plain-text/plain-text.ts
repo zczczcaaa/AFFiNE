@@ -2,16 +2,8 @@ import {
   DEFAULT_NOTE_BACKGROUND_COLOR,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
-import {
-  type AdapterContext,
-  AdapterFactoryIdentifier,
-  type BlockPlainTextAdapterMatcher,
-  BlockPlainTextAdapterMatcherIdentifier,
-  type PlainText,
-  PlainTextDeltaConverter,
-  type TextBuffer,
-} from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
+import type { ServiceProvider } from '@blocksuite/global/di';
 import {
   type AssetsManager,
   ASTWalker,
@@ -32,8 +24,21 @@ import {
   type ToDocSnapshotPayload,
 } from '@blocksuite/store';
 
-import { defaultBlockPlainTextAdapterMatchers } from './block-matcher.js';
-import { inlineDeltaToPlainTextAdapterMatchers } from './delta-converter/inline-delta.js';
+import {
+  type AdapterContext,
+  AdapterFactoryIdentifier,
+  type TextBuffer,
+} from '../types';
+import {
+  type BlockPlainTextAdapterMatcher,
+  BlockPlainTextAdapterMatcherIdentifier,
+} from './block-adapter';
+import {
+  InlineDeltaToPlainTextAdapterMatcherIdentifier,
+  PlainTextDeltaConverter,
+} from './delta-converter';
+
+export type PlainText = string;
 
 type PlainTextToSliceSnapshotPayload = {
   file: PlainText;
@@ -46,11 +51,20 @@ type PlainTextToSliceSnapshotPayload = {
 export class PlainTextAdapter extends BaseAdapter<PlainText> {
   deltaConverter: PlainTextDeltaConverter;
 
+  readonly blockMatchers: BlockPlainTextAdapterMatcher[];
+
   constructor(
     job: Job,
-    readonly blockMatchers: BlockPlainTextAdapterMatcher[] = defaultBlockPlainTextAdapterMatchers
+    readonly provider: ServiceProvider
   ) {
     super(job);
+    const blockMatchers = Array.from(
+      provider.getAll(BlockPlainTextAdapterMatcherIdentifier).values()
+    );
+    const inlineDeltaToPlainTextAdapterMatchers = Array.from(
+      provider.getAll(InlineDeltaToPlainTextAdapterMatcherIdentifier).values()
+    );
+    this.blockMatchers = blockMatchers;
     this.deltaConverter = new PlainTextDeltaConverter(
       job.adapterConfigs,
       inlineDeltaToPlainTextAdapterMatchers,
@@ -78,6 +92,7 @@ export class PlainTextAdapter extends BaseAdapter<PlainText> {
             configs: this.configs,
             job: this.job,
             deltaConverter: this.deltaConverter,
+            provider: this.provider,
             textBuffer,
           };
           await matcher.fromBlockSnapshot.enter?.(o, adapterContext);
@@ -93,6 +108,7 @@ export class PlainTextAdapter extends BaseAdapter<PlainText> {
             configs: this.configs,
             job: this.job,
             deltaConverter: this.deltaConverter,
+            provider: this.provider,
             textBuffer,
           };
           await matcher.fromBlockSnapshot.leave?.(o, adapterContext);
@@ -309,13 +325,7 @@ export const PlainTextAdapterFactoryIdentifier =
 export const PlainTextAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(PlainTextAdapterFactoryIdentifier, provider => ({
-      get: (job: Job) =>
-        new PlainTextAdapter(
-          job,
-          Array.from(
-            provider.getAll(BlockPlainTextAdapterMatcherIdentifier).values()
-          )
-        ),
+      get: (job: Job) => new PlainTextAdapter(job, provider),
     }));
   },
 };

@@ -1,4 +1,4 @@
-import { createIdentifier } from '@blocksuite/global/di';
+import { createIdentifier, type ServiceProvider } from '@blocksuite/global/di';
 import type { BaseTextAttributes, DeltaInsert } from '@blocksuite/inline';
 import {
   type AssetsManager,
@@ -38,6 +38,7 @@ export type AdapterContext<
   job: Job;
   deltaConverter: TConverter;
   textBuffer: TextBuffer;
+  provider?: ServiceProvider;
   assets?: AssetsManager;
   pageMap?: Map<string, string>;
   updateAssetIds?: (assetsId: string) => void;

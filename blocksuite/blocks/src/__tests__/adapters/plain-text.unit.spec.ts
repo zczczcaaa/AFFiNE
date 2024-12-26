@@ -2,6 +2,8 @@ import {
   DEFAULT_NOTE_BACKGROUND_COLOR,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
+import { PlainTextAdapter } from '@blocksuite/affine-shared/adapters';
+import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
   DocSnapshot,
@@ -9,9 +11,19 @@ import type {
 } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { PlainTextAdapter } from '../../_common/adapters/plain-text/plain-text.js';
+import { defaultBlockPlainTextAdapterMatchers } from '../../_common/adapters/plain-text/block-matcher.js';
+import { inlineDeltaToPlainTextAdapterMatchers } from '../../_common/adapters/plain-text/delta-converter/inline-delta.js';
 import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';
+
+const container = new Container();
+[
+  ...defaultBlockPlainTextAdapterMatchers,
+  ...inlineDeltaToPlainTextAdapterMatchers,
+].forEach(ext => {
+  ext.setup(container);
+});
+const provider = container.provider();
 
 describe('snapshot to plain text', () => {
   test('paragraph', async () => {
@@ -157,7 +169,7 @@ describe('snapshot to plain text', () => {
     };
 
     const plainText = 'aaabbbccc\nddd\neee\nfff\nggg\n';
-    const plainTextAdapter = new PlainTextAdapter(createJob());
+    const plainTextAdapter = new PlainTextAdapter(createJob(), provider);
     const target = await plainTextAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -316,7 +328,7 @@ describe('snapshot to plain text', () => {
 
     const plainText = 'aaa\nbbb\nccc\nddd\neee\n';
 
-    const plainTextAdapter = new PlainTextAdapter(createJob());
+    const plainTextAdapter = new PlainTextAdapter(createJob(), provider);
     const target = await plainTextAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -386,7 +398,7 @@ describe('snapshot to plain text', () => {
     };
 
     const plainText = 'aaa\n---\n';
-    const plainTextAdapter = new PlainTextAdapter(createJob());
+    const plainTextAdapter = new PlainTextAdapter(createJob(), provider);
     const target = await plainTextAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -449,7 +461,7 @@ describe('snapshot to plain text', () => {
     };
 
     const plainText = 'import this\n';
-    const plainTextAdapter = new PlainTextAdapter(createJob());
+    const plainTextAdapter = new PlainTextAdapter(createJob(), provider);
     const target = await plainTextAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -568,7 +580,10 @@ describe('snapshot to plain text', () => {
       adapterConfigs.set('title:deadbeef', 'test');
       adapterConfigs.set('docLinkBaseUrl', 'https://example.com');
     };
-    const plainTextAdapter = new PlainTextAdapter(createJob([middleware]));
+    const plainTextAdapter = new PlainTextAdapter(
+      createJob([middleware]),
+      provider
+    );
 
     const plainText =
       'aaa: https://affine.pro/\ntest: https://example.com/deadbeef?mode=page&blockIds=abc%2C123&elementIds=def%2C456&databaseId=deadbeef&databaseRowId=123\nE=mc^2\n';
@@ -670,7 +685,7 @@ describe('snapshot to plain text', () => {
           ],
         };
 
-        const plainTextAdapter = new PlainTextAdapter(createJob());
+        const plainTextAdapter = new PlainTextAdapter(createJob(), provider);
         const target = await plainTextAdapter.fromBlockSnapshot({
           snapshot: blockSnapshot,
         });
@@ -750,7 +765,10 @@ describe('snapshot to plain text', () => {
       };
       const plainText =
         'test: https://example.com/4T5ObMgEIMII-4Bexyta1?mode=page&blockIds=abc%2C123&elementIds=def%2C456&databaseId=deadbeef&databaseRowId=123\n';
-      const plainTextAdapter = new PlainTextAdapter(createJob([middleware]));
+      const plainTextAdapter = new PlainTextAdapter(
+        createJob([middleware]),
+        provider
+      );
       const target = await plainTextAdapter.fromBlockSnapshot({
         snapshot: blockSnapShot,
       });
@@ -1146,7 +1164,7 @@ describe('snapshot to plain text', () => {
       await job.snapshotToDoc(syncedDocSnapshot);
       await job.snapshotToDoc(docSnapShot);
 
-      const mdAdapter = new PlainTextAdapter(job);
+      const mdAdapter = new PlainTextAdapter(job, provider);
       const target = await mdAdapter.fromDocSnapshot({
         snapshot: docSnapShot,
       });
@@ -1180,7 +1198,7 @@ describe('snapshot to plain text', () => {
     };
 
     const plainText = 'LaTex, with value: E=mc^2\n';
-    const plainTextAdapter = new PlainTextAdapter(createJob());
+    const plainTextAdapter = new PlainTextAdapter(createJob(), provider);
     const target = await plainTextAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1405,7 +1423,7 @@ describe('snapshot to plain text', () => {
 | Task 1 | TODO        | 2023-12-15 | 1      | 65       | test1,test2 | test2: https://google.com | https://google.com | true     |
 | Task 2 | In Progress | 2023-12-20 |        |          |             | test1                     |                    |          |
 `;
-    const plainTextAdapter = new PlainTextAdapter(createJob());
+    const plainTextAdapter = new PlainTextAdapter(createJob(), provider);
     const target = await plainTextAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });

@@ -1,8 +1,8 @@
 import { getConnectorText } from '../../../utils/text.js';
-import type { ElementModelToPlainTextAdapterMatcher } from '../type.js';
+import { ElementToPlainTextAdapterExtension } from '../type.js';
 
-export const connectorToPlainTextAdapterMatcher: ElementModelToPlainTextAdapterMatcher =
-  {
+export const connectorToPlainTextAdapterMatcher =
+  ElementToPlainTextAdapterExtension({
     name: 'connector',
     match: elementModel => elementModel.type === 'connector',
     toAST: elementModel => {
@@ -10,4 +10,4 @@ export const connectorToPlainTextAdapterMatcher: ElementModelToPlainTextAdapterM
       const content = `Connector, with text label "${text}"`;
       return { content };
     },
-  };
+  });

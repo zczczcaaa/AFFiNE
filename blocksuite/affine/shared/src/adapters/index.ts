@@ -42,9 +42,13 @@ export {
   BlockPlainTextAdapterExtension,
   type BlockPlainTextAdapterMatcher,
   BlockPlainTextAdapterMatcherIdentifier,
+  InlineDeltaToPlainTextAdapterExtension,
   type InlineDeltaToPlainTextAdapterMatcher,
   InlineDeltaToPlainTextAdapterMatcherIdentifier,
   type PlainText,
+  PlainTextAdapter,
+  PlainTextAdapterFactoryExtension,
+  PlainTextAdapterFactoryIdentifier,
   PlainTextDeltaConverter,
 } from './plain-text';
 export {

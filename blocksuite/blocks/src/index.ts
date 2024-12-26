@@ -103,6 +103,9 @@ export {
   HtmlAdapter,
   HtmlAdapterFactoryExtension,
   HtmlAdapterFactoryIdentifier,
+  PlainTextAdapter,
+  PlainTextAdapterFactoryExtension,
+  PlainTextAdapterFactoryIdentifier,
 } from '@blocksuite/affine-shared/adapters';
 export * from '@blocksuite/affine-shared/services';
 export { scrollbarStyle } from '@blocksuite/affine-shared/styles';

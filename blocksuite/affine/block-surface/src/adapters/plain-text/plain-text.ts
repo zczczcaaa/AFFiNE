@@ -5,6 +5,7 @@ import {
 
 import { getMindMapNodeMap } from '../utils/mindmap.js';
 import { PlainTextElementModelAdapter } from './element-adapter/index.js';
+import { ElementToPlainTextAdapterMatcherIdentifier } from './element-adapter/type.js';
 
 export const surfaceBlockPlainTextAdapterMatcher: BlockPlainTextAdapterMatcher =
   {
@@ -30,8 +31,18 @@ export const edgelessSurfaceBlockPlainTextAdapterMatcher: BlockPlainTextAdapterM
     toBlockSnapshot: {},
     fromBlockSnapshot: {
       enter: (o, context) => {
-        const { walkerContext } = context;
-        const plainTextElementModelAdapter = new PlainTextElementModelAdapter();
+        const { walkerContext, provider } = context;
+        if (!provider) {
+          context.walkerContext.skipAllChildren();
+          return;
+        }
+
+        const elementModelMatchers = Array.from(
+          provider.getAll(ElementToPlainTextAdapterMatcherIdentifier).values()
+        );
+        const plainTextElementModelAdapter = new PlainTextElementModelAdapter(
+          elementModelMatchers
+        );
         if ('elements' in o.node.props) {
           const elements = o.node.props.elements as Record<
             string,

@@ -86,7 +86,9 @@ export async function getContentFromSlice(
   }
   processTextInSnapshot(snapshot, host);
   const adapter =
-    type === 'markdown' ? new MarkdownAdapter(job) : new PlainTextAdapter(job);
+    type === 'markdown'
+      ? new MarkdownAdapter(job)
+      : new PlainTextAdapter(job, host.std.provider);
   const content = await adapter.fromSliceSnapshot({
     snapshot,
     assets: job.assetsManager,
@@ -104,7 +106,7 @@ export async function getPlainTextFromSlice(host: EditorHost, slice: Slice) {
     return '';
   }
   processTextInSnapshot(snapshot, host);
-  const plainTextAdapter = new PlainTextAdapter(job);
+  const plainTextAdapter = new PlainTextAdapter(job, host.std.provider);
   const plainText = await plainTextAdapter.fromSliceSnapshot({
     snapshot,
     assets: job.assetsManager,

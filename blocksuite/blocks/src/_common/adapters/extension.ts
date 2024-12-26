@@ -1,4 +1,7 @@
-import { HtmlAdapterFactoryExtension } from '@blocksuite/affine-shared/adapters';
+import {
+  HtmlAdapterFactoryExtension,
+  PlainTextAdapterFactoryExtension,
+} from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
 
 import { AttachmentAdapterFactoryExtension } from './attachment.js';
@@ -10,12 +13,13 @@ import { MixTextAdapterFactoryExtension } from './mix-text.js';
 import { notionHtmlInlineToDeltaMatchers } from './notion-html/delta-converter/html-inline.js';
 import { NotionHtmlAdapterFactoryExtension } from './notion-html/notion-html.js';
 import { NotionTextAdapterFactoryExtension } from './notion-text.js';
-import { PlainTextAdapterFactoryExtension } from './plain-text/plain-text.js';
+import { inlineDeltaToPlainTextAdapterMatchers } from './plain-text/delta-converter/inline-delta.js';
 
 export const AdapterFactoryExtensions: ExtensionType[] = [
   ...htmlInlineToDeltaMatchers,
   ...inlineDeltaToHtmlAdapterMatchers,
   ...notionHtmlInlineToDeltaMatchers,
+  ...inlineDeltaToPlainTextAdapterMatchers,
   AttachmentAdapterFactoryExtension,
   ImageAdapterFactoryExtension,
   MarkdownAdapterFactoryExtension,
