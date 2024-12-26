@@ -17,7 +17,7 @@ function PDFViewerStatus({ pdf, ...props }: PDFViewerProps & { pdf: PDF }) {
   }, [state]);
 
   if (state?.status !== PDFStatus.Opened) {
-    return <LoadingSvg />;
+    return <PDFLoading />;
   }
 
   return <PDFViewerInner {...props} pdf={pdf} state={state} />;
@@ -38,12 +38,20 @@ export function PDFViewer({ model, ...props }: PDFViewerProps) {
     const { pdf, release } = pdfService.get(model);
     setPdf(pdf);
 
-    return release;
+    return () => {
+      release();
+    };
   }, [model, pdfService, setPdf]);
 
   if (!pdf) {
-    return <LoadingSvg />;
+    return <PDFLoading />;
   }
 
   return <PDFViewerStatus {...props} model={model} pdf={pdf} />;
 }
+
+const PDFLoading = () => (
+  <div style={{ margin: 'auto' }}>
+    <LoadingSvg />
+  </div>
+);
