@@ -10,5 +10,5 @@ export const embedYoutubeBlockNotionHtmlAdapterMatcher =
     youtubeUrlRegex
   );
 
-export const EmbedYoutubeNotionHtmlAdapterExtension =
+export const EmbedYoutubeBlockNotionHtmlAdapterExtension =
   BlockNotionHtmlAdapterExtension(embedYoutubeBlockNotionHtmlAdapterMatcher);

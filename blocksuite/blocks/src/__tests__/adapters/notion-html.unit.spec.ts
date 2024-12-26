@@ -2,6 +2,7 @@ import {
   DEFAULT_NOTE_BACKGROUND_COLOR,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
+import { Container } from '@blocksuite/global/di';
 import {
   AssetsManager,
   type BlockSnapshot,
@@ -9,9 +10,21 @@ import {
 } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
+import { defaultBlockNotionHtmlAdapterMatchers } from '../../_common/adapters/notion-html/block-matcher.js';
+import { notionHtmlInlineToDeltaMatchers } from '../../_common/adapters/notion-html/delta-converter/html-inline.js';
 import { NotionHtmlAdapter } from '../../_common/adapters/notion-html/notion-html.js';
 import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { createJob } from '../utils/create-job.js';
+
+const container = new Container();
+[
+  ...notionHtmlInlineToDeltaMatchers,
+  ...defaultBlockNotionHtmlAdapterMatchers,
+].forEach(ext => {
+  ext.setup(container);
+});
+
+const provider = container.provider();
 
 describe('notion html to snapshot', () => {
   test('code', async () => {
@@ -56,7 +69,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -179,7 +192,7 @@ describe('notion html to snapshot', () => {
         },
       ],
     };
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -259,7 +272,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -776,7 +789,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -914,7 +927,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1018,7 +1031,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1069,7 +1082,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1139,7 +1152,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1187,7 +1200,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1225,7 +1238,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
       assets: new AssetsManager({ blob: new MemoryBlobCRUD() }),
@@ -1277,7 +1290,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1319,7 +1332,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const blobCRUD = new MemoryBlobCRUD();
     const key = await blobCRUD.set(new File([], 'README.pdf'));
     const assestsManager = new AssetsManager({ blob: blobCRUD });
@@ -1683,7 +1696,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1872,7 +1885,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1912,7 +1925,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -1967,7 +1980,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });
@@ -2052,7 +2065,7 @@ describe('notion html to snapshot', () => {
       ],
     };
 
-    const adapter = new NotionHtmlAdapter(createJob());
+    const adapter = new NotionHtmlAdapter(createJob(), provider);
     const rawBlockSnapshot = await adapter.toBlockSnapshot({
       file: html,
     });

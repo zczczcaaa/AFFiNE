@@ -30,6 +30,7 @@ export {
   BlockNotionHtmlAdapterMatcherIdentifier,
   type InlineDeltaToNotionHtmlAdapterMatcher,
   type NotionHtml,
+  NotionHtmlASTToDeltaExtension,
   type NotionHtmlASTToDeltaMatcher,
   NotionHtmlASTToDeltaMatcherIdentifier,
   NotionHtmlDeltaConverter,

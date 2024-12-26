@@ -10,5 +10,5 @@ export const embedGithubBlockNotionHtmlAdapterMatcher =
     githubUrlRegex
   );
 
-export const EmbedGithubNotionHtmlAdapterExtension =
+export const EmbedGithubBlockNotionHtmlAdapterExtension =
   BlockNotionHtmlAdapterExtension(embedGithubBlockNotionHtmlAdapterMatcher);

@@ -10,5 +10,5 @@ export const embedLoomBlockNotionHtmlAdapterMatcher =
     loomUrlRegex
   );
 
-export const EmbedLoomNotionHtmlAdapterExtension =
+export const EmbedLoomBlockNotionHtmlAdapterExtension =
   BlockNotionHtmlAdapterExtension(embedLoomBlockNotionHtmlAdapterMatcher);

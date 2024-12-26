@@ -1,6 +1,9 @@
+import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
 import { type DocCollection, extMimeMap, Job } from '@blocksuite/store';
 
+import { defaultBlockNotionHtmlAdapterMatchers } from '../adapters/notion-html/block-matcher.js';
+import { notionHtmlInlineToDeltaMatchers } from '../adapters/notion-html/delta-converter/html-inline.js';
 import { NotionHtmlAdapter } from '../adapters/notion-html/notion-html.js';
 import { defaultImageProxyMiddleware } from './middlewares.js';
 import { Unzip } from './utils.js';
@@ -9,6 +12,16 @@ type ImportNotionZipOptions = {
   collection: DocCollection;
   imported: Blob;
 };
+
+const container = new Container();
+[
+  ...notionHtmlInlineToDeltaMatchers,
+  ...defaultBlockNotionHtmlAdapterMatchers,
+].forEach(ext => {
+  ext.setup(container);
+});
+
+const provider = container.provider();
 
 /**
  * Imports a Notion zip file into the BlockSuite collection.
@@ -109,7 +122,7 @@ async function importNotionZip({
         collection: collection,
         middlewares: [defaultImageProxyMiddleware],
       });
-      const htmlAdapter = new NotionHtmlAdapter(job);
+      const htmlAdapter = new NotionHtmlAdapter(job, provider);
       const assets = job.assetsManager.getAssets();
       const pathBlobIdMap = job.assetsManager.getPathBlobIdMap();
       for (const [key, value] of pendingAssets.entries()) {

@@ -1,36 +1,35 @@
-import { attachmentBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-attachment';
-import { bookmarkBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-bookmark';
+import { AttachmentBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-attachment';
+import { BookmarkBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-bookmark';
 import {
-  embedFigmaBlockNotionHtmlAdapterMatcher,
-  embedGithubBlockNotionHtmlAdapterMatcher,
-  embedLoomBlockNotionHtmlAdapterMatcher,
-  embedYoutubeBlockNotionHtmlAdapterMatcher,
+  EmbedFigmaBlockNotionHtmlAdapterExtension,
+  EmbedGithubBlockNotionHtmlAdapterExtension,
+  EmbedLoomBlockNotionHtmlAdapterExtension,
+  EmbedYoutubeBlockNotionHtmlAdapterExtension,
 } from '@blocksuite/affine-block-embed';
-import { imageBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-image';
-import { listBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-list';
-import { paragraphBlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-block-paragraph';
-import type { BlockNotionHtmlAdapterMatcher } from '@blocksuite/affine-shared/adapters';
+import { ImageBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-image';
+import { ListBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-list';
+import { ParagraphBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-paragraph';
+import type { ExtensionType } from '@blocksuite/block-std';
 
-import { codeBlockNotionHtmlAdapterMatcher } from '../../../code-block/adapters/notion-html.js';
-import { databaseBlockNotionHtmlAdapterMatcher } from '../../../database-block/adapters/notion-html.js';
-import { dividerBlockNotionHtmlAdapterMatcher } from '../../../divider-block/adapters/notion-html.js';
-import { latexBlockNotionHtmlAdapterMatcher } from '../../../latex-block/adapters/notion-html.js';
-import { rootBlockNotionHtmlAdapterMatcher } from '../../../root-block/adapters/notion-html.js';
+import { CodeBlockNotionHtmlAdapterExtension } from '../../../code-block/adapters/notion-html.js';
+import { DatabaseBlockNotionHtmlAdapterExtension } from '../../../database-block/adapters/notion-html.js';
+import { DividerBlockNotionHtmlAdapterExtension } from '../../../divider-block/adapters/notion-html.js';
+import { LatexBlockNotionHtmlAdapterExtension } from '../../../latex-block/adapters/notion-html.js';
+import { RootBlockNotionHtmlAdapterExtension } from '../../../root-block/adapters/notion-html.js';
 
-export const defaultBlockNotionHtmlAdapterMatchers: BlockNotionHtmlAdapterMatcher[] =
-  [
-    listBlockNotionHtmlAdapterMatcher,
-    paragraphBlockNotionHtmlAdapterMatcher,
-    codeBlockNotionHtmlAdapterMatcher,
-    dividerBlockNotionHtmlAdapterMatcher,
-    imageBlockNotionHtmlAdapterMatcher,
-    rootBlockNotionHtmlAdapterMatcher,
-    bookmarkBlockNotionHtmlAdapterMatcher,
-    databaseBlockNotionHtmlAdapterMatcher,
-    latexBlockNotionHtmlAdapterMatcher,
-    embedYoutubeBlockNotionHtmlAdapterMatcher,
-    embedFigmaBlockNotionHtmlAdapterMatcher,
-    embedGithubBlockNotionHtmlAdapterMatcher,
-    embedLoomBlockNotionHtmlAdapterMatcher,
-    attachmentBlockNotionHtmlAdapterMatcher,
-  ];
+export const defaultBlockNotionHtmlAdapterMatchers: ExtensionType[] = [
+  ListBlockNotionHtmlAdapterExtension,
+  ParagraphBlockNotionHtmlAdapterExtension,
+  CodeBlockNotionHtmlAdapterExtension,
+  DividerBlockNotionHtmlAdapterExtension,
+  ImageBlockNotionHtmlAdapterExtension,
+  RootBlockNotionHtmlAdapterExtension,
+  BookmarkBlockNotionHtmlAdapterExtension,
+  DatabaseBlockNotionHtmlAdapterExtension,
+  LatexBlockNotionHtmlAdapterExtension,
+  EmbedYoutubeBlockNotionHtmlAdapterExtension,
+  EmbedFigmaBlockNotionHtmlAdapterExtension,
+  EmbedGithubBlockNotionHtmlAdapterExtension,
+  EmbedLoomBlockNotionHtmlAdapterExtension,
+  AttachmentBlockNotionHtmlAdapterExtension,
+];

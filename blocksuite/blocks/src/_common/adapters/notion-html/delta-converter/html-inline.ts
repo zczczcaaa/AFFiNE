@@ -1,8 +1,9 @@
 import {
   HastUtils,
   type HtmlAST,
-  type NotionHtmlASTToDeltaMatcher,
+  NotionHtmlASTToDeltaExtension,
 } from '@blocksuite/affine-shared/adapters';
+import type { ExtensionType } from '@blocksuite/block-std';
 import { collapseWhiteSpace } from 'collapse-white-space';
 import type { Element, Text } from 'hast';
 
@@ -21,7 +22,7 @@ const italicElementTags = new Set(['i', 'em']);
 const NotionInlineEquationToken = 'notion-text-equation-token';
 const NotionUnderlineStyleToken = 'border-bottom:0.05em solid';
 
-export const notionHtmlTextToDeltaMatcher: NotionHtmlASTToDeltaMatcher = {
+export const notionHtmlTextToDeltaMatcher = NotionHtmlASTToDeltaExtension({
   name: 'text',
   match: ast => isText(ast),
   toDelta: (ast, context) => {
@@ -45,10 +46,10 @@ export const notionHtmlTextToDeltaMatcher: NotionHtmlASTToDeltaMatcher = {
     }
     return [];
   },
-};
+});
 
-export const notionHtmlSpanElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
-  {
+export const notionHtmlSpanElementToDeltaMatcher =
+  NotionHtmlASTToDeltaExtension({
     name: 'span-element',
     match: ast => isElement(ast) && ast.tagName === 'span',
     toDelta: (ast, context) => {
@@ -82,18 +83,18 @@ export const notionHtmlSpanElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
 
       return ast.children.flatMap(child => toDelta(child, options));
     },
-  };
+  });
 
-export const notionHtmlListToDeltaMatcher: NotionHtmlASTToDeltaMatcher = {
+export const notionHtmlListToDeltaMatcher = NotionHtmlASTToDeltaExtension({
   name: 'list-element',
   match: ast => isElement(ast) && listElementTags.has(ast.tagName),
   toDelta: () => {
     return [];
   },
-};
+});
 
-export const notionHtmlStrongElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
-  {
+export const notionHtmlStrongElementToDeltaMatcher =
+  NotionHtmlASTToDeltaExtension({
     name: 'strong-element',
     match: ast => isElement(ast) && strongElementTags.has(ast.tagName),
     toDelta: (ast, context) => {
@@ -109,10 +110,10 @@ export const notionHtmlStrongElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher 
         })
       );
     },
-  };
+  });
 
-export const notionHtmlItalicElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
-  {
+export const notionHtmlItalicElementToDeltaMatcher =
+  NotionHtmlASTToDeltaExtension({
     name: 'italic-element',
     match: ast => isElement(ast) && italicElementTags.has(ast.tagName),
     toDelta: (ast, context) => {
@@ -127,9 +128,10 @@ export const notionHtmlItalicElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher 
         })
       );
     },
-  };
-export const notionHtmlCodeElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
-  {
+  });
+
+export const notionHtmlCodeElementToDeltaMatcher =
+  NotionHtmlASTToDeltaExtension({
     name: 'code-element',
     match: ast => isElement(ast) && ast.tagName === 'code',
     toDelta: (ast, context) => {
@@ -144,27 +146,29 @@ export const notionHtmlCodeElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
         })
       );
     },
-  };
+  });
 
-export const notionHtmlDelElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher = {
-  name: 'del-element',
-  match: ast => isElement(ast) && ast.tagName === 'del',
-  toDelta: (ast, context) => {
-    if (!isElement(ast)) {
-      return [];
-    }
-    const { toDelta, options } = context;
-    return ast.children.flatMap(child =>
-      toDelta(child, options).map(delta => {
-        delta.attributes = { ...delta.attributes, strike: true };
-        return delta;
-      })
-    );
-  },
-};
-
-export const notionHtmlUnderlineElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
+export const notionHtmlDelElementToDeltaMatcher = NotionHtmlASTToDeltaExtension(
   {
+    name: 'del-element',
+    match: ast => isElement(ast) && ast.tagName === 'del',
+    toDelta: (ast, context) => {
+      if (!isElement(ast)) {
+        return [];
+      }
+      const { toDelta, options } = context;
+      return ast.children.flatMap(child =>
+        toDelta(child, options).map(delta => {
+          delta.attributes = { ...delta.attributes, strike: true };
+          return delta;
+        })
+      );
+    },
+  }
+);
+
+export const notionHtmlUnderlineElementToDeltaMatcher =
+  NotionHtmlASTToDeltaExtension({
     name: 'underline-element',
     match: ast => isElement(ast) && ast.tagName === 'u',
     toDelta: (ast, context) => {
@@ -179,10 +183,10 @@ export const notionHtmlUnderlineElementToDeltaMatcher: NotionHtmlASTToDeltaMatch
         })
       );
     },
-  };
+  });
 
-export const notionHtmlLinkElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
-  {
+export const notionHtmlLinkElementToDeltaMatcher =
+  NotionHtmlASTToDeltaExtension({
     name: 'link-element',
     match: ast => isElement(ast) && ast.tagName === 'a',
     toDelta: (ast, context) => {
@@ -222,10 +226,10 @@ export const notionHtmlLinkElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
         })
       );
     },
-  };
+  });
 
-export const notionHtmlMarkElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
-  {
+export const notionHtmlMarkElementToDeltaMatcher =
+  NotionHtmlASTToDeltaExtension({
     name: 'mark-element',
     match: ast => isElement(ast) && ast.tagName === 'mark',
     toDelta: (ast, context) => {
@@ -240,9 +244,9 @@ export const notionHtmlMarkElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
         })
       );
     },
-  };
+  });
 
-export const notionHtmlLiElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher = {
+export const notionHtmlLiElementToDeltaMatcher = NotionHtmlASTToDeltaExtension({
   name: 'li-element',
   match: ast =>
     isElement(ast) &&
@@ -260,26 +264,26 @@ export const notionHtmlLiElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher = {
       .slice(checkBoxIndex + 2)
       .flatMap(child => toDelta(child, options));
   },
-};
+});
 
-export const notionHtmlBrElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher = {
+export const notionHtmlBrElementToDeltaMatcher = NotionHtmlASTToDeltaExtension({
   name: 'br-element',
   match: ast => isElement(ast) && ast.tagName === 'br',
   toDelta: () => {
     return [{ insert: '\n' }];
   },
-};
+});
 
-export const notionHtmlStyleElementToDeltaMatcher: NotionHtmlASTToDeltaMatcher =
-  {
+export const notionHtmlStyleElementToDeltaMatcher =
+  NotionHtmlASTToDeltaExtension({
     name: 'style-element',
     match: ast => isElement(ast) && ast.tagName === 'style',
     toDelta: () => {
       return [];
     },
-  };
+  });
 
-export const notionHtmlInlineToDeltaMatchers: NotionHtmlASTToDeltaMatcher[] = [
+export const notionHtmlInlineToDeltaMatchers: ExtensionType[] = [
   notionHtmlTextToDeltaMatcher,
   notionHtmlSpanElementToDeltaMatcher,
   notionHtmlStrongElementToDeltaMatcher,

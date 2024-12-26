@@ -9,9 +9,11 @@ import {
   HastUtils,
   type HtmlAST,
   type NotionHtml,
+  NotionHtmlASTToDeltaMatcherIdentifier,
   NotionHtmlDeltaConverter,
 } from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
+import type { ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import {
   type AssetsManager,
@@ -33,8 +35,6 @@ import rehypeParse from 'rehype-parse';
 import { unified } from 'unified';
 
 import { AdapterFactoryIdentifier } from '../type.js';
-import { defaultBlockNotionHtmlAdapterMatchers } from './block-matcher.js';
-import { notionHtmlInlineToDeltaMatchers } from './delta-converter/html-inline.js';
 
 type NotionHtmlToSliceSnapshotPayload = {
   file: NotionHtml;
@@ -112,11 +112,17 @@ export class NotionHtmlAdapter extends BaseAdapter<NotionHtml> {
 
   deltaConverter: NotionHtmlDeltaConverter;
 
-  constructor(
-    job: Job,
-    readonly blockMatchers: BlockNotionHtmlAdapterMatcher[] = defaultBlockNotionHtmlAdapterMatchers
-  ) {
+  readonly blockMatchers: BlockNotionHtmlAdapterMatcher[];
+
+  constructor(job: Job, provider: ServiceProvider) {
     super(job);
+    const blockMatchers = Array.from(
+      provider.getAll(BlockNotionHtmlAdapterMatcherIdentifier).values()
+    );
+    const notionHtmlInlineToDeltaMatchers = Array.from(
+      provider.getAll(NotionHtmlASTToDeltaMatcherIdentifier).values()
+    );
+    this.blockMatchers = blockMatchers;
     this.deltaConverter = new NotionHtmlDeltaConverter(
       job.adapterConfigs,
       [],
@@ -287,13 +293,7 @@ export const NotionHtmlAdapterFactoryIdentifier =
 export const NotionHtmlAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(NotionHtmlAdapterFactoryIdentifier, provider => ({
-      get: (job: Job) =>
-        new NotionHtmlAdapter(
-          job,
-          Array.from(
-            provider.getAll(BlockNotionHtmlAdapterMatcherIdentifier).values()
-          )
-        ),
+      get: (job: Job) => new NotionHtmlAdapter(job, provider),
     }));
   },
 };

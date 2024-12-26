@@ -7,6 +7,7 @@ import { HtmlAdapterFactoryExtension } from './html/html.js';
 import { ImageAdapterFactoryExtension } from './image.js';
 import { MarkdownAdapterFactoryExtension } from './markdown/markdown.js';
 import { MixTextAdapterFactoryExtension } from './mix-text.js';
+import { notionHtmlInlineToDeltaMatchers } from './notion-html/delta-converter/html-inline.js';
 import { NotionHtmlAdapterFactoryExtension } from './notion-html/notion-html.js';
 import { NotionTextAdapterFactoryExtension } from './notion-text.js';
 import { PlainTextAdapterFactoryExtension } from './plain-text/plain-text.js';
@@ -14,6 +15,7 @@ import { PlainTextAdapterFactoryExtension } from './plain-text/plain-text.js';
 export const AdapterFactoryExtensions: ExtensionType[] = [
   ...htmlInlineToDeltaMatchers,
   ...inlineDeltaToHtmlAdapterMatchers,
+  ...notionHtmlInlineToDeltaMatchers,
   AttachmentAdapterFactoryExtension,
   ImageAdapterFactoryExtension,
   MarkdownAdapterFactoryExtension,

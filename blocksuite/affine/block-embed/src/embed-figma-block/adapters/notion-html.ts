@@ -10,5 +10,5 @@ export const embedFigmaBlockNotionHtmlAdapterMatcher =
     figmaUrlRegex
   );
 
-export const EmbedFigmaNotionHtmlAdapterExtension =
+export const EmbedFigmaBlockNotionHtmlAdapterExtension =
   BlockNotionHtmlAdapterExtension(embedFigmaBlockNotionHtmlAdapterMatcher);
