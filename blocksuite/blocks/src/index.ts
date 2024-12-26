@@ -21,7 +21,6 @@ export * from './data-view-block/index.js';
 export * from './database-block/index.js';
 export * from './divider-block/index.js';
 export * from './edgeless-text-block/index.js';
-export * from './frame-block/index.js';
 export * from './latex-block/index.js';
 export { EdgelessTemplatePanel } from './root-block/edgeless/components/toolbar/template/template-panel.js';
 export type {
@@ -49,6 +48,7 @@ export * from './surface-ref-block/index.js';
 export * from '@blocksuite/affine-block-attachment';
 export * from '@blocksuite/affine-block-bookmark';
 export * from '@blocksuite/affine-block-embed';
+export * from '@blocksuite/affine-block-frame';
 export * from '@blocksuite/affine-block-image';
 export * from '@blocksuite/affine-block-list';
 export * from '@blocksuite/affine-block-note';

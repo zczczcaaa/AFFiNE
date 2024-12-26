@@ -7,13 +7,7 @@ import { html } from 'lit';
 import { state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { EdgelessRootService } from '../root-block/index.js';
-
 export class FrameBlockComponent extends GfxBlockComponent<FrameBlockModel> {
-  get rootService() {
-    return this.std.getService('affine:page') as EdgelessRootService;
-  }
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -59,13 +53,13 @@ export class FrameBlockComponent extends GfxBlockComponent<FrameBlockModel> {
   }
 
   override renderGfxBlock() {
-    const { model, showBorder, rootService, std } = this;
+    const { model, showBorder, std } = this;
     const backgroundColor = std
       .get(ThemeProvider)
       .generateColorProperty(model.background, '--affine-platte-transparent');
     const _isNavigator =
       this.gfx.tool.currentToolName$.value === 'frameNavigator';
-    const frameIndex = rootService.layer.getZIndex(model);
+    const frameIndex = this.gfx.layer.getZIndex(model);
 
     return html`
       <div
