@@ -46,7 +46,7 @@ export class BrushElementModel extends GfxPrimitiveElementModel<BrushProps> {
    */
   get commands() {
     if (!this._local.has('commands')) {
-      const stroke = getSolidStrokePoints(this.points, this.lineWidth);
+      const stroke = getSolidStrokePoints(this.points ?? [], this.lineWidth);
       const commands = getSvgPathFromStroke(stroke);
 
       this._local.set('commands', commands);
