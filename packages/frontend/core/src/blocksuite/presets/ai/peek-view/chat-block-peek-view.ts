@@ -8,16 +8,16 @@ import {
   NotificationProvider,
   TelemetryProvider,
 } from '@blocksuite/affine/blocks';
-import {
-  type AIChatBlockModel,
-  type ChatMessage,
-  ChatMessagesSchema,
-} from '@toeverything/infra/blocksuite';
 import { html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
+import {
+  type AIChatBlockModel,
+  type ChatMessage,
+  ChatMessagesSchema,
+} from '../../../blocks';
 import {
   ChatBlockPeekViewActions,
   constructUserInfoWithMessages,

@@ -1,6 +1,7 @@
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { Schema } from '@blocksuite/affine/store';
-import { AIChatBlockSchema } from '@toeverything/infra';
+
+import { AIChatBlockSchema } from '../../blocksuite/blocks';
 
 let _schema: Schema | null = null;
 export function getAFFiNEWorkspaceSchema() {

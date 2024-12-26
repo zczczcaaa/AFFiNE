@@ -10,11 +10,11 @@ import type {
 } from '@blocksuite/affine/blocks';
 import { AffineReference } from '@blocksuite/affine/blocks';
 import type { Block, BlockModel } from '@blocksuite/affine/store';
-import type { AIChatBlockModel } from '@toeverything/infra';
 import { Entity, LiveData } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
 import { firstValueFrom, map, race } from 'rxjs';
 
+import type { AIChatBlockModel } from '../../../blocksuite/blocks';
 import { resolveLinkToDoc } from '../../navigation';
 import type { WorkbenchService } from '../../workbench';
 

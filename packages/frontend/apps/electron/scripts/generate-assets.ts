@@ -17,8 +17,7 @@ const webDir = path.join(
   'packages',
   'frontend',
   'apps',
-  'electron',
-  'renderer'
+  'electron-renderer'
 );
 const affineWebOutDir = path.join(webDir, 'dist');
 const publicAffineOutDir = path.join(publicDistDir, `web-static`);

@@ -7,6 +7,7 @@ import {
   toReactNode,
   type useConfirmModal,
 } from '@affine/component';
+import { AIChatBlockSchema } from '@affine/core/blocksuite/blocks';
 import { AttachmentPreviewErrorBoundary } from '@affine/core/components/attachment-viewer/error';
 import { PDFViewerEmbedded } from '@affine/core/components/attachment-viewer/pdf-viewer-embedded';
 import { buildAttachmentProps } from '@affine/core/components/attachment-viewer/utils';
@@ -66,11 +67,7 @@ import {
 import { Bound } from '@blocksuite/affine/global/utils';
 import { type BlockSnapshot, Text } from '@blocksuite/affine/store';
 import type { ReferenceParams } from '@blocksuite/affine-model';
-import {
-  AIChatBlockSchema,
-  type DocProps,
-  type FrameworkProvider,
-} from '@toeverything/infra';
+import { type DocProps, type FrameworkProvider } from '@toeverything/infra';
 import { type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { literal } from 'lit/static-html.js';

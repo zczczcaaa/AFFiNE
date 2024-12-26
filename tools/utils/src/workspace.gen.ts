@@ -332,7 +332,6 @@ export const PackageList = [
       'packages/common/debug',
       'packages/common/env',
       'packages/frontend/templates',
-      'blocksuite/affine/all',
     ],
   },
   {
@@ -370,14 +369,20 @@ export const PackageList = [
     workspaceDependencies: [
       'tests/kit',
       'tools/utils',
+      'packages/frontend/native',
+      'packages/common/nbstore',
+      'packages/common/infra',
+    ],
+  },
+  {
+    location: 'packages/frontend/apps/electron-renderer',
+    name: '@affine/electron-renderer',
+    workspaceDependencies: [
       'packages/frontend/component',
       'packages/frontend/core',
       'packages/frontend/electron-api',
       'packages/frontend/i18n',
-      'packages/frontend/native',
-      'packages/common/nbstore',
-      'blocksuite/affine/all',
-      'packages/common/infra',
+      'tools/utils',
     ],
   },
   {
@@ -579,6 +584,7 @@ export type PackageName =
   | '@affine/admin'
   | '@affine/android'
   | '@affine/electron'
+  | '@affine/electron-renderer'
   | '@affine/ios'
   | '@affine/mobile'
   | '@affine/web'

@@ -1,10 +1,11 @@
 import type { EdgelessRootService } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
+
 import {
   type AIChatBlockModel,
   CHAT_BLOCK_HEIGHT,
   CHAT_BLOCK_WIDTH,
-} from '@toeverything/infra';
+} from '../../../blocks';
 
 /**
  * Calculates the bounding box for a child block

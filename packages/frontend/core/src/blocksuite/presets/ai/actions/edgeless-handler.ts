@@ -16,9 +16,9 @@ import {
 import { assertExists } from '@blocksuite/affine/global/utils';
 import { Slice } from '@blocksuite/affine/store';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
-import { AIChatBlockModel } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
 
+import { AIChatBlockModel } from '../../../blocks';
 import { getContentFromSlice } from '../../_common';
 import { AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';

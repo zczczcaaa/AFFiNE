@@ -456,19 +456,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@affine/electron-renderer@workspace:packages/frontend/apps/electron-renderer":
+  version: 0.0.0-use.local
+  resolution: "@affine/electron-renderer@workspace:packages/frontend/apps/electron-renderer"
+  dependencies:
+    "@affine-tools/utils": "workspace:*"
+    "@affine/component": "workspace:*"
+    "@affine/core": "workspace:*"
+    "@affine/electron-api": "workspace:*"
+    "@affine/i18n": "workspace:*"
+    "@emotion/react": "npm:^11.14.0"
+    "@sentry/react": "npm:^8.44.0"
+    "@types/react": "npm:^19.0.1"
+    "@types/react-dom": "npm:^19.0.2"
+    "@vanilla-extract/css": "npm:^1.16.1"
+    cross-env: "npm:^7.0.3"
+    next-themes: "npm:^0.4.4"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
+    react-router-dom: "npm:^6.28.0"
+    typescript: "npm:^5.7.2"
+  languageName: unknown
+  linkType: soft
+
 "@affine/electron@workspace:packages/frontend/apps/electron":
   version: 0.0.0-use.local
   resolution: "@affine/electron@workspace:packages/frontend/apps/electron"
   dependencies:
     "@affine-test/kit": "workspace:*"
     "@affine-tools/utils": "workspace:*"
-    "@affine/component": "workspace:*"
-    "@affine/core": "workspace:*"
-    "@affine/electron-api": "workspace:*"
-    "@affine/i18n": "workspace:*"
     "@affine/native": "workspace:*"
     "@affine/nbstore": "workspace:*"
-    "@blocksuite/affine": "workspace:*"
     "@electron-forge/cli": "npm:^7.6.0"
     "@electron-forge/core": "npm:^7.6.0"
     "@electron-forge/core-utils": "npm:^7.6.0"
@@ -479,7 +497,6 @@ __metadata:
     "@electron-forge/maker-zip": "npm:^7.6.0"
     "@electron-forge/plugin-auto-unpack-natives": "npm:^7.6.0"
     "@electron-forge/shared-types": "npm:^7.6.0"
-    "@emotion/react": "npm:^11.14.0"
     "@pengx17/electron-forge-maker-appimage": "npm:^1.2.1"
     "@sentry/electron": "npm:^5.8.0"
     "@sentry/esbuild-plugin": "npm:^2.22.7"
@@ -487,7 +504,6 @@ __metadata:
     "@toeverything/infra": "workspace:*"
     "@types/set-cookie-parser": "npm:^2.4.10"
     "@types/uuid": "npm:^10.0.0"
-    "@vanilla-extract/css": "npm:^1.16.1"
     "@vitejs/plugin-react-swc": "npm:^3.7.2"
     app-builder-lib: "npm:^25.1.8"
     async-call-rpc: "npm:^6.4.2"
@@ -507,9 +523,6 @@ __metadata:
     msw: "npm:^2.6.8"
     nanoid: "npm:^5.0.9"
     next-themes: "npm:^0.4.4"
-    react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
-    react-router-dom: "npm:^6.28.0"
     rxjs: "npm:^7.8.1"
     semver: "npm:^7.6.3"
     set-cookie-parser: "npm:^2.7.1"
@@ -13884,7 +13897,6 @@ __metadata:
     "@affine/debug": "workspace:*"
     "@affine/env": "workspace:*"
     "@affine/templates": "workspace:*"
-    "@blocksuite/affine": "workspace:*"
     "@datastructures-js/binary-search-tree": "npm:^5.3.2"
     "@emotion/react": "npm:^11.14.0"
     "@swc/core": "npm:^1.10.1"

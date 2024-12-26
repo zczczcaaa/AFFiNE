@@ -315,11 +315,11 @@ jobs:
           electron-install: false
           full-cache: true
       - name: Build Electron renderer
-        run: yarn affine @affine/electron bundle
+        run: yarn affine @affine/electron-renderer build
         env:
           DISTRIBUTION: desktop
       - name: zip web
-        run: tar -czf dist.tar.gz --directory=packages/frontend/apps/electron/renderer/dist .
+        run: tar -czf dist.tar.gz --directory=packages/frontend/apps/electron-renderer/dist .
       - name: Upload web artifact
         uses: actions/upload-artifact@v4
         with:

@@ -100,6 +100,9 @@
       "path": "./packages/frontend/apps/web"
     },
     {
+      "path": "./packages/frontend/apps/electron-renderer"
+    },
+    {
       "path": "./packages/frontend/apps/mobile"
     },
     {
@@ -110,9 +113,6 @@
     },
     {
       "path": "./packages/frontend/apps/electron/tsconfig.test.json"
-    },
-    {
-      "path": "./packages/frontend/apps/electron/renderer/tsconfig.json"
     },
     {
       "path": "./packages/frontend/graphql"

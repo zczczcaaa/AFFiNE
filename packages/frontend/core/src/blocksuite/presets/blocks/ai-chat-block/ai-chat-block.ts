@@ -1,12 +1,9 @@
 import { BlockComponent } from '@blocksuite/affine/block-std';
 import { Peekable } from '@blocksuite/affine/blocks';
 import { computed } from '@preact/signals-core';
-import {
-  type AIChatBlockModel,
-  ChatMessagesSchema,
-} from '@toeverything/infra/blocksuite';
 import { html } from 'lit';
 
+import { type AIChatBlockModel, ChatMessagesSchema } from '../../../blocks';
 import { ChatWithAIIcon } from '../_common/icon';
 import { AIChatBlockStyles } from './styles';
 
