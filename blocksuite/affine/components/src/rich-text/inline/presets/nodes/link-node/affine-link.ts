@@ -103,7 +103,8 @@ export class AffineLink extends ShadowlessElement {
   // Please also note that when readonly mode active,
   // this workaround is not necessary and links work normally.
   get block() {
-    const block = this.inlineEditor?.rootElement.closest<BlockComponent>(
+    if (!this.inlineEditor?.rootElement) return null;
+    const block = this.inlineEditor.rootElement.closest<BlockComponent>(
       `[${BLOCK_ID_ATTR}]`
     );
     return block;

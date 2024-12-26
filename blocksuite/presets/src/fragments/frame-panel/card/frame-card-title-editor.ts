@@ -43,6 +43,7 @@ export class FrameCardTitleEditor extends WithDisposable(ShadowlessElement) {
         });
 
         const inlineEditorContainer = this.inlineEditor.rootElement;
+        if (!inlineEditorContainer) return;
 
         this.disposables.addFromEvent(inlineEditorContainer, 'blur', () => {
           this._unmount();

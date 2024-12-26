@@ -138,7 +138,7 @@ export class ReferencePopup extends WithDisposable(LitElement) {
   }
 
   get block() {
-    const block = this.inlineEditor.rootElement.closest<BlockComponent>(
+    const block = this.inlineEditor.rootElement?.closest<BlockComponent>(
       `[${BLOCK_ID_ATTR}]`
     );
     assertExists(block);

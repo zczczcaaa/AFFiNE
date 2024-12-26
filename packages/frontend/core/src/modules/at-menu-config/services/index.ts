@@ -321,6 +321,9 @@ export class AtMenuConfigService extends Service {
           close();
 
           const getRect = () => {
+            if (!inlineEditor.rootElement) {
+              return { x: 0, y: 0, width: 0, height: 0 };
+            }
             let rect = inlineEditor.getNativeRange()?.getBoundingClientRect();
 
             if (!rect || rect.width === 0 || rect.height === 0) {

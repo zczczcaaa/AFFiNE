@@ -148,7 +148,8 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
   }
 
   get block() {
-    const block = this.inlineEditor?.rootElement.closest<BlockComponent>(
+    if (!this.inlineEditor?.rootElement) return null;
+    const block = this.inlineEditor.rootElement.closest<BlockComponent>(
       `[${BLOCK_ID_ATTR}]`
     );
     return block;

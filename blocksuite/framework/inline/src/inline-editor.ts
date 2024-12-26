@@ -1,5 +1,5 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import { assertExists, DisposableGroup, Slot } from '@blocksuite/global/utils';
+import { DisposableGroup, Slot } from '@blocksuite/global/utils';
 import { type Signal, signal } from '@preact/signals-core';
 import { nothing, render, type TemplateResult } from 'lit';
 import type * as Y from 'yjs';
@@ -136,7 +136,6 @@ export class InlineEditor<
 
   private _rootElement: InlineRootElement<TextAttributes> | null = null;
   get rootElement() {
-    assertExists(this._rootElement);
     return this._rootElement;
   }
 
@@ -244,7 +243,7 @@ export class InlineEditor<
     this._rootElement.dataset.vRoot = 'true';
     this.setReadonly(isReadonly);
 
-    this.rootElement.replaceChildren();
+    this._rootElement.replaceChildren();
 
     delete (this.rootElement as any)['_$litPart$'];
 
@@ -259,10 +258,12 @@ export class InlineEditor<
   }
 
   unmount() {
-    if (this.rootElement.isConnected) {
-      render(nothing, this.rootElement);
+    if (this.rootElement) {
+      if (this.rootElement.isConnected) {
+        render(nothing, this.rootElement);
+      }
+      this.rootElement.removeAttribute(INLINE_ROOT_ATTR);
     }
-    this.rootElement.removeAttribute(INLINE_ROOT_ATTR);
     this._rootElement = null;
     this._mounted = false;
     this.disposables.dispose();
@@ -272,7 +273,7 @@ export class InlineEditor<
   setReadonly(isReadonly: boolean): void {
     const value = isReadonly ? 'false' : 'true';
 
-    if (this.rootElement.contentEditable !== value) {
+    if (this.rootElement && this.rootElement.contentEditable !== value) {
       this.rootElement.contentEditable = value;
     }
 

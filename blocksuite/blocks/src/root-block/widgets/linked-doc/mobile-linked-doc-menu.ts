@@ -117,7 +117,8 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
       offset = scrollTopOffset ?? 0;
     }
 
-    container?.scrollTo({
+    if (!inlineEditor.rootElement || !container) return;
+    container.scrollTo({
       top:
         inlineEditor.rootElement.getBoundingClientRect().top +
         containerScrollTop -

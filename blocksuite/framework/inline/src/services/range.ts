@@ -63,6 +63,8 @@ export class RangeService<TextAttributes extends BaseTextAttributes> {
     rangeIndexRelatedToLine: number;
   } | null => {
     const rootElement = this.editor.rootElement;
+    if (!rootElement) return null;
+
     const lineElements = Array.from(rootElement.querySelectorAll('v-line'));
 
     let beforeIndex = 0;
@@ -100,6 +102,8 @@ export class RangeService<TextAttributes extends BaseTextAttributes> {
 
   getTextPoint = (rangeIndex: InlineRange['index']): TextPoint | null => {
     const rootElement = this.editor.rootElement;
+    if (!rootElement) return null;
+
     const vLines = Array.from(rootElement.querySelectorAll('v-line'));
 
     let index = 0;
@@ -280,6 +284,7 @@ export class RangeService<TextAttributes extends BaseTextAttributes> {
     const handler = () => {
       const selection = document.getSelection();
       if (!selection) return;
+      if (!this.editor.rootElement) return;
 
       if (inlineRange === null) {
         if (selection.rangeCount > 0) {
@@ -321,6 +326,7 @@ export class RangeService<TextAttributes extends BaseTextAttributes> {
    */
   toDomRange = (inlineRange: InlineRange): Range | null => {
     const rootElement = this.editor.rootElement;
+    if (!rootElement) return null;
     return inlineRangeToDomRange(rootElement, inlineRange);
   };
 
@@ -358,7 +364,7 @@ export class RangeService<TextAttributes extends BaseTextAttributes> {
    */
   toInlineRange = (range: Range): InlineRange | null => {
     const { rootElement, yText } = this.editor;
-
+    if (!rootElement || !yText) return null;
     return domRangeToInlineRange(range, rootElement, yText);
   };
 

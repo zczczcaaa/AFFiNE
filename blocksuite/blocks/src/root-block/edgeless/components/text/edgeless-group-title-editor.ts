@@ -79,6 +79,8 @@ export class EdgelessGroupTitleEditor extends WithDisposable(
 
         this.disposables.add(dispatcher.add('click', () => true));
         this.disposables.add(dispatcher.add('doubleClick', () => true));
+
+        if (!this.inlineEditorContainer) return;
         this.disposables.addFromEvent(
           this.inlineEditorContainer,
           'blur',

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TextUtils } from '@blocksuite/affine-block-surface';
 import type { RichText } from '@blocksuite/affine-components/rich-text';
 import type { ConnectorElementModel } from '@blocksuite/affine-model';
@@ -71,6 +70,8 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
     const { connector, edgeless } = this;
     if (!connector || !edgeless) return;
 
+    if (!this.inlineEditorContainer) return;
+
     const newWidth = this.inlineEditorContainer.scrollWidth;
     const newHeight = this.inlineEditorContainer.scrollHeight;
     const center = connector.getPointByOffsetDistance(
@@ -137,7 +138,7 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
             const isModEnter = onlyCmd && key === 'Enter';
             const isEscape = key === 'Escape';
             if (!isComposing && (isModEnter || isEscape)) {
-              this.inlineEditorContainer.blur();
+              this.inlineEditorContainer?.blur();
 
               edgeless.service.selection.set({
                 elements: [connector.id],
@@ -191,6 +192,8 @@ export class EdgelessConnectorLabelEditor extends WithDisposable(
             editing: false,
           });
         });
+
+        if (!this.inlineEditorContainer) return;
 
         this.disposables.addFromEvent(
           this.inlineEditorContainer,

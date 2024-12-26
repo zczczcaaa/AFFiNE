@@ -73,7 +73,7 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
     const edgeless = this.edgeless;
     const element = this.element;
 
-    if (!edgeless || !element) return;
+    if (!edgeless || !element || !this.inlineEditorContainer) return;
 
     const newWidth = this.inlineEditorContainer.scrollWidth;
     const newHeight = this.inlineEditorContainer.scrollHeight;
@@ -206,6 +206,7 @@ export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
           });
         });
 
+        if (!this.inlineEditorContainer) return;
         this.disposables.addFromEvent(
           this.inlineEditorContainer,
           'blur',

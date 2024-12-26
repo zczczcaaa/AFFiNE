@@ -94,6 +94,8 @@ export class EdgelessFrameTitleEditor extends WithDisposable(
 
         this.disposables.add(dispatcher.add('click', () => true));
         this.disposables.add(dispatcher.add('doubleClick', () => true));
+
+        if (!this.inlineEditor.rootElement) return;
         this.disposables.addFromEvent(
           this.inlineEditor.rootElement,
           'blur',

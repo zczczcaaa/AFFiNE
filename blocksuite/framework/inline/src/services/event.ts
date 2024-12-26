@@ -19,6 +19,8 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
     if (range.commonAncestorContainer.ownerDocument !== document) return false;
 
     const rootElement = this.editor.rootElement;
+    if (!rootElement) return false;
+
     const rootRange = document.createRange();
     rootRange.selectNode(rootElement);
 
@@ -140,7 +142,9 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
 
   private readonly _onCompositionEnd = async (event: CompositionEvent) => {
     this._isComposing = false;
-    if (!this.editor.rootElement.isConnected) return;
+    if (!this.editor.rootElement || !this.editor.rootElement.isConnected) {
+      return;
+    }
 
     const range = this.editor.rangeService.getNativeRange();
     if (
@@ -181,6 +185,7 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
 
   private readonly _onCompositionStart = () => {
     this._isComposing = true;
+    if (!this.editor.rootElement) return;
     // embeds is not editable and it will break IME
     const embeds = this.editor.rootElement.querySelectorAll(
       '[data-v-embed="true"]'
@@ -198,7 +203,9 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
   };
 
   private readonly _onCompositionUpdate = () => {
-    if (!this.editor.rootElement.isConnected) return;
+    if (!this.editor.rootElement || !this.editor.rootElement.isConnected) {
+      return;
+    }
 
     const range = this.editor.rangeService.getNativeRange();
     if (
@@ -272,6 +279,8 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
 
   private readonly _onSelectionChange = () => {
     const rootElement = this.editor.rootElement;
+    if (!rootElement) return;
+
     const previousInlineRange = this.editor.getInlineRange();
     if (this._isComposing) {
       return;
@@ -361,7 +370,9 @@ export class EventService<TextAttributes extends BaseTextAttributes> {
       'keydown',
       this._onKeyDown
     );
-    this.editor.disposables.addFromEvent(rootElement, 'click', this._onClick);
+    if (rootElement) {
+      this.editor.disposables.addFromEvent(rootElement, 'click', this._onClick);
+    }
   };
 
   get isComposing() {

@@ -1,4 +1,4 @@
-/* eslint-disable no-useless-escape */
+/* oxlint-disable no-useless-escape */
 import type { BlockComponent, ExtensionType } from '@blocksuite/block-std';
 import {
   KEYBOARD_ALLOW_DEFAULT,
@@ -450,6 +450,7 @@ export const LatexExtension = InlineMarkdownExtension({
 
       undoManager.stopCapturing();
 
+      if (!inlineEditor.rootElement) return KEYBOARD_ALLOW_DEFAULT;
       const blockComponent =
         inlineEditor.rootElement.closest<BlockComponent>('[data-block-id]');
       if (!blockComponent) return KEYBOARD_ALLOW_DEFAULT;

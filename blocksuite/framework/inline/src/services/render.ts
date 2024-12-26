@@ -78,7 +78,7 @@ export class RenderService<TextAttributes extends BaseTextAttributes> {
   }
   // render current deltas to VLines
   render = () => {
-    if (!this.editor.mounted) return;
+    if (!this.editor.rootElement) return;
 
     this._rendering = true;
 
@@ -160,7 +160,7 @@ export class RenderService<TextAttributes extends BaseTextAttributes> {
   rerenderWholeEditor = () => {
     const rootElement = this.editor.rootElement;
 
-    if (!rootElement.isConnected) return;
+    if (!rootElement || !rootElement.isConnected) return;
 
     rootElement.replaceChildren();
     // Because we bypassed Lit and disrupted the DOM structure, this will cause an inconsistency in the original state of `ChildPart`.
@@ -172,6 +172,7 @@ export class RenderService<TextAttributes extends BaseTextAttributes> {
   };
 
   waitForUpdate = async () => {
+    if (!this.editor.rootElement) return;
     const vLines = Array.from(
       this.editor.rootElement.querySelectorAll('v-line')
     );

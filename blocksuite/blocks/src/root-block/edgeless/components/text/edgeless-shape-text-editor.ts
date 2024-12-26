@@ -212,6 +212,8 @@ export class EdgelessShapeTextEditor extends WithDisposable(ShadowlessElement) {
             this._updateElementWH();
           })
         );
+
+        if (!this.inlineEditorContainer) return;
         this.disposables.addFromEvent(
           this.inlineEditorContainer,
           'blur',
