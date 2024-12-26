@@ -79,15 +79,20 @@ export class QuotaManagementService {
 
   async getUserStorageUsage(userId: string) {
     const workspaces = await this.permissions.getOwnedWorkspaces(userId);
+    const workspacesWithQuota = await this.quota.hasWorkspacesQuota(workspaces);
 
     const sizes = await Promise.allSettled(
-      workspaces.map(workspace => this.storage.totalSize(workspace))
+      workspaces
+        .filter(w => !workspacesWithQuota.includes(w))
+        .map(workspace => this.storage.totalSize(workspace))
     );
 
     return sizes.reduce((total, size) => {
       if (size.status === 'fulfilled') {
-        if (Number.isSafeInteger(size.value)) {
-          return total + size.value;
+        // ensure that size is within the safe range of gql
+        const totalSize = total + size.value;
+        if (Number.isSafeInteger(totalSize)) {
+          return totalSize;
         } else {
           this.logger.error(`Workspace size is invalid: ${size.value}`);
         }
@@ -96,6 +101,17 @@ export class QuotaManagementService {
       }
       return total;
     }, 0);
+  }
+
+  async getWorkspaceStorageUsage(workspaceId: string) {
+    const totalSize = this.storage.totalSize(workspaceId);
+    // ensure that size is within the safe range of gql
+    if (Number.isSafeInteger(totalSize)) {
+      return totalSize;
+    } else {
+      this.logger.error(`Workspace size is invalid: ${totalSize}`);
+    }
+    return 0;
   }
 
   private generateQuotaCalculator(
@@ -146,17 +162,23 @@ export class QuotaManagementService {
     );
   }
 
-  private async getWorkspaceQuota(userId: string, workspaceId: string) {
+  private async getWorkspaceQuota(
+    userId: string,
+    workspaceId: string
+  ): Promise<{ quota: QuotaConfig; fromUser: boolean }> {
     const { feature: workspaceQuota } =
       (await this.quota.getWorkspaceQuota(workspaceId)) || {};
     const { feature: userQuota } = await this.quota.getUserQuota(userId);
     if (workspaceQuota) {
-      return workspaceQuota.withOverride({
-        // override user quota with workspace quota
-        copilotActionLimit: userQuota.copilotActionLimit,
-      });
+      return {
+        quota: workspaceQuota.withOverride({
+          // override user quota with workspace quota
+          copilotActionLimit: userQuota.copilotActionLimit,
+        }),
+        fromUser: false,
+      };
     }
-    return userQuota;
+    return { quota: userQuota, fromUser: true };
   }
 
   async checkWorkspaceSeat(workspaceId: string, excludeSelf = false) {
@@ -173,17 +195,24 @@ export class QuotaManagementService {
     const memberCount =
       await this.permissions.getWorkspaceMemberCount(workspaceId);
     const {
-      name,
-      blobLimit,
-      businessBlobLimit,
-      historyPeriod,
-      memberLimit,
-      storageQuota,
-      copilotActionLimit,
-      humanReadable,
+      quota: {
+        name,
+        blobLimit,
+        businessBlobLimit,
+        historyPeriod,
+        memberLimit,
+        storageQuota,
+        copilotActionLimit,
+        humanReadable,
+      },
+      fromUser,
     } = await this.getWorkspaceQuota(owner.id, workspaceId);
-    // get all workspaces size of owner used
-    const usedSize = await this.getUserStorageUsage(owner.id);
+
+    const usedSize = fromUser
+      ? // get all workspaces size of owner used
+        await this.getUserStorageUsage(owner.id)
+      : // get workspace size
+        await this.getWorkspaceStorageUsage(workspaceId);
     // relax restrictions if workspace has unlimited feature
     // todo(@darkskygit): need a mechanism to allow feature as a middleware to edit quota
     const unlimited = await this.feature.hasWorkspaceFeature(

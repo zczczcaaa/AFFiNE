@@ -270,6 +270,23 @@ export class QuotaService {
       .then(count => count > 0);
   }
 
+  /// check if workspaces have quota
+  /// return workspaces's id that have quota
+  async hasWorkspacesQuota(
+    workspaces: string[],
+    quota?: QuotaType
+  ): Promise<string[]> {
+    const workspaceIds = await this.prisma.workspaceFeature.findMany({
+      where: {
+        workspaceId: { in: workspaces },
+        feature: { feature: quota, type: FeatureKind.Quota },
+        activated: true,
+      },
+      select: { workspaceId: true },
+    });
+    return Array.from(new Set(workspaceIds.map(w => w.workspaceId)));
+  }
+
   async getWorkspaceConfig<Q extends QuotaType>(
     workspaceId: string,
     type: Q
