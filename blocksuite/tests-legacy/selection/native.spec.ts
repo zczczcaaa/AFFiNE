@@ -1780,7 +1780,7 @@ test('unexpected scroll when clicking padding area', async ({ page }) => {
   assertExists(databaseRect);
   await page.mouse.click(
     databaseRect.x + databaseRect.width + 10,
-    databaseRect.y + 10
+    databaseRect.y + 100
   );
   const newDatabaseRect = await database.boundingBox();
   // not scroll
