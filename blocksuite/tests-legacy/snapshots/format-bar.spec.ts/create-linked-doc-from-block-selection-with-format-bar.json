@@ -34,7 +34,7 @@
       "children": [
         {
           "type": "block",
-          "id": "11",
+          "id": "12",
           "flavour": "affine:embed-linked-doc",
           "version": 1,
           "props": {

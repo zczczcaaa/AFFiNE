@@ -965,6 +965,9 @@ test('create linked doc from block selection with format bar', async ({
   expect(await getPageSnapshot(page, true)).toMatchSnapshot(
     `${testInfo.title}.json`
   );
+
+  const paragraph = page.locator('affine-paragraph');
+  await expect(paragraph).toHaveCount(3);
 });
 
 test.describe('more menu button', () => {

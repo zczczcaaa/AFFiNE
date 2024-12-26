@@ -32,7 +32,7 @@ export const quickActionConfig: QuickActionConfig[] = [
         .chain()
         .getSelectedModels({
           types: ['block'],
-          mode: 'highest',
+          mode: 'flat',
         })
         .draftSelectedModels()
         .run();

@@ -197,7 +197,7 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
         const [_, ctx] = chain
           .getSelectedModels({
             types: ['block', 'text'],
-            mode: 'highest',
+            mode: 'flat',
           })
           .draftSelectedModels()
           .run();
