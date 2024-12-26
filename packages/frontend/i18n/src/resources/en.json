@@ -1324,6 +1324,8 @@
   "com.affine.settings.workspace.experimental-features.enable-multiple-cloud-servers.description": "Once enabled, users can connect to selfhosted cloud servers.",
   "com.affine.settings.workspace.experimental-features.enable-mobile-edgeless-editing.name": "Enable Edgeless Editing",
   "com.affine.settings.workspace.experimental-features.enable-mobile-edgeless-editing.description": "Once enabled, users can edit edgeless canvas.",
+  "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.name": "PDF embed preview",
+  "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "Once enabled, you can preview PDF in embed view.",
   "com.affine.settings.workspace.not-owner": "Only an owner can edit the workspace avatar and name. Changes will be shown for everyone.",
   "com.affine.settings.workspace.preferences": "Preference",
   "com.affine.settings.workspace.billing": "Billing",

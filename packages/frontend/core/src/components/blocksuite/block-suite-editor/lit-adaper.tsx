@@ -11,6 +11,7 @@ import type {
 } from '@affine/core/modules/doc-info/types';
 import { EditorService } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { JournalService } from '@affine/core/modules/journal';
 import { toURLSearchParams } from '@affine/core/modules/navigation';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
@@ -97,12 +98,14 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     docsService,
     editorService,
     workspaceService,
+    featureFlagService,
   } = useServices({
     PeekViewService,
     DocService,
     DocsService,
     WorkspaceService,
     EditorService,
+    FeatureFlagService,
   });
   const framework = useFramework();
   const referenceRenderer: ReferenceReactRenderer = useMemo(() => {
@@ -149,7 +152,11 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     let patched = specs.concat(
       patchReferenceRenderer(reactToLit, referenceRenderer)
     );
-    patched = patched.concat(patchForAttachmentEmbedViews(reactToLit));
+
+    if (featureFlagService.flags.enable_pdf_embed_preview.value) {
+      patched = patched.concat(patchForAttachmentEmbedViews(reactToLit));
+    }
+
     patched = patched.concat(patchNotificationService(confirmModal));
     patched = patched.concat(patchPeekViewService(peekViewService));
     patched = patched.concat(patchEdgelessClipboard());
@@ -178,6 +185,7 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     referenceRenderer,
     shared,
     specs,
+    featureFlagService,
   ]);
 
   return [

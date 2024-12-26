@@ -234,7 +234,16 @@ export const AFFINE_FLAGS = {
     configurable: isMobile,
     defaultState: false,
   },
+  enable_pdf_embed_preview: {
+    category: 'affine',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description',
+    configurable: !isMobile,
+    defaultState: false,
+  },
 } satisfies { [key in string]: FlagInfo };
 
-// eslint-disable-next-line no-redeclare
+// oxlint-disable-next-line no-redeclare
 export type AFFINE_FLAGS = typeof AFFINE_FLAGS;
