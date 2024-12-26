@@ -217,7 +217,7 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
           ${collapsedSiblings.map(sibling =>
             unsafeHTML(`
               [data-block-id="${sibling.id}"] {
-                display: none;
+                display: none !important;
               }
             `)
           )}
