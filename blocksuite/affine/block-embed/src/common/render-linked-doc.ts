@@ -5,14 +5,18 @@ import {
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
 import { EMBED_CARD_HEIGHT } from '@blocksuite/affine-shared/consts';
+import { NotificationProvider } from '@blocksuite/affine-shared/services';
 import { matchFlavours, SpecProvider } from '@blocksuite/affine-shared/utils';
 import { BlockStdScope } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
 import {
   type BlockModel,
+  type BlockSnapshot,
   BlockViewType,
   type Doc,
+  type DraftModel,
   type Query,
+  Slice,
 } from '@blocksuite/store';
 import { render, type TemplateResult } from 'lit';
 
@@ -294,4 +298,123 @@ export function getDocContentWithMaxLength(doc: Doc, maxlength = 500) {
   }
 
   return texts.join('\n');
+}
+
+export function getTitleFromSelectedModels(selectedModels: DraftModel[]) {
+  const firstBlock = selectedModels[0];
+  if (
+    matchFlavours(firstBlock, ['affine:paragraph']) &&
+    firstBlock.type.startsWith('h')
+  ) {
+    return firstBlock.text.toString();
+  }
+  return undefined;
+}
+
+export function promptDocTitle(std: BlockStdScope, autofill?: string) {
+  const notification = std.getOptional(NotificationProvider);
+  if (!notification) return Promise.resolve(undefined);
+
+  return notification.prompt({
+    title: 'Create linked doc',
+    message: 'Enter a title for the new doc.',
+    placeholder: 'Untitled',
+    autofill,
+    confirmText: 'Confirm',
+    cancelText: 'Cancel',
+  });
+}
+
+export function notifyDocCreated(std: BlockStdScope, doc: Doc) {
+  const notification = std.getOptional(NotificationProvider);
+  if (!notification) return;
+
+  const abortController = new AbortController();
+  const clear = () => {
+    doc.history.off('stack-item-added', addHandler);
+    doc.history.off('stack-item-popped', popHandler);
+    disposable.dispose();
+  };
+  const closeNotify = () => {
+    abortController.abort();
+    clear();
+  };
+
+  // edit or undo or switch doc, close notify toast
+  const addHandler = doc.history.on('stack-item-added', closeNotify);
+  const popHandler = doc.history.on('stack-item-popped', closeNotify);
+  const disposable = std.host.slots.unmounted.on(closeNotify);
+
+  notification.notify({
+    title: 'Linked doc created',
+    message: 'You can click undo to recovery block content',
+    accent: 'info',
+    duration: 10 * 1000,
+    action: {
+      label: 'Undo',
+      onClick: () => {
+        doc.undo();
+        clear();
+      },
+    },
+    abort: abortController.signal,
+    onClose: clear,
+  });
+}
+
+export async function convertSelectedBlocksToLinkedDoc(
+  std: BlockStdScope,
+  doc: Doc,
+  selectedModels: DraftModel[] | Promise<DraftModel[]>,
+  docTitle?: string
+) {
+  const models = await selectedModels;
+  const slice = std.clipboard.sliceToSnapshot(Slice.fromModels(doc, models));
+  if (!slice) {
+    return;
+  }
+  const firstBlock = models[0];
+  if (!firstBlock) {
+    return;
+  }
+  // if title undefined, use the first heading block content as doc title
+  const title = docTitle || getTitleFromSelectedModels(models);
+  const linkedDoc = createLinkedDocFromSlice(std, doc, slice.content, title);
+  // insert linked doc card
+  doc.addSiblingBlocks(
+    doc.getBlock(firstBlock.id)!.model,
+    [
+      {
+        flavour: 'affine:embed-linked-doc',
+        pageId: linkedDoc.id,
+      },
+    ],
+    'before'
+  );
+  // delete selected elements
+  models.forEach(model => doc.deleteBlock(model));
+  return linkedDoc;
+}
+
+export function createLinkedDocFromSlice(
+  std: BlockStdScope,
+  doc: Doc,
+  snapshots: BlockSnapshot[],
+  docTitle?: string
+) {
+  // const modelsWithChildren = (list:BlockModel[]):BlockModel[]=>list.flatMap(model=>[model,...modelsWithChildren(model.children)])
+  const linkedDoc = doc.collection.createDoc({});
+  linkedDoc.load(() => {
+    const rootId = linkedDoc.addBlock('affine:page', {
+      title: new doc.Text(docTitle),
+    });
+    linkedDoc.addBlock('affine:surface', {}, rootId);
+    const noteId = linkedDoc.addBlock('affine:note', {}, rootId);
+    snapshots.forEach(snapshot => {
+      std.clipboard
+        .pasteBlockSnapshot(snapshot, linkedDoc, noteId)
+        .catch(console.error);
+    });
+  });
+  return linkedDoc;
 }

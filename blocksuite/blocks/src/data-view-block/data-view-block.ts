@@ -1,3 +1,4 @@
+import type { NoteBlockComponent } from '@blocksuite/affine-block-note';
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import {
   menu,
@@ -40,7 +41,6 @@ import { html } from 'lit/static-html.js';
 
 import { BlockRenderer } from '../database-block/detail-panel/block-renderer.js';
 import { NoteRenderer } from '../database-block/detail-panel/note-renderer.js';
-import type { NoteBlockComponent } from '../note-block/index.js';
 import {
   EdgelessRootBlockComponent,
   type RootService,

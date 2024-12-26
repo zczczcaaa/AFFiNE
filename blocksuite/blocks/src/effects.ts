@@ -3,6 +3,7 @@ import { effects as blockBookmarkEffects } from '@blocksuite/affine-block-bookma
 import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/effects';
 import { effects as blockImageEffects } from '@blocksuite/affine-block-image/effects';
 import { effects as blockListEffects } from '@blocksuite/affine-block-list/effects';
+import { effects as blockNoteEffects } from '@blocksuite/affine-block-note/effects';
 import { effects as blockParagraphEffects } from '@blocksuite/affine-block-paragraph/effects';
 import { effects as blockSurfaceEffects } from '@blocksuite/affine-block-surface/effects';
 import { effects as componentAiItemEffects } from '@blocksuite/affine-components/ai-item';
@@ -66,23 +67,6 @@ import { EdgelessTextBlockComponent } from './edgeless-text-block/index.js';
 import { FrameBlockComponent } from './frame-block/index.js';
 import { effects as blockLatexEffects } from './latex-block/effects.js';
 import { LatexBlockComponent } from './latex-block/index.js';
-import type { updateBlockType } from './note-block/commands/block-type.js';
-import type { dedentBlock } from './note-block/commands/dedent-block.js';
-import type { dedentBlockToRoot } from './note-block/commands/dedent-block-to-root.js';
-import type { dedentBlocks } from './note-block/commands/dedent-blocks.js';
-import type { dedentBlocksToRoot } from './note-block/commands/dedent-blocks-to-root.js';
-import type { focusBlockEnd } from './note-block/commands/focus-block-end.js';
-import type { focusBlockStart } from './note-block/commands/focus-block-start.js';
-import type { indentBlock } from './note-block/commands/indent-block.js';
-import type { indentBlocks } from './note-block/commands/indent-blocks.js';
-import type { selectBlock } from './note-block/commands/select-block.js';
-import type { selectBlocksBetween } from './note-block/commands/select-blocks-between.js';
-import {
-  EdgelessNoteBlockComponent,
-  EdgelessNoteMask,
-  NoteBlockComponent,
-  type NoteBlockService,
-} from './note-block/index.js';
 import { EdgelessAutoCompletePanel } from './root-block/edgeless/components/auto-complete/auto-complete-panel.js';
 import { EdgelessAutoComplete } from './root-block/edgeless/components/auto-complete/edgeless-auto-complete.js';
 import { EdgelessToolIconButton } from './root-block/edgeless/components/buttons/tool-icon-button.js';
@@ -264,6 +248,7 @@ export function effects() {
   stdEffects();
   inlineEffects();
 
+  blockNoteEffects();
   blockAttachmentEffects();
   blockBookmarkEffects();
   blockListEffects();
@@ -314,8 +299,6 @@ export function effects() {
   customElements.define('database-datasource-block-renderer', BlockRenderer);
   customElements.define('affine-latex', LatexBlockComponent);
   customElements.define('affine-page-root', PageRootBlockComponent);
-  customElements.define('edgeless-note-mask', EdgelessNoteMask);
-  customElements.define('affine-edgeless-note', EdgelessNoteBlockComponent);
   customElements.define('affine-preview-root', PreviewRootBlockComponent);
   customElements.define('affine-code', CodeBlockComponent);
   customElements.define('mini-mindmap-preview', MiniMindmapPreview);
@@ -445,7 +428,6 @@ export function effects() {
   customElements.define('edgeless-present-button', EdgelessPresentButton);
   customElements.define('edgeless-color-picker', EdgelessColorPicker);
   customElements.define('overlay-scrollbar', OverlayScrollbar);
-  customElements.define('affine-note', NoteBlockComponent);
   customElements.define('affine-template-loading', AffineTemplateLoading);
   customElements.define(
     'edgeless-color-picker-button',
@@ -549,18 +531,7 @@ export function effects() {
 declare global {
   namespace BlockSuite {
     interface Commands {
-      selectBlock: typeof selectBlock;
-      selectBlocksBetween: typeof selectBlocksBetween;
-      focusBlockStart: typeof focusBlockStart;
-      focusBlockEnd: typeof focusBlockEnd;
-      indentBlocks: typeof indentBlocks;
-      dedentBlock: typeof dedentBlock;
-      dedentBlocksToRoot: typeof dedentBlocksToRoot;
-      dedentBlocks: typeof dedentBlocks;
-      indentBlock: typeof indentBlock;
-      updateBlockType: typeof updateBlockType;
       insertEdgelessText: typeof insertEdgelessTextCommand;
-      dedentBlockToRoot: typeof dedentBlockToRoot;
     }
     interface CommandContext {
       focusBlock?: BlockComponent | null;
@@ -573,7 +544,6 @@ declare global {
       'affine:page': RootBlockConfig;
     }
     interface BlockServices {
-      'affine:note': NoteBlockService;
       'affine:page': RootService;
       'affine:database': DatabaseBlockService;
     }

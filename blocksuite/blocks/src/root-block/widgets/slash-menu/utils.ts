@@ -1,9 +1,11 @@
-import type { TextFormatConfig } from '@blocksuite/affine-components/rich-text';
+import type {
+  TextConversionConfig,
+  TextFormatConfig,
+} from '@blocksuite/affine-components/rich-text';
 import { isInsideBlockByFlavour } from '@blocksuite/affine-shared/utils';
 import { assertType } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
-import type { TextConversionConfig } from '../../../_common/configs/text-conversion.js';
 import type {
   SlashMenuActionItem,
   SlashMenuContext,

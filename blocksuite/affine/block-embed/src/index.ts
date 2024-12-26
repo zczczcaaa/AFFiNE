@@ -28,7 +28,7 @@ export {
   LinkPreviewer,
   type LinkPreviewResponseData,
 } from './common/link-previewer.js';
-export { getDocContentWithMaxLength } from './common/render-linked-doc';
+export * from './common/render-linked-doc';
 export { toEdgelessEmbedBlock } from './common/to-edgeless-embed-block';
 export * from './common/utils';
 export * from './embed-figma-block';

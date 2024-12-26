@@ -3340,6 +3340,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blocksuite/affine-block-note@workspace:*, @blocksuite/affine-block-note@workspace:blocksuite/affine/block-note":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-block-note@workspace:blocksuite/affine/block-note"
+  dependencies:
+    "@blocksuite/affine-block-embed": "workspace:*"
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/icons": "npm:^2.1.75"
+    "@blocksuite/inline": "workspace:*"
+    "@blocksuite/store": "workspace:*"
+    "@floating-ui/dom": "npm:^1.6.10"
+    "@lit/context": "npm:^1.1.2"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@toeverything/theme": "npm:^1.1.1"
+    lit: "npm:^3.2.0"
+    minimatch: "npm:^10.0.1"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@blocksuite/affine-block-paragraph@workspace:*, @blocksuite/affine-block-paragraph@workspace:blocksuite/affine/block-paragraph":
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-block-paragraph@workspace:blocksuite/affine/block-paragraph"
@@ -3511,6 +3534,7 @@ __metadata:
     "@blocksuite/affine-block-embed": "workspace:*"
     "@blocksuite/affine-block-image": "workspace:*"
     "@blocksuite/affine-block-list": "workspace:*"
+    "@blocksuite/affine-block-note": "workspace:*"
     "@blocksuite/affine-block-paragraph": "workspace:*"
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"

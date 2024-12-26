@@ -38,6 +38,9 @@
       "path": "../affine/block-embed"
     },
     {
+      "path": "../affine/block-note"
+    },
+    {
       "path": "../affine/block-bookmark"
     },
     {

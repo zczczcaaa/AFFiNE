@@ -1,3 +1,4 @@
+import { textConversionConfigs } from '@blocksuite/affine-components/rich-text';
 import { NoteBlockSchema } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
@@ -5,14 +6,14 @@ import {
   type BlockComponent,
   type BlockSelection,
   BlockService,
+  type BlockStdScope,
   type UIEventHandler,
   type UIEventStateContext,
 } from '@blocksuite/block-std';
+import type { BlockModel } from '@blocksuite/store';
 
-import { moveBlockConfigs } from '../_common/configs/move-block.js';
-import { quickActionConfig } from '../_common/configs/quick-action/config.js';
-import { textConversionConfigs } from '../_common/configs/text-conversion.js';
-import { onModelElementUpdated } from '../root-block/utils/callback.js';
+import { moveBlockConfigs } from './move-block';
+import { quickActionConfig } from './quick-action';
 
 export class NoteBlockService extends BlockService {
   static override readonly flavour = NoteBlockSchema.model.flavour;
@@ -51,10 +52,10 @@ export class NoteBlockService extends BlockService {
           return {
             ...acc,
             [config.hotkey!]: ctx => {
-              if (!config.showWhen(this.std.host)) return;
+              if (!config.showWhen(this.std)) return;
 
               ctx.get('defaultState').event.preventDefault();
-              config.action(this.std.host);
+              config.action(this.std);
             },
           };
         },
@@ -83,8 +84,7 @@ export class NoteBlockService extends BlockService {
                     })
                     .inline((ctx, next) => {
                       const newModels = ctx.updatedBlocks;
-                      const host = ctx.std.host;
-                      if (!host || !newModels) {
+                      if (!newModels) {
                         return;
                       }
 
@@ -93,7 +93,7 @@ export class NoteBlockService extends BlockService {
                       }
 
                       const [codeModel] = newModels;
-                      onModelElementUpdated(host, codeModel, codeElement => {
+                      onModelElementUpdated(ctx.std, codeModel, codeElement => {
                         this._std.selection.setGroup('note', [
                           this._std.selection.create('text', {
                             from: {
@@ -583,4 +583,20 @@ export class NoteBlockService extends BlockService {
       'Mod-a': this._onSelectAll,
     });
   }
+}
+
+async function onModelElementUpdated(
+  std: BlockStdScope,
+  model: BlockModel,
+  callback: (block: BlockComponent) => void
+) {
+  const page = model.doc;
+  if (!page.root) return;
+
+  const rootComponent = std.view.getBlock(page.root.id);
+  if (!rootComponent) return;
+  await rootComponent.updateComplete;
+
+  const element = std.view.getBlock(model.id);
+  if (element) callback(element);
 }

@@ -1,3 +1,4 @@
+import type { NoteBlockComponent } from '@blocksuite/affine-block-note';
 import { captureEventTarget } from '@blocksuite/affine-shared/utils';
 import {
   BLOCK_ID_ATTR,
@@ -8,7 +9,6 @@ import {
 import { Point, throttle } from '@blocksuite/global/utils';
 import { computed } from '@preact/signals-core';
 
-import type { NoteBlockComponent } from '../../../../note-block/index.js';
 import type { EdgelessRootBlockComponent } from '../../../edgeless/index.js';
 import {
   DRAG_HANDLE_CONTAINER_WIDTH,

@@ -28,6 +28,7 @@ import {
   getInlineEditorByModel,
   insertContent,
   REFERENCE_NODE,
+  textConversionConfigs,
   textFormatConfigs,
 } from '@blocksuite/affine-components/rich-text';
 import { toast } from '@blocksuite/affine-components/toast';
@@ -49,7 +50,6 @@ import { Slice, Text } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
 
 import { toggleEmbedCardCreateModal } from '../../../_common/components/embed-card/modal/embed-card-create-modal.js';
-import { textConversionConfigs } from '../../../_common/configs/text-conversion.js';
 import type { DataViewBlockComponent } from '../../../data-view-block/index.js';
 import { getSurfaceBlock } from '../../../surface-ref-block/utils.js';
 import type { RootBlockComponent } from '../../types.js';

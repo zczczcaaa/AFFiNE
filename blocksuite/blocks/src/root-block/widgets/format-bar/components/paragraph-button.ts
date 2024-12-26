@@ -1,5 +1,6 @@
 import { whenHover } from '@blocksuite/affine-components/hover';
 import { ArrowDownIcon } from '@blocksuite/affine-components/icons';
+import { textConversionConfigs } from '@blocksuite/affine-components/rich-text';
 import type { ParagraphBlockModel } from '@blocksuite/affine-model';
 import type { EditorHost } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
@@ -8,7 +9,6 @@ import { html } from 'lit';
 import { ref, type RefOrCallback } from 'lit/directives/ref.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { textConversionConfigs } from '../../../../_common/configs/text-conversion.js';
 import type { ParagraphActionConfigItem } from '../config.js';
 import type { AffineFormatBarWidget } from '../format-bar.js';
 

@@ -1,14 +1,13 @@
-import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent, BlockSelection } from '@blocksuite/block-std';
-import { IS_MAC, IS_WINDOWS } from '@blocksuite/global/env';
-import { assertExists } from '@blocksuite/global/utils';
-
 import {
   convertSelectedBlocksToLinkedDoc,
   getTitleFromSelectedModels,
   notifyDocCreated,
   promptDocTitle,
-} from '../../_common/utils/render-linked-doc.js';
+} from '@blocksuite/affine-block-embed';
+import { matchFlavours } from '@blocksuite/affine-shared/utils';
+import type { BlockComponent, BlockSelection } from '@blocksuite/block-std';
+import { IS_MAC, IS_WINDOWS } from '@blocksuite/global/env';
+import { assertExists } from '@blocksuite/global/utils';
 
 export class PageKeyboardManager {
   private readonly _handleDelete = () => {
@@ -117,7 +116,7 @@ export class PageKeyboardManager {
 
     const doc = rootComponent.host.doc;
     const autofill = getTitleFromSelectedModels(selectedModels);
-    promptDocTitle(rootComponent.host, autofill)
+    promptDocTitle(rootComponent.std, autofill)
       .then(title => {
         if (title === null) return;
         convertSelectedBlocksToLinkedDoc(
@@ -126,7 +125,7 @@ export class PageKeyboardManager {
           draftedModels,
           title
         ).catch(console.error);
-        notifyDocCreated(rootComponent.host, doc);
+        notifyDocCreated(rootComponent.std, doc);
       })
       .catch(console.error);
   }

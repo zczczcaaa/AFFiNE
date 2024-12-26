@@ -1,10 +1,12 @@
 import type { AttachmentBlockComponent } from '@blocksuite/affine-block-attachment';
 import type { BookmarkBlockComponent } from '@blocksuite/affine-block-bookmark';
-import type {
-  EmbedFigmaBlockComponent,
-  EmbedGithubBlockComponent,
-  EmbedLoomBlockComponent,
-  EmbedYoutubeBlockComponent,
+import {
+  type EmbedFigmaBlockComponent,
+  type EmbedGithubBlockComponent,
+  type EmbedLoomBlockComponent,
+  type EmbedYoutubeBlockComponent,
+  notifyDocCreated,
+  promptDocTitle,
 } from '@blocksuite/affine-block-embed';
 import type { ImageBlockComponent } from '@blocksuite/affine-block-image';
 import { isPeekable, peek } from '@blocksuite/affine-components/peek';
@@ -30,8 +32,6 @@ import {
 import {
   createLinkedDocFromEdgelessElements,
   createLinkedDocFromNote,
-  notifyDocCreated,
-  promptDocTitle,
 } from '../../../../_common/utils/render-linked-doc.js';
 import { duplicate } from '../../../edgeless/utils/clipboard-utils.js';
 import { getSortedCloneElements } from '../../../edgeless/utils/clone-utils.js';
@@ -245,11 +245,11 @@ export const conversionsGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
       label: 'Turn into linked doc',
       type: 'turn-into-linked-doc',
       action: async ctx => {
-        const { doc, service, surface, host, std } = ctx;
+        const { doc, service, surface, std } = ctx;
         const element = ctx.getNoteBlock();
         if (!element) return;
 
-        const title = await promptDocTitle(host);
+        const title = await promptDocTitle(std);
         if (title === null) return;
 
         const linkedDoc = createLinkedDocFromNote(doc, element, title);
@@ -309,7 +309,7 @@ export const conversionsGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
         host,
         std,
       }) => {
-        const title = await promptDocTitle(host);
+        const title = await promptDocTitle(std);
         if (title === null) return;
 
         const elements = getSortedCloneElements(selection.selectedElements);
@@ -360,7 +360,7 @@ export const conversionsGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
           other: 'new doc',
         });
 
-        notifyDocCreated(host, doc);
+        notifyDocCreated(std, doc);
       },
       when: ctx => !(ctx.getLinkedDocBlock() || ctx.getNoteBlock()),
     },

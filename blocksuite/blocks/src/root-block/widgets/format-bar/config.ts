@@ -1,4 +1,10 @@
 import {
+  convertSelectedBlocksToLinkedDoc,
+  getTitleFromSelectedModels,
+  notifyDocCreated,
+  promptDocTitle,
+} from '@blocksuite/affine-block-embed';
+import {
   BoldIcon,
   BulletedListIcon,
   CheckBoxIcon,
@@ -37,12 +43,6 @@ import { assertExists } from '@blocksuite/global/utils';
 import { Slice } from '@blocksuite/store';
 import { html, type TemplateResult } from 'lit';
 
-import {
-  convertSelectedBlocksToLinkedDoc,
-  getTitleFromSelectedModels,
-  notifyDocCreated,
-  promptDocTitle,
-} from '../../../_common/utils/render-linked-doc.js';
 import { convertToDatabase } from '../../../database-block/data-source.js';
 import { DATABASE_CONVERT_WHITE_LIST } from '../../../database-block/utils/block-utils.js';
 import { FormatBarContext } from './context.js';
@@ -201,7 +201,7 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
           })
           .draftSelectedModels()
           .run();
-        const { draftedModels, selectedModels } = ctx;
+        const { draftedModels, selectedModels, std } = ctx;
         if (!selectedModels?.length || !draftedModels) return;
 
         const host = formatBar.host;
@@ -209,16 +209,16 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
 
         const doc = host.doc;
         const autofill = getTitleFromSelectedModels(selectedModels);
-        promptDocTitle(host, autofill)
+        promptDocTitle(std, autofill)
           .then(async title => {
             if (title === null) return;
             await convertSelectedBlocksToLinkedDoc(
-              host.std,
+              std,
               doc,
               draftedModels,
               title
             );
-            notifyDocCreated(host, doc);
+            notifyDocCreated(std, doc);
             host.std.getOptional(TelemetryProvider)?.track('DocCreated', {
               control: 'create linked doc',
               page: 'doc editor',
