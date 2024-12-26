@@ -376,7 +376,7 @@ jobs:
         uses: ./.github/actions/server-test-env
 
       - name: Run server tests
-        run: yarn affine @affine/server test:coverage
+        run: yarn affine @affine/server test:coverage --forbid-only
         env:
           CARGO_TARGET_DIR: '${{ github.workspace }}/target'
           COPILOT_OPENAI_API_KEY: 'use_fake_openai_api_key'
