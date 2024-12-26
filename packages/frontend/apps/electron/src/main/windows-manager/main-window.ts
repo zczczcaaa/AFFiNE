@@ -153,6 +153,7 @@ export class MainWindowManager {
 
     const refreshBound = (timeout = 0) => {
       setTimeout(() => {
+        if (mainWindow.isDestroyed()) return;
         // FIXME: workaround for theme bug in full screen mode
         const size = mainWindow.getSize();
         mainWindow.setSize(size[0] + 1, size[1] + 1);
