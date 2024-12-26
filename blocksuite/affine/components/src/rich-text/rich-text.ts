@@ -360,6 +360,12 @@ export class RichText extends WithDisposable(ShadowlessElement) {
   }
 
   override updated(changedProperties: Map<string | number | symbol, unknown>) {
+    const inlineEditor = this.inlineEditor;
+    if (inlineEditor && this._yText && this._yText !== inlineEditor.yText) {
+      this._unmount();
+      this._init();
+      return;
+    }
     if (this._inlineEditor && changedProperties.has('readonly')) {
       this._inlineEditor.setReadonly(this.readonly);
     }
