@@ -230,14 +230,17 @@ export class MindmapElementModel extends GfxGroupLikeElementModel<MindmapElement
         },
     updateKey: boolean = true
   ) {
-    const collapsed = 'collapsed' in options;
+    const hasFromTo = 'to' in options;
     const { connector, from, layout } = options;
 
-    if (!from.element || (!collapsed && !options.to.element)) {
+    if (!from?.element) {
+      return { outdated: true, cacheKey: '' };
+    }
+    if (hasFromTo && !options.to?.element) {
       return { outdated: true, cacheKey: '' };
     }
 
-    const cacheKey = collapsed
+    const cacheKey = !hasFromTo
       ? `${from.element.xywh}-collapsed-${layout}-${this.style}`
       : `${from.element.xywh}-${options.to.element.xywh}-${layout}-${this.style}`;
 
