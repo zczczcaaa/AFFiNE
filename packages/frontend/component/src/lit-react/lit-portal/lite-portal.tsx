@@ -11,29 +11,27 @@ type PortalEvent = {
 };
 
 type PortalListener = (event: PortalEvent) => void;
-const listeners: Set<PortalListener> = new Set();
 
 export function createLitPortalAnchor(callback: (event: PortalEvent) => void) {
   const id = nanoid();
-  // todo(@Peng): clean up listeners?
-  listeners.add(event => {
-    if (event.target.portalId !== id) {
-      return;
-    }
-    callback(event);
-  });
-  return html`<lit-react-portal portalId=${id}></lit-react-portal>`;
+  return html`<lit-react-portal
+    .notify=${callback}
+    portalId=${id}
+  ></lit-react-portal>`;
 }
 
 export const LIT_REACT_PORTAL = 'lit-react-portal';
 
 @customElement(LIT_REACT_PORTAL)
 class LitReactPortal extends LitElement {
-  portalId: string = '';
+  portalId!: string;
+
+  notify!: PortalListener;
 
   static override get properties() {
     return {
       portalId: { type: String },
+      notify: { attribute: false },
     };
   }
 
@@ -44,13 +42,11 @@ class LitReactPortal extends LitElement {
   ) {
     super.attributeChangedCallback(name, oldVal, newVal);
     if (name.toLowerCase() === 'portalid') {
-      listeners.forEach(l =>
-        l({
-          name: 'willUpdate',
-          target: this,
-          previousPortalId: oldVal,
-        })
-      );
+      this.notify({
+        name: 'willUpdate',
+        target: this,
+        previousPortalId: oldVal,
+      });
     }
   }
 
@@ -60,22 +56,18 @@ class LitReactPortal extends LitElement {
   }
 
   override connectedCallback() {
-    listeners.forEach(l =>
-      l({
-        name: 'connectedCallback',
-        target: this,
-      })
-    );
+    this.notify({
+      name: 'connectedCallback',
+      target: this,
+    });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    listeners.forEach(l =>
-      l({
-        name: 'disconnectedCallback',
-        target: this,
-      })
-    );
+    this.notify({
+      name: 'disconnectedCallback',
+      target: this,
+    });
   }
 }
 
@@ -98,24 +90,54 @@ export const useLitPortalFactory = () => {
 
   return [
     useCallback(
-      (elementOrFactory: React.ReactElement | (() => React.ReactElement)) => {
+      (
+        elementOrFactory: React.ReactElement | (() => React.ReactElement),
+        rerendering = true
+      ) => {
         const element =
           typeof elementOrFactory === 'function'
             ? elementOrFactory()
             : elementOrFactory;
         return createLitPortalAnchor(event => {
-          const portalId = event.target.portalId;
+          const { name, target } = event;
+          const id = target.portalId;
+
+          if (name === 'connectedCallback') {
+            setPortals(portals => [
+              ...portals,
+              {
+                id,
+                portal: ReactDOM.createPortal(element, target, id),
+              },
+            ]);
+            return;
+          }
+
+          if (name === 'disconnectedCallback') {
+            setPortals(portals => portals.filter(p => p.id !== id));
+            return;
+          }
+
+          const prevId = event.previousPortalId;
+          // Ignore first `willUpdate`
+          if (!prevId) {
+            return;
+          }
+
+          // No re-rendering allowed
+          // Used in `pdf embed view` scenario
+          if (!rerendering) {
+            return;
+          }
+
           setPortals(portals => {
-            const newPortals = portals.filter(
-              p => p.id !== event.previousPortalId && p.id !== portalId
-            );
-            if (event.name !== 'disconnectedCallback') {
-              newPortals.push({
-                id: portalId,
-                portal: ReactDOM.createPortal(element, event.target),
-              });
-            }
-            return newPortals;
+            const portal = portals.find(p => p.id === prevId);
+            if (!portal) return portals;
+
+            portal.id = id;
+            portal.portal.key = id;
+            portal.portal.children = element;
+            return [...portals];
           });
         });
       },
