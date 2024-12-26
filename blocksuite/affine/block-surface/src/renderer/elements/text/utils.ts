@@ -203,6 +203,8 @@ export function getTextWidth(text: string, font: string): number {
 }
 
 export function wrapTextDeltas(text: Y.Text, font: string, w: number) {
+  if (!text) return [];
+
   const deltas: TextDelta[] = (text.toDelta() as TextDelta[]).flatMap(
     delta => ({
       insert: wrapText(delta.insert, font, w),
