@@ -7,6 +7,7 @@ import {
   embedSyncedDocBlockPlainTextAdapterMatcher,
   embedYoutubeBlockPlainTextAdapterMatcher,
 } from '@blocksuite/affine-block-embed';
+import { latexBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-latex';
 import { listBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-list';
 import { paragraphBlockPlainTextAdapterMatcher } from '@blocksuite/affine-block-paragraph';
 import type { BlockPlainTextAdapterMatcher } from '@blocksuite/affine-shared/adapters';
@@ -14,7 +15,6 @@ import type { BlockPlainTextAdapterMatcher } from '@blocksuite/affine-shared/ada
 import { codeBlockPlainTextAdapterMatcher } from '../../../code-block/adapters/plain-text.js';
 import { databaseBlockPlainTextAdapterMatcher } from '../../../database-block/adapters/plain-text.js';
 import { dividerBlockPlainTextAdapterMatcher } from '../../../divider-block/adapters/plain-text.js';
-import { latexBlockPlainTextAdapterMatcher } from '../../../latex-block/adapters/plain-text.js';
 
 export const defaultBlockPlainTextAdapterMatchers: BlockPlainTextAdapterMatcher[] =
   [

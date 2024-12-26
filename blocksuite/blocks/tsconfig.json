@@ -32,6 +32,9 @@
       "path": "../affine/block-paragraph"
     },
     {
+      "path": "../affine/block-latex"
+    },
+    {
       "path": "../affine/block-list"
     },
     {

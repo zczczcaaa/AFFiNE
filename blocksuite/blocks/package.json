@@ -19,6 +19,7 @@
     "@blocksuite/affine-block-embed": "workspace:*",
     "@blocksuite/affine-block-frame": "workspace:*",
     "@blocksuite/affine-block-image": "workspace:*",
+    "@blocksuite/affine-block-latex": "workspace:*",
     "@blocksuite/affine-block-list": "workspace:*",
     "@blocksuite/affine-block-note": "workspace:*",
     "@blocksuite/affine-block-paragraph": "workspace:*",

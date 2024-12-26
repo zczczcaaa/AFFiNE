@@ -1,7 +1,8 @@
-import type { insertLatexBlockCommand } from './commands.js';
+import type { insertLatexBlockCommand } from './commands';
+import { LatexBlockComponent } from './latex-block';
 
 export function effects() {
-  // TODO(@L-Sun): move other effects to this file
+  customElements.define('affine-latex', LatexBlockComponent);
 }
 
 declare global {
