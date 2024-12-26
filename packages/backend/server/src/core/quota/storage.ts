@@ -104,7 +104,7 @@ export class QuotaManagementService {
   }
 
   async getWorkspaceStorageUsage(workspaceId: string) {
-    const totalSize = this.storage.totalSize(workspaceId);
+    const totalSize = await this.storage.totalSize(workspaceId);
     // ensure that size is within the safe range of gql
     if (Number.isSafeInteger(totalSize)) {
       return totalSize;

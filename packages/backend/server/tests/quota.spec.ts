@@ -169,26 +169,44 @@ test('should be able to check with workspace quota', async t => {
   const u1 = await auth.signUp('test@affine.pro', '123456');
   const w1 = await workspace.createWorkspace(u1, null);
   const w2 = await workspace.createWorkspace(u1, null);
-  await quotaManager.addTeamWorkspace(w2.id, 'test');
+  const w3 = await workspace.createWorkspace(u1, null);
+  await quotaManager.addTeamWorkspace(w3.id, 'test');
 
   {
-    const wq = await quotaManager.getWorkspaceUsage(w1.id);
-    t.is(wq.usedSize, 0, 'should be 0');
+    const wq1 = await quotaManager.getWorkspaceUsage(w1.id);
+    t.is(wq1.usedSize, 0, 'should be 0');
+    const wq2 = await quotaManager.getWorkspaceUsage(w2.id);
+    t.is(wq2.usedSize, 0, 'should be 0');
+    const wq3 = await quotaManager.getWorkspaceUsage(w3.id);
+    t.is(wq3.usedSize, 0, 'should be 0');
   }
 
   {
     await workspaceBlob.put(w1.id, 'test', Buffer.from([0, 0]));
+    await workspaceBlob.put(w2.id, 'test', Buffer.from([0, 0]));
+
+    // normal workspace
     const wq1 = await quotaManager.getWorkspaceUsage(w1.id);
-    t.is(wq1.usedSize, 2, 'should be 2');
+    t.is(wq1.usedSize, 4, 'should share usage with w2');
     const wq2 = await quotaManager.getWorkspaceUsage(w2.id);
-    t.is(wq2.usedSize, 0, 'should be 0');
+    t.is(wq2.usedSize, 4, 'should share usage with w1');
+
+    // workspace with quota
+    const wq3 = await quotaManager.getWorkspaceUsage(w3.id);
+    t.is(wq3.usedSize, 0, 'should not share usage with w1 and w2');
   }
 
   {
-    await workspaceBlob.put(w2.id, 'test', Buffer.from([0, 0, 0]));
+    await workspaceBlob.put(w3.id, 'test', Buffer.from([0, 0, 0]));
+
+    // normal workspace
     const wq1 = await quotaManager.getWorkspaceUsage(w1.id);
-    t.is(wq1.usedSize, 2, 'should be 2');
+    t.is(wq1.usedSize, 4, 'should not share usage with w3');
     const wq2 = await quotaManager.getWorkspaceUsage(w2.id);
-    t.is(wq2.usedSize, 3, 'should be 0');
+    t.is(wq2.usedSize, 4, 'should not share usage with w3');
+
+    // workspace with quota
+    const wq3 = await quotaManager.getWorkspaceUsage(w3.id);
+    t.is(wq3.usedSize, 3, 'should not share usage with w1 and w2');
   }
 });
