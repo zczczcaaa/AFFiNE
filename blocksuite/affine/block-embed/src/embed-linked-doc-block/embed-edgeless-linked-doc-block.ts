@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
@@ -33,16 +34,16 @@ export class EmbedEdgelessLinkedDocBlockComponent extends toEdgelessEmbedBlock(
       return;
     }
 
-    // @ts-expect-error TODO: fix after edgeless refactor
-    const newId = edgelessService.addBlock(
+    const { addBlock } = this.std.get(EdgelessCRUDIdentifier);
+    const surface = this.gfx.surface ?? undefined;
+    const newId = addBlock(
       'affine:embed-synced-doc',
       {
         xywh: bound.serialize(),
         caption,
         ...cloneReferenceInfoWithoutAliases(this.referenceInfo$.peek()),
       },
-      // @ts-expect-error TODO: fix after edgeless refactor
-      edgelessService.surface
+      surface
     );
 
     this.std.command.exec('reassociateConnectors', {
@@ -50,8 +51,7 @@ export class EmbedEdgelessLinkedDocBlockComponent extends toEdgelessEmbedBlock(
       newId,
     });
 
-    // @ts-expect-error TODO: fix after edgeless refactor
-    edgelessService.selection.set({
+    this.gfx.selection.set({
       editing: false,
       elements: [newId],
     });

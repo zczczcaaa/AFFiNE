@@ -1,10 +1,14 @@
-import { SurfaceBlockComponent } from '@blocksuite/affine-block-surface';
+import {
+  EdgelessCRUDIdentifier,
+  SurfaceBlockComponent,
+} from '@blocksuite/affine-block-surface';
 import type { EmbedCardStyle } from '@blocksuite/affine-model';
 import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import type { BlockStdScope } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound, Vec } from '@blocksuite/global/utils';
 
 interface EmbedCardProperties {
@@ -46,14 +50,14 @@ export function insertEmbedCard(
     const edgelessRoot = std.view.getBlock(rootId);
     if (!edgelessRoot) return;
 
-    // @ts-expect-error TODO: fix after edgeless refactor
-    edgelessRoot.service.viewport.smoothZoom(1);
-    // @ts-expect-error TODO: fix after edgeless refactor
-    const surfaceBlock = edgelessRoot.surface;
+    const gfx = std.get(GfxControllerIdentifier);
+    const crud = std.get(EdgelessCRUDIdentifier);
+
+    gfx.viewport.smoothZoom(1);
+    const surfaceBlock = gfx.surfaceComponent;
     if (!(surfaceBlock instanceof SurfaceBlockComponent)) return;
     const center = Vec.toVec(surfaceBlock.renderer.viewport.center);
-    // @ts-expect-error TODO: fix after edgeless refactor
-    const cardId = edgelessRoot.service.addBlock(
+    const cardId = crud.addBlock(
       flavour,
       {
         ...props,
@@ -67,8 +71,7 @@ export function insertEmbedCard(
       surfaceBlock.model
     );
 
-    // @ts-expect-error TODO: fix after edgeless refactor
-    edgelessRoot.service.selection.set({
+    gfx.selection.set({
       elements: [cardId],
       editing: false,
     });
