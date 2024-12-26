@@ -103,8 +103,9 @@ class PDFRendererBackend extends OpConsumer<ClientOps> {
 
     if (!page) return;
 
-    const width = Math.ceil(opts.width * (opts.scale ?? 1));
-    const height = Math.ceil(opts.height * (opts.scale ?? 1));
+    const scale = opts.scale ?? 1;
+    const width = Math.ceil(opts.width * scale);
+    const height = Math.ceil(opts.height * scale);
 
     const bitmap = viewer.createBitmap(width, height, 0);
     bitmap.fill(0, 0, width, height);
@@ -119,9 +120,8 @@ class PDFRendererBackend extends OpConsumer<ClientOps> {
     );
 
     const data = new Uint8ClampedArray(bitmap.toUint8Array());
-    const imageBitmap = await createImageBitmap(
-      new ImageData(data, width, height)
-    );
+    const imageData = new ImageData(data, width, height);
+    const imageBitmap = await createImageBitmap(imageData);
 
     bitmap.close();
     page.close();

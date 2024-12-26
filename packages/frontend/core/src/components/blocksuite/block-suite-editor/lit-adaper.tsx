@@ -53,6 +53,7 @@ import {
   patchDocModeService,
   patchEdgelessClipboard,
   patchEmbedLinkedDocBlockConfig,
+  patchForAttachmentEmbedViews,
   patchForMobile,
   patchForSharedPage,
   patchGenerateDocUrlExtension,
@@ -148,6 +149,7 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     let patched = specs.concat(
       patchReferenceRenderer(reactToLit, referenceRenderer)
     );
+    patched = patched.concat(patchForAttachmentEmbedViews(reactToLit));
     patched = patched.concat(patchNotificationService(confirmModal));
     patched = patched.concat(patchPeekViewService(peekViewService));
     patched = patched.concat(patchEdgelessClipboard());

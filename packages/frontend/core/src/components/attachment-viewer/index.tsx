@@ -2,7 +2,7 @@ import { ViewBody, ViewHeader } from '@affine/core/modules/workbench';
 import type { AttachmentBlockModel } from '@blocksuite/affine/blocks';
 
 import { AttachmentPreviewErrorBoundary, Error } from './error';
-import { PDFViewer } from './pdf-viewer';
+import { PDFViewer, type PDFViewerProps } from './pdf-viewer';
 import * as styles from './styles.css';
 import { Titlebar } from './titlebar';
 import { buildAttachmentProps } from './utils';
@@ -18,13 +18,7 @@ export const AttachmentViewer = ({ model }: AttachmentViewerProps) => {
   return (
     <div className={styles.viewerContainer}>
       <Titlebar {...props} />
-      {model.type.endsWith('pdf') ? (
-        <AttachmentPreviewErrorBoundary>
-          <PDFViewer {...props} />
-        </AttachmentPreviewErrorBoundary>
-      ) : (
-        <Error {...props} />
-      )}
+      <AttachmentViewerInner {...props} />
     </div>
   );
 };
@@ -39,14 +33,18 @@ export const AttachmentViewerView = ({ model }: AttachmentViewerProps) => {
         <Titlebar {...props} />
       </ViewHeader>
       <ViewBody>
-        {model.type.endsWith('pdf') ? (
-          <AttachmentPreviewErrorBoundary>
-            <PDFViewer {...props} />
-          </AttachmentPreviewErrorBoundary>
-        ) : (
-          <Error {...props} />
-        )}
+        <AttachmentViewerInner {...props} />
       </ViewBody>
     </>
+  );
+};
+
+const AttachmentViewerInner = (props: PDFViewerProps) => {
+  return props.model.type.endsWith('pdf') ? (
+    <AttachmentPreviewErrorBoundary>
+      <PDFViewer {...props} />
+    </AttachmentPreviewErrorBoundary>
+  ) : (
+    <Error {...props} />
   );
 };

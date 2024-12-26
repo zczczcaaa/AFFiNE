@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import type { PDF } from '../entities/pdf';
 import type { PDFPage } from '../entities/pdf-page';
-import { LoadingSvg } from './components';
+import { LoadingSvg, PDFPageCanvas } from './components';
 import * as styles from './styles.css';
 
 interface PDFPageProps {
@@ -34,6 +34,8 @@ export const PDFPageRenderer = ({
   const style = { width, aspectRatio: `${width} / ${height}` };
 
   useEffect(() => {
+    if (width * height === 0) return;
+
     const { page, release } = pdf.page(pageNum, `${width}:${height}:${scale}`);
     setPdfPage(page);
 
@@ -41,6 +43,8 @@ export const PDFPageRenderer = ({
   }, [pdf, width, height, pageNum, scale]);
 
   useEffect(() => {
+    if (width * height === 0) return;
+
     pdfPage?.render({ width, height, scale });
 
     return pdfPage?.render.unsubscribe;
@@ -52,6 +56,7 @@ export const PDFPageRenderer = ({
     if (!img) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    if (width * height === 0) return;
 
     canvas.width = width * scale;
     canvas.height = height * scale;
@@ -74,11 +79,7 @@ export const PDFPageRenderer = ({
       style={style}
       onClick={() => onSelect?.(pageNum)}
     >
-      {img === null ? (
-        <LoadingSvg />
-      ) : (
-        <canvas className={styles.pdfPageCanvas} ref={canvasRef} />
-      )}
+      {img === null ? <LoadingSvg /> : <PDFPageCanvas ref={canvasRef} />}
     </div>
   );
 };

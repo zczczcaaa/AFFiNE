@@ -7,6 +7,9 @@ import {
   toReactNode,
   type useConfirmModal,
 } from '@affine/component';
+import { AttachmentPreviewErrorBoundary } from '@affine/core/components/attachment-viewer/error';
+import { PDFViewerEmbedded } from '@affine/core/components/attachment-viewer/pdf-viewer-embedded';
+import { buildAttachmentProps } from '@affine/core/components/attachment-viewer/utils';
 import { WorkspaceServerService } from '@affine/core/modules/cloud';
 import { type DocService, DocsService } from '@affine/core/modules/doc';
 import type { EditorService } from '@affine/core/modules/editor';
@@ -47,6 +50,7 @@ import type {
 } from '@blocksuite/affine/blocks';
 import {
   AffineSlashMenuWidget,
+  AttachmentEmbedConfigIdentifier,
   DocModeExtension,
   EdgelessRootBlockComponent,
   EmbedLinkedDocBlockComponent,
@@ -59,6 +63,7 @@ import {
   QuickSearchExtension,
   ReferenceNodeConfigExtension,
 } from '@blocksuite/affine/blocks';
+import { Bound } from '@blocksuite/affine/global/utils';
 import { type BlockSnapshot, Text } from '@blocksuite/affine/store';
 import type { ReferenceParams } from '@blocksuite/affine-model';
 import {
@@ -596,4 +601,34 @@ export function patchForMobile() {
     MobileSpecsPatches,
   ];
   return extensions;
+}
+
+export function patchForAttachmentEmbedViews(
+  reactToLit: (element: ElementOrFactory) => TemplateResult
+): ExtensionType {
+  return {
+    setup: di => {
+      di.override(AttachmentEmbedConfigIdentifier('pdf'), () => ({
+        name: 'pdf',
+        check: (model, maxFileSize) =>
+          model.type === 'application/pdf' && model.size <= maxFileSize,
+        action: model => {
+          const bound = Bound.deserialize(model.xywh);
+          bound.w = 537 + 24 + 2;
+          bound.h = 759 + 46 + 24 + 2;
+          model.doc.updateBlock(model, {
+            embed: true,
+            style: 'pdf',
+            xywh: bound.serialize(),
+          });
+        },
+        template: (model, _blobUrl) =>
+          reactToLit(
+            <AttachmentPreviewErrorBoundary key={model.id}>
+              <PDFViewerEmbedded {...buildAttachmentProps(model)} />
+            </AttachmentPreviewErrorBoundary>
+          ),
+      }));
+    },
+  };
 }

@@ -49,6 +49,10 @@ export const titlebarName = style({
   wordWrap: 'break-word',
 });
 
+export const virtuoso = style({
+  width: '100%',
+});
+
 export const error = style({
   flexDirection: 'column',
   alignItems: 'center',
@@ -106,10 +110,6 @@ export const viewer = style({
   },
 });
 
-export const virtuoso = style({
-  width: '100%',
-});
-
 export const pdfIndicator = style({
   display: 'flex',
   alignItems: 'center',
@@ -127,6 +127,7 @@ export const pdfPage = style({
   boxShadow:
     '0px 4px 20px 0px var(--transparent-black-200, rgba(0, 0, 0, 0.10))',
   overflow: 'hidden',
+  maxHeight: 'max-content',
 });
 
 export const pdfThumbnails = style({
@@ -156,7 +157,6 @@ export const pdfThumbnailsList = style({
   flexDirection: 'column',
   maxHeight: '100%',
   overflow: 'hidden',
-  resize: 'both',
   selectors: {
     '&.collapsed': {
       display: 'none',

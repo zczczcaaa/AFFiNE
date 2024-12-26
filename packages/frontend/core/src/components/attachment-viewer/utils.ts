@@ -2,6 +2,7 @@ import type { AttachmentBlockModel } from '@blocksuite/affine/blocks';
 import { filesize } from 'filesize';
 
 import { downloadBlob } from '../../utils/resource';
+import type { PDFViewerProps } from './pdf-viewer';
 
 export async function getAttachmentBlob(model: AttachmentBlockModel) {
   const sourceId = model.sourceId;
@@ -26,7 +27,9 @@ export async function download(model: AttachmentBlockModel) {
   await downloadBlob(blob, model.name);
 }
 
-export function buildAttachmentProps(model: AttachmentBlockModel) {
+export function buildAttachmentProps(
+  model: AttachmentBlockModel
+): PDFViewerProps {
   const pieces = model.name.split('.');
   const ext = pieces.pop() || '';
   const name = pieces.join('.');

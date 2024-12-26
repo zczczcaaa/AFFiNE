@@ -9,7 +9,7 @@ import type {
   SurfaceRefBlockModel,
 } from '@blocksuite/affine/blocks';
 import { AffineReference } from '@blocksuite/affine/blocks';
-import type { BlockModel } from '@blocksuite/affine/store';
+import type { Block, BlockModel } from '@blocksuite/affine/store';
 import type { AIChatBlockModel } from '@toeverything/infra';
 import { Entity, LiveData } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
@@ -36,7 +36,8 @@ export type PeekViewElement =
   | HTMLElement
   | BlockComponent
   | AffineReference
-  | HTMLAnchorElement;
+  | HTMLAnchorElement
+  | Block;
 
 export interface PeekViewTarget {
   element?: PeekViewElement;
@@ -184,7 +185,7 @@ function resolvePeekInfoFromPeekTarget(
             blockIds: [blockModel.id],
           },
         };
-      } else if (isAIChatBlockModel(blockModel)) {
+      } else if (isAIChatBlockModel(blockModel) && 'host' in element) {
         return {
           type: 'ai-chat-block',
           docRef: {

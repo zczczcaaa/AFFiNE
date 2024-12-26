@@ -113,3 +113,9 @@ export const LoadingSvg = memo(
 );
 
 LoadingSvg.displayName = 'pdf-loading';
+
+export const PDFPageCanvas = forwardRef<HTMLCanvasElement>((props, ref) => {
+  return <canvas className={styles.pdfPageCanvas} ref={ref} {...props} />;
+});
+
+PDFPageCanvas.displayName = 'pdf-page-canvas';
