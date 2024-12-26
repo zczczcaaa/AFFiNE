@@ -72,9 +72,15 @@ export class DragEventWatcher {
     }
   };
 
-  private readonly _dragEndHandler: UIEventHandler = () => {
+  private readonly _cleanup = () => {
+    this.widget.previewHelper.removeDragPreview();
     this.widget.clearRaf();
     this.widget.hide(true);
+    this._std.selection.setGroup('gfx', []);
+  };
+
+  private readonly _dragEndHandler: UIEventHandler = () => {
+    this._cleanup();
   };
 
   private readonly _dragMoveHandler: UIEventHandler = ctx => {
@@ -118,9 +124,7 @@ export class DragEventWatcher {
       return;
     }
     this._onDrop(context);
-    this._std.selection.setGroup('gfx', []);
-    this.widget.clearRaf();
-    this.widget.hide(true);
+    this._cleanup();
   };
 
   private readonly _onDragMove = (state: DndEventState) => {
