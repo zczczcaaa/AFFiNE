@@ -19,6 +19,7 @@ const ignoreLoaderScripts = [
   'prisma',
   'cap',
   'tsc',
+  /^r$/,
   /electron(?!-)/,
 ];
 
@@ -30,7 +31,7 @@ export class RunCommand extends PackageCommand {
     details: `
       \`affine web <script>\`    Run any script defined in package's package.json
 
-      \`affine codegen\`         Generate the required files if there are any package added or removed
+      \`affine init\`            Generate the required files if there are any package added or removed
 
       \`affine clean\`           Clean the output files of ts, cargo, webpack, etc.
 
@@ -88,7 +89,7 @@ export class RunCommand extends PackageCommand {
     if (pkgScript) {
       await this.runScript(pkg, scriptName, args.slice(1), opts);
     } else {
-      await this.runCommand(pkg, scriptName, args.slice(1));
+      await this.runCommand(pkg, args);
     }
   }
 
@@ -98,9 +99,9 @@ export class RunCommand extends PackageCommand {
     args: string[],
     opts: RunScriptOptions = {}
   ) {
-    const script = pkg.scripts[scriptName];
+    const rawScript = pkg.scripts[scriptName];
 
-    if (!script) {
+    if (!rawScript) {
       if (opts.ignoreIfNotFound) {
         return;
       }
@@ -108,14 +109,19 @@ export class RunCommand extends PackageCommand {
       throw new Error(`Script ${scriptName} not found in ${pkg.name}`);
     }
 
-    const isAFFiNECommand = script.startsWith('affine ');
+    const rawArgs = [...rawScript.split(' '), ...args];
+
+    const { args: extractedArgs, envs } = this.extractEnvs(rawArgs);
+
+    args = extractedArgs;
+
     if (opts.includeDependencies) {
       const depsRun = Promise.all(
         pkg.deps.map(dep => {
           return this.runScript(
             pkg.workspace.getPackage(dep.name),
             scriptName,
-            args,
+            [],
             {
               ...opts,
               ignoreIfNotFound: true,
@@ -123,6 +129,7 @@ export class RunCommand extends PackageCommand {
           );
         })
       );
+
       if (opts.waitDependencies) {
         await depsRun;
       } else {
@@ -132,34 +139,87 @@ export class RunCommand extends PackageCommand {
       }
     }
 
-    args = [...script.split(' '), ...args];
-
+    const isAFFiNECommand = args[0] === 'affine';
     if (isAFFiNECommand) {
+      // remove 'affine' from 'affine xxx' command
       args.shift();
       args.push('-p', pkg.name);
-    } else {
-      args.unshift(pkg.name);
-    }
 
-    await this.cli.run(args);
+      process.env = {
+        ...process.env,
+        ...envs,
+      };
+      await this.cli.run(args);
+    } else {
+      await this.runCommand(pkg, rawArgs);
+    }
   }
 
-  async runCommand(pkg: Package, scriptName: string, args: string[]) {
-    // very simple test for auto ts/mjs scripts
-    // TODO(@forehalo): bypass cross-env and fetch the next script after envs
-    const isLoaderRequired = !ignoreLoaderScripts.some(ignore =>
-      new RegExp(ignore).test(scriptName)
-    );
+  async runCommand(pkg: Package, args: string[]) {
+    const { args: extractedArgs, envs } = this.extractEnvs(args);
+    args = extractedArgs;
 
-    await execAsync(pkg.name, ['yarn', scriptName, ...args], {
+    const bin = args[0] === 'yarn' ? args[1] : args[0];
+
+    const loader = currentDir.join('../register.js').toFileUrl().toString();
+
+    // very simple test for auto ts/mjs scripts
+    const isLoaderRequired =
+      !ignoreLoaderScripts.some(ignore => new RegExp(ignore).test(bin)) ||
+      process.env.NODE_OPTIONS?.includes('ts-node/esm') ||
+      process.env.NODE_OPTIONS?.includes(loader);
+
+    let NODE_OPTIONS = process.env.NODE_OPTIONS
+      ? [process.env.NODE_OPTIONS]
+      : [];
+
+    if (isLoaderRequired) {
+      NODE_OPTIONS.push(`--import=${loader}`);
+    }
+
+    if (args[0] !== 'yarn') {
+      // add 'yarn' to the command so we can bypass bin execution to it
+      args.unshift('yarn');
+    }
+
+    await execAsync(pkg.name, args, {
       cwd: pkg.path.value,
-      ...(isLoaderRequired
-        ? {
-            env: {
-              NODE_OPTIONS: `--import=${currentDir.join('../register.js').toFileUrl()}`,
-            },
-          }
-        : {}),
+      env: {
+        ...envs,
+        NODE_OPTIONS: NODE_OPTIONS.join(' '),
+      },
     });
+  }
+
+  private extractEnvs(args: string[]): {
+    args: string[];
+    envs: Record<string, string>;
+  } {
+    const envs: Record<string, string> = {};
+
+    let i = 0;
+
+    while (i < args.length) {
+      const arg = args[i];
+      if (arg === 'cross-env') {
+        i++;
+        continue;
+      }
+
+      const match = arg.match(/^([A-Z_]+)=(.+)$/);
+
+      if (match) {
+        envs[match[1]] = match[2];
+        i++;
+      } else {
+        // not envs any more
+        break;
+      }
+    }
+
+    return {
+      args: args.slice(i),
+      envs,
+    };
   }
 }

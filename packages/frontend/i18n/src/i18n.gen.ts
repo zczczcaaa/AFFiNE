@@ -6302,7 +6302,7 @@ export function useAFFiNEI18N(): {
     /**
       * `Loading...`
       */
-    ["com.affine.editor.at-menu.recent-docs.loading"](): string;
+    ["com.affine.editor.at-menu.loading"](): string;
     /**
       * `New`
       */

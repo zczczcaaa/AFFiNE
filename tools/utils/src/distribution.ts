@@ -9,6 +9,7 @@ export const PackageToDistribution = new Map<
   ['@affine/admin', 'admin'],
   ['@affine/web', 'web'],
   ['@affine/electron-renderer', 'desktop'],
+  ['@affine/electron', 'desktop'],
   ['@affine/mobile', 'mobile'],
   ['@affine/ios', 'ios'],
   ['@affine/android', 'android'],

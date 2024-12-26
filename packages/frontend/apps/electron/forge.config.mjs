@@ -206,13 +206,6 @@ export default {
 
       cp.spawnSync('yarn', ['generate-assets'], {
         stdio: 'inherit',
-        env: {
-          ...process.env,
-          NODE_OPTIONS: (process.env.NODE_OPTIONS ?? '').replace(
-            '--loader ts-node/esm',
-            ''
-          ),
-        },
         cwd: __dirname,
       });
     },

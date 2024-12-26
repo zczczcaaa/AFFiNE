@@ -534,7 +534,7 @@ export const PackageList = [
   {
     location: 'tools/playstore-auto-bump',
     name: '@affine/playstore-auto-bump',
-    workspaceDependencies: ['tools/utils'],
+    workspaceDependencies: ['tools/cli', 'tools/utils'],
   },
   {
     location: 'tools/utils',

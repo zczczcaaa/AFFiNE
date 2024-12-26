@@ -46,7 +46,7 @@ yarn affine init
 
 ```json
 {
-  "name": "@affine/demo"
+  "name": "@affine/demo",
   "scripts": {
     "dev": "node ./dev.ts"
   }
@@ -55,6 +55,20 @@ yarn affine init
 
 ```bash
 affine @affine/demo dev
+```
+
+or
+
+```json
+{
+  "name": "@affine/demo",
+  "scripts": {
+    "dev": "r ./src/index.ts"
+  },
+  "devDependencies": {
+    "@affine-tools/cli": "workspace:*"
+  }
+}
 ```
 
 ### Short your key presses
@@ -110,4 +124,8 @@ restart all the integrated terminals and now you get:
 
 ```bash
 af web build
+```
+
+```
+
 ```

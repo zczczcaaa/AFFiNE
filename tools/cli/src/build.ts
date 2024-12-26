@@ -7,7 +7,7 @@ export class BuildCommand extends PackageCommand {
     const args: string[] = [];
 
     if (this.deps) {
-      args.push('--deps');
+      args.push('--deps', '--wait-deps');
     }
 
     args.push(this.package, 'build');

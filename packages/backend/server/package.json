@@ -15,7 +15,7 @@
     "test:coverage": "c8 ava --concurrency 1 --serial",
     "test:copilot:coverage": "c8 ava --timeout=5m \"tests/**/copilot-*.spec.ts\"",
     "data-migration": "cross-env NODE_ENV=script node ./src/data/index.ts",
-    "predeploy": "yarn prisma migrate deploy && node --import ./scripts/register.js ./dist/data/index.js run",
+    "predeploy": "yarn prisma migrate deploy && NODE_ENV=script node --import ./scripts/register.js ./dist/data/index.js run",
     "postinstall": "prisma generate"
   },
   "dependencies": {

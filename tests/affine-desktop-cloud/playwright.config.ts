@@ -23,7 +23,7 @@ const config: PlaywrightTestConfig = {
   webServer: [
     // Intentionally not building the web, reminds you to run it by yourself.
     {
-      command: 'yarn run -T affine bundle -p @affine/electron --dev',
+      command: 'yarn run -T affine dev -p @affine/electron-renderer',
       port: 8080,
       timeout: 120 * 1000,
       reuseExistingServer: !process.env.CI,

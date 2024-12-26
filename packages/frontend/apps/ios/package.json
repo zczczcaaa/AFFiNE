@@ -7,8 +7,8 @@
   "scripts": {
     "build": "affine bundle",
     "dev": "affine bundle --dev",
-    "sync": "yarn cap sync",
-    "sync:dev": "CAP_SERVER_URL=http://localhost:8080 yarn cap sync"
+    "sync": "cap sync",
+    "sync:dev": "CAP_SERVER_URL=http://localhost:8080 cap sync"
   },
   "dependencies": {
     "@affine/component": "workspace:*",

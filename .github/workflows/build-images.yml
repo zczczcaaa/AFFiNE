@@ -27,7 +27,7 @@ jobs:
           electron-install: false
           extra-flags: workspaces focus @affine/server
       - name: Build Server
-        run: yarn affine @affine/server build
+        run: yarn workspace @affine/server build
       - name: Upload server dist
         uses: actions/upload-artifact@v4
         with:
@@ -257,7 +257,7 @@ jobs:
           yarn workspaces focus @affine/server --production
 
       - name: Generate Prisma client
-        run: yarn affine @affine/server prisma generate
+        run: yarn workspace @affine/server prisma generate
 
       - name: Setup Version
         id: version

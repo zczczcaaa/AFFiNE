@@ -316,7 +316,6 @@ export function createWebpackConfig(
                 // copy the shared public assets into dist
                 from: pkg.workspace.getPackage('@affine/core').join('public')
                   .value,
-                to: pkg.distPath.value,
               },
             ],
           }),
