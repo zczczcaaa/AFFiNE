@@ -604,7 +604,10 @@ export function patchForMobile() {
 }
 
 export function patchForAttachmentEmbedViews(
-  reactToLit: (element: ElementOrFactory) => TemplateResult
+  reactToLit: (
+    element: ElementOrFactory,
+    rerendering?: boolean
+  ) => TemplateResult
 ): ExtensionType {
   return {
     setup: di => {
@@ -626,7 +629,8 @@ export function patchForAttachmentEmbedViews(
           reactToLit(
             <AttachmentPreviewErrorBoundary key={model.id}>
               <PDFViewerEmbedded {...buildAttachmentProps(model)} />
-            </AttachmentPreviewErrorBoundary>
+            </AttachmentPreviewErrorBoundary>,
+            false
           ),
       }));
     },
