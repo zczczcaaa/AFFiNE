@@ -1,9 +1,9 @@
 import type { RootBlockModel } from '@blocksuite/affine-model';
+import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import {
-  DocModeProvider,
-  type DropType,
-} from '@blocksuite/affine-shared/services';
-import {
+  calcDropTarget,
+  type DroppingType,
+  type DropResult,
   getScrollContainer,
   isInsideEdgelessEditor,
   isInsidePageEditor,
@@ -27,14 +27,12 @@ import { autoScroll } from '../../../root-block/text-selection/utils.js';
 import type { EdgelessRootService } from '../../edgeless/index.js';
 import type { DragPreview } from './components/drag-preview.js';
 import type { DropIndicator } from './components/drop-indicator.js';
-import type { DropResult } from './config.js';
 import type { AFFINE_DRAG_HANDLE_WIDGET } from './consts.js';
 import { PreviewHelper } from './helpers/preview-helper.js';
 import { RectHelper } from './helpers/rect-helper.js';
 import { SelectionHelper } from './helpers/selection-helper.js';
 import { styles } from './styles.js';
 import {
-  calcDropTarget,
   containBlock,
   containChildBlock,
   getClosestBlockByPoint,
@@ -107,9 +105,6 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
       return null;
     }
 
-    let rect = null;
-    let dropType: DropType = 'before';
-
     const result = calcDropTarget(
       point,
       model,
@@ -119,20 +114,9 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
       isDraggedElementNote === false
     );
 
-    if (result) {
-      rect = result.rect;
-      dropType = result.dropType;
-    }
+    if (isDraggedElementNote && result?.type === 'in') return null;
 
-    if (isDraggedElementNote && dropType === 'in') return null;
-
-    const dropIndicator = {
-      rect,
-      dropBlockId: blockId,
-      dropType,
-    };
-
-    return dropIndicator;
+    return result;
   };
 
   private readonly _handleEventWatcher = new HandleEventWatcher(this);
@@ -181,8 +165,8 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
 
   private readonly _updateDropResult = (dropResult: DropResult | null) => {
     if (!this.dropIndicator) return;
-    this.dropBlockId = dropResult?.dropBlockId ?? '';
-    this.dropType = dropResult?.dropType ?? null;
+    this.dropBlockId = dropResult?.modelState.model.id ?? '';
+    this.dropType = dropResult?.type ?? null;
     if (dropResult?.rect) {
       const offsetParentRect =
         this.dragHandleContainerOffsetParent.getBoundingClientRect();
@@ -237,7 +221,7 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
 
   dropIndicator: DropIndicator | null = null;
 
-  dropType: DropType | null = null;
+  dropType: DroppingType | null = null;
 
   edgelessWatcher = new EdgelessWatcher(this);
 

@@ -20,7 +20,7 @@ export enum DropFlags {
 /**
  * A dropping type.
  */
-export type DroppingType = 'none' | 'before' | 'after' | 'database';
+export type DroppingType = 'none' | 'before' | 'after' | 'database' | 'in';
 
 export type DropResult = {
   type: DroppingType;

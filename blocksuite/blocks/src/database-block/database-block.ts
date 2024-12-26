@@ -259,9 +259,9 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<
       return () => {
         this.indicator.remove();
         const model = this.doc.getBlock(id)?.model;
-        const target = this.doc.getBlock(result.dropBlockId)?.model ?? null;
-        let parent = this.doc.getParent(result.dropBlockId);
-        const shouldInsertIn = result.dropType === 'in';
+        const target = result.modelState.model;
+        let parent = this.doc.getParent(target.id);
+        const shouldInsertIn = result.type === 'in';
         if (shouldInsertIn) {
           parent = target;
         }
@@ -273,7 +273,7 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<
               [model],
               parent,
               target,
-              result.dropType === 'before'
+              result.type === 'before'
             );
           }
         }

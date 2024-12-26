@@ -1,17 +1,12 @@
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
 import type { ParagraphBlockModel } from '@blocksuite/affine-model';
-import { BLOCK_CHILDREN_CONTAINER_PADDING_LEFT } from '@blocksuite/affine-shared/consts';
+import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import {
-  DocModeProvider,
-  type DropType,
-} from '@blocksuite/affine-shared/services';
-import {
+  calcDropTarget,
+  type DropResult,
   findClosestBlockComponent,
   getBlockProps,
-  getClosestBlockComponentByElement,
   getClosestBlockComponentByPoint,
-  getDropRectByPoint,
-  getRectByBlockComponent,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
 import type {
@@ -26,7 +21,6 @@ import {
   DRAG_HANDLE_CONTAINER_HEIGHT,
   DRAG_HANDLE_CONTAINER_OFFSET_LEFT,
   DRAG_HANDLE_CONTAINER_OFFSET_LEFT_LIST,
-  type DropResult,
   EDGELESS_NOTE_EXTRA_PADDING,
   NOTE_CONTAINER_PADDING,
 } from './config.js';
@@ -180,116 +174,6 @@ export const getClosestBlockByPoint = (
 
   return closestBlock;
 };
-
-export function calcDropTarget(
-  point: Point,
-  model: BlockModel,
-  element: Element,
-  draggingElements: BlockComponent[],
-  scale: number,
-  /**
-   * Allow the dragging block to be dropped as sublist
-   */
-  allowSublist: boolean = true
-): DropResult | null {
-  let type: DropType | 'none' = 'none';
-  const height = 3 * scale;
-  const dropRect = getDropRectByPoint(point, model, element);
-  if (!dropRect) return null;
-  const { rect: domRect } = dropRect;
-
-  const distanceToTop = Math.abs(domRect.top - point.y);
-  const distanceToBottom = Math.abs(domRect.bottom - point.y);
-  const before = distanceToTop < distanceToBottom;
-
-  type = before ? 'before' : 'after';
-  let offsetY = 4;
-
-  if (type === 'before') {
-    // before
-    let prev;
-    let prevRect;
-
-    prev = element.previousElementSibling;
-    if (prev) {
-      if (
-        draggingElements.length &&
-        prev === draggingElements[draggingElements.length - 1]
-      ) {
-        type = 'none';
-      } else {
-        prevRect = getRectByBlockComponent(prev);
-      }
-    } else {
-      prev = element.parentElement?.previousElementSibling;
-      if (prev) {
-        prevRect = prev.getBoundingClientRect();
-      }
-    }
-
-    if (prevRect) {
-      offsetY = (domRect.top - prevRect.bottom) / 2;
-    }
-  } else {
-    // Only consider drop as children when target block is list block.
-    // To drop in, the position must after the target first
-    // If drop in target has children, we can use insert before or after of that children
-    // to achieve the same effect.
-    const hasChild = (element as BlockComponent).childBlocks.length;
-    if (
-      allowSublist &&
-      matchFlavours(model, ['affine:list']) &&
-      !hasChild &&
-      point.x > domRect.x + BLOCK_CHILDREN_CONTAINER_PADDING_LEFT
-    ) {
-      type = 'in';
-    }
-    // after
-    let next;
-    let nextRect;
-
-    next = element.nextElementSibling;
-    if (next) {
-      if (
-        type === 'after' &&
-        draggingElements.length &&
-        next === draggingElements[0]
-      ) {
-        type = 'none';
-        next = null;
-      }
-    } else {
-      next = getClosestBlockComponentByElement(
-        element.parentElement
-      )?.nextElementSibling;
-    }
-
-    if (next) {
-      nextRect = getRectByBlockComponent(next);
-      offsetY = (nextRect.top - domRect.bottom) / 2;
-    }
-  }
-
-  if (type === 'none') return null;
-
-  let top = domRect.top;
-  if (type === 'before') {
-    top -= offsetY;
-  } else {
-    top += domRect.height + offsetY;
-  }
-
-  if (type === 'in') {
-    domRect.x += BLOCK_CHILDREN_CONTAINER_PADDING_LEFT;
-    domRect.width -= BLOCK_CHILDREN_CONTAINER_PADDING_LEFT;
-  }
-
-  return {
-    rect: Rect.fromLWTH(domRect.left, domRect.width, top - height / 2, height),
-    dropBlockId: model.id,
-    dropType: type,
-  };
-}
 
 export const getDropResult = (
   event: MouseEvent,

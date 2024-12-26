@@ -6,8 +6,6 @@ import {
 import { type Container, createIdentifier } from '@blocksuite/global/di';
 import { Job, Slice, type SliceSnapshot } from '@blocksuite/store';
 
-export type DropType = 'before' | 'after' | 'in';
-
 export const DndApiExtensionIdentifier = createIdentifier<DNDAPIExtension>(
   'AffineDndApiIdentifier'
 );
