@@ -13,10 +13,9 @@ type PortalEvent = {
 type PortalListener = (event: PortalEvent) => void;
 
 export function createLitPortalAnchor(callback: (event: PortalEvent) => void) {
-  const id = nanoid();
   return html`<lit-react-portal
     .notify=${callback}
-    portalId=${id}
+    portalId=${nanoid()}
   ></lit-react-portal>`;
 }
 
@@ -119,24 +118,27 @@ export const useLitPortalFactory = () => {
           }
 
           const prevId = event.previousPortalId;
-          // Ignore first `willUpdate`
-          if (!prevId) {
-            return;
-          }
 
-          // No re-rendering allowed
-          // Used in `pdf embed view` scenario
-          if (!rerendering) {
+          // Ignores first `willUpdate`
+          if (!prevId) {
             return;
           }
 
           setPortals(portals => {
             const portal = portals.find(p => p.id === prevId);
-            if (!portal) return portals;
+            if (!portal) return [...portals];
 
+            // Updates `ID`
+            // Used for portal queries in `disconnectedCallback`
             portal.id = id;
-            portal.portal.key = id;
-            portal.portal.children = element;
+
+            // Re-rendering
+            //  true: `inline link`
+            //  false: `pdf embed view`
+            if (rerendering) {
+              portal.portal = ReactDOM.createPortal(element, target, id);
+            }
+
             return [...portals];
           });
         });

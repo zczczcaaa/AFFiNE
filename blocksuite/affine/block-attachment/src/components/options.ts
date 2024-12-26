@@ -98,6 +98,7 @@ export function attachmentViewToggleMenu({
           button => button.type,
           ({ type, label, action, disabled }) => html`
             <editor-menu-action
+              aria-label=${label}
               data-testid=${`link-to-${type}`}
               ?data-selected=${type === viewType}
               ?disabled=${disabled}

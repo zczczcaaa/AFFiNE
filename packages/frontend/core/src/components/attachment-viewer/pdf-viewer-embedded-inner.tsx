@@ -219,6 +219,7 @@ export function PDFViewerEmbeddedInner({ model }: PDFViewerProps) {
             icon={<ArrowUpSmallIcon />}
             className={embeddedStyles.pdfControlButton}
             onDoubleClick={stopPropagation}
+            aria-label="Prev"
             {...navigator.prev}
           />
           <IconButton
@@ -226,6 +227,7 @@ export function PDFViewerEmbeddedInner({ model }: PDFViewerProps) {
             icon={<ArrowDownSmallIcon />}
             className={embeddedStyles.pdfControlButton}
             onDoubleClick={stopPropagation}
+            aria-label="Next"
             {...navigator.next}
           />
           <IconButton
@@ -250,8 +252,13 @@ export function PDFViewerEmbeddedInner({ model }: PDFViewerProps) {
             embeddedStyles.pdfPageCount,
           ])}
         >
-          <span>{meta.pageCount > 0 ? cursor + 1 : '-'}</span>/
-          <span>{meta.pageCount > 0 ? meta.pageCount : '-'}</span>
+          <span className="page-cursor">
+            {meta.pageCount > 0 ? cursor + 1 : '-'}
+          </span>
+          /
+          <span className="page-count">
+            {meta.pageCount > 0 ? meta.pageCount : '-'}
+          </span>
         </div>
       </footer>
     </div>
