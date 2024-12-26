@@ -262,6 +262,9 @@ export class FilterGroupView extends SignalWatcher(ShadowlessElement) {
 
   private _clickConditionOps(target: HTMLElement, i: number) {
     const filter = this.filterGroup.value.conditions[i];
+    if (!filter) {
+      return;
+    }
     popFilterableSimpleMenu(popupTargetFromElement(target), [
       menu.group({
         items: [

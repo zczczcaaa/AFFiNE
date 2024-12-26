@@ -79,6 +79,7 @@ export const popRowMenu = (
     return;
   }
   const row = selection.rows[0];
+  if (!row) return;
   popFilterableSimpleMenu(ele, [
     menu.action({
       name: 'Expand Row',

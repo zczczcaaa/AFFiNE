@@ -234,7 +234,7 @@ export class TableSelectionController implements ReactiveController {
     }
     const rows =
       groupKey != null
-        ? this.view.groupTrait.groupDataMap$.value?.[groupKey].rows
+        ? this.view.groupTrait.groupDataMap$.value?.[groupKey]?.rows
         : this.view.rows$.value;
     requestAnimationFrame(() => {
       const index = this.host.props.view.properties$.value.findIndex(
@@ -285,7 +285,8 @@ export class TableSelectionController implements ReactiveController {
       length: selection.rowsSelection.end - selection.rowsSelection.start + 1,
     })
       .map((_, index) => index + selection.rowsSelection.start)
-      .map(row => rows[row]?.rowId);
+      .map(row => rows[row]?.rowId)
+      .filter((id): id is string => id != null);
     return ids.map(id => ({ id, groupKey: selection.groupKey }));
   }
 
@@ -314,6 +315,7 @@ export class TableSelectionController implements ReactiveController {
       };
       for (let i = 0; i < rowOffsets.length; i++) {
         const offset = rowOffsets[i];
+        if (offset == null) continue;
         if (offset < startY) {
           row.start = i;
         }
@@ -323,6 +325,7 @@ export class TableSelectionController implements ReactiveController {
       }
       for (let i = 0; i < columnOffsets.length; i++) {
         const offset = columnOffsets[i];
+        if (offset == null) continue;
         if (offset < startX) {
           column.start = i;
         }
@@ -544,20 +547,21 @@ export class TableSelectionController implements ReactiveController {
     if (!TableRowSelection.is(this.selection)) return;
     const rows = this.selection.rows;
     const lastRow = rows[rows.length - 1];
+    if (!lastRow) return;
     const lastRowIndex =
       (
-        this.getGroup(lastRow.groupKey)?.querySelector(
-          `data-view-table-row[data-row-id='${lastRow.id}']`
+        this.getGroup(lastRow?.groupKey)?.querySelector(
+          `data-view-table-row[data-row-id='${lastRow?.id}']`
         ) as TableRow | null
       )?.rowIndex ?? 0;
     const getRowByIndex = (index: number) => {
-      const tableRow = this.rows(lastRow.groupKey)?.item(index);
+      const tableRow = this.rows(lastRow?.groupKey)?.item(index);
       if (!tableRow) {
         return;
       }
       return {
         id: tableRow.rowId,
-        groupKey: lastRow.groupKey,
+        groupKey: lastRow?.groupKey,
       };
     };
     const prevRow = getRowByIndex(lastRowIndex - 1);
@@ -621,10 +625,15 @@ export class TableSelectionController implements ReactiveController {
     add.forEach(row => rows.add(key(row)));
     const result = [...rows]
       .map(r => r.split('.'))
-      .map(([id, groupKey]) => ({
-        id,
-        groupKey: groupKey ? groupKey : undefined,
-      }));
+      .flatMap(([id, groupKey]) => {
+        if (id == null) return [];
+        return [
+          {
+            id,
+            groupKey: groupKey ? groupKey : undefined,
+          },
+        ];
+      });
     this.selection = TableRowSelection.create({
       rows: result,
     });

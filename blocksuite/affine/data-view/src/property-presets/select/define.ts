@@ -37,6 +37,9 @@ export const selectPropertyModelConfig = selectPropertyType.modelConfig<
       .split(',')
       .map(v => v.trim())
       .filter(v => v)[0];
+    if (!name) {
+      return { value: null, data: data };
+    }
 
     let value: string | undefined;
     const option = optionMap[name];

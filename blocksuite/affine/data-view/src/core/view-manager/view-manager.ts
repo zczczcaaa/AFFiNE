@@ -15,8 +15,8 @@ export interface ViewManager {
   dataSource: DataSource;
   readonly$: ReadonlySignal<boolean>;
 
-  currentViewId$: ReadonlySignal<string>;
-  currentView$: ReadonlySignal<SingleView>;
+  currentViewId$: ReadonlySignal<string | undefined>;
+  currentView$: ReadonlySignal<SingleView | undefined>;
 
   setCurrentView(id: string): void;
 
@@ -49,7 +49,9 @@ export class ViewManagerBase implements ViewManager {
   });
 
   currentView$ = computed(() => {
-    return this.viewGet(this.currentViewId$.value);
+    const id = this.currentViewId$.value;
+    if (!id) return;
+    return this.viewGet(id);
   });
 
   readonly$ = computed(() => {
@@ -66,7 +68,7 @@ export class ViewManagerBase implements ViewManager {
     this.dataSource.viewDataMoveTo(id, position);
   }
 
-  setCurrentView(id: string): void {
+  setCurrentView(id: string | undefined): void {
     this._currentViewId$.value = id;
   }
 

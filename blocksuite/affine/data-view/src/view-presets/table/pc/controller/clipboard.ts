@@ -197,7 +197,7 @@ function getSelectedArea(
   const { rowsSelection, columnsSelection, groupKey } = selection;
   const data: SelectedArea = [];
   const rows = groupKey
-    ? view.groupTrait.groupDataMap$.value?.[groupKey].rows
+    ? view.groupTrait.groupDataMap$.value?.[groupKey]?.rows
     : view.rows$.value;
   const columns = view.propertyIds$.value;
   if (!rows) {
@@ -208,8 +208,14 @@ function getSelectedArea(
       cells: [],
     };
     const rowId = rows[i];
+    if (rowId == null) {
+      continue;
+    }
     for (let j = columnsSelection.start; j <= columnsSelection.end; j++) {
       const columnId = columns[j];
+      if (columnId == null) {
+        continue;
+      }
       const cell = view.cellGet(rowId, columnId);
       row.cells.push(cell);
     }
@@ -237,7 +243,7 @@ function getTargetRangeFromSelection(
         },
         column: {
           start: focus.columnIndex,
-          length: data[0].length,
+          length: data[0]?.length ?? 0,
         },
       }
     : {
@@ -258,7 +264,7 @@ function pasteToCells(
   selection: TableAreaSelection
 ) {
   const srcRowLength = rows.length;
-  const srcColumnLength = rows[0].length;
+  const srcColumnLength = rows[0]?.length ?? 0;
   const targetRange = getTargetRangeFromSelection(selection, rows);
   for (let i = 0; i < targetRange.row.length; i++) {
     for (let j = 0; j < targetRange.column.length; j++) {
@@ -267,7 +273,7 @@ function pasteToCells(
 
       const srcRowIndex = i % srcRowLength;
       const srcColumnIndex = j % srcColumnLength;
-      const dataString = rows[srcRowIndex][srcColumnIndex];
+      const dataString = rows[srcRowIndex]?.[srcColumnIndex];
 
       const targetContainer = table.selectionController.getCellContainer(
         selection.groupKey,
@@ -278,7 +284,7 @@ function pasteToCells(
       const columnId = targetContainer?.dataset.columnId;
 
       if (rowId && columnId) {
-        targetContainer?.column.valueSetFromString(rowId, dataString);
+        targetContainer?.column.valueSetFromString(rowId, dataString ?? '');
       }
     }
   }

@@ -27,9 +27,16 @@ export const firstFilterByRef = (
   };
 };
 export const firstFilter = (vars: Variable[]): SingleFilter => {
+  const variable = vars[0];
+  if (!variable) {
+    throw new BlockSuiteError(
+      ErrorCode.DatabaseBlockError,
+      `can't find any variable`
+    );
+  }
   const ref: VariableRef = {
     type: 'ref',
-    name: vars[0].id,
+    name: variable.id,
   };
   const filter = firstFilterName(vars, ref);
   if (!filter) {

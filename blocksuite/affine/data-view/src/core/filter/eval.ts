@@ -25,7 +25,7 @@ export const evalFilter = (
       for (let i = 0; i < expectArgLen; i++) {
         const argValue = evalValue(filter.args[i]);
         const argType = func.args[i];
-        if (argValue == null) {
+        if (argValue == null || argType == null) {
           return true;
         }
         if (!argType.valueValidate(argValue)) {

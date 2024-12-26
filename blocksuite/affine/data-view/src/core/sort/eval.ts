@@ -34,7 +34,12 @@ const compareList = <T>(
 ) => {
   let i = 0;
   while (i < listA.length && i < listB.length) {
-    const result = compare(listA[i], listB[i]);
+    const a = listA[i];
+    const b = listB[i];
+    if (a == null || b == null) {
+      continue;
+    }
+    const result = compare(a, b);
     if (result !== 0) {
       return result;
     }

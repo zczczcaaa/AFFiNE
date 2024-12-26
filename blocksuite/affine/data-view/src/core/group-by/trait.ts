@@ -110,9 +110,12 @@ export class GroupTrait {
     }
     const sortedGroup = this.ops.sortGroup(Object.keys(groupMap));
     sortedGroup.forEach(key => {
+      if (!groupMap[key]) return;
       groupMap[key].rows = this.ops.sortRow(key, groupMap[key].rows);
     });
-    return (this.preDataList = sortedGroup.map(key => groupMap[key]));
+    return (this.preDataList = sortedGroup
+      .map(key => groupMap[key])
+      .filter((v): v is GroupData => v != null));
   });
 
   groupsDataList$ = computed(() => {
@@ -166,7 +169,7 @@ export class GroupTrait {
     }
     const addTo = this.config$.value?.addToGroup ?? (value => value);
     const newValue = addTo(
-      groupMap[key].value,
+      groupMap[key]?.value,
       this.view.cellJsonValueGet(rowId, propertyId)
     );
     this.view.cellValueSet(rowId, propertyId, newValue);
@@ -240,10 +243,10 @@ export class GroupTrait {
         );
       }
       const addTo = this.config$.value?.addToGroup ?? (value => value);
-      newValue = addTo(groupMap[toGroupKey].value, newValue);
+      newValue = addTo(groupMap[toGroupKey]?.value, newValue);
       this.view.cellValueSet(rowId, propertyId, newValue);
     }
-    const rows = groupMap[toGroupKey].rows.filter(id => id !== rowId);
+    const rows = groupMap[toGroupKey]?.rows.filter(id => id !== rowId) ?? [];
     const index = insertPositionToIndex(position, rows, id => id);
     rows.splice(index, 0, rowId);
     this.changeCardSort(toGroupKey, rows);
@@ -275,7 +278,7 @@ export class GroupTrait {
     }
     const remove = this.config$.value?.removeFromGroup ?? (() => undefined);
     const newValue = remove(
-      groupMap[key].value,
+      groupMap[key]?.value,
       this.view.cellJsonValueGet(rowId, propertyId)
     );
     this.view.cellValueSet(rowId, propertyId, newValue);

@@ -32,7 +32,7 @@ export type FilterConfig<
   ) => boolean;
   defaultValue?: (args: {
     [K in keyof Args]: ValueTypeOf<ReplaceVar<Args[K], Vars>>;
-  }) => ValueTypeOf<ReplaceVar<Self, Vars>>;
+  }) => ValueTypeOf<ReplaceVar<Self, Vars>> | undefined;
 };
 type FindVar<
   Vars extends TypeVarDefinitionInstance[],

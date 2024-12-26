@@ -148,7 +148,11 @@ export class DataViewHeaderViews extends WidgetBase {
     }
     const views = this.viewManager.views$.value;
     const index = views.findIndex(v => v === id);
-    const view = this.viewManager.viewGet(views[index]);
+    const viewId = views[index];
+    if (!viewId) {
+      return;
+    }
+    const view = this.viewManager.viewGet(viewId);
     if (!view) {
       return;
     }

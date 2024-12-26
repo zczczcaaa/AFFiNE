@@ -56,7 +56,9 @@ export class Overflow extends SignalWatcher(WithDisposable(ShadowlessElement)) {
 
     let width = 0;
     for (let i = 0; i < this.items.length; i++) {
-      const itemWidth = this.items[i].getBoundingClientRect().width;
+      const item = this.items[i];
+      if (!item) continue;
+      const itemWidth = item.getBoundingClientRect().width;
       // Try to calculate the width occupied by rendering n+1 items;
       // if it exceeds the limit, render n items(in i++ round).
       const totalWidth =

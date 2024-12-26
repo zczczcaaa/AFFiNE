@@ -306,6 +306,7 @@ export class TableSingleView extends SingleViewBase<TableViewData> {
       }
       const columns = [...this.computedColumns$.value];
       const [column] = columns.splice(columnIndex, 1);
+      if (!column) return {};
       const index = insertPositionToIndex(toAfterOfColumn, columns);
       columns.splice(index, 0, column);
       return {
@@ -356,12 +357,12 @@ export class TableSingleView extends SingleViewBase<TableViewData> {
     this.groupTrait.moveCardTo(rowId, fromGroup, toGroup, position);
   }
 
-  override rowNextGet(rowId: string): string {
+  override rowNextGet(rowId: string): string | undefined {
     const index = this.rows$.value.indexOf(rowId);
     return this.rows$.value[index + 1];
   }
 
-  override rowPrevGet(rowId: string): string {
+  override rowPrevGet(rowId: string): string | undefined {
     const index = this.rows$.value.indexOf(rowId);
     return this.rows$.value[index - 1];
   }

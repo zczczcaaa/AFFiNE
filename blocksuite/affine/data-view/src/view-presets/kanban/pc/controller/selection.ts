@@ -183,7 +183,7 @@ export class KanbanSelectionController implements ReactiveController {
     if (selection.selectionType === 'card') {
       const card = getSelectedCards(this.host, selection)[0];
       const cell = card?.querySelector('affine-data-view-kanban-cell');
-      if (cell) {
+      if (card && cell) {
         this.selection = {
           groupKey: card.groupKey,
           cardId: card.cardId,
@@ -209,11 +209,9 @@ export class KanbanSelectionController implements ReactiveController {
       const index = kanbanCells.findIndex(
         cell => cell.column.id === selection.columnId
       );
-      const { cell, cardId, groupKey } = this.getNextFocusCell(
-        selection,
-        index,
-        position
-      );
+      const result = this.getNextFocusCell(selection, index, position);
+      if (!result) return;
+      const { cell, cardId, groupKey } = result;
       if (cell instanceof KanbanCell) {
         this.selection = {
           ...selection,
@@ -234,7 +232,9 @@ export class KanbanSelectionController implements ReactiveController {
       const index = cardElements.findIndex(
         card => card.cardId === selection.cards[0].cardId
       );
-      const { card, cards } = this.getNextFocusCard(selection, index, position);
+      const result = this.getNextFocusCard(selection, index, position);
+      if (!result) return;
+      const { card, cards } = result;
       if (card instanceof KanbanCard) {
         const newCards = cards ?? selection.cards;
         this.selection = atLeastOne(newCards)
@@ -286,10 +286,12 @@ export class KanbanSelectionController implements ReactiveController {
     selection: KanbanCardSelection,
     index: number,
     nextPosition: 'up' | 'down' | 'left' | 'right'
-  ): {
-    card: KanbanCard;
-    cards: KanbanCardSelectionCard[];
-  } {
+  ):
+    | {
+        card: KanbanCard;
+        cards: KanbanCardSelectionCard[];
+      }
+    | undefined {
     const group = this.host.querySelector(
       `affine-data-view-kanban-group[data-key="${selection.cards[0].groupKey}"]`
     );
@@ -301,7 +303,7 @@ export class KanbanSelectionController implements ReactiveController {
       const nextIndex = index - 1;
       const nextCardIndex = nextIndex < 0 ? kanbanCards.length - 1 : nextIndex;
       const card = kanbanCards[nextCardIndex];
-
+      if (!card) return;
       return {
         card,
         cards: [
@@ -317,7 +319,7 @@ export class KanbanSelectionController implements ReactiveController {
       const nextIndex = index + 1;
       const nextCardIndex = nextIndex > kanbanCards.length - 1 ? 0 : nextIndex;
       const card = kanbanCards[nextCardIndex];
-
+      if (!card) return;
       return {
         card,
         cards: [
@@ -360,11 +362,13 @@ export class KanbanSelectionController implements ReactiveController {
     selection: KanbanCellSelection,
     index: number,
     nextPosition: 'up' | 'down' | 'left' | 'right'
-  ): {
-    cell: KanbanCell;
-    cardId?: string;
-    groupKey?: string;
-  } {
+  ):
+    | {
+        cell: KanbanCell;
+        cardId?: string;
+        groupKey?: string;
+      }
+    | undefined {
     const kanbanCells = getCardCellsBySelection(this.host, selection);
     const group = this.host.querySelector(
       `affine-data-view-kanban-group[data-key="${selection.groupKey}"]`
@@ -384,11 +388,14 @@ export class KanbanSelectionController implements ReactiveController {
             cardIndex => (cardIndex === 0 ? cards.length - 1 : cardIndex - 1)
           );
         } else {
+          const cell = kanbanCells[kanbanCells.length - 1];
+          if (!cell) return;
           return {
-            cell: kanbanCells[kanbanCells.length - 1],
+            cell,
           };
         }
       }
+      if (!kanbanCells[nextIndex]) return;
       return {
         cell: kanbanCells[nextIndex],
       };
@@ -405,11 +412,14 @@ export class KanbanSelectionController implements ReactiveController {
             cardIndex => (cardIndex === cards.length - 1 ? 0 : cardIndex + 1)
           );
         } else {
+          const cell = kanbanCells[0];
+          if (!cell) return;
           return {
-            cell: kanbanCells[0],
+            cell,
           };
         }
       }
+      if (!kanbanCells[nextIndex]) return;
       return {
         cell: kanbanCells[nextIndex],
       };
@@ -569,19 +579,19 @@ function getNextGroupFocusElement(
   groups: KanbanGroup[],
   selection: KanbanCellSelection,
   getNextGroupIndex: (groupIndex: number) => number
-): NextFocusCell;
+): NextFocusCell | undefined;
 function getNextGroupFocusElement(
   viewElement: Element,
   groups: KanbanGroup[],
   selection: KanbanCardSelection,
   getNextGroupIndex: (groupIndex: number) => number
-): NextFocusCard;
+): NextFocusCard | undefined;
 function getNextGroupFocusElement(
   viewElement: Element,
   groups: KanbanGroup[],
   selection: KanbanCellSelection | KanbanCardSelection,
   getNextGroupIndex: (groupIndex: number) => number
-): NextFocusCell | NextFocusCard {
+): NextFocusCell | NextFocusCard | undefined {
   const groupIndex = groups.findIndex(group => {
     if (selection.selectionType === 'cell') {
       return group.group.key === selection.groupKey;
@@ -591,10 +601,11 @@ function getNextGroupFocusElement(
 
   let nextGroupIndex = getNextGroupIndex(groupIndex);
   let nextGroup = groups[nextGroupIndex];
-  while (nextGroup.group.rows.length === 0) {
+  while (nextGroup?.group.rows.length === 0) {
     nextGroupIndex = getNextGroupIndex(nextGroupIndex);
     nextGroup = groups[nextGroupIndex];
   }
+  if (!nextGroup) return;
 
   const element =
     selection.selectionType === 'cell'
@@ -621,6 +632,7 @@ function getNextGroupFocusElement(
     });
   const nextCard = nextCards[cardPos.index];
 
+  if (!nextCard) return;
   if (selection.selectionType === 'card') {
     return {
       card: nextCard,
@@ -652,6 +664,7 @@ function getNextGroupFocusElement(
     });
   const nextCell = cells[cellPos.index];
 
+  if (!nextCell) return;
   return {
     cell: nextCell,
     cardId: nextCard.cardId,
@@ -664,17 +677,21 @@ function getNextCardFocusCell(
   cards: KanbanCard[],
   selection: KanbanCellSelection,
   getNextCardIndex: (cardIndex: number) => number
-): {
-  cell: KanbanCell;
-  cardId: string;
-} {
+):
+  | {
+      cell: KanbanCell;
+      cardId: string;
+    }
+  | undefined {
   const cardIndex = cards.findIndex(card => card.cardId === selection.cardId);
   const nextCardIndex = getNextCardIndex(cardIndex);
   const nextCard = cards[nextCardIndex];
+  if (!nextCard) return;
   const nextCells = Array.from(
     nextCard.querySelectorAll('affine-data-view-kanban-cell')
   );
   const nextCellIndex = nextPosition === 'up' ? nextCells.length - 1 : 0;
+  if (!nextCells[nextCellIndex]) return;
   return {
     cell: nextCells[nextCellIndex],
     cardId: nextCard.cardId,

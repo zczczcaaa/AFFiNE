@@ -68,7 +68,10 @@ export class SortContext extends DndContext {
           overIndex: list.findIndex(v => v.id === this.overId$.value),
         });
         transforms.forEach((transform, i) => {
-          const node = list[i].node;
+          const node = list[i]?.node;
+          if (!node) {
+            return;
+          }
           if (transform != null) {
             node.style.transform = `translate3d(${Math.round(transform.x)}px,${Math.round(transform.y)}px,0)
     scaleX(${transform.scaleX}) scaleY(${transform.scaleY})`;

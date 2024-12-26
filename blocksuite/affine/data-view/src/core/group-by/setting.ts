@@ -78,8 +78,8 @@ export class GroupSetting extends SignalWatcher(
       const activeId = evt.active.id;
       const groups = this.groups$.value;
       if (over && over.id !== activeId && groups) {
-        const activeIndex = groups.findIndex(data => data.key === activeId);
-        const overIndex = groups.findIndex(data => data.key === over.id);
+        const activeIndex = groups.findIndex(data => data?.key === activeId);
+        const overIndex = groups.findIndex(data => data?.key === over.id);
 
         this.groupTrait.moveGroupTo(
           activeId,
@@ -104,7 +104,11 @@ export class GroupSetting extends SignalWatcher(
       },
     ],
     items: computed(() => {
-      return this.groupTrait.groupsDataList$.value?.map(v => v.key) ?? [];
+      return (
+        this.groupTrait.groupsDataList$.value?.map(
+          v => v?.key ?? 'default key'
+        ) ?? []
+      );
     }),
     strategy: verticalListSortingStrategy,
   });
@@ -136,8 +140,9 @@ export class GroupSetting extends SignalWatcher(
       >
         ${repeat(
           groups,
-          group => group.key,
+          group => group?.key ?? 'default key',
           group => {
+            if (!group) return;
             const props: GroupRenderProps = {
               value: group.value,
               data: group.property.data$.value,

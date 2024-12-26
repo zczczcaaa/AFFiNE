@@ -53,6 +53,12 @@ export const kanbanViewModel = kanbanViewType.createModel<KanbanViewData>({
       return 1;
     };
     const columnId = allowList.sort((a, b) => getWeight(b) - getWeight(a))[0];
+    if (!columnId) {
+      throw new BlockSuiteError(
+        ErrorCode.DatabaseBlockError,
+        'no groupable column found'
+      );
+    }
     const type = viewManager.dataSource.propertyTypeGet(columnId);
     const meta = type && viewManager.dataSource.propertyMetaGet(type);
     const data = viewManager.dataSource.propertyDataGet(columnId);

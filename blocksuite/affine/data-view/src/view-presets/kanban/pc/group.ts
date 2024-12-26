@@ -101,13 +101,15 @@ export class KanbanGroup extends SignalWatcher(
     requestAnimationFrame(() => {
       const kanban = this.closest('affine-data-view-kanban');
       if (kanban) {
+        const columnId =
+          this.view.mainProperties$.value.titleColumn ||
+          this.view.propertyIds$.value[0];
+        if (!columnId) return;
         kanban.selectionController.selection = {
           selectionType: 'cell',
           groupKey: this.group.key,
           cardId: id,
-          columnId:
-            this.view.mainProperties$.value.titleColumn ||
-            this.view.propertyIds$.value[0],
+          columnId,
           isEditing: true,
         };
       }
@@ -119,13 +121,15 @@ export class KanbanGroup extends SignalWatcher(
     requestAnimationFrame(() => {
       const kanban = this.closest('affine-data-view-kanban');
       if (kanban) {
+        const columnId =
+          this.view.mainProperties$.value.titleColumn ||
+          this.view.propertyIds$.value[0];
+        if (!columnId) return;
         kanban.selectionController.selection = {
           selectionType: 'cell',
           groupKey: this.group.key,
           cardId: id,
-          columnId:
-            this.view.mainProperties$.value.titleColumn ||
-            this.view.propertyIds$.value[0],
+          columnId,
           isEditing: true,
         };
       }

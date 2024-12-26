@@ -41,12 +41,15 @@ export const numberStatsFunctions: StatisticsConfig[] = [
     dataType: t.number.instance(),
     impl: data => {
       const arr = withoutNull(data).sort((a, b) => a - b);
-      let result = 0;
+      let result: number | undefined = undefined;
       if (arr.length % 2 === 1) {
         result = arr[(arr.length - 1) / 2];
       } else {
         const index = arr.length / 2;
-        result = (arr[index] + arr[index - 1]) / 2;
+        const a = arr[index];
+        const b = arr[index - 1];
+        if (a == null || b == null) return 'None';
+        result = (a + b) / 2;
       }
       return result?.toString() ?? 'None';
     },

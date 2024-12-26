@@ -243,7 +243,10 @@ export class MultiTagSelect extends SignalWatcher(
     event.stopPropagation();
     const inputValue = this.text.value.trim();
     if (event.key === 'Backspace' && inputValue === '') {
-      this.tagManager.deleteTag(this.value.value[this.value.value.length - 1]);
+      const lastId = this.value.value[this.value.value.length - 1];
+      if (lastId) {
+        this.tagManager.deleteTag(lastId);
+      }
     } else if (event.key === 'Enter' && !event.isComposing) {
       this.selectedTag$.value?.select();
     } else if (event.key === 'ArrowUp') {

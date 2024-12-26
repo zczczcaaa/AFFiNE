@@ -87,6 +87,9 @@ export class DataViewRenderer extends SignalWatcher(
       return;
     }
     const view = this.viewMap$.value[currentViewId];
+    if (!view) {
+      return;
+    }
     return {
       view: view,
       selection$: computed(() => {

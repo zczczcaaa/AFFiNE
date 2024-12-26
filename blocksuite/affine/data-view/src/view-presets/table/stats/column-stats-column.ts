@@ -94,12 +94,15 @@ export class DatabaseColumnStatsCell extends SignalWatcher(
       if (!groups[func.group]) {
         groups[func.group] = {};
       }
-      const oldFunc = groups[func.group][func.type];
+      const oldFunc = groups[func.group]?.[func.type];
       if (!oldFunc || typeSystem.unify(func.dataType, oldFunc.dataType)) {
         if (!func.impl) {
-          delete groups[func.group][func.type];
+          delete groups[func.group]?.[func.type];
         } else {
-          groups[func.group][func.type] = func;
+          const group = groups[func.group];
+          if (group) {
+            group[func.type] = func;
+          }
         }
       }
     });

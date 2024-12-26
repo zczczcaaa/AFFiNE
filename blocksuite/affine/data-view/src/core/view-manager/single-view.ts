@@ -76,9 +76,9 @@ export interface SingleView {
 
   rowGet(rowId: string): Row;
 
-  rowPrevGet(rowId: string): string;
+  rowPrevGet(rowId: string): string | undefined;
 
-  rowNextGet(rowId: string): string;
+  rowNextGet(rowId: string): string | undefined;
 
   readonly propertyMetas: PropertyMetaConfig[];
 
@@ -116,7 +116,7 @@ export interface SingleView {
 
   propertyIndexGet(propertyId: string): number;
 
-  propertyIdGetByIndex(index: number): string;
+  propertyIdGetByIndex(index: number): string | undefined;
 
   propertyReadonlyGet(propertyId: string): boolean;
 
@@ -387,7 +387,7 @@ export abstract class SingleViewBase<
     return this.dataSource.propertyMetaGet(type).renderer.icon;
   }
 
-  propertyIdGetByIndex(index: number): string {
+  propertyIdGetByIndex(index: number): string | undefined {
     return this.propertyIds$.value[index];
   }
 
@@ -410,9 +410,10 @@ export abstract class SingleViewBase<
   }
 
   propertyNextGet(propertyId: string): Property | undefined {
-    return this.propertyGet(
-      this.propertyIdGetByIndex(this.propertyIndexGet(propertyId) + 1)
-    );
+    const index = this.propertyIndexGet(propertyId);
+    const nextId = this.propertyIdGetByIndex(index + 1);
+    if (!nextId) return;
+    return this.propertyGet(nextId);
   }
 
   propertyParseValueFromString(propertyId: string, cellData: string) {
@@ -430,9 +431,10 @@ export abstract class SingleViewBase<
   }
 
   propertyPreGet(propertyId: string): Property | undefined {
-    return this.propertyGet(
-      this.propertyIdGetByIndex(this.propertyIndexGet(propertyId) - 1)
-    );
+    const index = this.propertyIndexGet(propertyId);
+    const prevId = this.propertyIdGetByIndex(index - 1);
+    if (!prevId) return;
+    return this.propertyGet(prevId);
   }
 
   propertyReadonlyGet(propertyId: string): boolean {
@@ -463,9 +465,9 @@ export abstract class SingleViewBase<
     this.dataSource.rowMove(rowId, position);
   }
 
-  abstract rowNextGet(rowId: string): string;
+  abstract rowNextGet(rowId: string): string | undefined;
 
-  abstract rowPrevGet(rowId: string): string;
+  abstract rowPrevGet(rowId: string): string | undefined;
 
   protected rowsMapping(rows: string[]): string[] {
     return this.searchRowsMapping(rows, this.searchString.value);

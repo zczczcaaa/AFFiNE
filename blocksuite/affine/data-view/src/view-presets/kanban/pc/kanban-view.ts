@@ -166,8 +166,8 @@ export class DataViewKanban extends DataViewBase<
       const activeId = evt.active.id;
       const groups = this.groupManager.groupsDataList$.value;
       if (over && over.id !== activeId && groups) {
-        const activeIndex = groups.findIndex(data => data.key === activeId);
-        const overIndex = groups.findIndex(data => data.key === over.id);
+        const activeIndex = groups.findIndex(data => data?.key === activeId);
+        const overIndex = groups.findIndex(data => data?.key === over.id);
 
         this.groupManager.moveGroupTo(
           activeId,
@@ -192,7 +192,11 @@ export class DataViewKanban extends DataViewBase<
       },
     ],
     items: computed(() => {
-      return this.groupManager.groupsDataList$.value?.map(v => v.key) ?? [];
+      return (
+        this.groupManager.groupsDataList$.value?.map(
+          v => v?.key ?? 'default key'
+        ) ?? []
+      );
     }),
     strategy: horizontalListSortingStrategy,
   });
@@ -268,8 +272,9 @@ export class DataViewKanban extends DataViewBase<
       >
         ${repeat(
           groups,
-          group => group.key,
+          group => group?.key ?? 'default key',
           group => {
+            if (!group) return;
             return html` <affine-data-view-kanban-group
               ${sortable(group.key)}
               data-key="${group.key}"
