@@ -88,6 +88,10 @@ export class DesktopApiService extends Service {
   }
 
   private setupCommonUIEvents() {
+    if (this.api.appInfo.windowName !== 'main') {
+      return;
+    }
+
     const handleMaximized = (maximized: boolean | undefined) => {
       document.documentElement.dataset.maximized = String(maximized);
     };
@@ -102,12 +106,13 @@ export class DesktopApiService extends Service {
       .isFullScreen()
       .then(handleFullscreen)
       .catch(console.error);
+
     this.api.events.ui.onMaximized(handleMaximized);
     this.api.events.ui.onFullScreen(handleFullscreen);
 
     const tabId = this.api.appInfo.viewId;
 
-    if (tabId && this.api.appInfo.windowName === 'main') {
+    if (tabId) {
       let isActive = false;
       const handleActiveTabChange = (active: boolean) => {
         isActive = active;
