@@ -34,7 +34,7 @@ export class EdgelessCRUDExtension extends Extension {
     return this._gfx.surface as SurfaceBlockModel | null;
   }
 
-  deleteElements(elements: BlockSuite.EdgelessModel[]) {
+  deleteElements = (elements: BlockSuite.EdgelessModel[]) => {
     const surface = this._surface;
     if (!surface) {
       console.error('surface is not initialized');
@@ -60,14 +60,14 @@ export class EdgelessCRUDExtension extends Extension {
         gfx.deleteElement(element.id);
       }
     });
-  }
+  };
 
-  addBlock(
+  addBlock = (
     flavour: BlockSuite.EdgelessModelKeys | string,
     props: Record<string, unknown>,
     parentId?: string | BlockModel,
     parentIndex?: number
-  ) {
+  ) => {
     const gfx = this.std.get(GfxControllerIdentifier);
     const key = getLastPropsKey(flavour as BlockSuite.EdgelessModelKeys, props);
     if (key) {
@@ -85,9 +85,9 @@ export class EdgelessCRUDExtension extends Extension {
       parentId,
       parentIndex
     );
-  }
+  };
 
-  addElement<T extends Record<string, unknown>>(type: string, props: T) {
+  addElement = <T extends Record<string, unknown>>(type: string, props: T) => {
     const surface = this._surface;
     if (!surface) {
       console.error('surface is not initialized');
@@ -107,7 +107,7 @@ export class EdgelessCRUDExtension extends Extension {
     };
 
     return surface.addElement(nProps);
-  }
+  };
 
   updateElement = (id: string, props: Record<string, unknown>) => {
     const surface = this._surface;
