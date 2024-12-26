@@ -1,4 +1,3 @@
-/* oxlint-disable no-useless-escape */
 import type { BlockComponent, ExtensionType } from '@blocksuite/block-std';
 import {
   KEYBOARD_ALLOW_DEFAULT,
@@ -16,7 +15,7 @@ import { InlineMarkdownExtension } from '../../extension/markdown-matcher.js';
 
 export const BoldItalicMarkdown = InlineMarkdownExtension({
   name: 'bolditalic',
-  pattern: /(?:\*\*\*)([^\s\*](?:[^*]*?[^\s\*])?)(?:\*\*\*)$/g,
+  pattern: /(?:\*\*\*)([^\s*](?:[^*]*?[^\s*])?)(?:\*\*\*)$/g,
   action: ({ inlineEditor, prefixText, inlineRange, pattern, undoManager }) => {
     const match = pattern.exec(prefixText);
     if (!match) {
@@ -75,7 +74,7 @@ export const BoldItalicMarkdown = InlineMarkdownExtension({
 
 export const BoldMarkdown = InlineMarkdownExtension({
   name: 'bold',
-  pattern: /(?:\*\*)([^\s\*](?:[^*]*?[^\s\*])?)(?:\*\*)$/g,
+  pattern: /(?:\*\*)([^\s*](?:[^*]*?[^\s*])?)(?:\*\*)$/g,
   action: ({ inlineEditor, prefixText, inlineRange, pattern, undoManager }) => {
     const match = pattern.exec(prefixText);
     if (!match) {
@@ -132,7 +131,7 @@ export const BoldMarkdown = InlineMarkdownExtension({
 
 export const ItalicExtension = InlineMarkdownExtension({
   name: 'italic',
-  pattern: /(?:\*)([^\s\*](?:[^*]*?[^\s\*])?)(?:\*)$/g,
+  pattern: /(?:\*)([^\s*](?:[^*]*?[^\s*])?)(?:\*)$/g,
   action: ({ inlineEditor, prefixText, inlineRange, pattern, undoManager }) => {
     const match = pattern.exec(prefixText);
     if (!match) {
@@ -425,7 +424,7 @@ export const LatexExtension = InlineMarkdownExtension({
   name: 'latex',
 
   pattern:
-    /(?:\$\$)(?<content>[^\$]+)(?:\$\$)$|(?<blockPrefix>\$\$\$\$)|(?<inlinePrefix>\$\$)$/g,
+    /(?:\$\$)(?<content>[^$]+)(?:\$\$)$|(?<blockPrefix>\$\$\$\$)|(?<inlinePrefix>\$\$)$/g,
   action: ({ inlineEditor, prefixText, inlineRange, pattern, undoManager }) => {
     const match = pattern.exec(prefixText);
     if (!match || !match.groups) {
