@@ -88,9 +88,9 @@ export const CloudQuotaModal = () => {
     currentWorkspace.engine.blob.singleBlobSizeLimit = workspaceQuota.blobLimit;
 
     const disposable =
-      currentWorkspace.engine.blob.onAbortLargeBlob.on(onAbortLargeBlob);
+      currentWorkspace.engine.blob.onAbortLargeBlob(onAbortLargeBlob);
     return () => {
-      disposable?.dispose();
+      disposable();
     };
   }, [currentWorkspace.engine.blob, onAbortLargeBlob, workspaceQuota]);
 

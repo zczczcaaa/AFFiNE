@@ -3,13 +3,12 @@ import { Unreachable } from '@affine/env/constant';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import type { DeltaInsert } from '@blocksuite/affine/inline';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
+import { ObjectPool, Service } from '@toeverything/infra';
+
 import {
   type DocProps,
   initDocFromProps,
-  ObjectPool,
-  Service,
-} from '@toeverything/infra';
-
+} from '../../../blocksuite/initialization';
 import type { Doc } from '../entities/doc';
 import { DocPropertyList } from '../entities/property-list';
 import { DocRecordList } from '../entities/record-list';

@@ -67,12 +67,13 @@ import {
 import { Bound } from '@blocksuite/affine/global/utils';
 import { type BlockSnapshot, Text } from '@blocksuite/affine/store';
 import type { ReferenceParams } from '@blocksuite/affine-model';
-import { type DocProps, type FrameworkProvider } from '@toeverything/infra';
+import { type FrameworkProvider } from '@toeverything/infra';
 import { type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { literal } from 'lit/static-html.js';
 import { pick } from 'lodash-es';
 
+import type { DocProps } from '../../../../../blocksuite/initialization';
 import { generateUrl } from '../../../../hooks/affine/use-share-url';
 import { createKeyboardToolbarConfig } from './widgets/keyboard-toolbar';
 

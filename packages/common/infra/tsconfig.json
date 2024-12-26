@@ -12,9 +12,6 @@
     },
     {
       "path": "../debug"
-    },
-    {
-      "path": "../../../blocksuite/affine/all"
     }
   ]
 }

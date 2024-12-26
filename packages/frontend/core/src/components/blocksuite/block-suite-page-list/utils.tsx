@@ -1,11 +1,12 @@
 import { toast } from '@affine/component';
+import type { DocProps } from '@affine/core/blocksuite/initialization';
 import { AppSidebarService } from '@affine/core/modules/app-sidebar';
 import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { type DocMode } from '@blocksuite/affine/blocks';
 import type { DocCollection } from '@blocksuite/affine/store';
-import { type DocProps, useServices } from '@toeverything/infra';
+import { useServices } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
 export const usePageHelper = (docCollection: DocCollection) => {

@@ -1,8 +1,11 @@
 import { Text } from '@blocksuite/affine/store';
-import type { DocProps } from '@toeverything/infra';
-import { initDocFromProps, LiveData, Service } from '@toeverything/infra';
+import { LiveData, Service } from '@toeverything/infra';
 import dayjs from 'dayjs';
 
+import {
+  type DocProps,
+  initDocFromProps,
+} from '../../../blocksuite/initialization';
 import type { DocsService } from '../../doc';
 import type { EditorSettingService } from '../../editor-setting';
 import type { JournalStore } from '../store/journal';

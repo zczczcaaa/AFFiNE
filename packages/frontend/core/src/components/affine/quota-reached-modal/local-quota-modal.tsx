@@ -16,13 +16,13 @@ export const LocalQuotaModal = () => {
   }, [setOpen]);
 
   useEffect(() => {
-    const disposable = currentWorkspace.engine.blob.onAbortLargeBlob.on(() => {
+    const disposable = currentWorkspace.engine.blob.onAbortLargeBlob(() => {
       setOpen(true);
     });
     return () => {
-      disposable?.dispose();
+      disposable();
     };
-  }, [currentWorkspace.engine.blob.onAbortLargeBlob, setOpen]);
+  }, [currentWorkspace.engine.blob, setOpen]);
 
   return (
     <ConfirmModal

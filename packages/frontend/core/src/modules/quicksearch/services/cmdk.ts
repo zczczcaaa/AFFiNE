@@ -1,8 +1,8 @@
 import { track } from '@affine/track';
 import { Text } from '@blocksuite/affine/store';
-import type { DocProps } from '@toeverything/infra';
 import { Service } from '@toeverything/infra';
 
+import type { DocProps } from '../../../blocksuite/initialization';
 import type { DocsService } from '../../doc';
 import { EditorSettingService } from '../../editor-setting';
 import type { WorkbenchService } from '../../workbench';
