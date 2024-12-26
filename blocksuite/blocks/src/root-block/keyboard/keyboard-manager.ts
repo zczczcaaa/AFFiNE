@@ -5,12 +5,17 @@ import {
   promptDocTitle,
 } from '@blocksuite/affine-block-embed';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent, BlockSelection } from '@blocksuite/block-std';
+import type {
+  BlockComponent,
+  BlockSelection,
+  UIEventHandler,
+} from '@blocksuite/block-std';
 import { IS_MAC, IS_WINDOWS } from '@blocksuite/global/env';
 import { assertExists } from '@blocksuite/global/utils';
 
 export class PageKeyboardManager {
-  private readonly _handleDelete = () => {
+  private readonly _handleDelete: UIEventHandler = ctx => {
+    const event = ctx.get('keyboardState').raw;
     const blockSelections = this._currentSelection.filter(sel =>
       sel.is('block')
     );
@@ -18,6 +23,7 @@ export class PageKeyboardManager {
       return;
     }
 
+    event.preventDefault();
     this._doc.transact(() => {
       const selection = this._replaceBlocksBySelection(
         blockSelections,
@@ -79,9 +85,9 @@ export class PageKeyboardManager {
         'Mod-Backspace': () => true,
         Backspace: this._handleDelete,
         Delete: this._handleDelete,
-        'Control-d': () => {
+        'Control-d': ctx => {
           if (!IS_MAC) return;
-          this._handleDelete();
+          this._handleDelete(ctx);
         },
         'Mod-Shift-l': () => {
           this._createEmbedBlock();
