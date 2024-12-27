@@ -12,6 +12,7 @@
     ".vscode",
     ".yarnrc.yml",
     ".docker",
+    "**/.storybook",
     ".coverage",
     ".nx/**",
     "target",
@@ -33,8 +34,7 @@
     "packages/frontend/graphql/src/graphql/index.ts",
     "packages/frontend/graphql/src/schema.ts",
     "packages/frontend/apps/android/App/app/build/**",
-    "blocksuite/tests-legacy/snapshots",
-    "**/.storybook"
+    "blocksuite/tests-legacy/snapshots"
   ],
   "rules": {
     "import/named": "allow",

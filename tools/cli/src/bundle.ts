@@ -58,7 +58,7 @@ export class BundleCommand extends PackageCommand {
       .join('webpack.config.ts');
 
     if (overrideConfigPath.isFile()) {
-      const override = await import(overrideConfigPath.value);
+      const override = await import(overrideConfigPath.toFileUrl().toString());
       configOverride = override.config ?? override.default;
     }
 
