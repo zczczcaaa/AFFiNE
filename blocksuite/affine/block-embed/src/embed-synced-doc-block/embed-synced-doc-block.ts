@@ -1,8 +1,5 @@
 import { Peekable } from '@blocksuite/affine-components/peek';
-import {
-  REFERENCE_NODE,
-  RefNodeSlotsProvider,
-} from '@blocksuite/affine-components/rich-text';
+import { RefNodeSlotsProvider } from '@blocksuite/affine-components/rich-text';
 import {
   type AliasInfo,
   type DocMode,
@@ -10,6 +7,7 @@ import {
   NoteDisplayMode,
   type ReferenceInfo,
 } from '@blocksuite/affine-model';
+import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import {
   DocDisplayMetaProvider,
   DocModeProvider,

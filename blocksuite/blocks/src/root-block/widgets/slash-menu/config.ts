@@ -28,7 +28,6 @@ import {
 import {
   getInlineEditorByModel,
   insertContent,
-  REFERENCE_NODE,
   textConversionConfigs,
   textFormatConfigs,
 } from '@blocksuite/affine-components/rich-text';
@@ -37,6 +36,7 @@ import type {
   FrameBlockModel,
   ParagraphBlockModel,
 } from '@blocksuite/affine-model';
+import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import {
   createDefaultDoc,

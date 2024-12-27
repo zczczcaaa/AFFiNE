@@ -29,6 +29,7 @@ export {
   MarkdownASTToDeltaMatcherIdentifier,
   MarkdownDeltaConverter,
 } from './markdown';
+export * from './middlewares';
 export {
   BlockNotionHtmlAdapterExtension,
   type BlockNotionHtmlAdapterMatcher,

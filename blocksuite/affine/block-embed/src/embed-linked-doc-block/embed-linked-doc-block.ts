@@ -1,8 +1,5 @@
 import { isPeekable, Peekable } from '@blocksuite/affine-components/peek';
-import {
-  REFERENCE_NODE,
-  RefNodeSlotsProvider,
-} from '@blocksuite/affine-components/rich-text';
+import { RefNodeSlotsProvider } from '@blocksuite/affine-components/rich-text';
 import type {
   DocMode,
   EmbedLinkedDocModel,
@@ -11,6 +8,7 @@ import type {
 import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
+  REFERENCE_NODE,
 } from '@blocksuite/affine-shared/consts';
 import {
   DocDisplayMetaProvider,

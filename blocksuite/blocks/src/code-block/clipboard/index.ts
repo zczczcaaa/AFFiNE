@@ -1,5 +1,6 @@
 import {
   HtmlAdapter,
+  pasteMiddleware,
   PlainTextAdapter,
 } from '@blocksuite/affine-shared/adapters';
 import {
@@ -8,8 +9,6 @@ import {
   type UIEventHandler,
 } from '@blocksuite/block-std';
 import { assertExists, DisposableGroup } from '@blocksuite/global/utils';
-
-import { pasteMiddleware } from '../../root-block/clipboard/middlewares/index.js';
 
 export class CodeClipboardController {
   private _clipboard!: Clipboard;

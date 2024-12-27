@@ -3,10 +3,10 @@ import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import {
   getInlineEditorByModel,
   insertContent,
-  REFERENCE_NODE,
 } from '@blocksuite/affine-components/rich-text';
 import { toast } from '@blocksuite/affine-components/toast';
 import type { FrameBlockModel } from '@blocksuite/affine-model';
+import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import {
   createDefaultDoc,

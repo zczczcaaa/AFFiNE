@@ -1,12 +1,9 @@
-import { REFERENCE_NODE } from '@blocksuite/affine-components/rich-text';
-import type { ParagraphBlockModel } from '@blocksuite/affine-model';
 import {
-  ParseDocUrlProvider,
-  type ParseDocUrlService,
-  TelemetryProvider,
-} from '@blocksuite/affine-shared/services';
-import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
-import { referenceToNode } from '@blocksuite/affine-shared/utils';
+  type DocMode,
+  DocModes,
+  type ParagraphBlockModel,
+  type ReferenceInfo,
+} from '@blocksuite/affine-model';
 import {
   BLOCK_ID_ATTR,
   type BlockComponent,
@@ -27,8 +24,14 @@ import {
   type Text,
 } from '@blocksuite/store';
 
-import { matchFlavours } from '../../../_common/utils/index.js';
-import { extractSearchParams } from '../../../_common/utils/url.js';
+import { REFERENCE_NODE } from '../../consts';
+import {
+  ParseDocUrlProvider,
+  type ParseDocUrlService,
+  TelemetryProvider,
+} from '../../services';
+import type { AffineTextAttributes } from '../../types';
+import { matchFlavours, referenceToNode } from '../../utils';
 
 function findLastMatchingNode(
   root: BlockSnapshot[],
@@ -527,3 +530,40 @@ export const pasteMiddleware = (std: EditorHost['std']): JobMiddleware => {
     });
   };
 };
+
+function extractSearchParams(link: string) {
+  try {
+    const url = new URL(link);
+    const mode = url.searchParams.get('mode') as DocMode | undefined;
+
+    if (mode && DocModes.includes(mode)) {
+      const params: ReferenceInfo['params'] = { mode: mode as DocMode };
+      const blockIds = url.searchParams
+        .get('blockIds')
+        ?.trim()
+        .split(',')
+        .map(id => id.trim())
+        .filter(id => id.length);
+      const elementIds = url.searchParams
+        .get('elementIds')
+        ?.trim()
+        .split(',')
+        .map(id => id.trim())
+        .filter(id => id.length);
+
+      if (blockIds?.length) {
+        params.blockIds = blockIds;
+      }
+
+      if (elementIds?.length) {
+        params.elementIds = elementIds;
+      }
+
+      return { params };
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  return null;
+}

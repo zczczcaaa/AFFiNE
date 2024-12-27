@@ -1,4 +1,6 @@
-import { type AffineInlineEditor, REFERENCE_NODE } from './inline/index.js';
+import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
+
+import { type AffineInlineEditor } from './inline/index.js';
 
 export function insertLinkedNode({
   inlineEditor,

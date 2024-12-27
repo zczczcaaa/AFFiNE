@@ -1,4 +1,8 @@
-import type { EditorHost, TextRangePoint } from '@blocksuite/block-std';
+import type {
+  BlockStdScope,
+  EditorHost,
+  TextRangePoint,
+} from '@blocksuite/block-std';
 import type {
   BlockSnapshot,
   DraftModel,
@@ -6,7 +10,7 @@ import type {
   JobSlots,
 } from '@blocksuite/store';
 
-import { matchFlavours } from '../../../_common/utils/index.js';
+import { matchFlavours } from '../../utils';
 
 const handlePoint = (
   point: TextRangePoint,
@@ -47,7 +51,7 @@ const sliceText = (slots: JobSlots, std: EditorHost['std']) => {
   });
 };
 
-export const copyMiddleware = (std: EditorHost['std']): JobMiddleware => {
+export const copyMiddleware = (std: BlockStdScope): JobMiddleware => {
   return ({ slots }) => {
     sliceText(slots, std);
   };

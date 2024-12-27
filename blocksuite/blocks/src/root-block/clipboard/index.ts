@@ -1,8 +1,10 @@
 import {
   AttachmentAdapter,
+  copyMiddleware,
   HtmlAdapter,
   ImageAdapter,
   NotionTextAdapter,
+  pasteMiddleware,
 } from '@blocksuite/affine-shared/adapters';
 import type { BlockComponent, UIEventHandler } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/utils';
@@ -15,7 +17,6 @@ import {
   titleMiddleware,
 } from '../../_common/transformers/middlewares.js';
 import { ClipboardAdapter } from './adapter.js';
-import { copyMiddleware, pasteMiddleware } from './middlewares/index.js';
 
 export class PageClipboard {
   private readonly _copySelected = (onCopy?: () => void) => {

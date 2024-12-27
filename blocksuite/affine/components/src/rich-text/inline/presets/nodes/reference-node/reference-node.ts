@@ -1,4 +1,8 @@
 import type { ReferenceInfo } from '@blocksuite/affine-model';
+import {
+  DEFAULT_DOC_NAME,
+  REFERENCE_NODE,
+} from '@blocksuite/affine-shared/consts';
 import { DocDisplayMetaProvider } from '@blocksuite/affine-shared/services';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import {
@@ -32,7 +36,6 @@ import { HoverController } from '../../../../../hover/index.js';
 import { Peekable } from '../../../../../peek/index.js';
 import { RefNodeSlotsProvider } from '../../../../extension/index.js';
 import { affineTextStyles } from '../affine-text.js';
-import { DEFAULT_DOC_NAME, REFERENCE_NODE } from '../consts.js';
 import type { ReferenceNodeConfigProvider } from './reference-config.js';
 import { toggleReferencePopup } from './reference-popup.js';
 

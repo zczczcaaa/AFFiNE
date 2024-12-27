@@ -5,7 +5,10 @@ import {
 } from '@blocksuite/affine-components/rich-text';
 import type { CodeBlockModel } from '@blocksuite/affine-model';
 import { BRACKET_PAIRS, NOTE_SELECTOR } from '@blocksuite/affine-shared/consts';
-import { NotificationProvider } from '@blocksuite/affine-shared/services';
+import {
+  DocModeProvider,
+  NotificationProvider,
+} from '@blocksuite/affine-shared/services';
 import { getViewportElement } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent } from '@blocksuite/block-std';
 import { getInlineRangeProvider } from '@blocksuite/block-std';
@@ -24,7 +27,6 @@ import { query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import type { ThemedToken } from 'shiki';
 
-import { EdgelessRootBlockComponent } from '../root-block/edgeless/edgeless-root-block.js';
 import { CodeClipboardController } from './clipboard/index.js';
 import { CodeBlockInlineManagerExtension } from './code-block-inline.js';
 import type { CodeBlockService } from './code-block-service.js';
@@ -72,9 +74,8 @@ export class CodeBlockComponent extends CaptionedBlockComponent<
   }
 
   override get topContenteditableElement() {
-    if (this.rootComponent instanceof EdgelessRootBlockComponent) {
-      const el = this.closest<BlockComponent>(NOTE_SELECTOR);
-      return el;
+    if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
+      return this.closest<BlockComponent>(NOTE_SELECTOR);
     }
     return this.rootComponent;
   }

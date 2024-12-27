@@ -1,8 +1,8 @@
-import { REFERENCE_NODE } from '@blocksuite/affine-components/rich-text';
 import type {
   DatabaseBlockModel,
   RootBlockModel,
 } from '@blocksuite/affine-model';
+import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import {

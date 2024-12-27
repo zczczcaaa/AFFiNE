@@ -1,4 +1,5 @@
 import type { ReferenceInfo } from '@blocksuite/affine-model';
+import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import {
   type LinkEventType,
   type TelemetryEvent,
@@ -22,7 +23,6 @@ import { live } from 'lit/directives/live.js';
 
 import type { EditorIconButton } from '../../../../../toolbar/index.js';
 import type { AffineInlineEditor } from '../../affine-inline-specs.js';
-import { REFERENCE_NODE } from '../consts.js';
 
 export class ReferenceAliasPopup extends SignalWatcher(
   WithDisposable(ShadowlessElement)
