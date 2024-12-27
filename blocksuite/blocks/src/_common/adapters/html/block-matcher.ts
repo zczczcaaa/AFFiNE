@@ -1,4 +1,5 @@
 import { BookmarkBlockHtmlAdapterExtension } from '@blocksuite/affine-block-bookmark';
+import { DividerBlockHtmlAdapterExtension } from '@blocksuite/affine-block-divider';
 import {
   EmbedFigmaBlockHtmlAdapterExtension,
   EmbedGithubBlockHtmlAdapterExtension,
@@ -13,7 +14,6 @@ import { ParagraphBlockHtmlAdapterExtension } from '@blocksuite/affine-block-par
 
 import { CodeBlockHtmlAdapterExtension } from '../../../code-block/adapters/html.js';
 import { DatabaseBlockHtmlAdapterExtension } from '../../../database-block/adapters/html.js';
-import { DividerBlockHtmlAdapterExtension } from '../../../divider-block/adapters/html.js';
 import { RootBlockHtmlAdapterExtension } from '../../../root-block/adapters/html.js';
 
 export const defaultBlockHtmlAdapterMatchers = [

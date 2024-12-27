@@ -59,6 +59,9 @@
       "path": "../affine/block-edgeless-text"
     },
     {
+      "path": "../affine/block-divider"
+    },
+    {
       "path": "../affine/data-view"
     },
     {

@@ -1,5 +1,6 @@
 import { AttachmentBlockSpec } from '@blocksuite/affine-block-attachment';
 import { BookmarkBlockSpec } from '@blocksuite/affine-block-bookmark';
+import { DividerBlockSpec } from '@blocksuite/affine-block-divider';
 import {
   EmbedFigmaBlockSpec,
   EmbedGithubBlockSpec,
@@ -20,7 +21,6 @@ import { ParagraphBlockSpec } from '@blocksuite/affine-block-paragraph';
 import { CodeBlockSpec } from '../../code-block/code-block-spec.js';
 import { DataViewBlockSpec } from '../../data-view-block/data-view-spec.js';
 import { DatabaseBlockSpec } from '../../database-block/database-spec.js';
-import { DividerBlockSpec } from '../../divider-block/divider-spec.js';
 
 export {
   AttachmentBlockSpec,

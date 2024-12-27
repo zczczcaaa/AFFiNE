@@ -1,4 +1,5 @@
 import { bookmarkBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-bookmark';
+import { dividerBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-divider';
 import {
   embedFigmaBlockMarkdownAdapterMatcher,
   embedGithubBlockMarkdownAdapterMatcher,
@@ -14,7 +15,6 @@ import { paragraphBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-p
 
 import { codeBlockMarkdownAdapterMatcher } from '../../../code-block/adapters/markdown.js';
 import { databaseBlockMarkdownAdapterMatcher } from '../../../database-block/adapters/markdown.js';
-import { dividerBlockMarkdownAdapterMatcher } from '../../../divider-block/adapters/markdown.js';
 import { rootBlockMarkdownAdapterMatcher } from '../../../root-block/adapters/markdown.js';
 
 export const defaultBlockMarkdownAdapterMatchers = [

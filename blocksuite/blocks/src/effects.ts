@@ -1,5 +1,6 @@
 import { effects as blockAttachmentEffects } from '@blocksuite/affine-block-attachment/effects';
 import { effects as blockBookmarkEffects } from '@blocksuite/affine-block-bookmark/effects';
+import { effects as blockDividerEffects } from '@blocksuite/affine-block-divider/effects';
 import { effects as blockEdgelessTextEffects } from '@blocksuite/affine-block-edgeless-text/effects';
 import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/effects';
 import { effects as blockFrameEffects } from '@blocksuite/affine-block-frame/effects';
@@ -64,7 +65,6 @@ import {
   HeaderAreaTextCell,
   HeaderAreaTextCellEditing,
 } from './database-block/properties/title/text.js';
-import { DividerBlockComponent } from './divider-block/index.js';
 import { EdgelessAutoCompletePanel } from './root-block/edgeless/components/auto-complete/auto-complete-panel.js';
 import { EdgelessAutoComplete } from './root-block/edgeless/components/auto-complete/edgeless-auto-complete.js';
 import { EdgelessToolIconButton } from './root-block/edgeless/components/buttons/tool-icon-button.js';
@@ -254,12 +254,12 @@ export function effects() {
   blockParagraphEffects();
   blockEmbedEffects();
   blockSurfaceEffects();
-  dataViewEffects();
   blockImageEffects();
   blockDatabaseEffects();
   blockSurfaceRefEffects();
   blockLatexEffects();
   blockEdgelessTextEffects();
+  blockDividerEffects();
 
   componentCaptionEffects();
   componentContextMenuEffects();
@@ -277,6 +277,8 @@ export function effects() {
   widgetFrameTitleEffects();
   widgetEdgelessElementToolbarEffects();
   widgetCodeToolbarEffects();
+
+  dataViewEffects();
 
   customElements.define('affine-database-title', DatabaseTitle);
   customElements.define('data-view-header-area-icon', IconCell);
@@ -303,7 +305,6 @@ export function effects() {
   customElements.define('mini-mindmap-surface-block', MindmapSurfaceBlock);
   customElements.define('affine-data-view', DataViewBlockComponent);
   customElements.define('affine-edgeless-root', EdgelessRootBlockComponent);
-  customElements.define('affine-divider', DividerBlockComponent);
   customElements.define('edgeless-copilot-panel', EdgelessCopilotPanel);
   customElements.define(
     'edgeless-copilot-toolbar-entry',

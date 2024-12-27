@@ -1,5 +1,6 @@
 import { AttachmentBlockSpec } from '@blocksuite/affine-block-attachment';
 import { BookmarkBlockSpec } from '@blocksuite/affine-block-bookmark';
+import { DividerBlockSpec } from '@blocksuite/affine-block-divider';
 import { EmbedExtensions } from '@blocksuite/affine-block-embed';
 import { ImageBlockSpec } from '@blocksuite/affine-block-image';
 import { ListBlockSpec } from '@blocksuite/affine-block-list';
@@ -16,7 +17,6 @@ import { AdapterFactoryExtensions } from '../_common/adapters/extension.js';
 import { CodeBlockSpec } from '../code-block/code-block-spec.js';
 import { DataViewBlockSpec } from '../data-view-block/data-view-spec.js';
 import { DatabaseBlockSpec } from '../database-block/database-spec.js';
-import { DividerBlockSpec } from '../divider-block/divider-spec.js';
 
 export const CommonFirstPartyBlockSpecs: ExtensionType[] = [
   RichTextExtensions,

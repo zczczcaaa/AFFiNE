@@ -1,4 +1,5 @@
 import { BookmarkBlockPlainTextAdapterExtension } from '@blocksuite/affine-block-bookmark';
+import { DividerBlockPlainTextAdapterExtension } from '@blocksuite/affine-block-divider';
 import {
   EmbedFigmaBlockPlainTextAdapterExtension,
   EmbedGithubBlockPlainTextAdapterExtension,
@@ -14,7 +15,6 @@ import type { ExtensionType } from '@blocksuite/block-std';
 
 import { CodeBlockPlainTextAdapterExtension } from '../../../code-block/adapters/plain-text.js';
 import { DatabaseBlockPlainTextAdapterExtension } from '../../../database-block/adapters/plain-text.js';
-import { DividerBlockPlainTextAdapterExtension } from '../../../divider-block/adapters/plain-text.js';
 
 export const defaultBlockPlainTextAdapterMatchers: ExtensionType[] = [
   ParagraphBlockPlainTextAdapterExtension,
