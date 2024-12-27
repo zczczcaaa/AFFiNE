@@ -8,9 +8,6 @@ import {
   type useConfirmModal,
 } from '@affine/component';
 import { AIChatBlockSchema } from '@affine/core/blocksuite/blocks';
-import { AttachmentPreviewErrorBoundary } from '@affine/core/components/attachment-viewer/error';
-import { PDFViewerEmbedded } from '@affine/core/components/attachment-viewer/pdf-viewer-embedded';
-import { buildAttachmentProps } from '@affine/core/components/attachment-viewer/utils';
 import { WorkspaceServerService } from '@affine/core/modules/cloud';
 import { type DocService, DocsService } from '@affine/core/modules/doc';
 import type { EditorService } from '@affine/core/modules/editor';
@@ -74,6 +71,7 @@ import { literal } from 'lit/static-html.js';
 import { pick } from 'lodash-es';
 
 import type { DocProps } from '../../../../../blocksuite/initialization';
+import { AttachmentEmbedPreview } from '../../../../attachment-viewer/pdf-viewer-embedded';
 import { generateUrl } from '../../../../hooks/affine/use-share-url';
 import { createKeyboardToolbarConfig } from './widgets/keyboard-toolbar';
 
@@ -624,12 +622,7 @@ export function patchForAttachmentEmbedViews(
           });
         },
         template: (model, _blobUrl) =>
-          reactToLit(
-            <AttachmentPreviewErrorBoundary key={model.id}>
-              <PDFViewerEmbedded {...buildAttachmentProps(model)} />
-            </AttachmentPreviewErrorBoundary>,
-            false
-          ),
+          reactToLit(<AttachmentEmbedPreview model={model} />, false),
       }));
     },
   };

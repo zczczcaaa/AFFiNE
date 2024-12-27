@@ -28,9 +28,9 @@ import {
   useState,
 } from 'react';
 
-import type { PDFViewerProps } from './pdf-viewer';
 import * as styles from './styles.css';
 import * as embeddedStyles from './styles.embedded.css';
+import type { PDFViewerProps } from './types';
 
 function defaultMeta() {
   return {
@@ -40,9 +40,7 @@ function defaultMeta() {
   };
 }
 
-type PDFViewerEmbeddedInnerProps = PDFViewerProps;
-
-export function PDFViewerEmbeddedInner({ model }: PDFViewerEmbeddedInnerProps) {
+export function PDFViewerEmbeddedInner({ model }: PDFViewerProps) {
   const scale = window.devicePixelRatio;
   const peekView = useService(PeekViewService).peekView;
   const pdfService = useService(PDFService);

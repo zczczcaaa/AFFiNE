@@ -1,11 +1,11 @@
 import { type PDF, PDFService, PDFStatus } from '@affine/core/modules/pdf';
 import { LoadingSvg } from '@affine/core/modules/pdf/views';
 import track from '@affine/track';
-import type { AttachmentBlockModel } from '@blocksuite/affine/blocks';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useEffect, useState } from 'react';
 
 import { PDFViewerInner } from './pdf-viewer-inner';
+import type { PDFViewerProps } from './types';
 
 function PDFViewerStatus({ pdf, ...props }: PDFViewerProps & { pdf: PDF }) {
   const state = useLiveData(pdf.state$);
@@ -21,13 +21,6 @@ function PDFViewerStatus({ pdf, ...props }: PDFViewerProps & { pdf: PDF }) {
   }
 
   return <PDFViewerInner {...props} pdf={pdf} state={state} />;
-}
-
-export interface PDFViewerProps {
-  model: AttachmentBlockModel;
-  name: string;
-  ext: string;
-  size: string;
 }
 
 export function PDFViewer({ model, ...props }: PDFViewerProps) {

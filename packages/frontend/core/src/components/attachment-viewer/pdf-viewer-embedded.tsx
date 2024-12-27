@@ -1,14 +1,13 @@
-import type { AttachmentBlockModel } from '@blocksuite/affine/blocks';
-
+import { AttachmentPreviewErrorBoundary } from './error';
 import { PDFViewerEmbeddedInner } from './pdf-viewer-embedded-inner';
+import type { AttachmentViewerProps } from './types';
+import { buildAttachmentProps } from './utils';
 
-export interface PDFViewerEmbeddedProps {
-  model: AttachmentBlockModel;
-  name: string;
-  ext: string;
-  size: string;
-}
-
-export function PDFViewerEmbedded(props: PDFViewerEmbeddedProps) {
-  return <PDFViewerEmbeddedInner {...props} />;
-}
+// In Embed view
+export const AttachmentEmbedPreview = ({ model }: AttachmentViewerProps) => {
+  return (
+    <AttachmentPreviewErrorBoundary key={model.id}>
+      <PDFViewerEmbeddedInner {...buildAttachmentProps(model)} />
+    </AttachmentPreviewErrorBoundary>
+  );
+};

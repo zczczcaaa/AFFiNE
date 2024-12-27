@@ -3,7 +3,7 @@ import type { AttachmentBlockModel } from '@blocksuite/affine/blocks';
 import { filesize } from 'filesize';
 
 import { downloadBlob } from '../../utils/resource';
-import type { PDFViewerProps } from './pdf-viewer';
+import type { PDFViewerProps } from './types';
 
 export async function getAttachmentBlob(model: AttachmentBlockModel) {
   const sourceId = model.sourceId;
