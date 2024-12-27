@@ -159,11 +159,13 @@ function DocPeekPreviewEditor({
         </Scrollable.Viewport>
         <Scrollable.Scrollbar />
       </Scrollable.Root>
-      <EditorOutlineViewer
-        editor={editorElement}
-        show={mode === 'page'}
-        openOutlinePanel={openOutlinePanel}
-      />
+      {!BUILD_CONFIG.isMobileEdition && !BUILD_CONFIG.isMobileWeb ? (
+        <EditorOutlineViewer
+          editor={editorElement}
+          show={mode === 'page'}
+          openOutlinePanel={openOutlinePanel}
+        />
+      ) : null}
     </AffineErrorBoundary>
   );
 }
