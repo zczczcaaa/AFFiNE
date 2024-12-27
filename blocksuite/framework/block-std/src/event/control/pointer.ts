@@ -273,6 +273,8 @@ class DragController extends PointerControllerBase {
   };
 
   private readonly _nativeDragOver = (event: DragEvent) => {
+    // prevent default to allow drop in editor
+    event.preventDefault();
     const dndEventState = new DndEventState({ event });
     this._dispatcher.run(
       'nativeDragOver',
