@@ -1,10 +1,10 @@
+import { NotionHtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
 import { type DocCollection, extMimeMap, Job } from '@blocksuite/store';
 
 import { defaultBlockNotionHtmlAdapterMatchers } from '../adapters/notion-html/block-matcher.js';
 import { notionHtmlInlineToDeltaMatchers } from '../adapters/notion-html/delta-converter/html-inline.js';
-import { NotionHtmlAdapter } from '../adapters/notion-html/notion-html.js';
 import { defaultImageProxyMiddleware } from './middlewares.js';
 import { Unzip } from './utils.js';
 

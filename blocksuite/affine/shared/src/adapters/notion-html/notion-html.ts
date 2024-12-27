@@ -2,17 +2,6 @@ import {
   DEFAULT_NOTE_BACKGROUND_COLOR,
   NoteDisplayMode,
 } from '@blocksuite/affine-model';
-import {
-  type AdapterContext,
-  AdapterFactoryIdentifier,
-  type BlockNotionHtmlAdapterMatcher,
-  BlockNotionHtmlAdapterMatcherIdentifier,
-  HastUtils,
-  type HtmlAST,
-  type NotionHtml,
-  NotionHtmlASTToDeltaMatcherIdentifier,
-  NotionHtmlDeltaConverter,
-} from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
 import type { ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
@@ -34,6 +23,23 @@ import {
 } from '@blocksuite/store';
 import rehypeParse from 'rehype-parse';
 import { unified } from 'unified';
+
+import {
+  type AdapterContext,
+  AdapterFactoryIdentifier,
+} from '../types/adapter';
+import type { HtmlAST } from '../types/hast';
+import { HastUtils } from '../utils/hast';
+import {
+  type BlockNotionHtmlAdapterMatcher,
+  BlockNotionHtmlAdapterMatcherIdentifier,
+} from './block-adapter';
+import {
+  NotionHtmlASTToDeltaMatcherIdentifier,
+  NotionHtmlDeltaConverter,
+} from './delta-converter';
+
+export type NotionHtml = string;
 
 type NotionHtmlToSliceSnapshotPayload = {
   file: NotionHtml;

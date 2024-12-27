@@ -17,6 +17,7 @@ import '@shoelace-style/shoelace/dist/themes/dark.css';
 import './left-side-panel.js';
 import './side-panel.js';
 
+import { NotionHtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { ShadowlessElement } from '@blocksuite/block-std';
 import {
@@ -35,7 +36,6 @@ import {
   HtmlTransformer,
   MarkdownAdapterFactoryIdentifier,
   MarkdownTransformer,
-  NotionHtmlAdapter,
   NotionHtmlTransformer,
   openFileOrFiles,
   PlainTextAdapterFactoryIdentifier,
@@ -435,7 +435,7 @@ export class StarterDebugMenu extends ShadowlessElement {
         collection: this.collection,
         middlewares: [defaultImageProxyMiddleware],
       });
-      const htmlAdapter = new NotionHtmlAdapter(job);
+      const htmlAdapter = new NotionHtmlAdapter(job, this.editor.std.provider);
       await htmlAdapter.toDoc({
         file: await file.text(),
         pageId: this.collection.idGenerator(),
