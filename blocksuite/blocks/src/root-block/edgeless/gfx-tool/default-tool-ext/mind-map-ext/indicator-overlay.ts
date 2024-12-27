@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   NODE_HORIZONTAL_SPACING,
   NODE_VERTICAL_SPACING,
@@ -191,6 +190,7 @@ export class MindMapIndicatorOverlay extends Overlay {
     ctx.fillStyle = color;
     ctx.lineWidth = 3;
 
+    ctx.beginPath();
     ctx.roundRect(targetPos.x, targetPos.y, targetPos.w, targetPos.h, 4);
     ctx.fill();
 
