@@ -162,7 +162,6 @@ import {
   AffineInnerModalWidget,
   AffineModalWidget,
   AffinePageDraggingAreaWidget,
-  AffinePieMenuWidget,
   AffineSlashMenuWidget,
   AffineSurfaceRefToolbar,
   EdgelessCopilotToolbarEntry,
@@ -210,13 +209,6 @@ import { Loader } from './root-block/widgets/linked-doc/import-doc/loader';
 import { AffineCustomModal } from './root-block/widgets/modal/custom-modal.js';
 import { AFFINE_MODAL_WIDGET } from './root-block/widgets/modal/modal.js';
 import { AFFINE_PAGE_DRAGGING_AREA_WIDGET } from './root-block/widgets/page-dragging-area/page-dragging-area.js';
-import { PieNodeCenter } from './root-block/widgets/pie-menu/components/pie-node-center.js';
-import { PieNodeChild } from './root-block/widgets/pie-menu/components/pie-node-child.js';
-import { PieNodeContent } from './root-block/widgets/pie-menu/components/pie-node-content.js';
-import { PieCenterRotator } from './root-block/widgets/pie-menu/components/rotator.js';
-import { AFFINE_PIE_MENU_WIDGET } from './root-block/widgets/pie-menu/index.js';
-import { PieMenu } from './root-block/widgets/pie-menu/menu.js';
-import { PieNode } from './root-block/widgets/pie-menu/node.js';
 import { AFFINE_SLASH_MENU_WIDGET } from './root-block/widgets/slash-menu/index.js';
 import {
   InnerSlashMenu,
@@ -327,10 +319,6 @@ export function effects() {
   customElements.define('affine-custom-modal', AffineCustomModal);
   customElements.define('affine-database', DatabaseBlockComponent);
   customElements.define('affine-surface-ref', SurfaceRefBlockComponent);
-  customElements.define('pie-node-child', PieNodeChild);
-  customElements.define('pie-node-content', PieNodeContent);
-  customElements.define('pie-node-center', PieNodeCenter);
-  customElements.define('pie-center-rotator', PieCenterRotator);
   customElements.define('affine-slash-menu', SlashMenu);
   customElements.define('inner-slash-menu', InnerSlashMenu);
   customElements.define('generating-placeholder', GeneratingPlaceholder);
@@ -347,7 +335,6 @@ export function effects() {
     EdgelessDraggingAreaRectWidget
   );
   customElements.define('icon-button', IconButton);
-  customElements.define('affine-pie-menu', PieMenu);
   customElements.define('loader-element', Loader);
   customElements.define('edgeless-brush-menu', EdgelessBrushMenu);
   customElements.define(
@@ -359,7 +346,6 @@ export function effects() {
     'edgeless-connector-tool-button',
     EdgelessConnectorToolButton
   );
-  customElements.define('affine-pie-node', PieNode);
   customElements.define(
     'edgeless-default-tool-button',
     EdgelessDefaultToolButton
@@ -501,7 +487,6 @@ export function effects() {
     AffinePageDraggingAreaWidget
   );
   customElements.define(AFFINE_DRAG_HANDLE_WIDGET, AffineDragHandleWidget);
-  customElements.define(AFFINE_PIE_MENU_WIDGET, AffinePieMenuWidget);
   customElements.define(AFFINE_EDGELESS_COPILOT_WIDGET, EdgelessCopilotWidget);
 
   customElements.define(AFFINE_IMAGE_TOOLBAR_WIDGET, AffineImageToolbarWidget);

@@ -33,7 +33,6 @@ import { AFFINE_FRAME_TITLE_WIDGET } from '../widgets/frame-title/index.js';
 import { AFFINE_INNER_MODAL_WIDGET } from '../widgets/inner-modal/inner-modal.js';
 import { AFFINE_LINKED_DOC_WIDGET } from '../widgets/linked-doc/index.js';
 import { AFFINE_MODAL_WIDGET } from '../widgets/modal/modal.js';
-import { AFFINE_PIE_MENU_WIDGET } from '../widgets/pie-menu/index.js';
 import { AFFINE_SLASH_MENU_WIDGET } from '../widgets/slash-menu/index.js';
 import { AFFINE_VIEWPORT_OVERLAY_WIDGET } from '../widgets/viewport-overlay/viewport-overlay.js';
 import { NOTE_SLICER_WIDGET } from './components/note-slicer/index.js';
@@ -46,7 +45,6 @@ import { EdgelessRootService } from './edgeless-root-service.js';
 export const edgelessRootWidgetViewMap = {
   [AFFINE_MODAL_WIDGET]: literal`${unsafeStatic(AFFINE_MODAL_WIDGET)}`,
   [AFFINE_INNER_MODAL_WIDGET]: literal`${unsafeStatic(AFFINE_INNER_MODAL_WIDGET)}`,
-  [AFFINE_PIE_MENU_WIDGET]: literal`${unsafeStatic(AFFINE_PIE_MENU_WIDGET)}`,
   [AFFINE_SLASH_MENU_WIDGET]: literal`${unsafeStatic(
     AFFINE_SLASH_MENU_WIDGET
   )}`,

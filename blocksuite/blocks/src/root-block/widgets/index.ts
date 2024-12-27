@@ -46,7 +46,6 @@ export {
 export { AffineLinkedDocWidget } from './linked-doc/index.js';
 export { AffineModalWidget } from './modal/modal.js';
 export { AffinePageDraggingAreaWidget } from './page-dragging-area/page-dragging-area.js';
-export { AffinePieMenuWidget } from './pie-menu/index.js';
 export {
   type AffineSlashMenuActionItem,
   type AffineSlashMenuContext,
