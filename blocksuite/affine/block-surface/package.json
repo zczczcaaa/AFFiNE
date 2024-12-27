@@ -42,5 +42,6 @@
     "dist",
     "!src/__tests__",
     "!dist/__tests__"
-  ]
+  ],
+  "version": "0.19.0"
 }

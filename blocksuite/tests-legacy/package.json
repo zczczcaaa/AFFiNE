@@ -16,5 +16,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/toeverything/blocksuite.git"
-  }
+  },
+  "version": "0.19.0"
 }

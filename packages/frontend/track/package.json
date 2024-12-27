@@ -2,7 +2,7 @@
   "name": "@affine/track",
   "type": "module",
   "private": true,
-  "version": "0.18.0",
+  "version": "0.19.0",
   "exports": {
     ".": "./src/index.ts"
   },

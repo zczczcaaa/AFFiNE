@@ -2,7 +2,7 @@
   "name": "@affine/core",
   "type": "module",
   "private": true,
-  "version": "0.18.0",
+  "version": "0.19.0",
   "exports": {
     "./*": "./src/*",
     "./bootstrap": "./src/bootstrap/index.ts"
