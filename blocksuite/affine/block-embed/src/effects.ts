@@ -12,11 +12,10 @@ import { EmbedHtmlBlockComponent } from './embed-html-block';
 import { EmbedHtmlFullscreenToolbar } from './embed-html-block/components/fullscreen-toolbar';
 import { EmbedEdgelessHtmlBlockComponent } from './embed-html-block/embed-edgeless-html-block';
 import { EmbedLinkedDocBlockComponent } from './embed-linked-doc-block';
-import type { insertEmbedLinkedDocCommand } from './embed-linked-doc-block/commands/insert-embed-linked-doc';
 import type {
   InsertedLinkType,
-  insertLinkByQuickSearchCommand,
-} from './embed-linked-doc-block/commands/insert-link-by-quick-search';
+  insertEmbedLinkedDocCommand,
+} from './embed-linked-doc-block/commands/insert-embed-linked-doc';
 import { EmbedEdgelessLinkedDocBlockComponent } from './embed-linked-doc-block/embed-edgeless-linked-doc-block';
 import type { EmbedLinkedDocBlockConfig } from './embed-linked-doc-block/embed-linked-doc-config';
 import {
@@ -121,15 +120,14 @@ declare global {
       'affine:embed-loom': EmbedLoomBlockService;
       'affine:embed-youtube': EmbedYoutubeBlockService;
     }
-    interface BlockConfigs {
-      'affine:embed-linked-doc': EmbedLinkedDocBlockConfig;
-    }
     interface CommandContext {
       insertedLinkType?: Promise<InsertedLinkType>;
     }
+    interface BlockConfigs {
+      'affine:embed-linked-doc': EmbedLinkedDocBlockConfig;
+    }
     interface Commands {
       insertEmbedLinkedDoc: typeof insertEmbedLinkedDocCommand;
-      insertLinkByQuickSearch: typeof insertLinkByQuickSearchCommand;
     }
   }
 }

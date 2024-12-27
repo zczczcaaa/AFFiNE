@@ -3,6 +3,10 @@ import type { Command } from '@blocksuite/block-std';
 
 import { insertEmbedCard } from '../../common/insert-embed-card.js';
 
+export type InsertedLinkType = {
+  flavour?: 'affine:bookmark' | 'affine:embed-linked-doc';
+} | null;
+
 export const insertEmbedLinkedDocCommand: Command<
   never,
   'insertedLinkType',

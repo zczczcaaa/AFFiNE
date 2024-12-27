@@ -1,9 +1,6 @@
+import type { InsertedLinkType } from '@blocksuite/affine-block-embed';
 import { QuickSearchProvider } from '@blocksuite/affine-shared/services';
 import type { Command } from '@blocksuite/block-std';
-
-export type InsertedLinkType = {
-  flavour?: 'affine:bookmark' | 'affine:embed-linked-doc';
-} | null;
 
 export const insertLinkByQuickSearchCommand: Command<
   never,
@@ -34,7 +31,6 @@ export const insertLinkByQuickSearchCommand: Command<
 
       // add normal link;
       if ('externalUrl' in result) {
-        // @ts-expect-error FIXME: fix after bookmark refactor
         std.command.exec('insertBookmark', { url: result.externalUrl });
         return {
           flavour: 'affine:bookmark',
