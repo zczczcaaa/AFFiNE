@@ -38,12 +38,12 @@ export const devtoolsFormatter: typeof window.devtoolsFormatters = [
       if ('flavour' in (obj as BlockModel) && 'yBlock' in (obj as BlockModel)) {
         globalUtils.assertType<BlockModel>(obj);
 
-        // @ts-expect-error FIXME: ts error
+        // @ts-expect-error ignore
         const { props } = obj.page._blockTree.getBlock(obj.id)._parseYBlock();
 
         const propsArr = Object.entries(props).flatMap(([key]) => {
           return [
-            // @ts-expect-error FIXME: ts error
+            // @ts-expect-error ignore
             ...toStyledEntry(key, obj[key]),
             ['div', {}, ''],
           ] as HTMLTemplate[];

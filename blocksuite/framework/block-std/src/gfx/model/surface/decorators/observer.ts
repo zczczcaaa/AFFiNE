@@ -62,10 +62,10 @@ export function startObserve(
 ) {
   const proto = Object.getPrototypeOf(receiver);
   const observeFn = getObserveMeta(proto, prop as string)!;
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   const observerDisposable = receiver[observerDisposableSymbol] ?? {};
 
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   receiver[observerDisposableSymbol] = observerDisposable;
 
   if (observerDisposable[prop]) {
@@ -114,7 +114,7 @@ export function initializeObservers(
   });
 
   receiver['_disposable'].add(() => {
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     Object.values(receiver[observerDisposableSymbol] ?? {}).forEach(dispose =>
       (dispose as () => void)()
     );

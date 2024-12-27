@@ -46,12 +46,12 @@ export class SyncController {
           const keyName = key.replace('prop:', '');
           const proxy = this._getPropsProxy(keyName, value);
           this._byPassUpdate(() => {
-            // @ts-expect-error FIXME: ts error
+            // @ts-expect-error allow magic props
             this.model[keyName] = proxy;
             const signalKey = `${keyName}$`;
             this._mutex(() => {
               if (signalKey in this.model) {
-                // @ts-expect-error FIXME: ts error
+                // @ts-expect-error allow magic props
                 this.model[signalKey].value = y2Native(value);
               }
             });
@@ -62,10 +62,10 @@ export class SyncController {
         if (type.action === 'delete') {
           const keyName = key.replace('prop:', '');
           this._byPassUpdate(() => {
-            // @ts-expect-error FIXME: ts error
+            // @ts-expect-error allow magic props
             delete this.model[keyName];
             if (`${keyName}$` in this.model) {
-              // @ts-expect-error FIXME: ts error
+              // @ts-expect-error allow magic props
               this.model[`${keyName}$`].value = undefined;
             }
           });
@@ -136,7 +136,7 @@ export class SyncController {
           const value = data.value;
           if (!this.model) return;
           _mutex(() => {
-            // @ts-expect-error FIXME: ts error
+            // @ts-expect-error allow magic props
             this.model[key] = value;
           });
         });
@@ -208,7 +208,7 @@ export class SyncController {
 
     function setValue(target: BlockModel, p: string, value: unknown) {
       _mutex(() => {
-        // @ts-expect-error FIXME: ts error
+        // @ts-expect-error allow magic props
         target[`${p}$`].value = value;
       });
     }
@@ -222,7 +222,7 @@ export class SyncController {
         const signalKey = `${name}$`;
         if (signalKey in this.model) {
           this._mutex(() => {
-            // @ts-expect-error FIXME: ts error
+            // @ts-expect-error allow magic props
             this.model[signalKey].value = this.model[name];
           });
         }

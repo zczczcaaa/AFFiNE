@@ -277,7 +277,7 @@ export abstract class GfxPrimitiveElementModel<
 
     const value = this._stashed.get(prop);
     this._stashed.delete(prop);
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     delete this[prop];
 
     if (getFieldPropsSet(this).has(prop as string)) {

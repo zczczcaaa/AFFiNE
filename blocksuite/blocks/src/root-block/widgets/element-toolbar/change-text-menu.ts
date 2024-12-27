@@ -319,8 +319,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
 
     const key = this.elementType === 'connector' ? 'labelStyle' : 'color';
     this.elements.forEach(ele => {
-      // @ts-expect-error: FIXME
-      ele[event.type === 'start' ? 'stash' : 'pop'](key);
+      ele[event.type === 'start' ? 'stash' : 'pop'](key as 'color');
     });
   };
 

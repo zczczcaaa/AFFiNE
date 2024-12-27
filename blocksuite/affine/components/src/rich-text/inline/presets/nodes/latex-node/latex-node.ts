@@ -58,10 +58,7 @@ export class AffineLatexNode extends SignalWatcher(
       gap: 10px;
 
       border-radius: 4px;
-      background: ${
-        // @ts-expect-error FIXME: ts error
-        unsafeCSSVarV2('label/red')
-      };
+      background: ${unsafeCSSVarV2('chip/label/red')};
 
       color: ${unsafeCSSVarV2('text/highlight/fg/red')};
       font-family: Inter;
@@ -126,7 +123,7 @@ export class AffineLatexNode extends SignalWatcher(
             if (!latexContainer) return;
 
             latexContainer.replaceChildren();
-            // @ts-expect-error FIXME: ts error
+            // @ts-expect-error lit hack won't fix
             delete latexContainer['_$litPart$'];
 
             if (latex.length === 0) {
@@ -142,7 +139,7 @@ export class AffineLatexNode extends SignalWatcher(
                 });
               } catch {
                 latexContainer.replaceChildren();
-                // @ts-expect-error FIXME: ts error
+                // @ts-expect-error lit hack won't fix
                 delete latexContainer['_$litPart$'];
                 render(
                   html`<span class="error-placeholder">Error equation</span>`,

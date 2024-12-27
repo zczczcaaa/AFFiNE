@@ -56,7 +56,7 @@ export function updateDerivedProps(
     const decoratorState = getDecoratorState(receiver.surface);
     decoratorState.deriving = true;
     keys(derivedProps).forEach(key => {
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error ignore
       receiver[key] = derivedProps[key];
     });
     decoratorState.deriving = false;

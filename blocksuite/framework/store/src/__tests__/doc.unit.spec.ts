@@ -177,7 +177,7 @@ test('always get latest value in onChange', () => {
 
   let value: unknown;
   rootModel.propsUpdated.on(({ key }) => {
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     value = rootModel[key];
   });
 

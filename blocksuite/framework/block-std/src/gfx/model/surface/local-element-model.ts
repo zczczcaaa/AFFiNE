@@ -126,14 +126,14 @@ export abstract class GfxLocalElementModel implements GfxCompatibleInterface {
           this._local.delete('deserializedXYWH');
         }
 
-        // @ts-expect-error FIXME: ts error
+        // @ts-expect-error ignore
         const oldValue = target[prop as string];
 
         if (oldValue === value) {
           return true;
         }
 
-        // @ts-expect-error FIXME: ts error
+        // @ts-expect-error ignore
         target[prop as string] = value;
 
         if (!this._props.has(prop)) {
@@ -158,7 +158,7 @@ export abstract class GfxLocalElementModel implements GfxCompatibleInterface {
       },
     });
 
-    // eslint-disable-next-line no-constructor-return
+    // oxlint-disable-next-line no-constructor-return
     return p;
   }
 

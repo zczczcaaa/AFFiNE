@@ -129,7 +129,7 @@ export class ToolController extends GfxExtension {
   });
 
   get currentTool$() {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // oxlint-disable-next-line typescript/no-this-alias
     const self = this;
 
     return {
@@ -143,7 +143,7 @@ export class ToolController extends GfxExtension {
   }
 
   get currentToolOption$() {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // oxlint-disable-next-line typescript/no-this-alias
     const self = this;
 
     return {
@@ -475,7 +475,7 @@ export class ToolController extends GfxExtension {
     };
 
     this.std.provider.getAll(ToolIdentifier).forEach(tool => {
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error ignore
       tool['eventTarget'] = eventTarget;
       this._register(tool);
     });

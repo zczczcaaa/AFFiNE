@@ -49,11 +49,11 @@ describe('blocksuite yjs', () => {
 
       proxy.obj2 = { foo: 2, bar: { num: 3 } };
       expect(map.get('obj2')).toBeInstanceOf(Y.Map);
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error ignore
       expect(map.get('obj2').get('bar').get('num')).toBe(3);
 
       proxy.obj2.bar.str = 'hello';
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error ignore
       expect(map.get('obj2').get('bar').get('str')).toBe('hello');
 
       proxy.obj3 = {};
@@ -105,7 +105,7 @@ describe('blocksuite yjs', () => {
 
       proxy.inner.native.setValue(['hello', 'world', 'foo']);
       expect(native.getValue()).toEqual(['hello', 'world', 'foo']);
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error ignore
       expect(map.get('inner').get('native').get('value')).toEqual([
         'hello',
         'world',
@@ -114,10 +114,10 @@ describe('blocksuite yjs', () => {
 
       const native2 = new Boxed(0);
       proxy.inner.native2 = native2;
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error ignore
       expect(map.get('inner').get('native2').get('value')).toBe(0);
       native2.setValue(1);
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error ignore
       expect(map.get('inner').get('native2').get('value')).toBe(1);
     });
   });

@@ -4,6 +4,7 @@ import {
   type BlockHtmlAdapterMatcher,
   HastUtils,
 } from '@blocksuite/affine-shared/adapters';
+import type { DeltaInsert } from '@blocksuite/inline';
 import { nanoid } from '@blocksuite/store';
 import { bundledLanguagesInfo, codeToHast } from 'shiki';
 
@@ -74,16 +75,15 @@ export const codeBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
           )?.id ?? 'text')
         : 'text';
 
-      // @ts-expect-error FIXME: ts error
-      const text = o.node.props.text.delta as DeltaInsert[];
+      const text = (o.node.props.text as Record<string, unknown>)
+        .delta as DeltaInsert[];
       const code = text.map(delta => delta.insert).join('');
       const hast = await codeToHast(code, {
         lang: matchedLang,
         theme: 'light-plus',
       });
 
-      // @ts-expect-error FIXME: ts error
-      walkerContext.openNode(hast, 'children').closeNode();
+      walkerContext.openNode(hast as never, 'children').closeNode();
     },
   },
 };

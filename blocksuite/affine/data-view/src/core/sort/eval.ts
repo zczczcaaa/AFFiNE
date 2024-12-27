@@ -110,8 +110,7 @@ const compareAny = (a: unknown, b: unknown) => {
   if (!b) {
     return Compare.LT;
   }
-  // @ts-expect-error FIXME: ts error
-  return a - b;
+  return Number(a) - Number(b);
 };
 
 const compareTag = (type: DataTypeOf<typeof t.tag>, a: unknown, b: unknown) => {

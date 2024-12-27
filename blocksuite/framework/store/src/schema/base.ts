@@ -150,7 +150,7 @@ function MagicProps(): {
 
 const modelLabel = Symbol('model_label');
 
-// @ts-expect-error FIXME: ts error
+// @ts-expect-error allow magic props
 export class BlockModel<
   Props extends object = object,
   PropsSignal extends object = SignaledProps<Props>,

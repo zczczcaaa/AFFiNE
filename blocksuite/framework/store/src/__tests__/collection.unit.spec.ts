@@ -36,7 +36,7 @@ const spaceMetaId = 'meta';
 function serializCollection(doc: BlockSuiteDoc): Record<string, any> {
   const spaces = {};
   doc.spaces.forEach((subDoc, key) => {
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     spaces[key] = subDoc.toJSON();
   });
   const json = doc.toJSON();
@@ -103,7 +103,7 @@ describe('basic', () => {
 
     assert.equal(collection.isEmpty, false);
     assert.equal(typeof actualDoc.createDate, 'number');
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     delete actualDoc.createDate;
 
     assert.deepEqual(actual, {

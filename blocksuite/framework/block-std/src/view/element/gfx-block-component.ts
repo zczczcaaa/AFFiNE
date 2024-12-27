@@ -133,7 +133,7 @@ export function toGfxBlockComponent<
   WidgetName extends string,
   B extends typeof BlockComponent<Model, Service, WidgetName>,
 >(CustomBlock: B) {
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   return class extends CustomBlock {
     [GfxElementSymbol] = true;
 

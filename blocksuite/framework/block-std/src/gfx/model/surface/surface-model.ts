@@ -142,7 +142,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
 
     Object.keys(rest).forEach(key => {
       if (props[key] !== undefined) {
-        // @ts-expect-error FIXME: ts error
+        // @ts-expect-error ignore
         elementModel.model[key] = props[key];
       }
     });
@@ -177,7 +177,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
     state.skipField = options.skipFieldInit ?? false;
 
     let mounted = false;
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     Ctor['_decoratorState'] = state;
 
     const elementModel = new Ctor({
@@ -188,7 +188,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
       onChange: payload => mounted && options.onChange({ id, ...payload }),
     }) as GfxPrimitiveElementModel;
 
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     delete Ctor['_decoratorState'];
     state.creating = false;
     state.skipField = false;
@@ -364,7 +364,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
           {
             const group = this.getGroup(payload.id);
             if (group) {
-              // eslint-disable-next-line unicorn/prefer-dom-node-remove
+              // oxlint-disable-next-line unicorn/prefer-dom-node-remove
               group.removeChild(payload.model as GfxModel);
             }
           }
@@ -385,7 +385,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
       throw new Error(`Invalid element type: ${type}`);
     }
 
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     return (ctor.propsToY ?? GfxPrimitiveElementModel.propsToY)(props);
   }
 
@@ -449,7 +449,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
 
     const id = nanoid();
 
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     props.id = id;
 
     const elementModel = this._createElementFromProps(props, {
@@ -502,7 +502,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
         });
       }
 
-      // eslint-disable-next-line unicorn/prefer-dom-node-remove
+      // oxlint-disable-next-line unicorn/prefer-dom-node-remove
       group?.removeChild(element as GfxModel);
 
       this.elements.getValue()!.delete(id);
@@ -612,7 +612,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
         props as Record<string, unknown>
       ) as T;
       Object.entries(props).forEach(([key, value]) => {
-        // @ts-expect-error FIXME: ts error
+        // @ts-expect-error ignore
         elementModel[key] = value;
       });
     });

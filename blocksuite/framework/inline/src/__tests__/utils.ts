@@ -162,7 +162,7 @@ export async function assertSelection(
     ([richTextIndex]) => {
       const richText =
         document?.querySelectorAll('test-rich-text')[richTextIndex];
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error getInlineRange
       const inlineEditor = richText.inlineEditor;
       return inlineEditor?.getInlineRange();
     },

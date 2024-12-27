@@ -175,8 +175,8 @@ export const replaceIdMiddleware: JobMiddleware = ({ slots, collection }) => {
               break;
             }
             case 'group': {
-              // @ts-expect-error FIXME: ts error
-              const json = value.children.json as Record<string, unknown>;
+              const json = (value.children as Record<string, unknown>)
+                .json as Record<string, unknown>;
               Object.entries(json).forEach(([key, value]) => {
                 if (idMap.has(key)) {
                   delete json[key];

@@ -14,7 +14,7 @@ const env =
         : {};
 const importIdentifier = '__ $BLOCKSUITE_EDITOR$ __';
 
-// @ts-expect-error FIXME: ts error
+// @ts-expect-error check global identifier
 if (env[importIdentifier] === true) {
   // https://github.com/yjs/yjs/issues/438
   console.error(
@@ -22,5 +22,5 @@ if (env[importIdentifier] === true) {
   );
 }
 
-// @ts-expect-error FIXME: ts error
+// @ts-expect-error set global identifier
 env[importIdentifier] = true;

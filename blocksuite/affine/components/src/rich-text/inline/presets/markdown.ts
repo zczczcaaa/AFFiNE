@@ -482,7 +482,7 @@ export const LatexExtension = InlineMarkdownExtension({
           if (!latexBlock || latexBlock.flavour !== 'affine:latex') return;
 
           //FIXME(@Flrande): wait for refactor
-          // @ts-expect-error FIXME: ts error
+          // @ts-expect-error BS-2241
           latexBlock.toggleEditor();
         })
         .catch(console.error);

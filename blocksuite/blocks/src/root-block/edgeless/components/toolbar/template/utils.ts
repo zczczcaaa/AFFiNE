@@ -22,7 +22,7 @@ export function cloneDeep<T>(obj: T): T {
     seen.set(val, copy);
 
     Object.keys(val).forEach(key => {
-      // @ts-expect-error FIXME: ts error
+      // @ts-expect-error deep clone
       copy[key] = clone(val[key]);
     });
 

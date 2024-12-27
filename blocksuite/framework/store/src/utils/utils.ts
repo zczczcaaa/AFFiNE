@@ -19,7 +19,7 @@ export function syncBlockProps(
     if (SYS_KEYS.has(key)) return;
     if (value === undefined) return;
 
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error allow props
     model[key] = value;
   });
 
@@ -31,7 +31,7 @@ export function syncBlockProps(
       return;
     }
 
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error allow props
     model[key] = native2Y(value);
   });
 }

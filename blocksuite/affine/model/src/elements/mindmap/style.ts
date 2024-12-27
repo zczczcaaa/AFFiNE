@@ -499,10 +499,9 @@ export const mindmapStyleGetters: Record<MindmapStyle, MindmapStyleGetter> = {
 
 export const applyNodeStyle = (node: MindmapNode, nodeStyle: NodeStyle) => {
   Object.entries(nodeStyle).forEach(([key, value]) => {
-    // @ts-expect-error FIXME: ts error
-    if (!isEqual(node.element[key], value)) {
-      // @ts-expect-error FIXME: ts error
-      node.element[key] = value;
+    const element = node.element as unknown as Record<string, unknown>;
+    if (!isEqual(element[key], value)) {
+      element[key] = value;
     }
   });
 };

@@ -114,9 +114,9 @@ export const debounce = <T extends (...args: any[]) => void>(
 };
 
 export async function nextTick() {
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error check window.scheduler
   if ('scheduler' in window && 'yield' in window.scheduler) {
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error check window.scheduler.yield
     return window.scheduler.yield();
   } else if (typeof requestIdleCallback !== 'undefined') {
     return new Promise(resolve => requestIdleCallback(resolve));

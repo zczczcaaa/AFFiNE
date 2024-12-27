@@ -21,7 +21,7 @@ export function forwardDelete(std: BlockStdScope) {
   const ignoreForwardDeleteFlavourList: BlockSuite.Flavour[] = [
     'affine:attachment',
     'affine:bookmark',
-    // @ts-expect-error TODO: should be fixed after database model is migrated to affine-models
+    // @ts-expect-error FIXME: should be fixed after database model is migrated to affine-models
     'affine:database',
     'affine:code',
     'affine:image',

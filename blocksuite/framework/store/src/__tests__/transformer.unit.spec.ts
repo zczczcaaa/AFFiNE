@@ -96,23 +96,23 @@ test('snapshot to model', async () => {
   });
   expect(model.flavour).toBe(rootModel.flavour);
 
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   expect(model.props.title).toBeInstanceOf(Text);
 
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   map.set('title', model.props.title.yText);
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   expect(model.props.title.toString()).toBe('doc title');
 
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   expect(model.props.style).toEqual({
     color: 'red',
   });
 
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   expect(model.props.count).toBe(3);
 
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   expect(model.props.items).toMatchObject([
     {
       id: 0,
@@ -125,7 +125,7 @@ test('snapshot to model', async () => {
     },
   ]);
 
-  // @ts-expect-error FIXME: ts error
+  // @ts-expect-error ignore
   model.props.items.forEach((item, index) => {
     expect(item.content).toBeInstanceOf(Text);
     const key = `item:${index}:content`;

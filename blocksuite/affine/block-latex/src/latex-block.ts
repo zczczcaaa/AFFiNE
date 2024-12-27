@@ -44,7 +44,7 @@ export class LatexBlockComponent extends CaptionedBlockComponent<LatexBlockModel
         const latex = this.model.latex$.value;
 
         katexContainer.replaceChildren();
-        // @ts-expect-error FIXME: ts error
+        // @ts-expect-error lit hack won't fix
         delete katexContainer['_$litPart$'];
 
         if (latex.length === 0) {
@@ -60,7 +60,7 @@ export class LatexBlockComponent extends CaptionedBlockComponent<LatexBlockModel
             });
           } catch {
             katexContainer.replaceChildren();
-            // @ts-expect-error FIXME: ts error
+            // @ts-expect-error lit hack won't fix
             delete katexContainer['_$litPart$'];
             render(
               html`<span class="latex-block-error-placeholder"

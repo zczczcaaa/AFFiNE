@@ -40,7 +40,7 @@ describe('isEqual', () => {
       )
     ).toBe(true);
     expect(isEqual({}, { foo: 1 })).toBe(false);
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     expect(isEqual({ foo: 1 }, {})).toBe(false);
   });
 
@@ -63,7 +63,7 @@ describe('isEqual', () => {
       bigint: 110101195306153019n,
     };
     expect(isEqual(nested, nested)).toBe(true);
-    // @ts-expect-error FIXME: ts error
+    // @ts-expect-error ignore
     expect(isEqual({ foo: [] }, { foo: '' })).toBe(false);
   });
 });
