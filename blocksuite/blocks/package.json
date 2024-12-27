@@ -16,6 +16,7 @@
   "dependencies": {
     "@blocksuite/affine-block-attachment": "workspace:*",
     "@blocksuite/affine-block-bookmark": "workspace:*",
+    "@blocksuite/affine-block-edgeless-text": "workspace:*",
     "@blocksuite/affine-block-embed": "workspace:*",
     "@blocksuite/affine-block-frame": "workspace:*",
     "@blocksuite/affine-block-image": "workspace:*",

@@ -1,5 +1,6 @@
 import { effects as blockAttachmentEffects } from '@blocksuite/affine-block-attachment/effects';
 import { effects as blockBookmarkEffects } from '@blocksuite/affine-block-bookmark/effects';
+import { effects as blockEdgelessTextEffects } from '@blocksuite/affine-block-edgeless-text/effects';
 import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/effects';
 import { effects as blockFrameEffects } from '@blocksuite/affine-block-frame/effects';
 import { effects as blockImageEffects } from '@blocksuite/affine-block-image/effects';
@@ -64,8 +65,6 @@ import {
   HeaderAreaTextCellEditing,
 } from './database-block/properties/title/text.js';
 import { DividerBlockComponent } from './divider-block/index.js';
-import type { insertEdgelessTextCommand } from './edgeless-text-block/commands/insert-edgeless-text.js';
-import { EdgelessTextBlockComponent } from './edgeless-text-block/index.js';
 import { EdgelessAutoCompletePanel } from './root-block/edgeless/components/auto-complete/auto-complete-panel.js';
 import { EdgelessAutoComplete } from './root-block/edgeless/components/auto-complete/edgeless-auto-complete.js';
 import { EdgelessToolIconButton } from './root-block/edgeless/components/buttons/tool-icon-button.js';
@@ -260,6 +259,7 @@ export function effects() {
   blockDatabaseEffects();
   blockSurfaceRefEffects();
   blockLatexEffects();
+  blockEdgelessTextEffects();
 
   componentCaptionEffects();
   componentContextMenuEffects();
@@ -293,7 +293,6 @@ export function effects() {
     'affine-database-rich-text-cell-editing',
     RichTextCellEditing
   );
-  customElements.define('affine-edgeless-text', EdgelessTextBlockComponent);
   customElements.define('center-peek', CenterPeek);
   customElements.define('database-datasource-note-renderer', NoteRenderer);
   customElements.define('database-datasource-block-renderer', BlockRenderer);
@@ -528,14 +527,10 @@ export function effects() {
 
 declare global {
   namespace BlockSuite {
-    interface Commands {
-      insertEdgelessText: typeof insertEdgelessTextCommand;
-    }
     interface CommandContext {
       focusBlock?: BlockComponent | null;
       anchorBlock?: BlockComponent | null;
       updatedBlocks?: BlockModel[];
-      textId?: string;
     }
     interface BlockConfigs {
       'affine:code': CodeBlockConfig;

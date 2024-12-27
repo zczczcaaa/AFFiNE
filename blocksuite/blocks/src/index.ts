@@ -20,7 +20,6 @@ export * from './code-block/index.js';
 export * from './data-view-block/index.js';
 export * from './database-block/index.js';
 export * from './divider-block/index.js';
-export * from './edgeless-text-block/index.js';
 export { EdgelessTemplatePanel } from './root-block/edgeless/components/toolbar/template/template-panel.js';
 export type {
   Template,
@@ -46,6 +45,7 @@ export {
 export * from './surface-ref-block/index.js';
 export * from '@blocksuite/affine-block-attachment';
 export * from '@blocksuite/affine-block-bookmark';
+export * from '@blocksuite/affine-block-edgeless-text';
 export * from '@blocksuite/affine-block-embed';
 export * from '@blocksuite/affine-block-frame';
 export * from '@blocksuite/affine-block-image';

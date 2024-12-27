@@ -1,3 +1,5 @@
+import type { EdgelessTextBlockComponent } from '@blocksuite/affine-block-edgeless-text';
+import { EDGELESS_TEXT_BLOCK_MIN_WIDTH } from '@blocksuite/affine-block-edgeless-text';
 import {
   EMBED_HTML_MIN_HEIGHT,
   EMBED_HTML_MIN_WIDTH,
@@ -59,8 +61,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { isMindmapNode } from '../../../../_common/edgeless/mindmap/index.js';
-import type { EdgelessTextBlockComponent } from '../../../../edgeless-text-block/edgeless-text-block.js';
-import { EDGELESS_TEXT_BLOCK_MIN_WIDTH } from '../../../../edgeless-text-block/edgeless-text-block.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import type {
   EdgelessFrameManager,

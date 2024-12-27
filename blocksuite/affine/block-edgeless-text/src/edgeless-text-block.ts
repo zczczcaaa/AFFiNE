@@ -9,8 +9,6 @@ import { css, html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
 
-import type { EdgelessRootService } from '../root-block/index.js';
-
 export const EDGELESS_TEXT_BLOCK_MIN_WIDTH = 50;
 export const EDGELESS_TEXT_BLOCK_MIN_HEIGHT = 50;
 
@@ -42,10 +40,6 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
 
     this._updateH();
   });
-
-  get rootService() {
-    return this.std.getService('affine:page') as EdgelessRootService;
-  }
 
   private _updateH() {
     const bound = Bound.deserialize(this.model.xywh);
@@ -92,35 +86,35 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
       this.model.propsUpdated.on(({ key }) => {
         this.updateComplete
           .then(() => {
-            if (!this.host) return;
-
-            const command = this.host.command;
-            const blockSelections = this.model.children.map(child =>
-              this.host.selection.create('block', {
-                blockId: child.id,
-              })
-            );
+            const command = this.std.command;
+            const blockSelections = this.model.children.map(
+              child =>
+                this.std.selection.create('block', {
+                  blockId: child.id,
+                })
+              // FIXME: BS-2216
+            ) as never;
 
             if (key === 'fontStyle') {
               command.exec('formatBlock', {
                 blockSelections,
                 styles: {
                   italic: null,
-                },
+                } as never,
               });
             } else if (key === 'color') {
               command.exec('formatBlock', {
                 blockSelections,
                 styles: {
                   color: null,
-                },
+                } as never,
               });
             } else if (key === 'fontWeight') {
               command.exec('formatBlock', {
                 blockSelections,
                 styles: {
                   bold: null,
-                },
+                } as never,
               });
             }
           })
@@ -132,8 +126,8 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
   override firstUpdated(props: Map<string, unknown>) {
     super.firstUpdated(props);
 
-    const { disposables, rootService } = this;
-    const edgelessSelection = rootService.selection;
+    const { disposables, std } = this;
+    const edgelessSelection = this.gfx.selection;
 
     disposables.add(
       edgelessSelection.slots.updated.on(() => {
@@ -185,8 +179,8 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
       }
 
       if (newParagraphId) {
-        this.rootService.selectionManager.setGroup('note', [
-          this.rootService.selectionManager.create('text', {
+        std.selection.setGroup('note', [
+          std.selection.create('text', {
             from: {
               blockId: newParagraphId,
               index: 0,
@@ -201,7 +195,7 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
     disposables.addFromEvent(this._textContainer, 'focusout', () => {
       if (!this._editing) return;
 
-      this.rootService.selectionManager.clear();
+      this.std.selection.clear();
     });
 
     let composingWidth = EDGELESS_TEXT_BLOCK_MIN_WIDTH;

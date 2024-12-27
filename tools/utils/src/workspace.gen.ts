@@ -43,6 +43,20 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/block-edgeless-text',
+    name: '@blocksuite/affine-block-edgeless-text',
+    workspaceDependencies: [
+      'blocksuite/affine/block-surface',
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+      'blocksuite/framework/inline',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/block-embed',
     name: '@blocksuite/affine-block-embed',
     workspaceDependencies: [
@@ -210,6 +224,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/block-attachment',
       'blocksuite/affine/block-bookmark',
+      'blocksuite/affine/block-edgeless-text',
       'blocksuite/affine/block-embed',
       'blocksuite/affine/block-frame',
       'blocksuite/affine/block-image',
@@ -555,6 +570,7 @@ export type PackageName =
   | '@blocksuite/affine'
   | '@blocksuite/affine-block-attachment'
   | '@blocksuite/affine-block-bookmark'
+  | '@blocksuite/affine-block-edgeless-text'
   | '@blocksuite/affine-block-embed'
   | '@blocksuite/affine-block-frame'
   | '@blocksuite/affine-block-image'

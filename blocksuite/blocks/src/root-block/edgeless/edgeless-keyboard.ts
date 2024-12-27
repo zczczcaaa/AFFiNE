@@ -1,3 +1,4 @@
+import { EdgelessTextBlockComponent } from '@blocksuite/affine-block-edgeless-text';
 import {
   ConnectorElementModel,
   ConnectorMode,
@@ -27,7 +28,6 @@ import {
   isSingleMindMapNode,
 } from '../../_common/edgeless/mindmap/index.js';
 import { LassoMode } from '../../_common/types.js';
-import { EdgelessTextBlockComponent } from '../../edgeless-text-block/edgeless-text-block.js';
 import { PageKeyboardManager } from '../keyboard/keyboard-manager.js';
 import { GfxBlockModel } from './block-model.js';
 import type { EdgelessRootBlockComponent } from './edgeless-root-block.js';

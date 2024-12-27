@@ -1,3 +1,4 @@
+import { EdgelessTextBlockSpec } from '@blocksuite/affine-block-edgeless-text';
 import { FrameBlockSpec } from '@blocksuite/affine-block-frame';
 import { LatexBlockSpec } from '@blocksuite/affine-block-latex';
 import {
@@ -7,7 +8,6 @@ import {
 import { FontLoaderService } from '@blocksuite/affine-shared/services';
 import type { ExtensionType } from '@blocksuite/block-std';
 
-import { EdgelessTextBlockSpec } from '../../edgeless-text-block/edgeless-text-spec.js';
 import { EdgelessRootBlockSpec } from '../../root-block/edgeless/edgeless-root-spec.js';
 import {
   EdgelessFrameManager,
