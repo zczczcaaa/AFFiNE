@@ -70,6 +70,7 @@ jobs:
 
   make-distribution:
     strategy:
+      fail-fast: false
       matrix:
         spec:
           - runner: macos-14
@@ -190,6 +191,7 @@ jobs:
   package-distribution-windows:
     environment: ${{ github.event.inputs.build-type }}
     strategy:
+      fail-fast: false
       matrix:
         spec:
           - runner: windows-latest
@@ -281,6 +283,7 @@ jobs:
       - sign-packaged-artifacts-windows_x64
       - sign-packaged-artifacts-windows_arm64
     strategy:
+      fail-fast: false
       matrix:
         spec:
           - platform: win32
@@ -357,6 +360,7 @@ jobs:
         before-make,
       ]
     strategy:
+      fail-fast: false
       matrix:
         spec:
           - runner: windows-latest
