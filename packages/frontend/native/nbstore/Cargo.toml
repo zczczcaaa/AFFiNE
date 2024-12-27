@@ -4,7 +4,10 @@ name    = "affine_nbstore"
 version = "0.0.0"
 
 [lib]
-crate-type = ["rlib", "cdylib"]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+use-as-lib = ["napi-derive/noop", "napi/noop"]
 
 [dependencies]
 affine_schema = { path = "../schema" }
@@ -15,9 +18,12 @@ napi-derive   = { workspace = true }
 sqlx          = { workspace = true, default-features = false, features = ["chrono", "macros", "migrate", "runtime-tokio", "sqlite", "tls-rustls"] }
 tokio         = { workspace = true, features = ["full"] }
 
+[target.'cfg(any(target_os = "ios", target_os = "android"))'.dependencies]
+uniffi = { workspace = true }
+
 [build-dependencies]
 affine_schema = { path = "../schema" }
-dotenvy        = { workspace = true }
+dotenvy       = { workspace = true }
 napi-build    = { workspace = true }
 sqlx          = { workspace = true, default-features = false, features = ["chrono", "json", "macros", "migrate", "runtime-tokio", "sqlite", "tls-rustls"] }
 tokio         = { workspace = true, features = ["full"] }

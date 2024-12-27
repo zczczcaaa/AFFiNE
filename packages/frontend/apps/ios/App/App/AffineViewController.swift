@@ -20,6 +20,7 @@ class AFFiNEViewController: CAPBridgeViewController {
       HashcashPlugin(),
       NavigationGesturePlugin(),
       IntelligentsPlugin(representController: self),
+      NbStorePlugin(),
     ]
     plugins.forEach { bridge?.registerPluginInstance($0) }
   }

@@ -12,8 +12,22 @@ name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
 
 [dependencies]
-affine_common = { workspace = true }
-uniffi = { version = "0.28", features = ["cli"] }
+affine_common  = { workspace = true }
+affine_nbstore = { workspace = true, features = ["use-as-lib"] }
+anyhow         = { workspace = true }
+base64-simd    = { workspace = true }
+chrono         = { workspace = true }
+dashmap        = { workspace = true }
+sqlx           = { workspace = true }
+thiserror      = { workspace = true }
+uniffi         = { workspace = true, features = ["cli"] }
+
+[target.'cfg(any(target_os = "ios", target_os = "macos"))'.dependencies]
+objc2            = { workspace = true }
+objc2-foundation = { workspace = true, features = ["NSArray", "NSFileManager", "NSPathUtilities", "NSString", "NSURL"] }
+
+[target.'cfg(not(any(target_os = "ios", target_os = "macos")))'.dependencies]
+homedir = { workspace = true }
 
 [build-dependencies]
-uniffi = { version = "0.28", features = ["build"] }
+uniffi = { workspace = true, features = ["build"] }

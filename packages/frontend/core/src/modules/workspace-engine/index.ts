@@ -16,6 +16,7 @@ import {
 import { WorkspaceEngineStorageProvider } from './providers/engine';
 
 export { CloudBlobStorage } from './impls/engine/blob-cloud';
+export { base64ToUint8Array, uint8ArrayToBase64 } from './utils/base64';
 
 export function configureBrowserWorkspaceFlavours(framework: Framework) {
   framework

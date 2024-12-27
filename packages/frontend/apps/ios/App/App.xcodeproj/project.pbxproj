@@ -60,6 +60,10 @@
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C45499AB2D140B5000E21978 /* NBStore */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = NBStore; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		504EC3011FED79650016851F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -139,6 +143,7 @@
 		9D90BE1A2CCB9876006677DB /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				C45499AB2D140B5000E21978 /* NBStore */,
 				E93B276A2CED9298001409B8 /* NavigationGesture */,
 				9D90BE192CCB9876006677DB /* Cookie */,
 			);
@@ -200,6 +205,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C45499AB2D140B5000E21978 /* NBStore */,
 			);
 			name = App;
 			productName = App;

@@ -13,6 +13,10 @@ export function universalId({ peer, type, id }: StorageOptions) {
   return `@peer(${peer});@type(${type});@id(${id});`;
 }
 
+export function isValidSpaceType(type: string): type is SpaceType {
+  return type === 'workspace' || type === 'userspace';
+}
+
 export function isValidUniversalId(opts: Record<string, string>): boolean {
   const requiredKeys: Array<keyof StorageOptions> = [
     'peer',
@@ -26,11 +30,11 @@ export function isValidUniversalId(opts: Record<string, string>): boolean {
     }
   }
 
-  return opts.type === 'userspace' || opts.type === 'workspace';
+  return isValidSpaceType(opts.type);
 }
 
 export function parseUniversalId(id: string) {
-  const result: Record<string, string> = {};
+  const result: Partial<StorageOptions> = {};
   let key = '';
   let value = '';
   let isInValue = false;
@@ -44,6 +48,7 @@ export function parseUniversalId(id: string) {
     // when we are in value string, we only care about ch and next char to be [')', ';'] to end the id part
     if (isInValue) {
       if (ch === ')' && nextCh === ';') {
+        // @ts-expect-error we know the key is valid
         result[key] = value;
         key = '';
         value = '';
@@ -77,7 +82,7 @@ export function parseUniversalId(id: string) {
     );
   }
 
-  return result as any;
+  return result as StorageOptions;
 }
 
 export interface Storage {

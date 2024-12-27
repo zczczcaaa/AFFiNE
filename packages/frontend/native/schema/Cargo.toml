@@ -4,4 +4,4 @@ name    = "affine_schema"
 version = "0.0.0"
 
 [dependencies]
-sqlx          = { workspace = true, default-features = false, features = ["migrate"] }
+sqlx = { workspace = true, default-features = false, features = ["migrate"] }

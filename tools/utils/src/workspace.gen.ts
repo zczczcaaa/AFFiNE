@@ -396,6 +396,7 @@ export const PackageList = [
       'packages/frontend/i18n',
       'blocksuite/affine/all',
       'packages/common/infra',
+      'packages/frontend/native',
     ],
   },
   {

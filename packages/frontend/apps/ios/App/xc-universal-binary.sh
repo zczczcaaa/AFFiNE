@@ -71,4 +71,4 @@ for arch in $ARCHS; do
   esac
 done
 
-$HOME/.cargo/bin/cargo run --bin uniffi-bindgen generate --library $SRCROOT/lib${FFI_TARGET}.a --language swift --out-dir $SRCROOT/../../ios/App/App/uniffi
+$HOME/.cargo/bin/cargo run -p affine_mobile_native --bin uniffi-bindgen generate --library $SRCROOT/lib${FFI_TARGET}.a --language swift --out-dir $SRCROOT/../../ios/App/App/uniffi

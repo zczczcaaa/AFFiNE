@@ -436,7 +436,7 @@ jobs:
         uses: taiki-e/install-action@nextest
 
       - name: Run tests
-        run: cargo nextest run --release
+        run: cargo nextest run --release --no-fail-fast
 
   copilot-api-test:
     name: Server Copilot Api Test

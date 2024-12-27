@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use chrono::NaiveDateTime;
 use sqlx::{QueryBuilder, Row};
 
@@ -110,7 +112,7 @@ impl SqliteDocStorage {
     WHERE updated_at <= $3;"#,
     )
     .bind(snapshot.doc_id)
-    .bind(snapshot.data.as_ref())
+    .bind(snapshot.data.deref())
     .bind(snapshot.timestamp)
     .execute(&self.pool)
     .await?;
@@ -206,7 +208,6 @@ impl SqliteDocStorage {
 #[cfg(test)]
 mod tests {
   use chrono::{DateTime, Utc};
-  use napi::bindgen_prelude::Uint8Array;
 
   use super::*;
 
@@ -252,7 +253,7 @@ mod tests {
     storage
       .set_doc_snapshot(DocRecord {
         doc_id: "test".to_string(),
-        data: Uint8Array::from(vec![0, 0]),
+        data: vec![0, 0].into(),
         timestamp: Utc::now().naive_utc(),
       })
       .await
@@ -331,7 +332,7 @@ mod tests {
 
     let snapshot = DocRecord {
       doc_id: "test".to_string(),
-      data: Uint8Array::from(vec![0, 0]),
+      data: vec![0, 0].into(),
       timestamp: Utc::now().naive_utc(),
     };
 
@@ -349,7 +350,7 @@ mod tests {
 
     let snapshot = DocRecord {
       doc_id: "test".to_string(),
-      data: Uint8Array::from(vec![0, 0]),
+      data: vec![0, 0].into(),
       timestamp: Utc::now().naive_utc(),
     };
 
@@ -362,7 +363,7 @@ mod tests {
 
     let snapshot = DocRecord {
       doc_id: "test".to_string(),
-      data: Uint8Array::from(vec![0, 1]),
+      data: vec![0, 1].into(),
       timestamp: DateTime::from_timestamp_millis(Utc::now().timestamp_millis() - 1000)
         .unwrap()
         .naive_utc(),

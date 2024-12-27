@@ -591,6 +591,7 @@ __metadata:
     "@affine/component": "workspace:*"
     "@affine/core": "workspace:*"
     "@affine/i18n": "workspace:*"
+    "@affine/native": "workspace:*"
     "@blocksuite/affine": "workspace:*"
     "@blocksuite/icons": "npm:2.1.75"
     "@capacitor/app": "npm:^6.0.2"
@@ -610,6 +611,7 @@ __metadata:
     react-dom: "npm:^19.0.0"
     react-router-dom: "npm:^6.28.0"
     typescript: "npm:^5.7.2"
+    yjs: "npm:13.6.18"
   languageName: unknown
   linkType: soft
 

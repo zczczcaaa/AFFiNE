@@ -13,6 +13,7 @@
         "mobile",
         "ios",
         "android",
+        "mobile-native",
         "docs",
         "component",
         "env",

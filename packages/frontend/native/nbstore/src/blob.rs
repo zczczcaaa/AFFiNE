@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use super::{storage::SqliteDocStorage, Blob, ListedBlob, SetBlob};
 
 type Result<T> = std::result::Result<T, sqlx::Error>;
@@ -22,7 +24,7 @@ impl SqliteDocStorage {
       DO UPDATE SET data=$2, mime=$3, size=$4, deleted_at=NULL;"#,
     )
     .bind(blob.key)
-    .bind(blob.data.as_ref())
+    .bind(blob.data.deref())
     .bind(blob.mime)
     .bind(blob.data.len() as i64)
     .execute(&self.pool)
@@ -67,7 +69,6 @@ impl SqliteDocStorage {
 
 #[cfg(test)]
 mod tests {
-  use napi::bindgen_prelude::Uint8Array;
   use sqlx::Row;
 
   use super::*;
@@ -87,7 +88,7 @@ mod tests {
       storage
         .set_blob(SetBlob {
           key: format!("test_{}", i),
-          data: Uint8Array::from(vec![0, 0]),
+          data: vec![0, 0].into(),
           mime: "text/plain".to_string(),
         })
         .await
@@ -127,7 +128,7 @@ mod tests {
       storage
         .set_blob(SetBlob {
           key: format!("test_{}", i),
-          data: Uint8Array::from(vec![0, 0]),
+          data: vec![0, 0].into(),
           mime: "text/plain".to_string(),
         })
         .await
@@ -175,7 +176,7 @@ mod tests {
       storage
         .set_blob(SetBlob {
           key: format!("test_{}", i),
-          data: Uint8Array::from(vec![0, 0]),
+          data: vec![0, 0].into(),
           mime: "text/plain".to_string(),
         })
         .await
