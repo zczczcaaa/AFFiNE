@@ -34,15 +34,10 @@ runs:
         echo "TARGET_CC=clang" >> "$GITHUB_ENV"
 
     - name: Cache cargo
-      uses: actions/cache@v4
+      uses: Swatinem/rust-cache@v2
       with:
-        path: |
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-          ~/.napi-rs
-          target/${{ inputs.target }}
-        key: stable-${{ inputs.target }}-cargo-cache
+        save-if: ${{ github.ref_name == 'canary' }}
+        shared-key: ${{ inputs.target }}-inputs.package
     - name: Build
       shell: bash
       run: |
