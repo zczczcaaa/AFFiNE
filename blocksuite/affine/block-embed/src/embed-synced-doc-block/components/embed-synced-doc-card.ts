@@ -1,11 +1,14 @@
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { isGfxBlockComponent, ShadowlessElement } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { throttle, WithDisposable } from '@blocksuite/global/utils';
 import { html, nothing } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
-import { renderLinkedDocInCard } from '../../common/render-linked-doc.js';
+import {
+  RENDER_CARD_THROTTLE_MS,
+  renderLinkedDocInCard,
+} from '../../common/render-linked-doc.js';
 import type { EmbedSyncedDocBlockComponent } from '../embed-synced-doc-block.js';
 import { cardStyles } from '../styles.js';
 import { getSyncedDocIcons } from '../utils.js';
@@ -101,19 +104,23 @@ export class EmbedSyncedDocCard extends WithDisposable(ShadowlessElement) {
           renderLinkedDocInCard(this);
         })
       );
+      // Should throttle the blockUpdated event to avoid too many re-renders
+      // Because the blockUpdated event is triggered too frequently at some cases
       this.disposables.add(
-        syncedDoc.slots.blockUpdated.on(payload => {
-          if (this._dragging) {
-            return;
-          }
-          if (
-            payload.type === 'update' &&
-            ['', 'caption', 'xywh'].includes(payload.props.key)
-          ) {
-            return;
-          }
-          renderLinkedDocInCard(this);
-        })
+        syncedDoc.slots.blockUpdated.on(
+          throttle(payload => {
+            if (this._dragging) {
+              return;
+            }
+            if (
+              payload.type === 'update' &&
+              ['', 'caption', 'xywh'].includes(payload.props.key)
+            ) {
+              return;
+            }
+            renderLinkedDocInCard(this);
+          }, RENDER_CARD_THROTTLE_MS)
+        )
       );
     }
   }

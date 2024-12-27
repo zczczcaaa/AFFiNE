@@ -23,7 +23,7 @@ import {
   matchFlavours,
   referenceToNode,
 } from '@blocksuite/affine-shared/utils';
-import { Bound } from '@blocksuite/global/utils';
+import { Bound, throttle } from '@blocksuite/global/utils';
 import { DocCollection } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
 import { html, nothing } from 'lit';
@@ -33,7 +33,10 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
 
 import { EmbedBlockComponent } from '../common/embed-block-element.js';
-import { renderLinkedDocInCard } from '../common/render-linked-doc.js';
+import {
+  RENDER_CARD_THROTTLE_MS,
+  renderLinkedDocInCard,
+} from '../common/render-linked-doc.js';
 import { SyncedDocErrorIcon } from '../embed-synced-doc-block/styles.js';
 import {
   type EmbedLinkedDocBlockConfig,
@@ -301,24 +304,28 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
           });
         })
       );
+      // Should throttle the blockUpdated event to avoid too many re-renders
+      // Because the blockUpdated event is triggered too frequently at some cases
       this.disposables.add(
-        linkedDoc.slots.blockUpdated.on(payload => {
-          if (
-            payload.type === 'update' &&
-            ['', 'caption', 'xywh'].includes(payload.props.key)
-          ) {
-            return;
-          }
+        linkedDoc.slots.blockUpdated.on(
+          throttle(payload => {
+            if (
+              payload.type === 'update' &&
+              ['', 'caption', 'xywh'].includes(payload.props.key)
+            ) {
+              return;
+            }
 
-          if (payload.type === 'add' && payload.init) {
-            return;
-          }
+            if (payload.type === 'add' && payload.init) {
+              return;
+            }
 
-          this._load().catch(e => {
-            console.error(e);
-            this.isError = true;
-          });
-        })
+            this._load().catch(e => {
+              console.error(e);
+              this.isError = true;
+            });
+          }, RENDER_CARD_THROTTLE_MS)
+        )
       );
 
       this._setDocUpdatedAt();

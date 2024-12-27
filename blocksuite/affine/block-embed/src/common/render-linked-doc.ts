@@ -23,6 +23,12 @@ import { render, type TemplateResult } from 'lit';
 import type { EmbedLinkedDocBlockComponent } from '../embed-linked-doc-block/index.js';
 import type { EmbedSyncedDocCard } from '../embed-synced-doc-block/components/embed-synced-doc-card.js';
 
+// Throttle delay for block updates to reduce unnecessary re-renders
+// - Prevents rapid-fire updates when multiple blocks are updated in quick succession
+// - Ensures UI remains responsive while maintaining performance
+// - Small enough to feel instant to users, large enough to batch updates effectively
+export const RENDER_CARD_THROTTLE_MS = 60;
+
 export function renderLinkedDocInCard(
   card: EmbedLinkedDocBlockComponent | EmbedSyncedDocCard
 ) {
