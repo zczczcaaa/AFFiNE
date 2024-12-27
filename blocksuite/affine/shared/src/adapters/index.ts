@@ -1,3 +1,4 @@
+export * from './attachment';
 export {
   BlockHtmlAdapterExtension,
   type BlockHtmlAdapterMatcher,
@@ -14,6 +15,7 @@ export {
   type InlineDeltaToHtmlAdapterMatcher,
   InlineDeltaToHtmlAdapterMatcherIdentifier,
 } from './html';
+export * from './image';
 export {
   BlockMarkdownAdapterExtension,
   type BlockMarkdownAdapterMatcher,
@@ -41,6 +43,7 @@ export {
   NotionHtmlASTToDeltaMatcherIdentifier,
   NotionHtmlDeltaConverter,
 } from './notion-html';
+export * from './notion-text';
 export {
   BlockPlainTextAdapterExtension,
   type BlockPlainTextAdapterMatcher,

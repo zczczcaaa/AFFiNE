@@ -1,8 +1,8 @@
 import { DEFAULT_NOTE_BACKGROUND_COLOR } from '@blocksuite/affine-model';
+import { NotionTextAdapter } from '@blocksuite/affine-shared/adapters';
 import type { SliceSnapshot } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { NotionTextAdapter } from '../../_common/adapters/notion-text.js';
 import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { createJob } from '../utils/create-job.js';
 

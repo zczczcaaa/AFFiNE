@@ -1,4 +1,3 @@
-import { AdapterFactoryIdentifier } from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { sha } from '@blocksuite/global/utils';
@@ -20,76 +19,78 @@ import {
   type ToDocSnapshotPayload,
 } from '@blocksuite/store';
 
-export type Attachment = File[];
+import { AdapterFactoryIdentifier } from './types/adapter';
 
-type AttachmentToSliceSnapshotPayload = {
-  file: Attachment;
+export type Image = File[];
+
+type ImageToSliceSnapshotPayload = {
+  file: Image;
   assets?: AssetsManager;
   blockVersions: Record<string, number>;
   workspaceId: string;
   pageId: string;
 };
 
-export class AttachmentAdapter extends BaseAdapter<Attachment> {
+export class ImageAdapter extends BaseAdapter<Image> {
   override fromBlockSnapshot(
     _payload: FromBlockSnapshotPayload
-  ): Promise<FromBlockSnapshotResult<Attachment>> {
+  ): Promise<FromBlockSnapshotResult<Image>> {
     throw new BlockSuiteError(
       ErrorCode.TransformerNotImplementedError,
-      'AttachmentAdapter.fromBlockSnapshot is not implemented.'
+      'ImageAdapter.fromBlockSnapshot is not implemented.'
     );
   }
 
   override fromDocSnapshot(
     _payload: FromDocSnapshotPayload
-  ): Promise<FromDocSnapshotResult<Attachment>> {
+  ): Promise<FromDocSnapshotResult<Image>> {
     throw new BlockSuiteError(
       ErrorCode.TransformerNotImplementedError,
-      'AttachmentAdapter.fromDocSnapshot is not implemented.'
+      'ImageAdapter.fromDocSnapshot is not implemented.'
     );
   }
 
   override fromSliceSnapshot(
     payload: FromSliceSnapshotPayload
-  ): Promise<FromSliceSnapshotResult<Attachment>> {
-    const attachments: Attachment = [];
+  ): Promise<FromSliceSnapshotResult<Image>> {
+    const images: Image = [];
     for (const contentSlice of payload.snapshot.content) {
       if (contentSlice.type === 'block') {
         const { flavour, props } = contentSlice;
-        if (flavour === 'affine:attachment') {
+        if (flavour === 'affine:image') {
           const { sourceId } = props;
           const file = payload.assets?.getAssets().get(sourceId as string) as
             | File
             | undefined;
           if (file) {
-            attachments.push(file);
+            images.push(file);
           }
         }
       }
     }
-    return Promise.resolve({ file: attachments, assetsIds: [] });
+    return Promise.resolve({ file: images, assetsIds: [] });
   }
 
   override toBlockSnapshot(
-    _payload: ToBlockSnapshotPayload<Attachment>
+    _payload: ToBlockSnapshotPayload<Image>
   ): Promise<BlockSnapshot> {
     throw new BlockSuiteError(
       ErrorCode.TransformerNotImplementedError,
-      'AttachmentAdapter.toBlockSnapshot is not implemented.'
+      'ImageAdapter.toBlockSnapshot is not implemented.'
     );
   }
 
   override toDocSnapshot(
-    _payload: ToDocSnapshotPayload<Attachment>
+    _payload: ToDocSnapshotPayload<Image>
   ): Promise<DocSnapshot> {
     throw new BlockSuiteError(
       ErrorCode.TransformerNotImplementedError,
-      'AttachmentAdapter.toDocSnapshot is not implemented.'
+      'ImageAdapter.toDocSnapshot is not implemented'
     );
   }
 
   override async toSliceSnapshot(
-    payload: AttachmentToSliceSnapshotPayload
+    payload: ImageToSliceSnapshotPayload
   ): Promise<SliceSnapshot | null> {
     const content: SliceSnapshot['content'] = [];
     for (const item of payload.file) {
@@ -98,17 +99,9 @@ export class AttachmentAdapter extends BaseAdapter<Attachment> {
       await payload.assets?.writeToBlob(blobId);
       content.push({
         type: 'block',
-        flavour: 'affine:attachment',
+        flavour: 'affine:image',
         id: nanoid(),
         props: {
-          name: item.name,
-          size: item.size,
-          type: item.type,
-          embed: false,
-          style: 'horizontalThin',
-          index: 'a0',
-          xywh: '[0,0,0,0]',
-          rotate: 0,
           sourceId: blobId,
         },
         children: [],
@@ -126,13 +119,12 @@ export class AttachmentAdapter extends BaseAdapter<Attachment> {
   }
 }
 
-export const AttachmentAdapterFactoryIdentifier =
-  AdapterFactoryIdentifier('Attachment');
+export const ImageAdapterFactoryIdentifier = AdapterFactoryIdentifier('Image');
 
-export const AttachmentAdapterFactoryExtension: ExtensionType = {
+export const ImageAdapterFactoryExtension: ExtensionType = {
   setup: di => {
-    di.addImpl(AttachmentAdapterFactoryIdentifier, () => ({
-      get: (job: Job) => new AttachmentAdapter(job),
+    di.addImpl(ImageAdapterFactoryIdentifier, () => ({
+      get: (job: Job) => new ImageAdapter(job),
     }));
   },
 };

@@ -100,9 +100,18 @@ export {
 } from '@blocksuite/affine-components/toolbar';
 export * from '@blocksuite/affine-model';
 export {
+  AttachmentAdapter,
+  AttachmentAdapterFactoryExtension,
+  AttachmentAdapterFactoryIdentifier,
   HtmlAdapter,
   HtmlAdapterFactoryExtension,
   HtmlAdapterFactoryIdentifier,
+  ImageAdapter,
+  ImageAdapterFactoryExtension,
+  ImageAdapterFactoryIdentifier,
+  NotionTextAdapter,
+  NotionTextAdapterFactoryExtension,
+  NotionTextAdapterFactoryIdentifier,
   PlainTextAdapter,
   PlainTextAdapterFactoryExtension,
   PlainTextAdapterFactoryIdentifier,
