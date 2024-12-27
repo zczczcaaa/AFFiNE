@@ -244,12 +244,6 @@ export class EdgelessWatcher {
     );
 
     disposables.add(
-      edgelessSlots.draggingAreaUpdated.on(() => {
-        this.checkTopLevelBlockSelection();
-      })
-    );
-
-    disposables.add(
       edgelessSlots.elementResizeStart.on(() => {
         this.widget.hide();
       })

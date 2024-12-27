@@ -1312,7 +1312,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
   }
 
   override firstUpdated() {
-    const { _disposables, edgelessSlots, block, selection, gfx } = this;
+    const { _disposables, block, selection, gfx } = this;
 
     _disposables.add(
       // viewport zooming / scrolling
@@ -1331,15 +1331,6 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
       this.doc.slots.blockUpdated.on(this._updateOnElementChange)
     );
 
-    _disposables.add(
-      edgelessSlots.pressShiftKeyUpdated.on(pressed => {
-        this._shiftKey = pressed;
-        this._resizeManager.onPressShiftKey(pressed);
-        this._updateSelectedRect();
-        this._updateMode();
-      })
-    );
-
     _disposables.add(selection.slots.updated.on(this._updateOnSelectionChange));
 
     _disposables.add(
@@ -1355,6 +1346,39 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     _disposables.add(() => {
       this._propDisposables.forEach(disposable => disposable.dispose());
     });
+
+    this.block.handleEvent(
+      'keyDown',
+      ctx => {
+        const event = ctx.get('defaultState').event;
+        if (event instanceof KeyboardEvent) {
+          this._shift(event);
+        }
+      },
+      { global: true }
+    );
+
+    this.block.handleEvent(
+      'keyUp',
+      ctx => {
+        const event = ctx.get('defaultState').event;
+        if (event instanceof KeyboardEvent) {
+          this._shift(event);
+        }
+      },
+      { global: true }
+    );
+  }
+
+  private _shift(event: KeyboardEvent) {
+    if (event.repeat) return;
+
+    const pressed = event.key.toLowerCase() === 'shift' && event.shiftKey;
+
+    this._shiftKey = pressed;
+    this._resizeManager.onPressShiftKey(pressed);
+    this._updateSelectedRect();
+    this._updateMode();
   }
 
   override render() {

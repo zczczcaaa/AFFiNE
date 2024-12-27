@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   ConnectorElementModel,
   ConnectorMode,
@@ -163,7 +162,6 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
           const std = this.rootComponent.std;
           if (
             std.selection.getGroup('note').length > 0 ||
-            // eslint-disable-next-line
             std.selection.find('text') ||
             Boolean(std.selection.find('surface')?.editing)
           ) {
@@ -430,33 +428,7 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
       }
     );
 
-    this._bindShiftKey();
     this._bindToggleHand();
-  }
-
-  private _bindShiftKey() {
-    this.rootComponent.handleEvent(
-      'keyDown',
-      ctx => {
-        const event = ctx.get('defaultState').event;
-        if (event instanceof KeyboardEvent) {
-          this._shift(event);
-        }
-      },
-      { global: true }
-    );
-    this.rootComponent.handleEvent(
-      'keyUp',
-      ctx => {
-        const event = ctx.get('defaultState').event;
-        if (event instanceof KeyboardEvent) {
-          this._shift(event);
-        }
-      },
-      {
-        global: true,
-      }
-    );
   }
 
   private _bindToggleHand() {
@@ -683,21 +655,6 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
         ? options[0]
         : undefined
     );
-  }
-
-  private _shift(event: KeyboardEvent) {
-    const edgeless = this.rootComponent;
-
-    if (event.repeat) return;
-
-    const shiftKeyPressed =
-      event.key.toLowerCase() === 'shift' && event.shiftKey;
-
-    if (shiftKeyPressed) {
-      edgeless.slots.pressShiftKeyUpdated.emit(true);
-    } else {
-      edgeless.slots.pressShiftKeyUpdated.emit(false);
-    }
   }
 
   private _space(event: KeyboardEvent) {

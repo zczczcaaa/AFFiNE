@@ -3,7 +3,6 @@ import type {
   SurfaceBlockModel,
 } from '@blocksuite/affine-block-surface';
 import { CommonUtils } from '@blocksuite/affine-block-surface';
-import { toast } from '@blocksuite/affine-components/toast';
 import type {
   RootBlockModel,
   ShapeElementModel,
@@ -320,7 +319,7 @@ export class EdgelessRootBlockComponent extends BlockComponent<
   }
 
   private _initSlotEffects() {
-    const { disposables, slots } = this;
+    const { disposables } = this;
 
     this.disposables.add(
       this.std.get(ThemeProvider).theme$.subscribe(() => this.surface.refresh())
@@ -329,22 +328,6 @@ export class EdgelessRootBlockComponent extends BlockComponent<
     disposables.add(
       effect(() => {
         this.style.cursor = this.gfx.cursor$.value;
-      })
-    );
-
-    let canCopyAsPng = true;
-    disposables.add(
-      slots.copyAsPng.on(({ blocks, shapes }) => {
-        if (!canCopyAsPng) return;
-        canCopyAsPng = false;
-
-        this.clipboardController
-          .copyAsPng(blocks, shapes)
-          .then(() => toast(this.host, 'Copied to clipboard'))
-          .catch(() => toast(this.host, 'Failed to copy as PNG'))
-          .finally(() => {
-            canCopyAsPng = true;
-          });
       })
     );
   }

@@ -87,7 +87,6 @@ import {
 } from '../utils/query.js';
 
 const BLOCKSUITE_SURFACE = 'blocksuite/surface';
-const IMAGE_PNG = 'image/png';
 
 const { GROUP, MINDMAP, CONNECTOR } = CanvasElementType;
 const IMAGE_PADDING = 5; // for rotated shapes some padding is needed
@@ -1198,42 +1197,6 @@ export class EdgelessClipboardController extends PageClipboard {
         cancelable: true,
       })
     );
-  }
-
-  async copyAsPng(
-    blocks: BlockSuite.EdgelessBlockModelType[],
-    shapes: BlockSuite.SurfaceModel[]
-  ) {
-    const blocksLen = blocks.length;
-    const shapesLen = shapes.length;
-
-    if (blocksLen + shapesLen === 0) return;
-    const canvas = await this.toCanvas(blocks, shapes);
-    assertExists(canvas);
-    // @ts-expect-error FIXME: ts error
-    if (window.apis?.clipboard?.copyAsImageFromString) {
-      // @ts-expect-error FIXME: ts error
-      await window.apis.clipboard?.copyAsImageFromString(
-        canvas.toDataURL(IMAGE_PNG)
-      );
-    } else {
-      const blob: Blob = await new Promise((resolve, reject) =>
-        canvas.toBlob(
-          blob => (blob ? resolve(blob) : reject('Canvas can not export blob')),
-          IMAGE_PNG
-        )
-      );
-      assertExists(blob);
-
-      this.std.clipboard
-        .writeToClipboard(_items => {
-          return {
-            ..._items,
-            [IMAGE_PNG]: blob,
-          };
-        })
-        .catch(console.error);
-    }
   }
 
   async createElementsFromClipboardData(

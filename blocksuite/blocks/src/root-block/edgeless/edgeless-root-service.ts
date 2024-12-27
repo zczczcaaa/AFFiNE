@@ -60,13 +60,7 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
   elementRenderers: Record<string, ElementRenderer> = elementRenderers;
 
   slots = {
-    pressShiftKeyUpdated: new Slot<boolean>(),
-    copyAsPng: new Slot<{
-      blocks: BlockSuite.EdgelessBlockModelType[];
-      shapes: BlockSuite.SurfaceModel[];
-    }>(),
     readonlyUpdated: new Slot<boolean>(),
-    draggingAreaUpdated: new Slot(),
     navigatorSettingUpdated: new Slot<{
       hideToolbar?: boolean;
       blackBackground?: boolean;
