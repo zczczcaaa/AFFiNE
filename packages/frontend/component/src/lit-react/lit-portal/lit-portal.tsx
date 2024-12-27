@@ -7,12 +7,11 @@ import ReactDOM from 'react-dom';
 type PortalEvent = {
   name: 'connectedCallback' | 'disconnectedCallback' | 'willUpdate';
   target: LitReactPortal;
-  previousPortalId?: string;
 };
 
 type PortalListener = (event: PortalEvent) => void;
 
-export function createLitPortalAnchor(callback: (event: PortalEvent) => void) {
+function createLitPortalAnchor(callback: (event: PortalEvent) => void) {
   return html`<lit-react-portal
     .notify=${callback}
     portalId=${nanoid()}
@@ -24,7 +23,6 @@ export const LIT_REACT_PORTAL = 'lit-react-portal';
 @customElement(LIT_REACT_PORTAL)
 class LitReactPortal extends LitElement {
   portalId!: string;
-
   notify!: PortalListener;
 
   static override get properties() {
@@ -32,6 +30,14 @@ class LitReactPortal extends LitElement {
       portalId: { type: String },
       notify: { attribute: false },
     };
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.notify({
+      name: 'connectedCallback',
+      target: this,
+    });
   }
 
   override attributeChangedCallback(
@@ -44,7 +50,6 @@ class LitReactPortal extends LitElement {
       this.notify({
         name: 'willUpdate',
         target: this,
-        previousPortalId: oldVal,
       });
     }
   }
@@ -52,13 +57,6 @@ class LitReactPortal extends LitElement {
   // do not enable shadow root
   override createRenderRoot() {
     return this;
-  }
-
-  override connectedCallback() {
-    this.notify({
-      name: 'connectedCallback',
-      target: this,
-    });
   }
 
   override disconnectedCallback() {
@@ -81,6 +79,7 @@ export type ElementOrFactory = React.ReactElement | (() => React.ReactElement);
 type LitPortal = {
   id: string;
   portal: React.ReactPortal;
+  litElement: LitReactPortal;
 };
 
 // returns a factory function that renders a given element to a lit template
@@ -98,48 +97,37 @@ export const useLitPortalFactory = () => {
             ? elementOrFactory()
             : elementOrFactory;
         return createLitPortalAnchor(event => {
-          const { name, target } = event;
-          const id = target.portalId;
-
-          if (name === 'connectedCallback') {
-            setPortals(portals => [
-              ...portals,
-              {
-                id,
-                portal: ReactDOM.createPortal(element, target, id),
-              },
-            ]);
-            return;
-          }
-
-          if (name === 'disconnectedCallback') {
-            setPortals(portals => portals.filter(p => p.id !== id));
-            return;
-          }
-
-          const prevId = event.previousPortalId;
-
-          // Ignores first `willUpdate`
-          if (!prevId) {
-            return;
-          }
-
           setPortals(portals => {
-            const portal = portals.find(p => p.id === prevId);
-            if (!portal) return [...portals];
-
-            // Updates `ID`
-            // Used for portal queries in `disconnectedCallback`
-            portal.id = id;
-
-            // Re-rendering
-            //  true: `inline link`
-            //  false: `pdf embed view`
-            if (rerendering) {
-              portal.portal = ReactDOM.createPortal(element, target, id);
+            const { name, target } = event;
+            const id = target.portalId;
+            let newPortals = portals;
+            const updatePortals = () => {
+              let oldPortalIndex = portals.findIndex(
+                p => p.litElement === target
+              );
+              oldPortalIndex =
+                oldPortalIndex === -1 ? portals.length : oldPortalIndex;
+              newPortals = portals.toSpliced(oldPortalIndex, 1, {
+                id,
+                portal: ReactDOM.createPortal(element, target),
+                litElement: target,
+              });
+            };
+            switch (name) {
+              case 'connectedCallback':
+                updatePortals();
+                break;
+              case 'disconnectedCallback':
+                newPortals = portals.filter(p => p.litElement.isConnected);
+                break;
+              case 'willUpdate':
+                if (!target.isConnected || !rerendering) {
+                  break;
+                }
+                updatePortals();
+                break;
             }
-
-            return [...portals];
+            return newPortals;
           });
         });
       },

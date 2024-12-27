@@ -194,7 +194,7 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
       () => (
         <>
           {portals.map(p => (
-            <Fragment key={p.portal.key}>{p.portal}</Fragment>
+            <Fragment key={p.id}>{p.portal}</Fragment>
           ))}
         </>
       ),
