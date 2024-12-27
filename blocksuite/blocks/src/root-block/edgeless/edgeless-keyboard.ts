@@ -436,13 +436,15 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
       'keyDown',
       ctx => {
         const event = ctx.get('keyboardState').raw;
-        const service = this.rootComponent.service;
-        const selection = service.selection;
+        const gfx = this.rootComponent.gfx;
+        const selection = gfx.selection;
+
         if (event.code === 'Space' && !event.repeat) {
           this._space(event);
         } else if (
           !selection.editing &&
-          event.key.length === 1 &&
+          // the key might be `Unidentified` according to mdn
+          event.key?.length === 1 &&
           !event.shiftKey &&
           !event.ctrlKey &&
           !event.altKey &&
@@ -452,7 +454,7 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
           const doc = this.rootComponent.doc;
 
           if (isSingleMindMapNode(elements)) {
-            const target = service.getElementById(
+            const target = gfx.getElementById(
               elements[0].id
             ) as ShapeElementModel;
             if (target.text) {
