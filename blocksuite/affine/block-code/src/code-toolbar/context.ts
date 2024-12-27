@@ -1,6 +1,6 @@
 import { MenuContext } from '@blocksuite/affine-components/toolbar';
 
-import type { CodeBlockComponent } from '../../../code-block/code-block.js';
+import type { CodeBlockComponent } from '../code-block';
 
 export class CodeBlockToolbarContext extends MenuContext {
   override close = () => {

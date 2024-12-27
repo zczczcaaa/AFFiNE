@@ -1,5 +1,6 @@
 import { effects as blockAttachmentEffects } from '@blocksuite/affine-block-attachment/effects';
 import { effects as blockBookmarkEffects } from '@blocksuite/affine-block-bookmark/effects';
+import { effects as blockCodeEffects } from '@blocksuite/affine-block-code/effects';
 import { effects as blockDividerEffects } from '@blocksuite/affine-block-divider/effects';
 import { effects as blockEdgelessTextEffects } from '@blocksuite/affine-block-edgeless-text/effects';
 import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/effects';
@@ -36,11 +37,6 @@ import { EmbedCardEditCaptionEditModal } from './_common/components/embed-card/m
 import { EmbedCardCreateModal } from './_common/components/embed-card/modal/embed-card-create-modal.js';
 import { EmbedCardEditModal } from './_common/components/embed-card/modal/embed-card-edit-modal.js';
 import { registerSpecs } from './_specs/register-specs.js';
-import { AffineCodeUnit } from './code-block/highlight/affine-code-unit.js';
-import {
-  CodeBlockComponent,
-  type CodeBlockConfig,
-} from './code-block/index.js';
 import { DataViewBlockComponent } from './data-view-block/index.js';
 import { CenterPeek } from './database-block/components/layout.js';
 import { DatabaseTitle } from './database-block/components/title/index.js';
@@ -184,7 +180,6 @@ import {
   AIPanelGenerating,
   AIPanelInput,
 } from './root-block/widgets/ai-panel/components/index.js';
-import { effects as widgetCodeToolbarEffects } from './root-block/widgets/code-toolbar/effects.js';
 import { AFFINE_DOC_REMOTE_SELECTION_WIDGET } from './root-block/widgets/doc-remote-selection/index.js';
 import { DragPreview } from './root-block/widgets/drag-handle/components/drag-preview.js';
 import { DropIndicator } from './root-block/widgets/drag-handle/components/drop-indicator.js';
@@ -252,6 +247,7 @@ export function effects() {
   blockLatexEffects();
   blockEdgelessTextEffects();
   blockDividerEffects();
+  blockCodeEffects();
 
   componentCaptionEffects();
   componentContextMenuEffects();
@@ -268,7 +264,6 @@ export function effects() {
   widgetLinkedDocEffects();
   widgetFrameTitleEffects();
   widgetEdgelessElementToolbarEffects();
-  widgetCodeToolbarEffects();
 
   dataViewEffects();
 
@@ -281,7 +276,6 @@ export function effects() {
     'data-view-header-area-text-editing',
     HeaderAreaTextCellEditing
   );
-  customElements.define('affine-code-unit', AffineCodeUnit);
   customElements.define('affine-database-rich-text-cell', RichTextCell);
   customElements.define(
     'affine-database-rich-text-cell-editing',
@@ -292,7 +286,6 @@ export function effects() {
   customElements.define('database-datasource-block-renderer', BlockRenderer);
   customElements.define('affine-page-root', PageRootBlockComponent);
   customElements.define('affine-preview-root', PreviewRootBlockComponent);
-  customElements.define('affine-code', CodeBlockComponent);
   customElements.define('mini-mindmap-preview', MiniMindmapPreview);
   customElements.define('mini-mindmap-surface-block', MindmapSurfaceBlock);
   customElements.define('affine-data-view', DataViewBlockComponent);
@@ -519,7 +512,6 @@ declare global {
       updatedBlocks?: BlockModel[];
     }
     interface BlockConfigs {
-      'affine:code': CodeBlockConfig;
       'affine:page': RootBlockConfig;
     }
     interface BlockServices {

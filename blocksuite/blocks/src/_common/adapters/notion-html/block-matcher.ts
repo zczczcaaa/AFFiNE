@@ -1,5 +1,6 @@
 import { AttachmentBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-attachment';
 import { BookmarkBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-bookmark';
+import { CodeBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-code';
 import { DividerBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-divider';
 import {
   EmbedFigmaBlockNotionHtmlAdapterExtension,
@@ -13,7 +14,6 @@ import { ListBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-li
 import { ParagraphBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-paragraph';
 import type { ExtensionType } from '@blocksuite/block-std';
 
-import { CodeBlockNotionHtmlAdapterExtension } from '../../../code-block/adapters/notion-html.js';
 import { DatabaseBlockNotionHtmlAdapterExtension } from '../../../database-block/adapters/notion-html.js';
 import { RootBlockNotionHtmlAdapterExtension } from '../../../root-block/adapters/notion-html.js';
 

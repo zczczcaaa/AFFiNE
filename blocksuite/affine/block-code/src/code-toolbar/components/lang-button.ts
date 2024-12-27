@@ -11,7 +11,7 @@ import { property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { html } from 'lit/static-html.js';
 
-import type { CodeBlockComponent } from '../../../../code-block/code-block.js';
+import type { CodeBlockComponent } from '../..';
 
 export class LanguageListButton extends WithDisposable(
   SignalWatcher(LitElement)

@@ -9,6 +9,7 @@
     { "path": "./blocksuite/affine/all" },
     { "path": "./blocksuite/affine/block-attachment" },
     { "path": "./blocksuite/affine/block-bookmark" },
+    { "path": "./blocksuite/affine/block-code" },
     { "path": "./blocksuite/affine/block-divider" },
     { "path": "./blocksuite/affine/block-edgeless-text" },
     { "path": "./blocksuite/affine/block-embed" },

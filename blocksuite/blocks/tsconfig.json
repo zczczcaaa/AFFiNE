@@ -38,6 +38,9 @@
       "path": "../affine/block-list"
     },
     {
+      "path": "../affine/block-code"
+    },
+    {
       "path": "../affine/block-embed"
     },
     {

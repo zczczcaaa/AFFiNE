@@ -1,3 +1,4 @@
+import type { CodeBlockConfig } from '@blocksuite/affine-block-code';
 import {
   type ReferenceNodeConfig,
   ReferenceNodeConfigIdentifier,
@@ -11,7 +12,6 @@ import {
 } from '@blocksuite/block-std';
 import type { Container } from '@blocksuite/global/di';
 
-import type { CodeBlockConfig } from '../../code-block/code-block-config.js';
 import { AFFINE_EMBED_CARD_TOOLBAR_WIDGET } from '../../root-block/widgets/embed-card-toolbar/embed-card-toolbar.js';
 import { AFFINE_FORMAT_BAR_WIDGET } from '../../root-block/widgets/format-bar/format-bar.js';
 import { AFFINE_SLASH_MENU_WIDGET } from '../../root-block/widgets/slash-menu/index.js';

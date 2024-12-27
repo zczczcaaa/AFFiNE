@@ -8,7 +8,7 @@ import {
   Clipboard,
   type UIEventHandler,
 } from '@blocksuite/block-std';
-import { assertExists, DisposableGroup } from '@blocksuite/global/utils';
+import { DisposableGroup } from '@blocksuite/global/utils';
 
 export class CodeClipboardController {
   private _clipboard!: Clipboard;
@@ -42,17 +42,15 @@ export class CodeClipboardController {
       .try(cmd => [
         cmd.getTextSelection().inline<'currentSelectionPath'>((ctx, next) => {
           const textSelection = ctx.currentTextSelection;
-          assertExists(textSelection);
+          if (!textSelection) return;
           const end = textSelection.to ?? textSelection.from;
           next({ currentSelectionPath: end.blockId });
         }),
         cmd.getBlockSelections().inline<'currentSelectionPath'>((ctx, next) => {
           const currentBlockSelections = ctx.currentBlockSelections;
-          assertExists(currentBlockSelections);
+          if (!currentBlockSelections) return;
           const blockSelection = currentBlockSelections.at(-1);
-          if (!blockSelection) {
-            return;
-          }
+          if (!blockSelection) return;
           next({ currentSelectionPath: blockSelection.blockId });
         }),
       ])

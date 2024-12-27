@@ -6,13 +6,13 @@ import {
 } from '@blocksuite/block-std';
 import { literal, unsafeStatic } from 'lit/static-html.js';
 
-import { AFFINE_CODE_TOOLBAR_WIDGET } from '../root-block/widgets/code-toolbar/index.js';
 import { CodeBlockAdapterExtensions } from './adapters/extension.js';
 import {
   CodeBlockInlineManagerExtension,
   CodeBlockUnitSpecExtension,
 } from './code-block-inline.js';
 import { CodeBlockService } from './code-block-service.js';
+import { AFFINE_CODE_TOOLBAR_WIDGET } from './code-toolbar/index.js';
 
 export const CodeBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:code'),

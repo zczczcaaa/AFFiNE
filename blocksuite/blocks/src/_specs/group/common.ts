@@ -1,5 +1,6 @@
 import { AttachmentBlockSpec } from '@blocksuite/affine-block-attachment';
 import { BookmarkBlockSpec } from '@blocksuite/affine-block-bookmark';
+import { CodeBlockSpec } from '@blocksuite/affine-block-code';
 import { DividerBlockSpec } from '@blocksuite/affine-block-divider';
 import {
   EmbedFigmaBlockSpec,
@@ -18,7 +19,6 @@ import {
 } from '@blocksuite/affine-block-note';
 import { ParagraphBlockSpec } from '@blocksuite/affine-block-paragraph';
 
-import { CodeBlockSpec } from '../../code-block/code-block-spec.js';
 import { DataViewBlockSpec } from '../../data-view-block/data-view-spec.js';
 import { DatabaseBlockSpec } from '../../database-block/database-spec.js';
 

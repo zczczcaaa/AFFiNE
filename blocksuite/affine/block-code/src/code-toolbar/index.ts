@@ -13,7 +13,7 @@ import { WidgetComponent } from '@blocksuite/block-std';
 import { limitShift, shift } from '@floating-ui/dom';
 import { html } from 'lit';
 
-import type { CodeBlockComponent } from '../../../code-block/code-block.js';
+import type { CodeBlockComponent } from '../code-block.js';
 import { MORE_GROUPS, PRIMARY_GROUPS } from './config.js';
 import { CodeBlockToolbarContext } from './context.js';
 
