@@ -5,6 +5,7 @@ import {
   PropertyCollapsibleContent,
   PropertyCollapsibleSection,
 } from '@affine/component';
+import { BacklinkGroups } from '@affine/core/components/blocksuite/block-suite-editor/bi-directional-link-panel';
 import { CreatePropertyMenuItems } from '@affine/core/components/doc-properties/menu/create-doc-property';
 import { DocPropertyRow } from '@affine/core/components/doc-properties/table';
 import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
@@ -162,7 +163,8 @@ export const InfoTable = ({
       {backlinks && backlinks.length > 0 ? (
         <>
           <LinksRow
-            references={backlinks}
+            count={backlinks.length}
+            references={<BacklinkGroups />}
             onClick={onClose}
             label={t['com.affine.page-properties.backlinks']()}
           />
@@ -172,6 +174,7 @@ export const InfoTable = ({
       {links && links.length > 0 ? (
         <>
           <LinksRow
+            count={links.length}
             references={links}
             onClick={onClose}
             label={t['com.affine.page-properties.outgoing-links']()}

@@ -131,6 +131,7 @@ export const DocInfoSheet = ({
               <LinksRow
                 className={styles.linksRow}
                 references={backlinks}
+                count={backlinks.length}
                 label={t['com.affine.page-properties.backlinks']()}
               />
               <Divider size="thinner" />
@@ -141,6 +142,7 @@ export const DocInfoSheet = ({
               <LinksRow
                 className={styles.linksRow}
                 references={links}
+                count={links.length}
                 label={t['com.affine.page-properties.outgoing-links']()}
               />
               <Divider size="thinner" />

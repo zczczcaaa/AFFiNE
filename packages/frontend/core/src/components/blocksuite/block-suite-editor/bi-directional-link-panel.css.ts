@@ -89,6 +89,14 @@ globalStyle(`${link} .affine-reference-title`, {
   borderBottom: 'none',
 });
 
+globalStyle(`${link} svg`, {
+  color: cssVarV2('icon/secondary'),
+});
+
+globalStyle(`${link}:hover svg`, {
+  color: cssVarV2('icon/primary'),
+});
+
 export const linkPreviewContainer = style({
   display: 'flex',
   flexDirection: 'column',

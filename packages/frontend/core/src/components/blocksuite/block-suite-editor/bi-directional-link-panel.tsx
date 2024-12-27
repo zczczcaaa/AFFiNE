@@ -160,29 +160,13 @@ const usePreviewExtensions = () => {
   return [extensions, portals] as const;
 };
 
-export const BiDirectionalLinkPanel = () => {
-  const { docLinksService, workspaceService, docService } = useServices({
+const useBacklinkGroups = () => {
+  const { docLinksService } = useServices({
     DocLinksService,
-    WorkspaceService,
-    DocService,
   });
 
-  const [extensions, portals] = usePreviewExtensions();
-  const t = useI18n();
-
-  const [show, setShow] = useBiDirectionalLinkPanelCollapseState(
-    docService.doc.id
-  );
-
-  const links = useLiveData(
-    show ? docLinksService.links.links$ : new LiveData([] as Link[])
-  );
   const backlinkGroups = useLiveData(
     LiveData.computed(get => {
-      if (!show) {
-        return [];
-      }
-
       const links = get(docLinksService.backlinks.backlinks$);
 
       // group by docId
@@ -202,17 +186,17 @@ export const BiDirectionalLinkPanel = () => {
     })
   );
 
-  const backlinkCount = useMemo(() => {
-    return backlinkGroups.reduce((acc, link) => acc + link.links.length, 0);
-  }, [backlinkGroups]);
+  return backlinkGroups;
+};
 
-  const handleClickShow = useCallback(() => {
-    setShow(!show);
-    track.doc.biDirectionalLinksPanel.$.toggle({
-      type: show ? 'collapse' : 'expand',
-    });
-  }, [show, setShow]);
+export const BacklinkGroups = () => {
+  const [extensions, portals] = usePreviewExtensions();
+  const { workspaceService, docService } = useServices({
+    WorkspaceService,
+    DocService,
+  });
 
+  const backlinkGroups = useBacklinkGroups();
   const textRendererOptions = useMemo(() => {
     const docLinkBaseURLMiddleware: JobMiddleware = ({ adapterConfigs }) => {
       adapterConfigs.set(
@@ -228,6 +212,128 @@ export const BiDirectionalLinkPanel = () => {
     };
   }, [extensions, workspaceService.workspace.id]);
 
+  return (
+    <>
+      {backlinkGroups.map(linkGroup => (
+        <CollapsibleSection
+          key={linkGroup.docId}
+          title={
+            <AffinePageReference
+              pageId={linkGroup.docId}
+              onClick={() => {
+                track.doc.biDirectionalLinksPanel.backlinkTitle.navigate();
+              }}
+            />
+          }
+          length={linkGroup.links.length}
+          docId={docService.doc.id}
+          linkDocId={linkGroup.docId}
+        >
+          <div className={styles.linkPreviewContainer}>
+            {linkGroup.links.map(link => {
+              if (!link.markdownPreview) {
+                return null;
+              }
+              const searchParams = new URLSearchParams();
+              const displayMode = link.displayMode || 'page';
+              searchParams.set('mode', displayMode);
+
+              let blockId = link.blockId;
+              if (
+                link.parentFlavour === 'affine:database' &&
+                link.parentBlockId
+              ) {
+                // if parentBlockFlavour is 'affine:database',
+                // we will fallback to the database block instead
+                blockId = link.parentBlockId;
+              } else if (displayMode === 'edgeless' && link.noteBlockId) {
+                // if note has displayMode === 'edgeless' && has noteBlockId,
+                // set noteBlockId as blockId
+                blockId = link.noteBlockId;
+              }
+
+              searchParams.set('blockIds', blockId);
+
+              const to = {
+                pathname: '/' + linkGroup.docId,
+                search: '?' + searchParams.toString(),
+                hash: '',
+              };
+
+              // if this backlink has no noteBlock && displayMode is edgeless, we will render
+              // the link as a page link
+              const edgelessLink =
+                displayMode === 'edgeless' && !link.noteBlockId;
+
+              return (
+                <WorkbenchLink
+                  to={to}
+                  key={link.blockId}
+                  className={styles.linkPreview}
+                  onClick={() => {
+                    track.doc.biDirectionalLinksPanel.backlinkPreview.navigate();
+                  }}
+                >
+                  {edgelessLink ? (
+                    <>
+                      [Edgeless]
+                      <AffinePageReference
+                        key={link.blockId}
+                        pageId={linkGroup.docId}
+                        params={searchParams}
+                      />
+                    </>
+                  ) : (
+                    <BlocksuiteTextRenderer
+                      className={styles.linkPreviewRenderer}
+                      answer={link.markdownPreview}
+                      schema={getAFFiNEWorkspaceSchema()}
+                      options={textRendererOptions}
+                    />
+                  )}
+                </WorkbenchLink>
+              );
+            })}
+          </div>
+        </CollapsibleSection>
+      ))}
+      <>
+        {portals.map(p => (
+          <Fragment key={p.id}>{p.portal}</Fragment>
+        ))}
+      </>
+    </>
+  );
+};
+
+export const BiDirectionalLinkPanel = () => {
+  const { docLinksService, docService } = useServices({
+    DocLinksService,
+    DocService,
+  });
+
+  const t = useI18n();
+
+  const [show, setShow] = useBiDirectionalLinkPanelCollapseState(
+    docService.doc.id
+  );
+
+  const links = useLiveData(
+    show ? docLinksService.links.links$ : new LiveData([] as Link[])
+  );
+
+  const backlinkGroups = useBacklinkGroups();
+
+  const backlinkCount = useMemo(() => {
+    return backlinkGroups.reduce((acc, link) => acc + link.links.length, 0);
+  }, [backlinkGroups]);
+
+  const handleClickShow = useCallback(() => {
+    setShow(!show);
+    track.doc.biDirectionalLinksPanel.$.toggle({
+      type: show ? 'collapse' : 'expand',
+    });
+  }, [show, setShow]);
   return (
     <div className={styles.container}>
       {!show && (
@@ -254,89 +360,7 @@ export const BiDirectionalLinkPanel = () => {
             <div className={styles.linksTitles}>
               {t['com.affine.page-properties.backlinks']()} · {backlinkCount}
             </div>
-            {backlinkGroups.map(linkGroup => (
-              <CollapsibleSection
-                key={linkGroup.docId}
-                title={
-                  <AffinePageReference
-                    pageId={linkGroup.docId}
-                    onClick={() => {
-                      track.doc.biDirectionalLinksPanel.backlinkTitle.navigate();
-                    }}
-                  />
-                }
-                length={linkGroup.links.length}
-                docId={docService.doc.id}
-                linkDocId={linkGroup.docId}
-              >
-                <div className={styles.linkPreviewContainer}>
-                  {linkGroup.links.map(link => {
-                    if (!link.markdownPreview) {
-                      return null;
-                    }
-                    const searchParams = new URLSearchParams();
-                    const displayMode = link.displayMode || 'page';
-                    searchParams.set('mode', displayMode);
-
-                    let blockId = link.blockId;
-                    if (
-                      link.parentFlavour === 'affine:database' &&
-                      link.parentBlockId
-                    ) {
-                      // if parentBlockFlavour is 'affine:database',
-                      // we will fallback to the database block instead
-                      blockId = link.parentBlockId;
-                    } else if (displayMode === 'edgeless' && link.noteBlockId) {
-                      // if note has displayMode === 'edgeless' && has noteBlockId,
-                      // set noteBlockId as blockId
-                      blockId = link.noteBlockId;
-                    }
-
-                    searchParams.set('blockIds', blockId);
-
-                    const to = {
-                      pathname: '/' + linkGroup.docId,
-                      search: '?' + searchParams.toString(),
-                      hash: '',
-                    };
-
-                    // if this backlink has no noteBlock && displayMode is edgeless, we will render
-                    // the link as a page link
-                    const edgelessLink =
-                      displayMode === 'edgeless' && !link.noteBlockId;
-
-                    return (
-                      <WorkbenchLink
-                        to={to}
-                        key={link.blockId}
-                        className={styles.linkPreview}
-                        onClick={() => {
-                          track.doc.biDirectionalLinksPanel.backlinkPreview.navigate();
-                        }}
-                      >
-                        {edgelessLink ? (
-                          <>
-                            [Edgeless]
-                            <AffinePageReference
-                              key={link.blockId}
-                              pageId={linkGroup.docId}
-                              params={searchParams}
-                            />
-                          </>
-                        ) : (
-                          <BlocksuiteTextRenderer
-                            className={styles.linkPreviewRenderer}
-                            answer={link.markdownPreview}
-                            schema={getAFFiNEWorkspaceSchema()}
-                            options={textRendererOptions}
-                          />
-                        )}
-                      </WorkbenchLink>
-                    );
-                  })}
-                </div>
-              </CollapsibleSection>
-            ))}
+            <BacklinkGroups />
           </div>
           <div className={styles.linksContainer}>
             <div className={styles.linksTitles}>
@@ -354,13 +378,6 @@ export const BiDirectionalLinkPanel = () => {
           </div>
         </>
       )}
-      {
-        <>
-          {portals.map(p => (
-            <Fragment key={p.id}>{p.portal}</Fragment>
-          ))}
-        </>
-      }
     </div>
   );
 };
