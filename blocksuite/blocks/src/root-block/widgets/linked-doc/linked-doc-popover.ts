@@ -1,3 +1,4 @@
+import { LoadingIcon } from '@blocksuite/affine-block-image';
 import type { IconButton } from '@blocksuite/affine-components/icon-button';
 import { MoreHorizontalIcon } from '@blocksuite/affine-components/icons';
 import {
@@ -90,15 +91,26 @@ export class LinkedDocPopover extends SignalWatcher(
 
   private _getActionItems(group: LinkedMenuGroup) {
     const isExpanded = !!this._expanded.get(group.name);
-    const items = resolveSignal(group.items);
-    if (isExpanded) {
-      return items;
-    }
+    let items = resolveSignal(group.items);
+
     const isOverflow = !!group.maxDisplay && items.length > group.maxDisplay;
-    if (isOverflow) {
-      return items.slice(0, group.maxDisplay).concat({
+    const isLoading = resolveSignal(group.loading);
+
+    items = isExpanded ? items : items.slice(0, group.maxDisplay);
+
+    if (isLoading) {
+      items = items.concat({
+        key: 'loading',
+        name: resolveSignal(group.loadingText) || 'loading',
+        icon: LoadingIcon,
+        action: () => {},
+      });
+    }
+
+    if (isOverflow && !isExpanded && group.maxDisplay) {
+      items = items.concat({
         key: `${group.name} More`,
-        name: group.overflowText || 'more',
+        name: resolveSignal(group.overflowText) || 'more',
         icon: MoreHorizontalIcon,
         action: () => {
           this._expanded.set(group.name, true);
@@ -106,6 +118,7 @@ export class LinkedDocPopover extends SignalWatcher(
         },
       });
     }
+
     return items;
   }
 

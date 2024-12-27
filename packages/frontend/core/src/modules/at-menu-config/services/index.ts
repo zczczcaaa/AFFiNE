@@ -1,4 +1,3 @@
-import { LoadingIcon } from '@affine/core/blocksuite/presets/blocks/_common/icon';
 import { fuzzyMatch } from '@affine/core/utils/fuzzy-match';
 import { I18n, i18nTime } from '@affine/i18n';
 import track from '@affine/track';
@@ -11,6 +10,7 @@ import {
   LinkedWidgetUtils,
 } from '@blocksuite/affine/blocks';
 import { Text } from '@blocksuite/affine/store';
+import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
 import type { EditorHost } from '@blocksuite/block-std';
 import {
   DateTimeIcon,
@@ -18,11 +18,12 @@ import {
   NewXxxPageIcon,
 } from '@blocksuite/icons/lit';
 import type { DocMeta } from '@blocksuite/store';
-import { signal } from '@preact/signals-core';
+import { computed } from '@preact/signals-core';
 import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { map } from 'rxjs';
 
 import type { WorkspaceDialogService } from '../../dialogs';
 import type { DocsService } from '../../doc';
@@ -34,7 +35,6 @@ import type { RecentDocsService } from '../../quicksearch';
 import type { WorkspaceService } from '../../workspace';
 
 const MAX_DOCS = 3;
-const LOAD_CHUNK = 100;
 export class AtMenuConfigService extends Service {
   constructor(
     private readonly workspaceService: WorkspaceService,
@@ -75,7 +75,6 @@ export class AtMenuConfigService extends Service {
     const rawMetas = currentWorkspace.docCollection.meta.docMetas;
     const isJournal = (d: DocMeta) =>
       !!this.journalService.journalDate$(d.id).value;
-    const docItems = signal<LinkedMenuItem[]>([]);
 
     const docDisplayMetaService = this.docDisplayMetaService;
 
@@ -123,83 +122,94 @@ export class AtMenuConfigService extends Service {
 
     const showRecent = query.trim().length === 0;
 
-    (async () => {
-      const isIndexerLoading =
-        this.docsSearch.indexer.status$.value.remaining !== undefined &&
-        this.docsSearch.indexer.status$.value.remaining > 0;
+    if (showRecent) {
+      const recentDocs = this.recentDocsService.getRecentDocs();
+      return {
+        name: I18n.t('com.affine.editor.at-menu.recent-docs'),
+        items: recentDocs
+          .map(doc => {
+            const meta = rawMetas.find(meta => meta.id === doc.id);
+            if (!meta) {
+              return null;
+            }
+            const item = toDocItem({
+              ...meta,
+              highlights: undefined,
+            });
+            if (!item) {
+              return null;
+            }
+            return item;
+          })
+          .filter(item => !!item),
+      };
+    } else {
+      const { signal: docsSignal, cleanup } = createSignalFromObservable(
+        this.searchDocs$(query).pipe(
+          map(result => {
+            const docs = result
+              .map(doc => {
+                const meta = rawMetas.find(meta => meta.id === doc.id);
 
-      if (!showRecent && isIndexerLoading) {
-        // add a loading item
-        docItems.value = [
-          {
-            key: 'loading',
-            name: I18n.t('com.affine.editor.at-menu.loading'),
-            icon: LoadingIcon,
-            action: () => {
-              // no action
-            },
-          },
-        ];
-        // wait for indexer to finish
-        await this.docsSearch.indexer.status$.waitFor(
-          status => status.remaining === 0
+                if (!meta) {
+                  return null;
+                }
+
+                const highlights =
+                  'highlights' in doc ? doc.highlights : undefined;
+
+                const docItem = toDocItem({
+                  ...meta,
+                  highlights,
+                });
+
+                if (!docItem) {
+                  return null;
+                }
+
+                return docItem;
+              })
+              .filter(m => !!m);
+
+            return docs;
+          })
+        ),
+        []
+      );
+
+      const { signal: isIndexerLoading, cleanup: cleanupIndexerLoading } =
+        createSignalFromObservable(
+          this.docsSearch.indexer.status$.pipe(
+            map(
+              status => status.remaining !== undefined && status.remaining > 0
+            )
+          ),
+          false
         );
-        // remove the loading item
-        docItems.value = [];
-      }
 
-      const docMetas = (
-        showRecent
-          ? this.recentDocsService.getRecentDocs()
-          : await this.searchDocs(query)
-      )
-        .map(doc => {
-          const meta = rawMetas.find(meta => meta.id === doc.id);
-
-          if (!meta) {
-            return null;
-          }
-
-          const highlights = 'highlights' in doc ? doc.highlights : undefined;
-          return {
-            ...meta,
-            highlights,
-          };
-        })
-        .filter((m): m is DocMetaWithHighlights => !!m);
-
-      for (const [index, meta] of docMetas.entries()) {
-        if (abortSignal.aborted) {
-          return;
-        }
-
-        const item = toDocItem(meta);
-        if (item) {
-          docItems.value = [...docItems.value, item];
-        }
-
-        if (index % LOAD_CHUNK === 0) {
-          // use scheduler.yield?
-          await new Promise(resolve => setTimeout(resolve, 0));
-        }
-      }
-    })().catch(console.error);
-
-    return {
-      name: showRecent
-        ? I18n.t('com.affine.editor.at-menu.recent-docs')
-        : I18n.t('com.affine.editor.at-menu.link-to-doc', {
-            query,
-          }),
-      items: docItems,
-      maxDisplay: MAX_DOCS,
-      get overflowText() {
-        const overflowCount = docItems.value.length - MAX_DOCS;
+      const overflowText = computed(() => {
+        const overflowCount = docsSignal.value.length - MAX_DOCS;
         return I18n.t('com.affine.editor.at-menu.more-docs-hint', {
           count: overflowCount > 100 ? '100+' : overflowCount,
         });
-      },
-    };
+      });
+
+      abortSignal.addEventListener('abort', () => {
+        cleanup();
+        cleanupIndexerLoading();
+      });
+
+      return {
+        name: I18n.t('com.affine.editor.at-menu.link-to-doc', {
+          query,
+        }),
+        loading: isIndexerLoading,
+        loadingText: I18n.t('com.affine.editor.at-menu.loading'),
+        items: docsSignal,
+        maxDisplay: MAX_DOCS,
+        overflowText,
+      };
+    }
   }
 
   private newDocMenuGroup(
@@ -418,54 +428,58 @@ export class AtMenuConfigService extends Service {
   }
 
   // only search docs by title, excluding blocks
-  private async searchDocs(query: string) {
-    const { buckets } = await this.docsSearch.indexer.blockIndex.aggregate(
-      {
-        type: 'boolean',
-        occur: 'must',
-        queries: [
-          {
-            type: 'match',
-            field: 'content',
-            match: query,
-          },
-          {
-            type: 'boolean',
-            occur: 'should',
-            queries: [
-              {
-                type: 'match',
-                field: 'flavour',
-                match: 'affine:page',
-              },
-            ],
-          },
-        ],
-      },
-      'docId',
-      {
-        hits: {
-          fields: ['docId', 'content'],
-          pagination: {
-            limit: 1,
-          },
-          highlights: [
+  private searchDocs$(query: string) {
+    return this.docsSearch.indexer.blockIndex
+      .aggregate$(
+        {
+          type: 'boolean',
+          occur: 'must',
+          queries: [
             {
+              type: 'match',
               field: 'content',
-              before: `<span style="color: ${cssVarV2('text/emphasis')}">`,
-              end: '</span>',
+              match: query,
+            },
+            {
+              type: 'boolean',
+              occur: 'should',
+              queries: [
+                {
+                  type: 'match',
+                  field: 'flavour',
+                  match: 'affine:page',
+                },
+              ],
             },
           ],
         },
-      }
-    );
-    const result = buckets.map(bucket => {
-      return {
-        id: bucket.key,
-        title: bucket.hits.nodes[0].fields.content,
-        highlights: bucket.hits.nodes[0].highlights.content[0],
-      };
-    });
-    return result;
+        'docId',
+        {
+          hits: {
+            fields: ['docId', 'content'],
+            pagination: {
+              limit: 1,
+            },
+            highlights: [
+              {
+                field: 'content',
+                before: `<span style="color: ${cssVarV2('text/emphasis')}">`,
+                end: '</span>',
+              },
+            ],
+          },
+        }
+      )
+      .pipe(
+        map(({ buckets }) =>
+          buckets.map(bucket => {
+            return {
+              id: bucket.key,
+              title: bucket.hits.nodes[0].fields.content,
+              highlights: bucket.hits.nodes[0].highlights.content[0],
+            };
+          })
+        )
+      );
   }
 }

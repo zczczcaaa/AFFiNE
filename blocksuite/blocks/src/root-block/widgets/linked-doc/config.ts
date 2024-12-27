@@ -77,8 +77,12 @@ export type LinkedMenuGroup = {
   styles?: string;
   // maximum quantity displayed by default
   maxDisplay?: number;
+  // if the menu is loading
+  loading?: boolean | Signal<boolean>;
   // copywriting when display quantity exceeds
-  overflowText?: string;
+  overflowText?: string | Signal<string>;
+  // loading text
+  loadingText?: string | Signal<string>;
 };
 
 export type LinkedDocContext = {
