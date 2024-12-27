@@ -55,6 +55,12 @@ export class ServersService extends Service {
     );
   }
 
+  serverByBaseUrl$(url: string) {
+    return this.servers$.map(servers =>
+      servers.find(server => server.baseUrl === url)
+    );
+  }
+
   private readonly serverPool = new ObjectPool<string, Server>({
     onDelete(obj) {
       obj.dispose();

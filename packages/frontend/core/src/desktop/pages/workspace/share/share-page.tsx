@@ -9,6 +9,7 @@ import {
   AuthService,
   FetchService,
   GraphQLService,
+  ServerService,
 } from '@affine/core/modules/cloud';
 import { type Doc, DocsService } from '@affine/core/modules/doc';
 import {
@@ -64,8 +65,9 @@ export const SharePage = ({
   workspaceId: string;
   docId: string;
 }) => {
-  const { shareReaderService } = useServices({
+  const { shareReaderService, serverService } = useServices({
     ShareReaderService,
+    ServerService,
   });
 
   const isLoading = useLiveData(shareReaderService.reader.isLoading$);
@@ -104,8 +106,12 @@ export const SharePage = ({
     }, [location.search]);
 
   useEffect(() => {
-    shareReaderService.reader.loadShare({ workspaceId, docId });
-  }, [shareReaderService, docId, workspaceId]);
+    shareReaderService.reader.loadShare({
+      serverId: serverService.server.id,
+      workspaceId,
+      docId,
+    });
+  }, [shareReaderService, docId, workspaceId, serverService.server.id]);
 
   let element: ReactNode = null;
   if (isLoading) {

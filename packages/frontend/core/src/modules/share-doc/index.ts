@@ -5,7 +5,7 @@ export { ShareReaderService } from './services/share-reader';
 
 import { type Framework } from '@toeverything/infra';
 
-import { RawFetchProvider, WorkspaceServerService } from '../cloud';
+import { ServersService, WorkspaceServerService } from '../cloud';
 import { DocScope, DocService } from '../doc';
 import {
   WorkspaceLocalCache,
@@ -26,7 +26,7 @@ export function configureShareDocsModule(framework: Framework) {
   framework
     .service(ShareReaderService)
     .entity(ShareReader, [ShareReaderStore])
-    .store(ShareReaderStore, [RawFetchProvider])
+    .store(ShareReaderStore, [ServersService])
     .scope(WorkspaceScope)
     .service(ShareDocsListService, [WorkspaceService])
     .store(ShareDocsStore, [WorkspaceServerService])

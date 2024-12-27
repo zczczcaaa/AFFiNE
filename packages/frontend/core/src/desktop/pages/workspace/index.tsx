@@ -4,8 +4,8 @@ import { workbenchRoutes } from '@affine/core/desktop/workbench-router';
 import {
   DefaultServerService,
   ServersService,
-  WorkspaceServerService,
 } from '@affine/core/modules/cloud';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { DndService } from '@affine/core/modules/dnd/services';
 import { GlobalContextService } from '@affine/core/modules/global-context';
 import {
@@ -33,7 +33,6 @@ import { AffineErrorBoundary } from '../../../components/affine/affine-error-bou
 import { WorkbenchRoot } from '../../../modules/workbench';
 import { AppContainer } from '../../components/app-container';
 import { PageNotFound } from '../404';
-import { SignIn } from '../auth/sign-in';
 import { WorkspaceLayout } from './layouts/workspace-layout';
 import { SharePage } from './share/share-page';
 
@@ -53,8 +52,18 @@ declare global {
 }
 
 export const Component = (): ReactElement => {
-  const { workspacesService } = useServices({
+  const {
+    workspacesService,
+    globalDialogService,
+    serversService,
+    defaultServerService,
+    globalContextService,
+  } = useServices({
     WorkspacesService,
+    GlobalDialogService,
+    ServersService,
+    DefaultServerService,
+    GlobalContextService,
   });
 
   const params = useParams();
@@ -88,11 +97,6 @@ export const Component = (): ReactElement => {
   const [workspaceNotFound, setWorkspaceNotFound] = useState(false);
   const listLoading = useLiveData(workspacesService.list.isRevalidating$);
   const workspaces = useLiveData(workspacesService.list.workspaces$);
-  const serversService = useService(ServersService);
-  const serverFromSearchParams = searchParams.get('server');
-  const serverNotFound = serverFromSearchParams
-    ? serversService.getServerByBaseUrl(serverFromSearchParams)
-    : null;
   const meta = useMemo(() => {
     return workspaces.find(({ id }) => id === params.workspaceId);
   }, [workspaces, params.workspaceId]);
@@ -125,36 +129,87 @@ export const Component = (): ReactElement => {
     return;
   }, [listLoading, meta, workspaceNotFound, workspacesService]);
 
-  if (workspaceNotFound) {
-    if (BUILD_CONFIG.isElectron && serverNotFound) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('server');
-      const redirectUrl = url.toString().replace(window.location.origin, '');
-      return (
-        <AffineOtherPageLayout>
-          <SignIn redirectUrl={redirectUrl} />
-        </AffineOtherPageLayout>
-      );
+  // server search params
+  const serverFromSearchParams = useLiveData(
+    searchParams.has('server')
+      ? serversService.serverByBaseUrl$(searchParams.get('server') as string)
+      : undefined
+  );
+  // server from workspace
+  const serverFromWorkspace = useLiveData(
+    meta?.flavour && meta.flavour !== 'local'
+      ? serversService.server$(meta?.flavour)
+      : undefined
+  );
+  const server = serverFromWorkspace ?? serverFromSearchParams;
+
+  useEffect(() => {
+    if (server) {
+      globalContextService.globalContext.serverId.set(server.id);
+      return () => {
+        globalContextService.globalContext.serverId.set(
+          defaultServerService.server.id
+        );
+      };
     }
+    return;
+  }, [
+    defaultServerService.server.id,
+    globalContextService.globalContext.serverId,
+    server,
+  ]);
+
+  // if server is not found, and we have server in search params, we should show add selfhosted dialog
+  const needAddSelfhosted = server === undefined && searchParams.has('server');
+  // use ref to avoid useEffect trigger twice
+  const addSelfhostedDialogOpened = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (addSelfhostedDialogOpened.current) {
+      return;
+    }
+    addSelfhostedDialogOpened.current = true;
+    if (BUILD_CONFIG.isElectron && needAddSelfhosted) {
+      globalDialogService.open('sign-in', {
+        server: searchParams.get('server') as string,
+      });
+    }
+    return;
+  }, [
+    globalDialogService,
+    needAddSelfhosted,
+    searchParams,
+    serverFromSearchParams,
+  ]);
+
+  if (workspaceNotFound) {
     if (detailDocRoute) {
       return (
-        <SharePage
-          docId={detailDocRoute.docId}
-          workspaceId={detailDocRoute.workspaceId}
-        />
+        <FrameworkScope scope={server?.scope}>
+          <SharePage
+            docId={detailDocRoute.docId}
+            workspaceId={detailDocRoute.workspaceId}
+          />
+        </FrameworkScope>
       );
     }
     return (
-      <AffineOtherPageLayout>
-        <PageNotFound noPermission />
-      </AffineOtherPageLayout>
+      <FrameworkScope scope={server?.scope}>
+        <AffineOtherPageLayout>
+          <PageNotFound noPermission />
+        </AffineOtherPageLayout>
+      </FrameworkScope>
     );
   }
   if (!meta) {
     return <AppContainer fallback />;
   }
 
-  return <WorkspacePage meta={meta} />;
+  return (
+    <FrameworkScope scope={server?.scope}>
+      <WorkspacePage meta={meta} />
+    </FrameworkScope>
+  );
 };
 
 const DNDContextProvider = ({ children }: PropsWithChildren) => {
@@ -171,15 +226,12 @@ const DNDContextProvider = ({ children }: PropsWithChildren) => {
 };
 
 const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
-  const { workspacesService, globalContextService, defaultServerService } =
-    useServices({
-      WorkspacesService,
-      GlobalContextService,
-      DefaultServerService,
-    });
+  const { workspacesService, globalContextService } = useServices({
+    WorkspacesService,
+    GlobalContextService,
+  });
 
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
-  const workspaceServer = workspace?.scope.get(WorkspaceServerService).server;
 
   useLayoutEffect(() => {
     const ref = workspacesService.open({ metadata: meta });
@@ -238,30 +290,17 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
       };
       localStorage.setItem('last_workspace_id', workspace.id);
       globalContextService.globalContext.workspaceId.set(workspace.id);
-      if (workspaceServer) {
-        globalContextService.globalContext.serverId.set(workspaceServer.id);
-      }
       globalContextService.globalContext.workspaceFlavour.set(
         workspace.flavour
       );
       return () => {
         window.currentWorkspace = undefined;
         globalContextService.globalContext.workspaceId.set(null);
-        if (workspaceServer) {
-          globalContextService.globalContext.serverId.set(
-            defaultServerService.server.id
-          );
-        }
         globalContextService.globalContext.workspaceFlavour.set(null);
       };
     }
     return;
-  }, [
-    defaultServerService.server.id,
-    globalContextService,
-    workspace,
-    workspaceServer,
-  ]);
+  }, [globalContextService, workspace]);
 
   if (!workspace) {
     return null; // skip this, workspace will be set in layout effect
@@ -269,27 +308,23 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
 
   if (!isRootDocReady) {
     return (
-      <FrameworkScope scope={workspaceServer?.scope}>
-        <FrameworkScope scope={workspace.scope}>
-          <DNDContextProvider>
-            <AppContainer fallback />
-          </DNDContextProvider>
-        </FrameworkScope>
+      <FrameworkScope scope={workspace.scope}>
+        <DNDContextProvider>
+          <AppContainer fallback />
+        </DNDContextProvider>
       </FrameworkScope>
     );
   }
 
   return (
-    <FrameworkScope scope={workspaceServer?.scope}>
-      <FrameworkScope scope={workspace.scope}>
-        <DNDContextProvider>
-          <AffineErrorBoundary height="100vh">
-            <WorkspaceLayout>
-              <WorkbenchRoot />
-            </WorkspaceLayout>
-          </AffineErrorBoundary>
-        </DNDContextProvider>
-      </FrameworkScope>
+    <FrameworkScope scope={workspace.scope}>
+      <DNDContextProvider>
+        <AffineErrorBoundary height="100vh">
+          <WorkspaceLayout>
+            <WorkbenchRoot />
+          </WorkspaceLayout>
+        </AffineErrorBoundary>
+      </DNDContextProvider>
     </FrameworkScope>
   );
 };
