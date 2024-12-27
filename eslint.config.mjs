@@ -192,6 +192,7 @@ export default tseslint.config(
       'sonarjs/no-duplicated-branches': 'error',
       'sonarjs/no-collection-size-mischeck': 'error',
       'sonarjs/no-identical-functions': 'error',
+      'sonarjs/no-gratuitous-expressions': 'error',
 
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',

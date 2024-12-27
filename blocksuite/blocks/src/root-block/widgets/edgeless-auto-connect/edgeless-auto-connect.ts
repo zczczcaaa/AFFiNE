@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   AutoConnectLeftIcon,
   AutoConnectRightIcon,
@@ -48,7 +47,7 @@ function calculatePosition(gap: number, count: number, iconWidth: number) {
   for (let j = 0; j < count; j++) {
     let left = 10;
     if (isEven) {
-      if (Math.abs(j - middleIndex) < 1 && isEven) {
+      if (Math.abs(j - middleIndex) < 1) {
         left = 10 + middleOffset * getSign(j);
       } else {
         left =

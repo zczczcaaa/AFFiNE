@@ -61,7 +61,7 @@ export const test = baseTest.extend<{}>({
 });
 if (scope) {
   test.beforeEach(async ({ browser }, testInfo) => {
-    if (scope && !testInfo.title.startsWith(scope)) {
+    if (!testInfo.title.startsWith(scope!)) {
       testInfo.fn = () => {
         testInfo.skip();
       };
@@ -76,9 +76,9 @@ if (scope) {
     page = await browser.newPage();
   });
 
-  // eslint-disable-next-line no-empty-pattern
+  // oxlint-disable-next-line no-empty-pattern
   test.afterAll(async ({}, testInfo) => {
-    if (!scope || !testInfo.title.startsWith(scope)) {
+    if (!testInfo.title.startsWith(scope!)) {
       return;
     }
     const focusInSecondEditor = await page.evaluate(
