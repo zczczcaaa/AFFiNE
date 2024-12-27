@@ -441,7 +441,7 @@ jobs:
           node-version: 20
       - name: Copy Selfhost Release Files
         run: |
-          cp ./.docker/selfhost/compose.yaml ./release/docker-compose.yaml
+          cp ./.docker/selfhost/compose.yml ./release/docker-compose.yml
           cp ./.docker/selfhost/.env.example ./release/.env.example
       - name: Generate Release yml
         run: |
@@ -456,7 +456,9 @@ jobs:
           body: ''
           draft: ${{ github.event.inputs.is-draft }}
           prerelease: ${{ github.event.inputs.is-pre-release }}
-          files: ./release/*
+          files: |
+            - ./release/*
+            - ./release/.env.example
       - name: Create Nightly Release Draft
         if: ${{ github.ref_type == 'branch' }}
         uses: softprops/action-gh-release@v2
@@ -471,4 +473,6 @@ jobs:
           body: ''
           draft: false
           prerelease: true
-          files: ./release/*
+          files: |
+            - ./release/*
+            - ./release/.env.example

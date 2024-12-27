@@ -45,6 +45,7 @@ function loadPrivateKey() {
 }
 
 async function load() {
+  let isPrivateKeyFromEnv = !!process.env.AFFINE_PRIVATE_KEY;
   // Initializing AFFiNE config
   //
   // 1. load dotenv file to `process.env`
@@ -55,6 +56,12 @@ async function load() {
   config({
     path: join(CUSTOM_CONFIG_PATH, '.env'),
   });
+
+  // @deprecated
+  // The old AFFINE_PRIVATE_KEY in old .env is somehow not working, we should ignore it
+  if (!isPrivateKeyFromEnv) {
+    delete process.env.AFFINE_PRIVATE_KEY;
+  }
 
   // 2. generate AFFiNE default config and assign to `globalThis.AFFiNE`
   globalThis.AFFiNE = getAFFiNEConfigModifier();
