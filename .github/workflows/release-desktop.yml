@@ -457,8 +457,8 @@ jobs:
           draft: ${{ github.event.inputs.is-draft }}
           prerelease: ${{ github.event.inputs.is-pre-release }}
           files: |
-            - ./release/*
-            - ./release/.env.example
+            ./release/*
+            ./release/.env.example
       - name: Create Nightly Release Draft
         if: ${{ github.ref_type == 'branch' }}
         uses: softprops/action-gh-release@v2
@@ -474,5 +474,5 @@ jobs:
           draft: false
           prerelease: true
           files: |
-            - ./release/*
-            - ./release/.env.example
+            ./release/*
+            ./release/.env.example
