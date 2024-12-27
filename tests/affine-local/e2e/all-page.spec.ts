@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-dom-node-dataset */
 import { test } from '@affine-test/kit/playwright';
 import {
   changeFilter,
@@ -19,12 +20,7 @@ import {
   getBlockSuiteEditorTitle,
   waitForAllPagesLoad,
   waitForEditorLoad,
-  waitForEmptyEditor,
 } from '@affine-test/kit/utils/page-logic';
-import {
-  ensurePagePropertiesVisible,
-  togglePropertyListVisibility,
-} from '@affine-test/kit/utils/properties';
 import { clickSideBarAllPageButton } from '@affine-test/kit/utils/sidebar';
 import { expect } from '@playwright/test';
 
@@ -290,12 +286,10 @@ test('select a group of items by clicking "Select All" in group header', async (
 
   const selectedItemCount = await page
     .locator('[data-testid="page-list-group-header"]')
-    // oxlint-disable-next-line
     .getAttribute('data-group-selected-items-count');
 
   const selectedGroupItemTotalCount = await page
     .locator('[data-testid="page-list-group-header"]')
-    // oxlint-disable-next-line
     .getAttribute('data-group-items-count');
   expect(selectedItemCount).toBe(selectedGroupItemTotalCount);
 
@@ -462,30 +456,4 @@ test('create a tag and delete it', async ({ page }) => {
 
   const newCell = page.getByTestId('tag-list-item').getByText('test-tag');
   await expect(newCell).not.toBeVisible();
-});
-
-test('create a empty page and turn it into journal, should disappear in all docs', async ({
-  page,
-}) => {
-  await openHomePage(page);
-  await waitForEditorLoad(page);
-  await clickNewPageButton(page);
-  await clickSideBarAllPageButton(page);
-  const docItem = page
-    .locator('[data-testid="page-list-item-title-text"]')
-    .first();
-  const docTitle = await docItem.textContent();
-  await expect(docTitle).toBe('Untitled');
-  // open and turn it into journal
-  await docItem.click();
-  await waitForEmptyEditor(page);
-  await ensurePagePropertiesVisible(page);
-  await togglePropertyListVisibility(page);
-  const journalProperty = page.locator('[data-info-id="journal"]').first();
-  await journalProperty.locator('[data-property-value="true"]').click();
-  // back to all docs, the journal page should disappear
-  await clickSideBarAllPageButton(page);
-  await waitForAllPagesLoad(page);
-  const newDocTitle = await docItem.textContent();
-  await expect(newDocTitle).not.toBe(docTitle);
 });

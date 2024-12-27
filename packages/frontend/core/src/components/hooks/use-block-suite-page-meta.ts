@@ -1,12 +1,12 @@
 import { DocsService } from '@affine/core/modules/doc';
-import { JournalService } from '@affine/core/modules/journal';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import type { DocCollection, DocMeta } from '@blocksuite/affine/store';
-import { LiveData, useLiveData, useService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
 import { useAsyncCallback } from './affine-async-hooks';
 import { useAllBlockSuiteDocMeta } from './use-all-block-suite-page-meta';
+import { useJournalInfoHelper } from './use-journal';
 
 /**
  * Get pageMetas excluding journal pages without updatedDate
@@ -15,26 +15,13 @@ import { useAllBlockSuiteDocMeta } from './use-all-block-suite-page-meta';
  */
 export function useBlockSuiteDocMeta(docCollection: DocCollection) {
   const pageMetas = useAllBlockSuiteDocMeta(docCollection);
-  const journalService = useService(JournalService);
-
-  const journalIds = useLiveData(
-    useMemo(
-      () =>
-        LiveData.computed(get =>
-          pageMetas
-            .map(meta => meta.id)
-            .filter(id => !!get(journalService.journalDate$(id)))
-        ),
-      [pageMetas, journalService]
-    )
-  );
-
+  const { isPageJournal } = useJournalInfoHelper();
   return useMemo(
     () =>
       pageMetas.filter(
-        pageMeta => !journalIds.includes(pageMeta.id) || !!pageMeta.updatedDate
+        pageMeta => !isPageJournal(pageMeta.id) || !!pageMeta.updatedDate
       ),
-    [journalIds, pageMetas]
+    [isPageJournal, pageMetas]
   );
 }
 
