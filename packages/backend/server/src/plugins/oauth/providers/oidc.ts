@@ -34,7 +34,6 @@ const OIDCConfigurationSchema = z.object({
   authorization_endpoint: z.string().url(),
   token_endpoint: z.string().url(),
   userinfo_endpoint: z.string().url(),
-  end_session_endpoint: z.string().url(),
 });
 
 type OIDCConfiguration = z.infer<typeof OIDCConfigurationSchema>;
