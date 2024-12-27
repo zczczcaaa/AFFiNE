@@ -61,6 +61,15 @@ export class FsStorageProvider implements StorageProvider {
     this.logger.verbose(`Object \`${key}\` put`);
   }
 
+  async head(key: string) {
+    const metadata = this.readMetadata(key);
+    if (!metadata) {
+      this.logger.verbose(`Object \`${key}\` not found`);
+      return undefined;
+    }
+    return metadata;
+  }
+
   async get(key: string): Promise<{
     body?: Readable;
     metadata?: GetObjectMetadata;

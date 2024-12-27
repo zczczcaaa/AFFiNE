@@ -24,6 +24,10 @@ export interface WorkspaceEvents {
       workspaceId: Workspace['id'];
       key: string;
     }>;
+    sync: Payload<{
+      workspaceId: Workspace['id'];
+      key: string;
+    }>;
   };
 }
 

@@ -34,6 +34,7 @@ export interface StorageProvider {
     body: BlobInputType,
     metadata?: PutObjectMetadata
   ): Promise<void>;
+  head(key: string): Promise<GetObjectMetadata | undefined>;
   get(
     key: string
   ): Promise<{ body?: BlobOutputType; metadata?: GetObjectMetadata }>;
