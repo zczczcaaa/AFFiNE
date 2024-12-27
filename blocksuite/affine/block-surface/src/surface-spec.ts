@@ -10,11 +10,14 @@ import { literal } from 'lit/static-html.js';
 import {
   EdgelessSurfaceBlockAdapterExtensions,
   SurfaceBlockAdapterExtensions,
-} from './adapters/extension.js';
-import { commands } from './commands/index.js';
-import { EdgelessCRUDExtension } from './extensions/crud-extension.js';
-import { SurfaceBlockService } from './surface-service.js';
-import { MindMapView } from './view/mindmap.js';
+} from './adapters/extension';
+import { commands } from './commands';
+import {
+  EdgelessCRUDExtension,
+  EdgelessLegacySlotExtension,
+} from './extensions';
+import { SurfaceBlockService } from './surface-service';
+import { MindMapView } from './view/mindmap';
 
 const CommonSurfaceBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:surface'),
@@ -23,6 +26,7 @@ const CommonSurfaceBlockSpec: ExtensionType[] = [
   HighlightSelectionExtension,
   MindMapView,
   EdgelessCRUDExtension,
+  EdgelessLegacySlotExtension,
 ];
 
 export const PageSurfaceBlockSpec: ExtensionType[] = [

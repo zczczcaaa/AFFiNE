@@ -3244,6 +3244,7 @@ __metadata:
   resolution: "@blocksuite/affine-block-attachment@workspace:blocksuite/affine/block-attachment"
   dependencies:
     "@blocksuite/affine-block-embed": "workspace:*"
+    "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
@@ -3407,6 +3408,7 @@ __metadata:
   resolution: "@blocksuite/affine-block-note@workspace:blocksuite/affine/block-note"
   dependencies:
     "@blocksuite/affine-block-embed": "workspace:*"
+    "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"

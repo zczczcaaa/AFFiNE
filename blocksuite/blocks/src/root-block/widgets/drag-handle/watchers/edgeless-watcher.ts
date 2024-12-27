@@ -1,3 +1,7 @@
+import {
+  EdgelessLegacySlotIdentifier,
+  type SurfaceBlockComponent,
+} from '@blocksuite/affine-block-surface';
 import type { DndEventState } from '@blocksuite/block-std';
 import {
   GfxControllerIdentifier,
@@ -6,10 +10,6 @@ import {
 import { type IVec, Rect } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 
-import type {
-  EdgelessRootBlockComponent,
-  EdgelessRootService,
-} from '../../../edgeless/index.js';
 import {
   getSelectedRect,
   isTopLevelBlock,
@@ -64,8 +64,12 @@ export class EdgelessWatcher {
 
   private readonly _showDragHandleOnTopLevelBlocks = async () => {
     if (this.widget.mode === 'page') return;
-    const { edgelessRoot } = this;
-    await edgelessRoot.surface.updateComplete;
+
+    const surfaceModel = this.widget.doc.getBlockByFlavour('affine:surface');
+    const surface = this.widget.std.view.getBlock(
+      surfaceModel[0]!.id
+    ) as SurfaceBlockComponent;
+    await surface.updateComplete;
 
     if (!this.widget.anchorBlockId) return;
 
@@ -121,9 +125,11 @@ export class EdgelessWatcher {
       return;
     }
 
-    const { edgelessRoot } = this;
-    const editing = edgelessRoot.service.selection.editing;
-    const selectedElements = edgelessRoot.service.selection.selectedElements;
+    const { std } = this.widget;
+    const gfx = std.get(GfxControllerIdentifier);
+    const { selection } = gfx;
+    const editing = selection.editing;
+    const selectedElements = selection.selectedElements;
     if (editing || selectedElements.length !== 1) {
       this.widget.hide();
       return;
@@ -158,10 +164,6 @@ export class EdgelessWatcher {
     this.widget.dragPreview.style.opacity = altKey ? '1' : '0.5';
   };
 
-  get edgelessRoot() {
-    return this.widget.rootComponent as EdgelessRootBlockComponent;
-  }
-
   get hoverAreaRectTopLevelBlock() {
     const area = this.hoverAreaTopLevelBlock;
     if (!area) return null;
@@ -174,12 +176,11 @@ export class EdgelessWatcher {
 
     if (!edgelessElement) return null;
 
-    const { edgelessRoot } = this;
+    const { std } = this.widget;
+    const gfx = std.get(GfxControllerIdentifier);
+    const { viewport } = gfx;
     const rect = getSelectedRect([edgelessElement]);
-    let [left, top] = edgelessRoot.service.viewport.toViewCoord(
-      rect.left,
-      rect.top
-    );
+    let [left, top] = viewport.toViewCoord(rect.left, rect.top);
     const scale = this.widget.scale.peek();
     const width = rect.width * scale;
     const height = rect.height * scale;
@@ -212,26 +213,23 @@ export class EdgelessWatcher {
 
   watch() {
     const { disposables, std } = this.widget;
-    const gfxController = std.get(GfxControllerIdentifier);
-    const { viewport } = gfxController;
-    const edgelessService = std.getService(
-      'affine:page'
-    ) as EdgelessRootService;
-    const edgelessSlots = edgelessService.slots;
+    const gfx = std.get(GfxControllerIdentifier);
+    const { viewport, selection, tool } = gfx;
+    const edgelessSlots = std.get(EdgelessLegacySlotIdentifier);
 
     disposables.add(
       viewport.viewportUpdated.on(this._handleEdgelessViewPortUpdated)
     );
 
     disposables.add(
-      edgelessService.selection.slots.updated.on(() => {
+      selection.slots.updated.on(() => {
         this.checkTopLevelBlockSelection();
       })
     );
 
     disposables.add(
       effect(() => {
-        const value = gfxController.tool.currentToolOption$.value;
+        const value = tool.currentToolOption$.value;
 
         value && this._handleEdgelessToolUpdated(value);
       })

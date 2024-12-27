@@ -2,7 +2,10 @@ import type {
   SurfaceBlockComponent,
   SurfaceBlockModel,
 } from '@blocksuite/affine-block-surface';
-import { CommonUtils } from '@blocksuite/affine-block-surface';
+import {
+  CommonUtils,
+  EdgelessLegacySlotIdentifier,
+} from '@blocksuite/affine-block-surface';
 import type {
   RootBlockModel,
   ShapeElementModel,
@@ -143,7 +146,7 @@ export class EdgelessRootBlockComponent extends BlockComponent<
   }
 
   get slots() {
-    return this.service.slots;
+    return this.std.get(EdgelessLegacySlotIdentifier);
   }
 
   get surfaceBlockModel() {

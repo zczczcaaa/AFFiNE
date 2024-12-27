@@ -1,11 +1,11 @@
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import type { HoverController } from '@blocksuite/affine-components/hover';
 import { AttachmentBlockStyles } from '@blocksuite/affine-model';
 import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
-import { type BlockService, toGfxBlockComponent } from '@blocksuite/block-std';
-import type { Slot } from '@blocksuite/store';
+import { toGfxBlockComponent } from '@blocksuite/block-std';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { AttachmentBlockComponent } from './attachment-block.js';
@@ -17,30 +17,22 @@ export class AttachmentEdgelessBlockComponent extends toGfxBlockComponent(
 
   override blockDraggable = false;
 
-  get rootService(): null | (BlockService & { slots: Record<string, Slot> }) {
-    return this.std.getService('affine:page');
+  get slots() {
+    return this.std.get(EdgelessLegacySlotIdentifier);
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
 
-    const rootService = this.rootService;
-    if (!rootService) {
-      console.warn('rootService is not found');
-      return;
-    }
-
-    // TODO: move root service slots to extension
     this._disposables.add(
-      rootService.slots.elementResizeStart.on(() => {
+      this.slots.elementResizeStart.on(() => {
         this._isResizing = true;
         this._showOverlay = true;
       })
     );
 
-    // TODO: move root service slots to extension
     this._disposables.add(
-      rootService.slots.elementResizeEnd.on(() => {
+      this.slots.elementResizeEnd.on(() => {
         this._isResizing = false;
         this._showOverlay =
           this._isResizing || this._isDragging || !this._isSelected;

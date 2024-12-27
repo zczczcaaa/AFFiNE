@@ -18,6 +18,7 @@ export const PackageList = [
     name: '@blocksuite/affine-block-attachment',
     workspaceDependencies: [
       'blocksuite/affine/block-embed',
+      'blocksuite/affine/block-surface',
       'blocksuite/affine/components',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
@@ -113,6 +114,7 @@ export const PackageList = [
     name: '@blocksuite/affine-block-note',
     workspaceDependencies: [
       'blocksuite/affine/block-embed',
+      'blocksuite/affine/block-surface',
       'blocksuite/affine/components',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',

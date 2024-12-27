@@ -76,9 +76,9 @@ export function insertEmbedCard(
       editing: false,
     });
 
-    // @ts-expect-error TODO: fix after edgeless refactor
-    edgelessRoot.tools.setEdgelessTool({
-      type: 'default',
-    });
+    gfx.tool.setTool(
+      // @ts-expect-error FIXME: resolve after gfx tool refactor
+      'default'
+    );
   }
 }

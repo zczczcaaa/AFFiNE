@@ -1,3 +1,4 @@
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import {
   blockComponentSymbol,
   type BlockService,
@@ -49,21 +50,22 @@ export function toEdgelessEmbedBlock<
       return;
     }
 
+    get edgelessSlots() {
+      return this.std.get(EdgelessLegacySlotIdentifier);
+    }
+
     override connectedCallback(): void {
       super.connectedCallback();
-      const rootService = this.rootService;
 
       this._disposables.add(
-        // @ts-expect-error TODO: fix after edgeless slots are migrated to extension
-        rootService.slots.elementResizeStart.on(() => {
+        this.edgelessSlots.elementResizeStart.on(() => {
           this._isResizing = true;
           this._showOverlay = true;
         })
       );
 
       this._disposables.add(
-        // @ts-expect-error TODO: fix after edgeless slots are migrated to extension
-        rootService.slots.elementResizeEnd.on(() => {
+        this.edgelessSlots.elementResizeEnd.on(() => {
           this._isResizing = false;
           this._showOverlay =
             this._isResizing || this._isDragging || !this._isSelected;

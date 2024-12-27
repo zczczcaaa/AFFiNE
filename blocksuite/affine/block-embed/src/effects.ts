@@ -1,3 +1,5 @@
+import type * as SurfaceEffects from '@blocksuite/affine-block-surface/effects';
+
 import { EmbedFigmaBlockComponent } from './embed-figma-block';
 import { EmbedEdgelessBlockComponent } from './embed-figma-block/embed-edgeless-figma-block';
 import type { EmbedFigmaBlockService } from './embed-figma-block/embed-figma-service';
@@ -89,6 +91,8 @@ export function effects() {
     EmbedSyncedDocBlockComponent
   );
 }
+
+declare type _GLOBAL = typeof SurfaceEffects;
 
 declare global {
   interface HTMLElementTagNameMap {

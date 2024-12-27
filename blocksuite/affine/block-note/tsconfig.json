@@ -30,6 +30,9 @@
     },
     {
       "path": "../block-embed"
+    },
+    {
+      "path": "../block-surface"
     }
   ]
 }

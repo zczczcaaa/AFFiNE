@@ -2,6 +2,7 @@ import type { EditorHost } from '@blocksuite/block-std';
 import {
   createButtonPopper,
   DocModeProvider,
+  EdgelessLegacySlotIdentifier,
   EdgelessRootService,
   EditPropsStore,
   type NavigatorMode,
@@ -134,14 +135,14 @@ export class FramePanelHeader extends WithDisposable(LitElement) {
   private readonly _setEdgelessDisposables = () => {
     if (!this._edgelessRootService) return;
 
+    const slots = this.editorHost.std.get(EdgelessLegacySlotIdentifier);
+
     this._clearEdgelessDisposables();
     this._edgelessDisposables = new DisposableGroup();
     this._edgelessDisposables.add(
-      this._edgelessRootService.slots.navigatorSettingUpdated.on(
-        ({ fillScreen }) => {
-          this._navigatorMode = fillScreen ? 'fill' : 'fit';
-        }
-      )
+      slots.navigatorSettingUpdated.on(({ fillScreen }) => {
+        this._navigatorMode = fillScreen ? 'fill' : 'fit';
+      })
     );
   };
 

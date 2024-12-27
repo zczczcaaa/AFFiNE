@@ -1,3 +1,4 @@
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import { WidgetComponent } from '@blocksuite/block-std';
 import { effect } from '@preact/signals-core';
@@ -58,10 +59,8 @@ export class AffineEdgelessZoomToolbarWidget extends WidgetComponent<
   }
 
   override firstUpdated() {
-    const {
-      disposables,
-      edgeless: { slots },
-    } = this;
+    const { disposables, std } = this;
+    const slots = std.get(EdgelessLegacySlotIdentifier);
 
     disposables.add(
       slots.navigatorSettingUpdated.on(({ hideToolbar }) => {

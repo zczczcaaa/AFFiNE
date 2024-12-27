@@ -7,7 +7,7 @@ export * from './latex-block';
 export * from './latex-spec';
 
 // Global types
-declare type _Global =
+declare type _GLOBAl =
   | typeof NoteType
   | typeof CommandsType
   | typeof RemarkMathType;

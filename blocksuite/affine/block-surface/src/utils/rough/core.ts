@@ -64,8 +64,8 @@ export interface ResolvedOptions extends Options {
   preserveVertices: boolean;
 }
 
-export declare type OpType = 'move' | 'bcurveTo' | 'lineTo';
-export declare type OpSetType = 'path' | 'fillPath' | 'fillSketch';
+export type OpType = 'move' | 'bcurveTo' | 'lineTo';
+export type OpSetType = 'path' | 'fillPath' | 'fillSketch';
 
 export interface Op {
   op: OpType;

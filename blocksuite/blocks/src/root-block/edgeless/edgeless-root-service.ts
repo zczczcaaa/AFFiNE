@@ -1,5 +1,6 @@
 import {
   EdgelessCRUDIdentifier,
+  EdgelessLegacySlotIdentifier,
   type ElementRenderer,
   elementRenderers,
   type SurfaceBlockModel,
@@ -7,7 +8,6 @@ import {
 } from '@blocksuite/affine-block-surface';
 import {
   type ConnectorElementModel,
-  type FrameBlockModel,
   type GroupElementModel,
   MindmapElementModel,
   RootBlockSchema,
@@ -28,7 +28,6 @@ import {
 } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { Bound, getCommonBound } from '@blocksuite/global/utils';
-import { Slot } from '@blocksuite/store';
 import { effect } from '@preact/signals-core';
 
 import { getSurfaceBlock } from '../../surface-ref-block/utils.js';
@@ -58,23 +57,6 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
   private readonly _surface: SurfaceBlockModel;
 
   elementRenderers: Record<string, ElementRenderer> = elementRenderers;
-
-  slots = {
-    readonlyUpdated: new Slot<boolean>(),
-    navigatorSettingUpdated: new Slot<{
-      hideToolbar?: boolean;
-      blackBackground?: boolean;
-      fillScreen?: boolean;
-    }>(),
-    navigatorFrameChanged: new Slot<FrameBlockModel>(),
-    fullScreenToggled: new Slot(),
-
-    elementResizeStart: new Slot(),
-    elementResizeEnd: new Slot(),
-    toggleNoteSlicer: new Slot(),
-
-    toolbarLocked: new Slot<boolean>(),
-  };
 
   TemplateJob = TemplateJob;
 
@@ -168,12 +150,14 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
   private _initReadonlyListener() {
     const doc = this.doc;
 
+    const slots = this.std.get(EdgelessLegacySlotIdentifier);
+
     let readonly = doc.readonly;
     this.disposables.add(
       doc.awarenessStore.slots.update.on(() => {
         if (readonly !== doc.readonly) {
           readonly = doc.readonly;
-          this.slots.readonlyUpdated.emit(readonly);
+          slots.readonlyUpdated.emit(readonly);
         }
       })
     );

@@ -1,5 +1,9 @@
 import type { EditorHost } from '@blocksuite/block-std';
-import { EdgelessRootService, EditPropsStore } from '@blocksuite/blocks';
+import {
+  EdgelessLegacySlotIdentifier,
+  EdgelessRootService,
+  EditPropsStore,
+} from '@blocksuite/blocks';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
@@ -72,16 +76,20 @@ export const AFFINE_FRAMES_SETTING_MENU = 'affine-frames-setting-menu';
 export class FramesSettingMenu extends WithDisposable(LitElement) {
   static override styles = styles;
 
+  get slots() {
+    return this.editorHost.std.get(EdgelessLegacySlotIdentifier);
+  }
+
   private readonly _onBlackBackgroundChange = (checked: boolean) => {
     this.blackBackground = checked;
-    this._edgelessRootService?.slots.navigatorSettingUpdated.emit({
+    this.slots.navigatorSettingUpdated.emit({
       blackBackground: this.blackBackground,
     });
   };
 
   private readonly _onFillScreenChange = (checked: boolean) => {
     this.fillScreen = checked;
-    this._edgelessRootService?.slots.navigatorSettingUpdated.emit({
+    this.slots.navigatorSettingUpdated.emit({
       fillScreen: this.fillScreen,
     });
     this._editPropsStore.setStorage('presentFillScreen', this.fillScreen);
@@ -89,7 +97,7 @@ export class FramesSettingMenu extends WithDisposable(LitElement) {
 
   private readonly _onHideToolBarChange = (checked: boolean) => {
     this.hideToolbar = checked;
-    this._edgelessRootService?.slots.navigatorSettingUpdated.emit({
+    this.slots.navigatorSettingUpdated.emit({
       hideToolbar: this.hideToolbar,
     });
     this._editPropsStore.setStorage('presentHideToolbar', this.hideToolbar);
@@ -170,7 +178,7 @@ export class FramesSettingMenu extends WithDisposable(LitElement) {
     if (_changedProperties.has('editorHost')) {
       if (this._edgelessRootService) {
         this.disposables.add(
-          this._edgelessRootService.slots.navigatorSettingUpdated.on(
+          this.slots.navigatorSettingUpdated.on(
             ({ blackBackground, hideToolbar }) => {
               if (
                 blackBackground !== undefined &&
