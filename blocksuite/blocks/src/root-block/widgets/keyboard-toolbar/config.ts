@@ -1,4 +1,5 @@
 import { addSiblingAttachmentBlocks } from '@blocksuite/affine-block-attachment';
+import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import {
   getInlineEditorByModel,
   insertContent,
@@ -61,7 +62,6 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import type { TemplateResult } from 'lit';
 
 import { toggleEmbedCardCreateModal } from '../../../_common/components/embed-card/modal/embed-card-create-modal.js';
-import { getSurfaceBlock } from '../../../surface-ref-block/utils.js';
 import type { PageRootBlockComponent } from '../../page/page-root-block.js';
 import { formatDate, formatTime } from '../../utils/misc.js';
 import type { AffineLinkedDocWidget } from '../linked-doc/index.js';

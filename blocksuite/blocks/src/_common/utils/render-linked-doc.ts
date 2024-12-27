@@ -1,3 +1,4 @@
+import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import type { FrameBlockModel, NoteBlockModel } from '@blocksuite/affine-model';
 import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
@@ -15,7 +16,6 @@ import {
   isFrameBlock,
   isNoteBlock,
 } from '../../root-block/edgeless/utils/query.js';
-import { getSurfaceBlock } from '../../surface-ref-block/utils.js';
 
 export function addBlocksToDoc(
   targetDoc: Doc,

@@ -1,8 +1,7 @@
+import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import type { SurfaceRefProps } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import type { BlockCommands, Command } from '@blocksuite/block-std';
-
-import { getSurfaceBlock } from './utils.js';
 
 export const insertSurfaceRefBlockCommand: Command<
   'selectedModels',

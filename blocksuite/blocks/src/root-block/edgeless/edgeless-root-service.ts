@@ -3,6 +3,7 @@ import {
   EdgelessLegacySlotIdentifier,
   type ElementRenderer,
   elementRenderers,
+  getSurfaceBlock,
   type SurfaceBlockModel,
   type SurfaceContext,
 } from '@blocksuite/affine-block-surface';
@@ -30,7 +31,6 @@ import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { Bound, getCommonBound } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 
-import { getSurfaceBlock } from '../../surface-ref-block/utils.js';
 import { RootService } from '../root-service.js';
 import { GfxBlockModel } from './block-model.js';
 import type { EdgelessFrameManager } from './frame-manager.js';

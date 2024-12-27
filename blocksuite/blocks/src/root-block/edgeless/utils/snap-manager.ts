@@ -2,9 +2,10 @@ import type {
   SurfaceBlockComponent,
   SurfaceBlockModel,
 } from '@blocksuite/affine-block-surface';
-import { Overlay } from '@blocksuite/affine-block-surface';
+import { getSurfaceBlock, Overlay } from '@blocksuite/affine-block-surface';
 import type { ConnectorElementModel } from '@blocksuite/affine-model';
 import type { GfxController } from '@blocksuite/block-std/gfx';
+import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { Bound, Point } from '@blocksuite/global/utils';
 
 import { isConnectable } from '../utils/query.js';
@@ -52,9 +53,13 @@ export class EdgelessSnapManager extends Overlay {
   };
 
   private get _surface() {
-    const surfaceModel = this.gfx.doc.getBlockByFlavour(
-      'affine:surface'
-    )[0] as SurfaceBlockModel;
+    const surfaceModel = getSurfaceBlock(this.gfx.doc);
+    if (!surfaceModel) {
+      throw new BlockSuiteError(
+        ErrorCode.ValueNotExists,
+        'Surface block not found in doc when creating snap manager'
+      );
+    }
 
     return this.gfx.std.view.getBlock(surfaceModel.id) as SurfaceBlockComponent;
   }

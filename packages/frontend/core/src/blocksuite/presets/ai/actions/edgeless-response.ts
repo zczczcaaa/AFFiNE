@@ -7,7 +7,6 @@ import type {
   EdgelessRootService,
   MindmapElementModel,
   ShapeElementModel,
-  SurfaceBlockModel,
 } from '@blocksuite/affine/blocks';
 import {
   addImages,
@@ -17,6 +16,7 @@ import {
   EDGELESS_TEXT_BLOCK_MIN_WIDTH,
   EdgelessTextBlockModel,
   fitContent,
+  getSurfaceBlock,
   ImageBlockModel,
   InsertBelowIcon,
   LightLoadingIcon,
@@ -363,9 +363,8 @@ function responseToCreateImage(host: EditorHost) {
 }
 
 export function responseToExpandMindmap(host: EditorHost, ctx: AIContext) {
-  const [surface] = host.doc.getBlockByFlavour(
-    'affine:surface'
-  ) as SurfaceBlockModel[];
+  const surface = getSurfaceBlock(host.doc);
+  if (!surface) return;
 
   const elements = ctx.get().selectedElements;
   const mindmapNode = ctx.get().node;
@@ -414,9 +413,8 @@ function responseToBrainstormMindmap(host: EditorHost, ctx: AIContext) {
   const edgelessService = getEdgelessService(host);
   const edgelessCopilot = getEdgelessCopilotWidget(host);
   const selectionRect = edgelessCopilot.selectionModelRect;
-  const [surface] = host.doc.getBlockByFlavour(
-    'affine:surface'
-  ) as SurfaceBlockModel[];
+  const surface = getSurfaceBlock(host.doc);
+  if (!surface) return;
 
   const { node, style, selectedElements } = ctx.get();
   if (!node) return;
@@ -478,9 +476,8 @@ function responseToMakeItReal(host: EditorHost, ctx: AIContext) {
   html = preprocessHtml(html);
 
   const edgelessCopilot = getEdgelessCopilotWidget(host);
-  const [surface] = host.doc.getBlockByFlavour(
-    'affine:surface'
-  ) as SurfaceBlockModel[];
+  const surface = getSurfaceBlock(host.doc);
+  if (!surface) return;
 
   const data = ctx.get();
   const bounds = edgelessCopilot.determineInsertionBounds(

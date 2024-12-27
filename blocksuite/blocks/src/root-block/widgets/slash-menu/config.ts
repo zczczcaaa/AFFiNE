@@ -5,6 +5,7 @@ import {
   LoomIcon,
   YoutubeIcon,
 } from '@blocksuite/affine-block-embed';
+import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import {
   ArrowDownBigIcon,
   ArrowUpBigIcon,
@@ -51,7 +52,6 @@ import type { TemplateResult } from 'lit';
 
 import { toggleEmbedCardCreateModal } from '../../../_common/components/embed-card/modal/embed-card-create-modal.js';
 import type { DataViewBlockComponent } from '../../../data-view-block/index.js';
-import { getSurfaceBlock } from '../../../surface-ref-block/utils.js';
 import type { RootBlockComponent } from '../../types.js';
 import { formatDate, formatTime } from '../../utils/misc.js';
 import type { AffineLinkedDocWidget } from '../linked-doc/index.js';

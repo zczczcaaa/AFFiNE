@@ -1,4 +1,5 @@
 import {
+  getSurfaceBlock,
   type SurfaceBlockModel,
   SurfaceElementModel,
 } from '@blocksuite/affine-block-surface';
@@ -306,10 +307,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
   }
 
   private _initReferencedModel() {
-    const surfaceModel: SurfaceBlockModel | null =
-      (this.doc.getBlocksByFlavour('affine:surface')[0]?.model as
-        | SurfaceBlockModel
-        | undefined) ?? null;
+    const surfaceModel = getSurfaceBlock(this.doc);
     this._surfaceModel = surfaceModel;
 
     const findReferencedModel = (): [
@@ -338,15 +336,11 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
         .find(
           doc =>
             doc.getBlock(this.model.reference) ||
-            (
-              doc.getBlocksByFlavour('affine:surface')[0]
-                .model as SurfaceBlockModel
-            ).getElementById(this.model.reference)
+            getSurfaceBlock(doc)!.getElementById(this.model.reference)
         );
 
       if (doc) {
-        this._surfaceModel = doc.getBlocksByFlavour('affine:surface')[0]
-          .model as SurfaceBlockModel;
+        this._surfaceModel = getSurfaceBlock(doc);
       }
 
       if (doc && doc.getBlock(this.model.reference)) {
@@ -356,12 +350,9 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
         ];
       }
 
-      if (doc && doc.getBlocksByFlavour('affine:surface')[0]) {
+      if (doc && getSurfaceBlock(doc)) {
         return [
-          (
-            doc.getBlocksByFlavour('affine:surface')[0]
-              .model as SurfaceBlockModel
-          ).getElementById(this.model.reference),
+          getSurfaceBlock(doc)!.getElementById(this.model.reference),
           doc.id,
         ];
       }

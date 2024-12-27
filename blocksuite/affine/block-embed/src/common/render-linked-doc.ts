@@ -1,4 +1,4 @@
-import type { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
+import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import {
   type DocMode,
   type ImageBlockModel,
@@ -261,11 +261,6 @@ export function isEmptyNote(note: BlockModel) {
       (!block.text || block.text.length === 0)
     );
   });
-}
-
-function getSurfaceBlock(doc: Doc) {
-  const blocks = doc.getBlocksByFlavour('affine:surface');
-  return blocks.length !== 0 ? (blocks[0].model as SurfaceBlockModel) : null;
 }
 
 /**

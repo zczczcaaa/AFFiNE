@@ -34,3 +34,4 @@ export function normalizeWheelDeltaY(delta: number, zoom = 1) {
 }
 
 export { getLastPropsKey } from './get-last-props-key';
+export { getSurfaceBlock } from './get-surface-block';

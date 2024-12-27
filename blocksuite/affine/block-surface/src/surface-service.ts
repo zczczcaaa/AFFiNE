@@ -2,6 +2,7 @@ import { BlockService } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 
 import { type SurfaceBlockModel, SurfaceBlockSchema } from './surface-model.js';
+import { getSurfaceBlock } from './utils/get-surface-block.js';
 
 export class SurfaceBlockService extends BlockService {
   static override readonly flavour = SurfaceBlockSchema.model.flavour;
@@ -15,9 +16,10 @@ export class SurfaceBlockService extends BlockService {
   override mounted(): void {
     super.mounted();
 
-    this.surface = this.doc.getBlockByFlavour(
-      'affine:surface'
-    )[0] as SurfaceBlockModel;
+    const surface = getSurfaceBlock(this.doc);
+
+    // FIXME: BS-2271
+    this.surface = surface!;
 
     if (!this.surface) {
       const disposable = this.doc.slots.blockUpdated.on(payload => {

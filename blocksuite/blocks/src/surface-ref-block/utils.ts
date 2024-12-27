@@ -1,11 +1,4 @@
-import type { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
-import type { Doc } from '@blocksuite/store';
 import { html } from 'lit';
-
-export function getSurfaceBlock(doc: Doc) {
-  const blocks = doc.getBlocksByFlavour('affine:surface');
-  return blocks.length !== 0 ? (blocks[0].model as SurfaceBlockModel) : null;
-}
 
 export const noContentPlaceholder = html`
   <svg
