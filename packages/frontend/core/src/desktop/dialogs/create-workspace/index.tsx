@@ -1,8 +1,8 @@
-import { Avatar, ConfirmModal, Input, Switch } from '@affine/component';
+import { Avatar, ConfirmModal, Input, notify, Switch } from '@affine/component';
 import type { ConfirmModalProps } from '@affine/component/ui/modal';
 import { CloudSvg } from '@affine/core/components/affine/share-page-modal/cloud-svg';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
-import { AuthService } from '@affine/core/modules/cloud';
+import { AuthService, ServersService } from '@affine/core/modules/cloud';
 import {
   type DialogComponentProps,
   type GLOBAL_DIALOG_SCHEMA,
@@ -12,7 +12,7 @@ import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { WorkspacesService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import { useLiveData, useService } from '@toeverything/infra';
+import { FrameworkScope, useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
 import { buildShowcaseWorkspace } from '../../../utils/first-app-data';
@@ -60,8 +60,18 @@ const NameWorkspaceContent = ({
   );
 
   const handleCreateWorkspace = useCallback(() => {
+    if (loginStatus !== 'authenticated' && enable) {
+      return openSignInModal();
+    }
     onConfirmName(workspaceName, enable ? serverId || 'affine-cloud' : 'local');
-  }, [enable, onConfirmName, serverId, workspaceName]);
+  }, [
+    enable,
+    loginStatus,
+    onConfirmName,
+    openSignInModal,
+    serverId,
+    workspaceName,
+  ]);
 
   const onEnter = useCallback(() => {
     if (workspaceName) {
@@ -109,37 +119,41 @@ const NameWorkspaceContent = ({
           size="large"
         />
       </div>
-      <div className={styles.affineCloudWrapper}>
-        <div className={styles.subTitle}>{t['AFFiNE Cloud']()}</div>
-        <div className={styles.card}>
-          <div className={styles.cardText}>
-            <div className={styles.cardTitle}>
-              <span>{t['com.affine.nameWorkspace.affine-cloud.title']()}</span>
-              <Switch
-                checked={enable}
-                onChange={onSwitchChange}
-                disabled={forcedCloud}
-              />
+      {!serverId || serverId === 'affine-cloud' ? (
+        <div className={styles.affineCloudWrapper}>
+          <div className={styles.subTitle}>{t['AFFiNE Cloud']()}</div>
+          <div className={styles.card}>
+            <div className={styles.cardText}>
+              <div className={styles.cardTitle}>
+                <span>
+                  {t['com.affine.nameWorkspace.affine-cloud.title']()}
+                </span>
+                <Switch
+                  checked={enable}
+                  onChange={onSwitchChange}
+                  disabled={forcedCloud}
+                />
+              </div>
+              <div className={styles.cardDescription}>
+                {t['com.affine.nameWorkspace.affine-cloud.description']()}
+              </div>
             </div>
-            <div className={styles.cardDescription}>
-              {t['com.affine.nameWorkspace.affine-cloud.description']()}
+            <div className={styles.cloudSvgContainer}>
+              <CloudSvg />
             </div>
           </div>
-          <div className={styles.cloudSvgContainer}>
-            <CloudSvg />
-          </div>
+          {forcedCloud && BUILD_CONFIG.isWeb ? (
+            <a
+              className={styles.cloudTips}
+              href={BUILD_CONFIG.downloadUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t['com.affine.nameWorkspace.affine-cloud.web-tips']()}
+            </a>
+          ) : null}
         </div>
-        {forcedCloud ? (
-          <a
-            className={styles.cloudTips}
-            href={BUILD_CONFIG.downloadUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t['com.affine.nameWorkspace.affine-cloud.web-tips']()}
-          </a>
-        ) : null}
-      </div>
+      ) : null}
     </ConfirmModal>
   );
 };
@@ -150,9 +164,13 @@ export const CreateWorkspaceDialog = ({
   close,
 }: DialogComponentProps<GLOBAL_DIALOG_SCHEMA['create-workspace']>) => {
   const workspacesService = useService(WorkspacesService);
+  const serversService = useService(ServersService);
   const featureFlagService = useService(FeatureFlagService);
   const enableLocalWorkspace = useLiveData(
     featureFlagService.flags.enable_local_workspace.$
+  );
+  const server = useLiveData(
+    serverId ? serversService.server$(serverId) : null
   );
   const [loading, setLoading] = useState(false);
 
@@ -164,14 +182,22 @@ export const CreateWorkspaceDialog = ({
 
       // this will be the last step for web for now
       // fix me later
-      const { meta, defaultDocId } = await buildShowcaseWorkspace(
-        workspacesService,
-        workspaceFlavour,
-        name
-      );
-
-      close({ metadata: meta, defaultDocId });
-      setLoading(false);
+      try {
+        const { meta, defaultDocId } = await buildShowcaseWorkspace(
+          workspacesService,
+          workspaceFlavour,
+          name
+        );
+        close({ metadata: meta, defaultDocId });
+      } catch (e) {
+        console.error(e);
+        notify.error({
+          title: 'Failed to create workspace',
+          message: 'please try again later.',
+        });
+      } finally {
+        setLoading(false);
+      }
     },
     [loading, workspacesService, close]
   );
@@ -186,13 +212,15 @@ export const CreateWorkspaceDialog = ({
   );
 
   return (
-    <NameWorkspaceContent
-      loading={loading}
-      open
-      serverId={serverId}
-      forcedCloud={forcedCloud || !enableLocalWorkspace}
-      onOpenChange={onOpenChange}
-      onConfirmName={onConfirmName}
-    />
+    <FrameworkScope scope={server?.scope}>
+      <NameWorkspaceContent
+        loading={loading}
+        serverId={serverId}
+        open
+        forcedCloud={forcedCloud || !enableLocalWorkspace}
+        onOpenChange={onOpenChange}
+        onConfirmName={onConfirmName}
+      />
+    </FrameworkScope>
   );
 };

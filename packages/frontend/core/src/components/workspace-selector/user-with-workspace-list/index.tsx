@@ -1,12 +1,8 @@
-import { Divider } from '@affine/component/ui/divider';
 import { MenuItem } from '@affine/component/ui/menu';
 import { AuthService } from '@affine/core/modules/cloud';
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
-import {
-  type WorkspaceMetadata,
-  WorkspacesService,
-} from '@affine/core/modules/workspace';
+import { type WorkspaceMetadata } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { Logo1Icon } from '@blocksuite/icons/rc';
@@ -119,9 +115,6 @@ const UserWithWorkspaceListInner = ({
     globalDialogService.open('sign-in', { step: 'addSelfhosted' });
   }, [globalDialogService]);
 
-  const workspaceManager = useService(WorkspacesService);
-  const workspaces = useLiveData(workspaceManager.list.workspaces$);
-
   return (
     <div className={styles.workspaceListWrapper}>
       <AFFiNEWorkspaceList
@@ -130,7 +123,6 @@ const UserWithWorkspaceListInner = ({
         showEnableCloudButton={showEnableCloudButton}
         showSettingsButton={showSettingsButton}
       />
-      {workspaces.length > 0 ? <Divider size="thinner" /> : null}
       <AddWorkspace
         onAddWorkspace={onAddWorkspace}
         onNewWorkspace={onNewWorkspace}

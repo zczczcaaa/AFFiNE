@@ -138,17 +138,17 @@ const CloudWorkSpaceList = ({
           items={[
             server.id !== 'affine-cloud' && (
               <MenuItem key="delete-server" onClick={handleDeleteServer}>
-                Delete Server
+                {t['com.affine.server.delete']()}
               </MenuItem>
             ),
             accountStatus === 'authenticated' && (
               <MenuItem key="sign-out" onClick={handleSignOut}>
-                Sign Out
+                {t['com.affine.sign.out']()}
               </MenuItem>
             ),
             accountStatus === 'unauthenticated' && (
               <MenuItem key="sign-in" onClick={handleSignIn}>
-                Sign In
+                {t['com.affine.sign.in']()}
               </MenuItem>
             ),
           ]}
@@ -206,6 +206,7 @@ const LocalWorkspaces = ({
         onSettingClick={onClickWorkspaceSetting}
         onEnableCloudClick={onClickEnableCloud}
       />
+      <Divider size="thinner" />
     </div>
   );
 };

@@ -7,7 +7,7 @@ export class GlobalContext extends Entity {
   workspaceId = this.define<string>('workspaceId');
   workspaceFlavour = this.define<string>('workspaceFlavour');
 
-  serverId = this.define<string>('serverId');
+  serverId = this.define<string>('serverId', 'affine-cloud');
 
   /**
    * is in doc page
@@ -39,12 +39,14 @@ export class GlobalContext extends Entity {
    */
   isAllDocs = this.define<boolean>('isAllDocs');
 
-  define<T>(key: string) {
-    this.memento.set(key, null);
-    const livedata$ = LiveData.from(this.memento.watch<T>(key), null);
+  define<T>(key: string, defaultValue: T | null = null) {
+    this.memento.set(key, defaultValue);
+    const livedata$ = LiveData.from(this.memento.watch<T>(key), defaultValue);
     return {
       get: () => this.memento.get(key) as T | null,
-      set: (value: T | null) => this.memento.set(key, value),
+      set: (value: T | null) => {
+        this.memento.set(key, value);
+      },
       $: livedata$,
     };
   }
