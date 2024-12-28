@@ -1,11 +1,13 @@
 import {
   asyncGetBlockComponent,
+  getCurrentNativeRange,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
 import type { BlockStdScope, EditorHost } from '@blocksuite/block-std';
-import type { InlineRange } from '@blocksuite/inline';
-import type { BlockModel } from '@blocksuite/store';
+import type { InlineEditor, InlineRange } from '@blocksuite/inline';
+import { BlockModel } from '@blocksuite/store';
 
+import type { AffineInlineEditor } from './inline/index.js';
 import type { RichText } from './rich-text.js';
 
 /**
@@ -108,4 +110,64 @@ export async function onModelTextUpdated(
       callback(richText);
     }
   });
+}
+
+/**
+ * Remove specified text from the current range.
+ */
+export function cleanSpecifiedTail(
+  editorHost: EditorHost,
+  inlineEditorOrModel: AffineInlineEditor | BlockModel,
+  str: string
+) {
+  if (!str) {
+    console.warn('Failed to clean text! Unexpected empty string');
+    return;
+  }
+  const inlineEditor =
+    inlineEditorOrModel instanceof BlockModel
+      ? getInlineEditorByModel(editorHost, inlineEditorOrModel)
+      : inlineEditorOrModel;
+  if (!inlineEditor) {
+    return;
+  }
+  const inlineRange = inlineEditor.getInlineRange();
+  if (!inlineRange) {
+    return;
+  }
+  const idx = inlineRange.index - str.length;
+  const textStr = inlineEditor.yText.toString().slice(idx, idx + str.length);
+  if (textStr !== str) {
+    console.warn(
+      `Failed to clean text! Text mismatch expected: ${str} but actual: ${textStr}`
+    );
+    return;
+  }
+  inlineEditor.deleteText({ index: idx, length: str.length });
+  inlineEditor.setInlineRange({
+    index: idx,
+    length: 0,
+  });
+}
+
+export function getTextContentFromInlineRange(
+  inlineEditor: InlineEditor,
+  startRange: InlineRange | null
+) {
+  const nativeRange = getCurrentNativeRange();
+  if (!nativeRange) {
+    return null;
+  }
+  if (nativeRange.startContainer !== nativeRange.endContainer) {
+    return null;
+  }
+  const curRange = inlineEditor.getInlineRange();
+  if (!startRange || !curRange) {
+    return null;
+  }
+  if (curRange.index < startRange.index) {
+    return null;
+  }
+  const text = inlineEditor.yText.toString();
+  return text.slice(startRange.index, curRange.index);
 }

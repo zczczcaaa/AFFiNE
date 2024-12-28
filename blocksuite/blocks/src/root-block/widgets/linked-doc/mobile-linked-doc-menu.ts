@@ -1,8 +1,15 @@
 import {
+  cleanSpecifiedTail,
+  getTextContentFromInlineRange,
+} from '@blocksuite/affine-components/rich-text';
+import {
   VirtualKeyboardController,
   type VirtualKeyboardControllerConfig,
 } from '@blocksuite/affine-components/virtual-keyboard';
-import { getViewportElement } from '@blocksuite/affine-shared/utils';
+import {
+  createKeydownObserver,
+  getViewportElement,
+} from '@blocksuite/affine-shared/utils';
 import { PropTypes, requiredProperties } from '@blocksuite/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { MoreHorizontalIcon } from '@blocksuite/icons/lit';
@@ -12,11 +19,6 @@ import { property } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import {
-  cleanSpecifiedTail,
-  createKeydownObserver,
-  getQuery,
-} from '../../../_common/components/utils.js';
 import { PageRootBlockComponent } from '../../index.js';
 import type {
   LinkedDocContext,
@@ -151,7 +153,10 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
   private _updateLinkedDocGroupAbortController: AbortController | null = null;
 
   private get _query() {
-    return getQuery(this.context.inlineEditor, this.context.startRange);
+    return getTextContentFromInlineRange(
+      this.context.inlineEditor,
+      this.context.startRange
+    );
   }
 
   get virtualKeyboardControllerConfig(): VirtualKeyboardControllerConfig {

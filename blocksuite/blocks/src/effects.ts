@@ -33,9 +33,6 @@ import { effects as dataViewEffects } from '@blocksuite/data-view/effects';
 import { effects as inlineEffects } from '@blocksuite/inline/effects';
 import type { BlockModel } from '@blocksuite/store';
 
-import { EmbedCardEditCaptionEditModal } from './_common/components/embed-card/modal/embed-card-caption-edit-modal.js';
-import { EmbedCardCreateModal } from './_common/components/embed-card/modal/embed-card-create-modal.js';
-import { EmbedCardEditModal } from './_common/components/embed-card/modal/embed-card-edit-modal.js';
 import { registerSpecs } from './_specs/register-specs.js';
 import { DataViewBlockComponent } from './data-view-block/index.js';
 import { CenterPeek } from './database-block/components/layout.js';
@@ -372,15 +369,9 @@ export function effects() {
   );
   customElements.define('edgeless-align-panel', EdgelessAlignPanel);
   customElements.define('card-style-panel', CardStylePanel);
-  customElements.define(
-    'embed-card-caption-edit-modal',
-    EmbedCardEditCaptionEditModal
-  );
   customElements.define('edgeless-color-button', EdgelessColorButton);
   customElements.define('edgeless-color-panel', EdgelessColorPanel);
   customElements.define('edgeless-text-color-icon', EdgelessTextColorIcon);
-  customElements.define('embed-card-create-modal', EmbedCardCreateModal);
-  customElements.define('embed-card-edit-modal', EmbedCardEditModal);
   customElements.define(
     'edgeless-mindmap-tool-button',
     EdgelessMindmapToolButton

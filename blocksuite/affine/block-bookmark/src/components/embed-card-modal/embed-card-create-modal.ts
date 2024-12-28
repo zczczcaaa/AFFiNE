@@ -6,6 +6,7 @@ import {
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import { EmbedOptionProvider } from '@blocksuite/affine-shared/services';
+import { isValidUrl } from '@blocksuite/affine-shared/utils';
 import type { EditorHost } from '@blocksuite/block-std';
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
@@ -15,8 +16,6 @@ import { html } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
-import type { EdgelessRootBlockComponent } from '../../../../root-block/edgeless/edgeless-root-block.js';
-import { getRootByEditorHost, isValidUrl } from '../../../utils/index.js';
 import { embedCardModalStyles } from './styles.js';
 
 export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
@@ -64,13 +63,6 @@ export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
         targetStyle = embedOptions.styles[0];
       }
 
-      const edgelessRoot = getRootByEditorHost(
-        this.host
-      ) as EdgelessRootBlockComponent | null;
-      if (!edgelessRoot) {
-        return;
-      }
-
       const gfx = this.host.std.get(GfxControllerIdentifier);
       const crud = this.host.std.get(EdgelessCRUDIdentifier);
 
@@ -95,7 +87,10 @@ export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
         surfaceModel
       );
 
-      gfx.tool.setTool('default');
+      gfx.tool.setTool(
+        // @ts-expect-error FIXME: resolve after gfx tool refactor
+        'default'
+      );
     }
     this.onConfirm();
     this.remove();

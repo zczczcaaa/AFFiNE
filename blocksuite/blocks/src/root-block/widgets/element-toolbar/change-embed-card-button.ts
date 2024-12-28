@@ -1,3 +1,11 @@
+import type {
+  BuiltInEmbedBlockComponent,
+  BuiltInEmbedModel,
+} from '@blocksuite/affine-block-bookmark';
+import {
+  isInternalEmbedModel,
+  toggleEmbedCardEditModal,
+} from '@blocksuite/affine-block-bookmark';
 import {
   getDocContentWithMaxLength,
   getEmbedCardIcons,
@@ -44,12 +52,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { toggleEmbedCardEditModal } from '../../../_common/components/embed-card/modal/embed-card-edit-modal.js';
-import type {
-  EmbedBlockComponent,
-  EmbedModel,
-} from '../../../_common/components/embed-card/type.js';
-import { isInternalEmbedModel } from '../../../_common/components/embed-card/type.js';
 import type { EmbedCardStyle } from '../../../_common/types.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import {
@@ -373,7 +375,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
 
     const blockComponent = this.std.view.getBlock(
       blockSelection[0].blockId
-    ) as EmbedBlockComponent | null;
+    ) as BuiltInEmbedBlockComponent | null;
 
     if (!blockComponent) return;
 
@@ -837,7 +839,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
   accessor edgeless!: EdgelessRootBlockComponent;
 
   @property({ attribute: false })
-  accessor model!: EmbedModel;
+  accessor model!: BuiltInEmbedModel;
 
   @property({ attribute: false })
   accessor quickConnectButton!: TemplateResult<1> | typeof nothing;
@@ -861,7 +863,7 @@ export function renderEmbedButton(
 
 function track(
   std: BlockStdScope,
-  model: EmbedModel,
+  model: BuiltInEmbedModel,
   viewType: string,
   event: LinkEventType,
   props: Partial<TelemetryEvent>

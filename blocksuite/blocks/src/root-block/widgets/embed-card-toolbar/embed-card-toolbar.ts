@@ -1,4 +1,12 @@
 import {
+  type BuiltInEmbedBlockComponent,
+  type BuiltInEmbedModel,
+  isEmbedCardBlockComponent,
+  isInternalEmbedModel,
+  toggleEmbedCardCaptionEditModal,
+  toggleEmbedCardEditModal,
+} from '@blocksuite/affine-block-bookmark';
+import {
   getDocContentWithMaxLength,
   getEmbedCardIcons,
 } from '@blocksuite/affine-block-embed';
@@ -54,14 +62,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { toggleEmbedCardCaptionEditModal } from '../../../_common/components/embed-card/modal/embed-card-caption-edit-modal.js';
-import { toggleEmbedCardEditModal } from '../../../_common/components/embed-card/modal/embed-card-edit-modal.js';
-import {
-  type EmbedBlockComponent,
-  type EmbedModel,
-  isEmbedCardBlockComponent,
-  isInternalEmbedModel,
-} from '../../../_common/components/embed-card/type.js';
 import {
   isBookmarkBlock,
   isEmbedGithubBlock,
@@ -303,7 +303,7 @@ export class EmbedCardToolbar extends WidgetComponent<
     return 'inline';
   }
 
-  get focusModel(): EmbedModel | undefined {
+  get focusModel(): BuiltInEmbedModel | undefined {
     return this.focusBlock?.model;
   }
 
@@ -726,7 +726,7 @@ export class EmbedCardToolbar extends WidgetComponent<
           return;
         }
 
-        this.focusBlock = block as EmbedBlockComponent;
+        this.focusBlock = block as BuiltInEmbedBlockComponent;
         this._show();
       })
     );
@@ -848,7 +848,7 @@ export class EmbedCardToolbar extends WidgetComponent<
   accessor embedCardToolbarElement!: HTMLElement;
 
   @state()
-  accessor focusBlock: EmbedBlockComponent | null = null;
+  accessor focusBlock: BuiltInEmbedBlockComponent | null = null;
 
   @state()
   accessor hide: boolean = true;
@@ -865,7 +865,7 @@ declare global {
 
 function track(
   std: BlockStdScope,
-  model: EmbedModel,
+  model: BuiltInEmbedModel,
   viewType: string,
   event: LinkEventType,
   props: Partial<TelemetryEvent>

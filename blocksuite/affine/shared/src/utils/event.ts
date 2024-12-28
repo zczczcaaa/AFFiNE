@@ -194,3 +194,156 @@ export const captureEventTarget = (target: EventTarget | null) => {
       : target.parentElement
     : null;
 };
+
+interface ObserverParams {
+  target: HTMLElement;
+  signal: AbortSignal;
+  onInput?: (isComposition: boolean) => void;
+  onDelete?: () => void;
+  onMove?: (step: 1 | -1) => void;
+  onConfirm?: () => void;
+  onAbort?: () => void;
+  onPaste?: () => void;
+  interceptor?: (e: KeyboardEvent, next: () => void) => void;
+}
+
+/**
+ * @deprecated don't use this, use event dispatch instead
+ */
+export const createKeydownObserver = ({
+  target,
+  signal,
+  onInput,
+  onDelete,
+  onMove,
+  onConfirm,
+  onAbort,
+  onPaste,
+  interceptor = (_, next) => next(),
+}: ObserverParams) => {
+  const keyDownListener = (e: KeyboardEvent) => {
+    if (e.key === 'Process' || e.isComposing) return;
+
+    if (e.defaultPrevented) return;
+
+    if (isControlledKeyboardEvent(e)) {
+      const isOnlyCmd = (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey;
+      // Ctrl/Cmd + alphabet key
+      if (isOnlyCmd && e.key.length === 1) {
+        switch (e.key) {
+          // Previous command
+          case 'p': {
+            onMove?.(-1);
+            e.stopPropagation();
+            e.preventDefault();
+            return;
+          }
+          // Next command
+          case 'n': {
+            onMove?.(1);
+            e.stopPropagation();
+            e.preventDefault();
+            return;
+          }
+          // Paste command
+          case 'v': {
+            onPaste?.();
+            return;
+          }
+        }
+      }
+
+      // Pressing **only** modifier key is allowed and will be ignored
+      // Because we don't know the user's intention
+      // Aborting here will cause the above hotkeys to not work
+      if (e.key === 'Control' || e.key === 'Meta' || e.key === 'Alt') {
+        e.stopPropagation();
+        return;
+      }
+
+      // Abort when press modifier key + any other key to avoid weird behavior
+      // e.g. press ctrl + a to select all
+      onAbort?.();
+      return;
+    }
+
+    e.stopPropagation();
+
+    if (
+      // input abc, 123, etc.
+      !isControlledKeyboardEvent(e) &&
+      e.key.length === 1
+    ) {
+      onInput?.(false);
+      return;
+    }
+
+    switch (e.key) {
+      case 'Backspace': {
+        onDelete?.();
+        return;
+      }
+      case 'Enter': {
+        if (e.shiftKey) {
+          onAbort?.();
+          return;
+        }
+        onConfirm?.();
+        e.preventDefault();
+        return;
+      }
+      case 'Tab': {
+        if (e.shiftKey) {
+          onMove?.(-1);
+        } else {
+          onMove?.(1);
+        }
+        e.preventDefault();
+        return;
+      }
+      case 'ArrowUp': {
+        if (e.shiftKey) {
+          onAbort?.();
+          return;
+        }
+        onMove?.(-1);
+        e.preventDefault();
+        return;
+      }
+      case 'ArrowDown': {
+        if (e.shiftKey) {
+          onAbort?.();
+          return;
+        }
+        onMove?.(1);
+        e.preventDefault();
+        return;
+      }
+      case 'Escape':
+      case 'ArrowLeft':
+      case 'ArrowRight': {
+        onAbort?.();
+        return;
+      }
+      default:
+        // Other control keys
+        return;
+    }
+  };
+
+  target.addEventListener(
+    'keydown',
+    (e: KeyboardEvent) => interceptor(e, () => keyDownListener(e)),
+    {
+      // Workaround: Use capture to prevent the event from triggering the keyboard bindings action
+      capture: true,
+      signal,
+    }
+  );
+
+  // Fix paste input
+  target.addEventListener('paste', () => onDelete?.(), { signal });
+
+  // Fix composition input
+  target.addEventListener('compositionend', () => onInput?.(true), { signal });
+};

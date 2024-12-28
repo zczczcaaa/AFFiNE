@@ -1,3 +1,4 @@
+import type { BuiltInEmbedModel } from '@blocksuite/affine-block-bookmark';
 import { CommonUtils } from '@blocksuite/affine-block-surface';
 import { ConnectorCWithArrowIcon } from '@blocksuite/affine-components/icons';
 import {
@@ -38,7 +39,6 @@ import { css, html, nothing, type TemplateResult, unsafeCSS } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 
-import type { EmbedModel } from '../../../_common/components/embed-card/type.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import {
   isAttachmentBlock,
@@ -79,7 +79,7 @@ type CategorizedElements = {
   image?: ImageBlockModel[];
   attachment?: AttachmentBlockModel[];
   mindmap?: MindmapElementModel[];
-  embedCard?: EmbedModel[];
+  embedCard?: BuiltInEmbedModel[];
   edgelessText?: EdgelessTextBlockModel[];
 };
 

@@ -2,6 +2,11 @@ import { LoadingIcon } from '@blocksuite/affine-block-image';
 import type { IconButton } from '@blocksuite/affine-components/icon-button';
 import { MoreHorizontalIcon } from '@blocksuite/affine-components/icons';
 import {
+  cleanSpecifiedTail,
+  getTextContentFromInlineRange,
+} from '@blocksuite/affine-components/rich-text';
+import {
+  createKeydownObserver,
   getCurrentNativeRange,
   getViewportElement,
 } from '@blocksuite/affine-shared/utils';
@@ -15,11 +20,6 @@ import { html, LitElement, nothing } from 'lit';
 import { property, query, queryAll, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import {
-  cleanSpecifiedTail,
-  createKeydownObserver,
-  getQuery,
-} from '../../../_common/components/utils.js';
 import { getPopperPosition } from '../../utils/position.js';
 import type { LinkedDocContext, LinkedMenuGroup } from './config.js';
 import { linkedDocPopoverStyles } from './styles.js';
@@ -86,7 +86,10 @@ export class LinkedDocPopover extends SignalWatcher(
   }
 
   private get _query() {
-    return getQuery(this.context.inlineEditor, this.context.startRange);
+    return getTextContentFromInlineRange(
+      this.context.inlineEditor,
+      this.context.startRange
+    );
   }
 
   private _getActionItems(group: LinkedMenuGroup) {

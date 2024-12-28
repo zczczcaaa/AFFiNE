@@ -37,8 +37,8 @@ import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { live } from 'lit/directives/live.js';
 
-import type { LinkableEmbedModel } from '../type.js';
-import { isInternalEmbedModel } from '../type.js';
+import type { LinkableEmbedModel } from './type.js';
+import { isInternalEmbedModel } from './type.js';
 
 export class EmbedCardEditModal extends SignalWatcher(
   WithDisposable(LitElement)

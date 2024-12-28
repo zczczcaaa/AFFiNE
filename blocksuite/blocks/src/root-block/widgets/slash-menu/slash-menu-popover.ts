@@ -1,8 +1,13 @@
 import { ArrowDownIcon } from '@blocksuite/affine-components/icons';
 import { createLitPortal } from '@blocksuite/affine-components/portal';
 import type { AffineInlineEditor } from '@blocksuite/affine-components/rich-text';
-import { getInlineEditorByModel } from '@blocksuite/affine-components/rich-text';
 import {
+  cleanSpecifiedTail,
+  getInlineEditorByModel,
+  getTextContentFromInlineRange,
+} from '@blocksuite/affine-components/rich-text';
+import {
+  createKeydownObserver,
   isControlledKeyboardEvent,
   isFuzzyMatch,
   substringMatchScore,
@@ -14,11 +19,6 @@ import { property, query, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import {
-  cleanSpecifiedTail,
-  createKeydownObserver,
-  getQuery,
-} from '../../../_common/components/utils.js';
 import type {
   SlashMenuActionItem,
   SlashMenuContext,
@@ -144,7 +144,7 @@ export class SlashMenu extends WithDisposable(LitElement) {
   };
 
   private get _query() {
-    return getQuery(this.inlineEditor, this._startRange);
+    return getTextContentFromInlineRange(this.inlineEditor, this._startRange);
   }
 
   get host() {
