@@ -11,9 +11,9 @@ import { computed } from '@preact/signals-core';
 import { css, html, nothing } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { RemoteColorManager } from '../../../root-block/remote-color-manager/remote-color-manager.js';
-import type { DocRemoteSelectionConfig } from './config.js';
-import { cursorStyle, selectionStyle } from './utils.js';
+import { RemoteColorManager } from '../manager/remote-color-manager';
+import type { DocRemoteSelectionConfig } from './config';
+import { cursorStyle, selectionStyle } from './utils';
 
 export interface SelectionRect {
   width: number;
@@ -56,14 +56,12 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
   });
 
   private get _config(): DocRemoteSelectionConfig {
-    const config =
-      this.std.getConfig('affine:page')?.docRemoteSelectionWidget ?? {};
-
     return {
       blockSelectionBackgroundTransparent: block => {
         return (
           matchFlavours(block, [
             'affine:code',
+            // @ts-expect-error FIXME: fix after database model moved to affine-model
             'affine:database',
             'affine:image',
             'affine:attachment',
@@ -72,7 +70,6 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
           ]) || /affine:embed-*/.test(block.flavour)
         );
       },
-      ...config,
     };
   }
 

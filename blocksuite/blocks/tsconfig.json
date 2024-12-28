@@ -72,6 +72,9 @@
     },
     {
       "path": "../affine/widget-scroll-anchoring"
+    },
+    {
+      "path": "../affine/widget-remote-selection"
     }
   ]
 }

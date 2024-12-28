@@ -15,7 +15,7 @@ import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { RemoteColorManager } from '../../../root-block/remote-color-manager/remote-color-manager.js';
+import { RemoteColorManager } from '../manager/remote-color-manager';
 
 export const AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET =
   'affine-edgeless-remote-selection-widget';

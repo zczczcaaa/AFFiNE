@@ -26,6 +26,7 @@ import { SmoothCorner } from '@blocksuite/affine-components/smooth-corner';
 import { effects as componentToggleButtonEffects } from '@blocksuite/affine-components/toggle-button';
 import { ToggleSwitch } from '@blocksuite/affine-components/toggle-switch';
 import { effects as componentToolbarEffects } from '@blocksuite/affine-components/toolbar';
+import { effects as widgetRemoteSelectionEffects } from '@blocksuite/affine-widget-remote-selection/effects';
 import { effects as widgetScrollAnchoringEffects } from '@blocksuite/affine-widget-scroll-anchoring/effects';
 import type { BlockComponent } from '@blocksuite/block-std';
 import { effects as stdEffects } from '@blocksuite/block-std/effects';
@@ -147,7 +148,6 @@ import {
   AFFINE_EMBED_CARD_TOOLBAR_WIDGET,
   AFFINE_FORMAT_BAR_WIDGET,
   AffineAIPanelWidget,
-  AffineDocRemoteSelectionWidget,
   AffineDragHandleWidget,
   AffineEdgelessZoomToolbarWidget,
   AffineFormatBarWidget,
@@ -159,7 +159,6 @@ import {
   AffineSurfaceRefToolbar,
   EdgelessCopilotToolbarEntry,
   EdgelessCopilotWidget,
-  EdgelessRemoteSelectionWidget,
   EdgelessRootBlockComponent,
   EmbedCardToolbar,
   FramePreview,
@@ -177,7 +176,6 @@ import {
   AIPanelGenerating,
   AIPanelInput,
 } from './root-block/widgets/ai-panel/components/index.js';
-import { AFFINE_DOC_REMOTE_SELECTION_WIDGET } from './root-block/widgets/doc-remote-selection/index.js';
 import { DragPreview } from './root-block/widgets/drag-handle/components/drag-preview.js';
 import { DropIndicator } from './root-block/widgets/drag-handle/components/drop-indicator.js';
 import { AFFINE_DRAG_HANDLE_WIDGET } from './root-block/widgets/drag-handle/consts.js';
@@ -186,7 +184,6 @@ import {
   EdgelessAutoConnectWidget,
 } from './root-block/widgets/edgeless-auto-connect/edgeless-auto-connect.js';
 import { EdgelessCopilotPanel } from './root-block/widgets/edgeless-copilot-panel/index.js';
-import { AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET } from './root-block/widgets/edgeless-remote-selection/index.js';
 import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from './root-block/widgets/edgeless-zoom-toolbar/index.js';
 import { ZoomBarToggleButton } from './root-block/widgets/edgeless-zoom-toolbar/zoom-bar-toggle-button.js';
 import { EdgelessZoomToolbar } from './root-block/widgets/edgeless-zoom-toolbar/zoom-toolbar.js';
@@ -261,7 +258,7 @@ export function effects() {
   widgetLinkedDocEffects();
   widgetFrameTitleEffects();
   widgetEdgelessElementToolbarEffects();
-
+  widgetRemoteSelectionEffects();
   dataViewEffects();
 
   customElements.define('affine-database-title', DatabaseTitle);
@@ -461,10 +458,6 @@ export function effects() {
   customElements.define(AFFINE_AI_PANEL_WIDGET, AffineAIPanelWidget);
   customElements.define(AFFINE_EMBED_CARD_TOOLBAR_WIDGET, EmbedCardToolbar);
   customElements.define(AFFINE_INNER_MODAL_WIDGET, AffineInnerModalWidget);
-  customElements.define(
-    AFFINE_DOC_REMOTE_SELECTION_WIDGET,
-    AffineDocRemoteSelectionWidget
-  );
   customElements.define(AFFINE_MODAL_WIDGET, AffineModalWidget);
   customElements.define(
     AFFINE_PAGE_DRAGGING_AREA_WIDGET,
@@ -475,10 +468,6 @@ export function effects() {
 
   customElements.define(AFFINE_IMAGE_TOOLBAR_WIDGET, AffineImageToolbarWidget);
   customElements.define(AFFINE_SLASH_MENU_WIDGET, AffineSlashMenuWidget);
-  customElements.define(
-    AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET,
-    EdgelessRemoteSelectionWidget
-  );
   customElements.define(
     AFFINE_VIEWPORT_OVERLAY_WIDGET,
     AffineViewportOverlayWidget
