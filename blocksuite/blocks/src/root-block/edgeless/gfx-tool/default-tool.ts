@@ -25,6 +25,7 @@ import type { PointerEventState } from '@blocksuite/block-std';
 import {
   BaseTool,
   getTopElements,
+  type GfxBlockElementModel,
   GfxExtensionIdentifier,
   type GfxModel,
   type GfxPrimitiveElementModel,
@@ -43,7 +44,6 @@ import {
 import { effect } from '@preact/signals-core';
 
 import { isSingleMindMapNode } from '../../../_common/edgeless/mindmap/index.js';
-import type { GfxBlockModel } from '../block-model.js';
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 import type { EdgelessFrameManager, FrameOverlay } from '../frame-manager.js';
 import { prepareCloneData } from '../utils/clone-utils.js';
@@ -116,8 +116,8 @@ export class DefaultTool extends BaseTool {
   };
 
   private readonly _pendingUpdates = new Map<
-    GfxBlockModel | GfxPrimitiveElementModel,
-    Partial<GfxBlockModel>
+    GfxBlockElementModel | GfxPrimitiveElementModel,
+    Partial<GfxBlockElementModel>
   >();
 
   private _rafId: number | null = null;
@@ -544,8 +544,8 @@ export class DefaultTool extends BaseTool {
   }
 
   private _scheduleUpdate(
-    element: GfxBlockModel | GfxPrimitiveElementModel,
-    updates: Partial<GfxBlockModel>
+    element: GfxBlockElementModel | GfxPrimitiveElementModel,
+    updates: Partial<GfxBlockElementModel>
   ) {
     this._pendingUpdates.set(element, updates);
 

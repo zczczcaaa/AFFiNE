@@ -3,13 +3,13 @@ import {
   LassoFreeHandIcon,
   LassoPolygonalIcon,
 } from '@blocksuite/affine-components/icons';
+import { LassoMode } from '@blocksuite/affine-shared/types';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { LassoMode } from '../../../../../_common/types.js';
 import { getTooltipWithShortcut } from '../../utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 

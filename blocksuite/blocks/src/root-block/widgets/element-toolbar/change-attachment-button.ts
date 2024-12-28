@@ -9,7 +9,10 @@ import {
   PaletteIcon,
 } from '@blocksuite/affine-components/icons';
 import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
-import type { AttachmentBlockModel } from '@blocksuite/affine-model';
+import type {
+  AttachmentBlockModel,
+  EmbedCardStyle,
+} from '@blocksuite/affine-model';
 import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
@@ -21,7 +24,6 @@ import { html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 
-import type { EmbedCardStyle } from '../../../_common/types.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 
 export class EdgelessChangeAttachmentButton extends WithDisposable(LitElement) {

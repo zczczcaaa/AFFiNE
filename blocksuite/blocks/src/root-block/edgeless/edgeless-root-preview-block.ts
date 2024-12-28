@@ -7,6 +7,7 @@ import {
   FontLoaderService,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
+import { requestThrottledConnectedFrame } from '@blocksuite/affine-shared/utils';
 import type {
   GfxBlockComponent,
   SurfaceSelection,
@@ -17,7 +18,6 @@ import { assertExists } from '@blocksuite/global/utils';
 import { css, html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 
-import { requestThrottledConnectedFrame } from '../../_common/utils/index.js';
 import type { EdgelessRootBlockWidgetName } from '../types.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
 import { getBackgroundGrid, isCanvasElement } from './utils/query.js';

@@ -13,13 +13,12 @@ import {
 import type { BlockStdScope } from '@blocksuite/block-std';
 import {
   getTopElements,
+  GfxBlockElementModel,
   type GfxModel,
   isGfxGroupCompatibleModel,
   type SerializedElement,
 } from '@blocksuite/block-std/gfx';
 import { type BlockSnapshot, Job } from '@blocksuite/store';
-
-import { GfxBlockModel } from '../block-model.js';
 
 /**
  * return all elements in the tree of the elements
@@ -55,7 +54,7 @@ export function serializeElement(
   elements: GfxModel[],
   job: Job
 ) {
-  if (element instanceof GfxBlockModel) {
+  if (element instanceof GfxBlockElementModel) {
     const snapshot = job.blockToSnapshot(element);
     if (!snapshot) {
       return;

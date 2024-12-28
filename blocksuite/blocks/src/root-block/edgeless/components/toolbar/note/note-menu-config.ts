@@ -13,9 +13,8 @@ import {
   QuoteIcon,
   TextIcon,
 } from '@blocksuite/affine-components/icons';
+import type { NoteChildrenFlavour } from '@blocksuite/affine-shared/types';
 import type { TemplateResult } from 'lit';
-
-import type { NoteChildrenFlavour } from '../../../../../_common/utils/index.js';
 
 export const BUTTON_GROUP_LENGTH = 10;
 

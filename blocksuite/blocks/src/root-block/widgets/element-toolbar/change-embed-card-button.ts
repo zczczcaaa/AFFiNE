@@ -28,7 +28,11 @@ import {
   type MenuItem,
   renderToolbarSeparator,
 } from '@blocksuite/affine-components/toolbar';
-import { type AliasInfo, BookmarkStyles } from '@blocksuite/affine-model';
+import {
+  type AliasInfo,
+  BookmarkStyles,
+  type EmbedCardStyle,
+} from '@blocksuite/affine-model';
 import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
@@ -52,7 +56,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { EmbedCardStyle } from '../../../_common/types.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import {
   isBookmarkBlock,

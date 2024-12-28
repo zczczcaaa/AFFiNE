@@ -23,6 +23,3 @@ export type Connectable = Exclude<
   BlockSuite.EdgelessModel,
   ConnectorElementModel | BrushElementModel | GroupElementModel
 >;
-
-export type { EmbedCardStyle } from '@blocksuite/affine-model';
-export * from '@blocksuite/affine-shared/types';

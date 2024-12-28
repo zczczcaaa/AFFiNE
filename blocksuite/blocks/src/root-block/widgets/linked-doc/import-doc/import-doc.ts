@@ -6,6 +6,7 @@ import {
   NewIcon,
   NotionIcon,
 } from '@blocksuite/affine-components/icons';
+import { openFileOrFiles } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
 import type { DocCollection } from '@blocksuite/store';
 import { html, LitElement, type PropertyValues } from 'lit';
@@ -14,7 +15,6 @@ import { query, state } from 'lit/decorators.js';
 import { HtmlTransformer } from '../../../../_common/transformers/html.js';
 import { MarkdownTransformer } from '../../../../_common/transformers/markdown.js';
 import { NotionHtmlTransformer } from '../../../../_common/transformers/notion-html.js';
-import { openFileOrFiles } from '../../../../_common/utils/index.js';
 import { styles } from './styles.js';
 
 export type OnSuccessHandler = (

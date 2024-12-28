@@ -1,8 +1,8 @@
 /* oxlint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./effects.ts" />
+import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import { deserializeXYWH, Point } from '@blocksuite/global/utils';
 
-import { matchFlavours } from './_common/utils/index.js';
 import { splitElements } from './root-block/edgeless/utils/clipboard-utils.js';
 import { isCanvasElement } from './root-block/edgeless/utils/query.js';
 

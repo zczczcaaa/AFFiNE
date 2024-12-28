@@ -13,8 +13,10 @@ import {
   EditPropsStore,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
+import { LassoMode } from '@blocksuite/affine-shared/types';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
+  GfxBlockElementModel,
   type GfxToolsMap,
   type GfxToolsOption,
   isGfxGroupCompatibleModel,
@@ -27,9 +29,7 @@ import {
   isElementOutsideViewport,
   isSingleMindMapNode,
 } from '../../_common/edgeless/mindmap/index.js';
-import { LassoMode } from '../../_common/types.js';
 import { PageKeyboardManager } from '../keyboard/keyboard-manager.js';
-import { GfxBlockModel } from './block-model.js';
 import type { EdgelessRootBlockComponent } from './edgeless-root-block.js';
 import { CopilotTool } from './gfx-tool/copilot-tool.js';
 import { LassoTool } from './gfx-tool/lasso-tool.js';
@@ -115,8 +115,8 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
 
           if (
             selection.selectedElements.length === 1 &&
-            selection.firstElement instanceof GfxBlockModel &&
-            matchFlavours(selection.firstElement as GfxBlockModel, [
+            selection.firstElement instanceof GfxBlockElementModel &&
+            matchFlavours(selection.firstElement as GfxBlockElementModel, [
               'affine:note',
             ])
           ) {

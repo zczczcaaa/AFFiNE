@@ -3,6 +3,7 @@ import { Overlay } from '@blocksuite/affine-block-surface';
 import {
   generateKeyBetweenV2,
   getTopElements,
+  GfxBlockElementModel,
   type GfxController,
   GfxExtension,
   GfxExtensionIdentifier,
@@ -22,7 +23,6 @@ import type { Doc } from '@blocksuite/store';
 import { DocCollection, Text } from '@blocksuite/store';
 
 import type { FrameBlockModel, NoteBlockModel } from '../../index.js';
-import { GfxBlockModel } from './block-model.js';
 import { areSetsEqual } from './utils/misc.js';
 import { isFrameBlock } from './utils/query.js';
 
@@ -254,7 +254,7 @@ export class EdgelessFrameManager extends GfxExtension {
       doc.slots.blockUpdated.on(payload => {
         if (
           payload.type === 'add' &&
-          payload.model instanceof GfxBlockModel &&
+          payload.model instanceof GfxBlockElementModel &&
           renderableInEdgeless(doc, surfaceModel, payload.model)
         ) {
           const frame = this.getFrameFromPoint(
@@ -454,7 +454,7 @@ export class EdgelessFrameManager extends GfxExtension {
 
   removeFromParentFrame(element: GfxModel) {
     const parentFrame = this.getParentFrame(element);
-    // eslint-disable-next-line unicorn/prefer-dom-node-remove
+    // oxlint-disable-next-line unicorn/prefer-dom-node-remove
     parentFrame?.removeChild(element);
   }
 
@@ -499,7 +499,7 @@ export function getBlocksInFrameBound(
   ).concat(
     surface.children.filter(ele => {
       if (ele.id === model.id) return false;
-      if (ele instanceof GfxBlockModel) {
+      if (ele instanceof GfxBlockElementModel) {
         const blockBound = Bound.deserialize(ele.xywh);
         return fullyContained
           ? bound.contains(blockBound)

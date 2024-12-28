@@ -30,15 +30,15 @@ import {
   ResetIcon,
 } from '@blocksuite/icons/lit';
 
-import {
-  createLinkedDocFromEdgelessElements,
-  createLinkedDocFromNote,
-} from '../../../../_common/utils/render-linked-doc.js';
 import { duplicate } from '../../../edgeless/utils/clipboard-utils.js';
 import { getSortedCloneElements } from '../../../edgeless/utils/clone-utils.js';
 import { moveConnectors } from '../../../edgeless/utils/connector.js';
 import { deleteElements } from '../../../edgeless/utils/crud.js';
 import type { ElementToolbarMoreMenuContext } from './context.js';
+import {
+  createLinkedDocFromEdgelessElements,
+  createLinkedDocFromNote,
+} from './render-linked-doc.js';
 
 type EmbedLinkBlockComponent =
   | EmbedGithubBlockComponent

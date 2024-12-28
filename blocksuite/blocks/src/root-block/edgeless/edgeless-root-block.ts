@@ -15,6 +15,7 @@ import {
   FontLoaderService,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
+import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
   isTouchPadPinchEvent,
   requestConnectedFrame,
@@ -38,7 +39,6 @@ import { query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import { isSingleMindMapNode } from '../../_common/edgeless/mindmap/index.js';
-import type { Viewport } from '../../_common/utils/index.js';
 import type { EdgelessRootBlockWidgetName } from '../types.js';
 import { EdgelessClipboardController } from './clipboard/clipboard.js';
 import type { EdgelessSelectedRectWidget } from './components/rects/edgeless-selected-rect.js';

@@ -21,6 +21,7 @@ import {
   type ExtensionType,
   StdIdentifier,
 } from '@blocksuite/block-std';
+import type { GfxBlockElementModel } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { IBound } from '@blocksuite/global/utils';
 import { Bound } from '@blocksuite/global/utils';
@@ -30,14 +31,13 @@ import {
   getBlockComponentByModel,
   getRootByEditorHost,
 } from '../../_common/utils/index.js';
-import type { GfxBlockModel } from '../../root-block/edgeless/block-model.js';
 import type { EdgelessRootBlockComponent } from '../../root-block/edgeless/edgeless-root-block.js';
 import { getBlocksInFrameBound } from '../../root-block/edgeless/frame-manager.js';
 import { xywhArrayToObject } from '../../root-block/edgeless/utils/convert.js';
 import { getBackgroundGrid } from '../../root-block/edgeless/utils/query.js';
 import { FileExporter } from './file-exporter.js';
 
-// eslint-disable-next-line
+// oxlint-disable-next-line typescript/consistent-type-imports
 type Html2CanvasFunction = typeof import('html2canvas').default;
 
 export type ExportOptions = {
@@ -408,7 +408,7 @@ export class ExportManager {
     surfaceRenderer: CanvasRenderer,
     bound: IBound,
     edgeless?: EdgelessRootBlockComponent,
-    nodes?: GfxBlockModel[],
+    nodes?: GfxBlockElementModel[],
     surfaces?: BlockSuite.SurfaceElementModel[],
     edgelessBackground?: {
       zoom: number;

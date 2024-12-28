@@ -1,8 +1,7 @@
+import type { GfxBlockElementModel } from '@blocksuite/block-std/gfx';
 import { deserializeXYWH } from '@blocksuite/global/utils';
 
-import type { GfxBlockModel } from '../block-model.js';
-
-export function xywhArrayToObject(element: GfxBlockModel) {
+export function xywhArrayToObject(element: GfxBlockElementModel) {
   const [x, y, w, h] = deserializeXYWH(element.xywh);
   return { x, y, w, h };
 }

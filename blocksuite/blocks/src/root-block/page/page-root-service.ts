@@ -1,7 +1,7 @@
 import { RootBlockSchema } from '@blocksuite/affine-model';
+import type { Viewport } from '@blocksuite/affine-shared/types';
 import { Slot } from '@blocksuite/store';
 
-import type { Viewport } from '../../_common/utils/index.js';
 import { RootService } from '../root-service.js';
 
 export class PageRootService extends RootService {

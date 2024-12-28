@@ -4,15 +4,13 @@ import {
   DEFAULT_NOTE_WIDTH,
 } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
+import type { NoteChildrenFlavour } from '@blocksuite/affine-shared/types';
 import type { PointerEventState } from '@blocksuite/block-std';
 import { BaseTool } from '@blocksuite/block-std/gfx';
 import { Point } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 
-import {
-  hasClassNameInList,
-  type NoteChildrenFlavour,
-} from '../../../_common/utils/index.js';
+import { hasClassNameInList } from '../../../_common/utils/index.js';
 import { addNote } from '../utils/common.js';
 import { EXCLUDING_MOUSE_OUT_CLASS_LIST } from '../utils/consts.js';
 import { DraggingNoteOverlay, NoteOverlay } from '../utils/tool-overlay.js';

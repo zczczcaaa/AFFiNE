@@ -23,6 +23,7 @@ import type {
   ReorderingDirection,
 } from '@blocksuite/block-std/gfx';
 import {
+  GfxBlockElementModel,
   GfxControllerIdentifier,
   GfxExtensionIdentifier,
   isGfxGroupCompatibleModel,
@@ -32,7 +33,6 @@ import { Bound, getCommonBound } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 
 import { RootService } from '../root-service.js';
-import { GfxBlockModel } from './block-model.js';
 import type { EdgelessFrameManager } from './frame-manager.js';
 import { TemplateJob } from './services/template.js';
 import {
@@ -60,7 +60,7 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
 
   TemplateJob = TemplateJob;
 
-  get blocks(): GfxBlockModel[] {
+  get blocks(): GfxBlockElementModel[] {
     return this.layer.blocks;
   }
 
@@ -358,7 +358,7 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
       });
     }
 
-    if (el instanceof GfxBlockModel) {
+    if (el instanceof GfxBlockElementModel) {
       this.doc.deleteBlock(el);
       return;
     }
@@ -376,7 +376,7 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
     const index = this.layer.getReorderedIndex(element, direction);
 
     // block should be updated in transaction
-    if (element instanceof GfxBlockModel) {
+    if (element instanceof GfxBlockElementModel) {
       this.doc.transact(() => {
         element.index = index;
       });

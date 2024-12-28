@@ -3,8 +3,8 @@ import {
   LassoFreeHandIcon,
   LassoPolygonalIcon,
 } from '@blocksuite/affine-components/icons';
+import { LassoMode } from '@blocksuite/affine-shared/types';
 
-import { LassoMode } from '../../../../../_common/types.js';
 import type { DenseMenuBuilder } from '../common/type.js';
 
 export const buildLassoDenseMenu: DenseMenuBuilder = edgeless => {

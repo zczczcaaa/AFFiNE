@@ -25,6 +25,7 @@ import {
   TextElementModel,
 } from '@blocksuite/affine-model';
 import type {
+  GfxBlockElementModel,
   GfxModel,
   GfxPrimitiveElementModel,
   GfxToolsFullOptionValue,
@@ -39,20 +40,19 @@ import {
 import type { BlockModel } from '@blocksuite/store';
 
 import type { Connectable } from '../../../_common/utils/index.js';
-import type { GfxBlockModel } from '../block-model.js';
 import { getElementsWithoutGroup } from './group.js';
 
 const { clamp } = CommonUtils;
 
 export function isMindmapNode(
-  element: GfxBlockModel | BlockSuite.EdgelessModel | null
+  element: GfxBlockElementModel | BlockSuite.EdgelessModel | null
 ) {
   return element?.group instanceof MindmapElementModel;
 }
 
 export function isTopLevelBlock(
   selectable: BlockModel | BlockSuite.EdgelessModel | null
-): selectable is GfxBlockModel {
+): selectable is GfxBlockElementModel {
   return !!selectable && 'flavour' in selectable;
 }
 

@@ -3,17 +3,17 @@ import { addImages, LoadedImageIcon } from '@blocksuite/affine-block-image';
 import { AttachmentIcon, LinkIcon } from '@blocksuite/affine-components/icons';
 import { MAX_IMAGE_WIDTH } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
+import type { NoteChildrenFlavour } from '@blocksuite/affine-shared/types';
+import {
+  getImageFilesFromLocal,
+  openFileOrFiles,
+} from '@blocksuite/affine-shared/utils';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import {
-  getImageFilesFromLocal,
-  type NoteChildrenFlavour,
-  openFileOrFiles,
-} from '../../../../../_common/utils/index.js';
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
 import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';

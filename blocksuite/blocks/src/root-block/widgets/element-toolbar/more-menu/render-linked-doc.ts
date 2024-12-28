@@ -4,24 +4,17 @@ import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import { getBlockProps } from '@blocksuite/affine-shared/utils';
 import type { EditorHost } from '@blocksuite/block-std';
+import { GfxBlockElementModel } from '@blocksuite/block-std/gfx';
 import { type BlockModel, type Doc } from '@blocksuite/store';
 
-import { GfxBlockModel } from '../../root-block/edgeless/block-model.js';
 import {
   getElementProps,
   mapFrameIds,
   sortEdgelessElements,
-} from '../../root-block/edgeless/utils/clone-utils.js';
-import {
-  isFrameBlock,
-  isNoteBlock,
-} from '../../root-block/edgeless/utils/query.js';
+} from '../../../edgeless/utils/clone-utils.js';
+import { isFrameBlock, isNoteBlock } from '../../../edgeless/utils/query.js';
 
-export function addBlocksToDoc(
-  targetDoc: Doc,
-  model: BlockModel,
-  parentId: string
-) {
+function addBlocksToDoc(targetDoc: Doc, model: BlockModel, parentId: string) {
   // Add current block to linked doc
   const blockProps = getBlockProps(model);
   const newModelId = targetDoc.addBlock(
@@ -87,7 +80,7 @@ export function createLinkedDocFromEdgelessElements(
     const ids = new Map<string, string>();
     sortedElements.forEach(model => {
       let newId = model.id;
-      if (model instanceof GfxBlockModel) {
+      if (model instanceof GfxBlockElementModel) {
         const blockProps = getBlockProps(model);
         if (isNoteBlock(model)) {
           newId = linkedDoc.addBlock('affine:note', blockProps, rootId);
