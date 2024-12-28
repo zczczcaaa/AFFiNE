@@ -118,7 +118,7 @@ export const textRender: DraggableTool['render'] = (
     }) as string;
 
     edgeless.doc.captureSync();
-    const textElement = edgeless.service.getElementById(id);
+    const textElement = edgeless.service.crud.getElementById(id);
     assertInstanceOf(textElement, TextElementModel);
     mountTextElementEditor(textElement, edgeless);
   }

@@ -194,7 +194,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
 
       note.children.forEach(model => {
         if (matchFlavours(model, ['affine:surface-ref'])) {
-          const reference = service.getElementById(model.reference);
+          const reference = service.crud.getElementById(model.reference);
 
           if (!isAutoConnectElement(reference)) return;
 

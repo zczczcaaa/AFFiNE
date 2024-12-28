@@ -1,28 +1,26 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { RemoteCursor } from '@blocksuite/affine-components/icons';
 import type { RootBlockModel } from '@blocksuite/affine-model';
-import { requestThrottledConnectedFrame } from '@blocksuite/affine-shared/utils';
+import {
+  getSelectedRect,
+  isTopLevelBlock,
+  requestThrottledConnectedFrame,
+} from '@blocksuite/affine-shared/utils';
 import { WidgetComponent } from '@blocksuite/block-std';
-import { assertExists, pickValues } from '@blocksuite/global/utils';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
+import { pickValues } from '@blocksuite/global/utils';
 import type { UserInfo } from '@blocksuite/store';
-import { css, html } from 'lit';
+import { css, html, nothing } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { EdgelessRootBlockComponent } from '../../../root-block/edgeless/edgeless-root-block.js';
-import {
-  getSelectedRect,
-  isTopLevelBlock,
-} from '../../../root-block/edgeless/utils/query.js';
 import { RemoteColorManager } from '../../../root-block/remote-color-manager/remote-color-manager.js';
 
 export const AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET =
   'affine-edgeless-remote-selection-widget';
 
-export class EdgelessRemoteSelectionWidget extends WidgetComponent<
-  RootBlockModel,
-  EdgelessRootBlockComponent
-> {
+export class EdgelessRemoteSelectionWidget extends WidgetComponent<RootBlockModel> {
   static override styles = css`
     :host {
       pointer-events: none;
@@ -109,7 +107,7 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
   };
 
   private readonly _updateRemoteRects = () => {
-    const { selection, block } = this;
+    const { selection } = this;
     const remoteSelectionsMap = selection.remoteSurfaceSelectionsMap;
     const remoteRects: EdgelessRemoteSelectionWidget['_remoteRects'] =
       new Map();
@@ -119,7 +117,7 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
         if (selection.elements.length === 0) return;
 
         const elements = selection.elements
-          .map(id => block.service.getElementById(id))
+          .map(id => this.crud.getElementById(id))
           .filter(element => element) as BlockSuite.EdgelessModel[];
         const rect = getSelectedRect(elements);
 
@@ -151,7 +149,7 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
   };
 
   private readonly _updateTransform = requestThrottledConnectedFrame(() => {
-    const { translateX, translateY, zoom } = this.edgeless.service.viewport;
+    const { translateX, translateY, zoom } = this.gfx.viewport;
 
     this.style.setProperty('--v-zoom', `${zoom}`);
 
@@ -161,24 +159,28 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
     );
   }, this);
 
-  get edgeless() {
-    return this.block;
+  get gfx() {
+    return this.std.get(GfxControllerIdentifier);
+  }
+
+  get crud() {
+    return this.std.get(EdgelessCRUDIdentifier);
   }
 
   get selection() {
-    return this.edgeless.service.selection;
+    return this.gfx.selection;
   }
 
   get surface() {
-    return this.edgeless.surface;
+    return this.gfx.surface;
   }
 
   override connectedCallback() {
     super.connectedCallback();
 
-    const { _disposables, doc, edgeless } = this;
+    const { _disposables, doc } = this;
 
-    pickValues(edgeless.service.surface, [
+    pickValues(this.surface!, [
       'elementAdded',
       'elementRemoved',
       'elementUpdated',
@@ -196,7 +198,7 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
     );
 
     _disposables.add(
-      edgeless.service.viewport.viewportUpdated.on(() => {
+      this.gfx.viewport.viewportUpdated.on(() => {
         this._updateTransform();
       })
     );
@@ -209,7 +211,7 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<
 
   override render() {
     const { _remoteRects, _remoteCursors, _remoteColorManager } = this;
-    assertExists(_remoteColorManager);
+    if (!_remoteColorManager) return nothing;
 
     const rects = repeat(
       _remoteRects.entries(),

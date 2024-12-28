@@ -31,6 +31,8 @@ import { EMBED_CARD_HEIGHT } from '@blocksuite/affine-shared/consts';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import {
   clamp,
+  getElementsWithoutGroup,
+  getSelectedRect,
   requestThrottledConnectedFrame,
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
@@ -72,10 +74,8 @@ import {
   AI_CHAT_BLOCK_MIN_HEIGHT,
   AI_CHAT_BLOCK_MIN_WIDTH,
 } from '../../utils/consts.js';
-import { getElementsWithoutGroup } from '../../utils/group.js';
 import {
   getSelectableBounds,
-  getSelectedRect,
   isAIChatBlock,
   isAttachmentBlock,
   isBookmarkBlock,

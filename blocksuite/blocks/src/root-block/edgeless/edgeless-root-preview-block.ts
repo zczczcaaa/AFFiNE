@@ -181,7 +181,7 @@ export class EdgelessRootPreviewBlockComponent extends BlockComponent<
       );
       if (!surface) return;
 
-      const el = this.service.getElementById(surface.elements[0]);
+      const el = this.service.crud.getElementById(surface.elements[0]);
       if (isCanvasElement(el)) {
         return true;
       }

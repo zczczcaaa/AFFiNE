@@ -50,7 +50,7 @@ describe('apply last props', () => {
       shapeType: ShapeType.Rect,
     });
     assertExists(rectId);
-    const rectShape = service.getElementById(rectId) as ShapeElementModel;
+    const rectShape = service.crud.getElementById(rectId) as ShapeElementModel;
     expect(rectShape.fillColor).toBe(ShapeFillColor.Yellow);
     service.crud.updateElement(rectId, {
       fillColor: ShapeFillColor.Orange,
@@ -65,7 +65,9 @@ describe('apply last props', () => {
       shapeType: ShapeType.Diamond,
     });
     assertExists(diamondId);
-    const diamondShape = service.getElementById(diamondId) as ShapeElementModel;
+    const diamondShape = service.crud.getElementById(
+      diamondId
+    ) as ShapeElementModel;
     expect(diamondShape.fillColor).toBe(ShapeFillColor.Yellow);
     service.crud.updateElement(diamondId, {
       fillColor: ShapeFillColor.Blue,
@@ -81,7 +83,7 @@ describe('apply last props', () => {
       radius: 0.1,
     });
     assertExists(roundedRectId);
-    const roundedRectShape = service.getElementById(
+    const roundedRectShape = service.crud.getElementById(
       roundedRectId
     ) as ShapeElementModel;
     expect(roundedRectShape.fillColor).toBe(ShapeFillColor.Yellow);
@@ -97,14 +99,16 @@ describe('apply last props', () => {
       shapeType: ShapeType.Rect,
     });
     assertExists(rectId2);
-    const rectShape2 = service.getElementById(rectId2) as ShapeElementModel;
+    const rectShape2 = service.crud.getElementById(
+      rectId2
+    ) as ShapeElementModel;
     expect(rectShape2.fillColor).toBe(ShapeFillColor.Orange);
 
     const diamondId2 = service.crud.addElement('shape', {
       shapeType: ShapeType.Diamond,
     });
     assertExists(diamondId2);
-    const diamondShape2 = service.getElementById(
+    const diamondShape2 = service.crud.getElementById(
       diamondId2
     ) as ShapeElementModel;
     expect(diamondShape2.fillColor).toBe(ShapeFillColor.Blue);
@@ -114,7 +118,7 @@ describe('apply last props', () => {
       radius: 0.1,
     });
     assertExists(roundedRectId2);
-    const roundedRectShape2 = service.getElementById(
+    const roundedRectShape2 = service.crud.getElementById(
       roundedRectId2
     ) as ShapeElementModel;
     expect(roundedRectShape2.fillColor).toBe(ShapeFillColor.Green);
@@ -123,7 +127,7 @@ describe('apply last props', () => {
   test('connector', () => {
     const id = service.crud.addElement('connector', { mode: 0 });
     assertExists(id);
-    const connector = service.getElementById(id) as ConnectorElementModel;
+    const connector = service.crud.getElementById(id) as ConnectorElementModel;
     expect(connector.stroke).toBe(LineColor.Grey);
     expect(connector.strokeWidth).toBe(2);
     expect(connector.strokeStyle).toBe('solid');
@@ -133,7 +137,9 @@ describe('apply last props', () => {
 
     const id2 = service.crud.addElement('connector', { mode: 1 });
     assertExists(id2);
-    const connector2 = service.getElementById(id2) as ConnectorElementModel;
+    const connector2 = service.crud.getElementById(
+      id2
+    ) as ConnectorElementModel;
     expect(connector2.strokeWidth).toBe(10);
     service.crud.updateElement(id2, {
       labelStyle: {
@@ -144,7 +150,9 @@ describe('apply last props', () => {
 
     const id3 = service.crud.addElement('connector', { mode: 1 });
     assertExists(id3);
-    const connector3 = service.getElementById(id3) as ConnectorElementModel;
+    const connector3 = service.crud.getElementById(
+      id3
+    ) as ConnectorElementModel;
     expect(connector3.strokeWidth).toBe(10);
     expect(connector3.labelStyle.color).toBe(LineColor.Magenta);
     expect(connector3.labelStyle.fontFamily).toBe(FontFamily.Kalam);
@@ -153,14 +161,14 @@ describe('apply last props', () => {
   test('brush', () => {
     const id = service.crud.addElement('brush', {});
     assertExists(id);
-    const brush = service.getElementById(id) as BrushElementModel;
+    const brush = service.crud.getElementById(id) as BrushElementModel;
     expect(brush.color).toEqual({
       dark: LineColor.White,
       light: LineColor.Black,
     });
     expect(brush.lineWidth).toBe(4);
     service.crud.updateElement(id, { lineWidth: 10 });
-    const secondBrush = service.getElementById(
+    const secondBrush = service.crud.getElementById(
       service.crud.addElement('brush', {}) as string
     ) as BrushElementModel;
     expect(secondBrush.lineWidth).toBe(10);
@@ -169,10 +177,10 @@ describe('apply last props', () => {
   test('text', () => {
     const id = service.crud.addElement('text', {});
     assertExists(id);
-    const text = service.getElementById(id) as TextElementModel;
+    const text = service.crud.getElementById(id) as TextElementModel;
     expect(text.fontSize).toBe(24);
     service.crud.updateElement(id, { fontSize: 36 });
-    const secondText = service.getElementById(
+    const secondText = service.crud.getElementById(
       service.crud.addElement('text', {}) as string
     ) as TextElementModel;
     expect(secondText.fontSize).toBe(36);
@@ -181,7 +189,7 @@ describe('apply last props', () => {
   test('mindmap', () => {
     const id = service.crud.addElement('mindmap', {});
     assertExists(id);
-    const mindmap = service.getElementById(id) as MindmapElementModel;
+    const mindmap = service.crud.getElementById(id) as MindmapElementModel;
     expect(mindmap.layoutType).toBe(LayoutType.RIGHT);
     expect(mindmap.style).toBe(MindmapStyle.ONE);
     service.crud.updateElement(id, {
@@ -191,7 +199,7 @@ describe('apply last props', () => {
 
     const id2 = service.crud.addElement('mindmap', {});
     assertExists(id2);
-    const mindmap2 = service.getElementById(id2) as MindmapElementModel;
+    const mindmap2 = service.crud.getElementById(id2) as MindmapElementModel;
     expect(mindmap2.layoutType).toBe(LayoutType.BALANCE);
     expect(mindmap2.style).toBe(MindmapStyle.THREE);
   });
@@ -200,7 +208,7 @@ describe('apply last props', () => {
     const surface = getSurfaceBlock(doc);
     const id = service.crud.addBlock('affine:edgeless-text', {}, surface!.id);
     assertExists(id);
-    const text = service.getElementById(id) as EdgelessTextBlockModel;
+    const text = service.crud.getElementById(id) as EdgelessTextBlockModel;
     expect(text.color).toBe(DEFAULT_TEXT_COLOR);
     expect(text.fontFamily).toBe(FontFamily.Inter);
     service.crud.updateElement(id, {
@@ -210,7 +218,7 @@ describe('apply last props', () => {
 
     const id2 = service.crud.addBlock('affine:edgeless-text', {}, surface!.id);
     assertExists(id2);
-    const text2 = service.getElementById(id2) as EdgelessTextBlockModel;
+    const text2 = service.crud.getElementById(id2) as EdgelessTextBlockModel;
     expect(text2.color).toBe(LineColor.Green);
     expect(text2.fontFamily).toBe(FontFamily.OrelegaOne);
   });
@@ -218,7 +226,7 @@ describe('apply last props', () => {
   test('note', () => {
     const id = service.crud.addBlock('affine:note', {}, doc.root!.id);
     assertExists(id);
-    const note = service.getElementById(id) as NoteBlockModel;
+    const note = service.crud.getElementById(id) as NoteBlockModel;
     expect(note.background).toBe(DEFAULT_NOTE_BACKGROUND_COLOR);
     expect(note.edgeless.style.shadowType).toBe(DEFAULT_NOTE_SHADOW);
     service.crud.updateElement(id, {
@@ -232,7 +240,7 @@ describe('apply last props', () => {
 
     const id2 = service.crud.addBlock('affine:note', {}, doc.root!.id);
     assertExists(id2);
-    const note2 = service.getElementById(id2) as NoteBlockModel;
+    const note2 = service.crud.getElementById(id2) as NoteBlockModel;
     expect(note2.background).toBe(NoteBackgroundColor.Purple);
     expect(note2.edgeless.style.shadowType).toBe(NoteShadow.Film);
   });
@@ -241,7 +249,7 @@ describe('apply last props', () => {
     const surface = getSurfaceBlock(doc);
     const id = service.crud.addBlock('affine:frame', {}, surface!.id);
     assertExists(id);
-    const note = service.getElementById(id) as FrameBlockModel;
+    const note = service.crud.getElementById(id) as FrameBlockModel;
     expect(note.background).toBe('--affine-palette-transparent');
     service.crud.updateElement(id, {
       background: FrameBackgroundColor.Purple,
@@ -249,7 +257,7 @@ describe('apply last props', () => {
 
     const id2 = service.crud.addBlock('affine:frame', {}, surface!.id);
     assertExists(id2);
-    const frame2 = service.getElementById(id2) as FrameBlockModel;
+    const frame2 = service.crud.getElementById(id2) as FrameBlockModel;
     expect(frame2.background).toBe(FrameBackgroundColor.Purple);
     service.crud.updateElement(id2, {
       background: { normal: '#def4e740' },
@@ -257,7 +265,7 @@ describe('apply last props', () => {
 
     const id3 = service.crud.addBlock('affine:frame', {}, surface!.id);
     assertExists(id3);
-    const frame3 = service.getElementById(id3) as FrameBlockModel;
+    const frame3 = service.crud.getElementById(id3) as FrameBlockModel;
     expect(frame3.background).toEqual({ normal: '#def4e740' });
     service.crud.updateElement(id3, {
       background: { light: '#a381aa23', dark: '#6e907452' },
@@ -265,7 +273,7 @@ describe('apply last props', () => {
 
     const id4 = service.crud.addBlock('affine:frame', {}, surface!.id);
     assertExists(id4);
-    const frame4 = service.getElementById(id4) as FrameBlockModel;
+    const frame4 = service.crud.getElementById(id4) as FrameBlockModel;
     expect(frame4.background).toEqual({
       light: '#a381aa23',
       dark: '#6e907452',

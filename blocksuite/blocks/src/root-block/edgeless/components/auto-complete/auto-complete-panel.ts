@@ -167,7 +167,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       surfaceBlockModel
     );
     edgeless.doc.captureSync();
-    const frame = service.getElementById(id);
+    const frame = this.crud.getElementById(id);
     if (!frame) return;
 
     this.connector.target = {
@@ -225,7 +225,6 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
 
     const currentSource = this.currentSource;
     const { nextBound, position } = result;
-    const { service } = edgeless;
     const id = createShapeElement(edgeless, currentSource, targetType);
     if (!id) return;
 
@@ -235,10 +234,10 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     });
 
     mountShapeTextEditor(
-      service.getElementById(id) as ShapeElementModel,
+      this.crud.getElementById(id) as ShapeElementModel,
       this.edgeless
     );
-    edgeless.service.selection.set({
+    this.gfx.selection.set({
       elements: [id],
       editing: true,
     });
@@ -250,7 +249,6 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     if (!target) return;
     const { xywh, position } = target;
     const bound = Bound.fromXYWH(xywh);
-    const edgelessService = this.edgeless.service;
 
     const textFlag = this.edgeless.doc.awarenessStore.getFlag(
       'enable_edgeless_text'
@@ -262,7 +260,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       });
       if (!textId) return;
 
-      const textElement = edgelessService.getElementById(textId);
+      const textElement = this.crud.getElementById(textId);
       if (!textElement) return;
 
       this.crud.updateElement(this.connector.id, {
@@ -272,7 +270,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         this.currentSource.group.addChild(textElement);
       }
 
-      this.edgeless.service.selection.set({
+      this.gfx.selection.set({
         elements: [textId],
         editing: false,
       });
@@ -289,7 +287,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         fontStyle: FontStyle.Normal,
       });
       if (!textId) return;
-      const textElement = edgelessService.getElementById(textId);
+      const textElement = this.crud.getElementById(textId);
       assertInstanceOf(textElement, TextElementModel);
 
       this.crud.updateElement(this.connector.id, {
@@ -299,7 +297,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
         this.currentSource.group.addChild(textElement);
       }
 
-      this.edgeless.service.selection.set({
+      this.gfx.selection.set({
         elements: [textId],
         editing: false,
       });
@@ -331,7 +329,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
   }
 
   private _connectorExist() {
-    return !!this.edgeless.service.getElementById(this.connector.id);
+    return !!this.crud.getElementById(this.connector.id);
   }
 
   private _generateTarget(connector: ConnectorElementModel) {

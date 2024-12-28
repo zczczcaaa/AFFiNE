@@ -4,11 +4,10 @@ import {
   Overlay,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine-block-surface';
+import { isTopLevelBlock } from '@blocksuite/affine-shared/utils';
 import type { PointerEventState } from '@blocksuite/block-std';
 import { BaseTool } from '@blocksuite/block-std/gfx';
 import { Bound, type IVec } from '@blocksuite/global/utils';
-
-import { isTopLevelBlock } from '../utils/query.js';
 
 const { getSvgPathFromStroke, getStroke, linePolygonIntersects } = CommonUtils;
 

@@ -6,6 +6,7 @@ import type {
   ImageBlockModel,
   NoteBlockModel,
 } from '@blocksuite/affine-model';
+import { getElementsWithoutGroup } from '@blocksuite/affine-shared/utils';
 import {
   generateKeyBetweenV2,
   type SerializedElement,
@@ -16,7 +17,6 @@ import { type BlockSnapshot, BlockSnapshotSchema } from '@blocksuite/store';
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 import { EdgelessFrameManager } from '../frame-manager.js';
 import { getSortedCloneElements, prepareCloneData } from './clone-utils.js';
-import { getElementsWithoutGroup } from './group.js';
 import {
   isEdgelessTextBlock,
   isEmbedSyncedDocBlock,

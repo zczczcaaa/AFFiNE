@@ -124,7 +124,7 @@ test.describe('single edgeless element to linked doc', () => {
 
     const shapes = await page.evaluate(() => {
       const container = document.querySelector('affine-edgeless-root');
-      return container!.service
+      return container!.service.crud
         .getElementsByType('shape')
         .map(s => ({ type: s.type, xywh: s.xywh }));
     });
@@ -163,7 +163,7 @@ test.describe('single edgeless element to linked doc', () => {
     await waitNextFrame(page, 200);
     const brushes = await page.evaluate(() => {
       const container = document.querySelector('affine-edgeless-root');
-      return container!.service
+      return container!.service.crud
         .getElementsByType('brush')
         .map(s => ({ type: s.type, xywh: s.xywh }));
     });
@@ -191,9 +191,9 @@ test.describe('single edgeless element to linked doc', () => {
     await waitNextFrame(page, 200);
     const groups = await page.evaluate(() => {
       const container = document.querySelector('affine-edgeless-root');
-      return container!.service.getElementsByType('group').map(s => ({
+      return container!.service.crud.getElementsByType('group').map(s => ({
         type: s.type,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line @typescript-eslint/no-explicit-any
         children: s.childElements.map((c: any) => c.type || c.flavour),
       }));
     });

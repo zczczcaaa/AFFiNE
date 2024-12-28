@@ -2,6 +2,10 @@ import {
   EdgelessLegacySlotIdentifier,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine-block-surface';
+import {
+  getSelectedRect,
+  isTopLevelBlock,
+} from '@blocksuite/affine-shared/utils';
 import type { DndEventState } from '@blocksuite/block-std';
 import {
   GfxControllerIdentifier,
@@ -10,10 +14,6 @@ import {
 import { type IVec, Rect } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 
-import {
-  getSelectedRect,
-  isTopLevelBlock,
-} from '../../../edgeless/utils/query.js';
 import {
   DRAG_HANDLE_CONTAINER_OFFSET_LEFT_TOP_LEVEL,
   DRAG_HANDLE_CONTAINER_WIDTH_TOP_LEVEL,

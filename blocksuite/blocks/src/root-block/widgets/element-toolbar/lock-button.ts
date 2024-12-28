@@ -54,7 +54,7 @@ export class EdgelessLockButton extends SignalWatcher(
 
     // release other elements from their groups and group with top element
     otherElements.forEach(element => {
-      // eslint-disable-next-line
+      // oxlint-disable-next-line unicorn/prefer-dom-node-remove
       element.group?.removeChild(element);
       topElement.group?.addChild(element);
     });
@@ -72,7 +72,7 @@ export class EdgelessLockButton extends SignalWatcher(
     const groupId = service.createGroup([topElement, ...otherElements]);
 
     if (groupId) {
-      const group = service.getElementById(groupId);
+      const group = service.crud.getElementById(groupId);
       if (group) {
         group.lock();
         this.edgeless.gfx.selection.set({

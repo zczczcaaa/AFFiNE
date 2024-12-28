@@ -121,7 +121,7 @@ describe('group', () => {
     const groupId = service.crud.addElement('group', { children });
     assertExists(groupId);
 
-    const group = service.getElementById(groupId) as GroupElementModel;
+    const group = service.crud.getElementById(groupId) as GroupElementModel;
     const assertInitial = () => {
       expect(group.x).toBe(0);
       expect(group.y).toBe(0);
@@ -190,7 +190,7 @@ describe('group', () => {
     const map = new DocCollection.Y.Map<boolean>();
     const groupId = service.crud.addElement('group', { children: map });
     assertExists(groupId);
-    const group = service.getElementById(groupId) as GroupElementModel;
+    const group = service.crud.getElementById(groupId) as GroupElementModel;
 
     expect(group.x).toBe(0);
     expect(group.y).toBe(0);
@@ -205,7 +205,7 @@ describe('group', () => {
       }) as string;
     });
     const groups = groupIds.map(
-      id => service.getElementById(id) as GroupElementModel
+      id => service.crud.getElementById(id) as GroupElementModel
     );
 
     groups.forEach(group => {
@@ -255,7 +255,7 @@ describe('mindmap', () => {
     const mindmapId = service.crud.addElement('mindmap', { children: tree });
     assertExists(mindmapId);
     const mindmap = () =>
-      service.getElementById(mindmapId) as MindmapElementModel;
+      service.crud.getElementById(mindmapId) as MindmapElementModel;
 
     expect(service.surface.elementModels.length).toBe(6);
     doc.captureSync();
@@ -306,7 +306,7 @@ describe('mindmap', () => {
     });
     assertExists(mindmapId);
     const mindmap = () =>
-      service.getElementById(mindmapId) as MindmapElementModel;
+      service.crud.getElementById(mindmapId) as MindmapElementModel;
 
     doc.captureSync();
     await wait();
@@ -351,7 +351,7 @@ describe('mindmap', () => {
     });
     assertExists(mindmapId);
     const mindmap = () =>
-      service.getElementById(mindmapId) as MindmapElementModel;
+      service.crud.getElementById(mindmapId) as MindmapElementModel;
 
     doc.captureSync();
     await wait();

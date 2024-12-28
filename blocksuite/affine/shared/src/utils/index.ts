@@ -2,6 +2,7 @@ export * from './button-popper.js';
 export * from './collapsed/index.js';
 export * from './dnd/index.js';
 export * from './dom/index.js';
+export * from './edgeless.js';
 export * from './event.js';
 export * from './file/index.js';
 export * from './insert.js';

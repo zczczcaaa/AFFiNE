@@ -452,7 +452,8 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
         const edgelessService = this.std.get(EdgelessRootService);
         const { _disposable } = this;
 
-        const referenceElement = edgelessService.getElementById(referenceId);
+        const referenceElement =
+          edgelessService.crud.getElementById(referenceId);
         if (!referenceElement) {
           throw new BlockSuiteError(
             ErrorCode.MissingViewModelError,

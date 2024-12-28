@@ -41,7 +41,7 @@ export function calcChildBound(
     const targetBlocks = childConnectors
       .map(connector => connector.target.id)
       .filter(id => id !== undefined)
-      .map(id => service.getElementById(id))
+      .map(id => service.crud.getElementById(id))
       .filter(block => !!block);
 
     if (targetBlocks.length) {

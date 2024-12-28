@@ -137,4 +137,26 @@ export class EdgelessCRUDExtension extends Extension {
       this.std.doc.updateBlock(block, props);
     }
   };
+
+  getElementById(id: string): BlockSuite.EdgelessModel | null {
+    const surface = this._surface;
+    if (!surface) {
+      return null;
+    }
+    const el =
+      surface.getElementById(id) ??
+      (this.std.doc.getBlockById(
+        id
+      ) as BlockSuite.EdgelessBlockModelType | null);
+    return el;
+  }
+
+  getElementsByType<K extends keyof BlockSuite.SurfaceElementModelMap>(
+    type: K
+  ): BlockSuite.SurfaceElementModelMap[K][] {
+    if (!this._surface) {
+      return [];
+    }
+    return this._surface.getElementsByType(type);
+  }
 }

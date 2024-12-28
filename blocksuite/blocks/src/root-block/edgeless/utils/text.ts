@@ -79,7 +79,7 @@ export function mountShapeTextEditor(
       .updateElement(shapeElement.id, { text });
   }
 
-  const updatedElement = edgeless.service.getElementById(shapeElement.id);
+  const updatedElement = edgeless.service.crud.getElementById(shapeElement.id);
 
   assertInstanceOf(
     updatedElement,
@@ -171,7 +171,7 @@ export function addText(
       });
     if (!id) return;
     edgeless.doc.captureSync();
-    const textElement = edgeless.service.getElementById(id);
+    const textElement = edgeless.service.crud.getElementById(id);
     if (!textElement) return;
     if (textElement instanceof TextElementModel) {
       mountTextElementEditor(textElement, edgeless);

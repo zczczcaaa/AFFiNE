@@ -26,6 +26,7 @@ import {
 } from '@blocksuite/affine-shared/services';
 import {
   isInsidePageEditor,
+  isTopLevelBlock,
   isUrlInClipboard,
   matchFlavours,
   referenceToNode,
@@ -83,7 +84,6 @@ import {
   isAttachmentBlock,
   isCanvasElementWithText,
   isImageBlock,
-  isTopLevelBlock,
 } from '../utils/query.js';
 
 const BLOCKSUITE_SURFACE = 'blocksuite/surface';
@@ -595,9 +595,7 @@ export class EdgelessClipboardController extends PageClipboard {
       segment: 'toolbar',
       type: clipboardData.type as string,
     });
-    const element = this.host.service.getElementById(
-      id
-    ) as BlockSuite.SurfaceModel;
+    const element = this.crud.getElementById(id) as BlockSuite.SurfaceModel;
     assertExists(element);
     return element;
   }

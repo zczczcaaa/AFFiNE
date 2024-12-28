@@ -211,7 +211,7 @@ describe('basic', () => {
 
     const edgeless = surfaceRef.previewEditor!.std.get(EdgelessRootService);
 
-    const group = edgeless.getElementById(groupId)!;
+    const group = edgeless.crud.getElementById(groupId)!;
 
     expect(edgeless.viewport.isInViewport(group.elementBound)).toBeTruthy();
   });

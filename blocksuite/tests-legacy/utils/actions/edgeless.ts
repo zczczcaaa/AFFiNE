@@ -1005,7 +1005,7 @@ export async function deleteAllConnectors(page: Page) {
   return page.evaluate(() => {
     const container = document.querySelector('affine-edgeless-root');
     if (!container) throw new Error('container not found');
-    container.service.getElementsByType('connector').forEach(c => {
+    container.service.crud.getElementsByType('connector').forEach(c => {
       container.service.removeElement(c.id);
     });
   });
@@ -1604,7 +1604,7 @@ export async function getConnectorSourceConnection(page: Page) {
   return page.evaluate(() => {
     const container = document.querySelector('affine-edgeless-root');
     if (!container) throw new Error('container not found');
-    return container.service.getElementsByType('connector')[0].source;
+    return container.service.crud.getElementsByType('connector')[0].source;
   });
 }
 
@@ -1613,7 +1613,7 @@ export async function getConnectorPath(page: Page, index = 0): Promise<IVec[]> {
     ([index]) => {
       const container = document.querySelector('affine-edgeless-root');
       if (!container) throw new Error('container not found');
-      const connectors = container.service.getElementsByType('connector');
+      const connectors = container.service.crud.getElementsByType('connector');
       return connectors[index].absolutePath;
     },
     [index]
@@ -1628,7 +1628,7 @@ export async function getEdgelessElementBound(
     ([elementId]) => {
       const container = document.querySelector('affine-edgeless-root');
       if (!container) throw new Error('container not found');
-      const element = container.service.getElementById(elementId);
+      const element = container.service.crud.getElementById(elementId);
       if (!element) throw new Error(`element not found: ${elementId}`);
       return JSON.parse(element.xywh);
     },
@@ -1692,7 +1692,7 @@ export async function getContainerChildIds(page: Page, id: string) {
     ([id]) => {
       const container = document.querySelector('affine-edgeless-root');
       if (!container) throw new Error('container not found');
-      const gfxModel = container.service.getElementById(id);
+      const gfxModel = container.service.crud.getElementById(id);
 
       return gfxModel && container.service.surface.isGroup(gfxModel)
         ? gfxModel.childIds
@@ -1731,7 +1731,7 @@ export async function getTypeById(page: Page, id: string) {
     ([id]) => {
       const container = document.querySelector('affine-edgeless-root');
       if (!container) throw new Error('container not found');
-      const element = container.service.getElementById(id)!;
+      const element = container.service.crud.getElementById(id)!;
       return 'flavour' in element ? element.flavour : element.type;
     },
     [id]

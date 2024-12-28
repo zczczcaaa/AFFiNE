@@ -91,7 +91,7 @@ test('change element should update layer automatically', async () => {
 
   service.crud.updateElement(id, {
     index: service.layer.getReorderedIndex(
-      service.getElementById(id)!,
+      service.crud.getElementById(id)!,
       'forward'
     ),
   });
@@ -101,7 +101,7 @@ test('change element should update layer automatically', async () => {
 
   service.crud.updateElement(canvasElId!, {
     index: service.layer.getReorderedIndex(
-      service.getElementById(canvasElId!)!,
+      service.crud.getElementById(canvasElId!)!,
       'forward'
     ),
   });
@@ -160,7 +160,7 @@ test('a new layer should be created in canvasLayers prop when the topmost layer 
 test('layer zindex should update correctly when elements changed', async () => {
   addNote(doc);
   const noteId = addNote(doc);
-  const note = service.getElementById(noteId);
+  const note = service.crud.getElementById(noteId);
   addNote(doc);
   service.crud.addElement('shape', {
     shapeType: 'rect',
@@ -168,7 +168,7 @@ test('layer zindex should update correctly when elements changed', async () => {
   const topShapeId = service.crud.addElement('shape', {
     shapeType: 'rect',
   });
-  const topShape = service.getElementById(topShapeId!)!;
+  const topShape = service.crud.getElementById(topShapeId!)!;
 
   await wait();
 
@@ -238,8 +238,8 @@ test('blocks should rerender when their z-index changed', async () => {
   service.crud.addElement('shape', {
     shapeType: 'rect',
     index: CommonUtils.generateKeyBetween(
-      service.getElementById(blocks[1])!.index,
-      service.getElementById(blocks[2])!.index
+      service.crud.getElementById(blocks[1])!.index,
+      service.crud.getElementById(blocks[2])!.index
     ),
   });
 
@@ -266,19 +266,19 @@ describe('layer reorder functionality', () => {
   test('forward', async () => {
     service.crud.updateElement(ids[0], {
       index: service.layer.getReorderedIndex(
-        service.getElementById(ids[0])!,
+        service.crud.getElementById(ids[0])!,
         'forward'
       ),
     });
 
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[0]) as any)
+        layer.set.has(service.crud.getElementById(ids[0]) as any)
       )
     ).toBe(1);
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[1]) as any)
+        layer.set.has(service.crud.getElementById(ids[1]) as any)
       )
     ).toBe(0);
 
@@ -286,19 +286,19 @@ describe('layer reorder functionality', () => {
 
     service.crud.updateElement(ids[1], {
       index: service.layer.getReorderedIndex(
-        service.getElementById(ids[1])!,
+        service.crud.getElementById(ids[1])!,
         'forward'
       ),
     });
 
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[0]) as any)
+        layer.set.has(service.crud.getElementById(ids[0]) as any)
       )
     ).toBe(0);
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[1]) as any)
+        layer.set.has(service.crud.getElementById(ids[1]) as any)
       )
     ).toBe(1);
   });
@@ -306,7 +306,7 @@ describe('layer reorder functionality', () => {
   test('front', async () => {
     service.crud.updateElement(ids[0], {
       index: service.layer.getReorderedIndex(
-        service.getElementById(ids[0])!,
+        service.crud.getElementById(ids[0])!,
         'front'
       ),
     });
@@ -315,20 +315,20 @@ describe('layer reorder functionality', () => {
 
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[0]) as any)
+        layer.set.has(service.crud.getElementById(ids[0]) as any)
       )
     ).toBe(3);
 
     service.crud.updateElement(ids[1], {
       index: service.layer.getReorderedIndex(
-        service.getElementById(ids[1])!,
+        service.crud.getElementById(ids[1])!,
         'front'
       ),
     });
 
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[1]) as any)
+        layer.set.has(service.crud.getElementById(ids[1]) as any)
       )
     ).toBe(3);
   });
@@ -336,19 +336,19 @@ describe('layer reorder functionality', () => {
   test('backward', async () => {
     service.crud.updateElement(ids[3], {
       index: service.layer.getReorderedIndex(
-        service.getElementById(ids[3])!,
+        service.crud.getElementById(ids[3])!,
         'backward'
       ),
     });
 
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[3]) as any)
+        layer.set.has(service.crud.getElementById(ids[3]) as any)
       )
     ).toBe(1);
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[2]) as any)
+        layer.set.has(service.crud.getElementById(ids[2]) as any)
       )
     ).toBe(2);
 
@@ -356,19 +356,19 @@ describe('layer reorder functionality', () => {
 
     service.crud.updateElement(ids[2], {
       index: service.layer.getReorderedIndex(
-        service.getElementById(ids[2])!,
+        service.crud.getElementById(ids[2])!,
         'backward'
       ),
     });
 
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[3]) as any)
+        layer.set.has(service.crud.getElementById(ids[3]) as any)
       )
     ).toBe(3);
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[2]) as any)
+        layer.set.has(service.crud.getElementById(ids[2]) as any)
       )
     ).toBe(2);
   });
@@ -376,14 +376,14 @@ describe('layer reorder functionality', () => {
   test('back', async () => {
     service.crud.updateElement(ids[3], {
       index: service.layer.getReorderedIndex(
-        service.getElementById(ids[3])!,
+        service.crud.getElementById(ids[3])!,
         'back'
       ),
     });
 
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[3]) as any)
+        layer.set.has(service.crud.getElementById(ids[3]) as any)
       )
     ).toBe(0);
 
@@ -391,14 +391,14 @@ describe('layer reorder functionality', () => {
 
     service.crud.updateElement(ids[2], {
       index: service.layer.getReorderedIndex(
-        service.getElementById(ids[2])!,
+        service.crud.getElementById(ids[2])!,
         'back'
       ),
     });
 
     expect(
       service.layer.layers.findIndex(layer =>
-        layer.set.has(service.getElementById(ids[2]) as any)
+        layer.set.has(service.crud.getElementById(ids[2]) as any)
       )
     ).toBe(0);
   });
@@ -507,7 +507,7 @@ describe('group related functionality', () => {
       service,
       elements.filter((_, idx) => idx !== 1 && idx !== 3)
     )!;
-    const group = service.getElementById(groupId)!;
+    const group = service.crud.getElementById(groupId)!;
 
     expect(service.layer.layers.length).toBe(2);
 
@@ -538,7 +538,7 @@ describe('group related functionality', () => {
       })!,
     ];
     service.doc.captureSync();
-    const elements = elementIds.map(id => service.getElementById(id)!);
+    const elements = elementIds.map(id => service.crud.getElementById(id)!);
 
     const isKeptRelativeOrder = () => {
       return elements.every((element, idx) => {
@@ -552,7 +552,7 @@ describe('group related functionality', () => {
     const groupId = createGroup(edgeless.service, elementIds)!;
     expect(isKeptRelativeOrder()).toBeTruthy();
 
-    service.ungroup(service.getElementById(groupId) as GroupElementModel);
+    service.ungroup(service.crud.getElementById(groupId) as GroupElementModel);
     expect(isKeptRelativeOrder()).toBeTruthy();
 
     service.doc.undo();
@@ -586,15 +586,15 @@ describe('compare function', () => {
     const shapeId = service.crud.addElement('shape', {
       shapeType: 'rect',
     })!;
-    const shapeEl = service.getElementById(shapeId)!;
+    const shapeEl = service.crud.getElementById(shapeId)!;
     expect(service.layer.compare(shapeEl, shapeEl)).toBe(SORT_ORDER.SAME);
 
     const groupId = createGroup(service, [shapeId])!;
-    const groupEl = service.getElementById(groupId)!;
+    const groupEl = service.crud.getElementById(groupId)!;
     expect(service.layer.compare(groupEl, groupEl)).toBe(SORT_ORDER.SAME);
 
     const noteId = addNote(doc);
-    const note = service.getElementById(noteId)! as NoteBlockModel;
+    const note = service.crud.getElementById(noteId)! as NoteBlockModel;
     expect(service.layer.compare(note, note)).toBe(SORT_ORDER.SAME);
   });
 
@@ -602,11 +602,11 @@ describe('compare function', () => {
     const shapeId = service.crud.addElement('shape', {
       shapeType: 'rect',
     })!;
-    const shapeEl = service.getElementById(shapeId)!;
+    const shapeEl = service.crud.getElementById(shapeId)!;
     const noteId = addNote(doc);
-    const note = service.getElementById(noteId)! as NoteBlockModel;
+    const note = service.crud.getElementById(noteId)! as NoteBlockModel;
     const groupId = createGroup(service, [shapeId, noteId])!;
-    const groupEl = service.getElementById(groupId)!;
+    const groupEl = service.crud.getElementById(groupId)!;
 
     expect(service.layer.compare(groupEl, shapeEl)).toBe(SORT_ORDER.BEFORE);
     expect(service.layer.compare(shapeEl, groupEl)).toBe(SORT_ORDER.AFTER);
@@ -618,16 +618,16 @@ describe('compare function', () => {
     const shape1Id = service.crud.addElement('shape', {
       shapeType: 'rect',
     })!;
-    const shape1 = service.getElementById(shape1Id)!;
+    const shape1 = service.crud.getElementById(shape1Id)!;
     const shape2Id = service.crud.addElement('shape', {
       shapeType: 'rect',
     })!;
-    const shape2 = service.getElementById(shape2Id)!;
+    const shape2 = service.crud.getElementById(shape2Id)!;
     const note1Id = addNote(doc);
 
-    const note1 = service.getElementById(note1Id)! as NoteBlockModel;
+    const note1 = service.crud.getElementById(note1Id)! as NoteBlockModel;
     const note2Id = addNote(doc);
-    const note2 = service.getElementById(note2Id)! as NoteBlockModel;
+    const note2 = service.crud.getElementById(note2Id)! as NoteBlockModel;
 
     expect(service.layer.compare(shape1, shape2)).toBe(SORT_ORDER.BEFORE);
     expect(service.layer.compare(shape2, shape1)).toBe(SORT_ORDER.AFTER);
@@ -659,12 +659,12 @@ describe('compare function', () => {
     ])!;
     const group2Id = createGroup(service, [group1Id])!;
 
-    const shape1 = service.getElementById(shape1Id)!;
-    const shape2 = service.getElementById(shape2Id)!;
-    const note1 = service.getElementById(note1Id)! as NoteBlockModel;
-    const note2 = service.getElementById(note2Id)! as NoteBlockModel;
-    const group1 = service.getElementById(group1Id)!;
-    const group2 = service.getElementById(group2Id)!;
+    const shape1 = service.crud.getElementById(shape1Id)!;
+    const shape2 = service.crud.getElementById(shape2Id)!;
+    const note1 = service.crud.getElementById(note1Id)! as NoteBlockModel;
+    const note2 = service.crud.getElementById(note2Id)! as NoteBlockModel;
+    const group1 = service.crud.getElementById(group1Id)!;
+    const group2 = service.crud.getElementById(group2Id)!;
 
     // assert nested group to group
     expect(service.layer.compare(group2, group1)).toBe(SORT_ORDER.BEFORE);
@@ -695,9 +695,9 @@ describe('compare function', () => {
     const groupAId = createGroup(service, [
       createGroup(service, [groupAShapeId, groupANoteId])!,
     ])!;
-    const groupAShape = service.getElementById(groupAShapeId)!;
-    const groupANote = service.getElementById(groupANoteId)!;
-    const groupA = service.getElementById(groupAId)!;
+    const groupAShape = service.crud.getElementById(groupAShapeId)!;
+    const groupANote = service.crud.getElementById(groupANoteId)!;
+    const groupA = service.crud.getElementById(groupAId)!;
 
     const groupBShapeId = service.crud.addElement('shape', {
       shapeType: 'rect',
@@ -706,9 +706,9 @@ describe('compare function', () => {
     const groupBId = createGroup(service, [
       createGroup(service, [groupBShapeId, groupBNoteId])!,
     ])!;
-    const groupBShape = service.getElementById(groupBShapeId)!;
-    const groupBNote = service.getElementById(groupBNoteId)!;
-    const groupB = service.getElementById(groupBId)!;
+    const groupBShape = service.crud.getElementById(groupBShapeId)!;
+    const groupBNote = service.crud.getElementById(groupBNoteId)!;
+    const groupB = service.crud.getElementById(groupBId)!;
 
     expect(service.layer.compare(groupAShape, groupBShape)).toBe(
       SORT_ORDER.BEFORE
@@ -860,10 +860,10 @@ describe('index generator', () => {
     })!;
     const noteId = addNote(doc);
 
-    preinsertedShape = service.getElementById(
+    preinsertedShape = service.crud.getElementById(
       shapeId
     )! as BlockSuite.SurfaceElementModel;
-    preinsertedNote = service.getElementById(noteId)! as NoteBlockModel;
+    preinsertedNote = service.crud.getElementById(noteId)! as NoteBlockModel;
   });
 
   test('generator should remember the index it generated', () => {

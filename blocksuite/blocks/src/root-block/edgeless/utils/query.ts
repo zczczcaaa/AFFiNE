@@ -17,13 +17,17 @@ import {
   type EmbedLoomModel,
   type EmbedSyncedDocModel,
   type EmbedYoutubeModel,
-  FrameBlockModel,
+  type FrameBlockModel,
   type ImageBlockModel,
   MindmapElementModel,
   type NoteBlockModel,
   ShapeElementModel,
   TextElementModel,
 } from '@blocksuite/affine-model';
+import {
+  getElementsWithoutGroup,
+  isTopLevelBlock,
+} from '@blocksuite/affine-shared/utils';
 import type {
   GfxBlockElementModel,
   GfxModel,
@@ -32,15 +36,10 @@ import type {
   Viewport,
 } from '@blocksuite/block-std/gfx';
 import type { PointLocation } from '@blocksuite/global/utils';
-import {
-  Bound,
-  deserializeXYWH,
-  getQuadBoundWithRotation,
-} from '@blocksuite/global/utils';
+import { Bound } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
 import type { Connectable } from '../../../_common/utils/index.js';
-import { getElementsWithoutGroup } from './group.js';
 
 const { clamp } = CommonUtils;
 
@@ -48,12 +47,6 @@ export function isMindmapNode(
   element: GfxBlockElementModel | BlockSuite.EdgelessModel | null
 ) {
   return element?.group instanceof MindmapElementModel;
-}
-
-export function isTopLevelBlock(
-  selectable: BlockModel | BlockSuite.EdgelessModel | null
-): selectable is GfxBlockElementModel {
-  return !!selectable && 'flavour' in selectable;
 }
 
 export function isNoteBlock(
@@ -261,57 +254,6 @@ export function getBackgroundGrid(zoom: number, showGrid: boolean) {
       ? 'radial-gradient(var(--affine-edgeless-grid-color) 1px, var(--affine-background-primary-color) 1px)'
       : 'unset',
   };
-}
-
-export function getSelectedRect(selected: BlockSuite.EdgelessModel[]): DOMRect {
-  if (selected.length === 0) {
-    return new DOMRect();
-  }
-
-  const lockedElementsByFrame = selected
-    .map(selectable => {
-      if (selectable instanceof FrameBlockModel && selectable.isLocked()) {
-        return selectable.descendantElements;
-      }
-      return [];
-    })
-    .flat();
-
-  selected = [...new Set([...selected, ...lockedElementsByFrame])];
-
-  if (selected.length === 1) {
-    const [x, y, w, h] = deserializeXYWH(selected[0].xywh);
-    return new DOMRect(x, y, w, h);
-  }
-
-  return getElementsWithoutGroup(selected).reduce(
-    (bounds, selectable, index) => {
-      const rotate = isTopLevelBlock(selectable) ? 0 : selectable.rotate;
-      const [x, y, w, h] = deserializeXYWH(selectable.xywh);
-      let { left, top, right, bottom } = getQuadBoundWithRotation({
-        x,
-        y,
-        w,
-        h,
-        rotate,
-      });
-
-      if (index !== 0) {
-        left = Math.min(left, bounds.left);
-        top = Math.min(top, bounds.top);
-        right = Math.max(right, bounds.right);
-        bottom = Math.max(bottom, bounds.bottom);
-      }
-
-      bounds.x = left;
-      bounds.y = top;
-      bounds.width = right - left;
-      bounds.height = bottom - top;
-
-      return bounds;
-    },
-    new DOMRect()
-  );
 }
 
 export type SelectableProps = {

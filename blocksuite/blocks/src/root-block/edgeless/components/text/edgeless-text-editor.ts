@@ -6,6 +6,7 @@ import {
 import type { RichText } from '@blocksuite/affine-components/rich-text';
 import type { TextElementModel } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
+import { getSelectedRect } from '@blocksuite/affine-shared/utils';
 import {
   RANGE_SYNC_EXCLUDE_ATTR,
   ShadowlessElement,
@@ -22,7 +23,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import { deleteElements } from '../../utils/crud.js';
-import { getSelectedRect } from '../../utils/query.js';
 
 const { toRadian } = CommonUtils;
 

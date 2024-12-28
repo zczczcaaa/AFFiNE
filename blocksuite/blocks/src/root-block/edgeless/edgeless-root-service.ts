@@ -288,19 +288,6 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
     return this.surface.getConnectors(id) as ConnectorElementModel[];
   }
 
-  getElementById(id: string): BlockSuite.EdgelessModel | null {
-    const el =
-      this._surface.getElementById(id) ??
-      (this.doc.getBlockById(id) as BlockSuite.EdgelessBlockModelType | null);
-    return el;
-  }
-
-  getElementsByType<K extends keyof BlockSuite.SurfaceElementModelMap>(
-    type: K
-  ): BlockSuite.SurfaceElementModelMap[K][] {
-    return this.surface.getElementsByType(type);
-  }
-
   getFitToScreenData(
     padding: [number, number, number, number] = [0, 0, 0, 0],
     inputBounds?: Bound[]
@@ -351,7 +338,7 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
   removeElement(id: string | BlockSuite.EdgelessModel) {
     id = typeof id === 'string' ? id : id.id;
 
-    const el = this.getElementById(id);
+    const el = this.crud.getElementById(id);
     if (isGfxGroupCompatibleModel(el)) {
       el.childIds.forEach(childId => {
         this.removeElement(childId);

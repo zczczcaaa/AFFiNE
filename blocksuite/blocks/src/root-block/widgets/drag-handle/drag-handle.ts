@@ -1,3 +1,4 @@
+import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import {
@@ -7,6 +8,7 @@ import {
   getScrollContainer,
   isInsideEdgelessEditor,
   isInsidePageEditor,
+  isTopLevelBlock,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
 import {
@@ -22,9 +24,7 @@ import { html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { isTopLevelBlock } from '../../../root-block/edgeless/utils/query.js';
 import { autoScroll } from '../../../root-block/text-selection/utils.js';
-import type { EdgelessRootService } from '../../edgeless/index.js';
 import type { DragPreview } from './components/drag-preview.js';
 import type { DropIndicator } from './components/drop-indicator.js';
 import type { AFFINE_DRAG_HANDLE_WIDGET } from './consts.js';
@@ -196,8 +196,8 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
       if (!this.anchorBlockId.value) return null;
       if (this.mode === 'page') return null;
 
-      const service = this.std.getService('affine:page') as EdgelessRootService;
-      const edgelessElement = service.getElementById(this.anchorBlockId.value);
+      const crud = this.std.get(EdgelessCRUDIdentifier);
+      const edgelessElement = crud.getElementById(this.anchorBlockId.value);
       return isTopLevelBlock(edgelessElement) ? edgelessElement : null;
     }
   );

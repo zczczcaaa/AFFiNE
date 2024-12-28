@@ -186,9 +186,7 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
             layoutType: mindmap?.layoutType === 'left' ? 1 : 0,
           });
           if (!id) return;
-          const element = this.edgeless.service.getElementById(
-            id
-          ) as MindmapElementModel;
+          const element = this.crud.getElementById(id) as MindmapElementModel;
 
           this.tryDisposePopper();
           this.setEdgelessTool({ type: 'default' });
