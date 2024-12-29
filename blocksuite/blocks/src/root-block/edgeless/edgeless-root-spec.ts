@@ -4,8 +4,10 @@ import {
   DocDisplayMetaService,
   DocModeService,
   EmbedOptionService,
+  PageViewportServiceExtension,
   ThemeService,
 } from '@blocksuite/affine-shared/services';
+import { AFFINE_DRAG_HANDLE_WIDGET } from '@blocksuite/affine-widget-drag-handle';
 import {
   AFFINE_DOC_REMOTE_SELECTION_WIDGET,
   AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET,
@@ -25,7 +27,6 @@ import { literal, unsafeStatic } from 'lit/static-html.js';
 import { ExportManagerExtension } from '../../_common/export-manager/export-manager.js';
 import { RootBlockAdapterExtensions } from '../adapters/extension.js';
 import { commands } from '../commands/index.js';
-import { AFFINE_DRAG_HANDLE_WIDGET } from '../widgets/drag-handle/consts.js';
 import { AFFINE_EDGELESS_AUTO_CONNECT_WIDGET } from '../widgets/edgeless-auto-connect/edgeless-auto-connect.js';
 import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from '../widgets/edgeless-zoom-toolbar/index.js';
 import { EDGELESS_ELEMENT_TOOLBAR_WIDGET } from '../widgets/element-toolbar/index.js';
@@ -97,6 +98,7 @@ const EdgelessCommonExtension: ExtensionType[] = [
   ExportManagerExtension,
   ToolController,
   DNDAPIExtension,
+  PageViewportServiceExtension,
   DocDisplayMetaService,
   RootBlockAdapterExtensions,
   FileDropExtension,

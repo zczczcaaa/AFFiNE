@@ -75,6 +75,9 @@
     },
     {
       "path": "../affine/widget-remote-selection"
+    },
+    {
+      "path": "../affine/widget-drag-handle"
     }
   ]
 }

@@ -26,6 +26,7 @@ import { SmoothCorner } from '@blocksuite/affine-components/smooth-corner';
 import { effects as componentToggleButtonEffects } from '@blocksuite/affine-components/toggle-button';
 import { ToggleSwitch } from '@blocksuite/affine-components/toggle-switch';
 import { effects as componentToolbarEffects } from '@blocksuite/affine-components/toolbar';
+import { effects as widgetDragHandleEffects } from '@blocksuite/affine-widget-drag-handle/effects';
 import { effects as widgetRemoteSelectionEffects } from '@blocksuite/affine-widget-remote-selection/effects';
 import { effects as widgetScrollAnchoringEffects } from '@blocksuite/affine-widget-scroll-anchoring/effects';
 import type { BlockComponent } from '@blocksuite/block-std';
@@ -148,7 +149,6 @@ import {
   AFFINE_EMBED_CARD_TOOLBAR_WIDGET,
   AFFINE_FORMAT_BAR_WIDGET,
   AffineAIPanelWidget,
-  AffineDragHandleWidget,
   AffineEdgelessZoomToolbarWidget,
   AffineFormatBarWidget,
   AffineImageToolbarWidget,
@@ -176,9 +176,6 @@ import {
   AIPanelGenerating,
   AIPanelInput,
 } from './root-block/widgets/ai-panel/components/index.js';
-import { DragPreview } from './root-block/widgets/drag-handle/components/drag-preview.js';
-import { DropIndicator } from './root-block/widgets/drag-handle/components/drop-indicator.js';
-import { AFFINE_DRAG_HANDLE_WIDGET } from './root-block/widgets/drag-handle/consts.js';
 import {
   AFFINE_EDGELESS_AUTO_CONNECT_WIDGET,
   EdgelessAutoConnectWidget,
@@ -259,6 +256,7 @@ export function effects() {
   widgetFrameTitleEffects();
   widgetEdgelessElementToolbarEffects();
   widgetRemoteSelectionEffects();
+  widgetDragHandleEffects();
   dataViewEffects();
 
   customElements.define('affine-database-title', DatabaseTitle);
@@ -433,7 +431,6 @@ export function effects() {
     'edgeless-group-title-editor',
     EdgelessGroupTitleEditor
   );
-  customElements.define('affine-drag-preview', DragPreview);
   customElements.define(EDGELESS_TOOLBAR_WIDGET, EdgelessToolbarWidget);
   customElements.define('edgeless-shape-style-panel', EdgelessShapeStylePanel);
   customElements.define(
@@ -446,7 +443,6 @@ export function effects() {
   );
   customElements.define('edgeless-text-editor', EdgelessTextEditor);
   customElements.define('affine-image-toolbar', AffineImageToolbar);
-  customElements.define('affine-drop-indicator', DropIndicator);
   customElements.define('mini-mindmap-root-block', MindmapRootBlock);
   customElements.define('affine-block-selection', BlockSelection);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
@@ -463,7 +459,6 @@ export function effects() {
     AFFINE_PAGE_DRAGGING_AREA_WIDGET,
     AffinePageDraggingAreaWidget
   );
-  customElements.define(AFFINE_DRAG_HANDLE_WIDGET, AffineDragHandleWidget);
   customElements.define(AFFINE_EDGELESS_COPILOT_WIDGET, EdgelessCopilotWidget);
 
   customElements.define(AFFINE_IMAGE_TOOLBAR_WIDGET, AffineImageToolbarWidget);

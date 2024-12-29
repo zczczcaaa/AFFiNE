@@ -2,6 +2,7 @@ import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import {
+  autoScroll,
   calcDropTarget,
   type DroppingType,
   type DropResult,
@@ -24,7 +25,6 @@ import { html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { autoScroll } from '../../../root-block/text-selection/utils.js';
 import type { DragPreview } from './components/drag-preview.js';
 import type { DropIndicator } from './components/drop-indicator.js';
 import type { AFFINE_DRAG_HANDLE_WIDGET } from './consts.js';
@@ -75,7 +75,9 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
     const blockId = closestBlock.model.id;
     const model = closestBlock.model;
 
-    const isDatabase = matchFlavours(model, ['affine:database']);
+    const isDatabase = matchFlavours(model, [
+      'affine:database' as BlockSuite.Flavour,
+    ]);
     if (isDatabase) return null;
 
     // note block can only be dropped into another note block

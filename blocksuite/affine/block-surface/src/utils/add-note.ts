@@ -1,4 +1,3 @@
-import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
 import {
   DEFAULT_NOTE_HEIGHT,
@@ -18,7 +17,8 @@ import {
   serializeXYWH,
 } from '@blocksuite/global/utils';
 
-import { DEFAULT_NOTE_OFFSET_X, DEFAULT_NOTE_OFFSET_Y } from './consts.js';
+import { DEFAULT_NOTE_OFFSET_X, DEFAULT_NOTE_OFFSET_Y } from '../consts';
+import { EdgelessCRUDIdentifier } from '../extensions/crud-extension';
 
 export function addNoteAtPoint(
   std: BlockStdScope,
@@ -96,7 +96,7 @@ export function addNote(
   const doc = std.doc;
 
   const blockId = doc.addBlock(
-    options.childFlavour,
+    options.childFlavour as BlockSuite.Flavour,
     { type: options.childType },
     noteId
   );
@@ -107,7 +107,10 @@ export function addNote(
       note.edgeless.collapsedHeight = height;
     });
   }
-  gfx.tool.setTool('default');
+  gfx.tool.setTool(
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
+    'default'
+  );
 
   // Wait for edgelessTool updated
   requestAnimationFrame(() => {

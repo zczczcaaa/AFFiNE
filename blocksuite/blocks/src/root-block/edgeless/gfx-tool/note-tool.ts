@@ -1,4 +1,5 @@
 import type { SurfaceBlockComponent } from '@blocksuite/affine-block-surface';
+import { addNote } from '@blocksuite/affine-block-surface';
 import {
   DEFAULT_NOTE_HEIGHT,
   DEFAULT_NOTE_WIDTH,
@@ -11,7 +12,6 @@ import { Point } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 
 import { hasClassNameInList } from '../../../_common/utils/index.js';
-import { addNote } from '../utils/common.js';
 import { EXCLUDING_MOUSE_OUT_CLASS_LIST } from '../utils/consts.js';
 import { DraggingNoteOverlay, NoteOverlay } from '../utils/tool-overlay.js';
 

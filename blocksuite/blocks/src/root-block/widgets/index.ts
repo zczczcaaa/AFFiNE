@@ -6,7 +6,6 @@ export {
   type AffineAIPanelState,
   type AffineAIPanelWidgetConfig,
 } from './ai-panel/type.js';
-export { AffineDragHandleWidget } from './drag-handle/drag-handle.js';
 export {
   AFFINE_EDGELESS_COPILOT_WIDGET,
   EdgelessCopilotWidget,
@@ -53,7 +52,3 @@ export {
   type AffineSlashSubMenu,
 } from './slash-menu/index.js';
 export { AffineSurfaceRefToolbar } from './surface-ref-toolbar/surface-ref-toolbar.js';
-export {
-  AffineDocRemoteSelectionWidget,
-  EdgelessRemoteSelectionWidget,
-} from '@blocksuite/affine-widget-remote-selection';

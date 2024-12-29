@@ -6,10 +6,10 @@ import {
   type PointerEventState,
   type UIEventHandler,
 } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Point, throttle } from '@blocksuite/global/utils';
 import { computed } from '@preact/signals-core';
 
-import type { EdgelessRootBlockComponent } from '../../../edgeless/index.js';
 import {
   DRAG_HANDLE_CONTAINER_WIDTH,
   DRAG_HANDLE_GRABBER_BORDER_RADIUS,
@@ -30,19 +30,19 @@ import {
 } from '../utils.js';
 
 export class PointerEventWatcher {
+  private get _gfx() {
+    return this.widget.std.get(GfxControllerIdentifier);
+  }
+
   private readonly _canEditing = (noteBlock: BlockComponent) => {
     if (noteBlock.doc.id !== this.widget.doc.id) return false;
 
     if (this.widget.mode === 'page') return true;
 
-    const edgelessRoot = this.widget
-      .rootComponent as EdgelessRootBlockComponent;
+    const selection = this._gfx.selection;
 
     const noteBlockId = noteBlock.model.id;
-    return (
-      edgelessRoot.service.selection.editing &&
-      edgelessRoot.service.selection.selectedIds[0] === noteBlockId
-    );
+    return selection.editing && selection.selectedIds[0] === noteBlockId;
   };
 
   /**

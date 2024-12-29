@@ -27,6 +27,7 @@ export class EdgelessWatcher {
   private readonly _handleEdgelessToolUpdated = (
     newTool: GfxToolsFullOptionValue
   ) => {
+    // @ts-expect-error FIXME: resolve after gfx tool refactor
     if (newTool.type === 'default') {
       this.checkTopLevelBlockSelection();
     } else {

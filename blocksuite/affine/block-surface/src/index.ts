@@ -104,7 +104,12 @@ import {
   tryMoveNode,
 } from './utils/mindmap/utils';
 export * from './extensions';
-export { getLastPropsKey, getSurfaceBlock } from './utils';
+export {
+  addNote,
+  addNoteAtPoint,
+  getLastPropsKey,
+  getSurfaceBlock,
+} from './utils';
 export type { Options } from './utils/rough/core';
 export { sortIndex } from './utils/sort';
 export { updateXYWH } from './utils/update-xywh.js';

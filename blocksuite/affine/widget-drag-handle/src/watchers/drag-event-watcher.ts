@@ -1,4 +1,8 @@
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
+import {
+  addNoteAtPoint,
+  getSurfaceBlock,
+} from '@blocksuite/affine-block-surface';
 import type { EmbedCardStyle, NoteBlockModel } from '@blocksuite/affine-model';
 import {
   EMBED_CARD_HEIGHT,
@@ -28,8 +32,6 @@ import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound, Point } from '@blocksuite/global/utils';
 import { Job, Slice, type SliceSnapshot } from '@blocksuite/store';
 
-import type { EdgelessRootBlockComponent } from '../../../edgeless/index.js';
-import { addNoteAtPoint } from '../../../edgeless/utils/common.js';
 import { DropIndicator } from '../components/drop-indicator.js';
 import { AFFINE_DRAG_HANDLE_WIDGET } from '../consts.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
@@ -39,16 +41,19 @@ import { surfaceRefToEmbed } from '../middleware/surface-ref-to-embed.js';
 import { containBlock, includeTextSelection } from '../utils.js';
 
 export class DragEventWatcher {
+  private get _gfx() {
+    return this.widget.std.get(GfxControllerIdentifier);
+  }
+
   private readonly _computeEdgelessBound = (
     x: number,
     y: number,
     width: number,
     height: number
   ) => {
-    const controller = this._std.get(GfxControllerIdentifier);
     const border = 2;
     const noteScale = this.widget.noteScale.peek();
-    const { viewport } = controller;
+    const { viewport } = this._gfx;
     const { left: viewportLeft, top: viewportTop } = viewport;
     const currentViewBound = new Bound(
       x - viewportLeft,
@@ -335,10 +340,9 @@ export class DragEventWatcher {
     const state = context.get('dndState');
     // If drop a note, should do nothing
     const snapshot = this._deserializeSnapshot(state);
-    const edgelessRoot = this.widget
-      .rootComponent as EdgelessRootBlockComponent;
+    const surfaceBlockModel = getSurfaceBlock(this.widget.doc);
 
-    if (!snapshot) {
+    if (!snapshot || !surfaceBlockModel) {
       return;
     }
 
@@ -358,7 +362,7 @@ export class DragEventWatcher {
         const std = this._std;
         const job = this._getJob();
         job
-          .snapshotToSlice(snapshot, std.doc, edgelessRoot.surfaceBlockModel.id)
+          .snapshotToSlice(snapshot, std.doc, surfaceBlockModel.id)
           .catch(console.error);
       };
 
@@ -404,9 +408,9 @@ export class DragEventWatcher {
       }
     }
 
-    const { left: viewportLeft, top: viewportTop } = edgelessRoot.viewport;
+    const { left: viewportLeft, top: viewportTop } = this._gfx.viewport;
     const newNoteId = addNoteAtPoint(
-      edgelessRoot.std,
+      this._std,
       new Point(state.raw.x - viewportLeft, state.raw.y - viewportTop),
       {
         scale: this.widget.noteScale.peek(),

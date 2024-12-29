@@ -1,26 +1,25 @@
+import { PageViewportService } from '@blocksuite/affine-shared/services';
 import { getScrollContainer } from '@blocksuite/affine-shared/utils';
 
-import type { PageRootBlockComponent } from '../../../page/page-root-block.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 
 export class PageWatcher {
-  get pageRoot() {
-    return this.widget.rootComponent as PageRootBlockComponent;
+  get pageViewportService() {
+    return this.widget.std.get(PageViewportService);
   }
 
   constructor(readonly widget: AffineDragHandleWidget) {}
 
   watch() {
-    const { pageRoot } = this;
     const { disposables } = this.widget;
-    const scrollContainer = getScrollContainer(pageRoot);
+    const scrollContainer = getScrollContainer(this.widget.rootComponent);
 
     disposables.add(
       this.widget.doc.slots.blockUpdated.on(() => this.widget.hide())
     );
 
     disposables.add(
-      pageRoot.slots.viewportUpdated.on(() => {
+      this.pageViewportService.on(() => {
         this.widget.hide();
         if (this.widget.dropIndicator) {
           this.widget.dropIndicator.rect = null;

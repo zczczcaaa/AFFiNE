@@ -16,6 +16,7 @@ import {
   type TelemetryEventMap,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
+import { getDropResult } from '@blocksuite/affine-widget-drag-handle';
 import { RANGE_SYNC_EXCLUDE_ATTR } from '@blocksuite/block-std';
 import {
   createRecordDetail,
@@ -46,7 +47,6 @@ import { computed, signal } from '@preact/signals-core';
 import { css, html, nothing, unsafeCSS } from 'lit';
 
 import { EdgelessRootBlockComponent } from '../root-block/index.js';
-import { getDropResult } from '../root-block/widgets/drag-handle/utils.js';
 import { popSideDetail } from './components/layout.js';
 import type { DatabaseOptionsConfig } from './config.js';
 import { HostContextKey } from './context/host-context.js';

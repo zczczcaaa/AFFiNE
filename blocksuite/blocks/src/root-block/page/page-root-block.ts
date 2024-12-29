@@ -1,6 +1,7 @@
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
 import type { NoteBlockModel, RootBlockModel } from '@blocksuite/affine-model';
 import { NoteDisplayMode } from '@blocksuite/affine-model';
+import { PageViewportService } from '@blocksuite/affine-shared/services';
 import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
   focusTitle,
@@ -141,10 +142,6 @@ export class PageRootBlockComponent extends BlockComponent<
     return getScrollContainer(this);
   }
 
-  get slots() {
-    return this.service.slots;
-  }
-
   get viewport(): Viewport | null {
     if (!this.viewportElement) {
       return null;
@@ -172,9 +169,9 @@ export class PageRootBlockComponent extends BlockComponent<
 
   get viewportElement(): HTMLDivElement | null {
     if (this._viewportElement) return this._viewportElement;
-    this._viewportElement = this.host.closest(
+    this._viewportElement = this.host.closest<HTMLDivElement>(
       '.affine-page-viewport'
-    ) as HTMLDivElement | null;
+    );
     return this._viewportElement;
   }
 
@@ -198,12 +195,14 @@ export class PageRootBlockComponent extends BlockComponent<
     if (!viewport || !viewportElement) {
       return;
     }
+
+    const viewportService = this.std.get(PageViewportService);
     // when observe viewportElement resize, emit viewport update event
     const resizeObserver = new ResizeObserver(
       (entries: ResizeObserverEntry[]) => {
         for (const { target } of entries) {
           if (target === viewportElement) {
-            this.slots.viewportUpdated.emit(viewport);
+            viewportService.emit(viewport);
             break;
           }
         }
