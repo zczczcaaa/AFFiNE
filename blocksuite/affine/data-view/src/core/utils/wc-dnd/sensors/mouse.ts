@@ -74,8 +74,12 @@ export function hasViewportRelativeCoordinates(
   return 'clientX' in event && 'clientY' in event;
 }
 
+function isTouchEvent(event: Event): event is TouchEvent {
+  return 'TouchEvent' in globalThis && event instanceof TouchEvent;
+}
+
 const getEventCoordinates = (event: Event) => {
-  if (event instanceof TouchEvent) {
+  if (isTouchEvent(event)) {
     if (event.touches && event.touches.length) {
       const touch = event.touches[0];
       if (!touch) return;
