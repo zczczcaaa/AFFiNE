@@ -9,7 +9,7 @@ declare global {
     ): {
       offsetNode: Node;
       offset: number;
-    };
+    } | null;
   }
 }
 
@@ -23,6 +23,9 @@ export function caretRangeFromPoint(
 ): Range | null {
   if (IS_FIREFOX) {
     const caret = document.caretPositionFromPoint(clientX, clientY);
+    if (!caret) {
+      return null;
+    }
     // TODO handle caret is covered by popup
     const range = document.createRange();
     range.setStart(caret.offsetNode, caret.offset);
