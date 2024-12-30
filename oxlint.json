@@ -132,7 +132,7 @@
     "typescript/no-this-alias": [
       "error",
       {
-        "allow_destructuring": true
+        "allowDestructuring": true
       }
     ],
     "typescript/prefer-as-const": "error",

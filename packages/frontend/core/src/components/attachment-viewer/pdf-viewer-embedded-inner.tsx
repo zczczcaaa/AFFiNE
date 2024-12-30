@@ -8,7 +8,7 @@ import {
 import type { PDFMeta } from '@affine/core/modules/pdf/renderer';
 import type { PageSize } from '@affine/core/modules/pdf/renderer/types';
 import { LoadingSvg, PDFPageCanvas } from '@affine/core/modules/pdf/views';
-import { PeekViewService } from '@affine/core/modules/peek-view';
+import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
 import { stopPropagation } from '@affine/core/utils';
 import {
   ArrowDownSmallIcon,
