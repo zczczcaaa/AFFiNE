@@ -19,7 +19,6 @@ env:
   AFFINE_ENV: dev
   COVERAGE: true
   MACOSX_DEPLOYMENT_TARGET: '10.13'
-  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
   DEPLOYMENT_TYPE: affine
 
 concurrency:
@@ -280,11 +279,16 @@ jobs:
         spec:
           - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
           - { os: windows-latest, target: x86_64-pc-windows-msvc }
-          - { os: macos-14, target: x86_64-apple-darwin }
-          - { os: macos-14, target: aarch64-apple-darwin }
+          - { os: macos-latest, target: x86_64-apple-darwin }
+          - { os: macos-latest, target: aarch64-apple-darwin }
 
     steps:
       - uses: actions/checkout@v4
+      - uses: samypr100/setup-dev-drive@v3
+        if: ${{ matrix.spec.os == 'windows-latest' }}
+        with:
+          workspace-copy: true
+          drive-size: 8GB
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
         with:
@@ -292,6 +296,7 @@ jobs:
           electron-install: false
       - name: Setup filename
         id: filename
+        working-directory: ${{ env.DEV_DRIVE_WORKSPACE || github.workspace }}
         shell: bash
         run: |
           export PLATFORM_ARCH_ABI=$(node -e "console.log(require('@napi-rs/cli').parseTriple('${{ matrix.spec.target }}').platformArchABI)")
@@ -305,7 +310,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.filename.outputs.filename }}
-          path: ./packages/frontend/native/${{ steps.filename.outputs.filename }}
+          path: ${{ env.DEV_DRIVE_WORKSPACE || github.workspace }}/packages/frontend/native/${{ steps.filename.outputs.filename }}
           if-no-files-found: error
 
   build-server-native:
@@ -435,7 +440,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rust
-        uses: ./.github/actions/setup-rust
+        uses: ./.github/actions/build-rust
+        with:
+          package: 'affine'
+          no-build: 'true'
 
       - name: Install latest nextest release
         uses: taiki-e/install-action@nextest
@@ -717,14 +725,14 @@ jobs:
       matrix:
         spec:
           - {
-              os: macos-14,
+              os: macos-latest,
               platform: macos,
               arch: x64,
               target: x86_64-apple-darwin,
               test: false,
             }
           - {
-              os: macos-14,
+              os: macos-latest,
               platform: macos,
               arch: arm64,
               target: aarch64-apple-darwin,

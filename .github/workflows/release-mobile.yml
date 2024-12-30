@@ -149,9 +149,11 @@ jobs:
           p12-file-base64: ${{ secrets.CERTIFICATES_P12_MOBILE }}
           p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD_MOBILE }}
       - name: Setup Rust
-        uses: ./.github/actions/setup-rust
+        uses: ./.github/actions/build-rust
         with:
-          targets: 'aarch64-apple-ios'
+          target: 'aarch64-apple-ios'
+          package: 'affine_mobile_native'
+          no-build: 'true'
       - name: Build Rust
         run: |
           brew install swiftformat
@@ -195,9 +197,11 @@ jobs:
           hard-link-nm: false
           enableScripts: false
       - name: Setup Rust
-        uses: ./.github/actions/setup-rust
+        uses: ./.github/actions/build-rust
         with:
-          targets: 'aarch64-linux-android'
+          target: 'aarch64-linux-android'
+          package: 'affine_mobile_native'
+          no-build: 'true'
       - name: Cap sync
         run: yarn workspace @affine/android cap sync
       - uses: actions/setup-python@v5

@@ -3,9 +3,6 @@ name: Copilot Cron Test
 on:
   workflow_dispatch:
 
-env:
-  PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/node_modules/.cache/ms-playwright
-
 jobs:
   build-server-native:
     name: Build Server native
