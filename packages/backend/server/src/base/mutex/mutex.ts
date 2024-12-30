@@ -14,6 +14,7 @@ export const MUTEX_WAIT = 100;
 @Injectable()
 export class Mutex {
   protected logger = new Logger(Mutex.name);
+  private readonly clusterIdentifier = `cluster:${randomUUID()}`;
 
   constructor(protected readonly locker: Locker) {}
 
@@ -38,7 +39,7 @@ export class Mutex {
    * @param key resource key
    * @returns LockGuard
    */
-  async acquire(key: string, owner: string = 'global') {
+  async acquire(key: string, owner: string = this.clusterIdentifier) {
     try {
       return await retryable(
         () => this.locker.lock(owner, key),
