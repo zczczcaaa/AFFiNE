@@ -55,7 +55,7 @@ runs:
       uses: Swatinem/rust-cache@v2
       if: ${{ runner.os == 'Windows' }}
       with:
-        workspaces: ${{ inputs.workspace-path }}
+        workspaces: ${{ env.DEV_DRIVE_WORKSPACE }}
         save-if: ${{ github.ref_name == 'canary' }}
         shared-key: ${{ inputs.target }}-${{ inputs.package }}
       env:
