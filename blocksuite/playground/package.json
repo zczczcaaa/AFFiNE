@@ -31,7 +31,7 @@
     "tweakpane": "^4.0.4",
     "y-indexeddb": "^9.0.12",
     "y-protocols": "^1.0.6",
-    "yjs": "patch:yjs@npm%3A13.6.18#~/.yarn/patches/yjs-npm-13.6.18-ad0d5f7c43.patch",
+    "yjs": "^13.6.21",
     "zod": "^3.23.8"
   },
   "license": "MIT",

@@ -86,7 +86,7 @@
     "stripe": "^17.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
-    "yjs": "patch:yjs@npm%3A13.6.18#~/.yarn/patches/yjs-npm-13.6.18-ad0d5f7c43.patch",
+    "yjs": "^13.6.21",
     "zod": "^3.24.1"
   },
   "devDependencies": {

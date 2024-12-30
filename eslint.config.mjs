@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 
 import eslint from '@eslint/js';
-import rxjs from '@smarttools/eslint-plugin-rxjs';
 import tsParser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import importX from 'eslint-plugin-import-x';
@@ -11,6 +11,10 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import sonarjs from 'eslint-plugin-sonarjs';
 import unicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
+
+const __require = createRequire(import.meta.url);
+
+const rxjs = __require('@smarttools/eslint-plugin-rxjs').default;
 
 const ignoreList = readFileSync('.prettierignore', 'utf-8')
   .split('\n')

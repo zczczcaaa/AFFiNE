@@ -1,8 +1,8 @@
 diff --git a/dist/yjs.cjs b/dist/yjs.cjs
-index d2dc06ae11a6eb44f8c8445d4298c0e89c3e4da2..a30ab04fa9f3b77666939caa88335c68c40f194c 100644
+index 8a343ca9d0a153e95b27ad337e0553a8cc80d5ca..7199cf6e05d9c2c3491e56c4d4bda109e1755563 100644
 --- a/dist/yjs.cjs
 +++ b/dist/yjs.cjs
-@@ -414,7 +414,7 @@ const equalDeleteSets = (ds1, ds2) => {
+@@ -416,7 +416,7 @@ const equalDeleteSets = (ds1, ds2) => {
   */
  
  
@@ -12,10 +12,10 @@ index d2dc06ae11a6eb44f8c8445d4298c0e89c3e4da2..a30ab04fa9f3b77666939caa88335c68
  /**
   * @typedef {Object} DocOpts
 diff --git a/dist/yjs.mjs b/dist/yjs.mjs
-index 20c9e58c32bcb6bc714200a2561fd1f542c49523..14267e5e36d9781ca3810d5b70ff8c051dac779e 100644
+index 1c29ce7fe8f146b78911d0af9a53d1b516e86494..220fa0faacf4dc2a787e18f7cc79100e7c516e3a 100644
 --- a/dist/yjs.mjs
 +++ b/dist/yjs.mjs
-@@ -378,7 +378,7 @@ const equalDeleteSets = (ds1, ds2) => {
+@@ -379,7 +379,7 @@ const equalDeleteSets = (ds1, ds2) => {
   */
  
  
@@ -25,7 +25,7 @@ index 20c9e58c32bcb6bc714200a2561fd1f542c49523..14267e5e36d9781ca3810d5b70ff8c05
  /**
   * @typedef {Object} DocOpts
 diff --git a/src/utils/Doc.js b/src/utils/Doc.js
-index 62643617c86e57c64dd9babdb792fa8888357ec0..4df5048ab12af1ae0f1154da67f06dce1fda7b49 100644
+index d5165426f2314fc3c2388e64841e7cd6498a92a9..4bb2e5a8b79bb59f08a011af77e69af862312292 100644
 --- a/src/utils/Doc.js
 +++ b/src/utils/Doc.js
 @@ -20,7 +20,7 @@ import * as map from 'lib0/map'
