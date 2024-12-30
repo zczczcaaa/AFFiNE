@@ -130,14 +130,17 @@ function isCommonTLD(url: URL) {
  * Assuming the user will input anything, we need to check rigorously.
  */
 export function isStrictUrl(str: string) {
-  if (!isValidUrl(str)) {
+  try {
+    if (!isValidUrl(str)) {
+      return false;
+    }
+
+    const url = new URL(normalizeUrl(str));
+
+    return isCommonTLD(url);
+  } catch {
     return false;
   }
-  const url = new URL(normalizeUrl(str));
-  if (isCommonTLD(url)) {
-    return true;
-  }
-  return false;
 }
 
 export function isUrlInClipboard(clipboardData: DataTransfer) {
