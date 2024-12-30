@@ -7,14 +7,24 @@ This document explains how to start server (@affine/server) locally with Docker
 
 ## Run required dev services in docker compose
 
+Running yarn's server package (@affine/server) requires some dev services to be running, i.e.:
+
+- postgres
+- redis
+- mailhog
+
+You can run these services in docker compose by running the following command:
+
 ```sh
 cp ./.docker/dev/compose.yml.example ./.docker/dev/compose.yml
 cp ./.docker/dev/.env.example ./.docker/dev/.env
 
-docker compose -f ./.docker/dev/compose.yml up -d
+docker compose -f ./.docker/dev/compose.yml up
 ```
 
 ## Build native packages (you need to setup rust toolchain first)
+
+Server also requires native packages to be built, you can build them by running the following command:
 
 ```sh
 # build native
@@ -50,6 +60,8 @@ when server started, it will created a default user for testing:
 # at project root
 yarn dev
 ```
+
+You can login with the user (dev@affine.pro / dev) above to test the server.
 
 ## Done
 
