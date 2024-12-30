@@ -2,6 +2,7 @@ import type {
   SurfaceBlockComponent,
   SurfaceBlockModel,
 } from '@blocksuite/affine-block-surface';
+import type { EdgelessPreviewer } from '@blocksuite/affine-block-surface-ref';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import {
   FontLoaderService,
@@ -22,11 +23,14 @@ import type { EdgelessRootBlockWidgetName } from '../types.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
 import { getBackgroundGrid, isCanvasElement } from './utils/query.js';
 
-export class EdgelessRootPreviewBlockComponent extends BlockComponent<
-  RootBlockModel,
-  EdgelessRootService,
-  EdgelessRootBlockWidgetName
-> {
+export class EdgelessRootPreviewBlockComponent
+  extends BlockComponent<
+    RootBlockModel,
+    EdgelessRootService,
+    EdgelessRootBlockWidgetName
+  >
+  implements EdgelessPreviewer
+{
   static override styles = css`
     affine-edgeless-root-preview {
       pointer-events: none;

@@ -20,6 +20,7 @@
     { "path": "./blocksuite/affine/block-note" },
     { "path": "./blocksuite/affine/block-paragraph" },
     { "path": "./blocksuite/affine/block-surface" },
+    { "path": "./blocksuite/affine/block-surface-ref" },
     { "path": "./blocksuite/affine/components" },
     { "path": "./blocksuite/affine/data-view" },
     { "path": "./blocksuite/affine/model" },

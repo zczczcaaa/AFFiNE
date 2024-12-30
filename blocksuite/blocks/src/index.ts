@@ -39,7 +39,6 @@ export {
   MindmapSurfaceBlock,
   MiniMindmapPreview,
 } from './surface-block/mini-mindmap/index.js';
-export * from './surface-ref-block/index.js';
 export * from '@blocksuite/affine-block-attachment';
 export * from '@blocksuite/affine-block-bookmark';
 export * from '@blocksuite/affine-block-code';
@@ -53,6 +52,7 @@ export * from '@blocksuite/affine-block-list';
 export * from '@blocksuite/affine-block-note';
 export * from '@blocksuite/affine-block-paragraph';
 export * from '@blocksuite/affine-block-surface';
+export * from '@blocksuite/affine-block-surface-ref';
 export {
   type AIError,
   type AIItemConfig,

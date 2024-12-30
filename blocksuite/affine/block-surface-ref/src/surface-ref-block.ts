@@ -1,4 +1,5 @@
 import {
+  EdgelessCRUDExtension,
   getSurfaceBlock,
   type SurfaceBlockModel,
   SurfaceElementModel,
@@ -20,7 +21,10 @@ import {
   EditPropsStore,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
-import { requestConnectedFrame } from '@blocksuite/affine-shared/utils';
+import {
+  requestConnectedFrame,
+  SpecProvider,
+} from '@blocksuite/affine-shared/utils';
 import {
   type BaseSelection,
   BlockComponent,
@@ -29,7 +33,10 @@ import {
   type EditorHost,
   LifeCycleWatcher,
 } from '@blocksuite/block-std';
-import { GfxBlockElementModel } from '@blocksuite/block-std/gfx';
+import {
+  GfxBlockElementModel,
+  GfxControllerIdentifier,
+} from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import {
   assertExists,
@@ -43,9 +50,7 @@ import { css, html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { SpecProvider } from '../_specs/index.js';
-import type { EdgelessRootPreviewBlockComponent } from '../root-block/edgeless/edgeless-root-preview-block.js';
-import { EdgelessRootService } from '../root-block/index.js';
+import type { EdgelessPreviewer } from './types.js';
 import { noContentPlaceholder } from './utils.js';
 
 const REF_LABEL_ICON = {
@@ -418,18 +423,20 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
   private _initSpec() {
     const refreshViewport = this._refreshViewport.bind(this);
+
     class PageViewWatcher extends BlockServiceWatcher {
       static override readonly flavour = 'affine:page';
 
       override mounted() {
         this.blockService.disposables.add(
           this.blockService.specSlots.viewConnected.once(({ component }) => {
-            const edgelessBlock =
-              component as EdgelessRootPreviewBlockComponent;
+            const edgelessBlock = component as BlockComponent &
+              EdgelessPreviewer;
 
             edgelessBlock.editorViewportSelector = 'ref-viewport';
             refreshViewport();
-            edgelessBlock.service.viewport.sizeUpdated.once(() => {
+            const gfx = edgelessBlock.std.get(GfxControllerIdentifier);
+            gfx.viewport.sizeUpdated.once(() => {
               refreshViewport();
             });
           })
@@ -449,11 +456,12 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       private readonly _disposable = new DisposableGroup();
 
       override mounted() {
-        const edgelessService = this.std.get(EdgelessRootService);
+        const crud = this.std.get(EdgelessCRUDExtension);
         const { _disposable } = this;
+        const surfaceModel = getSurfaceBlock(this.std.doc);
+        if (!surfaceModel) return;
 
-        const referenceElement =
-          edgelessService.crud.getElementById(referenceId);
+        const referenceElement = crud.getElementById(referenceId);
         if (!referenceElement) {
           throw new BlockSuiteError(
             ErrorCode.MissingViewModelError,
@@ -470,7 +478,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
           );
         } else if (referenceElement instanceof GroupElementModel) {
           _disposable.add(
-            edgelessService.surface.elementUpdated.on(({ id, oldValues }) => {
+            surfaceModel.elementUpdated.on(({ id, oldValues }) => {
               if (
                 id === referenceId &&
                 oldValues.xywh !== referenceElement.xywh
@@ -500,13 +508,10 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
     if (!previewEditorHost) return;
 
-    const edgelessService = previewEditorHost.std.getService(
-      'affine:page'
-    ) as EdgelessRootService;
+    const gfx = previewEditorHost.std.get(GfxControllerIdentifier);
+    const viewport = gfx.viewport;
 
-    edgelessService.viewport.setViewportByBound(
-      Bound.deserialize(this._referenceXYWH)
-    );
+    viewport.setViewportByBound(Bound.deserialize(this._referenceXYWH));
   }
 
   private _renderMask(

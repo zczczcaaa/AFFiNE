@@ -65,10 +65,13 @@
       "path": "../affine/block-divider"
     },
     {
-      "path": "../affine/data-view"
+      "path": "../affine/block-surface"
     },
     {
-      "path": "../affine/block-surface"
+      "path": "../affine/block-surface-ref"
+    },
+    {
+      "path": "../affine/data-view"
     },
     {
       "path": "../affine/widget-scroll-anchoring"

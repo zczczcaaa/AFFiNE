@@ -1,3 +1,4 @@
+import type { SurfaceRefBlockComponent } from '@blocksuite/affine-block-surface-ref';
 import { HoverController } from '@blocksuite/affine-components/hover';
 import {
   CaptionIcon,
@@ -25,7 +26,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { SurfaceRefBlockComponent } from '../../../surface-ref-block/index.js';
 import { BUILT_IN_GROUPS } from './config.js';
 import { SurfaceRefToolbarContext } from './context.js';
 

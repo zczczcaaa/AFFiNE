@@ -1,4 +1,3 @@
-import type { NoteBlockComponent } from '@blocksuite/affine-block-note';
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import {
   menu,
@@ -17,7 +16,10 @@ import {
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
 import { getDropResult } from '@blocksuite/affine-widget-drag-handle';
-import { RANGE_SYNC_EXCLUDE_ATTR } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  RANGE_SYNC_EXCLUDE_ATTR,
+} from '@blocksuite/block-std';
 import {
   createRecordDetail,
   createUniComponentFromWebComponent,
@@ -46,7 +48,6 @@ import { autoUpdate } from '@floating-ui/dom';
 import { computed, signal } from '@preact/signals-core';
 import { css, html, nothing, unsafeCSS } from 'lit';
 
-import { EdgelessRootBlockComponent } from '../root-block/index.js';
 import { popSideDetail } from './components/layout.js';
 import type { DatabaseOptionsConfig } from './config.js';
 import { HostContextKey } from './context/host-context.js';
@@ -351,9 +352,8 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<
   }
 
   override get topContenteditableElement() {
-    if (this.rootComponent instanceof EdgelessRootBlockComponent) {
-      const note = this.closest<NoteBlockComponent>(NOTE_SELECTOR);
-      return note;
+    if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
+      return this.closest<BlockComponent>(NOTE_SELECTOR);
     }
     return this.rootComponent;
   }

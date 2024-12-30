@@ -18,6 +18,10 @@ import {
   PageSurfaceBlockSpec,
 } from '@blocksuite/affine-block-surface';
 import {
+  EdgelessSurfaceRefBlockSpec,
+  PageSurfaceRefBlockSpec,
+} from '@blocksuite/affine-block-surface-ref';
+import {
   RefNodeSlotsExtension,
   RichTextExtensions,
 } from '@blocksuite/affine-components/rich-text';
@@ -31,10 +35,6 @@ import type { ExtensionType } from '@blocksuite/block-std';
 import { AdapterFactoryExtensions } from '../_common/adapters/extension.js';
 import { DataViewBlockSpec } from '../data-view-block/data-view-spec.js';
 import { DatabaseBlockSpec } from '../database-block/database-spec.js';
-import {
-  EdgelessSurfaceRefBlockSpec,
-  PageSurfaceRefBlockSpec,
-} from '../surface-ref-block/surface-ref-spec.js';
 
 export const CommonBlockSpecs: ExtensionType[] = [
   DocDisplayMetaService,

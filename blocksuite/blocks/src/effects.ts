@@ -11,6 +11,7 @@ import { effects as blockListEffects } from '@blocksuite/affine-block-list/effec
 import { effects as blockNoteEffects } from '@blocksuite/affine-block-note/effects';
 import { effects as blockParagraphEffects } from '@blocksuite/affine-block-paragraph/effects';
 import { effects as blockSurfaceEffects } from '@blocksuite/affine-block-surface/effects';
+import { effects as blockSurfaceRefEffects } from '@blocksuite/affine-block-surface-ref/effects';
 import { effects as componentAiItemEffects } from '@blocksuite/affine-components/ai-item';
 import { BlockSelection } from '@blocksuite/affine-components/block-selection';
 import { BlockZeroWidth } from '@blocksuite/affine-components/block-zero-width';
@@ -209,13 +210,6 @@ import {
   MindmapSurfaceBlock,
   MiniMindmapPreview,
 } from './surface-block/mini-mindmap/index.js';
-import { effects as blockSurfaceRefEffects } from './surface-ref-block/effects.js';
-import {
-  EdgelessSurfaceRefBlockComponent,
-  SurfaceRefBlockComponent,
-} from './surface-ref-block/index.js';
-import { SurfaceRefGenericBlockPortal } from './surface-ref-block/portal/generic-block.js';
-import { SurfaceRefNotePortal } from './surface-ref-block/portal/note.js';
 
 export function effects() {
   registerSpecs();
@@ -287,10 +281,6 @@ export function effects() {
     EdgelessCopilotToolbarEntry
   );
   customElements.define(
-    'affine-edgeless-surface-ref',
-    EdgelessSurfaceRefBlockComponent
-  );
-  customElements.define(
     'edgeless-color-custom-button',
     EdgelessColorCustomButton
   );
@@ -302,7 +292,6 @@ export function effects() {
   );
   customElements.define('affine-custom-modal', AffineCustomModal);
   customElements.define('affine-database', DatabaseBlockComponent);
-  customElements.define('affine-surface-ref', SurfaceRefBlockComponent);
   customElements.define('affine-slash-menu', SlashMenu);
   customElements.define('inner-slash-menu', InnerSlashMenu);
   customElements.define('generating-placeholder', GeneratingPlaceholder);
@@ -321,10 +310,6 @@ export function effects() {
   customElements.define('icon-button', IconButton);
   customElements.define('loader-element', Loader);
   customElements.define('edgeless-brush-menu', EdgelessBrushMenu);
-  customElements.define(
-    'surface-ref-generic-block-portal',
-    SurfaceRefGenericBlockPortal
-  );
   customElements.define('edgeless-brush-tool-button', EdgelessBrushToolButton);
   customElements.define(
     'edgeless-connector-tool-button',
@@ -334,7 +319,6 @@ export function effects() {
     'edgeless-default-tool-button',
     EdgelessDefaultToolButton
   );
-  customElements.define('surface-ref-note-portal', SurfaceRefNotePortal);
   customElements.define('edgeless-connector-menu', EdgelessConnectorMenu);
   customElements.define('smooth-corner', SmoothCorner);
   customElements.define('toggle-switch', ToggleSwitch);
