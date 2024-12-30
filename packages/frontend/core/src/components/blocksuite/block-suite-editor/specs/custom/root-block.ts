@@ -1,11 +1,12 @@
 import {
-  AIEdgelessRootBlockSpec,
-  AIPageRootBlockSpec,
+  AICodeBlockSpec,
+  AIImageBlockSpec,
+  AIParagraphBlockSpec,
 } from '@affine/core/blocksuite/presets/ai';
+import { AIChatBlockSpec } from '@affine/core/blocksuite/presets/blocks';
 import { DocService, DocsService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { AppThemeService } from '@affine/core/modules/theme';
 import { mixpanel } from '@affine/track';
 import {
@@ -18,18 +19,17 @@ import type {
   DocDisplayMetaExtension,
   DocDisplayMetaParams,
   RootBlockConfig,
+  SpecBuilder,
   TelemetryEventMap,
   ThemeExtension,
 } from '@blocksuite/affine/blocks';
 import {
+  CodeBlockSpec,
   ColorScheme,
   DocDisplayMetaProvider,
-  EdgelessBuiltInManager,
-  EdgelessRootBlockSpec,
-  EdgelessToolExtension,
   EditorSettingExtension,
-  FontLoaderService,
-  PageRootBlockSpec,
+  ImageBlockSpec,
+  ParagraphBlockSpec,
   TelemetryProvider,
   ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
@@ -258,36 +258,24 @@ export const extendEdgelessPreviewSpec = (function () {
   };
 })();
 
-export function createPageRootBlockSpec(
-  framework: FrameworkProvider
-): ExtensionType[] {
-  const featureFlagService = framework.get(FeatureFlagService);
-  const enableAI = featureFlagService.flags.enable_ai.value;
-  return [
-    enableAI ? AIPageRootBlockSpec : PageRootBlockSpec,
-    FontLoaderService,
-    getThemeExtension(framework),
-    getFontConfigExtension(),
-    getTelemetryExtension(),
-    getEditorConfigExtension(framework),
-    buildDocDisplayMetaExtension(framework),
-  ].flat();
+export function enableAffineExtension(
+  framework: FrameworkProvider,
+  specBuilder: SpecBuilder
+): void {
+  specBuilder.extend(
+    [
+      getThemeExtension(framework),
+      getFontConfigExtension(),
+      getTelemetryExtension(),
+      getEditorConfigExtension(framework),
+      buildDocDisplayMetaExtension(framework),
+    ].flat()
+  );
 }
 
-export function createEdgelessRootBlockSpec(
-  framework: FrameworkProvider
-): ExtensionType[] {
-  const featureFlagService = framework.get(FeatureFlagService);
-  const enableAI = featureFlagService.flags.enable_ai.value;
-  return [
-    enableAI ? AIEdgelessRootBlockSpec : EdgelessRootBlockSpec,
-    FontLoaderService,
-    getThemeExtension(framework),
-    EdgelessToolExtension,
-    EdgelessBuiltInManager,
-    getFontConfigExtension(),
-    getTelemetryExtension(),
-    getEditorConfigExtension(framework),
-    buildDocDisplayMetaExtension(framework),
-  ].flat();
+export function enableAIExtension(specBuilder: SpecBuilder): void {
+  specBuilder.replace(CodeBlockSpec, AICodeBlockSpec);
+  specBuilder.replace(ImageBlockSpec, AIImageBlockSpec);
+  specBuilder.replace(ParagraphBlockSpec, AIParagraphBlockSpec);
+  specBuilder.extend(AIChatBlockSpec);
 }

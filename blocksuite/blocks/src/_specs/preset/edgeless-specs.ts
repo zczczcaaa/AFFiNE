@@ -53,7 +53,7 @@ export const EdgelessBuiltInManager: ExtensionType[] = [
 
 export const EdgelessEditorBlockSpecs: ExtensionType[] = [
   EdgelessRootBlockSpec,
-  ...EdgelessFirstPartyBlockSpecs,
+  EdgelessFirstPartyBlockSpecs,
   EdgelessToolExtension,
   EdgelessBuiltInManager,
 ].flat();

@@ -16,8 +16,8 @@ export * from './_common/test-utils/test-utils.js';
 export * from './_common/transformers/index.js';
 export { type AbstractEditor } from './_common/types.js';
 export * from './_specs/index.js';
-export * from './data-view-block/index.js';
-export * from './database-block/index.js';
+export * from './data-view-block';
+export * from './database-block';
 export { EdgelessTemplatePanel } from './root-block/edgeless/components/toolbar/template/template-panel.js';
 export type {
   Template,

@@ -22,6 +22,7 @@ import {
   RichTextExtensions,
 } from '@blocksuite/affine-components/rich-text';
 import {
+  DocDisplayMetaService,
   EditPropsStore,
   FontLoaderService,
 } from '@blocksuite/affine-shared/services';
@@ -36,6 +37,7 @@ import {
 } from '../surface-ref-block/surface-ref-spec.js';
 
 export const CommonBlockSpecs: ExtensionType[] = [
+  DocDisplayMetaService,
   RefNodeSlotsExtension,
   EditPropsStore,
   RichTextExtensions,
@@ -54,7 +56,7 @@ export const CommonBlockSpecs: ExtensionType[] = [
 ].flat();
 
 export const PageFirstPartyBlockSpecs: ExtensionType[] = [
-  ...CommonBlockSpecs,
+  CommonBlockSpecs,
   NoteBlockSpec,
   PageSurfaceBlockSpec,
   PageSurfaceRefBlockSpec,
@@ -62,7 +64,7 @@ export const PageFirstPartyBlockSpecs: ExtensionType[] = [
 ].flat();
 
 export const EdgelessFirstPartyBlockSpecs: ExtensionType[] = [
-  ...CommonBlockSpecs,
+  CommonBlockSpecs,
 
   EdgelessNoteBlockSpec,
   EdgelessSurfaceBlockSpec,

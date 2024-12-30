@@ -1,7 +1,6 @@
 import { FileDropExtension } from '@blocksuite/affine-components/drag-indicator';
 import {
   DNDAPIExtension,
-  DocDisplayMetaService,
   DocModeService,
   EmbedOptionService,
   PageViewportServiceExtension,
@@ -99,7 +98,6 @@ const EdgelessCommonExtension: ExtensionType[] = [
   ToolController,
   DNDAPIExtension,
   PageViewportServiceExtension,
-  DocDisplayMetaService,
   RootBlockAdapterExtensions,
   FileDropExtension,
 ].flat();

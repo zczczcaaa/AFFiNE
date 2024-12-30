@@ -15,6 +15,7 @@ import {
   DividerBlockSpec,
   EditPropsStore,
   EmbedExtensions,
+  FontLoaderService,
   ImageBlockSpec,
   LatexBlockSpec,
   ListBlockSpec,
@@ -36,6 +37,7 @@ const CommonBlockSpecs: ExtensionType[] = [
   BookmarkBlockSpec,
   AttachmentBlockSpec,
   AdapterFactoryExtensions,
+  FontLoaderService,
 ].flat();
 
 export const DefaultBlockSpecs: ExtensionType[] = [

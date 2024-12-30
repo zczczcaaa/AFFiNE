@@ -1,7 +1,6 @@
 import { FileDropExtension } from '@blocksuite/affine-components/drag-indicator';
 import {
   DNDAPIExtension,
-  DocDisplayMetaService,
   DocModeService,
   EmbedOptionService,
   PageViewportServiceExtension,
@@ -70,7 +69,6 @@ const PageCommonExtension: ExtensionType[] = [
   DocModeService,
   ThemeService,
   EmbedOptionService,
-  DocDisplayMetaService,
   PageViewportServiceExtension,
 ];
 
