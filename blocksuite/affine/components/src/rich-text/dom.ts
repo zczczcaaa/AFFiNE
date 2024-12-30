@@ -37,7 +37,6 @@ export function getInlineEditorByModel(
     typeof model === 'string'
       ? editorHost.std.doc.getBlock(model)?.model
       : model;
-  // @ts-expect-error TODO: migrate database model to `@blocksuite/affine-model`
   if (!blockModel || matchFlavours(blockModel, ['affine:database'])) {
     // Not support database model since it's may be have multiple inline editor instances.
     // Support to enter the editing state through the Enter key in the database.

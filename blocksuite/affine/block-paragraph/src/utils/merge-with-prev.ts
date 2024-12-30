@@ -86,7 +86,6 @@ export function mergeWithPrev(editorHost: EditorHost, model: BlockModel) {
     return true;
   }
 
-  // @ts-expect-error FIXME: should be fixed after database model is migrated to affine-models
   if (matchFlavours(parent, ['affine:database'])) {
     doc.deleteBlock(model);
     focusTextModel(editorHost.std, prevBlock.id, prevBlock.text?.yText.length);

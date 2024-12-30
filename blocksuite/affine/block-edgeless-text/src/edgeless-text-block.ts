@@ -87,34 +87,32 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
         this.updateComplete
           .then(() => {
             const command = this.std.command;
-            const blockSelections = this.model.children.map(
-              child =>
-                this.std.selection.create('block', {
-                  blockId: child.id,
-                })
-              // FIXME: BS-2216
-            ) as never;
+            const blockSelections = this.model.children.map(child =>
+              this.std.selection.create('block', {
+                blockId: child.id,
+              })
+            );
 
             if (key === 'fontStyle') {
               command.exec('formatBlock', {
                 blockSelections,
                 styles: {
                   italic: null,
-                } as never,
+                },
               });
             } else if (key === 'color') {
               command.exec('formatBlock', {
                 blockSelections,
                 styles: {
                   color: null,
-                } as never,
+                },
               });
             } else if (key === 'fontWeight') {
               command.exec('formatBlock', {
                 blockSelections,
                 styles: {
                   bold: null,
-                } as never,
+                },
               });
             }
           })

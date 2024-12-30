@@ -62,6 +62,7 @@ export const PackageList = [
       'blocksuite/affine/components',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
+      'blocksuite/affine/widget-drag-handle',
       'blocksuite/framework/block-std',
       'blocksuite/affine/data-view',
       'blocksuite/framework/global',

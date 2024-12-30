@@ -24,9 +24,7 @@ export function getDropRectByPoint(
     flag: DropFlags.Normal,
   };
 
-  const isDatabase = matchFlavours(model, [
-    'affine:database' as BlockSuite.Flavour,
-  ]);
+  const isDatabase = matchFlavours(model, ['affine:database']);
 
   if (isDatabase) {
     const table = getDatabaseBlockTableElement(element);

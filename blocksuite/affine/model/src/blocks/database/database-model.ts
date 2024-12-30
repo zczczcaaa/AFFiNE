@@ -28,3 +28,11 @@ export const DatabaseBlockSchema = defineBlockSchema({
   },
   toModel: () => new DatabaseBlockModel(),
 });
+
+declare global {
+  namespace BlockSuite {
+    interface BlockModels {
+      'affine:database': DatabaseBlockModel;
+    }
+  }
+}

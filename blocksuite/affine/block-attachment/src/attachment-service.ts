@@ -29,10 +29,7 @@ export const AttachmentDropOption = FileDropConfigExtension({
 
     if (!attachmentFiles.length) return false;
 
-    if (
-      targetModel &&
-      !matchFlavours(targetModel, ['affine:surface' as BlockSuite.Flavour])
-    ) {
+    if (targetModel && !matchFlavours(targetModel, ['affine:surface'])) {
       addSiblingAttachmentBlocks(
         std.host,
         attachmentFiles,

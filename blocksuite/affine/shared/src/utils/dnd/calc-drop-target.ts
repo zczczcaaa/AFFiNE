@@ -43,9 +43,7 @@ export function calcDropTarget(
    */
   allowSublist: boolean = true
 ): DropResult | null {
-  const schema = model.doc.getSchemaByFlavour(
-    'affine:database' as BlockSuite.Flavour
-  );
+  const schema = model.doc.getSchemaByFlavour('affine:database');
   const children = schema?.model.children ?? [];
 
   let shouldAppendToDatabase = true;
@@ -56,10 +54,7 @@ export function calcDropTarget(
       .every(m => children.includes(m.flavour));
   }
 
-  if (
-    !shouldAppendToDatabase &&
-    !matchFlavours(model, ['affine:database' as BlockSuite.Flavour])
-  ) {
+  if (!shouldAppendToDatabase && !matchFlavours(model, ['affine:database'])) {
     const databaseBlockComponent =
       element.closest<BlockComponent>('affine-database');
     if (databaseBlockComponent) {

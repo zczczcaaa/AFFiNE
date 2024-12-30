@@ -28,10 +28,7 @@ export const ImageDropOption = FileDropConfigExtension({
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
     if (!imageFiles.length) return false;
 
-    if (
-      targetModel &&
-      !matchFlavours(targetModel, ['affine:surface' as BlockSuite.Flavour])
-    ) {
+    if (targetModel && !matchFlavours(targetModel, ['affine:surface'])) {
       addSiblingImageBlock(
         std.host,
         imageFiles,

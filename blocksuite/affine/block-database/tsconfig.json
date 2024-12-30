@@ -32,16 +32,7 @@
       "path": "../data-view"
     },
     {
-      "path": "../block-embed"
-    },
-    {
-      "path": "../block-paragraph"
-    },
-    {
-      "path": "../block-note"
-    },
-    {
-      "path": "../block-list"
+      "path": "../widget-drag-handle"
     }
   ]
 }

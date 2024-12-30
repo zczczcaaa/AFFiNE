@@ -523,7 +523,6 @@ export async function addImages(
     editing: false,
   });
   if (isMultipleFiles) {
-    // @ts-expect-error FIXME(command): BS-2216
     std.command.exec('autoResizeElements');
   }
   return blockIds;

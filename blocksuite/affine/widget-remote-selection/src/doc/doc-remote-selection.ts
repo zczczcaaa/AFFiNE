@@ -61,7 +61,6 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
         return (
           matchFlavours(block, [
             'affine:code',
-            // @ts-expect-error FIXME: fix after database model moved to affine-model
             'affine:database',
             'affine:image',
             'affine:attachment',

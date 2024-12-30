@@ -188,9 +188,7 @@ export const getDropResult = (
 
   const model = closestBlock.model;
 
-  const isDatabase = matchFlavours(model, [
-    'affine:database' as BlockSuite.Flavour,
-  ]);
+  const isDatabase = matchFlavours(model, ['affine:database']);
   if (isDatabase) {
     return dropIndicator;
   }

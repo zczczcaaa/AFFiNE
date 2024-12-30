@@ -75,9 +75,7 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
     const blockId = closestBlock.model.id;
     const model = closestBlock.model;
 
-    const isDatabase = matchFlavours(model, [
-      'affine:database' as BlockSuite.Flavour,
-    ]);
+    const isDatabase = matchFlavours(model, ['affine:database']);
     if (isDatabase) return null;
 
     // note block can only be dropped into another note block

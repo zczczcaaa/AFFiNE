@@ -1,5 +1,3 @@
-import type { DatabaseBlockModel } from '@blocksuite/affine-model';
-
 import type { insertDatabaseBlockCommand } from './commands';
 import { CenterPeek } from './components/layout';
 import { DatabaseTitle } from './components/title';
@@ -44,10 +42,6 @@ export function effects() {
 
 declare global {
   namespace BlockSuite {
-    interface BlockModels {
-      'affine:database': DatabaseBlockModel;
-    }
-
     interface BlockConfigs {
       'affine:database': Partial<DatabaseOptionsConfig>;
     }

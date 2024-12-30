@@ -1,4 +1,6 @@
-import type { DatabaseBlockModel } from '@blocksuite/affine-model';
+import type * as CommandType from '@blocksuite/affine-shared/commands';
+
+declare type _GLOBAL_ = typeof CommandType;
 
 export * from './adapters';
 export type { DatabaseOptionsConfig } from './config';
@@ -12,11 +14,3 @@ export * from './properties';
 export * from './properties/rich-text/cell-renderer';
 export * from './properties/utils';
 export * from './utils/block-utils';
-
-declare global {
-  namespace BlockSuite {
-    interface BlockModels {
-      'affine:database': DatabaseBlockModel;
-    }
-  }
-}
