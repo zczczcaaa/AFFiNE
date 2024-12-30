@@ -2,26 +2,21 @@ import type { BlockStdScope } from '@blocksuite/block-std';
 import {
   type BrushElementModel,
   type ConnectorElementModel,
-  DEFAULT_NOTE_BACKGROUND_COLOR,
   DEFAULT_NOTE_SHADOW,
-  DEFAULT_TEXT_COLOR,
+  DefaultTheme,
   type EdgelessRootBlockComponent,
   type EdgelessTextBlockModel,
   EditPropsStore,
   FontFamily,
-  FrameBackgroundColor,
   type FrameBlockModel,
   getSurfaceBlock,
   LayoutType,
   type MindmapElementModel,
   MindmapStyle,
-  NoteBackgroundColor,
   type NoteBlockModel,
   NoteShadow,
   type ShapeElementModel,
-  ShapeFillColor,
   ShapeType,
-  StrokeColor,
   type TextElementModel,
 } from '@blocksuite/blocks';
 import { assertExists } from '@blocksuite/global/utils';
@@ -51,14 +46,14 @@ describe('apply last props', () => {
     });
     assertExists(rectId);
     const rectShape = service.crud.getElementById(rectId) as ShapeElementModel;
-    expect(rectShape.fillColor).toBe(ShapeFillColor.Yellow);
+    expect(rectShape.fillColor).toBe(DefaultTheme.shapeFillColor);
     service.crud.updateElement(rectId, {
-      fillColor: ShapeFillColor.Orange,
+      fillColor: DefaultTheme.FillColorMap.Orange,
     });
     expect(
       std.get(EditPropsStore).lastProps$.value[`shape:${ShapeType.Rect}`]
         .fillColor
-    ).toBe(ShapeFillColor.Orange);
+    ).toBe(DefaultTheme.FillColorMap.Orange);
 
     // diamond shape
     const diamondId = service.crud.addElement('shape', {
@@ -68,14 +63,14 @@ describe('apply last props', () => {
     const diamondShape = service.crud.getElementById(
       diamondId
     ) as ShapeElementModel;
-    expect(diamondShape.fillColor).toBe(ShapeFillColor.Yellow);
+    expect(diamondShape.fillColor).toBe(DefaultTheme.FillColorMap.Yellow);
     service.crud.updateElement(diamondId, {
-      fillColor: ShapeFillColor.Blue,
+      fillColor: DefaultTheme.FillColorMap.Blue,
     });
     expect(
       std.get(EditPropsStore).lastProps$.value[`shape:${ShapeType.Diamond}`]
         .fillColor
-    ).toBe(ShapeFillColor.Blue);
+    ).toBe(DefaultTheme.FillColorMap.Blue);
 
     // rounded rect shape
     const roundedRectId = service.crud.addElement('shape', {
@@ -86,13 +81,13 @@ describe('apply last props', () => {
     const roundedRectShape = service.crud.getElementById(
       roundedRectId
     ) as ShapeElementModel;
-    expect(roundedRectShape.fillColor).toBe(ShapeFillColor.Yellow);
+    expect(roundedRectShape.fillColor).toBe(DefaultTheme.FillColorMap.Yellow);
     service.crud.updateElement(roundedRectId, {
-      fillColor: ShapeFillColor.Green,
+      fillColor: DefaultTheme.FillColorMap.Green,
     });
     expect(
       std.get(EditPropsStore).lastProps$.value['shape:roundedRect'].fillColor
-    ).toBe(ShapeFillColor.Green);
+    ).toBe(DefaultTheme.FillColorMap.Green);
 
     // apply last props
     const rectId2 = service.crud.addElement('shape', {
@@ -102,7 +97,7 @@ describe('apply last props', () => {
     const rectShape2 = service.crud.getElementById(
       rectId2
     ) as ShapeElementModel;
-    expect(rectShape2.fillColor).toBe(ShapeFillColor.Orange);
+    expect(rectShape2.fillColor).toBe(DefaultTheme.FillColorMap.Orange);
 
     const diamondId2 = service.crud.addElement('shape', {
       shapeType: ShapeType.Diamond,
@@ -111,7 +106,7 @@ describe('apply last props', () => {
     const diamondShape2 = service.crud.getElementById(
       diamondId2
     ) as ShapeElementModel;
-    expect(diamondShape2.fillColor).toBe(ShapeFillColor.Blue);
+    expect(diamondShape2.fillColor).toBe(DefaultTheme.FillColorMap.Blue);
 
     const roundedRectId2 = service.crud.addElement('shape', {
       shapeType: ShapeType.Rect,
@@ -121,14 +116,14 @@ describe('apply last props', () => {
     const roundedRectShape2 = service.crud.getElementById(
       roundedRectId2
     ) as ShapeElementModel;
-    expect(roundedRectShape2.fillColor).toBe(ShapeFillColor.Green);
+    expect(roundedRectShape2.fillColor).toBe(DefaultTheme.FillColorMap.Green);
   });
 
   test('connector', () => {
     const id = service.crud.addElement('connector', { mode: 0 });
     assertExists(id);
     const connector = service.crud.getElementById(id) as ConnectorElementModel;
-    expect(connector.stroke).toBe(StrokeColor.Grey);
+    expect(connector.stroke).toBe(DefaultTheme.connectorColor);
     expect(connector.strokeWidth).toBe(2);
     expect(connector.strokeStyle).toBe('solid');
     expect(connector.frontEndpointStyle).toBe('None');
@@ -143,7 +138,7 @@ describe('apply last props', () => {
     expect(connector2.strokeWidth).toBe(10);
     service.crud.updateElement(id2, {
       labelStyle: {
-        color: StrokeColor.Magenta,
+        color: DefaultTheme.black,
         fontFamily: FontFamily.Kalam,
       },
     });
@@ -154,7 +149,7 @@ describe('apply last props', () => {
       id3
     ) as ConnectorElementModel;
     expect(connector3.strokeWidth).toBe(10);
-    expect(connector3.labelStyle.color).toBe(StrokeColor.Magenta);
+    expect(connector3.labelStyle.color).toEqual(DefaultTheme.black);
     expect(connector3.labelStyle.fontFamily).toBe(FontFamily.Kalam);
   });
 
@@ -162,10 +157,7 @@ describe('apply last props', () => {
     const id = service.crud.addElement('brush', {});
     assertExists(id);
     const brush = service.crud.getElementById(id) as BrushElementModel;
-    expect(brush.color).toEqual({
-      dark: StrokeColor.White,
-      light: StrokeColor.Black,
-    });
+    expect(brush.color).toEqual(DefaultTheme.black);
     expect(brush.lineWidth).toBe(4);
     service.crud.updateElement(id, { lineWidth: 10 });
     const secondBrush = service.crud.getElementById(
@@ -209,17 +201,17 @@ describe('apply last props', () => {
     const id = service.crud.addBlock('affine:edgeless-text', {}, surface!.id);
     assertExists(id);
     const text = service.crud.getElementById(id) as EdgelessTextBlockModel;
-    expect(text.color).toBe(DEFAULT_TEXT_COLOR);
+    expect(text.color).toBe(DefaultTheme.textColor);
     expect(text.fontFamily).toBe(FontFamily.Inter);
     service.crud.updateElement(id, {
-      color: StrokeColor.Green,
+      color: DefaultTheme.StrokeColorMap.Green,
       fontFamily: FontFamily.OrelegaOne,
     });
 
     const id2 = service.crud.addBlock('affine:edgeless-text', {}, surface!.id);
     assertExists(id2);
     const text2 = service.crud.getElementById(id2) as EdgelessTextBlockModel;
-    expect(text2.color).toBe(StrokeColor.Green);
+    expect(text2.color).toBe(DefaultTheme.StrokeColorMap.Green);
     expect(text2.fontFamily).toBe(FontFamily.OrelegaOne);
   });
 
@@ -227,10 +219,10 @@ describe('apply last props', () => {
     const id = service.crud.addBlock('affine:note', {}, doc.root!.id);
     assertExists(id);
     const note = service.crud.getElementById(id) as NoteBlockModel;
-    expect(note.background).toBe(DEFAULT_NOTE_BACKGROUND_COLOR);
+    expect(note.background).toEqual(DefaultTheme.noteBackgrounColor);
     expect(note.edgeless.style.shadowType).toBe(DEFAULT_NOTE_SHADOW);
     service.crud.updateElement(id, {
-      background: NoteBackgroundColor.Purple,
+      background: DefaultTheme.NoteBackgroundColorMap.Purple,
       edgeless: {
         style: {
           shadowType: NoteShadow.Film,
@@ -241,7 +233,9 @@ describe('apply last props', () => {
     const id2 = service.crud.addBlock('affine:note', {}, doc.root!.id);
     assertExists(id2);
     const note2 = service.crud.getElementById(id2) as NoteBlockModel;
-    expect(note2.background).toBe(NoteBackgroundColor.Purple);
+    expect(note2.background).toEqual(
+      DefaultTheme.NoteBackgroundColorMap.Purple
+    );
     expect(note2.edgeless.style.shadowType).toBe(NoteShadow.Film);
   });
 
@@ -252,13 +246,13 @@ describe('apply last props', () => {
     const note = service.crud.getElementById(id) as FrameBlockModel;
     expect(note.background).toBe('transparent');
     service.crud.updateElement(id, {
-      background: FrameBackgroundColor.Purple,
+      background: DefaultTheme.StrokeColorMap.Purple,
     });
 
     const id2 = service.crud.addBlock('affine:frame', {}, surface!.id);
     assertExists(id2);
     const frame2 = service.crud.getElementById(id2) as FrameBlockModel;
-    expect(frame2.background).toBe(FrameBackgroundColor.Purple);
+    expect(frame2.background).toBe(DefaultTheme.StrokeColorMap.Purple);
     service.crud.updateElement(id2, {
       background: { normal: '#def4e740' },
     });
