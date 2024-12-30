@@ -25,11 +25,9 @@ const styles = css`
     color: var(--affine-white);
     background: var(--affine-tooltip);
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
+    word-break: break-all;
   }
 
   .arrow {
@@ -201,10 +199,8 @@ export class Tooltip extends LitElement {
       :host {
         z-index: ${unsafeCSS(this.zIndex)};
         opacity: 0;
-        ${
-          // All the styles are applied to the portal element
-          unsafeCSS(this.style.cssText)
-        }
+        // All the styles are applied to the portal element
+        ${unsafeCSS(this.style.cssText)}
       }
 
       ${this.allowInteractive
