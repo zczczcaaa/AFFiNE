@@ -10,13 +10,7 @@
   "include": ["./src", "./src/**/*.json"],
   "references": [
     {
-      "path": "../framework/global"
-    },
-    {
-      "path": "../framework/store"
-    },
-    {
-      "path": "../framework/block-std"
+      "path": "../framework"
     },
     {
       "path": "../blocks"
