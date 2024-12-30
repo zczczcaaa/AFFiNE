@@ -347,7 +347,7 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<
   get optionsConfig(): DatabaseOptionsConfig {
     return {
       configure: (_model, options) => options,
-      ...this.std.getConfig('affine:page')?.databaseOptions,
+      ...this.std.getConfig('affine:database'),
     };
   }
 

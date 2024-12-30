@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { DatabaseBlockModel } from '@blocksuite/affine-model';
 import {
   insertPositionToIndex,

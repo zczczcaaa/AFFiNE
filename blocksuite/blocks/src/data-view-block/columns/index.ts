@@ -1,7 +1,6 @@
+import { richTextColumnConfig } from '@blocksuite/affine-block-database';
 import type { PropertyMetaConfig } from '@blocksuite/data-view';
 import { propertyPresets } from '@blocksuite/data-view/property-presets';
-
-import { richTextColumnConfig } from '../../database-block/properties/rich-text/cell-renderer.js';
 
 export const queryBlockColumns = [
   propertyPresets.datePropertyConfig,

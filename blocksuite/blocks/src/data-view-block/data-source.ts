@@ -1,3 +1,7 @@
+import {
+  databaseBlockAllPropertyMap,
+  databasePropertyConverts,
+} from '@blocksuite/affine-block-database';
 import type { Column } from '@blocksuite/affine-model';
 import {
   insertPositionToIndex,
@@ -9,10 +13,6 @@ import { propertyPresets } from '@blocksuite/data-view/property-presets';
 import { assertExists, Slot } from '@blocksuite/global/utils';
 import type { Block, Doc } from '@blocksuite/store';
 
-import {
-  databaseBlockAllPropertyMap,
-  databasePropertyConverts,
-} from '../database-block/properties/index.js';
 import type { BlockMeta } from './block-meta/base.js';
 import { blockMetaMap } from './block-meta/index.js';
 import { queryBlockAllColumnMap, queryBlockColumns } from './columns/index.js';

@@ -1,4 +1,8 @@
 import {
+  convertToDatabase,
+  DATABASE_CONVERT_WHITE_LIST,
+} from '@blocksuite/affine-block-database';
+import {
   convertSelectedBlocksToLinkedDoc,
   getTitleFromSelectedModels,
   notifyDocCreated,
@@ -43,8 +47,6 @@ import { assertExists } from '@blocksuite/global/utils';
 import { Slice } from '@blocksuite/store';
 import { html, type TemplateResult } from 'lit';
 
-import { convertToDatabase } from '../../../database-block/data-source.js';
-import { DATABASE_CONVERT_WHITE_LIST } from '../../../database-block/utils/block-utils.js';
 import { FormatBarContext } from './context.js';
 import type { AffineFormatBarWidget } from './format-bar.js';
 

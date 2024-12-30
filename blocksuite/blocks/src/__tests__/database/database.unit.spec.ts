@@ -1,4 +1,13 @@
 import {
+  addProperty,
+  copyCellsByProperty,
+  databaseBlockColumns,
+  deleteColumn,
+  getCell,
+  getProperty,
+  updateCell,
+} from '@blocksuite/affine-block-database';
+import {
   type Cell,
   type Column,
   type DatabaseBlockModel,
@@ -11,16 +20,6 @@ import { propertyModelPresets } from '@blocksuite/data-view/property-pure-preset
 import type { BlockModel, Doc } from '@blocksuite/store';
 import { DocCollection, IdGeneratorType, Schema } from '@blocksuite/store';
 import { beforeEach, describe, expect, test } from 'vitest';
-
-import { databaseBlockColumns } from '../../database-block/index.js';
-import {
-  addProperty,
-  copyCellsByProperty,
-  deleteColumn,
-  getCell,
-  getProperty,
-  updateCell,
-} from '../../database-block/utils/block-utils.js';
 
 const AffineSchemas = [
   RootBlockSchema,

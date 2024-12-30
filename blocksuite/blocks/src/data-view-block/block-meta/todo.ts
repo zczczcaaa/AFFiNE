@@ -1,7 +1,7 @@
+import { richTextColumnConfig } from '@blocksuite/affine-block-database';
 import { type ListBlockModel, ListBlockSchema } from '@blocksuite/affine-model';
 import { propertyPresets } from '@blocksuite/data-view/property-presets';
 
-import { richTextColumnConfig } from '../../database-block/properties/rich-text/cell-renderer.js';
 import { createBlockMeta } from './base.js';
 
 export const todoMeta = createBlockMeta<ListBlockModel>({

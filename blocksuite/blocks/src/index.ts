@@ -17,7 +17,6 @@ export * from './_common/transformers/index.js';
 export { type AbstractEditor } from './_common/types.js';
 export * from './_specs/index.js';
 export * from './data-view-block';
-export * from './database-block';
 export { EdgelessTemplatePanel } from './root-block/edgeless/components/toolbar/template/template-panel.js';
 export type {
   Template,
@@ -42,6 +41,7 @@ export {
 export * from '@blocksuite/affine-block-attachment';
 export * from '@blocksuite/affine-block-bookmark';
 export * from '@blocksuite/affine-block-code';
+export * from '@blocksuite/affine-block-database';
 export * from '@blocksuite/affine-block-divider';
 export * from '@blocksuite/affine-block-edgeless-text';
 export * from '@blocksuite/affine-block-embed';

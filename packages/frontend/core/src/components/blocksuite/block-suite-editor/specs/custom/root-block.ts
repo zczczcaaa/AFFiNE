@@ -233,10 +233,10 @@ function getEditorConfigExtension(
   const editorSettingService = framework.get(EditorSettingService);
   return [
     EditorSettingExtension(editorSettingService.editorSetting.settingSignal),
+    ConfigExtension('affine:database', createDatabaseOptionsConfig(framework)),
     ConfigExtension('affine:page', {
       linkedWidget: createLinkedWidgetConfig(framework),
       toolbarMoreMenu: createToolbarMoreMenuConfig(framework),
-      databaseOptions: createDatabaseOptionsConfig(framework),
     } satisfies RootBlockConfig),
   ];
 }

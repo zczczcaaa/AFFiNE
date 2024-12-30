@@ -56,6 +56,20 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/block-database',
+    name: '@blocksuite/affine-block-database',
+    workspaceDependencies: [
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/affine/data-view',
+      'blocksuite/framework/global',
+      'blocksuite/framework/inline',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/block-divider',
     name: '@blocksuite/affine-block-divider',
     workspaceDependencies: [
@@ -292,6 +306,7 @@ export const PackageList = [
       'blocksuite/affine/block-attachment',
       'blocksuite/affine/block-bookmark',
       'blocksuite/affine/block-code',
+      'blocksuite/affine/block-database',
       'blocksuite/affine/block-divider',
       'blocksuite/affine/block-edgeless-text',
       'blocksuite/affine/block-embed',
@@ -643,6 +658,7 @@ export type PackageName =
   | '@blocksuite/affine-block-attachment'
   | '@blocksuite/affine-block-bookmark'
   | '@blocksuite/affine-block-code'
+  | '@blocksuite/affine-block-database'
   | '@blocksuite/affine-block-divider'
   | '@blocksuite/affine-block-edgeless-text'
   | '@blocksuite/affine-block-embed'

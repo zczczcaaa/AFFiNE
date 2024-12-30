@@ -1,3 +1,4 @@
+import { BlockRenderer, NoteRenderer } from '@blocksuite/affine-block-database';
 import type { NoteBlockComponent } from '@blocksuite/affine-block-note';
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import {
@@ -39,8 +40,6 @@ import { computed, signal } from '@preact/signals-core';
 import { css, nothing, unsafeCSS } from 'lit';
 import { html } from 'lit/static-html.js';
 
-import { BlockRenderer } from '../database-block/detail-panel/block-renderer.js';
-import { NoteRenderer } from '../database-block/detail-panel/note-renderer.js';
 import {
   EdgelessRootBlockComponent,
   type RootService,

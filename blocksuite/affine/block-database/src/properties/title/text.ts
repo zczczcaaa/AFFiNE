@@ -22,7 +22,6 @@ import { css, type TemplateResult } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { html } from 'lit/static-html.js';
 
-import { ClipboardAdapter } from '../../../root-block/clipboard/adapter.js';
 import { HostContextKey } from '../../context/host-context.js';
 import type { DatabaseBlockComponent } from '../../database-block.js';
 import { getSingleDocIdFromText } from '../../utils/title-doc.js';
@@ -262,7 +261,7 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
         };
         const snapshot = this.std?.clipboard?.readFromClipboard(
           e.clipboardData
-        )[ClipboardAdapter.MIME];
+        )['BLOCKSUITE/SNAPSHOT'];
         const deltas = (
           JSON.parse(snapshot).snapshot.content as BlockSnapshot[]
         ).flatMap(getDeltas);

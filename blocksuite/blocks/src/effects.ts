@@ -1,6 +1,7 @@
 import { effects as blockAttachmentEffects } from '@blocksuite/affine-block-attachment/effects';
 import { effects as blockBookmarkEffects } from '@blocksuite/affine-block-bookmark/effects';
 import { effects as blockCodeEffects } from '@blocksuite/affine-block-code/effects';
+import { effects as blockDatabaseEffects } from '@blocksuite/affine-block-database/effects';
 import { effects as blockDividerEffects } from '@blocksuite/affine-block-divider/effects';
 import { effects as blockEdgelessTextEffects } from '@blocksuite/affine-block-edgeless-text/effects';
 import { effects as blockEmbedEffects } from '@blocksuite/affine-block-embed/effects';
@@ -38,29 +39,6 @@ import type { BlockModel } from '@blocksuite/store';
 
 import { registerSpecs } from './_specs/register-specs.js';
 import { DataViewBlockComponent } from './data-view-block/index.js';
-import { CenterPeek } from './database-block/components/layout.js';
-import { DatabaseTitle } from './database-block/components/title/index.js';
-import { BlockRenderer } from './database-block/detail-panel/block-renderer.js';
-import { NoteRenderer } from './database-block/detail-panel/note-renderer.js';
-import { effects as blockDatabaseEffects } from './database-block/effects.js';
-import {
-  DatabaseBlockComponent,
-  type DatabaseBlockService,
-} from './database-block/index.js';
-import {
-  LinkCell,
-  LinkCellEditing,
-} from './database-block/properties/link/cell-renderer.js';
-import { LinkNode } from './database-block/properties/link/components/link-node.js';
-import {
-  RichTextCell,
-  RichTextCellEditing,
-} from './database-block/properties/rich-text/cell-renderer.js';
-import { IconCell } from './database-block/properties/title/icon.js';
-import {
-  HeaderAreaTextCell,
-  HeaderAreaTextCellEditing,
-} from './database-block/properties/title/text.js';
 import { EdgelessAutoCompletePanel } from './root-block/edgeless/components/auto-complete/auto-complete-panel.js';
 import { EdgelessAutoComplete } from './root-block/edgeless/components/auto-complete/edgeless-auto-complete.js';
 import { EdgelessToolIconButton } from './root-block/edgeless/components/buttons/tool-icon-button.js';
@@ -252,23 +230,6 @@ export function effects() {
   widgetDragHandleEffects();
   dataViewEffects();
 
-  customElements.define('affine-database-title', DatabaseTitle);
-  customElements.define('data-view-header-area-icon', IconCell);
-  customElements.define('affine-database-link-cell', LinkCell);
-  customElements.define('affine-database-link-cell-editing', LinkCellEditing);
-  customElements.define('data-view-header-area-text', HeaderAreaTextCell);
-  customElements.define(
-    'data-view-header-area-text-editing',
-    HeaderAreaTextCellEditing
-  );
-  customElements.define('affine-database-rich-text-cell', RichTextCell);
-  customElements.define(
-    'affine-database-rich-text-cell-editing',
-    RichTextCellEditing
-  );
-  customElements.define('center-peek', CenterPeek);
-  customElements.define('database-datasource-note-renderer', NoteRenderer);
-  customElements.define('database-datasource-block-renderer', BlockRenderer);
   customElements.define('affine-page-root', PageRootBlockComponent);
   customElements.define('affine-preview-root', PreviewRootBlockComponent);
   customElements.define('mini-mindmap-preview', MiniMindmapPreview);
@@ -291,7 +252,6 @@ export function effects() {
     EdgelessRootPreviewBlockComponent
   );
   customElements.define('affine-custom-modal', AffineCustomModal);
-  customElements.define('affine-database', DatabaseBlockComponent);
   customElements.define('affine-slash-menu', SlashMenu);
   customElements.define('inner-slash-menu', InnerSlashMenu);
   customElements.define('generating-placeholder', GeneratingPlaceholder);
@@ -357,7 +317,6 @@ export function effects() {
   customElements.define('edgeless-note-tool-button', EdgelessNoteToolButton);
   customElements.define('edgeless-note-menu', EdgelessNoteMenu);
   customElements.define('edgeless-line-width-panel', EdgelessLineWidthPanel);
-  customElements.define('affine-database-link-node', LinkNode);
   customElements.define(
     'edgeless-frame-order-button',
     EdgelessFrameOrderButton
@@ -470,7 +429,6 @@ declare global {
     }
     interface BlockServices {
       'affine:page': RootService;
-      'affine:database': DatabaseBlockService;
     }
   }
 }

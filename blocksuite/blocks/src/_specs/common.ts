@@ -1,6 +1,7 @@
 import { AttachmentBlockSpec } from '@blocksuite/affine-block-attachment';
 import { BookmarkBlockSpec } from '@blocksuite/affine-block-bookmark';
 import { CodeBlockSpec } from '@blocksuite/affine-block-code';
+import { DatabaseBlockSpec } from '@blocksuite/affine-block-database';
 import { DividerBlockSpec } from '@blocksuite/affine-block-divider';
 import { EdgelessTextBlockSpec } from '@blocksuite/affine-block-edgeless-text';
 import { EmbedExtensions } from '@blocksuite/affine-block-embed';
@@ -34,7 +35,6 @@ import type { ExtensionType } from '@blocksuite/block-std';
 
 import { AdapterFactoryExtensions } from '../_common/adapters/extension.js';
 import { DataViewBlockSpec } from '../data-view-block/data-view-spec.js';
-import { DatabaseBlockSpec } from '../database-block/database-spec.js';
 
 export const CommonBlockSpecs: ExtensionType[] = [
   DocDisplayMetaService,
