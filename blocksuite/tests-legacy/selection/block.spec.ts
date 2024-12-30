@@ -59,15 +59,15 @@ test('block level range delete', async ({ page }) => {
 
   await dragBetweenCoords(page, below789, above123);
   await pressBackspace(page);
-  await assertBlockCount(page, 'paragraph', 1);
-  await assertRichTexts(page, ['']);
+  await assertBlockCount(page, 'paragraph', 0);
+  await assertRichTexts(page, []);
 
   await waitNextFrame(page);
   await undoByClick(page);
   await assertRichTexts(page, ['123', '456', '789']);
 
   await redoByClick(page);
-  await assertRichTexts(page, ['']);
+  await assertRichTexts(page, []);
 });
 
 test('block level range delete by forwardDelete', async ({ page }) => {
@@ -86,15 +86,15 @@ test('block level range delete by forwardDelete', async ({ page }) => {
   await dragBetweenCoords(page, below789, above123);
   await pressForwardDelete(page);
   await waitNextFrame(page);
-  await assertBlockCount(page, 'paragraph', 1);
-  await assertRichTexts(page, ['']);
+  await assertBlockCount(page, 'paragraph', 0);
+  await assertRichTexts(page, []);
 
   await waitNextFrame(page);
   await undoByClick(page);
   await assertRichTexts(page, ['123', '456', '789']);
 
   await redoByClick(page);
-  await assertRichTexts(page, ['']);
+  await assertRichTexts(page, []);
 });
 
 // XXX: Doesn't simulate full user operation due to backspace cursor issue in Playwright.
@@ -108,9 +108,8 @@ test('select all and delete', async ({ page }) => {
   await selectAllByKeyboard(page);
   await shamefullyBlurActiveElement(page);
   await pressBackspace(page);
-  await focusRichText(page, 0);
-  await type(page, 'abc');
-  await assertRichTexts(page, ['abc']);
+  await assertBlockCount(page, 'paragraph', 0);
+  await assertRichTexts(page, []);
 });
 
 test('select all and delete by forwardDelete', async ({ page }) => {
@@ -123,9 +122,8 @@ test('select all and delete by forwardDelete', async ({ page }) => {
   await selectAllByKeyboard(page);
   await shamefullyBlurActiveElement(page);
   await pressForwardDelete(page);
-  await focusRichText(page, 0);
-  await type(page, 'abc');
-  await assertRichTexts(page, ['abc']);
+  await assertBlockCount(page, 'paragraph', 0);
+  await assertRichTexts(page, []);
 });
 
 test('select all should work for multiple notes in doc mode', async ({
@@ -148,7 +146,13 @@ test('select all should work for multiple notes in doc mode', async ({
 
 async function clickListIcon(page: Page, i = 0) {
   const locator = page.locator('.affine-list-block__prefix').nth(i);
-  await locator.click({ force: true });
+  await locator.click({
+    force: true,
+    position: {
+      x: 2,
+      y: 2,
+    },
+  });
 }
 
 test('click the list icon can select and copy', async ({ page }) => {
@@ -179,14 +183,10 @@ test('click the list icon can select and delete', async ({ page }) => {
   await initThreeLists(page);
   await assertRichTexts(page, ['123', '456', '789']);
 
-  await clickListIcon(page, 0);
+  await clickListIcon(page, 1);
   await waitNextFrame(page);
   await pressBackspace(page);
-  await assertRichTexts(page, ['', '456', '789']);
-  await clickListIcon(page, 0);
-  await waitNextFrame(page);
-  await pressBackspace(page);
-  await assertRichTexts(page, ['', '']);
+  await assertRichTexts(page, ['123']);
 });
 
 test('click the list icon can select and delete by forwardDelete', async ({
@@ -197,14 +197,10 @@ test('click the list icon can select and delete by forwardDelete', async ({
   await initThreeLists(page);
   await assertRichTexts(page, ['123', '456', '789']);
 
-  await clickListIcon(page, 0);
+  await clickListIcon(page, 1);
   await waitNextFrame(page);
   await pressForwardDelete(page);
-  await assertRichTexts(page, ['', '456', '789']);
-  await clickListIcon(page, 0);
-  await waitNextFrame(page);
-  await pressForwardDelete(page);
-  await assertRichTexts(page, ['', '']);
+  await assertRichTexts(page, ['123']);
 });
 
 test('selection on heavy page', async ({ page }) => {

@@ -34,6 +34,7 @@ export class ListBlockComponent extends CaptionedBlockComponent<ListBlockModel> 
 
   private readonly _onClickIcon = (e: MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
 
     if (this.model.type === 'toggle') {
       if (this.doc.readonly) {

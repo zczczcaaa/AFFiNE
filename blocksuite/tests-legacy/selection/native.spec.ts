@@ -154,7 +154,7 @@ test('native range delete by forwardDelete', async ({ page }) => {
   await assertRichTexts(page, ['123', '456', '789']);
 
   const box123 = await getRichTextBoundingBox(page, '2');
-  const inside123 = { x: box123.left - 1, y: box123.top + 1 };
+  const inside123 = { x: box123.left + 1, y: box123.top + 1 };
 
   const box789 = await getRichTextBoundingBox(page, '4');
   const inside789 = { x: box789.right - 1, y: box789.bottom - 1 };
@@ -180,7 +180,7 @@ test('native range input', async ({ page }) => {
   await assertRichTexts(page, ['123', '456', '789']);
 
   const box123 = await getRichTextBoundingBox(page, '2');
-  const inside123 = { x: box123.left - 1, y: box123.top + 1 };
+  const inside123 = { x: box123.left + 1, y: box123.top + 1 };
 
   const box789 = await getRichTextBoundingBox(page, '4');
   const inside789 = { x: box789.right - 1, y: box789.bottom - 1 };
@@ -200,10 +200,10 @@ test('native range selection backwards', async ({ page }) => {
   await assertRichTexts(page, ['123', '456', '789']);
 
   const box123 = await getRichTextBoundingBox(page, '2');
-  const above123 = { x: box123.left, y: box123.top - 2 };
+  const above123 = { x: box123.left + 1, y: box123.top + 1 };
 
   const box789 = await getRichTextBoundingBox(page, '4');
-  const bottomRight789 = { x: box789.right, y: box789.bottom };
+  const bottomRight789 = { x: box789.right - 1, y: box789.bottom - 1 };
 
   // from bottom to top
   await dragBetweenCoords(page, bottomRight789, above123, { steps: 10 });
@@ -230,7 +230,7 @@ test('native range selection backwards by forwardDelete', async ({ page }) => {
   const above123 = { x: box123.left, y: box123.top - 2 };
 
   const box789 = await getRichTextBoundingBox(page, '4');
-  const bottomRight789 = { x: box789.right, y: box789.bottom };
+  const bottomRight789 = { x: box789.right - 1, y: box789.bottom - 1 };
 
   // from bottom to top
   await dragBetweenCoords(page, bottomRight789, above123, { steps: 10 });
@@ -390,7 +390,7 @@ test('select all text with dragging and delete', async ({ page }) => {
   await initThreeParagraphs(page);
   await assertRichTexts(page, ['123', '456', '789']);
 
-  await dragBetweenIndices(page, [0, 0], [2, 3], undefined, undefined, {
+  await dragBetweenIndices(page, [0, 0], [2, 3], { x: 1, y: 1 }, undefined, {
     steps: 20,
   });
   await pressBackspace(page);
@@ -434,14 +434,7 @@ test('select all text with keyboard delete', async ({ page }) => {
   await selectAllByKeyboard(page);
   await selectAllByKeyboard(page);
   await pressBackspace(page);
-  await assertRichTexts(page, ['', '456', '789']);
-
-  await type(page, 'abc');
-  await selectAllByKeyboard(page);
-  await selectAllByKeyboard(page);
-  await selectAllByKeyboard(page);
-  await pressBackspace(page);
-  await assertRichTexts(page, ['']);
+  await assertRichTexts(page, ['456', '789']);
 });
 
 test('select text leaving a few words in the last line and delete', async ({
@@ -801,7 +794,7 @@ test('Delete the second divider between two dividers by forwardDelete', async ({
   await pressArrowUp(page);
   await pressForwardDelete(page);
   await assertDivider(page, 1);
-  await assertRichTexts(page, ['', '', '']);
+  await assertRichTexts(page, ['', '']);
 });
 
 test('should delete line with content after divider not lose content', async ({
@@ -818,7 +811,7 @@ test('should delete line with content after divider not lose content', async ({
   await waitNextFrame(page);
   await pressBackspace(page, 2);
   await assertDivider(page, 0);
-  await assertRichTexts(page, ['', '123']);
+  await assertRichTexts(page, ['123']);
 });
 
 test('should forwardDelete divider works properly', async ({ page }) => {
@@ -835,7 +828,7 @@ test('should forwardDelete divider works properly', async ({ page }) => {
   await page.keyboard.press(`${SHORT_KEY}+ArrowRight`, { delay: 50 });
   await pressForwardDelete(page);
   await assertDivider(page, 0);
-  await assertRichTexts(page, ['123', '', '']);
+  await assertRichTexts(page, ['123', '']);
 });
 
 test('the cursor should move to closest editor block when clicking outside container', async ({

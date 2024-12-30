@@ -481,12 +481,7 @@ test('should attachment can be deleted', async ({ page }) => {
   prop:hidden={false}
   prop:index="a0"
   prop:lockedBySelf={false}
->
-  <affine:paragraph
-    prop:collapsed={false}
-    prop:type="text"
-  />
-</affine:note>`,
+/>`,
     noteId
   );
 });

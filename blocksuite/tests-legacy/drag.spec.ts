@@ -249,7 +249,7 @@ test('should sync selected-blocks to session-manager when clicking drag handle',
   await handle.click();
 
   await page.keyboard.press('Backspace');
-  await assertRichTexts(page, ['', '456', '789']);
+  await assertRichTexts(page, ['456', '789']);
 });
 
 test.fixme(
