@@ -45,7 +45,8 @@ yarn data-migration run
 ## Start server
 
 ```sh
-yarn dev
+# at project root
+yarn affine server dev
 ```
 
 when server started, it will created a default user for testing:
