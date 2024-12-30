@@ -13,7 +13,6 @@ import {
   FontConfigExtension,
   ParseDocUrlProvider,
   QuickSearchProvider,
-  RefNodeSlotsExtension,
   RefNodeSlotsProvider,
 } from '@blocksuite/blocks';
 import { effects as blocksEffects } from '@blocksuite/blocks/effects';
@@ -60,12 +59,10 @@ async function main() {
         },
         defaultExtensions: (): ExtensionType[] => [
           FontConfigExtension(CommunityCanvasTextFonts),
-          RefNodeSlotsExtension(),
         ],
         extensions: {
           FontConfigExtension: FontConfigExtension(CommunityCanvasTextFonts),
           WidgetViewMapExtension,
-          RefNodeSlotsExtension: RefNodeSlotsExtension(),
         },
         mockServices: {
           mockDocModeService,

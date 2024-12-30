@@ -46,6 +46,15 @@ export class SpecProvider {
     return this.specMap.has(id);
   }
 
+  cloneSpec(id: string, targetId: string) {
+    const existingSpec = this.specMap.get(id);
+    if (!existingSpec) {
+      console.error(`Spec not found for ${id}`);
+      return;
+    }
+    this.specMap.set(targetId, [...existingSpec]);
+  }
+
   omitSpec(id: string, targetSpec: ExtensionType) {
     const existingSpec = this.specMap.get(id);
     if (!existingSpec) {
@@ -56,6 +65,19 @@ export class SpecProvider {
     this.specMap.set(
       id,
       existingSpec.filter(spec => spec !== targetSpec)
+    );
+  }
+
+  replaceSpec(id: string, targetSpec: ExtensionType, newSpec: ExtensionType) {
+    const existingSpec = this.specMap.get(id);
+    if (!existingSpec) {
+      console.error(`Spec not found for ${id}`);
+      return;
+    }
+
+    this.specMap.set(
+      id,
+      existingSpec.map(spec => (spec === targetSpec ? newSpec : spec))
     );
   }
 }

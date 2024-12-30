@@ -1892,7 +1892,7 @@ export async function createNote(
   content?: string
 ) {
   const start = await toViewCoord(page, coord1);
-  return addNote(page, content || 'note', start[0], start[1]);
+  return addNote(page, content ?? 'note', start[0], start[1]);
 }
 
 export async function hoverOnNote(page: Page, id: string, offset = [0, 0]) {

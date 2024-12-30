@@ -29,7 +29,6 @@ import { isNewTabTrigger } from '@affine/core/utils';
 import { DebugLogger } from '@affine/debug';
 import { track } from '@affine/track';
 import {
-  type BlockService,
   BlockServiceWatcher,
   BlockViewIdentifier,
   ConfigIdentifier,
@@ -44,7 +43,6 @@ import type {
   PeekViewService as BSPeekViewService,
   QuickSearchResult,
   RootBlockConfig,
-  RootService,
 } from '@blocksuite/affine/blocks';
 import {
   AffineSlashMenuWidget,
@@ -81,21 +79,15 @@ export type ReferenceReactRenderer = (
 
 const logger = new DebugLogger('affine::spec-patchers');
 
-function patchSpecService<Service extends BlockService = BlockService>(
+function patchSpecService(
   flavour: string,
-  onMounted: (service: Service) => (() => void) | void,
   onWidgetConnected?: (component: WidgetComponent) => void
 ) {
   class TempServiceWatcher extends BlockServiceWatcher {
     static override readonly flavour = flavour;
     override mounted() {
       super.mounted();
-      const disposable = onMounted(this.blockService as any);
       const disposableGroup = this.blockService.disposables;
-      if (disposable) {
-        disposableGroup.add(disposable);
-      }
-
       if (onWidgetConnected) {
         disposableGroup.add(
           this.blockService.specSlots.widgetConnected.on(({ component }) => {
@@ -424,9 +416,8 @@ export function patchQuickSearchService(framework: FrameworkProvider) {
     },
   });
 
-  const SlashMenuQuickSearchExtension = patchSpecService<RootService>(
+  const SlashMenuQuickSearchExtension = patchSpecService(
     'affine:page',
-    () => {},
     (component: WidgetComponent) => {
       if (component instanceof AffineSlashMenuWidget) {
         component.config.items.forEach(item => {

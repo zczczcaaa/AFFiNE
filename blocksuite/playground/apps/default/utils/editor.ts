@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { EditorHost, ExtensionType } from '@blocksuite/block-std';
 import {
   CommunityCanvasTextFonts,
@@ -10,7 +9,6 @@ import {
   NotificationExtension,
   OverrideThemeExtension,
   ParseDocUrlExtension,
-  RefNodeSlotsExtension,
   RefNodeSlotsProvider,
   SpecProvider,
 } from '@blocksuite/blocks';
@@ -47,15 +45,8 @@ export async function mountDefaultDocEditor(collection: DocCollection) {
 
   const editor = new AffineEditorContainer();
   const specs = getExampleSpecs();
-  const refNodeSlotsExtension = RefNodeSlotsExtension();
-  editor.pageSpecs = patchPageRootSpec([
-    refNodeSlotsExtension,
-    ...specs.pageModeSpecs,
-  ]);
-  editor.edgelessSpecs = patchPageRootSpec([
-    refNodeSlotsExtension,
-    ...specs.edgelessModeSpecs,
-  ]);
+  editor.pageSpecs = patchPageRootSpec([...specs.pageModeSpecs]);
+  editor.edgelessSpecs = patchPageRootSpec([...specs.edgelessModeSpecs]);
 
   SpecProvider.getInstance().extendSpec('edgeless:preview', [
     OverrideThemeExtension(themeExtension),

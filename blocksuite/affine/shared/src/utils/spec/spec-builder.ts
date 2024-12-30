@@ -14,4 +14,14 @@ export class SpecBuilder {
   extend(extensions: ExtensionType[]) {
     this._value = [...this._value, ...extensions];
   }
+
+  omit(target: ExtensionType) {
+    this._value = this._value.filter(extension => extension !== target);
+  }
+
+  replace(target: ExtensionType, newExtension: ExtensionType) {
+    this._value = this._value.map(extension =>
+      extension === target ? newExtension : extension
+    );
+  }
 }

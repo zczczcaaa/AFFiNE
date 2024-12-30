@@ -509,17 +509,6 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       }
     });
 
-    // Forward docLinkClicked event from the synced doc
-    const refNodeProvider =
-      this.syncedDocEditorHost?.std.getOptional(RefNodeSlotsProvider);
-    if (refNodeProvider) {
-      this.disposables.add(
-        refNodeProvider.docLinkClicked.on(args => {
-          this.std.getOptional(RefNodeSlotsProvider)?.docLinkClicked.emit(args);
-        })
-      );
-    }
-
     this._initEdgelessFitEffect();
   }
 

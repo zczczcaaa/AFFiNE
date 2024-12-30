@@ -64,19 +64,28 @@ export const pageRootWidgetViewMap = {
   [AFFINE_SCROLL_ANCHORING_WIDGET]: literal`${unsafeStatic(AFFINE_SCROLL_ANCHORING_WIDGET)}`,
 };
 
-export const PageRootBlockSpec: ExtensionType[] = [
+const PageCommonExtension: ExtensionType[] = [
   FlavourExtension('affine:page'),
   PageRootService,
   DocModeService,
   ThemeService,
   EmbedOptionService,
-  CommandExtension(commands),
+  DocDisplayMetaService,
+  PageViewportServiceExtension,
+];
+
+export const PageRootBlockSpec: ExtensionType[] = [
+  ...PageCommonExtension,
   BlockViewExtension('affine:page', literal`affine-page-root`),
+  CommandExtension(commands),
   WidgetViewMapExtension('affine:page', pageRootWidgetViewMap),
   ExportManagerExtension,
   DNDAPIExtension,
-  PageViewportServiceExtension,
-  DocDisplayMetaService,
   RootBlockAdapterExtensions,
   FileDropExtension,
 ].flat();
+
+export const PreviewPageRootBlockSpec: ExtensionType[] = [
+  ...PageCommonExtension,
+  BlockViewExtension('affine:page', literal`affine-preview-root`),
+];

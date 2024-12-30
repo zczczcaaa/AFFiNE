@@ -1,11 +1,4 @@
-import { EdgelessTextBlockSpec } from '@blocksuite/affine-block-edgeless-text';
-import { FrameBlockSpec } from '@blocksuite/affine-block-frame';
-import { LatexBlockSpec } from '@blocksuite/affine-block-latex';
-import {
-  ConnectionOverlay,
-  EdgelessSurfaceBlockSpec,
-} from '@blocksuite/affine-block-surface';
-import { FontLoaderService } from '@blocksuite/affine-shared/services';
+import { ConnectionOverlay } from '@blocksuite/affine-block-surface';
 import type { ExtensionType } from '@blocksuite/block-std';
 
 import { EdgelessRootBlockSpec } from '../../root-block/edgeless/edgeless-root-spec.js';
@@ -30,7 +23,6 @@ import { TemplateTool } from '../../root-block/edgeless/gfx-tool/template-tool.j
 import { TextTool } from '../../root-block/edgeless/gfx-tool/text-tool.js';
 import { EditPropsMiddlewareBuilder } from '../../root-block/edgeless/middlewares/base.js';
 import { EdgelessSnapManager } from '../../root-block/edgeless/utils/snap-manager.js';
-import { EdgelessSurfaceRefBlockSpec } from '../../surface-ref-block/surface-ref-spec.js';
 import { EdgelessFirstPartyBlockSpecs } from '../common.js';
 
 export const EdgelessToolExtension: ExtensionType[] = [
@@ -62,12 +54,6 @@ export const EdgelessBuiltInManager: ExtensionType[] = [
 export const EdgelessEditorBlockSpecs: ExtensionType[] = [
   EdgelessRootBlockSpec,
   ...EdgelessFirstPartyBlockSpecs,
-  EdgelessSurfaceBlockSpec,
-  EdgelessSurfaceRefBlockSpec,
-  FrameBlockSpec,
-  EdgelessTextBlockSpec,
-  LatexBlockSpec,
-  FontLoaderService,
   EdgelessToolExtension,
   EdgelessBuiltInManager,
 ].flat();

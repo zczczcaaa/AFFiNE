@@ -13,7 +13,6 @@ import {
   OverrideThemeExtension,
   type PageRootService,
   ParseDocUrlExtension,
-  RefNodeSlotsExtension,
   RefNodeSlotsProvider,
   SpecProvider,
   toolbarDefaultConfig,
@@ -73,9 +72,7 @@ export async function mountDefaultDocEditor(collection: DocCollection) {
     }
   }
 
-  const refNodeSlotsExtension = RefNodeSlotsExtension();
   const extensions: ExtensionType[] = [
-    refNodeSlotsExtension,
     PatchPageServiceWatcher,
     FontConfigExtension(CommunityCanvasTextFonts),
     ParseDocUrlExtension(mockParseDocUrlService(collection)),
