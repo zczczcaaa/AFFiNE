@@ -280,8 +280,8 @@ export function getCopilotSelectedElems(
   const copilotWidget = getEdgelessCopilotWidget(host);
 
   if (copilotWidget.visible) {
-    return (service.gfx.tool.currentTool$.peek() as CopilotTool)
-      .selectedElements;
+    const currentTool = service.gfx.tool.currentTool$.peek() as CopilotTool;
+    return currentTool?.selectedElements ?? [];
   }
 
   return service.selection.selectedElements;
