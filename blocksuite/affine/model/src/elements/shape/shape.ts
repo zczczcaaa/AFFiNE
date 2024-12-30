@@ -98,7 +98,7 @@ export class ShapeElementModel extends GfxPrimitiveElementModel<ShapeProps> {
     });
   }
 
-  @field('#000000' as Color)
+  @field(DefaultTheme.shapeTextColor)
   accessor color!: Color;
 
   @field()
@@ -200,7 +200,7 @@ export class LocalShapeElementModel extends GfxLocalElementModel {
   }
 
   @prop()
-  accessor color: Color = '#000000';
+  accessor color: Color = DefaultTheme.shapeTextColor;
 
   @prop()
   accessor fillColor: Color = DefaultTheme.shapeFillColor;

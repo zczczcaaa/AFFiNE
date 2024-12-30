@@ -28,7 +28,7 @@ import {
   Vec,
 } from '@blocksuite/global/utils';
 
-import type { Color } from '../../themes/index.js';
+import { type Color, DefaultTheme } from '../../themes/index';
 
 export type BrushProps = BaseElementProps & {
   /**
@@ -131,7 +131,7 @@ export class BrushElementModel extends GfxPrimitiveElementModel<BrushProps> {
   }
 
   @field()
-  accessor color: Color = '#000000';
+  accessor color: Color = DefaultTheme.black;
 
   @watch((_, instance) => {
     instance['_local'].delete('commands');

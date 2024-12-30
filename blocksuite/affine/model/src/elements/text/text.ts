@@ -16,8 +16,8 @@ import {
   FontWeight,
   TextAlign,
   type TextStyleProps,
-} from '../../consts/index.js';
-import type { Color } from '../../themes/index.js';
+} from '../../consts/index';
+import { type Color, DefaultTheme } from '../../themes/index';
 
 export type TextElementProps = BaseElementProps & {
   text: Y.Text;
@@ -61,7 +61,7 @@ export class TextElementModel extends GfxPrimitiveElementModel<TextElementProps>
   }
 
   @field()
-  accessor color: Color = '#000000';
+  accessor color: Color = DefaultTheme.black;
 
   @field()
   accessor fontFamily: FontFamily = FontFamily.Inter;
