@@ -3953,6 +3953,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/legacy-e2e@workspace:blocksuite/tests-legacy"
   dependencies:
+    "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"

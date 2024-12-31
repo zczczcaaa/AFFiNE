@@ -1,3 +1,4 @@
+import { parseStringToRgba } from '@blocksuite/affine-components/color-picker';
 import {
   ColorScheme,
   FrameBlockModel,
@@ -22,7 +23,6 @@ import { themeToVar } from '@toeverything/theme/v2';
 import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import { parseStringToRgba } from '../../edgeless/components/color-picker/utils.js';
 import type { EdgelessRootService } from '../../edgeless/index.js';
 import { frameTitleStyle, frameTitleStyleVars } from './styles.js';
 

@@ -3,13 +3,13 @@ import {
   EditPropsStore,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
+import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { SignalWatcher } from '@blocksuite/global/utils';
 import { computed } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { ColorEvent } from '../../panel/color-panel.js';
 import type { LineWidthEvent } from '../../panel/line-width-panel.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
 

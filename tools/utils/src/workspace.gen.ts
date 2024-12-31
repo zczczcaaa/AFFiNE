@@ -415,6 +415,7 @@ export const PackageList = [
     location: 'blocksuite/tests-legacy',
     name: '@blocksuite/legacy-e2e',
     workspaceDependencies: [
+      'blocksuite/affine/components',
       'blocksuite/affine/model',
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',

@@ -4,6 +4,14 @@ import {
   normalizeShapeBound,
   TextUtils,
 } from '@blocksuite/affine-block-surface';
+import type {
+  EdgelessColorPickerButton,
+  PickColorEvent,
+} from '@blocksuite/affine-components/color-picker';
+import {
+  packColor,
+  packColorsWithColorScheme,
+} from '@blocksuite/affine-components/color-picker';
 import {
   SmallArrowDownIcon,
   TextAlignCenterIcon,
@@ -25,6 +33,7 @@ import {
   TextElementModel,
   type TextStyleProps,
 } from '@blocksuite/affine-model';
+import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import {
   Bound,
   countBy,
@@ -37,15 +46,6 @@ import { choose } from 'lit/directives/choose.js';
 import { join } from 'lit/directives/join.js';
 import { when } from 'lit/directives/when.js';
 
-import type {
-  EdgelessColorPickerButton,
-  PickColorEvent,
-} from '../../edgeless/components/color-picker/index.js';
-import {
-  packColor,
-  packColorsWithColorScheme,
-} from '../../edgeless/components/color-picker/utils.js';
-import type { ColorEvent } from '../../edgeless/components/panel/color-panel.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 
 const FONT_SIZE_LIST = [

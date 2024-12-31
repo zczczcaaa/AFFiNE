@@ -3,11 +3,11 @@ import {
   DefaultTheme,
   type StrokeStyle,
 } from '@blocksuite/affine-model';
+import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { ColorEvent } from './color-panel.js';
 import { type LineStyleEvent, LineStylesPanel } from './line-styles-panel.js';
 
 export class StrokeStylePanel extends WithDisposable(LitElement) {

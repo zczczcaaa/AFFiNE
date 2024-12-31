@@ -1,28 +1,13 @@
 import type { Color, ColorScheme, Palette } from '@blocksuite/affine-model';
 import { isTransparent, resolveColor } from '@blocksuite/affine-model';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
+import { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { css, html, LitElement, nothing, svg, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { repeat } from 'lit/directives/repeat.js';
 import isEqual from 'lodash.isequal';
-
-export class ColorEvent extends Event {
-  detail: Palette;
-
-  constructor(
-    type: string,
-    {
-      detail,
-      composed,
-      bubbles,
-    }: { detail: Palette; composed: boolean; bubbles: boolean }
-  ) {
-    super(type, { bubbles, composed });
-    this.detail = detail;
-  }
-}
 
 function TransparentIcon(hollowCircle = false) {
   const CircleIcon: TemplateResult | typeof nothing = hollowCircle

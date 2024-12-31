@@ -1,4 +1,4 @@
-import { parseStringToRgba } from '@blocks/root-block/edgeless/components/color-picker/utils.js';
+import { parseStringToRgba } from '@blocksuite/affine-components/color-picker';
 import { expect, type Locator, type Page } from '@playwright/test';
 import { dragBetweenCoords } from 'utils/actions/drag.js';
 import {

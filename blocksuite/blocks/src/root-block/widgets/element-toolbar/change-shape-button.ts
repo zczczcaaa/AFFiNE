@@ -1,4 +1,12 @@
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+import type {
+  EdgelessColorPickerButton,
+  PickColorEvent,
+} from '@blocksuite/affine-components/color-picker';
+import {
+  packColor,
+  packColorsWithColorScheme,
+} from '@blocksuite/affine-components/color-picker';
 import {
   AddTextIcon,
   ChangeShapeIcon,
@@ -26,6 +34,7 @@ import {
   ShapeStyle,
   StrokeStyle,
 } from '@blocksuite/affine-model';
+import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { countBy, maxBy, WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property, query } from 'lit/decorators.js';
@@ -36,13 +45,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
 import isEqual from 'lodash.isequal';
 
-import type { EdgelessColorPickerButton } from '../../edgeless/components/color-picker/button.js';
-import type { PickColorEvent } from '../../edgeless/components/color-picker/types.js';
-import {
-  packColor,
-  packColorsWithColorScheme,
-} from '../../edgeless/components/color-picker/utils.js';
-import type { ColorEvent } from '../../edgeless/components/panel/color-panel.js';
 import {
   type LineStyleEvent,
   LineStylesPanel,

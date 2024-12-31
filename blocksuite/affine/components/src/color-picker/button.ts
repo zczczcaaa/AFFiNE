@@ -1,6 +1,6 @@
-import type { EditorMenuButton } from '@blocksuite/affine-components/toolbar';
 import type { ColorScheme, Palette } from '@blocksuite/affine-model';
 import { resolveColor } from '@blocksuite/affine-model';
+import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { html, LitElement } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -8,7 +8,7 @@ import { choose } from 'lit/directives/choose.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { ColorEvent } from '../panel/color-panel.js';
+import type { EditorMenuButton } from '../toolbar/menu-button.js';
 import type { ModeType, PickColorEvent, PickColorType } from './types.js';
 import { keepColor, preprocessColor, rgbaToHex8 } from './utils.js';
 

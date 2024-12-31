@@ -1,5 +1,13 @@
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type {
+  EdgelessColorPickerButton,
+  PickColorEvent,
+} from '@blocksuite/affine-components/color-picker';
+import {
+  packColor,
+  packColorsWithColorScheme,
+} from '@blocksuite/affine-components/color-picker';
+import type {
   BrushElementModel,
   BrushProps,
   ColorScheme,
@@ -9,18 +17,12 @@ import {
   LineWidth,
   resolveColor,
 } from '@blocksuite/affine-model';
+import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { countBy, maxBy, WithDisposable } from '@blocksuite/global/utils';
 import { html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 
-import type { EdgelessColorPickerButton } from '../../edgeless/components/color-picker/button.js';
-import type { PickColorEvent } from '../../edgeless/components/color-picker/types.js';
-import {
-  packColor,
-  packColorsWithColorScheme,
-} from '../../edgeless/components/color-picker/utils.js';
-import type { ColorEvent } from '../../edgeless/components/panel/color-panel.js';
 import type { LineWidthEvent } from '../../edgeless/components/panel/line-width-panel.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 

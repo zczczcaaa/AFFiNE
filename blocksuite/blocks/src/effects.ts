@@ -18,6 +18,7 @@ import { effects as componentAiItemEffects } from '@blocksuite/affine-components
 import { BlockSelection } from '@blocksuite/affine-components/block-selection';
 import { BlockZeroWidth } from '@blocksuite/affine-components/block-zero-width';
 import { effects as componentCaptionEffects } from '@blocksuite/affine-components/caption';
+import { effects as componentColorPickerEffects } from '@blocksuite/affine-components/color-picker';
 import { effects as componentContextMenuEffects } from '@blocksuite/affine-components/context-menu';
 import { effects as componentDatePickerEffects } from '@blocksuite/affine-components/date-picker';
 import { effects as componentDragIndicatorEffects } from '@blocksuite/affine-components/drag-indicator';
@@ -43,9 +44,6 @@ import { EdgelessAutoCompletePanel } from './root-block/edgeless/components/auto
 import { EdgelessAutoComplete } from './root-block/edgeless/components/auto-complete/edgeless-auto-complete.js';
 import { EdgelessToolIconButton } from './root-block/edgeless/components/buttons/tool-icon-button.js';
 import { EdgelessToolbarButton } from './root-block/edgeless/components/buttons/toolbar-button.js';
-import { EdgelessColorPickerButton } from './root-block/edgeless/components/color-picker/button.js';
-import { EdgelessColorPicker } from './root-block/edgeless/components/color-picker/color-picker.js';
-import { EdgelessColorCustomButton } from './root-block/edgeless/components/color-picker/custom-button.js';
 import { EdgelessConnectorHandle } from './root-block/edgeless/components/connector/connector-handle.js';
 import {
   NOTE_SLICER_WIDGET,
@@ -221,6 +219,7 @@ export function effects() {
   componentDragIndicatorEffects();
   componentToggleButtonEffects();
   componentAiItemEffects();
+  componentColorPickerEffects();
 
   widgetScrollAnchoringEffects();
   widgetMobileToolbarEffects();
@@ -240,10 +239,6 @@ export function effects() {
   customElements.define(
     'edgeless-copilot-toolbar-entry',
     EdgelessCopilotToolbarEntry
-  );
-  customElements.define(
-    'edgeless-color-custom-button',
-    EdgelessColorCustomButton
   );
   customElements.define('edgeless-connector-handle', EdgelessConnectorHandle);
   customElements.define('edgeless-zoom-toolbar', EdgelessZoomToolbar);
@@ -331,13 +326,8 @@ export function effects() {
     EdgelessNavigatorSettingButton
   );
   customElements.define('edgeless-present-button', EdgelessPresentButton);
-  customElements.define('edgeless-color-picker', EdgelessColorPicker);
   customElements.define('overlay-scrollbar', OverlayScrollbar);
   customElements.define('affine-template-loading', AffineTemplateLoading);
-  customElements.define(
-    'edgeless-color-picker-button',
-    EdgelessColorPickerButton
-  );
   customElements.define('edgeless-auto-complete', EdgelessAutoComplete);
   customElements.define(
     'edgeless-font-weight-and-style-panel',

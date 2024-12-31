@@ -14,13 +14,13 @@ import {
   EditPropsStore,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
+import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { computed, effect, type Signal, signal } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
-import type { ColorEvent } from '../../panel/color-panel.js';
 import { ShapeComponentConfig } from './shape-menu-config.js';
 
 export class EdgelessShapeMenu extends SignalWatcher(

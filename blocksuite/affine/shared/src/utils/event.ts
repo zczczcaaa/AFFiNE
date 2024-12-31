@@ -1,3 +1,4 @@
+import type { Palette } from '@blocksuite/affine-model';
 import { IS_IOS, IS_MAC } from '@blocksuite/global/env';
 
 export function isTouchPadPinchEvent(e: WheelEvent) {
@@ -347,3 +348,19 @@ export const createKeydownObserver = ({
   // Fix composition input
   target.addEventListener('compositionend', () => onInput?.(true), { signal });
 };
+
+export class ColorEvent extends Event {
+  detail: Palette;
+
+  constructor(
+    type: string,
+    {
+      detail,
+      composed,
+      bubbles,
+    }: { detail: Palette; composed: boolean; bubbles: boolean }
+  ) {
+    super(type, { bubbles, composed });
+    this.detail = detail;
+  }
+}

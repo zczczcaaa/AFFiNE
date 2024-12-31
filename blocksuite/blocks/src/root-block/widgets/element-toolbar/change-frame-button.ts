@@ -1,4 +1,12 @@
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+import type {
+  EdgelessColorPickerButton,
+  PickColorEvent,
+} from '@blocksuite/affine-components/color-picker';
+import {
+  packColor,
+  packColorsWithColorScheme,
+} from '@blocksuite/affine-components/color-picker';
 import {
   NoteIcon,
   RenameIcon,
@@ -14,6 +22,7 @@ import {
   NoteDisplayMode,
   resolveColor,
 } from '@blocksuite/affine-model';
+import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import { GfxExtensionIdentifier } from '@blocksuite/block-std/gfx';
 import {
@@ -28,13 +37,6 @@ import { property, query } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 import { when } from 'lit/directives/when.js';
 
-import type { EdgelessColorPickerButton } from '../../edgeless/components/color-picker/button.js';
-import type { PickColorEvent } from '../../edgeless/components/color-picker/types.js';
-import {
-  packColor,
-  packColorsWithColorScheme,
-} from '../../edgeless/components/color-picker/utils.js';
-import type { ColorEvent } from '../../edgeless/components/panel/color-panel.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import type { EdgelessFrameManager } from '../../edgeless/frame-manager.js';
 import { mountFrameTitleEditor } from '../../edgeless/utils/text.js';
