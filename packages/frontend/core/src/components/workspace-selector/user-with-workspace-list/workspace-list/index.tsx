@@ -143,12 +143,12 @@ const CloudWorkSpaceList = ({
             ),
             accountStatus === 'authenticated' && (
               <MenuItem key="sign-out" onClick={handleSignOut}>
-                {t['com.affine.sign.out']()}
+                {t['Sign out']()}
               </MenuItem>
             ),
             accountStatus === 'unauthenticated' && (
               <MenuItem key="sign-in" onClick={handleSignIn}>
-                {t['com.affine.sign.in']()}
+                {t['Sign in']()}
               </MenuItem>
             ),
           ]}
