@@ -74,5 +74,5 @@ Now you should be able to start developing affine with server enabled.
 
 ```sh
 # available at http://localhost:5555
-yarn prisma studio
+yarn affine server prisma studio
 ```

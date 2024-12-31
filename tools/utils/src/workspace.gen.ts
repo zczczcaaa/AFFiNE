@@ -418,7 +418,11 @@ export const PackageList = [
   {
     location: 'packages/backend/server',
     name: '@affine/server',
-    workspaceDependencies: ['tests/kit', 'packages/backend/native'],
+    workspaceDependencies: [
+      'tests/kit',
+      'tools/cli',
+      'packages/backend/native',
+    ],
   },
   {
     location: 'packages/common/debug',
