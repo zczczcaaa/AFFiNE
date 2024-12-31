@@ -62,7 +62,6 @@ import { state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { isMindmapNode } from '../../../../_common/edgeless/mindmap/index.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import type {
   EdgelessFrameManager,
@@ -91,6 +90,7 @@ import {
   isEmbedYoutubeBlock,
   isFrameBlock,
   isImageBlock,
+  isMindmapNode,
   isNoteBlock,
 } from '../../utils/query.js';
 import {

@@ -1,12 +1,6 @@
 import { MindmapElementModel } from '@blocksuite/affine-model';
 import type { Viewport } from '@blocksuite/block-std/gfx';
 
-export function isMindmapNode(el: BlockSuite.EdgelessModel) {
-  return (
-    el.group instanceof MindmapElementModel || el instanceof MindmapElementModel
-  );
-}
-
 export function isSingleMindMapNode(els: BlockSuite.EdgelessModel[]) {
   return els.length === 1 && els[0].group instanceof MindmapElementModel;
 }
