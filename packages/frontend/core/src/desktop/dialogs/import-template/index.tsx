@@ -206,6 +206,7 @@ const Dialog = ({
           loading={disabled}
           disabled={disabled}
           onClick={handleImportToSelectedWorkspace}
+          data-testid="import-template-to-workspace-btn"
         >
           {selectedWorkspaceName &&
             t['com.affine.import-template.dialog.createDocToWorkspace']({
