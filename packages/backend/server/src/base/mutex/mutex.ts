@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { Inject, Injectable, Logger, Scope } from '@nestjs/common';
 import { ModuleRef, REQUEST } from '@nestjs/core';
 import type { Request } from 'express';
+import { nanoid } from 'nanoid';
 
 import { GraphqlContext } from '../graphql';
 import { retryable } from '../utils/promise';
@@ -14,7 +15,7 @@ export const MUTEX_WAIT = 100;
 @Injectable()
 export class Mutex {
   protected logger = new Logger(Mutex.name);
-  private readonly clusterIdentifier = `cluster:${randomUUID()}`;
+  private readonly clusterIdentifier = `cluster:${nanoid()}`;
 
   constructor(protected readonly locker: Locker) {}
 
@@ -39,7 +40,10 @@ export class Mutex {
    * @param key resource key
    * @returns LockGuard
    */
-  async acquire(key: string, owner: string = this.clusterIdentifier) {
+  async acquire(
+    key: string,
+    owner: string = `${this.clusterIdentifier}:${nanoid()}`
+  ) {
     try {
       return await retryable(
         () => this.locker.lock(owner, key),

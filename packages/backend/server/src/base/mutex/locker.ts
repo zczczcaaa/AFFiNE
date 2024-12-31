@@ -11,11 +11,12 @@ import { Lock } from './lock';
 const lockScript = `local key = KEYS[1]
 local owner = ARGV[1]
 
--- if lock is not exists or lock is owned by the owner
--- then set lock to the owner and return 1, otherwise return 0
+-- if lock is not exists then set lock to the owner and return 1, otherwise return 0
 -- if the lock is not released correctly due to unexpected reasons
 -- lock will be released after 60 seconds
-if redis.call("get", key) == owner or redis.call("set", key, owner, "NX", "EX", 60) then
+if redis.call("get", key) == owner then
+  return 0
+elseif redis.call("set", key, owner, "NX", "EX", 60) then
   return 1
 else
   return 0
