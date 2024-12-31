@@ -34,12 +34,10 @@ yarn affine @affine/server-native build
 ## Prepare dev environment
 
 ```sh
-cd packages/backend/server
-
 # uncomment all env variables here
-cp .env.example .env
-yarn prisma db push
-yarn data-migration run
+cp packages/backend/server/.env.example packages/backend/server/.env
+yarn affine server prisma db push
+yarn affine server data-migration run
 ```
 
 ## Start server
