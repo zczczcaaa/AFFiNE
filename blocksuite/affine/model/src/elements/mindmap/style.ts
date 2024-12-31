@@ -49,7 +49,7 @@ export type NodeStyle = {
     blur: number;
     offsetX: number;
     offsetY: number;
-    color: string;
+    color: Color;
   };
 };
 
@@ -199,7 +199,7 @@ export class StyleTwo extends MindmapStyleGetter {
     textResizing: TextResizing.AUTO_WIDTH_AND_HEIGHT,
 
     strokeWidth: 3,
-    strokeColor: DefaultTheme.pureBlack,
+    strokeColor: DefaultTheme.black,
 
     fontFamily: FontFamily.Poppins,
     fontSize: 18,
@@ -215,7 +215,7 @@ export class StyleTwo extends MindmapStyleGetter {
       blur: 0,
       offsetX: 3,
       offsetY: 3,
-      color: DefaultTheme.pureBlack,
+      color: DefaultTheme.black,
     },
   };
 
@@ -231,7 +231,7 @@ export class StyleTwo extends MindmapStyleGetter {
     return {
       connector: {
         strokeStyle: StrokeStyle.Solid,
-        stroke: DefaultTheme.pureBlack,
+        stroke: DefaultTheme.black,
         strokeWidth: 3,
 
         mode: ConnectorMode.Orthogonal,
@@ -242,9 +242,9 @@ export class StyleTwo extends MindmapStyleGetter {
         radius: 0.5,
 
         filled: true,
-        fillColor: DefaultTheme.pureWhite,
+        fillColor: DefaultTheme.white,
 
-        strokeColor: DefaultTheme.pureBlack,
+        strokeColor: DefaultTheme.black,
         strokeWidth: 3,
       },
       expandButton: {
@@ -253,14 +253,14 @@ export class StyleTwo extends MindmapStyleGetter {
         radius: 2,
 
         filled: true,
-        fillColor: DefaultTheme.pureBlack,
+        fillColor: DefaultTheme.black,
 
         padding: [4, 0],
 
-        strokeColor: DefaultTheme.pureBlack,
+        strokeColor: DefaultTheme.black,
         strokeWidth: 0,
 
-        color: DefaultTheme.pureWhite,
+        color: DefaultTheme.white,
 
         fontFamily: FontFamily.Inter,
         fontWeight: FontWeight.Bold,
@@ -272,7 +272,7 @@ export class StyleTwo extends MindmapStyleGetter {
         textResizing: TextResizing.AUTO_WIDTH_AND_HEIGHT,
 
         strokeWidth: 3,
-        strokeColor: DefaultTheme.pureBlack,
+        strokeColor: DefaultTheme.black,
 
         fontFamily: FontFamily.Poppins,
         fontSize: 16,
@@ -288,7 +288,7 @@ export class StyleTwo extends MindmapStyleGetter {
           blur: 0,
           offsetX: 3,
           offsetY: 3,
-          color: DefaultTheme.pureBlack,
+          color: DefaultTheme.black,
         },
       },
     };
@@ -300,7 +300,7 @@ export class StyleThree extends MindmapStyleGetter {
   private readonly _strokeColor = [
     DefaultTheme.StrokeColorMap.Yellow,
     DefaultTheme.StrokeColorMap.Green,
-    DefaultTheme.StrokeColorMap.Teal,
+    '#5cc7ba',
   ];
 
   readonly root = {
@@ -335,6 +335,7 @@ export class StyleThree extends MindmapStyleGetter {
 
   override getNodeStyle(_: MindmapNode, path: number[]) {
     const strokeColor = this._getColor(path.length - 2);
+    const dotColor = this._getColor(path.length - 1);
 
     return {
       node: {
@@ -343,7 +344,7 @@ export class StyleThree extends MindmapStyleGetter {
         textResizing: TextResizing.AUTO_WIDTH_AND_HEIGHT,
 
         strokeWidth: 2,
-        strokeColor: strokeColor,
+        strokeColor,
 
         fontFamily: FontFamily.Poppins,
         fontSize: 16,
@@ -370,7 +371,7 @@ export class StyleThree extends MindmapStyleGetter {
         filled: true,
         fillColor: DefaultTheme.pureWhite,
 
-        strokeColor: '#3cbc36',
+        strokeColor: dotColor,
         strokeWidth: 3,
       },
       expandButton: {
@@ -379,14 +380,14 @@ export class StyleThree extends MindmapStyleGetter {
         radius: 8,
 
         filled: true,
-        fillColor: '#3cbc36',
+        fillColor: dotColor,
 
         padding: [4, 0],
 
-        strokeColor: '#3cbc36',
+        strokeColor: dotColor,
         strokeWidth: 0,
 
-        color: '#fff',
+        color: DefaultTheme.pureWhite,
 
         fontFamily: FontFamily.Inter,
         fontWeight: FontWeight.Bold,

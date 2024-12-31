@@ -148,7 +148,7 @@ export class ShapeElementModel extends GfxPrimitiveElementModel<ShapeProps> {
     blur: number;
     offsetX: number;
     offsetY: number;
-    color: string;
+    color: Color;
   } | null = null;
 
   @field()
@@ -234,7 +234,7 @@ export class LocalShapeElementModel extends GfxLocalElementModel {
     blur: number;
     offsetX: number;
     offsetY: number;
-    color: string;
+    color: Color;
   } | null = null;
 
   @prop()

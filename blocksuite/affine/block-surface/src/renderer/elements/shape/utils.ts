@@ -80,7 +80,7 @@ export function drawGeneralShape(
       ctx.shadowOffsetY = offsetY * scale;
     }
 
-    ctx.shadowColor = renderer.getPropertyValue(color);
+    ctx.shadowColor = renderer.getColorValue(color, undefined, true);
   }
 
   ctx.stroke();
