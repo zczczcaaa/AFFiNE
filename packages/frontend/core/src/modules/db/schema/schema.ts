@@ -26,7 +26,7 @@ export const AFFiNE_WORKSPACE_DB_SCHEMA = {
     id: f.string().primaryKey().optional().default(nanoid),
     name: f.string().optional(),
     type: f.string(),
-    show: f.string().optional(),
+    show: f.enum('always-show', 'always-hide', 'hide-when-empty').optional(),
     index: f.string().optional(),
     icon: f.string().optional(),
     additionalData: f.json().optional(),
