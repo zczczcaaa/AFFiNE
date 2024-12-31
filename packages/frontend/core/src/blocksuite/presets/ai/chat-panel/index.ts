@@ -191,8 +191,10 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
 
   protected override updated(_changedProperties: PropertyValues) {
     if (_changedProperties.has('doc')) {
-      this.chatContextValue.chatSessionId = null;
-      this._resetItems();
+      requestAnimationFrame(() => {
+        this.chatContextValue.chatSessionId = null;
+        this._resetItems();
+      });
     }
 
     if (

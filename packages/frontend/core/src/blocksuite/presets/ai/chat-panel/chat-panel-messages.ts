@@ -8,7 +8,7 @@ import {
   UnauthorizedError,
 } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import { css, html, nothing, type PropertyValues } from 'lit';
+import { css, html, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -139,25 +139,6 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   @state()
   accessor showChatCards = true;
 
-  protected override updated(changedProperties: PropertyValues) {
-    if (changedProperties.has('host')) {
-      const { disposables } = this;
-
-      disposables.add(
-        this.host.selection.slots.changed.on(() => {
-          this._selectionValue = this.host.selection.value;
-        })
-      );
-      const docModeService = this.host.std.get(DocModeProvider);
-      disposables.add(
-        docModeService.onPrimaryModeChange(
-          () => this.requestUpdate(),
-          this.host.doc.id
-        )
-      );
-    }
-  }
-
   private _renderAIOnboarding() {
     return this.isLoading ||
       !this.host?.doc.awarenessStore.getFlag('enable_ai_onboarding')
@@ -284,13 +265,16 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
 
   override connectedCallback() {
     super.connectedCallback();
+    const { disposables } = this;
+    const docModeService = this.host.std.get(DocModeProvider);
 
     Promise.resolve(AIProvider.userInfo)
       .then(res => {
         this.avatarUrl = res?.avatarUrl ?? '';
       })
       .catch(console.error);
-    this.disposables.add(
+
+    disposables.add(
       AIProvider.slots.userInfo.on(userInfo => {
         const { status, error } = this.chatContextValue;
         this.avatarUrl = userInfo?.avatarUrl ?? '';
@@ -303,11 +287,21 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         }
       })
     );
-
-    this.disposables.add(
+    disposables.add(
       AIProvider.slots.toggleChatCards.on(({ visible }) => {
         this.showChatCards = visible;
       })
+    );
+    disposables.add(
+      this.host.selection.slots.changed.on(() => {
+        this._selectionValue = this.host.selection.value;
+      })
+    );
+    disposables.add(
+      docModeService.onPrimaryModeChange(
+        () => this.requestUpdate(),
+        this.host.doc.id
+      )
     );
   }
 
