@@ -454,6 +454,8 @@ __metadata:
 "@affine/electron-api@workspace:*, @affine/electron-api@workspace:packages/frontend/electron-api":
   version: 0.0.0-use.local
   resolution: "@affine/electron-api@workspace:packages/frontend/electron-api"
+  dependencies:
+    async-call-rpc: "npm:^6.4.2"
   languageName: unknown
   linkType: soft
 
