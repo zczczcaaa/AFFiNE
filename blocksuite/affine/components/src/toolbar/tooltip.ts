@@ -26,7 +26,7 @@ const styles = css`
     background: var(--affine-tooltip);
 
     overflow-wrap: anywhere;
-    white-space: pre-wrap;
+    white-space: normal;
     word-break: break-all;
   }
 
