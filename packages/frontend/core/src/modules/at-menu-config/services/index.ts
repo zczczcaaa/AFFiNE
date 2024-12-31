@@ -429,7 +429,7 @@ export class AtMenuConfigService extends Service {
 
   // only search docs by title, excluding blocks
   private searchDocs$(query: string) {
-    return this.docsSearch.indexer.blockIndex
+    return this.docsSearch.indexer.docIndex
       .aggregate$(
         {
           type: 'boolean',
@@ -437,32 +437,21 @@ export class AtMenuConfigService extends Service {
           queries: [
             {
               type: 'match',
-              field: 'content',
+              field: 'title',
               match: query,
-            },
-            {
-              type: 'boolean',
-              occur: 'should',
-              queries: [
-                {
-                  type: 'match',
-                  field: 'flavour',
-                  match: 'affine:page',
-                },
-              ],
             },
           ],
         },
         'docId',
         {
           hits: {
-            fields: ['docId', 'content'],
+            fields: ['docId', 'title'],
             pagination: {
               limit: 1,
             },
             highlights: [
               {
-                field: 'content',
+                field: 'title',
                 before: `<span style="color: ${cssVarV2('text/emphasis')}">`,
                 end: '</span>',
               },
@@ -475,8 +464,8 @@ export class AtMenuConfigService extends Service {
           buckets.map(bucket => {
             return {
               id: bucket.key,
-              title: bucket.hits.nodes[0].fields.content,
-              highlights: bucket.hits.nodes[0].highlights.content[0],
+              title: bucket.hits.nodes[0].fields.title,
+              highlights: bucket.hits.nodes[0].highlights.title[0],
             };
           })
         )
