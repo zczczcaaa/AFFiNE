@@ -70,7 +70,8 @@ export const useDocSnapshotList = (workspaceId: string, pageDocId: string) => {
 };
 
 const snapshotFetcher = async (
-  [workspaceId, pageDocId, ts]: [
+  [fetchService, workspaceId, pageDocId, ts]: [
+    FetchService,
     workspaceId: string,
     pageDocId: string,
     ts: string,
@@ -79,7 +80,7 @@ const snapshotFetcher = async (
   if (!ts) {
     return null;
   }
-  const res = await fetch(
+  const res = await fetchService.fetch(
     `/api/workspaces/${workspaceId}/docs/${pageDocId}/histories/${ts}`
   );
 
@@ -132,9 +133,10 @@ export const usePageHistory = (
   pageDocId: string,
   ts?: string
 ) => {
+  const fetchService = useService(FetchService);
   // snapshot should be immutable. so we use swr immutable to disable revalidation
   const { data } = useSWRImmutable<ArrayBuffer | null>(
-    [workspaceId, pageDocId, ts],
+    [fetchService, workspaceId, pageDocId, ts],
     {
       fetcher: snapshotFetcher,
       suspense: false,
