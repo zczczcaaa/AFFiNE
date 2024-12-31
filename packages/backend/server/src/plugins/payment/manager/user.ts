@@ -176,6 +176,9 @@ export class UserSubscriptionManager extends SubscriptionManager {
           }
         : {
             mode: 'subscription' as const,
+            subscription_data: {
+              ...trials,
+            },
           };
 
     return this.stripe.checkout.sessions.create({
@@ -188,9 +191,6 @@ export class UserSubscriptionManager extends SubscriptionManager {
       ],
       ...mode,
       ...discounts,
-      subscription_data: {
-        ...trials,
-      },
       success_url: this.url.link(params.successCallbackLink),
     });
   }
