@@ -39,6 +39,7 @@ const OptimizeOptionOptions: (
           unused: true,
         },
         mangle: true,
+        keep_classnames: true,
       },
     }),
   ],
