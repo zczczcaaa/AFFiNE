@@ -60,5 +60,5 @@ export const embedSyncedDocBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatc
     },
   };
 
-export const EmbedSyncedDocBlockMarkdownAdapterExtension =
+export const EmbedSyncedDocMarkdownAdapterExtension =
   BlockMarkdownAdapterExtension(embedSyncedDocBlockMarkdownAdapterMatcher);

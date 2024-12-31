@@ -30,10 +30,14 @@ import {
 } from '@affine/core/modules/workspace-engine';
 import { I18n } from '@affine/i18n';
 import {
+  defaultBlockMarkdownAdapterMatchers,
   docLinkBaseURLMiddleware,
+  inlineDeltaToMarkdownAdapterMatchers,
   MarkdownAdapter,
+  markdownInlineToDeltaMatchers,
   titleMiddleware,
 } from '@blocksuite/affine/blocks';
+import { Container } from '@blocksuite/affine/global/di';
 import { Job } from '@blocksuite/affine/store';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
@@ -175,7 +179,17 @@ const frameworkProvider = framework.provider();
     });
     const snapshot = job.docToSnapshot(blockSuiteDoc);
 
-    const adapter = new MarkdownAdapter(job);
+    const container = new Container();
+    [
+      ...markdownInlineToDeltaMatchers,
+      ...defaultBlockMarkdownAdapterMatchers,
+      ...inlineDeltaToMarkdownAdapterMatchers,
+    ].forEach(ext => {
+      ext.setup(container);
+    });
+    const provider = container.provider();
+
+    const adapter = new MarkdownAdapter(job, provider);
     if (!snapshot) {
       return;
     }

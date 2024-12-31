@@ -143,7 +143,11 @@ export const copyTextAnswer = async (panel: AffineAIPanelWidget) => {
 };
 
 export const copyText = async (host: EditorHost, text: string) => {
-  const previewDoc = await markDownToDoc(host.std.doc.schema, text);
+  const previewDoc = await markDownToDoc(
+    host.std.provider,
+    host.std.doc.schema,
+    text
+  );
   const models = previewDoc
     .getBlocksByFlavour('affine:note')
     .map(b => b.model)

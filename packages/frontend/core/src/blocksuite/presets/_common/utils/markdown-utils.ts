@@ -12,6 +12,7 @@ import {
   PlainTextAdapter,
   titleMiddleware,
 } from '@blocksuite/affine/blocks';
+import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import type { JobMiddleware, Schema } from '@blocksuite/affine/store';
 import { DocCollection, Job } from '@blocksuite/affine/store';
 import { assertExists } from '@blocksuite/global/utils';
@@ -87,7 +88,7 @@ export async function getContentFromSlice(
   processTextInSnapshot(snapshot, host);
   const adapter =
     type === 'markdown'
-      ? new MarkdownAdapter(job)
+      ? new MarkdownAdapter(job, host.std.provider)
       : new PlainTextAdapter(job, host.std.provider);
   const content = await adapter.fromSliceSnapshot({
     snapshot,
@@ -122,7 +123,7 @@ export const markdownToSnapshot = async (
     collection: host.std.doc.collection,
     middlewares: [defaultImageProxyMiddleware, pasteMiddleware(host.std)],
   });
-  const markdownAdapter = new MixTextAdapter(job);
+  const markdownAdapter = new MixTextAdapter(job, host.std.provider);
   const { blockVersions, workspaceVersion, pageVersion } =
     host.std.doc.collection.meta;
   if (!blockVersions || !workspaceVersion || !pageVersion)
@@ -188,6 +189,7 @@ export async function replaceFromMarkdown(
 }
 
 export async function markDownToDoc(
+  provider: ServiceProvider,
   schema: Schema,
   answer: string,
   additionalMiddlewares?: JobMiddleware[]
@@ -205,7 +207,7 @@ export async function markDownToDoc(
     collection,
     middlewares,
   });
-  const mdAdapter = new MarkdownAdapter(job);
+  const mdAdapter = new MarkdownAdapter(job, provider);
   const doc = await mdAdapter.toDoc({
     file: answer,
     assets: job.assetsManager,

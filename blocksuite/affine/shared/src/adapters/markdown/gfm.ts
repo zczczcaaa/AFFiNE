@@ -52,7 +52,7 @@ function gfmToMarkdown() {
 }
 
 export function remarkGfm(this: Processor) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  // oxlint-disable-next-line typescript/no-this-alias
   const self = this;
   const data = self.data();
 

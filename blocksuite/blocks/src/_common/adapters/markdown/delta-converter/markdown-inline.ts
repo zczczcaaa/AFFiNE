@@ -1,6 +1,6 @@
-import type { MarkdownASTToDeltaMatcher } from '@blocksuite/affine-shared/adapters';
+import { MarkdownASTToDeltaExtension } from '@blocksuite/affine-shared/adapters';
 
-export const markdownTextToDeltaMatcher: MarkdownASTToDeltaMatcher = {
+export const markdownTextToDeltaMatcher = MarkdownASTToDeltaExtension({
   name: 'text',
   match: ast => ast.type === 'text',
   toDelta: ast => {
@@ -9,9 +9,9 @@ export const markdownTextToDeltaMatcher: MarkdownASTToDeltaMatcher = {
     }
     return [{ insert: ast.value }];
   },
-};
+});
 
-export const markdownInlineCodeToDeltaMatcher: MarkdownASTToDeltaMatcher = {
+export const markdownInlineCodeToDeltaMatcher = MarkdownASTToDeltaExtension({
   name: 'inlineCode',
   match: ast => ast.type === 'inlineCode',
   toDelta: ast => {
@@ -20,9 +20,9 @@ export const markdownInlineCodeToDeltaMatcher: MarkdownASTToDeltaMatcher = {
     }
     return [{ insert: ast.value, attributes: { code: true } }];
   },
-};
+});
 
-export const markdownStrongToDeltaMatcher: MarkdownASTToDeltaMatcher = {
+export const markdownStrongToDeltaMatcher = MarkdownASTToDeltaExtension({
   name: 'strong',
   match: ast => ast.type === 'strong',
   toDelta: (ast, context) => {
@@ -36,9 +36,9 @@ export const markdownStrongToDeltaMatcher: MarkdownASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const markdownEmphasisToDeltaMatcher: MarkdownASTToDeltaMatcher = {
+export const markdownEmphasisToDeltaMatcher = MarkdownASTToDeltaExtension({
   name: 'emphasis',
   match: ast => ast.type === 'emphasis',
   toDelta: (ast, context) => {
@@ -52,9 +52,9 @@ export const markdownEmphasisToDeltaMatcher: MarkdownASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const markdownDeleteToDeltaMatcher: MarkdownASTToDeltaMatcher = {
+export const markdownDeleteToDeltaMatcher = MarkdownASTToDeltaExtension({
   name: 'delete',
   match: ast => ast.type === 'delete',
   toDelta: (ast, context) => {
@@ -68,9 +68,9 @@ export const markdownDeleteToDeltaMatcher: MarkdownASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const markdownLinkToDeltaMatcher: MarkdownASTToDeltaMatcher = {
+export const markdownLinkToDeltaMatcher = MarkdownASTToDeltaExtension({
   name: 'link',
   match: ast => ast.type === 'link',
   toDelta: (ast, context) => {
@@ -119,15 +119,15 @@ export const markdownLinkToDeltaMatcher: MarkdownASTToDeltaMatcher = {
       })
     );
   },
-};
+});
 
-export const markdownListToDeltaMatcher: MarkdownASTToDeltaMatcher = {
+export const markdownListToDeltaMatcher = MarkdownASTToDeltaExtension({
   name: 'list',
   match: ast => ast.type === 'list',
   toDelta: () => [],
-};
+});
 
-export const markdownInlineMathToDeltaMatcher: MarkdownASTToDeltaMatcher = {
+export const markdownInlineMathToDeltaMatcher = MarkdownASTToDeltaExtension({
   name: 'inlineMath',
   match: ast => ast.type === 'inlineMath',
   toDelta: ast => {
@@ -136,9 +136,9 @@ export const markdownInlineMathToDeltaMatcher: MarkdownASTToDeltaMatcher = {
     }
     return [{ insert: ' ', attributes: { latex: ast.value } }];
   },
-};
+});
 
-export const markdownInlineToDeltaMatchers: MarkdownASTToDeltaMatcher[] = [
+export const markdownInlineToDeltaMatchers = [
   markdownTextToDeltaMatcher,
   markdownInlineCodeToDeltaMatcher,
   markdownStrongToDeltaMatcher,

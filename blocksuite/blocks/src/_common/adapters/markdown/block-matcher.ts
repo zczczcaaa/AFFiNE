@@ -1,36 +1,36 @@
-import { bookmarkBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-bookmark';
-import { codeBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-code';
-import { databaseBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-database';
-import { dividerBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-divider';
+import { BookmarkBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-bookmark';
+import { CodeBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-code';
+import { DatabaseBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-database';
+import { DividerBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-divider';
 import {
-  embedFigmaBlockMarkdownAdapterMatcher,
-  embedGithubBlockMarkdownAdapterMatcher,
-  embedLinkedDocBlockMarkdownAdapterMatcher,
-  embedLoomBlockMarkdownAdapterMatcher,
-  embedSyncedDocBlockMarkdownAdapterMatcher,
-  embedYoutubeBlockMarkdownAdapterMatcher,
+  EmbedFigmaMarkdownAdapterExtension,
+  EmbedGithubMarkdownAdapterExtension,
+  EmbedLinkedDocMarkdownAdapterExtension,
+  EmbedLoomMarkdownAdapterExtension,
+  EmbedSyncedDocMarkdownAdapterExtension,
+  EmbedYoutubeMarkdownAdapterExtension,
 } from '@blocksuite/affine-block-embed';
-import { imageBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-image';
-import { latexBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-latex';
-import { listBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-list';
-import { paragraphBlockMarkdownAdapterMatcher } from '@blocksuite/affine-block-paragraph';
+import { ImageBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-image';
+import { LatexBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-latex';
+import { ListBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-list';
+import { ParagraphBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-paragraph';
 
-import { rootBlockMarkdownAdapterMatcher } from '../../../root-block/adapters/markdown.js';
+import { RootBlockMarkdownAdapterExtension } from '../../../root-block/adapters/markdown.js';
 
 export const defaultBlockMarkdownAdapterMatchers = [
-  embedFigmaBlockMarkdownAdapterMatcher,
-  embedGithubBlockMarkdownAdapterMatcher,
-  embedLinkedDocBlockMarkdownAdapterMatcher,
-  embedLoomBlockMarkdownAdapterMatcher,
-  embedSyncedDocBlockMarkdownAdapterMatcher,
-  embedYoutubeBlockMarkdownAdapterMatcher,
-  listBlockMarkdownAdapterMatcher,
-  paragraphBlockMarkdownAdapterMatcher,
-  bookmarkBlockMarkdownAdapterMatcher,
-  codeBlockMarkdownAdapterMatcher,
-  databaseBlockMarkdownAdapterMatcher,
-  dividerBlockMarkdownAdapterMatcher,
-  imageBlockMarkdownAdapterMatcher,
-  latexBlockMarkdownAdapterMatcher,
-  rootBlockMarkdownAdapterMatcher,
+  EmbedFigmaMarkdownAdapterExtension,
+  EmbedGithubMarkdownAdapterExtension,
+  EmbedLinkedDocMarkdownAdapterExtension,
+  EmbedLoomMarkdownAdapterExtension,
+  EmbedSyncedDocMarkdownAdapterExtension,
+  EmbedYoutubeMarkdownAdapterExtension,
+  ListBlockMarkdownAdapterExtension,
+  ParagraphBlockMarkdownAdapterExtension,
+  BookmarkBlockMarkdownAdapterExtension,
+  CodeBlockMarkdownAdapterExtension,
+  DatabaseBlockMarkdownAdapterExtension,
+  DividerBlockMarkdownAdapterExtension,
+  ImageBlockMarkdownAdapterExtension,
+  LatexBlockMarkdownAdapterExtension,
+  RootBlockMarkdownAdapterExtension,
 ];

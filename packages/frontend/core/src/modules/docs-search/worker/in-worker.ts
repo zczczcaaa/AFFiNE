@@ -5,7 +5,13 @@ import type {
   EmbedBlockModel,
   ImageBlockModel,
 } from '@blocksuite/affine/blocks';
-import { MarkdownAdapter } from '@blocksuite/affine/blocks';
+import {
+  defaultBlockMarkdownAdapterMatchers,
+  inlineDeltaToMarkdownAdapterMatchers,
+  MarkdownAdapter,
+  markdownInlineToDeltaMatchers,
+} from '@blocksuite/affine/blocks';
+import { Container } from '@blocksuite/affine/global/di';
 import {
   createYProxy,
   DocCollection,
@@ -174,11 +180,22 @@ function generateMarkdownPreviewBuilder(
     adapterConfigs.set('docLinkBaseUrl', baseUrl);
   };
 
+  const container = new Container();
+  [
+    ...markdownInlineToDeltaMatchers,
+    ...defaultBlockMarkdownAdapterMatchers,
+    ...inlineDeltaToMarkdownAdapterMatchers,
+  ].forEach(ext => {
+    ext.setup(container);
+  });
+
+  const provider = container.provider();
   const markdownAdapter = new MarkdownAdapter(
     new Job({
       collection: markdownPreviewDocCollection,
       middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
-    })
+    }),
+    provider
   );
 
   const markdownPreviewCache = new WeakMap<BlockDocumentInfo, string | null>();

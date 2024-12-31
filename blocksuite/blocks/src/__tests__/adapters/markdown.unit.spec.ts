@@ -1,4 +1,6 @@
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
+import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
+import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
   DocSnapshot,
@@ -8,10 +10,23 @@ import type {
 import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { MarkdownAdapter } from '../../_common/adapters/markdown/index.js';
+import { inlineDeltaToMarkdownAdapterMatchers } from '../../_common/adapters/markdown/delta-converter/inline-delta.js';
+import { markdownInlineToDeltaMatchers } from '../../_common/adapters/markdown/delta-converter/markdown-inline.js';
+import { defaultBlockMarkdownAdapterMatchers } from '../../_common/adapters/markdown/index.js';
 import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';
+
+const container = new Container();
+[
+  ...markdownInlineToDeltaMatchers,
+  ...defaultBlockMarkdownAdapterMatchers,
+  ...inlineDeltaToMarkdownAdapterMatchers,
+].forEach(ext => {
+  ext.setup(container);
+});
+
+const provider = container.provider();
 
 describe('snapshot to markdown', () => {
   test('code', async () => {
@@ -71,7 +86,7 @@ describe('snapshot to markdown', () => {
 
     const markdown = '```python\nimport this\n```\n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -270,7 +285,7 @@ describe('snapshot to markdown', () => {
 hhh
 `;
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -418,7 +433,7 @@ hhh
 * eee
 `;
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -567,7 +582,7 @@ hhh
 * [ ] eee
 `;
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -710,7 +725,7 @@ hhh
 2. ddd
 `;
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -874,7 +889,7 @@ hhh
 2. eee
 `;
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -946,7 +961,7 @@ hhh
     };
     const markdown = 'aaa `bbb` ccc\n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1018,7 +1033,7 @@ hhh
     };
     const markdown = 'inline $E=mc^2$ latex\n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1074,7 +1089,7 @@ hhh
 
     const markdown = '$$\nE=mc^2\n$$\n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1146,7 +1161,7 @@ hhh
     };
     const markdown = 'aaa [bbb](https://affine.pro/) ccc\n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1215,7 +1230,7 @@ hhh
     };
     const markdown = 'aaa https://affine.pro/  \n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1288,7 +1303,7 @@ hhh
 
     const markdown = 'aaa**bbb**ccc\n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1361,7 +1376,7 @@ hhh
 
     const markdown = 'aaa*bbb*ccc\n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1437,7 +1452,7 @@ hhh
     const markdown =
       '![](assets/YXXTjRmLlNyiOUnHb8nAIvUP6V7PAXhwW9F5_tc2LGs=.blob "aaa")\n\n';
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const blobCRUD = new MemoryBlobCRUD();
     await blobCRUD.set(
       'YXXTjRmLlNyiOUnHb8nAIvUP6V7PAXhwW9F5_tc2LGs=',
@@ -1670,7 +1685,7 @@ hhh
 | Task 1 | TODO        | 2023-12-15 | 1      | 65       | test1,test2 | [test2](https://google.com) | https://google.com | true     |
 | Task 2 | In Progress | 2023-12-20 |        |          |             | test1                       |                    |          |
 `;
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -1920,7 +1935,7 @@ hhh
       adapterConfigs.set('title:deadbeef', 'test');
       adapterConfigs.set('docLinkBaseUrl', 'https://example.com');
     };
-    const mdAdapter = new MarkdownAdapter(createJob([middleware]));
+    const mdAdapter = new MarkdownAdapter(createJob([middleware]), provider);
     const target = await mdAdapter.fromBlockSnapshot({
       snapshot: blockSnapshot,
     });
@@ -2327,7 +2342,7 @@ World!
     await job.snapshotToDoc(syncedDocSnapshot);
     await job.snapshotToDoc(docSnapShot);
 
-    const mdAdapter = new MarkdownAdapter(job);
+    const mdAdapter = new MarkdownAdapter(job, provider);
     const target = await mdAdapter.fromDocSnapshot({
       snapshot: docSnapShot,
     });
@@ -2371,7 +2386,7 @@ describe('markdown to snapshot', () => {
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -2420,7 +2435,7 @@ describe('markdown to snapshot', () => {
       pageId: '',
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawSliceSnapshot = await mdAdapter.toSliceSnapshot({
       file: markdown,
       workspaceId: '',
@@ -2471,7 +2486,7 @@ describe('markdown to snapshot', () => {
       pageId: '',
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawSliceSnapshot = await mdAdapter.toSliceSnapshot({
       file: markdown,
       workspaceId: '',
@@ -2522,7 +2537,7 @@ describe('markdown to snapshot', () => {
       pageId: '',
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawSliceSnapshot = await mdAdapter.toSliceSnapshot({
       file: markdown,
       workspaceId: '',
@@ -2700,7 +2715,7 @@ hhh
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -2836,7 +2851,7 @@ hhh
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -2972,7 +2987,7 @@ hhh
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3081,7 +3096,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3131,7 +3146,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3186,7 +3201,7 @@ bbb
       pageId: '',
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawSliceSnapshot = await mdAdapter.toSliceSnapshot({
       file: markdown,
       workspaceId: '',
@@ -3238,7 +3253,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3288,7 +3303,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3339,7 +3354,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3390,7 +3405,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3511,7 +3526,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3553,7 +3568,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3603,7 +3618,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3637,7 +3652,7 @@ bbb
       ],
     };
 
-    const mdAdapter = new MarkdownAdapter(createJob());
+    const mdAdapter = new MarkdownAdapter(createJob(), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
@@ -3835,7 +3850,7 @@ hhh
     const middleware: JobMiddleware = ({ adapterConfigs }) => {
       adapterConfigs.set('docLinkBaseUrl', 'https://example.com');
     };
-    const mdAdapter = new MarkdownAdapter(createJob([middleware]));
+    const mdAdapter = new MarkdownAdapter(createJob([middleware]), provider);
     const rawBlockSnapshot = await mdAdapter.toBlockSnapshot({
       file: markdown,
     });
