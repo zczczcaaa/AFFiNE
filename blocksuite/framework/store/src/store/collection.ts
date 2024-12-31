@@ -23,7 +23,6 @@ import {
   BlockSuiteDoc,
   type RawAwarenessState,
 } from '../yjs/index.js';
-import { DocCollectionAddonType, test } from './addon/index.js';
 import { BlockCollection, type GetDocOptions } from './doc/block-collection.js';
 import type { Doc, Query } from './doc/index.js';
 import type { IdGeneratorType } from './id.js';
@@ -73,10 +72,7 @@ export interface StackItem {
   meta: Map<'cursor-location' | 'selection-state', unknown>;
 }
 
-// oxlint-disable-next-line
-// @ts-ignore FIXME: typecheck error
-@test
-export class DocCollection extends DocCollectionAddonType {
+export class DocCollection {
   static Y = Y;
 
   protected readonly _schema: Schema;
@@ -142,7 +138,6 @@ export class DocCollection extends DocCollectionAddonType {
     },
     logger = new NoopLogger(),
   }: DocCollectionOptions) {
-    super();
     this._schema = schema;
 
     this.id = id || '';

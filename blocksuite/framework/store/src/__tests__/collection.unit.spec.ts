@@ -865,68 +865,6 @@ describe('getBlock', () => {
   });
 });
 
-// Inline snapshot is not supported under describe.parallel config
-describe('collection.exportJSX works', () => {
-  it('collection matches snapshot', () => {
-    const options = createTestOptions();
-    const collection = new DocCollection(options);
-    collection.meta.initialize();
-    const doc = collection.createDoc({ id: 'doc:home' });
-
-    doc.addBlock('affine:page', { title: new doc.Text('hello') });
-
-    expect(collection.exportJSX()).toMatchInlineSnapshot(`
-      <affine:page
-        prop:count={0}
-        prop:items={[]}
-        prop:style={{}}
-        prop:title="hello"
-      />
-    `);
-  });
-
-  it('empty collection matches snapshot', () => {
-    const options = createTestOptions();
-    const collection = new DocCollection(options);
-    collection.meta.initialize();
-    collection.createDoc({ id: 'doc:home' });
-
-    expect(collection.exportJSX()).toMatchInlineSnapshot('null');
-  });
-
-  it('collection with multiple blocks children matches snapshot', () => {
-    const options = createTestOptions();
-    const collection = new DocCollection(options);
-    collection.meta.initialize();
-    const doc = collection.createDoc({ id: 'doc:home' });
-    doc.load(() => {
-      const rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
-      });
-      const noteId = doc.addBlock('affine:note', {}, rootId);
-      doc.addBlock('affine:paragraph', {}, noteId);
-      doc.addBlock('affine:paragraph', {}, noteId);
-    });
-
-    expect(collection.exportJSX()).toMatchInlineSnapshot(/* xml */ `
-      <affine:page
-        prop:count={0}
-        prop:items={[]}
-        prop:style={{}}
-      >
-        <affine:note>
-          <affine:paragraph
-            prop:type="text"
-          />
-          <affine:paragraph
-            prop:type="text"
-          />
-        </affine:note>
-      </affine:page>
-    `);
-  });
-});
-
 describe('flags', () => {
   it('update flags', () => {
     const options = createTestOptions();

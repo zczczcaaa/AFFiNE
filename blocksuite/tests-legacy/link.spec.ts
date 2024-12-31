@@ -20,10 +20,7 @@ import {
   type,
   waitNextFrame,
 } from './utils/actions/index.js';
-import {
-  assertKeyboardWorkInInput,
-  assertStoreMatchJSX,
-} from './utils/asserts.js';
+import { assertKeyboardWorkInInput } from './utils/asserts.js';
 import { test } from './utils/playwright.js';
 
 const pressCreateLinkShortCut = async (page: Page) => {
@@ -146,63 +143,26 @@ async function createLinkBlock(page: Page, str: string, link: string) {
 
 test('type character in link should not jump out link node', async ({
   page,
-}) => {
+}, testInfo) => {
   await enterPlaygroundRoom(page);
-  const id = await createLinkBlock(page, 'link text', 'http://example.com');
+  await createLinkBlock(page, 'link text', 'http://example.com');
   await focusRichText(page, 0);
   await page.keyboard.press('ArrowLeft');
   await type(page, 'IN_LINK');
-  await assertStoreMatchJSX(
-    page,
-    `
-<affine:paragraph
-  prop:collapsed={false}
-  prop:text={
-    <>
-      <text
-        insert="Hello"
-      />
-      <text
-        insert="link texIN_LINKt"
-        link="http://example.com"
-      />
-    </>
-  }
-  prop:type="text"
-/>`,
-    id
+  expect(await getPageSnapshot(page, true)).toMatchSnapshot(
+    `${testInfo.title}.json`
   );
 });
 
 test('type character after link should not extend the link attributes', async ({
   page,
-}) => {
+}, testInfo) => {
   await enterPlaygroundRoom(page);
-  const id = await createLinkBlock(page, 'link text', 'http://example.com');
+  await createLinkBlock(page, 'link text', 'http://example.com');
   await focusRichText(page, 0);
   await type(page, 'AFTER_LINK');
-  await assertStoreMatchJSX(
-    page,
-    `
-<affine:paragraph
-  prop:collapsed={false}
-  prop:text={
-    <>
-      <text
-        insert="Hello"
-      />
-      <text
-        insert="link text"
-        link="http://example.com"
-      />
-      <text
-        insert="AFTER_LINK"
-      />
-    </>
-  }
-  prop:type="text"
-/>`,
-    id
+  expect(await getPageSnapshot(page, true)).toMatchSnapshot(
+    `${testInfo.title}.json`
   );
 });
 
@@ -237,11 +197,11 @@ test('readonly mode should not trigger link popup', async ({ page }) => {
   await expect(linkPopoverInput).not.toBeVisible();
 });
 
-test('should mock selection not stored', async ({ page }) => {
+test('should mock selection not stored', async ({ page }, testInfo) => {
   const linkText = 'linkText';
   const link = 'http://example.com';
   await enterPlaygroundRoom(page);
-  const { paragraphId } = await initEmptyParagraphState(page);
+  await initEmptyParagraphState(page);
   await focusRichText(page);
   await type(page, linkText);
 
@@ -254,15 +214,8 @@ test('should mock selection not stored', async ({ page }) => {
   await expect(mockSelectNode).toBeVisible();
 
   // the mock select node should not be stored in the Y doc
-  await assertStoreMatchJSX(
-    page,
-    `
-<affine:paragraph
-  prop:collapsed={false}
-  prop:text="linkText"
-  prop:type="text"
-/>`,
-    paragraphId
+  expect(await getPageSnapshot(page, true)).toMatchSnapshot(
+    `${testInfo.title}.json`
   );
 
   await type(page, link);
@@ -346,9 +299,9 @@ test('link bar should not be appear when the range is collapsed', async ({
   await expect(linkPopoverLocator).toBeVisible();
 });
 
-test('create link with paste', async ({ page }) => {
+test('create link with paste', async ({ page }, testInfo) => {
   await enterPlaygroundRoom(page);
-  const { paragraphId } = await initEmptyParagraphState(page);
+  await initEmptyParagraphState(page);
   await focusRichText(page);
   await type(page, 'aaa');
 
@@ -375,22 +328,8 @@ test('create link with paste', async ({ page }) => {
   await expect(confirmBtn).not.toHaveAttribute('disabled');
   await pressEnter(page);
   await expect(createLinkPopoverLocator).not.toBeVisible();
-  await assertStoreMatchJSX(
-    page,
-    `
-<affine:paragraph
-  prop:collapsed={false}
-  prop:text={
-    <>
-      <text
-        insert="aaa"
-        link="http://affine.pro"
-      />
-    </>
-  }
-  prop:type="text"
-/>`,
-    paragraphId
+  expect(await getPageSnapshot(page, true)).toMatchSnapshot(
+    `${testInfo.title}.json`
   );
 });
 
@@ -447,8 +386,7 @@ test('convert link to card', async ({ page }, testInfo) => {
   await expect(linkToEmbedBtn).not.toBeVisible();
 });
 
-//TODO: wait for embed block completed
-test.skip('convert link to embed', async ({ page }) => {
+test('convert link to embed', async ({ page }, testInfo) => {
   const linkText = 'alinkTexta';
   const link = 'https://www.youtube.com/watch?v=U6s2pdxebSo';
   await enterPlaygroundRoom(page);
@@ -471,73 +409,13 @@ test.skip('convert link to embed', async ({ page }) => {
   await expect(linkPopoverLocator).not.toBeVisible();
   await focusRichText(page);
 
-  await assertStoreMatchJSX(
-    page,
-    `
-<affine:page>
-  <affine:note
-    prop:background="--affine-note-background-blue"
-    prop:displayMode="both"
-    prop:edgeless={
-      Object {
-        "style": Object {
-          "borderRadius": 8,
-          "borderSize": 4,
-          "borderStyle": "none",
-          "shadowType": "--affine-note-shadow-box",
-        },
-      }
-    }
-    prop:hidden={false}
-    prop:index="a0"
-    prop:lockedBySelf={false}
-  >
-    <affine:paragraph
-      prop:collapsed={false} 
-      prop:text="aaa"
-      prop:type="text"
-    />
-    <affine:paragraph
-      prop:collapsed={false}
-      prop:text={
-        <>
-          <text
-            insert="a"
-          />
-          <text
-            insert="linkText"
-            link="${link}"
-          />
-          <text
-            insert="a"
-          />
-        </>
-      }
-      prop:type="text"
-    />
-  </affine:note>
-</affine:page>`
+  expect(await getPageSnapshot(page, true)).toMatchSnapshot(
+    `${testInfo.title}.json`
   );
 
-  const linkToCardBtn = page.getByTestId('link-to-card');
-  const linkToEmbedBtn = page.getByTestId('link-to-embed');
   const linkLocator = page.locator('affine-link a');
 
   await linkLocator.hover();
   await waitNextFrame(page);
   await expect(linkPopoverLocator).toBeVisible();
-  await expect(linkToCardBtn).toBeVisible();
-  await expect(linkToEmbedBtn).toBeVisible();
-
-  await page.mouse.move(0, 0);
-  await waitNextFrame(page);
-  await expect(linkPopoverLocator).not.toBeVisible();
-  await focusRichText(page, 1);
-  await pressTab(page);
-
-  await linkLocator.hover();
-  await waitNextFrame(page);
-  await expect(linkPopoverLocator).toBeVisible();
-  await expect(linkToCardBtn).not.toBeVisible();
-  await expect(linkToEmbedBtn).not.toBeVisible();
 });

@@ -50,7 +50,6 @@ import {
   assertDocTitleFocus,
   assertRichTextInlineRange,
   assertRichTexts,
-  assertStoreMatchJSX,
   assertTitle,
 } from './utils/asserts.js';
 import { test } from './utils/playwright.js';
@@ -1296,9 +1295,11 @@ test.describe('readonly mode', () => {
     await expect(placeholder).toBeHidden();
   });
 
-  test('should readonly mode not be able to modify text', async ({ page }) => {
+  test('should readonly mode not be able to modify text', async ({
+    page,
+  }, testInfo) => {
     await enterPlaygroundRoom(page);
-    const { paragraphId } = await initEmptyParagraphState(page);
+    await initEmptyParagraphState(page);
 
     await focusRichText(page);
     await type(page, 'hello');
@@ -1308,27 +1309,13 @@ test.describe('readonly mode', () => {
     await type(page, 'world');
     await dragBetweenIndices(page, [0, 1], [0, 3]);
     await page.keyboard.press(`${SHORT_KEY}+b`);
-    await assertStoreMatchJSX(
-      page,
-      `
-<affine:paragraph
-  prop:collapsed={false}
-  prop:text="hello"
-  prop:type="text"
-/>`,
-      paragraphId
+    expect(await getPageSnapshot(page, true)).toMatchSnapshot(
+      `${testInfo.title}_1.json`
     );
 
     await undoByKeyboard(page);
-    await assertStoreMatchJSX(
-      page,
-      `
-<affine:paragraph
-  prop:collapsed={false}
-  prop:text="hello"
-  prop:type="text"
-/>`,
-      paragraphId
+    expect(await getPageSnapshot(page, true)).toMatchSnapshot(
+      `${testInfo.title}_2.json`
     );
   });
 });

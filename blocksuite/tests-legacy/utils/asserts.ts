@@ -18,11 +18,6 @@ import type { InlineRootElement } from '@inline/inline-editor.js';
 import { expect, type Locator, type Page } from '@playwright/test';
 import { COLLECTION_VERSION, PAGE_VERSION } from '@store/consts.js';
 import type { BlockModel } from '@store/index.js';
-import type { JSXElement } from '@store/utils/jsx.js';
-import {
-  format as prettyFormat,
-  plugins as prettyFormatPlugins,
-} from 'pretty-format';
 
 import {
   getCanvasElementsCount,
@@ -50,7 +45,6 @@ import {
 import {
   captureHistory,
   getClipboardCustomData,
-  getCurrentEditorDocId,
   getCurrentThemeCSSPropertyValue,
   getEditorLocator,
   inlineEditorInnerTextToString,
@@ -631,116 +625,6 @@ export async function assertBlockTypes(page: Page, blockTypes: string[]) {
     );
   }, currentEditorIndex);
   expect(actual).toEqual(blockTypes);
-}
-
-/**
- * @example
- * ```ts
- * await assertMatchMarkdown(
- *   page,
- *   `title
- * text1
- * text2`
- * );
- * ```
- * @deprecated experimental, use {@link assertStoreMatchJSX} instead
- */
-export async function assertMatchMarkdown(page: Page, text: string) {
-  const jsonDoc = (await page.evaluate(() =>
-    window.collection.doc.toJSON()
-  )) as Record<string, Record<string, unknown>>;
-  const titleNode = jsonDoc['doc:home']['0'] as Record<string, unknown>;
-
-  const markdownVisitor = (node: Record<string, unknown>): string => {
-    // TODO use schema
-    if (node['sys:flavour'] === 'affine:page') {
-      return (node['prop:title'] as Text).toString() ?? '';
-    }
-    if (!('prop:type' in node)) {
-      return '[? unknown node]';
-    }
-    if (node['prop:type'] === 'text') {
-      return node['prop:text'] as string;
-    }
-    if (node['prop:type'] === 'bulleted') {
-      return `- ${node['prop:text']}`;
-    }
-    // TODO please fix this
-    return `[? ${node['prop:type']} node]`;
-  };
-
-  const INDENT_SIZE = 2;
-  const visitNodes = (
-    node: Record<string, unknown>,
-    visitor: (node: Record<string, unknown>) => string
-  ): string[] => {
-    if (!('sys:children' in node) || !Array.isArray(node['sys:children'])) {
-      throw new Error("Failed to visit nodes: 'sys:children' is not an array");
-      // return visitor(node);
-    }
-
-    const children = node['sys:children'].map(id => jsonDoc['doc:home'][id]);
-    return [
-      visitor(node),
-      ...children.flatMap(child =>
-        visitNodes(child as Record<string, unknown>, visitor).map(line => {
-          if (node['sys:flavour'] === 'affine:page') {
-            // Ad hoc way to remove the title indent
-            return line;
-          }
-
-          return ' '.repeat(INDENT_SIZE) + line;
-        })
-      ),
-    ];
-  };
-  const visitRet = visitNodes(titleNode, markdownVisitor);
-  const actual = visitRet.join('\n');
-
-  expect(actual).toEqual(text);
-}
-
-export async function assertStoreMatchJSX(
-  page: Page,
-  snapshot: string,
-  blockId?: string
-) {
-  const docId = await getCurrentEditorDocId(page);
-  const element = (await page.evaluate(
-    ([blockId, docId]) => window.collection.exportJSX(blockId, docId),
-    [blockId, docId]
-  )) as JSXElement;
-
-  // Fix symbol can not be serialized, we need to set $$typeof manually
-  // If the function passed to the page.evaluate(pageFunction[, arg]) returns a non-Serializable value,
-  // then page.evaluate(pageFunction[, arg]) resolves to undefined.
-  // See https://playwright.dev/docs/api/class-page#page-evaluate
-  const testSymbol = Symbol.for('react.test.json');
-  const markSymbol = (node: JSXElement) => {
-    node.$$typeof = testSymbol;
-    if (!node.children) {
-      return;
-    }
-    const propText = node.props['prop:text'];
-    if (propText && typeof propText === 'object') {
-      markSymbol(propText);
-    }
-    node.children.forEach(child => {
-      if (!(typeof child === 'object')) {
-        return;
-      }
-      markSymbol(child);
-    });
-  };
-
-  markSymbol(element);
-
-  // See https://github.com/facebook/jest/blob/main/packages/pretty-format
-  const formattedJSX = prettyFormat(element, {
-    plugins: [prettyFormatPlugins.ReactTestComponent],
-    printFunctionName: false,
-  });
-  expect(formattedJSX, formattedJSX).toEqual(snapshot.trimStart());
 }
 
 type MimeType = 'text/plain' | 'blocksuite/x-c+w' | 'text/html';
