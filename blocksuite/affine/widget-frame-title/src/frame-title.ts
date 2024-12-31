@@ -23,7 +23,6 @@ import { themeToVar } from '@toeverything/theme/v2';
 import { LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import type { EdgelessRootService } from '../../edgeless/index.js';
 import { frameTitleStyle, frameTitleStyleVars } from './styles.js';
 
 export const AFFINE_FRAME_TITLE = 'affine-frame-title';
@@ -83,10 +82,6 @@ export class AffineFrameTitle extends SignalWatcher(
 
   get gfx() {
     return this.std.get(GfxControllerIdentifier);
-  }
-
-  get rootService() {
-    return this.std.getService('affine:page') as EdgelessRootService;
   }
 
   private _isInsideFrame() {
@@ -165,7 +160,7 @@ export class AffineFrameTitle extends SignalWatcher(
   override connectedCallback() {
     super.connectedCallback();
 
-    const { _disposables, doc, gfx, rootService } = this;
+    const { _disposables, doc, gfx } = this;
 
     this._nestedFrame = this._isInsideFrame();
 
@@ -198,10 +193,10 @@ export class AffineFrameTitle extends SignalWatcher(
     );
 
     _disposables.add(
-      rootService.selection.slots.updated.on(() => {
+      gfx.selection.slots.updated.on(() => {
         this._editing =
-          rootService.selection.selectedIds[0] === this.model.id &&
-          rootService.selection.editing;
+          gfx.selection.selectedIds[0] === this.model.id &&
+          gfx.selection.editing;
       })
     );
 

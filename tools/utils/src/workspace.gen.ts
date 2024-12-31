@@ -296,6 +296,16 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/widget-frame-title',
+    name: '@blocksuite/affine-widget-frame-title',
+    workspaceDependencies: [
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+    ],
+  },
+  {
     location: 'blocksuite/affine/widget-remote-selection',
     name: '@blocksuite/affine-widget-remote-selection',
     workspaceDependencies: [
@@ -339,6 +349,7 @@ export const PackageList = [
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
       'blocksuite/affine/widget-drag-handle',
+      'blocksuite/affine/widget-frame-title',
       'blocksuite/affine/widget-remote-selection',
       'blocksuite/affine/widget-scroll-anchoring',
       'blocksuite/framework/block-std',
@@ -698,6 +709,7 @@ export type PackageName =
   | '@blocksuite/affine-model'
   | '@blocksuite/affine-shared'
   | '@blocksuite/affine-widget-drag-handle'
+  | '@blocksuite/affine-widget-frame-title'
   | '@blocksuite/affine-widget-remote-selection'
   | '@blocksuite/affine-widget-scroll-anchoring'
   | '@blocksuite/blocks'

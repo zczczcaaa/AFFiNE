@@ -28,6 +28,7 @@
     { "path": "./blocksuite/affine/model" },
     { "path": "./blocksuite/affine/shared" },
     { "path": "./blocksuite/affine/widget-drag-handle" },
+    { "path": "./blocksuite/affine/widget-frame-title" },
     { "path": "./blocksuite/affine/widget-remote-selection" },
     { "path": "./blocksuite/affine/widget-scroll-anchoring" },
     { "path": "./blocksuite/blocks" },

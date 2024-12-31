@@ -25,7 +25,6 @@ export {
   AFFINE_FORMAT_BAR_WIDGET,
   AffineFormatBarWidget,
 } from './format-bar/format-bar.js';
-export { AffineFrameTitleWidget } from './frame-title/index.js';
 export { AffineImageToolbarWidget } from './image-toolbar/index.js';
 export { AffineInnerModalWidget } from './inner-modal/inner-modal.js';
 export * from './keyboard-toolbar/index.js';
@@ -52,3 +51,4 @@ export {
   type AffineSlashSubMenu,
 } from './slash-menu/index.js';
 export { AffineSurfaceRefToolbar } from './surface-ref-toolbar/surface-ref-toolbar.js';
+export { AffineFrameTitleWidget } from '@blocksuite/affine-widget-frame-title';

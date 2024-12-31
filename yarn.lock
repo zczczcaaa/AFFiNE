@@ -3747,6 +3747,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blocksuite/affine-widget-frame-title@workspace:*, @blocksuite/affine-widget-frame-title@workspace:blocksuite/affine/widget-frame-title":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-widget-frame-title@workspace:blocksuite/affine/widget-frame-title"
+  dependencies:
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@lit/context": "npm:^1.1.2"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@toeverything/theme": "npm:^1.1.3"
+    lit: "npm:^3.2.0"
+  languageName: unknown
+  linkType: soft
+
 "@blocksuite/affine-widget-remote-selection@workspace:*, @blocksuite/affine-widget-remote-selection@workspace:blocksuite/affine/widget-remote-selection":
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-widget-remote-selection@workspace:blocksuite/affine/widget-remote-selection"
@@ -3834,6 +3849,7 @@ __metadata:
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/affine-widget-drag-handle": "workspace:*"
+    "@blocksuite/affine-widget-frame-title": "workspace:*"
     "@blocksuite/affine-widget-remote-selection": "workspace:*"
     "@blocksuite/affine-widget-scroll-anchoring": "workspace:*"
     "@blocksuite/block-std": "workspace:*"

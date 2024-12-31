@@ -78,6 +78,9 @@
     },
     {
       "path": "../affine/widget-drag-handle"
+    },
+    {
+      "path": "../affine/widget-frame-title"
     }
   ]
 }

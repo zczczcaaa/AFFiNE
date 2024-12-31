@@ -3,15 +3,11 @@ import { WidgetComponent } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { EdgelessRootBlockComponent } from '../../index.js';
 import type { AffineFrameTitle } from './frame-title.js';
 
 export const AFFINE_FRAME_TITLE_WIDGET = 'affine-frame-title-widget';
 
-export class AffineFrameTitleWidget extends WidgetComponent<
-  RootBlockModel,
-  EdgelessRootBlockComponent
-> {
+export class AffineFrameTitleWidget extends WidgetComponent<RootBlockModel> {
   private get _frames() {
     return Object.values(this.doc.blocks.value)
       .map(({ model }) => model)
@@ -38,3 +34,5 @@ export class AffineFrameTitleWidget extends WidgetComponent<
     );
   }
 }
+
+export * from './styles.js';
