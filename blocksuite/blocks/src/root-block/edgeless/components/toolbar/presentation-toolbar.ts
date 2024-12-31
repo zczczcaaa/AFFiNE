@@ -322,7 +322,7 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
     return html`
       <style>
         :host {
-          display: ${this.visible ? 'flex' : 'none'};
+          display: flex;
         }
       </style>
       <edgeless-tool-icon-button
@@ -442,9 +442,6 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
 
   @property({ type: Boolean })
   accessor settingMenuShow = false;
-
-  @property({ attribute: true, type: Boolean })
-  accessor visible = true;
 }
 
 declare global {
