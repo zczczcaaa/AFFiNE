@@ -5,7 +5,7 @@ import type { DraftModel } from './draft.js';
 import { fromJSON, toJSON } from './json.js';
 import type { BlockSnapshot } from './type.js';
 
-type BlockSnapshotLeaf = Pick<
+export type BlockSnapshotLeaf = Pick<
   BlockSnapshot,
   'id' | 'flavour' | 'props' | 'version'
 >;

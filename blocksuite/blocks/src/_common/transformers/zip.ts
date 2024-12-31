@@ -23,13 +23,19 @@ async function exportDocs(collection: DocCollection, docs: Doc[]) {
   );
 
   const assets = zip.folder('assets');
+  const pathBlobIdMap = job.assetsManager.getPathBlobIdMap();
   const assetsMap = job.assets;
 
-  for (const [id, blob] of assetsMap) {
-    const ext = getAssetName(assetsMap, id).split('.').at(-1);
-    const name = `${id}.${ext}`;
-    await assets.file(name, blob);
-  }
+  await Promise.all(
+    Array.from(pathBlobIdMap.values()).map(async blobId => {
+      await job.assetsManager.readFromBlob(blobId);
+      const ext = getAssetName(assetsMap, blobId).split('.').at(-1);
+      const blob = assetsMap.get(blobId);
+      if (blob) {
+        await assets.file(`${blobId}.${ext}`, blob);
+      }
+    })
+  );
 
   const downloadBlob = await zip.generate();
   return download(downloadBlob, `${collection.id}.bs.zip`);
