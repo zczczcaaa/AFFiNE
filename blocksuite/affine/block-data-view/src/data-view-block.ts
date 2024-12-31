@@ -1,5 +1,4 @@
 import { BlockRenderer, NoteRenderer } from '@blocksuite/affine-block-database';
-import type { NoteBlockComponent } from '@blocksuite/affine-block-note';
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import {
   menu,
@@ -13,12 +12,17 @@ import {
 } from '@blocksuite/affine-components/icons';
 import { PeekViewProvider } from '@blocksuite/affine-components/peek';
 import { toast } from '@blocksuite/affine-components/toast';
+import { NOTE_SELECTOR } from '@blocksuite/affine-shared/consts';
 import {
+  DocModeProvider,
   NotificationProvider,
   type TelemetryEventMap,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
-import { RANGE_SYNC_EXCLUDE_ATTR } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  RANGE_SYNC_EXCLUDE_ATTR,
+} from '@blocksuite/block-std';
 import {
   createRecordDetail,
   createUniComponentFromWebComponent,
@@ -40,10 +44,6 @@ import { computed, signal } from '@preact/signals-core';
 import { css, nothing, unsafeCSS } from 'lit';
 import { html } from 'lit/static-html.js';
 
-import {
-  EdgelessRootBlockComponent,
-  type RootService,
-} from '../root-block/index.js';
 import { BlockQueryDataSource } from './data-source.js';
 import type { DataViewBlockModel } from './data-view-model.js';
 
@@ -153,10 +153,6 @@ export class DataViewBlockComponent extends CaptionedBlockComponent<DataViewBloc
     };
   };
 
-  getRootService = () => {
-    return this.std.getService<RootService>('affine:page');
-  };
-
   headerWidget: DataViewWidget = defineUniComponent(
     (props: DataViewWidgetProps) => {
       return html`
@@ -230,9 +226,8 @@ export class DataViewBlockComponent extends CaptionedBlockComponent<DataViewBloc
   }
 
   override get topContenteditableElement() {
-    if (this.rootComponent instanceof EdgelessRootBlockComponent) {
-      const note = this.closest<NoteBlockComponent>('affine-note');
-      return note;
+    if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
+      return this.closest<BlockComponent>(NOTE_SELECTOR);
     }
     return this.rootComponent;
   }

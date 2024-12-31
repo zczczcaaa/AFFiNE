@@ -1,4 +1,5 @@
 // Import models only, the bundled file should not include anything else.
+import { DataViewBlockSchema } from '@blocksuite/affine-block-data-view';
 import { SurfaceBlockSchema } from '@blocksuite/affine-block-surface';
 import {
   AttachmentBlockSchema,
@@ -25,8 +26,6 @@ import {
 } from '@blocksuite/affine-model';
 import type { BlockSchema } from '@blocksuite/store';
 import type { z } from 'zod';
-
-import { DataViewBlockSchema } from './data-view-block/data-view-model.js';
 
 /** Built-in first party block models built for affine */
 export const AffineSchemas: z.infer<typeof BlockSchema>[] = [

@@ -1,5 +1,6 @@
 import { addSiblingAttachmentBlocks } from '@blocksuite/affine-block-attachment';
 import { toggleEmbedCardCreateModal } from '@blocksuite/affine-block-bookmark';
+import type { DataViewBlockComponent } from '@blocksuite/affine-block-data-view';
 import {
   FigmaIcon,
   GithubIcon,
@@ -51,7 +52,6 @@ import type { BlockModel } from '@blocksuite/store';
 import { Slice, Text } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
 
-import type { DataViewBlockComponent } from '../../../data-view-block/index.js';
 import type { RootBlockComponent } from '../../types.js';
 import { formatDate, formatTime } from '../../utils/misc.js';
 import type { AffineLinkedDocWidget } from '../linked-doc/index.js';

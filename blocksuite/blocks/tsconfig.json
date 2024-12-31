@@ -65,6 +65,9 @@
       "path": "../affine/block-surface-ref"
     },
     {
+      "path": "../affine/block-data-view"
+    },
+    {
       "path": "../affine/data-view"
     },
     {
