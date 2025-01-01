@@ -410,7 +410,7 @@ export function useAFFiNEI18N(): {
       */
     Select(): string;
     /**
-      * `Sign in AFFiNE Cloud`
+      * `Sign in`
       */
     ["Sign in"](): string;
     /**
@@ -5120,14 +5120,6 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.experimental-features.enable-ai.description"](): string;
     /**
-      * `Enable New DND`
-      */
-    ["com.affine.settings.workspace.experimental-features.enable-new-dnd.name"](): string;
-    /**
-      * `Enable new drag and drop features.`
-      */
-    ["com.affine.settings.workspace.experimental-features.enable-new-dnd.description"](): string;
-    /**
       * `Database Full Width`
       */
     ["com.affine.settings.workspace.experimental-features.enable-database-full-width.name"](): string;
@@ -5303,6 +5295,14 @@ export function useAFFiNEI18N(): {
       * `Once enabled, users can edit edgeless canvas.`
       */
     ["com.affine.settings.workspace.experimental-features.enable-mobile-edgeless-editing.description"](): string;
+    /**
+      * `PDF embed preview`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.name"](): string;
+    /**
+      * `Once enabled, you can preview PDF in embed view.`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description"](): string;
     /**
       * `Only an owner can edit the workspace avatar and name. Changes will be shown for everyone.`
       */
@@ -6477,6 +6477,10 @@ export function useAFFiNEI18N(): {
       * `Got It`
       */
     ["com.affine.payment.sync-paused.member.member.confirm"](): string;
+    /**
+      * `Delete Server`
+      */
+    ["com.affine.server.delete"](): string;
 } { const { t } = useTranslation(); return useMemo(() => createProxy((key) => t.bind(null, key)), [t]); }
 function createComponent(i18nKey: string) {
     return (props) => createElement(Trans, { i18nKey, shouldUnescape: true, ...props });

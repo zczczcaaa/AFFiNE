@@ -252,11 +252,6 @@ export class BlockCollection {
     // Initialization from empty yDoc, indicating that the document is new.
     if (!this.collection.meta.hasVersion) {
       this.collection.meta.writeVersion(this.collection);
-    } else {
-      // Initialization from existing yDoc, indicating that the document is loaded from storage.
-      if (this.awarenessStore.getFlag('enable_legacy_validation')) {
-        this.collection.meta.validateVersion(this.collection);
-      }
     }
   }
 

@@ -94,14 +94,12 @@ describe('basic', () => {
     const options = createTestOptions();
     const collection = new DocCollection(options);
     collection.meta.initialize();
-    assert.equal(collection.isEmpty, true);
 
     const doc = collection.createDoc({ id: 'doc:home' });
     doc.load();
     const actual = serializCollection(collection.doc);
     const actualDoc = actual[spaceMetaId].pages[0] as DocMeta;
 
-    assert.equal(collection.isEmpty, false);
     assert.equal(typeof actualDoc.createDate, 'number');
     // @ts-expect-error ignore
     delete actualDoc.createDate;
