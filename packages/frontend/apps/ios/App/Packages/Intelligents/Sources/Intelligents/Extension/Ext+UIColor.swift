@@ -9,10 +9,19 @@ import UIKit
 
 extension UIColor {
   static var accent: UIColor {
-    guard let color = UIColor(named: "accent", in: .module, compatibleWith: nil) else {
-      assertionFailure()
-      return .systemBlue
-    }
-    return color
+    Constant.affineTintColor
+  }
+
+  convenience init(light: UIColor, dark: UIColor) {
+    self.init(dynamicProvider: { traitCollection in
+      switch traitCollection.userInterfaceStyle {
+      case .light:
+        light
+      case .dark:
+        dark
+      default:
+        light
+      }
+    })
   }
 }

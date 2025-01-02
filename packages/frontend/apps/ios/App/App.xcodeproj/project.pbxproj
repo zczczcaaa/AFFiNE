@@ -32,6 +32,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5039CC962D1D42C700874F32 /* AffineGraphQL */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AffineGraphQL; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		507513692D1924C600AD60C0 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		5075136D2D1925BC00AD60C0 /* IntelligentsPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligentsPlugin.swift; sourceTree = "<group>"; };
@@ -114,6 +115,7 @@
 		50802D5F2D112F7D00694021 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				5039CC962D1D42C700874F32 /* AffineGraphQL */,
 				50802D5E2D112F7D00694021 /* Intelligents */,
 			);
 			path = Packages;
@@ -131,7 +133,6 @@
 		9D90BE192CCB9876006677DB /* Cookie */ = {
 			isa = PBXGroup;
 			children = (
-				9D1C07262CEC3E8200E1C502 /* IntelligentsPlugin.swift */,
 				9D90BE172CCB9876006677DB /* CookieManager.swift */,
 				9D90BE182CCB9876006677DB /* CookiePlugin.swift */,
 				9D6A85322CCF6DA700DAB35F /* HashcashPlugin.swift */,

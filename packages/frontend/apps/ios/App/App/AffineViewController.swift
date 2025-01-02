@@ -44,30 +44,29 @@ extension AFFiNEViewController: IntelligentsButtonDelegate, IntelligentsFocusApe
 
     button.beginProgress()
 
-    let script = "return await window.getCurrentDocContentInMarkdown();"
-    webView.callAsyncJavaScript(
-      script,
-      arguments: [:],
-      in: nil,
-      in: .page
-    ) { result in
-      button.stopProgress()
-      webView.resignFirstResponder()
-
-      if case let .failure(error) = result {
-        print("[?] \(self) script error: \(error.localizedDescription)")
+    let upstreamReaderScript = "window.getCurrentServerBaseUrl();"
+    webView.evaluateJavaScript(upstreamReaderScript) { result, _ in
+      if let baseUrl = result as? String {
+        Intelligents.setUpstreamEndpoint(baseUrl)
       }
 
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        if case let .success(content) = result,
-           let res = content as? String
-        {
-          print("[*] \(self) received document with \(res.count) characters")
-          DispatchQueue.main.async {
+      let script = "return await window.getCurrentDocContentInMarkdown();"
+      webView.callAsyncJavaScript(
+        script,
+        arguments: [:],
+        in: nil,
+        in: .page
+      ) { result in
+        button.stopProgress()
+        webView.resignFirstResponder()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+          if case let .success(content) = result,
+             let res = content as? String
+          {
+            print("[*] \(self) received document with \(res.count) characters")
             self.openIntelligentsSheet(withContext: res)
-          }
-        } else {
-          DispatchQueue.main.async {
+          } else {
             self.openSimpleChat()
           }
         }
