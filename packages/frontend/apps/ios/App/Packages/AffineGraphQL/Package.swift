@@ -14,7 +14,7 @@ let package = Package(
     .library(name: "AffineGraphQL", targets: ["AffineGraphQL"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/apollographql/apollo-ios.git", from: "1.0.0"),
+    .package(url: "https://github.com/apollographql/apollo-ios.git", from: "1.15.3"),
   ],
   targets: [
     .target(
