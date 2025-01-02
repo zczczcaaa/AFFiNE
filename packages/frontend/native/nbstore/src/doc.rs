@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use chrono::NaiveDateTime;
+use chrono::{DateTime, NaiveDateTime};
 use sqlx::{QueryBuilder, Row};
 
 use super::storage::{Result, SqliteDocStorage};
@@ -66,7 +66,40 @@ impl SqliteDocStorage {
     doc_id: String,
     update: Update,
   ) -> Result<NaiveDateTime> {
-    let timestamp = chrono::Utc::now().naive_utc();
+    let mut timestamp = DateTime::from_timestamp_millis(chrono::Utc::now().timestamp_millis())
+      .unwrap()
+      .naive_utc();
+
+    let mut tried = 0;
+
+    // Keep trying with incremented timestamps until success
+    loop {
+      match self
+        .try_insert_update_with_timestamp(&doc_id, update.as_ref(), timestamp)
+        .await
+      {
+        Ok(()) => break,
+        Err(e) => {
+          if tried > 10 {
+            return Err(e);
+          }
+
+          // Increment timestamp by 1ms and retry
+          timestamp = timestamp + chrono::Duration::milliseconds(1);
+          tried += 1;
+        }
+      }
+    }
+
+    Ok(timestamp)
+  }
+
+  async fn try_insert_update_with_timestamp(
+    &self,
+    doc_id: &str,
+    update: &[u8],
+    timestamp: NaiveDateTime,
+  ) -> sqlx::Result<()> {
     let mut tx = self.pool.begin().await?;
 
     sqlx::query(r#"INSERT INTO updates (doc_id, data, created_at) VALUES ($1, $2, $3);"#)
@@ -89,7 +122,7 @@ impl SqliteDocStorage {
 
     tx.commit().await?;
 
-    Ok(timestamp)
+    Ok(())
   }
 
   pub async fn get_doc_snapshot(&self, doc_id: String) -> Result<Option<DocRecord>> {
