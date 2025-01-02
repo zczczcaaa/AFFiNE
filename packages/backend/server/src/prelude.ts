@@ -73,17 +73,17 @@ async function load() {
   //   Modules may contribute to ENV_MAP, figure out a good way to involve them instead of hardcoding in `./config/affine.env`
   // 3. load env => config map to `globalThis.AFFiNE.ENV_MAP
   // load local env map as well in case there are new env added
-  await loadConfig(PROJECT_CONFIG_PATH, 'affine.env');
+  await loadConfig(PROJECT_CONFIG_PATH, 'affine.env.js');
 
   // 4. load `config/affine` to patch custom configs
   // load local config as well in case there are new default configurations added
-  await loadConfig(PROJECT_CONFIG_PATH, 'affine');
-  await loadConfig(CUSTOM_CONFIG_PATH, 'affine');
+  await loadConfig(PROJECT_CONFIG_PATH, 'affine.js');
+  await loadConfig(CUSTOM_CONFIG_PATH, 'affine.js');
 
   // 5. load `config/affine.self` to patch custom configs
   // This is the file only take effect in [AFFiNE Cloud]
   if (!AFFiNE.isSelfhosted) {
-    await loadConfig(PROJECT_CONFIG_PATH, 'affine.self');
+    await loadConfig(PROJECT_CONFIG_PATH, 'affine.self.js');
   }
 
   // 6. load `config/private.key` to patch app configs
