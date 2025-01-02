@@ -8,13 +8,12 @@ import { syncBlockProps } from '../../utils/utils.js';
 import type { BlockOptions } from './block/index.js';
 import { Block } from './block/index.js';
 import type { BlockCollection, BlockProps } from './block-collection.js';
-import type { DocCRUD } from './crud.js';
+import { DocCRUD } from './crud.js';
 import { type Query, runQuery } from './query.js';
 
 type DocOptions = {
   schema: Schema;
   blockCollection: BlockCollection;
-  crud: DocCRUD;
   readonly?: boolean;
   query?: Query;
 };
@@ -267,7 +266,7 @@ export class Doc {
     return this._blockCollection.withoutTransact.bind(this._blockCollection);
   }
 
-  constructor({ schema, blockCollection, crud, readonly, query }: DocOptions) {
+  constructor({ schema, blockCollection, readonly, query }: DocOptions) {
     this._blockCollection = blockCollection;
 
     this.slots = {
@@ -279,7 +278,7 @@ export class Doc {
       yBlockUpdated: this._blockCollection.slots.yBlockUpdated,
     };
 
-    this._crud = crud;
+    this._crud = new DocCRUD(this._yBlocks, blockCollection.schema);
     this._schema = schema;
     this._readonly = readonly;
     if (query) {

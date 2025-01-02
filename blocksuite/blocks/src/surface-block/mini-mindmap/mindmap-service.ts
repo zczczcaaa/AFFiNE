@@ -1,6 +1,6 @@
 import { RootBlockSchema } from '@blocksuite/affine-model';
 import { BlockService } from '@blocksuite/block-std';
-import { Slot } from '@blocksuite/store';
+import { Slot } from '@blocksuite/global/utils';
 
 export class MindmapService extends BlockService {
   static override readonly flavour = RootBlockSchema.model.flavour;

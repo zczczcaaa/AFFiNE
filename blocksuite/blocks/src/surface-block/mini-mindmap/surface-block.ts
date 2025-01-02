@@ -13,7 +13,7 @@ import type { Bound } from '@blocksuite/global/utils';
 import { html } from 'lit';
 import { query } from 'lit/decorators.js';
 
-import type { MindmapService } from './minmap-service.js';
+import type { MindmapService } from './mindmap-service.js';
 
 export class MindmapSurfaceBlock extends BlockComponent<SurfaceBlockModel> {
   renderer?: CanvasRenderer;

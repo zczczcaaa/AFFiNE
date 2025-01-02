@@ -16,7 +16,7 @@ import type { BlockSchema } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 import type { z } from 'zod';
 
-import { MindmapService } from './minmap-service.js';
+import { MindmapService } from './mindmap-service.js';
 import { MindmapSurfaceBlockService } from './surface-service.js';
 
 export const MiniMindmapSpecs: ExtensionType[] = [

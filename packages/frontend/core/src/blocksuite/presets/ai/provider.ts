@@ -3,7 +3,7 @@ import {
   PaymentRequiredError,
   UnauthorizedError,
 } from '@blocksuite/affine/blocks';
-import { Slot } from '@blocksuite/affine/store';
+import { Slot } from '@blocksuite/affine/global/utils';
 import { captureException } from '@sentry/react';
 
 import type { ChatContextValue } from './chat-panel/chat-context';

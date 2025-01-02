@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type {
   PeekOptions,
   PeekViewService,
@@ -17,8 +16,9 @@ import {
   type ThemeExtension,
   toast,
 } from '@blocksuite/blocks';
+import { Slot } from '@blocksuite/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/presets';
-import { type DocCollection, Slot } from '@blocksuite/store';
+import { type DocCollection } from '@blocksuite/store';
 import { signal } from '@preact/signals-core';
 import type { TemplateResult } from 'lit';
 

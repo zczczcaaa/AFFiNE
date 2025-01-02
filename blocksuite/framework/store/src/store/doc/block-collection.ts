@@ -8,7 +8,6 @@ import type { BlockModel } from '../../schema/base.js';
 import type { IdGenerator } from '../../utils/id-generator.js';
 import type { AwarenessStore, BlockSuiteDoc } from '../../yjs/index.js';
 import type { DocCollection } from '../collection.js';
-import { DocCRUD } from './crud.js';
 import { Doc } from './doc.js';
 import type { YBlock } from './index.js';
 import type { Query } from './query.js';
@@ -44,8 +43,6 @@ export class BlockCollection {
   private readonly _canUndo$ = signal(false);
 
   private readonly _collection: DocCollection;
-
-  private readonly _docCRUD: DocCRUD;
 
   private readonly _docMap = {
     undefined: new Map<string, Doc>(),
@@ -177,10 +174,6 @@ export class BlockCollection {
     return this._collection;
   }
 
-  get crud() {
-    return this._docCRUD;
-  }
-
   get docSync() {
     return this.collection.docSync;
   }
@@ -241,7 +234,6 @@ export class BlockCollection {
     this._yBlocks = this._ySpaceDoc.getMap('blocks');
     this._collection = collection;
     this._idGenerator = idGenerator;
-    this._docCRUD = new DocCRUD(this._yBlocks, collection.schema);
   }
 
   private _getReadonlyKey(readonly?: boolean): 'true' | 'false' | 'undefined' {
@@ -344,7 +336,6 @@ export class BlockCollection {
 
     const doc = new Doc({
       blockCollection: this,
-      crud: this._docCRUD,
       schema: this.collection.schema,
       readonly,
       query,

@@ -1,6 +1,6 @@
 import type { ExtensionType } from '@blocksuite/block-std';
 import { createIdentifier } from '@blocksuite/global/di';
-import { Slot } from '@blocksuite/store';
+import { Slot } from '@blocksuite/global/utils';
 
 import type { Viewport } from '../types';
 
