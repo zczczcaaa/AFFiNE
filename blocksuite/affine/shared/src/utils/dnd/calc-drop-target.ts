@@ -14,7 +14,8 @@ import { DropFlags, type DroppingType, type DropResult } from './types.js';
 function getVisiblePreviousElementSibling(element: Element | null) {
   if (!element) return null;
   let prev = element.previousElementSibling;
-  while (prev && !prev.checkVisibility()) {
+  // https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
+  while (prev instanceof HTMLElement && prev.offsetParent === null) {
     prev = prev.previousElementSibling;
   }
   return prev;
@@ -23,7 +24,7 @@ function getVisiblePreviousElementSibling(element: Element | null) {
 function getVisibleNextElementSibling(element: Element | null) {
   if (!element) return null;
   let next = element.nextElementSibling;
-  while (next && !next.checkVisibility()) {
+  while (next instanceof HTMLElement && next.offsetParent === null) {
     next = next.nextElementSibling;
   }
   return next;
