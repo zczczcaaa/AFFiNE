@@ -23,7 +23,7 @@ import { DocsStore } from './stores/docs';
 export function configureDocModule(framework: Framework) {
   framework
     .scope(WorkspaceScope)
-    .service(DocsService, [DocsStore])
+    .service(DocsService, [DocsStore, DocPropertiesStore])
     .store(DocPropertiesStore, [WorkspaceService, WorkspaceDBService])
     .store(DocsStore, [WorkspaceService, DocPropertiesStore])
     .entity(DocRecord, [DocsStore, DocPropertiesStore])

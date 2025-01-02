@@ -44,6 +44,24 @@ export class DocsStore extends Store {
     );
   }
 
+  watchNonTrashDocIds() {
+    return yjsObserveByPath(
+      this.workspaceService.workspace.rootYDoc.getMap('meta'),
+      'pages'
+    ).pipe(
+      switchMap(yjsObserveDeep),
+      map(meta => {
+        if (meta instanceof YArray) {
+          return meta
+            .map(v => (v.get('trash') ? null : v.get('id')))
+            .filter(Boolean) as string[];
+        } else {
+          return [];
+        }
+      })
+    );
+  }
+
   watchTrashDocIds() {
     return yjsObserveByPath(
       this.workspaceService.workspace.rootYDoc.getMap('meta'),

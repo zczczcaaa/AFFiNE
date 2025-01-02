@@ -3,17 +3,21 @@ import { Unreachable } from '@affine/env/constant';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import type { DeltaInsert } from '@blocksuite/affine/inline';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
-import { ObjectPool, Service } from '@toeverything/infra';
+import { LiveData, ObjectPool, Service } from '@toeverything/infra';
+import { omitBy } from 'lodash-es';
+import { combineLatest, map } from 'rxjs';
 
 import {
   type DocProps,
   initDocFromProps,
 } from '../../../blocksuite/initialization';
+import type { DocProperties } from '../../db';
 import type { Doc } from '../entities/doc';
 import { DocPropertyList } from '../entities/property-list';
 import { DocRecordList } from '../entities/record-list';
 import { DocCreated } from '../events';
 import { DocScope } from '../scopes/doc';
+import type { DocPropertiesStore } from '../stores/doc-properties';
 import type { DocsStore } from '../stores/docs';
 import { DocService } from './doc';
 
@@ -30,7 +34,29 @@ export class DocsService extends Service {
 
   propertyList = this.framework.createEntity(DocPropertyList);
 
-  constructor(private readonly store: DocsStore) {
+  /**
+   * used for search doc by properties, for convenience of search, all non-exist doc or trash doc have been filtered
+   */
+  allDocProperties$: LiveData<Record<string, DocProperties>> = LiveData.from(
+    combineLatest([
+      this.docPropertiesStore.watchAllDocProperties(),
+      this.store.watchNonTrashDocIds(),
+    ]).pipe(
+      map(([properties, docIds]) => {
+        const allIds = new Set(docIds);
+        return omitBy(
+          properties as Record<string, DocProperties>,
+          (_, id) => !allIds.has(id)
+        );
+      })
+    ),
+    {}
+  );
+
+  constructor(
+    private readonly store: DocsStore,
+    private readonly docPropertiesStore: DocPropertiesStore
+  ) {
     super();
   }
 
