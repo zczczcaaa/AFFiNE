@@ -211,10 +211,7 @@ const SharePageInner = ({
       .then(() => {
         const { doc } = workspace.scope.get(DocsService).open(docId);
 
-        workspace.docCollection.awarenessStore.setReadonly(
-          doc.blockSuiteDoc.blockCollection,
-          true
-        );
+        doc.blockSuiteDoc.readonly = true;
 
         setPage(doc);
 

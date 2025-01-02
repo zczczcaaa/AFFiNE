@@ -56,11 +56,8 @@ export function useDocMetaHelper() {
   const setDocReadonly = useCallback(
     (docId: string, readonly: boolean) => {
       const doc = workspaceService.workspace.docCollection.getDoc(docId);
-      if (doc?.blockCollection) {
-        workspaceService.workspace.docCollection.awarenessStore.setReadonly(
-          doc.blockCollection,
-          readonly
-        );
+      if (doc) {
+        doc.readonly = readonly;
       }
     },
     [workspaceService]

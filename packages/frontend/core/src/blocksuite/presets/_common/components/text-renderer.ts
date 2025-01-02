@@ -226,10 +226,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
             this.disposables.add(() => {
               doc.blockCollection.clearQuery(this._query);
             });
-            this._doc.awarenessStore.setReadonly(
-              this._doc.blockCollection,
-              true
-            );
+            this._doc.readonly = true;
             this.requestUpdate();
             if (this.state !== 'generating') {
               this._clearTimer();

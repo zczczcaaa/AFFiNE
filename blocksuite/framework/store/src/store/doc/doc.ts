@@ -37,7 +37,7 @@ export class Doc {
     mode: 'loose',
   };
 
-  protected readonly _readonly?: boolean;
+  protected _readonly?: boolean;
 
   protected readonly _schema: Schema;
 
@@ -144,10 +144,6 @@ export class Doc {
     return this._blockCollection.awarenessStore;
   }
 
-  get awarenessSync() {
-    return this.collection.awarenessSync;
-  }
-
   get blobSync() {
     return this.collection.blobSync;
   }
@@ -184,10 +180,6 @@ export class Doc {
     return this._blockCollection.collection;
   }
 
-  get docSync() {
-    return this.collection.docSync;
-  }
-
   get generateBlockId() {
     return this._blockCollection.generateBlockId.bind(this._blockCollection);
   }
@@ -217,6 +209,16 @@ export class Doc {
       return true;
     }
     return this._readonly === true;
+  }
+
+  set readonly(value: boolean) {
+    this._blockCollection.awarenessStore.setReadonly(
+      this._blockCollection,
+      value
+    );
+    if (this._readonly !== undefined && this._readonly !== value) {
+      this._readonly = value;
+    }
   }
 
   get ready() {

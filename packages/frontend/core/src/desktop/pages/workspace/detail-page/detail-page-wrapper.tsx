@@ -51,10 +51,7 @@ const useLoadDoc = (pageId: string) => {
 
   useEffect(() => {
     if (doc && isInTrash) {
-      currentWorkspace.docCollection.awarenessStore.setReadonly(
-        doc.blockSuiteDoc.blockCollection,
-        true
-      );
+      doc.blockSuiteDoc.readonly = true;
     }
   }, [currentWorkspace.docCollection.awarenessStore, doc, isInTrash]);
 

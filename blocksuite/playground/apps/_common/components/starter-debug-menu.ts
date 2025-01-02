@@ -668,7 +668,7 @@ export class StarterDebugMenu extends ShadowlessElement {
 
   private _toggleReadonly() {
     const doc = this.doc;
-    doc.awarenessStore.setReadonly(doc.blockCollection, !doc.readonly);
+    doc.readonly = !doc.readonly;
   }
 
   private async _toggleStyleDebugMenu() {

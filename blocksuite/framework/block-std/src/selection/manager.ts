@@ -75,7 +75,7 @@ export class SelectionManager extends LifeCycleWatcher {
 
   constructor(std: BlockStdScope) {
     super(std);
-    this._id = `${this.std.doc.blockCollection.id}:${nanoid()}`;
+    this._id = `${this.std.doc.id}:${nanoid()}`;
     this._setupDefaultSelections();
     this._store.awareness.on(
       'change',
@@ -99,9 +99,7 @@ export class SelectionManager extends LifeCycleWatcher {
             if (id === this._store.awareness.clientID) return;
             // selection id starts with the same block collection id from others clients would be considered as remote selections
             const selection = Object.entries(state.selectionV2)
-              .filter(([key]) =>
-                key.startsWith(this.std.doc.blockCollection.id)
-              )
+              .filter(([key]) => key.startsWith(this.std.doc.id))
               .flatMap(([_, selection]) => selection);
 
             const selections = selection

@@ -22,7 +22,6 @@ export function getDocFromUrlParams(collection: DocCollection, url: URL) {
   doc.load();
   doc.resetHistory();
 
-  assertExists(doc.ready, 'Doc is not ready');
   assertExists(doc.root, 'Doc root is not ready');
 
   return doc;

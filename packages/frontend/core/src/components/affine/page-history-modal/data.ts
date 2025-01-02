@@ -169,7 +169,7 @@ export const useSnapshotPage = (
       page = historyShellWorkspace.createDoc({
         id: pageId,
       });
-      page.awarenessStore.setReadonly(page.blockCollection, true);
+      page.readonly = true;
       const spaceDoc = page.spaceDoc;
       page.load(() => {
         applyUpdate(spaceDoc, new Uint8Array(snapshot));

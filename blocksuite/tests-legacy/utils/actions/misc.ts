@@ -79,7 +79,7 @@ async function initEmptyEditor({
       async function waitForMountPageEditor(
         doc: ReturnType<typeof collection.createDoc>
       ) {
-        if (!doc.ready) doc.load();
+        doc.load();
 
         if (!doc.root) {
           await new Promise(resolve => doc.slots.rootAdded.once(resolve));

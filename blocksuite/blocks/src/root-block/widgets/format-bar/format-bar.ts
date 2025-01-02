@@ -343,9 +343,7 @@ export class AffineFormatBarWidget extends WidgetComponent {
   }
 
   private _shouldDisplay() {
-    const readonly = this.doc.awarenessStore.isReadonly(
-      this.doc.blockCollection
-    );
+    const readonly = this.doc.readonly;
     const active = this.host.event.active;
     if (readonly || !active) return false;
 

@@ -188,7 +188,7 @@ async function renderNoteContent(
     let parent: string | null = block;
     while (parent && !ids.includes(parent)) {
       ids.push(parent);
-      parent = doc.blockCollection.crud.getParent(parent);
+      parent = doc.getParent(parent)?.id ?? null;
     }
   });
   const query: Query = {

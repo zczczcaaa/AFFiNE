@@ -35,7 +35,7 @@ export class PreviewHelper {
         if (!selectedIds.includes(parent)) {
           ids.push({ viewType: BlockViewType.Bypass, id: parent });
         }
-        parent = this.widget.doc.blockCollection.crud.getParent(parent);
+        parent = this.widget.doc.getParent(parent)?.id ?? null;
       } while (parent && !ids.map(({ id }) => id).includes(parent));
     });
 

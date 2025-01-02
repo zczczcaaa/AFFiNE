@@ -163,17 +163,14 @@ describe('basic', () => {
     doc.slots.rootAdded.on(rootAddedCallback);
 
     doc.load(() => {
-      expect(doc.ready).toBe(false);
       const rootId = doc.addBlock('affine:page', {
         title: new doc.Text(),
       });
       expect(rootAddedCallback).toBeCalledTimes(1);
-      expect(doc.ready).toBe(false);
 
       doc.addBlock('affine:note', {}, rootId);
     });
 
-    expect(doc.ready).toBe(true);
     expect(readyCallback).toBeCalledTimes(1);
   });
 
