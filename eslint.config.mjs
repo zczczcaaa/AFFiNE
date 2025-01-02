@@ -14,7 +14,7 @@ import tseslint from 'typescript-eslint';
 
 const __require = createRequire(import.meta.url);
 
-const rxjs = __require('@smarttools/eslint-plugin-rxjs').default;
+const rxjs = __require('@smarttools/eslint-plugin-rxjs');
 
 const ignoreList = readFileSync('.prettierignore', 'utf-8')
   .split('\n')
