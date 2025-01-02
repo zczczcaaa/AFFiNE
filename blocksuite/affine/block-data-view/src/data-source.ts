@@ -82,7 +82,7 @@ export class BlockQueryDataSource extends DataSourceBase {
     this.workspace.docs.forEach(doc => {
       this.listenToDoc(doc.getDoc());
     });
-    this.workspace.slots.docAdded.on(id => {
+    this.workspace.slots.docCreated.on(id => {
       const doc = this.workspace.getDoc(id);
       if (doc) {
         this.listenToDoc(doc);

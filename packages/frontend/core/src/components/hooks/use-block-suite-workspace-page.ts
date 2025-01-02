@@ -16,7 +16,7 @@ export function useDocCollectionPage(
   useEffect(() => {
     const group = new DisposableGroup();
     group.add(
-      docCollection.slots.docAdded.on(id => {
+      docCollection.slots.docCreated.on(id => {
         if (pageId === id) {
           setPage(docCollection.getDoc(id));
         }

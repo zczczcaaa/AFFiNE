@@ -107,7 +107,7 @@ export async function initStarterDocCollection(collection: DocCollection) {
     let firstDoc = firstCollection?.getDoc();
     if (!firstDoc) {
       await new Promise<string>(resolve =>
-        collection.slots.docAdded.once(resolve)
+        collection.slots.docCreated.once(resolve)
       );
       const firstCollection = collection.docs.values().next().value as
         | BlockCollection

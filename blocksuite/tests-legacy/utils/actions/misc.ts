@@ -201,7 +201,7 @@ async function initEmptyEditor({
           window.doc = firstDoc;
           waitForMountPageEditor(firstDoc).catch;
         } else {
-          collection.slots.docAdded.on(docId => {
+          collection.slots.docCreated.on(docId => {
             const doc = collection.getDoc(docId);
             if (!doc) {
               throw new Error(`Failed to get doc ${docId}`);

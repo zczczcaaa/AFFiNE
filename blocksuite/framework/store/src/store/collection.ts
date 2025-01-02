@@ -94,7 +94,6 @@ export class DocCollection {
   meta: DocCollectionMeta;
 
   slots = {
-    docAdded: new Slot<string>(),
     docUpdated: new Slot(),
     docRemoved: new Slot<string>(),
     docCreated: new Slot<string>(),
@@ -163,7 +162,6 @@ export class DocCollection {
         idGenerator: this.idGenerator,
       });
       this.blockCollections.set(doc.id, doc);
-      this.slots.docAdded.emit(doc.id);
     });
 
     this.meta.docMetaUpdated.on(() => this.slots.docUpdated.emit());
