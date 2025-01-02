@@ -7,11 +7,20 @@ import { replaceIdMiddleware, titleMiddleware } from './middlewares.js';
 
 async function exportDocs(collection: DocCollection, docs: Doc[]) {
   const zip = new Zip();
-  const job = new Job({ collection });
+  const job = new Job({
+    schema: collection.schema,
+    blobCRUD: collection.blobSync,
+    docCRUD: {
+      create: (id: string) => collection.createDoc({ id }),
+      get: (id: string) => collection.getDoc(id),
+      delete: (id: string) => collection.removeDoc(id),
+    },
+    middlewares: [
+      replaceIdMiddleware(collection.idGenerator),
+      titleMiddleware(collection.meta.docMetas),
+    ],
+  });
   const snapshots = await Promise.all(docs.map(job.docToSnapshot));
-
-  const collectionInfo = job.collectionInfoToSnapshot();
-  await zip.file('info.json', JSON.stringify(collectionInfo, null, 2));
 
   await Promise.all(
     snapshots
@@ -69,8 +78,17 @@ async function importDocs(collection: DocCollection, imported: Blob) {
   }
 
   const job = new Job({
-    collection,
-    middlewares: [replaceIdMiddleware, titleMiddleware],
+    schema: collection.schema,
+    blobCRUD: collection.blobSync,
+    docCRUD: {
+      create: (id: string) => collection.createDoc({ id }),
+      get: (id: string) => collection.getDoc(id),
+      delete: (id: string) => collection.removeDoc(id),
+    },
+    middlewares: [
+      replaceIdMiddleware(collection.idGenerator),
+      titleMiddleware(collection.meta.docMetas),
+    ],
   });
   const assetsMap = job.assets;
 

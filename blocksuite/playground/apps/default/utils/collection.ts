@@ -84,7 +84,15 @@ export async function createDefaultDocCollection() {
   // debug info
   window.collection = collection;
   window.blockSchemas = AffineSchemas;
-  window.job = new Job({ collection });
+  window.job = new Job({
+    schema: collection.schema,
+    blobCRUD: collection.blobSync,
+    docCRUD: {
+      create: (id: string) => collection.createDoc({ id }),
+      get: (id: string) => collection.getDoc(id),
+      delete: (id: string) => collection.removeDoc(id),
+    },
+  });
   window.Y = DocCollection.Y;
 
   return collection;

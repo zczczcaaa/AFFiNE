@@ -30,7 +30,7 @@ import {
 } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound, Point } from '@blocksuite/global/utils';
-import { Job, Slice, type SliceSnapshot } from '@blocksuite/store';
+import { Slice, type SliceSnapshot } from '@blocksuite/store';
 
 import { DropIndicator } from '../components/drop-indicator.js';
 import { AFFINE_DRAG_HANDLE_WIDGET } from '../consts.js';
@@ -544,14 +544,11 @@ export class DragEventWatcher {
 
   private _getJob() {
     const std = this._std;
-    return new Job({
-      collection: std.collection,
-      middlewares: [
-        newIdCrossDoc(std),
-        reorderList(std),
-        surfaceRefToEmbed(std),
-      ],
-    });
+    return std.getJob([
+      newIdCrossDoc(std),
+      reorderList(std),
+      surfaceRefToEmbed(std),
+    ]);
   }
 
   private _serializeData(slice: Slice, state: DndEventState) {

@@ -31,7 +31,7 @@ export const embedSyncedDocBlockPlainTextAdapterMatcher: BlockPlainTextAdapterMa
 
         if (type === 'content') {
           const syncedDocId = o.node.props.pageId as string;
-          const syncedDoc = job.collection.getDoc(syncedDocId);
+          const syncedDoc = job.docCRUD.get(syncedDocId);
           if (!syncedDoc) return;
 
           if (counter === 1) {

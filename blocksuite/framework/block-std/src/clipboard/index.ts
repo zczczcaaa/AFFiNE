@@ -4,10 +4,10 @@ import type {
   BaseAdapter,
   BlockSnapshot,
   Doc,
+  Job,
   JobMiddleware,
   Slice,
 } from '@blocksuite/store';
-import { Job } from '@blocksuite/store';
 import DOMPurify from 'dompurify';
 import type { RootContentMap } from 'hast';
 import * as lz from 'lz-string';
@@ -286,10 +286,7 @@ export class Clipboard extends LifeCycleWatcher {
   }
 
   private _getJob() {
-    return new Job({
-      middlewares: this._jobMiddlewares,
-      collection: this.std.collection,
-    });
+    return this.std.getJob(this._jobMiddlewares);
   }
 
   readFromClipboard(clipboardData: DataTransfer) {

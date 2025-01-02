@@ -247,7 +247,15 @@ export const markdownToMindmap = (
   provider: ServiceProvider
 ) => {
   let result: Node | null = null;
-  const job = new Job({ collection: doc.collection });
+  const job = new Job({
+    schema: doc.collection.schema,
+    blobCRUD: doc.collection.blobSync,
+    docCRUD: {
+      create: (id: string) => doc.collection.createDoc({ id }),
+      get: (id: string) => doc.collection.getDoc(id),
+      delete: (id: string) => doc.collection.removeDoc(id),
+    },
+  });
   const markdown = new MarkdownAdapter(job, provider);
   const ast: Root = markdown['_markdownToAst'](answer);
   const traverse = (

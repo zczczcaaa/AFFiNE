@@ -1,8 +1,8 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { nextTick, Slot } from '@blocksuite/global/utils';
 
-import type { BlockModel, BlockSchemaType } from '../schema/index.js';
-import type { Doc, DocCollection, DocMeta } from '../store/index.js';
+import type { BlockModel, BlockSchemaType, Schema } from '../schema/index.js';
+import type { Doc } from '../store/index.js';
 import { AssetsManager } from './assets.js';
 import { BaseBlockTransformer } from './base.js';
 import type { DraftModel } from './draft.js';
@@ -15,20 +15,22 @@ import type {
 } from './middleware.js';
 import { Slice } from './slice.js';
 import type {
+  BlobCRUD,
   BlockSnapshot,
-  CollectionInfoSnapshot,
+  DocCRUD,
   DocSnapshot,
   SliceSnapshot,
 } from './type.js';
 import {
   BlockSnapshotSchema,
-  CollectionInfoSnapshotSchema,
   DocSnapshotSchema,
   SliceSnapshotSchema,
 } from './type.js';
 
 export type JobConfig = {
-  collection: DocCollection;
+  schema: Schema;
+  blobCRUD: BlobCRUD;
+  docCRUD: DocCRUD;
   middlewares?: JobMiddleware[];
 };
 
@@ -52,7 +54,9 @@ export class Job {
 
   private readonly _assetsManager: AssetsManager;
 
-  private readonly _collection: DocCollection;
+  private readonly _schema: Schema;
+
+  private readonly _docCRUD: DocCRUD;
 
   private readonly _slots: JobSlots = {
     beforeImport: new Slot<BeforeImportPayload>(),
@@ -69,31 +73,6 @@ export class Job {
       return snapshot;
     } catch (error) {
       console.error(`Error when transforming block to snapshot:`);
-      console.error(error);
-      return;
-    }
-  };
-
-  collectionInfoToSnapshot = (): CollectionInfoSnapshot | undefined => {
-    try {
-      this._slots.beforeExport.emit({
-        type: 'info',
-      });
-      const collectionMeta = this._getCollectionMeta();
-      const snapshot: CollectionInfoSnapshot = {
-        type: 'info',
-        id: this._collection.id,
-        ...collectionMeta,
-      };
-      this._slots.afterExport.emit({
-        type: 'info',
-        snapshot,
-      });
-      CollectionInfoSnapshotSchema.parse(snapshot);
-
-      return snapshot;
-    } catch (error) {
-      console.error(`Error when transforming collection info to snapshot:`);
       console.error(error);
       return;
     }
@@ -199,7 +178,7 @@ export class Job {
       });
       DocSnapshotSchema.parse(snapshot);
       const { meta, blocks } = snapshot;
-      const doc = this._collection.createDoc({ id: meta.id });
+      const doc = this.docCRUD.create(meta.id);
       doc.load();
       await this.snapshotToBlock(blocks, doc);
       this._slots.afterImport.emit({
@@ -328,19 +307,24 @@ export class Job {
     return this._assetsManager;
   }
 
-  get collection() {
-    return this._collection;
+  get schema() {
+    return this._schema;
   }
 
-  constructor({ collection, middlewares = [] }: JobConfig) {
-    this._collection = collection;
-    this._assetsManager = new AssetsManager({ blob: collection.blobSync });
+  get docCRUD() {
+    return this._docCRUD;
+  }
+
+  constructor({ blobCRUD, schema, docCRUD, middlewares = [] }: JobConfig) {
+    this._assetsManager = new AssetsManager({ blob: blobCRUD });
+    this._schema = schema;
+    this._docCRUD = docCRUD;
 
     middlewares.forEach(middleware => {
       middleware({
         slots: this._slots,
+        docCRUD: this._docCRUD,
         assetsManager: this._assetsManager,
-        collection: this._collection,
         adapterConfigs: this._adapterConfigs,
       });
     });
@@ -465,20 +449,8 @@ export class Job {
     }
   }
 
-  private _getCollectionMeta() {
-    const { meta } = this._collection;
-    const { docs } = meta;
-    if (!docs) {
-      throw new BlockSuiteError(ErrorCode.TransformerError, 'Docs not found');
-    }
-    return {
-      properties: {}, // for backward compatibility
-      pages: JSON.parse(JSON.stringify(docs)) as DocMeta[],
-    };
-  }
-
   private _getSchema(flavour: string) {
-    const schema = this._collection.schema.flavourSchemaMap.get(flavour);
+    const schema = this.schema.flavourSchemaMap.get(flavour);
     if (!schema) {
       throw new BlockSuiteError(
         ErrorCode.TransformerError,

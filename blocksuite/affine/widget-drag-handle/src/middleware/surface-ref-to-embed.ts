@@ -3,7 +3,7 @@ import type { JobMiddleware } from '@blocksuite/store';
 
 export const surfaceRefToEmbed =
   (std: BlockStdScope): JobMiddleware =>
-  ({ slots, collection }) => {
+  ({ slots }) => {
     let pageId: string | null = null;
     slots.beforeImport.on(payload => {
       if (payload.type === 'slice') {
@@ -18,7 +18,7 @@ export const surfaceRefToEmbed =
         !std.doc.hasBlock(payload.snapshot.id)
       ) {
         const id = payload.snapshot.id;
-        payload.snapshot.id = collection.idGenerator();
+        payload.snapshot.id = std.collection.idGenerator();
         payload.snapshot.flavour = 'affine:embed-linked-doc';
         payload.snapshot.props = {
           blockId: id,

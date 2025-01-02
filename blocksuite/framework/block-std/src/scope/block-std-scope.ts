@@ -1,7 +1,7 @@
 import type { ServiceProvider } from '@blocksuite/global/di';
 import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import type { Doc } from '@blocksuite/store';
+import { type Doc, Job, type JobMiddleware } from '@blocksuite/store';
 
 import { Clipboard } from '../clipboard/index.js';
 import { CommandManager } from '../command/index.js';
@@ -166,6 +166,19 @@ export class BlockStdScope {
 
   getView(flavour: string) {
     return this.getOptional(BlockViewIdentifier(flavour));
+  }
+
+  getJob(middlewares: JobMiddleware[] = []) {
+    return new Job({
+      schema: this.collection.schema,
+      blobCRUD: this.collection.blobSync,
+      docCRUD: {
+        create: (id: string) => this.collection.createDoc({ id }),
+        get: (id: string) => this.collection.getDoc(id),
+        delete: (id: string) => this.collection.removeDoc(id),
+      },
+      middlewares,
+    });
   }
 
   mount() {

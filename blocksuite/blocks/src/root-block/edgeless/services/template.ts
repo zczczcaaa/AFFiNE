@@ -87,7 +87,16 @@ export class TemplateJob {
   type: TemplateType;
 
   constructor({ model, type, middlewares }: TemplateJobConfig) {
-    this.job = new Job({ collection: model.doc.collection, middlewares: [] });
+    this.job = new Job({
+      schema: model.doc.collection.schema,
+      blobCRUD: model.doc.collection.blobSync,
+      docCRUD: {
+        create: (id: string) => model.doc.collection.createDoc({ id }),
+        get: (id: string) => model.doc.collection.getDoc(id),
+        delete: (id: string) => model.doc.collection.removeDoc(id),
+      },
+      middlewares: [],
+    });
     this.model = model;
     this.type = TEMPLATE_TYPES.includes(type as TemplateType)
       ? (type as TemplateType)

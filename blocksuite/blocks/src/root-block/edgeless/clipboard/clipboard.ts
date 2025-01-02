@@ -369,7 +369,15 @@ export class EdgelessClipboardController extends PageClipboard {
       if (mayBeSurfaceDataJson !== undefined) {
         const elementsRawData = JSON.parse(mayBeSurfaceDataJson);
         const { snapshot, blobs } = elementsRawData;
-        const job = new Job({ collection: this.std.collection });
+        const job = new Job({
+          schema: this.std.collection.schema,
+          blobCRUD: this.std.collection.blobSync,
+          docCRUD: {
+            create: (id: string) => this.std.collection.createDoc({ id }),
+            get: (id: string) => this.std.collection.getDoc(id),
+            delete: (id: string) => this.std.collection.removeDoc(id),
+          },
+        });
         const map = job.assetsManager.getAssets();
         decodeClipboardBlobs(blobs, map);
         for (const blobId of map.keys()) {
@@ -1366,7 +1374,13 @@ export async function prepareClipboardData(
   std: BlockStdScope
 ) {
   const job = new Job({
-    collection: std.collection,
+    schema: std.collection.schema,
+    blobCRUD: std.collection.blobSync,
+    docCRUD: {
+      create: (id: string) => std.collection.createDoc({ id }),
+      get: (id: string) => std.collection.getDoc(id),
+      delete: (id: string) => std.collection.removeDoc(id),
+    },
   });
   const selected = await Promise.all(
     selectedAll.map(async selected => {

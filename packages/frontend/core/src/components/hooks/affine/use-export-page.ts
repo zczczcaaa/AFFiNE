@@ -55,10 +55,16 @@ interface AdapterConfig {
 
 async function exportDoc(doc: Doc, std: BlockStdScope, config: AdapterConfig) {
   const job = new Job({
-    collection: doc.collection,
+    schema: doc.collection.schema,
+    blobCRUD: doc.collection.blobSync,
+    docCRUD: {
+      create: (id: string) => doc.collection.createDoc({ id }),
+      get: (id: string) => doc.collection.getDoc(id),
+      delete: (id: string) => doc.collection.removeDoc(id),
+    },
     middlewares: [
-      docLinkBaseURLMiddleware,
-      titleMiddleware,
+      docLinkBaseURLMiddleware(doc.collection.id),
+      titleMiddleware(doc.collection.meta.docMetas),
       embedSyncedDocMiddleware('content'),
     ],
   });

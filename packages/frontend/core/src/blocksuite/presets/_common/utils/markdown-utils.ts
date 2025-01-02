@@ -78,8 +78,17 @@ export async function getContentFromSlice(
   type: 'markdown' | 'plain-text' = 'markdown'
 ) {
   const job = new Job({
-    collection: host.std.doc.collection,
-    middlewares: [titleMiddleware, embedSyncedDocMiddleware('content')],
+    schema: host.std.doc.collection.schema,
+    blobCRUD: host.std.doc.collection.blobSync,
+    docCRUD: {
+      create: (id: string) => host.std.doc.collection.createDoc({ id }),
+      get: (id: string) => host.std.doc.collection.getDoc(id),
+      delete: (id: string) => host.std.doc.collection.removeDoc(id),
+    },
+    middlewares: [
+      titleMiddleware(host.std.doc.collection.meta.docMetas),
+      embedSyncedDocMiddleware('content'),
+    ],
   });
   const snapshot = job.sliceToSnapshot(slice);
   if (!snapshot) {
@@ -99,8 +108,14 @@ export async function getContentFromSlice(
 
 export async function getPlainTextFromSlice(host: EditorHost, slice: Slice) {
   const job = new Job({
-    collection: host.std.doc.collection,
-    middlewares: [titleMiddleware],
+    schema: host.std.doc.collection.schema,
+    blobCRUD: host.std.doc.collection.blobSync,
+    docCRUD: {
+      create: (id: string) => host.std.doc.collection.createDoc({ id }),
+      get: (id: string) => host.std.doc.collection.getDoc(id),
+      delete: (id: string) => host.std.doc.collection.removeDoc(id),
+    },
+    middlewares: [titleMiddleware(host.std.doc.collection.meta.docMetas)],
   });
   const snapshot = job.sliceToSnapshot(slice);
   if (!snapshot) {
@@ -120,7 +135,13 @@ export const markdownToSnapshot = async (
   host: EditorHost
 ) => {
   const job = new Job({
-    collection: host.std.doc.collection,
+    schema: host.std.doc.collection.schema,
+    blobCRUD: host.std.doc.collection.blobSync,
+    docCRUD: {
+      create: (id: string) => host.std.doc.collection.createDoc({ id }),
+      get: (id: string) => host.std.doc.collection.getDoc(id),
+      delete: (id: string) => host.std.doc.collection.removeDoc(id),
+    },
     middlewares: [defaultImageProxyMiddleware, pasteMiddleware(host.std)],
   });
   const markdownAdapter = new MixTextAdapter(job, host.std.provider);
@@ -204,7 +225,13 @@ export async function markDownToDoc(
     middlewares.push(...additionalMiddlewares);
   }
   const job = new Job({
-    collection,
+    schema: collection.schema,
+    blobCRUD: collection.blobSync,
+    docCRUD: {
+      create: (id: string) => collection.createDoc({ id }),
+      get: (id: string) => collection.getDoc(id),
+      delete: (id: string) => collection.removeDoc(id),
+    },
     middlewares,
   });
   const mdAdapter = new MarkdownAdapter(job, provider);

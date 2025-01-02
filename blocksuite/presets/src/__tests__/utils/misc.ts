@@ -6,8 +6,14 @@ export async function importFromSnapshot(
   snapshot: DocSnapshot
 ) {
   const job = new Job({
-    collection,
-    middlewares: [replaceIdMiddleware],
+    schema: collection.schema,
+    blobCRUD: collection.blobSync,
+    docCRUD: {
+      create: (id: string) => collection.createDoc({ id }),
+      get: (id: string) => collection.getDoc(id),
+      delete: (id: string) => collection.removeDoc(id),
+    },
+    middlewares: [replaceIdMiddleware(collection.idGenerator)],
   });
 
   return job.snapshotToDoc(snapshot);

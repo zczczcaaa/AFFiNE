@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import type { Doc } from '../store/doc/doc.js';
 import type { DocMeta, DocsPropertiesMeta } from '../store/meta.js';
 
 export type BlockSnapshot = {
@@ -65,3 +66,16 @@ export const DocSnapshotSchema: z.ZodType<DocSnapshot> = z.object({
   meta: DocMetaSchema,
   blocks: BlockSnapshotSchema,
 });
+
+export interface BlobCRUD {
+  get: (key: string) => Promise<Blob | null> | Blob | null;
+  set: (key: string, value: Blob) => Promise<string> | string;
+  delete: (key: string) => Promise<void> | void;
+  list: () => Promise<string[]> | string[];
+}
+
+export interface DocCRUD {
+  create: (id: string) => Doc;
+  get: (id: string) => Doc | null;
+  delete: (id: string) => void;
+}

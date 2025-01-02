@@ -119,7 +119,13 @@ async function importNotionZip({
     }
     const pagePromises = Array.from(pagePaths).map(async path => {
       const job = new Job({
-        collection: collection,
+        schema: collection.schema,
+        blobCRUD: collection.blobSync,
+        docCRUD: {
+          create: (id: string) => collection.createDoc({ id }),
+          get: (id: string) => collection.getDoc(id),
+          delete: (id: string) => collection.removeDoc(id),
+        },
         middlewares: [defaultImageProxyMiddleware],
       });
       const htmlAdapter = new NotionHtmlAdapter(job, provider);

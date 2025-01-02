@@ -27,5 +27,14 @@ export function createJob(middlewares?: JobMiddleware[]) {
   const schema = new Schema().register(AffineSchemas);
   const docCollection = new DocCollection({ schema });
   docCollection.meta.initialize();
-  return new Job({ collection: docCollection, middlewares: testMiddlewares });
+  return new Job({
+    schema,
+    blobCRUD: docCollection.blobSync,
+    middlewares: testMiddlewares,
+    docCRUD: {
+      create: (id: string) => docCollection.createDoc({ id }),
+      get: (id: string) => docCollection.getDoc(id),
+      delete: (id: string) => docCollection.removeDoc(id),
+    },
+  });
 }

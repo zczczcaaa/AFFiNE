@@ -174,8 +174,17 @@ const frameworkProvider = framework.provider();
     const blockSuiteDoc = doc.blockSuiteDoc;
 
     const job = new Job({
-      collection: blockSuiteDoc.collection,
-      middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
+      schema: blockSuiteDoc.collection.schema,
+      blobCRUD: blockSuiteDoc.collection.blobSync,
+      docCRUD: {
+        create: (id: string) => blockSuiteDoc.collection.createDoc({ id }),
+        get: (id: string) => blockSuiteDoc.collection.getDoc(id),
+        delete: (id: string) => blockSuiteDoc.collection.removeDoc(id),
+      },
+      middlewares: [
+        docLinkBaseURLMiddleware(blockSuiteDoc.collection.id),
+        titleMiddleware(blockSuiteDoc.collection.meta.docMetas),
+      ],
     });
     const snapshot = job.docToSnapshot(blockSuiteDoc);
 

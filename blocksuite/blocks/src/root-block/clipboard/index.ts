@@ -59,8 +59,12 @@ export class PageClipboard {
     const paste = pasteMiddleware(this._std);
     this._std.clipboard.use(copy);
     this._std.clipboard.use(paste);
-    this._std.clipboard.use(replaceIdMiddleware);
-    this._std.clipboard.use(titleMiddleware);
+    this._std.clipboard.use(
+      replaceIdMiddleware(this._std.doc.collection.idGenerator)
+    );
+    this._std.clipboard.use(
+      titleMiddleware(this._std.doc.collection.meta.docMetas)
+    );
     this._std.clipboard.use(defaultImageProxyMiddleware);
 
     this._disposables.add({
@@ -80,8 +84,12 @@ export class PageClipboard {
         this._std.clipboard.unregisterAdapter('*/*');
         this._std.clipboard.unuse(copy);
         this._std.clipboard.unuse(paste);
-        this._std.clipboard.unuse(replaceIdMiddleware);
-        this._std.clipboard.unuse(titleMiddleware);
+        this._std.clipboard.unuse(
+          replaceIdMiddleware(this._std.doc.collection.idGenerator)
+        );
+        this._std.clipboard.unuse(
+          titleMiddleware(this._std.doc.collection.meta.docMetas)
+        );
         this._std.clipboard.unuse(defaultImageProxyMiddleware);
       },
     });

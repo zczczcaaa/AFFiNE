@@ -192,7 +192,13 @@ function generateMarkdownPreviewBuilder(
   const provider = container.provider();
   const markdownAdapter = new MarkdownAdapter(
     new Job({
-      collection: markdownPreviewDocCollection,
+      schema: markdownPreviewDocCollection.schema,
+      blobCRUD: markdownPreviewDocCollection.blobSync,
+      docCRUD: {
+        create: (id: string) => markdownPreviewDocCollection.createDoc({ id }),
+        get: (id: string) => markdownPreviewDocCollection.getDoc(id),
+        delete: (id: string) => markdownPreviewDocCollection.removeDoc(id),
+      },
       middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
     }),
     provider

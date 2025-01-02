@@ -4,7 +4,7 @@ import {
   StdIdentifier,
 } from '@blocksuite/block-std';
 import { type Container, createIdentifier } from '@blocksuite/global/di';
-import { Job, Slice, type SliceSnapshot } from '@blocksuite/store';
+import { Slice, type SliceSnapshot } from '@blocksuite/store';
 
 export const DndApiExtensionIdentifier = createIdentifier<DNDAPIExtension>(
   'AffineDndApiIdentifier'
@@ -40,7 +40,7 @@ export class DNDAPIExtension extends Extension {
     const { docId, flavour = 'affine:embed-linked-doc', blockId } = options;
 
     const slice = Slice.fromModels(this.std.doc, []);
-    const job = new Job({ collection: this.std.collection });
+    const job = this.std.getJob();
     const snapshot = job.sliceToSnapshot(slice);
     if (!snapshot) {
       console.error('Failed to convert slice to snapshot');

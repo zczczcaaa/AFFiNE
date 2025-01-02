@@ -102,10 +102,19 @@ export class AdaptersPanel extends WithDisposable(ShadowlessElement) {
 
   private _createJob() {
     return new Job({
-      collection: this.doc.collection,
+      schema: this.doc.collection.schema,
+      blobCRUD: this.doc.collection.blobSync,
+      docCRUD: {
+        create: (id: string) => this.doc.collection.createDoc({ id }),
+        get: (id: string) => this.doc.collection.getDoc(id),
+        delete: (id: string) => this.doc.collection.removeDoc(id),
+      },
       middlewares: [
-        docLinkBaseURLMiddlewareBuilder('https://example.com').get(),
-        titleMiddleware,
+        docLinkBaseURLMiddlewareBuilder(
+          'https://example.com',
+          this.doc.collection.id
+        ).get(),
+        titleMiddleware(this.doc.collection.meta.docMetas),
         embedSyncedDocMiddleware('content'),
         defaultImageProxyMiddleware,
       ],

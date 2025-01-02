@@ -1,12 +1,13 @@
 import type { Slot } from '@blocksuite/global/utils';
 
-import type { Doc, DocCollection } from '../store/index.js';
+import type { Doc } from '../store/index.js';
 import type { AssetsManager } from './assets.js';
 import type { DraftModel } from './draft.js';
 import type { Slice } from './slice.js';
 import type {
   BlockSnapshot,
   CollectionInfoSnapshot,
+  DocCRUD,
   DocSnapshot,
   SliceSnapshot,
 } from './type.js';
@@ -79,9 +80,9 @@ export type JobSlots = {
 };
 
 type JobMiddlewareOptions = {
-  collection: DocCollection;
   assetsManager: AssetsManager;
   slots: JobSlots;
+  docCRUD: DocCRUD;
   adapterConfigs: Map<string, string>;
 };
 

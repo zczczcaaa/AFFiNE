@@ -242,8 +242,17 @@ export class StarterDebugMenu extends ShadowlessElement {
   private async _exportFile(config: AdapterConfig) {
     const doc = this.editor.doc;
     const job = new Job({
-      collection: this.editor.doc.collection,
-      middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
+      schema: this.collection.schema,
+      blobCRUD: this.collection.blobSync,
+      docCRUD: {
+        create: (id: string) => this.collection.createDoc({ id }),
+        get: (id: string) => this.collection.getDoc(id),
+        delete: (id: string) => this.collection.removeDoc(id),
+      },
+      middlewares: [
+        docLinkBaseURLMiddleware(this.collection.id),
+        titleMiddleware(this.collection.meta.docMetas),
+      ],
     });
 
     const adapterFactory = this.editor.std.provider.get(config.identifier);
@@ -432,7 +441,13 @@ export class StarterDebugMenu extends ShadowlessElement {
       });
       if (!file) return;
       const job = new Job({
-        collection: this.collection,
+        schema: this.collection.schema,
+        blobCRUD: this.collection.blobSync,
+        docCRUD: {
+          create: (id: string) => this.collection.createDoc({ id }),
+          get: (id: string) => this.collection.getDoc(id),
+          delete: (id: string) => this.collection.removeDoc(id),
+        },
         middlewares: [defaultImageProxyMiddleware],
       });
       const htmlAdapter = new NotionHtmlAdapter(job, this.editor.std.provider);

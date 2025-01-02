@@ -45,8 +45,17 @@ const provider = container.provider();
  */
 async function exportDoc(doc: Doc) {
   const job = new Job({
-    collection: doc.collection,
-    middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
+    schema: doc.schema,
+    blobCRUD: doc.blobSync,
+    docCRUD: {
+      create: (id: string) => doc.collection.createDoc({ id }),
+      get: (id: string) => doc.collection.getDoc(id),
+      delete: (id: string) => doc.collection.removeDoc(id),
+    },
+    middlewares: [
+      docLinkBaseURLMiddleware(doc.collection.id),
+      titleMiddleware(doc.collection.meta.docMetas),
+    ],
   });
   const snapshot = job.docToSnapshot(doc);
   const adapter = new HtmlAdapter(job, provider);
@@ -91,11 +100,17 @@ async function importHTMLToDoc({
   fileName,
 }: ImportHTMLToDocOptions) {
   const job = new Job({
-    collection,
+    schema: collection.schema,
+    blobCRUD: collection.blobSync,
+    docCRUD: {
+      create: (id: string) => collection.createDoc({ id }),
+      get: (id: string) => collection.getDoc(id),
+      delete: (id: string) => collection.removeDoc(id),
+    },
     middlewares: [
       defaultImageProxyMiddleware,
       fileNameMiddleware(fileName),
-      docLinkBaseURLMiddleware,
+      docLinkBaseURLMiddleware(collection.id),
     ],
   });
   const htmlAdapter = new HtmlAdapter(job, provider);
@@ -147,11 +162,17 @@ async function importHTMLZip({ collection, imported }: ImportHTMLZipOptions) {
     htmlBlobs.map(async ([fileName, blob]) => {
       const fileNameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
       const job = new Job({
-        collection,
+        schema: collection.schema,
+        blobCRUD: collection.blobSync,
+        docCRUD: {
+          create: (id: string) => collection.createDoc({ id }),
+          get: (id: string) => collection.getDoc(id),
+          delete: (id: string) => collection.removeDoc(id),
+        },
         middlewares: [
           defaultImageProxyMiddleware,
           fileNameMiddleware(fileNameWithoutExt),
-          docLinkBaseURLMiddleware,
+          docLinkBaseURLMiddleware(collection.id),
         ],
       });
       const assets = job.assets;

@@ -51,8 +51,17 @@ type ImportMarkdownZipOptions = {
  */
 async function exportDoc(doc: Doc) {
   const job = new Job({
-    collection: doc.collection,
-    middlewares: [docLinkBaseURLMiddleware, titleMiddleware],
+    schema: doc.schema,
+    blobCRUD: doc.blobSync,
+    docCRUD: {
+      create: (id: string) => doc.collection.createDoc({ id }),
+      get: (id: string) => doc.collection.getDoc(id),
+      delete: (id: string) => doc.collection.removeDoc(id),
+    },
+    middlewares: [
+      docLinkBaseURLMiddleware(doc.collection.id),
+      titleMiddleware(doc.collection.meta.docMetas),
+    ],
   });
   const snapshot = job.docToSnapshot(doc);
 
@@ -101,8 +110,17 @@ async function importMarkdownToBlock({
   blockId,
 }: ImportMarkdownToBlockOptions) {
   const job = new Job({
-    collection: doc.collection,
-    middlewares: [defaultImageProxyMiddleware, docLinkBaseURLMiddleware],
+    schema: doc.schema,
+    blobCRUD: doc.blobSync,
+    docCRUD: {
+      create: (id: string) => doc.collection.createDoc({ id }),
+      get: (id: string) => doc.collection.getDoc(id),
+      delete: (id: string) => doc.collection.removeDoc(id),
+    },
+    middlewares: [
+      defaultImageProxyMiddleware,
+      docLinkBaseURLMiddleware(doc.collection.id),
+    ],
   });
   const adapter = new MarkdownAdapter(job, provider);
   const snapshot = await adapter.toSliceSnapshot({
@@ -137,11 +155,17 @@ async function importMarkdownToDoc({
   fileName,
 }: ImportMarkdownToDocOptions) {
   const job = new Job({
-    collection,
+    schema: collection.schema,
+    blobCRUD: collection.blobSync,
+    docCRUD: {
+      create: (id: string) => collection.createDoc({ id }),
+      get: (id: string) => collection.getDoc(id),
+      delete: (id: string) => collection.removeDoc(id),
+    },
     middlewares: [
       defaultImageProxyMiddleware,
       fileNameMiddleware(fileName),
-      docLinkBaseURLMiddleware,
+      docLinkBaseURLMiddleware(collection.id),
     ],
   });
   const mdAdapter = new MarkdownAdapter(job, provider);
@@ -195,11 +219,17 @@ async function importMarkdownZip({
     markdownBlobs.map(async ([fileName, blob]) => {
       const fileNameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
       const job = new Job({
-        collection,
+        schema: collection.schema,
+        blobCRUD: collection.blobSync,
+        docCRUD: {
+          create: (id: string) => collection.createDoc({ id }),
+          get: (id: string) => collection.getDoc(id),
+          delete: (id: string) => collection.removeDoc(id),
+        },
         middlewares: [
           defaultImageProxyMiddleware,
           fileNameMiddleware(fileNameWithoutExt),
-          docLinkBaseURLMiddleware,
+          docLinkBaseURLMiddleware(collection.id),
         ],
       });
       const assets = job.assets;
