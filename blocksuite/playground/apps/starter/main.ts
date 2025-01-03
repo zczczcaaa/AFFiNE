@@ -22,7 +22,10 @@ import { effects as presetsEffects } from '@blocksuite/presets/effects';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import * as store from '@blocksuite/store';
 
-import { mockDocModeService } from '../_common/mock-services.js';
+import {
+  mockDocModeService,
+  mockEditorSetting,
+} from '../_common/mock-services.js';
 import { setupEdgelessTemplate } from '../_common/setup.js';
 import {
   createStarterDocCollection,
@@ -59,6 +62,7 @@ async function main() {
         },
         defaultExtensions: (): ExtensionType[] => [
           FontConfigExtension(CommunityCanvasTextFonts),
+          blocks.EditorSettingExtension(mockEditorSetting()),
         ],
         extensions: {
           FontConfigExtension: FontConfigExtension(CommunityCanvasTextFonts),

@@ -7,6 +7,7 @@ import {
   AffineFormatBarWidget,
   CommunityCanvasTextFonts,
   DocModeProvider,
+  EditorSettingExtension,
   FontConfigExtension,
   GenerateDocUrlExtension,
   NotificationExtension,
@@ -35,6 +36,7 @@ import {
 } from '../../_common/history.js';
 import {
   mockDocModeService,
+  mockEditorSetting,
   mockGenerateDocUrlService,
   mockNotificationService,
   mockParseDocUrlService,
@@ -79,6 +81,7 @@ export async function mountDefaultDocEditor(collection: DocCollection) {
     GenerateDocUrlExtension(mockGenerateDocUrlService(collection)),
     NotificationExtension(mockNotificationService(editor)),
     OverrideThemeExtension(themeExtension),
+    EditorSettingExtension(mockEditorSetting()),
     {
       setup: di => {
         di.override(DocModeProvider, () =>

@@ -11,6 +11,7 @@ import type {
   ShapeElementModel,
 } from '@blocksuite/affine-model';
 import {
+  EditorSettingProvider,
   EditPropsStore,
   FontLoaderService,
   ThemeProvider,
@@ -371,8 +372,10 @@ export class EdgelessRootBlockComponent extends BlockComponent<
   private _initWheelEvent() {
     this._disposables.add(
       this.dispatcher.add('wheel', ctx => {
+        const config = this.std.getOptional(EditorSettingProvider);
         const state = ctx.get('defaultState');
         const e = state.event as WheelEvent;
+        const edgelessScrollZoom = config?.peek().edgelessScrollZoom ?? false;
 
         e.preventDefault();
 
@@ -380,7 +383,7 @@ export class EdgelessRootBlockComponent extends BlockComponent<
         if (viewport.locked) return;
 
         // zoom
-        if (isTouchPadPinchEvent(e)) {
+        if (isTouchPadPinchEvent(e) || edgelessScrollZoom) {
           const rect = this.getBoundingClientRect();
           // Perform zooming relative to the mouse position
           const [baseX, baseY] = this.gfx.viewport.toModelCoord(

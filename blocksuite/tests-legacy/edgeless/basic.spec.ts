@@ -120,6 +120,50 @@ test('zoom by mouse', async ({ page }) => {
   await assertEdgelessSelectedModelRect(page, zoomed);
 });
 
+test('zoom by mouse without ctrl pressed when edgelessScrollZoom is enabled', async ({
+  page,
+}) => {
+  await enterPlaygroundRoom(page);
+  await initEmptyEdgelessState(page);
+
+  await switchEditorMode(page);
+  await zoomResetByKeyboard(page);
+  await assertZoomLevel(page, 100);
+
+  await assertNoteXYWH(page, [0, 0, DEFAULT_NOTE_WIDTH, DEFAULT_NOTE_HEIGHT]);
+
+  await page.mouse.click(CENTER_X, CENTER_Y);
+  const original = [0, 0, DEFAULT_NOTE_WIDTH, DEFAULT_NOTE_HEIGHT];
+  await assertEdgelessSelectedModelRect(page, original);
+
+  // enable edgelessScrollZoom
+  await page.evaluate(() => {
+    window.editorSetting$.value = {
+      ...window.editorSetting$.value,
+      edgelessScrollZoom: true,
+    };
+  });
+
+  // can zoom without ctrl pressed
+  await zoomByMouseWheel(page, 0, 125, false);
+  await assertZoomLevel(page, 90);
+
+  const zoomed = [0, 0, original[2] * 0.9, original[3] * 0.9];
+  await assertEdgelessSelectedModelRect(page, zoomed);
+
+  // disable edgelessScrollZoom
+  await page.evaluate(() => {
+    window.editorSetting$.value = {
+      ...window.editorSetting$.value,
+      edgelessScrollZoom: false,
+    };
+  });
+
+  // can't zoom without ctrl pressed
+  await zoomByMouseWheel(page, 0, 125, false);
+  await assertZoomLevel(page, 90);
+});
+
 test('zoom by pinch', async ({ page }) => {
   await enterPlaygroundRoom(page);
   await initEmptyEdgelessState(page);

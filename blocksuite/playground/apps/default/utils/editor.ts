@@ -3,6 +3,7 @@ import {
   CommunityCanvasTextFonts,
   DocModeExtension,
   DocModeProvider,
+  EditorSettingExtension,
   FontConfigExtension,
   GenerateDocUrlExtension,
   GenerateDocUrlProvider,
@@ -26,6 +27,7 @@ import {
 } from '../../_common/history.js';
 import {
   mockDocModeService,
+  mockEditorSetting,
   mockGenerateDocUrlService,
   mockNotificationService,
   mockParseDocUrlService,
@@ -126,6 +128,7 @@ export async function mountDefaultDocEditor(collection: DocCollection) {
       NotificationExtension(mockNotificationService(editor)),
       FontConfigExtension(CommunityCanvasTextFonts),
       mockPeekViewExtension(attachmentViewerPanel),
+      EditorSettingExtension(mockEditorSetting()),
     ];
     return newSpec;
   }

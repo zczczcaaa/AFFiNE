@@ -3,11 +3,13 @@ import type {
   PeekViewService,
 } from '@blocksuite/affine-components/peek';
 import { PeekViewExtension } from '@blocksuite/affine-components/peek';
+import type { EditorSetting } from '@blocksuite/affine-shared/services';
 import { BlockComponent } from '@blocksuite/block-std';
 import {
   ColorScheme,
   type DocMode,
   type DocModeProvider,
+  GeneralSettingSchema,
   type GenerateDocUrlService,
   matchFlavours,
   type NotificationService,
@@ -19,7 +21,7 @@ import {
 import { Slot } from '@blocksuite/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import { type DocCollection } from '@blocksuite/store';
-import { signal } from '@preact/signals-core';
+import { Signal, signal } from '@preact/signals-core';
 import type { TemplateResult } from 'lit';
 
 import type { AttachmentViewerPanel } from './components/attachment-viewer-panel.js';
@@ -203,4 +205,29 @@ export function mockGenerateDocUrlService(collection: DocCollection) {
     },
   };
   return generateDocUrlService;
+}
+
+export function mockEditorSetting() {
+  if (window.editorSetting$) return window.editorSetting$;
+
+  const initialVal = Object.entries(GeneralSettingSchema.shape).reduce(
+    (pre: EditorSetting, [key, schema]) => {
+      // @ts-expect-error key is EditorSetting field
+      pre[key as keyof EditorSetting] = schema.parse(undefined);
+      return pre;
+    },
+    {} as EditorSetting
+  );
+
+  const signal = new Signal<EditorSetting>(initialVal);
+
+  window.editorSetting$ = signal;
+
+  return signal;
+}
+
+declare global {
+  interface Window {
+    editorSetting$: Signal<EditorSetting>;
+  }
 }

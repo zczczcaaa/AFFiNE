@@ -825,11 +825,14 @@ export async function clickComponentToolbarMoreMenuButton(
 export async function zoomByMouseWheel(
   page: Page,
   stepX: number,
-  stepY: number
+  stepY: number,
+  pressedKey = true
 ) {
-  await page.keyboard.down(SHORT_KEY);
+  if (pressedKey) await page.keyboard.down(SHORT_KEY);
+
   await page.mouse.wheel(stepX, stepY);
-  await page.keyboard.up(SHORT_KEY);
+
+  if (pressedKey) await page.keyboard.up(SHORT_KEY);
 }
 
 // touch screen is not supported by Playwright now

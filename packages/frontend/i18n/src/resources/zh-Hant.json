@@ -1140,6 +1140,8 @@
   "com.affine.settings.editorSettings.page.edgeless-default-theme.description": "設定無界的預設配色。",
   "com.affine.settings.editorSettings.page.edgeless-default-theme.title": "無界預設主題",
   "com.affine.settings.editorSettings.page.edgeless-default-theme.specified": "由目前顏色模式指定",
+  "com.affine.settings.editorSettings.page.edgeless-scroll-wheel-zoom.title": "滾輪縮放",
+  "com.affine.settings.editorSettings.page.edgeless-scroll-wheel-zoom.description": "使用滑鼠滾輪來調整縮放比例",
   "com.affine.settings.editorSettings.preferences": "首選項",
   "com.affine.settings.editorSettings.preferences.export.description": "您可以匯出整個首選項數據進行備份，導出的數據亦可重新匯入。",
   "com.affine.settings.editorSettings.preferences.export.title": "匯出設定",
