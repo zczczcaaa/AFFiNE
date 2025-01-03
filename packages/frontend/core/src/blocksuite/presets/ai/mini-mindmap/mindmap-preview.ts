@@ -12,13 +12,7 @@ import {
 } from '@blocksuite/affine/blocks';
 import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import {
-  type Doc,
-  type DocCollectionOptions,
-  IdGeneratorType,
-  Job,
-  Schema,
-} from '@blocksuite/affine/store';
+import { type Doc, Job, Schema } from '@blocksuite/affine/store';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -102,14 +96,11 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
   private _createTemporaryDoc() {
     const schema = new Schema();
     schema.register(MiniMindmapSchema);
-    const options: DocCollectionOptions = {
+
+    const collection = new WorkspaceImpl({
       id: 'MINI_MINDMAP_TEMPORARY',
       schema,
-      idGenerator: IdGeneratorType.NanoID,
-      awarenessSources: [],
-    };
-
-    const collection = new WorkspaceImpl(options);
+    });
     collection.meta.initialize();
     collection.start();
 

@@ -4,7 +4,8 @@ import {
   markdownInlineToDeltaMatchers,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
-import { DocCollection, Schema } from '@blocksuite/affine/store';
+import { Schema } from '@blocksuite/store';
+import { TestWorkspace } from '@blocksuite/store/test';
 import { describe, expect, test } from 'vitest';
 
 import { markdownToMindmap } from '../mindmap-preview.js';
@@ -28,7 +29,7 @@ describe('markdownToMindmap: convert markdown list to a mind map tree', () => {
   - Text D
     - Text E
 `;
-    const collection = new DocCollection({ schema: new Schema() });
+    const collection = new TestWorkspace({ schema: new Schema() });
     collection.meta.initialize();
     const doc = collection.createDoc();
     const nodes = markdownToMindmap(markdown, doc, provider);
@@ -66,7 +67,7 @@ describe('markdownToMindmap: convert markdown list to a mind map tree', () => {
     - Text D
         - Text E
 `;
-    const collection = new DocCollection({ schema: new Schema() });
+    const collection = new TestWorkspace({ schema: new Schema() });
     collection.meta.initialize();
     const doc = collection.createDoc();
     const nodes = markdownToMindmap(markdown, doc, provider);
@@ -98,7 +99,7 @@ describe('markdownToMindmap: convert markdown list to a mind map tree', () => {
 
   test('empty case', () => {
     const markdown = '';
-    const collection = new DocCollection({ schema: new Schema() });
+    const collection = new TestWorkspace({ schema: new Schema() });
     collection.meta.initialize();
     const doc = collection.createDoc();
     const nodes = markdownToMindmap(markdown, doc, provider);

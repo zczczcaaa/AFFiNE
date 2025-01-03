@@ -1,14 +1,12 @@
 import { AffineSchemas, TestUtils } from '@blocksuite/blocks';
 import type { BlockSuiteFlags } from '@blocksuite/global/types';
 import { assertExists } from '@blocksuite/global/utils';
+import { type BlockCollection, Job, nanoid, Schema } from '@blocksuite/store';
 import {
-  type BlockCollection,
-  DocCollection,
+  createAutoIncrementIdGenerator,
   type DocCollectionOptions,
-  IdGeneratorType,
-  Job,
-  Schema,
-} from '@blocksuite/store';
+  TestWorkspace,
+} from '@blocksuite/store/test';
 import {
   type BlobSource,
   BroadcastChannelAwarenessSource,
@@ -30,9 +28,7 @@ export function createStarterDocCollection() {
   const collectionId = room ?? 'starter';
   const schema = new Schema();
   schema.register(AffineSchemas);
-  const idGenerator = isE2E
-    ? IdGeneratorType.AutoIncrement
-    : IdGeneratorType.NanoID;
+  const idGenerator = isE2E ? createAutoIncrementIdGenerator() : nanoid;
 
   let docSources: DocCollectionOptions['docSources'];
   if (room) {
@@ -78,7 +74,7 @@ export function createStarterDocCollection() {
     docSources,
     blobSources,
   };
-  const collection = new DocCollection(options);
+  const collection = new TestWorkspace(options);
   collection.start();
 
   // debug info
@@ -99,7 +95,7 @@ export function createStarterDocCollection() {
   return collection;
 }
 
-export async function initStarterDocCollection(collection: DocCollection) {
+export async function initStarterDocCollection(collection: TestWorkspace) {
   // init from other clients
   if (room && !params.has('init')) {
     const firstCollection = collection.docs.values().next().value as
@@ -129,7 +125,7 @@ export async function initStarterDocCollection(collection: DocCollection) {
   // use built-in init function
   const functionMap = new Map<
     string,
-    (collection: DocCollection, id: string) => Promise<void> | void
+    (collection: TestWorkspace, id: string) => Promise<void> | void
   >();
   Object.values(
     (await import('../data/index.js')) as Record<string, InitFn>

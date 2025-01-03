@@ -13,12 +13,11 @@ import {
 } from '@blocksuite/blocks';
 import { AffineSchemas } from '@blocksuite/blocks/schemas';
 import { assertExists } from '@blocksuite/global/utils';
+import { Schema, Text } from '@blocksuite/store';
 import {
-  DocCollection,
-  IdGeneratorType,
-  Schema,
-  Text,
-} from '@blocksuite/store';
+  createAutoIncrementIdGenerator,
+  TestWorkspace,
+} from '@blocksuite/store/test';
 
 import { AffineEditorContainer } from '../../index.js';
 
@@ -28,7 +27,7 @@ function createCollectionOptions() {
 
   schema.register(AffineSchemas);
 
-  const idGenerator: IdGeneratorType = IdGeneratorType.AutoIncrement; // works only in single user mode
+  const idGenerator = createAutoIncrementIdGenerator();
 
   return {
     id: room,
@@ -44,7 +43,7 @@ function createCollectionOptions() {
   };
 }
 
-function initCollection(collection: DocCollection) {
+function initCollection(collection: TestWorkspace) {
   const doc = collection.createDoc({ id: 'doc:home' });
 
   doc.load(() => {
@@ -56,7 +55,7 @@ function initCollection(collection: DocCollection) {
   doc.resetHistory();
 }
 
-async function createEditor(collection: DocCollection, mode: DocMode = 'page') {
+async function createEditor(collection: TestWorkspace, mode: DocMode = 'page') {
   const app = document.createElement('div');
   const blockCollection = collection.docs.values().next().value as
     | BlockCollection
@@ -86,7 +85,7 @@ async function createEditor(collection: DocCollection, mode: DocMode = 'page') {
 }
 
 export async function setupEditor(mode: DocMode = 'page') {
-  const collection = new DocCollection(createCollectionOptions());
+  const collection = new TestWorkspace(createCollectionOptions());
   collection.meta.initialize();
 
   window.collection = collection;
@@ -113,12 +112,12 @@ export function cleanup() {
 declare global {
   const editor: AffineEditorContainer;
   const doc: Doc;
-  const collection: DocCollection;
+  const collection: TestWorkspace;
   const job: Job;
   interface Window {
     editor: AffineEditorContainer;
     doc: Doc;
     job: Job;
-    collection: DocCollection;
+    collection: TestWorkspace;
   }
 }

@@ -1,9 +1,10 @@
 import { AffineSchemas } from '@blocksuite/blocks';
-import { DocCollection, Schema } from '@blocksuite/store';
+import { Schema } from '@blocksuite/store';
+import { TestWorkspace } from '@blocksuite/store/test';
 
 export function createEmptyDoc() {
   const schema = new Schema().register(AffineSchemas);
-  const collection = new DocCollection({ schema });
+  const collection = new TestWorkspace({ schema });
   collection.meta.initialize();
   const doc = collection.createDoc();
 

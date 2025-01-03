@@ -1,13 +1,10 @@
 import { AffineSchemas } from '@blocksuite/blocks';
 import type { BlockSuiteFlags } from '@blocksuite/global/types';
+import { Job, nanoid, Schema, Text } from '@blocksuite/store';
 import {
-  DocCollection,
   type DocCollectionOptions,
-  IdGeneratorType,
-  Job,
-  Schema,
-  Text,
-} from '@blocksuite/store';
+  TestWorkspace,
+} from '@blocksuite/store/test';
 import {
   BroadcastChannelAwarenessSource,
   BroadcastChannelDocSource,
@@ -22,7 +19,7 @@ import { WebSocketDocSource } from '../../_common/sync/websocket/doc';
 const BASE_WEBSOCKET_URL = new URL(import.meta.env.PLAYGROUND_WS);
 
 export async function createDefaultDocCollection() {
-  const idGenerator: IdGeneratorType = IdGeneratorType.NanoID;
+  const idGenerator = nanoid;
   const schema = new Schema();
   schema.register(AffineSchemas);
 
@@ -79,7 +76,7 @@ export async function createDefaultDocCollection() {
       ...flags,
     },
   };
-  const collection = new DocCollection(options);
+  const collection = new TestWorkspace(options);
   collection.start();
 
   // debug info
@@ -99,7 +96,7 @@ export async function createDefaultDocCollection() {
   return collection;
 }
 
-export async function initDefaultDocCollection(collection: DocCollection) {
+export async function initDefaultDocCollection(collection: TestWorkspace) {
   const params = new URLSearchParams(location.search);
 
   await collection.waitForSynced();

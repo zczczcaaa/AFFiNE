@@ -9,7 +9,8 @@ import {
   type SchemaToModel,
 } from '../schema/index.js';
 import { Block, type YBlock } from '../store/doc/block/index.js';
-import { DocCollection, IdGeneratorType } from '../store/index.js';
+import { TestWorkspace } from '../test/test-workspace.js';
+import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 
 const pageSchema = defineBlockSchema({
   flavour: 'page',
@@ -28,7 +29,7 @@ const pageSchema = defineBlockSchema({
 type RootModel = SchemaToModel<typeof pageSchema>;
 
 function createTestOptions() {
-  const idGenerator = IdGeneratorType.AutoIncrement;
+  const idGenerator = createAutoIncrementIdGenerator();
   const schema = new Schema();
   schema.register([pageSchema]);
   return { id: 'test-collection', idGenerator, schema };
@@ -37,7 +38,7 @@ function createTestOptions() {
 const defaultDocId = 'doc:home';
 function createTestDoc(docId = defaultDocId) {
   const options = createTestOptions();
-  const collection = new DocCollection(options);
+  const collection = new TestWorkspace(options);
   collection.meta.initialize();
   const doc = collection.createDoc({ id: docId });
   doc.load();

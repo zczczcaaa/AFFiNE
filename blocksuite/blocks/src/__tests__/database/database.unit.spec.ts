@@ -18,7 +18,11 @@ import {
 } from '@blocksuite/affine-model';
 import { propertyModelPresets } from '@blocksuite/data-view/property-pure-presets';
 import type { BlockModel, Doc } from '@blocksuite/store';
-import { DocCollection, IdGeneratorType, Schema } from '@blocksuite/store';
+import { Schema } from '@blocksuite/store';
+import {
+  createAutoIncrementIdGenerator,
+  TestWorkspace,
+} from '@blocksuite/store/test';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 const AffineSchemas = [
@@ -29,7 +33,7 @@ const AffineSchemas = [
 ];
 
 function createTestOptions() {
-  const idGenerator = IdGeneratorType.AutoIncrement;
+  const idGenerator = createAutoIncrementIdGenerator();
   const schema = new Schema();
   schema.register(AffineSchemas);
   return { id: 'test-collection', idGenerator, schema };
@@ -37,7 +41,7 @@ function createTestOptions() {
 
 function createTestDoc(docId = 'doc0') {
   const options = createTestOptions();
-  const collection = new DocCollection(options);
+  const collection = new TestWorkspace(options);
   collection.meta.initialize();
   const doc = collection.createDoc({ id: docId });
   doc.load();

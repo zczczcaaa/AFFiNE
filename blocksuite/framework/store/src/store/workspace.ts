@@ -86,5 +86,5 @@ export interface Workspace {
 }
 
 export interface StackItem {
-  meta: Map<'cursor-location' | 'selection-state', unknown>;
+  meta: Map<'selection-state', unknown>;
 }

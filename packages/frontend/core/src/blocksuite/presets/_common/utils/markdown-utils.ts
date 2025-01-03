@@ -14,17 +14,18 @@ import {
   titleMiddleware,
 } from '@blocksuite/affine/blocks';
 import type { ServiceProvider } from '@blocksuite/affine/global/di';
-import type { JobMiddleware, Schema } from '@blocksuite/affine/store';
-import { Job } from '@blocksuite/affine/store';
-import { assertExists } from '@blocksuite/global/utils';
+import { assertExists } from '@blocksuite/affine/global/utils';
 import type {
   BlockModel,
   BlockSnapshot,
   Doc,
   DraftModel,
+  JobMiddleware,
+  Schema,
   Slice,
   SliceSnapshot,
-} from '@blocksuite/store';
+} from '@blocksuite/affine/store';
+import { Job } from '@blocksuite/affine/store';
 
 const updateSnapshotText = (
   point: TextRangePoint,

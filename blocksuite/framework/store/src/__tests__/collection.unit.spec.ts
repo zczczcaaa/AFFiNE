@@ -6,8 +6,10 @@ import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 
 import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
 import type { BlockModel, BlockSchemaType, Doc } from '../index.js';
-import { DocCollection, IdGeneratorType, Schema } from '../index.js';
+import { Schema } from '../index.js';
 import type { DocMeta } from '../store/workspace.js';
+import { TestWorkspace } from '../test/test-workspace.js';
+import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 import type { BlockSuiteDoc } from '../yjs/index.js';
 import {
   NoteBlockSchema,
@@ -23,7 +25,7 @@ export const BlockSchemas = [
 ] as BlockSchemaType[];
 
 function createTestOptions() {
-  const idGenerator = IdGeneratorType.AutoIncrement;
+  const idGenerator = createAutoIncrementIdGenerator();
   const schema = new Schema();
   schema.register(BlockSchemas);
   return { id: 'test-collection', idGenerator, schema };
@@ -60,7 +62,7 @@ function createRoot(doc: Doc) {
 
 function createTestDoc(docId = defaultDocId) {
   const options = createTestOptions();
-  const collection = new DocCollection(options);
+  const collection = new TestWorkspace(options);
   collection.meta.initialize();
   const doc = collection.createDoc({ id: docId });
   doc.load();
@@ -92,7 +94,7 @@ beforeEach(() => {
 describe('basic', () => {
   it('can init collection', () => {
     const options = createTestOptions();
-    const collection = new DocCollection(options);
+    const collection = new TestWorkspace(options);
     collection.meta.initialize();
 
     const doc = collection.createDoc({ id: 'doc:home' });
@@ -132,7 +134,7 @@ describe('basic', () => {
   it('init collection with custom id generator', () => {
     const options = createTestOptions();
     let id = 100;
-    const collection = new DocCollection({
+    const collection = new TestWorkspace({
       ...options,
       idGenerator: () => {
         return String(id++);
@@ -151,7 +153,7 @@ describe('basic', () => {
 
   it('doc ready lifecycle', () => {
     const options = createTestOptions();
-    const collection = new DocCollection(options);
+    const collection = new TestWorkspace(options);
     collection.meta.initialize();
     const doc = collection.createDoc({
       id: 'space:0',
@@ -176,9 +178,9 @@ describe('basic', () => {
 
   it('collection docs with yjs applyUpdate', () => {
     const options = createTestOptions();
-    const collection = new DocCollection(options);
+    const collection = new TestWorkspace(options);
     collection.meta.initialize();
-    const collection2 = new DocCollection(options);
+    const collection2 = new TestWorkspace(options);
     const doc = collection.createDoc({
       id: 'space:0',
     });
@@ -378,7 +380,7 @@ describe('addBlock', () => {
 
   it('can add and remove multi docs', async () => {
     const options = createTestOptions();
-    const collection = new DocCollection(options);
+    const collection = new TestWorkspace(options);
     collection.meta.initialize();
 
     const doc0 = collection.createDoc({ id: 'doc:home' });
@@ -403,7 +405,7 @@ describe('addBlock', () => {
 
   it('can remove doc that has not been loaded', () => {
     const options = createTestOptions();
-    const collection = new DocCollection(options);
+    const collection = new TestWorkspace(options);
     collection.meta.initialize();
 
     const doc0 = collection.createDoc({ id: 'doc:home' });
@@ -414,7 +416,7 @@ describe('addBlock', () => {
 
   it('can set doc state', () => {
     const options = createTestOptions();
-    const collection = new DocCollection(options);
+    const collection = new TestWorkspace(options);
     collection.meta.initialize();
     collection.createDoc({ id: 'doc:home' });
 
@@ -456,7 +458,7 @@ describe('addBlock', () => {
 
   it('can set collection common meta fields', async () => {
     const options = createTestOptions();
-    const collection = new DocCollection(options);
+    const collection = new TestWorkspace(options);
 
     queueMicrotask(() => collection.meta.setName('hello'));
     await waitOnce(collection.meta.commonFieldsUpdated);
@@ -863,7 +865,7 @@ describe('getBlock', () => {
 describe('flags', () => {
   it('update flags', () => {
     const options = createTestOptions();
-    const collection = new DocCollection(options);
+    const collection = new TestWorkspace(options);
     collection.meta.initialize();
 
     const awareness = collection.awarenessStore;

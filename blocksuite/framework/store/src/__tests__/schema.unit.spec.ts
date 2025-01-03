@@ -5,7 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { type BlockModel, defineBlockSchema } from '../schema/base.js';
 import { SchemaValidateError } from '../schema/error.js';
 import { Schema } from '../schema/index.js';
-import { DocCollection, IdGeneratorType } from '../store/index.js';
+import { TestWorkspace } from '../test/test-workspace.js';
+import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 import {
   DividerBlockSchema,
   ListBlockSchema,
@@ -15,7 +16,7 @@ import {
 } from './test-schema.js';
 
 function createTestOptions() {
-  const idGenerator = IdGeneratorType.AutoIncrement;
+  const idGenerator = createAutoIncrementIdGenerator();
   const schema = new Schema();
   schema.register(BlockSchemas);
   return { id: 'test-collection', idGenerator, schema };
@@ -60,7 +61,7 @@ const BlockSchemas = [
 const defaultDocId = 'doc0';
 function createTestDoc(docId = defaultDocId) {
   const options = createTestOptions();
-  const collection = new DocCollection(options);
+  const collection = new TestWorkspace(options);
   collection.meta.initialize();
   const doc = collection.createDoc({ id: docId });
   doc.load();

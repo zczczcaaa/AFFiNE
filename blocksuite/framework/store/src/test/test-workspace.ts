@@ -1,6 +1,6 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { BlockSuiteFlags } from '@blocksuite/global/types';
-import { type Logger, NoopLogger, Slot } from '@blocksuite/global/utils';
+import { NoopLogger, Slot } from '@blocksuite/global/utils';
 import {
   AwarenessEngine,
   type AwarenessSource,
@@ -16,29 +16,26 @@ import merge from 'lodash.merge';
 import { Awareness } from 'y-protocols/awareness.js';
 
 import type { Schema } from '../schema/index.js';
-import type { IdGenerator } from '../utils/id-generator.js';
+import {
+  BlockCollection,
+  type CreateDocOptions,
+  type Doc,
+  DocCollectionMeta,
+  type GetDocOptions,
+  type Workspace,
+} from '../store/index.js';
+import { type IdGenerator, nanoid } from '../utils/id-generator.js';
 import {
   AwarenessStore,
   BlockSuiteDoc,
   type RawAwarenessState,
 } from '../yjs/index.js';
-import { BlockCollection } from './doc/block-collection.js';
-import type { Doc } from './doc/index.js';
-import type { IdGeneratorType } from './id.js';
-import { pickIdGenerator } from './id.js';
-import { DocCollectionMeta } from './meta.js';
-import type {
-  CreateDocOptions,
-  GetDocOptions,
-  Workspace,
-} from './workspace.js';
 
 export type DocCollectionOptions = {
   schema: Schema;
   id?: string;
-  idGenerator?: IdGeneratorType | IdGenerator;
+  idGenerator?: IdGenerator;
   defaultFlags?: Partial<BlockSuiteFlags>;
-  logger?: Logger;
   docSources?: {
     main: DocSource;
     shadows?: DocSource[];
@@ -70,7 +67,11 @@ const FLAGS_PRESET = {
   readonly: {},
 } satisfies BlockSuiteFlags;
 
-export class DocCollection implements Workspace {
+/**
+ * Test only
+ * Do not use this in production
+ */
+export class TestWorkspace implements Workspace {
   protected readonly _schema: Schema;
 
   readonly awarenessStore: AwarenessStore;
@@ -117,7 +118,6 @@ export class DocCollection implements Workspace {
     blobSources = {
       main: new MemoryBlobSource(),
     },
-    logger = new NoopLogger(),
   }: DocCollectionOptions) {
     this._schema = schema;
 
@@ -127,6 +127,8 @@ export class DocCollection implements Workspace {
       new Awareness<RawAwarenessState>(this.doc),
       merge(clonedeep(FLAGS_PRESET), defaultFlags)
     );
+
+    const logger = new NoopLogger();
 
     this.awarenessSync = new AwarenessEngine(
       this.awarenessStore.awareness,
@@ -144,7 +146,7 @@ export class DocCollection implements Workspace {
       logger
     );
 
-    this.idGenerator = pickIdGenerator(idGenerator, this.doc.clientID);
+    this.idGenerator = idGenerator ?? nanoid;
 
     this.meta = new DocCollectionMeta(this.doc);
     this._bindDocMetaEvents();

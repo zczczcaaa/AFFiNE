@@ -9,8 +9,9 @@ import {
   Schema,
   type SchemaToModel,
 } from '../schema/index.js';
-import { DocCollection, IdGeneratorType } from '../store/index.js';
+import { TestWorkspace } from '../test/test-workspace.js';
 import { AssetsManager, BaseBlockTransformer } from '../transformer/index.js';
+import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 
 const docSchema = defineBlockSchema({
   flavour: 'page',
@@ -44,7 +45,7 @@ const docSchema = defineBlockSchema({
 type RootBlockModel = SchemaToModel<typeof docSchema>;
 
 function createTestOptions() {
-  const idGenerator = IdGeneratorType.AutoIncrement;
+  const idGenerator = createAutoIncrementIdGenerator();
   const schema = new Schema();
   schema.register([docSchema]);
   return { id: 'test-collection', idGenerator, schema };
@@ -56,7 +57,7 @@ const assets = new AssetsManager({ blob: blobCRUD });
 
 test('model to snapshot', () => {
   const options = createTestOptions();
-  const collection = new DocCollection(options);
+  const collection = new TestWorkspace(options);
   collection.meta.initialize();
   const doc = collection.createDoc({ id: 'home' });
   doc.load();
@@ -73,7 +74,7 @@ test('model to snapshot', () => {
 
 test('snapshot to model', async () => {
   const options = createTestOptions();
-  const collection = new DocCollection(options);
+  const collection = new TestWorkspace(options);
   collection.meta.initialize();
   const doc = collection.createDoc({ id: 'home' });
   doc.load();

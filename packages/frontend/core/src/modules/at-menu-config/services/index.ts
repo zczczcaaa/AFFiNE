@@ -9,6 +9,7 @@ import {
   type LinkedWidgetConfig,
   LinkedWidgetUtils,
 } from '@blocksuite/affine/blocks';
+import type { DocMeta } from '@blocksuite/affine/store';
 import { Text } from '@blocksuite/affine/store';
 import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
 import type { EditorHost } from '@blocksuite/block-std';
@@ -17,7 +18,6 @@ import {
   NewXxxEdgelessIcon,
   NewXxxPageIcon,
 } from '@blocksuite/icons/lit';
-import type { DocMeta } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
 import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';

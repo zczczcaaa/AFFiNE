@@ -35,7 +35,8 @@
     "@types/lodash.merge": "^4.6.9"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./test": "./src/test/index.ts"
   },
   "files": [
     "src",
