@@ -54,7 +54,9 @@ export class BlockSelection extends SignalWatcher(LitElement) {
 
   protected override updated(_changedProperties: PropertyValues): void {
     super.updated(_changedProperties);
-    this.style.display = this.block.selected?.is('block') ? 'block' : 'none';
+    if (this.block) {
+      this.style.display = this.block.selected?.is('block') ? 'block' : 'none';
+    }
   }
 
   @property({ attribute: false })
