@@ -341,7 +341,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
         .find(
           doc =>
             doc.getBlock(this.model.reference) ||
-            getSurfaceBlock(doc)!.getElementById(this.model.reference)
+            getSurfaceBlock(doc)?.getElementById(this.model.reference)
         );
 
       if (doc) {
@@ -355,11 +355,11 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
         ];
       }
 
-      if (doc && getSurfaceBlock(doc)) {
-        return [
-          getSurfaceBlock(doc)!.getElementById(this.model.reference),
-          doc.id,
-        ];
+      if (doc) {
+        const surfaceBlock = getSurfaceBlock(doc);
+        if (surfaceBlock) {
+          return [surfaceBlock.getElementById(this.model.reference), doc.id];
+        }
       }
 
       return [null, this.doc.id];
