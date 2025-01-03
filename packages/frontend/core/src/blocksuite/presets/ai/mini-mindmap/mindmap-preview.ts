@@ -1,18 +1,16 @@
-import type { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
+import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
 import {
+  MarkdownAdapter,
+  type MindmapElementModel,
+  MindmapStyle,
   MindmapStyleFour,
   MindmapStyleOne,
   MindmapStyleThree,
   MindmapStyleTwo,
-} from '@blocksuite/affine-components/icons';
-import {
-  type MindmapElementModel,
-  MindmapStyle,
-} from '@blocksuite/affine-model';
-import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
-import { BlockStdScope, type EditorHost } from '@blocksuite/block-std';
-import type { ServiceProvider } from '@blocksuite/global/di';
-import { WithDisposable } from '@blocksuite/global/utils';
+  type SurfaceBlockModel,
+} from '@blocksuite/affine/blocks';
+import type { ServiceProvider } from '@blocksuite/affine/global/di';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import {
   type Doc,
   DocCollection,
@@ -20,7 +18,7 @@ import {
   IdGeneratorType,
   Job,
   Schema,
-} from '@blocksuite/store';
+} from '@blocksuite/affine/store';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -133,7 +131,9 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
     }
 
     this.doc.transact(() => {
-      this._mindmap!.style = style;
+      if (this._mindmap) {
+        this._mindmap.style = style;
+      }
     });
 
     this.ctx.set({ style });

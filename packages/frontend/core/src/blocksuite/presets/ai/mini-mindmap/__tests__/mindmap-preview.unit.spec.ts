@@ -1,11 +1,13 @@
-import { Container } from '@blocksuite/global/di';
-import { DocCollection, Schema } from '@blocksuite/store';
+import {
+  defaultBlockMarkdownAdapterMatchers,
+  inlineDeltaToMarkdownAdapterMatchers,
+  markdownInlineToDeltaMatchers,
+} from '@blocksuite/affine/blocks';
+import { Container } from '@blocksuite/affine/global/di';
+import { DocCollection, Schema } from '@blocksuite/affine/store';
 import { describe, expect, test } from 'vitest';
 
-import { defaultBlockMarkdownAdapterMatchers } from '../../_common/adapters/index.js';
-import { inlineDeltaToMarkdownAdapterMatchers } from '../../_common/adapters/markdown/delta-converter/inline-delta.js';
-import { markdownInlineToDeltaMatchers } from '../../_common/adapters/markdown/delta-converter/markdown-inline.js';
-import { markdownToMindmap } from '../../surface-block/mini-mindmap/mindmap-preview.js';
+import { markdownToMindmap } from '../mindmap-preview.js';
 
 const container = new Container();
 [

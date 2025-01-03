@@ -1,15 +1,18 @@
 /* oxlint-disable @typescript-eslint/no-non-null-assertion */
-import type { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
+import { BlockComponent } from '@blocksuite/affine/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
+import type {
+  Color,
+  ShapeElementModel,
+  SurfaceBlockModel,
+} from '@blocksuite/affine/blocks';
 import {
   CanvasRenderer,
   elementRenderers,
   fitContent,
-} from '@blocksuite/affine-block-surface';
-import type { Color, ShapeElementModel } from '@blocksuite/affine-model';
-import { ThemeProvider } from '@blocksuite/affine-shared/services';
-import { BlockComponent } from '@blocksuite/block-std';
-import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
-import type { Bound } from '@blocksuite/global/utils';
+  ThemeProvider,
+} from '@blocksuite/affine/blocks';
+import type { Bound } from '@blocksuite/affine/global/utils';
 import { html } from 'lit';
 import { query } from 'lit/decorators.js';
 

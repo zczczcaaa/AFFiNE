@@ -1,18 +1,16 @@
 import {
-  MindMapView,
-  SurfaceBlockSchema,
-} from '@blocksuite/affine-block-surface';
-import { RootBlockSchema } from '@blocksuite/affine-model';
-import {
-  DocModeService,
-  ThemeService,
-} from '@blocksuite/affine-shared/services';
-import {
   BlockViewExtension,
   type ExtensionType,
   FlavourExtension,
-} from '@blocksuite/block-std';
-import type { BlockSchema } from '@blocksuite/store';
+} from '@blocksuite/affine/block-std';
+import {
+  DocModeService,
+  MindMapView,
+  RootBlockSchema,
+  SurfaceBlockSchema,
+  ThemeService,
+} from '@blocksuite/affine/blocks';
+import type { BlockSchema } from '@blocksuite/affine/store';
 import { literal } from 'lit/static-html.js';
 import type { z } from 'zod';
 

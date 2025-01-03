@@ -181,11 +181,6 @@ import {
   AFFINE_VIEWPORT_OVERLAY_WIDGET,
   AffineViewportOverlayWidget,
 } from './root-block/widgets/viewport-overlay/viewport-overlay.js';
-import {
-  MindmapRootBlock,
-  MindmapSurfaceBlock,
-  MiniMindmapPreview,
-} from './surface-block/mini-mindmap/index.js';
 
 export function effects() {
   registerSpecs();
@@ -232,8 +227,6 @@ export function effects() {
 
   customElements.define('affine-page-root', PageRootBlockComponent);
   customElements.define('affine-preview-root', PreviewRootBlockComponent);
-  customElements.define('mini-mindmap-preview', MiniMindmapPreview);
-  customElements.define('mini-mindmap-surface-block', MindmapSurfaceBlock);
   customElements.define('affine-edgeless-root', EdgelessRootBlockComponent);
   customElements.define('edgeless-copilot-panel', EdgelessCopilotPanel);
   customElements.define(
@@ -371,7 +364,6 @@ export function effects() {
   );
   customElements.define('edgeless-text-editor', EdgelessTextEditor);
   customElements.define('affine-image-toolbar', AffineImageToolbar);
-  customElements.define('mini-mindmap-root-block', MindmapRootBlock);
   customElements.define('affine-block-selection', BlockSelection);
   customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
   customElements.define(

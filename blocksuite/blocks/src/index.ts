@@ -33,11 +33,6 @@ export { EditPropsMiddlewareBuilder } from './root-block/edgeless/middlewares/ba
 export { EdgelessSnapManager } from './root-block/edgeless/utils/snap-manager.js';
 export * from './root-block/index.js';
 export * from './schemas.js';
-export {
-  markdownToMindmap,
-  MindmapSurfaceBlock,
-  MiniMindmapPreview,
-} from './surface-block/mini-mindmap/index.js';
 export * from '@blocksuite/affine-block-attachment';
 export * from '@blocksuite/affine-block-bookmark';
 export * from '@blocksuite/affine-block-code';
