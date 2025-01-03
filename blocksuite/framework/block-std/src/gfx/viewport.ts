@@ -278,17 +278,47 @@ export class Viewport {
     }
   }
 
+  /**
+   * Set the viewport to fit the bound with padding.
+   * @param bound The bound will be zoomed to fit the viewport.
+   * @param padding The padding will be applied to the bound after zooming, default is [0, 0, 0, 0],
+   *                the value may be reduced if there is not enough space for the padding.
+   *                Use decimal less than 1 to represent percentage padding. e.g. [0.1, 0.1, 0.1, 0.1] means 10% padding.
+   * @param smooth whether to animate the zooming
+   */
   setViewportByBound(
     bound: Bound,
     padding: [number, number, number, number] = [0, 0, 0, 0],
     smooth = false
   ) {
-    const [pt, pr, pb, pl] = padding;
-    const zoom = clamp(
+    let [pt, pr, pb, pl] = padding;
+
+    // Convert percentage padding to absolute values if they are between 0 and 1
+    if (pt > 0 && pt < 1) pt *= this.height;
+    if (pr > 0 && pr < 1) pr *= this.width;
+    if (pb > 0 && pb < 1) pb *= this.height;
+    if (pl > 0 && pl < 1) pl *= this.width;
+
+    // Calculate zoom
+    let zoom = Math.min(
       (this.width - (pr + pl)) / bound.w,
-      this.ZOOM_MIN,
       (this.height - (pt + pb)) / bound.h
     );
+
+    // Adjust padding if space is not enough
+    if (zoom < this.ZOOM_MIN) {
+      zoom = this.ZOOM_MIN;
+      const totalPaddingWidth = this.width - bound.w * zoom;
+      const totalPaddingHeight = this.height - bound.h * zoom;
+      pr = pl = Math.max(totalPaddingWidth / 2, 1);
+      pt = pb = Math.max(totalPaddingHeight / 2, 1);
+    }
+
+    // Ensure zoom does not exceed ZOOM_MAX
+    if (zoom > this.ZOOM_MAX) {
+      zoom = this.ZOOM_MAX;
+    }
+
     const center = [
       bound.x + (bound.w + pr / zoom) / 2 - pl / zoom / 2,
       bound.y + (bound.h + pb / zoom) / 2 - pt / zoom / 2,

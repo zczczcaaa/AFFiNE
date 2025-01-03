@@ -600,6 +600,7 @@
   "com.affine.keyboardShortcuts.zoomOut": "缩小",
   "com.affine.keyboardShortcuts.zoomTo100": "缩放至 100%",
   "com.affine.keyboardShortcuts.zoomToFit": "自适应缩放",
+  "com.affine.keyboardShortcuts.zoomToSelection": "缩放至选中元素",
   "com.affine.last30Days": "过去 30 天",
   "com.affine.last7Days": "过去 7 天",
   "com.affine.lastMonth": "上个月",

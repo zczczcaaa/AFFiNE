@@ -928,7 +928,7 @@ export async function multiTouchUp(page: Page, points: Point[]) {
 }
 
 export async function zoomFitByKeyboard(page: Page) {
-  await page.keyboard.press(`${SHORT_KEY}+1`, { delay: 100 });
+  await page.keyboard.press(`Alt+1`, { delay: 100 });
   await waitNextFrame(page, 300);
 }
 
@@ -938,7 +938,13 @@ export async function zoomOutByKeyboard(page: Page) {
 }
 
 export async function zoomResetByKeyboard(page: Page) {
-  await page.keyboard.press(`${SHORT_KEY}+0`, { delay: 50 });
+  await page.keyboard.press(`Alt+0`, { delay: 50 });
+  // Wait for animation
+  await waitNextFrame(page, 300);
+}
+
+export async function zoomToSelection(page: Page) {
+  await page.keyboard.press(`Alt+2`, { delay: 50 });
   // Wait for animation
   await waitNextFrame(page, 300);
 }

@@ -1,4 +1,5 @@
 import { EdgelessTextBlockComponent } from '@blocksuite/affine-block-edgeless-text';
+import { toast } from '@blocksuite/affine-components/toast';
 import {
   ConnectorElementModel,
   ConnectorMode,
@@ -22,7 +23,7 @@ import {
   isGfxGroupCompatibleModel,
 } from '@blocksuite/block-std/gfx';
 import { IS_MAC } from '@blocksuite/global/env';
-import { Bound } from '@blocksuite/global/utils';
+import { Bound, getCommonBound } from '@blocksuite/global/utils';
 
 import {
   getNearestTranslation,
@@ -48,6 +49,10 @@ import {
 } from './utils/text.js';
 
 export class EdgelessPageKeyboardManager extends PageKeyboardManager {
+  get gfx() {
+    return this.rootComponent.gfx;
+  }
+
   constructor(override rootComponent: EdgelessRootBlockComponent) {
     super(rootComponent);
     this.rootComponent.bindHotKey(
@@ -254,17 +259,39 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
             editing: false,
           });
         },
-        'Mod-1': ctx => {
-          ctx.get('defaultState').event.preventDefault();
-          this.rootComponent.service.setZoomByAction('fit');
-        },
         'Mod--': ctx => {
           ctx.get('defaultState').event.preventDefault();
           this.rootComponent.service.setZoomByAction('out');
         },
-        'Mod-0': ctx => {
+        'Alt-0': ctx => {
           ctx.get('defaultState').event.preventDefault();
           this.rootComponent.service.setZoomByAction('reset');
+        },
+        'Alt-1': ctx => {
+          ctx.get('defaultState').event.preventDefault();
+          this.rootComponent.service.setZoomByAction('fit');
+        },
+        'Alt-2': ctx => {
+          ctx.get('defaultState').event.preventDefault();
+
+          const selectedElements = this.gfx.selection.selectedElements;
+
+          if (selectedElements.length === 0) {
+            return;
+          }
+
+          const bound = getCommonBound(selectedElements);
+          if (bound === null) {
+            return;
+          }
+
+          toast(this.rootComponent.host, 'Zoom to selection');
+
+          this.gfx.viewport.setViewportByBound(
+            bound,
+            [0.12, 0.12, 0.12, 0.12],
+            true
+          );
         },
         'Mod-=': ctx => {
           ctx.get('defaultState').event.preventDefault();
