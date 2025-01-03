@@ -17,12 +17,12 @@ import {
   type BlockModel,
   type BlockSnapshot,
   type DeltaOperation,
-  DocCollection,
   fromJSON,
   type JobMiddleware,
   type SliceSnapshot,
   type Text,
 } from '@blocksuite/store';
+import * as Y from 'yjs';
 
 import { REFERENCE_NODE } from '../../consts';
 import {
@@ -357,7 +357,7 @@ class PasteTr {
       !matchFlavours(this.pointState.model, ['affine:code'])
     ) {
       const text = fromJSON(this.lastSnapshot.props.text) as Text;
-      const doc = new DocCollection.Y.Doc();
+      const doc = new Y.Doc();
       const temp = doc.getMap('temp');
       temp.set('text', text.yText);
       this.lastIndex = text.length;

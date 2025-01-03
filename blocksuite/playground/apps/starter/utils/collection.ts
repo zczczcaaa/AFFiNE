@@ -16,6 +16,7 @@ import {
   IndexedDBBlobSource,
   MemoryBlobSource,
 } from '@blocksuite/sync';
+import * as Y from 'yjs';
 
 import { MockServerBlobSource } from '../../_common/sync/blob/mock-server.js';
 import type { InitFn } from '../data/utils.js';
@@ -92,7 +93,7 @@ export function createStarterDocCollection() {
       delete: (id: string) => collection.removeDoc(id),
     },
   });
-  window.Y = DocCollection.Y;
+  window.Y = Y;
   window.testUtils = new TestUtils();
 
   return collection;

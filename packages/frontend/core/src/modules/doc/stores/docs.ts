@@ -128,7 +128,7 @@ export class DocsStore extends Store {
   }
 
   setDocMeta(id: string, meta: Partial<DocMeta>) {
-    this.workspaceService.workspace.docCollection.setDocMeta(id, meta);
+    this.workspaceService.workspace.docCollection.meta.setDocMeta(id, meta);
   }
 
   setDocPrimaryModeSetting(id: string, mode: DocMode) {

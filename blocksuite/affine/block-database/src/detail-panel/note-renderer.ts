@@ -66,7 +66,7 @@ export class NoteRenderer
           },
         } satisfies AffineTextAttributes as BaseTextAttributes
       );
-      collection.setDocMeta(note.id, { title: rowContent });
+      collection.meta.setDocMeta(note.id, { title: rowContent });
       if (note.root) {
         (note.root as RootBlockModel).title.insert(rowContent ?? '', 0);
         note.root.children

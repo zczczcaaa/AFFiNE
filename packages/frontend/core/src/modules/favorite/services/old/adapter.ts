@@ -1,9 +1,10 @@
 // the adapter is to bridge the workspace rootdoc & native js bindings
 import type { WorkspaceService } from '@affine/core/modules/workspace';
-import { createYProxy, type Y } from '@blocksuite/affine/store';
+import { createYProxy } from '@blocksuite/affine/store';
 import { LiveData, Service } from '@toeverything/infra';
 import { defaultsDeep } from 'lodash-es';
 import { Observable } from 'rxjs';
+import type * as Y from 'yjs';
 
 import type { FavoriteSupportTypeUnion } from '../../constant';
 import type { FavoriteService } from '../favorite';

@@ -17,9 +17,8 @@ import {
   DocSnapshotSchema,
   Job,
   type SnapshotNode,
-  type Y,
 } from '@blocksuite/store';
-
+import type * as Y from 'yjs';
 /**
  * Those block contains other block's id
  * should defer the loading

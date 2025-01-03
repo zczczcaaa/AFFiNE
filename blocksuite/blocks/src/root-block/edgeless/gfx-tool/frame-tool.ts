@@ -9,7 +9,8 @@ import {
 } from '@blocksuite/block-std/gfx';
 import type { IPoint, IVec } from '@blocksuite/global/utils';
 import { Bound, Vec } from '@blocksuite/global/utils';
-import { DocCollection, Text } from '@blocksuite/store';
+import { Text } from '@blocksuite/store';
+import * as Y from 'yjs';
 
 import type { EdgelessFrameManager, FrameOverlay } from '../frame-manager.js';
 
@@ -72,9 +73,7 @@ export class FrameTool extends BaseTool {
       const id = this.doc.addBlock(
         'affine:frame',
         {
-          title: new Text(
-            new DocCollection.Y.Text(`Frame ${frames.length + 1}`)
-          ),
+          title: new Text(new Y.Text(`Frame ${frames.length + 1}`)),
           xywh: Bound.fromPoints([this._startPoint, currentPoint]).serialize(),
           index: this.gfx.layer.generateIndex(true),
           presentationIndex: this.frameManager.generatePresentationIndex(),

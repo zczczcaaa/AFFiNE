@@ -40,13 +40,13 @@ import {
   Vec,
   WithDisposable,
 } from '@blocksuite/global/utils';
-import { DocCollection } from '@blocksuite/store';
 import { consume } from '@lit/context';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import * as Y from 'yjs';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import {
@@ -157,7 +157,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     const id = this.crud.addBlock(
       'affine:frame',
       {
-        title: new DocCollection.Y.Text(`Frame ${frameIndex}`),
+        title: new Y.Text(`Frame ${frameIndex}`),
         xywh: serializeXYWH(...xywh),
         presentationIndex: frameMgr.generatePresentationIndex(),
       },
@@ -275,7 +275,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     } else {
       const textId = this.crud.addElement(CanvasElementType.TEXT, {
         xywh: bound.serialize(),
-        text: new DocCollection.Y.Text(),
+        text: new Y.Text(),
         textAlign: 'left',
         fontSize: 24,
         fontFamily: FontFamily.Inter,

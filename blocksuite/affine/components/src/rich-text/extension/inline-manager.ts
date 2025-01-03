@@ -16,7 +16,7 @@ import {
   KEYBOARD_ALLOW_DEFAULT,
   type KeyboardBindingContext,
 } from '@blocksuite/inline';
-import type { Y } from '@blocksuite/store';
+import type * as Y from 'yjs';
 import { z, type ZodObject, type ZodTypeAny } from 'zod';
 
 import { MarkdownMatcherIdentifier } from './markdown-matcher.js';

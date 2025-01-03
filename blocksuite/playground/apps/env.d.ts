@@ -3,6 +3,7 @@ import type { TestUtils } from '@blocksuite/blocks';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import type { BlockSchema, Doc, DocCollection, Job } from '@blocksuite/store';
 import type { z } from 'zod';
+import type * as Y from 'yjs';
 
 declare global {
   type HTMLTemplate = [
@@ -17,7 +18,7 @@ declare global {
     collection: DocCollection;
     blockSchemas: z.infer<typeof BlockSchema>[];
     job: Job;
-    Y: typeof DocCollection.Y;
+    Y: typeof Y;
     std: typeof std;
     testUtils: TestUtils;
     host: EditorHost;

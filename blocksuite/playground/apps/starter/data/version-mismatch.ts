@@ -1,5 +1,5 @@
-import type { Y } from '@blocksuite/store';
-import { DocCollection } from '@blocksuite/store';
+import type { DocCollection } from '@blocksuite/store';
+import * as Y from 'yjs';
 
 import type { InitFn } from './utils.js';
 
@@ -24,9 +24,9 @@ export const versionMismatch: InitFn = (
     const paragraph = blocks.get(paragraphId) as Y.Map<unknown>;
     paragraph.set('sys:version', (paragraph.get('sys:version') as number) + 1);
 
-    const update = DocCollection.Y.encodeStateAsUpdate(tempDoc.spaceDoc);
+    const update = Y.encodeStateAsUpdate(tempDoc.spaceDoc);
 
-    DocCollection.Y.applyUpdate(doc.spaceDoc, update);
+    Y.applyUpdate(doc.spaceDoc, update);
     doc.addBlock('affine:paragraph', {}, noteId);
   });
 

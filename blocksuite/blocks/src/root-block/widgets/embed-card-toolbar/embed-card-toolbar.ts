@@ -53,7 +53,7 @@ import {
 } from '@blocksuite/affine-shared/services';
 import { getHostName, referenceToNode } from '@blocksuite/affine-shared/utils';
 import { type BlockStdScope, WidgetComponent } from '@blocksuite/block-std';
-import { type BlockModel, DocCollection } from '@blocksuite/store';
+import { type BlockModel } from '@blocksuite/store';
 import { autoUpdate, computePosition, flip, offset } from '@floating-ui/dom';
 import { html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';
@@ -61,6 +61,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
+import * as Y from 'yjs';
 
 import {
   isBookmarkBlock,
@@ -614,7 +615,7 @@ export class EmbedCardToolbar extends WidgetComponent<
     const parent = doc.getParent(targetModel);
     const index = parent?.children.indexOf(targetModel);
 
-    const yText = new DocCollection.Y.Text();
+    const yText = new Y.Text();
     const insert = title || caption || url;
     yText.insert(0, insert);
     yText.format(0, insert.length, { link: url });

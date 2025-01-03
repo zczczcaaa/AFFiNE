@@ -28,6 +28,7 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
+import * as _Y from 'yjs';
 
 import { AffineErrorBoundary } from '../../../components/affine/affine-error-boundary';
 import { WorkbenchRoot } from '../../../modules/workbench';
@@ -46,10 +47,14 @@ declare global {
   var exportWorkspaceSnapshot: (docs?: string[]) => Promise<void>;
   // oxlint-disable-next-line no-var
   var importWorkspaceSnapshot: () => Promise<void>;
+  // oxlint-disable-next-line no-var
+  var Y: typeof _Y;
   interface WindowEventMap {
     'affine:workspace:change': CustomEvent<{ id: string }>;
   }
 }
+
+globalThis.Y = _Y;
 
 export const Component = (): ReactElement => {
   const {

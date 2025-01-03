@@ -18,7 +18,7 @@ import type { GfxController, GfxModel } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { XYWH } from '@blocksuite/global/utils';
 import { assertType, Bound } from '@blocksuite/global/utils';
-import { DocCollection } from '@blocksuite/store';
+import * as Y from 'yjs';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import { type Shape, ShapeFactory } from '../../utils/tool-overlay.js';
@@ -284,7 +284,7 @@ export function createEdgelessElement(
   if (isShape(current)) {
     id = crud.addElement(current.type, {
       ...current.serialize(),
-      text: new DocCollection.Y.Text(),
+      text: new Y.Text(),
       xywh: bound.serialize(),
     });
     if (!id) return null;
@@ -340,7 +340,7 @@ export function createShapeElement(
   const id = crud.addElement('shape', {
     shapeType: getShapeType(targetType),
     radius: getShapeRadius(targetType),
-    text: new DocCollection.Y.Text(),
+    text: new Y.Text(),
   });
   if (!id) return null;
   const element = crud.getElementById(id);

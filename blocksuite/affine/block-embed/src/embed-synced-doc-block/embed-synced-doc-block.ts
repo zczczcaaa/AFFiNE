@@ -27,7 +27,6 @@ import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { assertExists, Bound, getCommonBound } from '@blocksuite/global/utils';
 import {
   BlockViewType,
-  DocCollection,
   type GetDocOptions,
   type Query,
 } from '@blocksuite/store';
@@ -38,6 +37,7 @@ import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { guard } from 'lit/directives/guard.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
+import * as Y from 'yjs';
 
 import { EmbedBlockComponent } from '../common/embed-block-element.js';
 import { isEmptyDoc } from '../common/render-linked-doc.js';
@@ -272,7 +272,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
     assertExists(parent);
     const index = parent.children.indexOf(this.model);
 
-    const yText = new DocCollection.Y.Text();
+    const yText = new Y.Text();
     yText.insert(0, REFERENCE_NODE);
     yText.format(0, REFERENCE_NODE.length, {
       reference: {

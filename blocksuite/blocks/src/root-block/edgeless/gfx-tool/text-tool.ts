@@ -3,7 +3,7 @@ import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import type { PointerEventState } from '@blocksuite/block-std';
 import { BaseTool, type GfxController } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
-import { DocCollection } from '@blocksuite/store';
+import * as Y from 'yjs';
 
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 import { mountTextElementEditor } from '../utils/text.js';
@@ -22,7 +22,7 @@ export function addText(gfx: GfxController, event: PointerEventState) {
     const id = gfx.surface.addElement({
       type: 'text',
       xywh: new Bound(modelX, modelY, 32, 32).serialize(),
-      text: new DocCollection.Y.Text(),
+      text: new Y.Text(),
     });
     gfx.doc.captureSync();
     const textElement = gfx.getElementById(id) as TextElementModel;

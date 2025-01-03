@@ -11,7 +11,7 @@ export function createDefaultDoc(
   const rootId = doc.addBlock('affine:page', {
     title: new doc.Text(title),
   });
-  collection.setDocMeta(doc.id, {
+  collection.meta.setDocMeta(doc.id, {
     title,
   });
 

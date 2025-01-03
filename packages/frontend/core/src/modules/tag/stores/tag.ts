@@ -86,7 +86,7 @@ export class TagStore extends Store {
   };
 
   updatePageTags = (pageId: string, tags: string[]) => {
-    this.workspaceService.workspace.docCollection.setDocMeta(pageId, {
+    this.workspaceService.workspace.docCollection.meta.setDocMeta(pageId, {
       tags,
     });
   };

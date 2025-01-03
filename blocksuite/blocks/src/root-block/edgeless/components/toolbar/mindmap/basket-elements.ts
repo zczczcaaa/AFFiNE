@@ -2,8 +2,8 @@ import { CanvasElementType } from '@blocksuite/affine-block-surface';
 import { type MindmapStyle, TextElementModel } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import { assertInstanceOf, Bound } from '@blocksuite/global/utils';
-import { DocCollection } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
+import * as Y from 'yjs';
 
 import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
 import type { EdgelessRootService } from '../../../edgeless-root-service.js';
@@ -114,7 +114,7 @@ export const textRender: DraggableTool['render'] = (
   } else {
     id = service.crud.addElement(CanvasElementType.TEXT, {
       xywh: new Bound(bound.x, vCenter - h / 2, w, h).serialize(),
-      text: new DocCollection.Y.Text(),
+      text: new Y.Text(),
     }) as string;
 
     edgeless.doc.captureSync();

@@ -14,6 +14,7 @@ import {
   IndexedDBBlobSource,
   IndexedDBDocSource,
 } from '@blocksuite/sync';
+import * as Y from 'yjs';
 
 import { WebSocketAwarenessSource } from '../../_common/sync/websocket/awareness';
 import { WebSocketDocSource } from '../../_common/sync/websocket/doc';
@@ -93,7 +94,7 @@ export async function createDefaultDocCollection() {
       delete: (id: string) => collection.removeDoc(id),
     },
   });
-  window.Y = DocCollection.Y;
+  window.Y = Y;
 
   return collection;
 }

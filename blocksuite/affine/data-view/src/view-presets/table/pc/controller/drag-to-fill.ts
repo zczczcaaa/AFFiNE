@@ -1,9 +1,10 @@
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { assertEquals } from '@blocksuite/global/utils';
-import { DocCollection, type Text } from '@blocksuite/store';
+import { type Text } from '@blocksuite/store';
 import { css, html } from 'lit';
 import { state } from 'lit/decorators.js';
 import { createRef, ref } from 'lit/directives/ref.js';
+import * as Y from 'yjs';
 
 import { t } from '../../../../core/index.js';
 import type { TableAreaSelection } from '../../types.js';
@@ -98,7 +99,7 @@ export function fillSelectionWithFocusCellData(
           curCellText.clear();
           curCellText.applyDelta(delta);
         } else {
-          const newText = new DocCollection.Y.Text();
+          const newText = new Y.Text();
           newText.applyDelta(delta);
           curCell.valueSet(newText);
         }

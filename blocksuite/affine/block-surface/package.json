@@ -27,6 +27,7 @@
     "lit": "^3.2.0",
     "lodash.chunk": "^4.2.0",
     "nanoid": "^5.0.7",
+    "yjs": "^13.6.21",
     "zod": "^3.23.8"
   },
   "devDependencies": {

@@ -22,13 +22,13 @@ import {
   referenceToNode,
 } from '@blocksuite/affine-shared/utils';
 import { Bound, throttle } from '@blocksuite/global/utils';
-import { DocCollection } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
 import { html, nothing } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
+import * as Y from 'yjs';
 
 import { EmbedBlockComponent } from '../common/embed-block-element.js';
 import {
@@ -163,7 +163,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
     }
     const index = parent.children.indexOf(this.model);
 
-    const yText = new DocCollection.Y.Text();
+    const yText = new Y.Text();
     yText.insert(0, REFERENCE_NODE);
     yText.format(0, REFERENCE_NODE.length, {
       reference: {

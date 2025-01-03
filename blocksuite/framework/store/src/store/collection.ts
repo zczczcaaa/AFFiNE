@@ -14,7 +14,6 @@ import {
 import clonedeep from 'lodash.clonedeep';
 import merge from 'lodash.merge';
 import { Awareness } from 'y-protocols/awareness.js';
-import * as Y from 'yjs';
 
 import type { Schema } from '../schema/index.js';
 import type { IdGenerator } from '../utils/id-generator.js';
@@ -27,7 +26,7 @@ import { BlockCollection, type GetDocOptions } from './doc/block-collection.js';
 import type { Doc, Query } from './doc/index.js';
 import type { IdGeneratorType } from './id.js';
 import { pickIdGenerator } from './id.js';
-import { DocCollectionMeta, type DocMeta } from './meta.js';
+import { DocCollectionMeta } from './meta.js';
 
 export type DocCollectionOptions = {
   schema: Schema;
@@ -71,8 +70,6 @@ export interface StackItem {
 }
 
 export class DocCollection {
-  static Y = Y;
-
   protected readonly _schema: Schema;
 
   readonly awarenessStore: AwarenessStore;
@@ -250,15 +247,6 @@ export class DocCollection {
     blockCollection.dispose();
     this.meta.removeDocMeta(docId);
     this.blockCollections.delete(docId);
-  }
-
-  /** Update doc meta state. Note that this intentionally does not mutate doc state. */
-  setDocMeta(
-    docId: string,
-    // You should not update subDocIds directly.
-    props: Partial<DocMeta>
-  ) {
-    this.meta.setDocMeta(docId, props);
   }
 
   /**

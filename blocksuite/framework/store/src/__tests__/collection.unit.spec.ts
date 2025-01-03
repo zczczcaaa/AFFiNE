@@ -436,7 +436,7 @@ describe('addBlock', () => {
       called = true;
     });
 
-    collection.setDocMeta('doc:home', { favorite: true });
+    collection.meta.setDocMeta('doc:home', { favorite: true });
     assert.deepEqual(
       collection.meta.docMetas.map(({ id, title, favorite }) => ({
         id,

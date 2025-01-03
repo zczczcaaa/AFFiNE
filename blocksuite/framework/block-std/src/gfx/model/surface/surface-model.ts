@@ -1,6 +1,7 @@
 import { assertType, type Constructor, Slot } from '@blocksuite/global/utils';
-import type { Boxed, Y } from '@blocksuite/store';
-import { BlockModel, DocCollection, nanoid } from '@blocksuite/store';
+import type { Boxed } from '@blocksuite/store';
+import { BlockModel, nanoid } from '@blocksuite/store';
+import * as Y from 'yjs';
 
 import {
   type GfxGroupCompatibleInterface,
@@ -124,7 +125,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
       throw new Error('Cannot find id in props');
     }
 
-    const yMap = new DocCollection.Y.Map();
+    const yMap = new Y.Map();
     const elementModel = this._createElementFromYMap(
       type as string,
       id as string,

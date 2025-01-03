@@ -84,7 +84,7 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
   };
 
   private readonly _updateTitleInMeta = () => {
-    this.doc.collection.setDocMeta(this.doc.id, {
+    this.doc.collection.meta.setDocMeta(this.doc.id, {
       title: this._rootModel.title.toString(),
     });
   };

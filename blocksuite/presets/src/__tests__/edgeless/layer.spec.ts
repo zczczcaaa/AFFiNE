@@ -5,8 +5,9 @@ import type {
   GroupElementModel,
   NoteBlockModel,
 } from '@blocksuite/blocks';
-import { type BlockModel, type Doc, DocCollection } from '@blocksuite/store';
+import { type BlockModel, type Doc } from '@blocksuite/store';
 import { beforeEach, describe, expect, test } from 'vitest';
+import * as Y from 'yjs';
 
 import { wait } from '../utils/common.js';
 import {
@@ -409,7 +410,7 @@ describe('group related functionality', () => {
     service: EdgelessRootBlockComponent['service'],
     childIds: string[]
   ) => {
-    const children = new DocCollection.Y.Map<boolean>();
+    const children = new Y.Map<boolean>();
     childIds.forEach(id => children.set(id, true));
 
     return service.crud.addElement('group', {
@@ -574,7 +575,7 @@ describe('compare function', () => {
     childIds: string[]
     // eslint-disable-next-line sonarjs/no-identical-functions
   ) => {
-    const children = new DocCollection.Y.Map<boolean>();
+    const children = new Y.Map<boolean>();
     childIds.forEach(id => children.set(id, true));
 
     return service.crud.addElement('group', {
