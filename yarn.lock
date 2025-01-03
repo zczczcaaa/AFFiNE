@@ -3804,6 +3804,7 @@ __metadata:
     "@blocksuite/inline": "workspace:*"
     "@blocksuite/presets": "workspace:*"
     "@blocksuite/store": "workspace:*"
+    "@blocksuite/sync": "workspace:*"
   languageName: unknown
   linkType: soft
 

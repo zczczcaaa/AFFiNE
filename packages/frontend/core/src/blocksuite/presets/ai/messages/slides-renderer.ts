@@ -1,3 +1,4 @@
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace';
 import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AffineAIPanelWidgetConfig,
@@ -6,7 +7,7 @@ import {
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import type { Doc } from '@blocksuite/affine/store';
-import { DocCollection, Schema } from '@blocksuite/affine/store';
+import { Schema } from '@blocksuite/affine/store';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -54,7 +55,7 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
 
   private _doc!: Doc;
 
-  private _docCollection: DocCollection | null = null;
+  private _docCollection: WorkspaceImpl | null = null;
 
   @query('editor-host')
   private accessor _editorHost!: EditorHost;
@@ -220,7 +221,7 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
     super.connectedCallback();
 
     const schema = new Schema().register(AffineSchemas);
-    const collection = new DocCollection({
+    const collection = new WorkspaceImpl({
       schema,
       id: 'SLIDES_PREVIEW',
     });

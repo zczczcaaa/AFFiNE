@@ -1,5 +1,4 @@
 import { DebugLogger } from '@affine/debug';
-import { DocCollection } from '@blocksuite/affine/store';
 import type {
   BlobStorage,
   DocStorage,
@@ -20,6 +19,7 @@ import {
   type WorkspaceMetadata,
   type WorkspaceProfileInfo,
 } from '../../workspace';
+import { WorkspaceImpl } from '../../workspace/impl/workspace';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { StaticBlobStorage } from './engine/blob-static';
@@ -79,7 +79,7 @@ class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
   }
   async createWorkspace(
     initial: (
-      docCollection: DocCollection,
+      docCollection: WorkspaceImpl,
       blobStorage: BlobStorage,
       docStorage: DocStorage
     ) => Promise<void>
@@ -90,11 +90,10 @@ class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
     const blobStorage = this.storageProvider.getBlobStorage(id);
     const docStorage = this.storageProvider.getDocStorage(id);
 
-    const docCollection = new DocCollection({
+    const docCollection = new WorkspaceImpl({
       id: id,
-      idGenerator: () => nanoid(),
       schema: getAFFiNEWorkspaceSchema(),
-      blobSources: { main: blobStorage },
+      blobSource: blobStorage,
     });
 
     try {

@@ -1,53 +1,36 @@
-import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import type { BlockSuiteFlags } from '@blocksuite/global/types';
-import { type Logger, NoopLogger, Slot } from '@blocksuite/global/utils';
+import {
+  BlockSuiteError,
+  ErrorCode,
+} from '@blocksuite/affine/global/exceptions';
+import type { BlockSuiteFlags } from '@blocksuite/affine/global/types';
+import { NoopLogger, Slot } from '@blocksuite/affine/global/utils';
+import {
+  AwarenessStore,
+  BlockCollection,
+  BlockSuiteDoc,
+  type CreateDocOptions,
+  type Doc,
+  DocCollectionMeta,
+  type GetDocOptions,
+  type IdGenerator,
+  nanoid,
+  type Schema,
+  type Workspace,
+} from '@blocksuite/affine/store';
 import {
   AwarenessEngine,
-  type AwarenessSource,
   BlobEngine,
   type BlobSource,
   DocEngine,
-  type DocSource,
   MemoryBlobSource,
   NoopDocSource,
-} from '@blocksuite/sync';
-import clonedeep from 'lodash.clonedeep';
-import merge from 'lodash.merge';
+} from '@blocksuite/affine/sync';
 import { Awareness } from 'y-protocols/awareness.js';
 
-import type { Schema } from '../schema/index.js';
-import type { IdGenerator } from '../utils/id-generator.js';
-import {
-  AwarenessStore,
-  BlockSuiteDoc,
-  type RawAwarenessState,
-} from '../yjs/index.js';
-import { BlockCollection } from './doc/block-collection.js';
-import type { Doc } from './doc/index.js';
-import type { IdGeneratorType } from './id.js';
-import { pickIdGenerator } from './id.js';
-import { DocCollectionMeta } from './meta.js';
-import type {
-  CreateDocOptions,
-  GetDocOptions,
-  Workspace,
-} from './workspace.js';
-
-export type DocCollectionOptions = {
-  schema: Schema;
+type WorkspaceOptions = {
   id?: string;
-  idGenerator?: IdGeneratorType | IdGenerator;
-  defaultFlags?: Partial<BlockSuiteFlags>;
-  logger?: Logger;
-  docSources?: {
-    main: DocSource;
-    shadows?: DocSource[];
-  };
-  blobSources?: {
-    main: BlobSource;
-    shadows?: BlobSource[];
-  };
-  awarenessSources?: AwarenessSource[];
+  schema: Schema;
+  blobSource?: BlobSource;
 };
 
 const FLAGS_PRESET = {
@@ -70,7 +53,7 @@ const FLAGS_PRESET = {
   readonly: {},
 } satisfies BlockSuiteFlags;
 
-export class DocCollection implements Workspace {
+export class WorkspaceImpl implements Workspace {
   protected readonly _schema: Schema;
 
   readonly awarenessStore: AwarenessStore;
@@ -105,46 +88,25 @@ export class DocCollection implements Workspace {
     return this._schema;
   }
 
-  constructor({
-    id,
-    schema,
-    idGenerator,
-    defaultFlags,
-    awarenessSources = [],
-    docSources = {
-      main: new NoopDocSource(),
-    },
-    blobSources = {
-      main: new MemoryBlobSource(),
-    },
-    logger = new NoopLogger(),
-  }: DocCollectionOptions) {
+  constructor({ id, schema, blobSource }: WorkspaceOptions) {
     this._schema = schema;
 
     this.id = id || '';
     this.doc = new BlockSuiteDoc({ guid: id });
-    this.awarenessStore = new AwarenessStore(
-      new Awareness<RawAwarenessState>(this.doc),
-      merge(clonedeep(FLAGS_PRESET), defaultFlags)
-    );
+    this.awarenessStore = new AwarenessStore(new Awareness(this.doc), {
+      ...FLAGS_PRESET,
+      readonly: {},
+    });
 
-    this.awarenessSync = new AwarenessEngine(
-      this.awarenessStore.awareness,
-      awarenessSources
-    );
-    this.docSync = new DocEngine(
-      this.doc,
-      docSources.main,
-      docSources.shadows ?? [],
-      logger
-    );
-    this.blobSync = new BlobEngine(
-      blobSources.main,
-      blobSources.shadows ?? [],
-      logger
-    );
+    blobSource = blobSource ?? new MemoryBlobSource();
+    const docSource = new NoopDocSource();
+    const logger = new NoopLogger();
 
-    this.idGenerator = pickIdGenerator(idGenerator, this.doc.clientID);
+    this.awarenessSync = new AwarenessEngine(this.awarenessStore.awareness, []);
+    this.docSync = new DocEngine(this.doc, docSource, [], logger);
+    this.blobSync = new BlobEngine(blobSource, [], logger);
+
+    this.idGenerator = nanoid;
 
     this.meta = new DocCollectionMeta(this.doc);
     this._bindDocMetaEvents();

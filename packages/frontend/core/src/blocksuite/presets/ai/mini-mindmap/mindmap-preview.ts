@@ -1,3 +1,4 @@
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace.js';
 import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
 import {
   MarkdownAdapter,
@@ -13,7 +14,6 @@ import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import {
   type Doc,
-  DocCollection,
   type DocCollectionOptions,
   IdGeneratorType,
   Job,
@@ -109,7 +109,7 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
       awarenessSources: [],
     };
 
-    const collection = new DocCollection(options);
+    const collection = new WorkspaceImpl(options);
     collection.meta.initialize();
     collection.start();
 

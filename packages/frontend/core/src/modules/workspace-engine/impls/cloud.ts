@@ -5,7 +5,6 @@ import {
   getWorkspaceInfoQuery,
   getWorkspacesQuery,
 } from '@affine/graphql';
-import { DocCollection } from '@blocksuite/affine/store';
 import {
   type BlobStorage,
   catchErrorInto,
@@ -20,7 +19,6 @@ import {
   Service,
 } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
-import { nanoid } from 'nanoid';
 import { EMPTY, map, mergeMap, Observable, switchMap } from 'rxjs';
 import { encodeStateAsUpdate } from 'yjs';
 
@@ -43,6 +41,7 @@ import {
   type WorkspaceMetadata,
   type WorkspaceProfileInfo,
 } from '../../workspace';
+import { WorkspaceImpl } from '../../workspace/impl/workspace';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { CloudAwarenessConnection } from './engine/awareness-cloud';
@@ -101,7 +100,7 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
 
   async createWorkspace(
     initial: (
-      docCollection: DocCollection,
+      docCollection: WorkspaceImpl,
       blobStorage: BlobStorage,
       docStorage: DocStorage
     ) => Promise<void>
@@ -117,13 +116,10 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
     const blobStorage = this.storageProvider.getBlobStorage(workspaceId);
     const docStorage = this.storageProvider.getDocStorage(workspaceId);
 
-    const docCollection = new DocCollection({
+    const docCollection = new WorkspaceImpl({
       id: workspaceId,
-      idGenerator: () => nanoid(),
       schema: getAFFiNEWorkspaceSchema(),
-      blobSources: {
-        main: blobStorage,
-      },
+      blobSource: blobStorage,
     });
 
     try {

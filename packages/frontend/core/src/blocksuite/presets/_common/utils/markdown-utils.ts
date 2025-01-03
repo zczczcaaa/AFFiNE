@@ -1,3 +1,4 @@
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace';
 import type {
   EditorHost,
   TextRangePoint,
@@ -14,7 +15,7 @@ import {
 } from '@blocksuite/affine/blocks';
 import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import type { JobMiddleware, Schema } from '@blocksuite/affine/store';
-import { DocCollection, Job } from '@blocksuite/affine/store';
+import { Job } from '@blocksuite/affine/store';
 import { assertExists } from '@blocksuite/global/utils';
 import type {
   BlockModel,
@@ -207,7 +208,7 @@ export async function markDownToDoc(
   additionalMiddlewares?: JobMiddleware[]
 ) {
   // Should not create a new doc in the original collection
-  const collection = new DocCollection({
+  const collection = new WorkspaceImpl({
     schema,
   });
   collection.meta.initialize();

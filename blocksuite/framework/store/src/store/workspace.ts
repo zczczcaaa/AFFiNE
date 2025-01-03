@@ -84,3 +84,7 @@ export interface Workspace {
 
   dispose(): void;
 }
+
+export interface StackItem {
+  meta: Map<'cursor-location' | 'selection-state', unknown>;
+}

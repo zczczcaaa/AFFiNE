@@ -11,6 +11,7 @@ export const PackageList = [
       'blocksuite/framework/inline',
       'blocksuite/presets',
       'blocksuite/framework/store',
+      'blocksuite/framework/sync',
     ],
   },
   {

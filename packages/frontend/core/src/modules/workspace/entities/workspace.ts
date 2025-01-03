@@ -1,14 +1,11 @@
-import {
-  DocCollection,
-  type Workspace as BSWorkspace,
-} from '@blocksuite/affine/store';
+import type { Workspace as WorkspaceInterface } from '@blocksuite/affine/store';
 import { Entity, LiveData } from '@toeverything/infra';
-import { nanoid } from 'nanoid';
 import { Observable } from 'rxjs';
 import type { Awareness } from 'y-protocols/awareness.js';
 
 import { WorkspaceDBService } from '../../db';
 import { getAFFiNEWorkspaceSchema } from '../global-schema';
+import { WorkspaceImpl } from '../impl/workspace';
 import type { WorkspaceScope } from '../scopes/workspace';
 import { WorkspaceEngineService } from '../services/engine';
 
@@ -25,16 +22,13 @@ export class Workspace extends Entity {
 
   readonly flavour = this.meta.flavour;
 
-  _docCollection: BSWorkspace | null = null;
+  _docCollection: WorkspaceInterface | null = null;
 
   get docCollection() {
     if (!this._docCollection) {
-      this._docCollection = new DocCollection({
+      this._docCollection = new WorkspaceImpl({
         id: this.openOptions.metadata.id,
-        blobSources: {
-          main: this.engine.blob,
-        },
-        idGenerator: () => nanoid(),
+        blobSource: this.engine.blob,
         schema: getAFFiNEWorkspaceSchema(),
       });
       this._docCollection.slots.docCreated.on(id => {

@@ -2,12 +2,13 @@ import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-
 import { useDocCollectionPage } from '@affine/core/components/hooks/use-block-suite-workspace-page';
 import { FetchService, GraphQLService } from '@affine/core/modules/cloud';
 import { getAFFiNEWorkspaceSchema } from '@affine/core/modules/workspace';
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace';
 import { DebugLogger } from '@affine/debug';
 import type { ListHistoryQuery } from '@affine/graphql';
 import { listHistoryQuery, recoverDocMutation } from '@affine/graphql';
 import { i18nTime } from '@affine/i18n';
 import { assertEquals } from '@blocksuite/affine/global/utils';
-import { DocCollection, type Workspace } from '@blocksuite/affine/store';
+import type { Workspace } from '@blocksuite/affine/store';
 import { useService } from '@toeverything/infra';
 import { useEffect, useMemo } from 'react';
 import useSWRImmutable from 'swr/immutable';
@@ -114,11 +115,9 @@ const getOrCreateShellWorkspace = (
       fetchService,
       graphQLService
     );
-    docCollection = new DocCollection({
+    docCollection = new WorkspaceImpl({
       id: workspaceId,
-      blobSources: {
-        main: blobStorage,
-      },
+      blobSource: blobStorage,
       schema: getAFFiNEWorkspaceSchema(),
     });
     docCollectionMap.set(workspaceId, docCollection);

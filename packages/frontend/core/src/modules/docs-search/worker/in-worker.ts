@@ -14,7 +14,6 @@ import {
 import { Container } from '@blocksuite/affine/global/di';
 import {
   createYProxy,
-  DocCollection,
   type DraftModel,
   Job,
   type JobMiddleware,
@@ -35,6 +34,7 @@ import {
 } from 'yjs';
 
 import { getAFFiNEWorkspaceSchema } from '../../workspace/global-schema';
+import { WorkspaceImpl } from '../../workspace/impl/workspace';
 import type { BlockIndexSchema, DocIndexSchema } from '../schema';
 import type {
   WorkerIngoingMessage,
@@ -118,7 +118,7 @@ const bookmarkFlavours = new Set([
   'affine:embed-loom',
 ]);
 
-const markdownPreviewDocCollection = new DocCollection({
+const markdownPreviewDocCollection = new WorkspaceImpl({
   id: 'indexer',
   schema: blocksuiteSchema,
 });
