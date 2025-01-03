@@ -40,7 +40,6 @@ export type PlainText = string;
 type PlainTextToSliceSnapshotPayload = {
   file: PlainText;
   assets?: AssetsManager;
-  blockVersions: Record<string, number>;
   workspaceId: string;
   pageId: string;
 };

@@ -31,7 +31,6 @@ export type MixText = string;
 type MixTextToSliceSnapshotPayload = {
   file: MixText;
   assets?: AssetsManager;
-  blockVersions: Record<string, number>;
   workspaceId: string;
   pageId: string;
 };

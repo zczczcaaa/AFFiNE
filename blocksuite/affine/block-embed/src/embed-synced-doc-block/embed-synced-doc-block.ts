@@ -475,7 +475,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
 
     this._setDocUpdatedAt();
     this.disposables.add(
-      this.doc.collection.meta.docMetaUpdated.on(() => {
+      this.doc.collection.slots.docListUpdated.on(() => {
         this._setDocUpdatedAt();
       })
     );

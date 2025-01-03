@@ -110,7 +110,7 @@ export class DocsPanel extends WithDisposable(ShadowlessElement) {
     });
 
     this.disposables.add(
-      this.editor.doc.collection.slots.docUpdated.on(() => {
+      this.editor.doc.collection.slots.docListUpdated.on(() => {
         this.requestUpdate();
       })
     );

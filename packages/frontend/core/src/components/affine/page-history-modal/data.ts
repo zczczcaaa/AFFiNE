@@ -7,7 +7,7 @@ import type { ListHistoryQuery } from '@affine/graphql';
 import { listHistoryQuery, recoverDocMutation } from '@affine/graphql';
 import { i18nTime } from '@affine/i18n';
 import { assertEquals } from '@blocksuite/affine/global/utils';
-import { DocCollection } from '@blocksuite/affine/store';
+import { DocCollection, type Workspace } from '@blocksuite/affine/store';
 import { useService } from '@toeverything/infra';
 import { useEffect, useMemo } from 'react';
 import useSWRImmutable from 'swr/immutable';
@@ -99,7 +99,7 @@ const snapshotFetcher = async (
 // so that we do not need to worry about providers etc
 // TODO(@Peng): fix references to the page (the referenced page will shown as deleted)
 // if we simply clone the current workspace, it maybe time consuming right?
-const docCollectionMap = new Map<string, DocCollection>();
+const docCollectionMap = new Map<string, Workspace>();
 
 // assume the workspace is a cloud workspace since the history feature is only enabled for cloud workspace
 const getOrCreateShellWorkspace = (
@@ -147,7 +147,7 @@ export const usePageHistory = (
 
 // workspace id + page id + timestamp + snapshot -> Page (to be used for rendering in blocksuite editor)
 export const useSnapshotPage = (
-  docCollection: DocCollection,
+  docCollection: Workspace,
   pageDocId: string,
   ts?: string
 ) => {
@@ -253,10 +253,7 @@ export function revertUpdate(
   applyUpdate(doc, revertChangesSinceSnapshotUpdate);
 }
 
-export const useRestorePage = (
-  docCollection: DocCollection,
-  pageId: string
-) => {
+export const useRestorePage = (docCollection: Workspace, pageId: string) => {
   const page = useDocCollectionPage(docCollection, pageId);
   const mutateQueryResource = useMutateQueryResource();
   const { trigger: recover, isMutating } = useMutation({

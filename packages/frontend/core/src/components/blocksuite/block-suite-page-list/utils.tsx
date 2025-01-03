@@ -5,11 +5,11 @@ import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { type DocMode } from '@blocksuite/affine/blocks';
-import type { DocCollection } from '@blocksuite/affine/store';
+import type { Workspace } from '@blocksuite/affine/store';
 import { useServices } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
-export const usePageHelper = (docCollection: DocCollection) => {
+export const usePageHelper = (docCollection: Workspace) => {
   const {
     docsService,
     workbenchService,

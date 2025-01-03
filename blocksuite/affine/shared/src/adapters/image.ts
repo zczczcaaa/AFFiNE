@@ -26,7 +26,6 @@ export type Image = File[];
 type ImageToSliceSnapshotPayload = {
   file: Image;
   assets?: AssetsManager;
-  blockVersions: Record<string, number>;
   workspaceId: string;
   pageId: string;
 };

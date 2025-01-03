@@ -22,11 +22,16 @@ import {
   BlockSuiteDoc,
   type RawAwarenessState,
 } from '../yjs/index.js';
-import { BlockCollection, type GetDocOptions } from './doc/block-collection.js';
-import type { Doc, Query } from './doc/index.js';
+import { BlockCollection } from './doc/block-collection.js';
+import type { Doc } from './doc/index.js';
 import type { IdGeneratorType } from './id.js';
 import { pickIdGenerator } from './id.js';
 import { DocCollectionMeta } from './meta.js';
+import type {
+  CreateDocOptions,
+  GetDocOptions,
+  Workspace,
+} from './workspace.js';
 
 export type DocCollectionOptions = {
   schema: Schema;
@@ -69,7 +74,7 @@ export interface StackItem {
   meta: Map<'cursor-location' | 'selection-state', unknown>;
 }
 
-export class DocCollection {
+export class DocCollection implements Workspace {
   protected readonly _schema: Schema;
 
   readonly awarenessStore: AwarenessStore;
@@ -91,7 +96,7 @@ export class DocCollection {
   meta: DocCollectionMeta;
 
   slots = {
-    docUpdated: new Slot(),
+    docListUpdated: new Slot(),
     docRemoved: new Slot<string>(),
     docCreated: new Slot<string>(),
   };
@@ -161,7 +166,7 @@ export class DocCollection {
       this.blockCollections.set(doc.id, doc);
     });
 
-    this.meta.docMetaUpdated.on(() => this.slots.docUpdated.emit());
+    this.meta.docMetaUpdated.on(() => this.slots.docListUpdated.emit());
 
     this.meta.docMetaRemoved.on(id => {
       const space = this.getBlockCollection(id);
@@ -189,8 +194,8 @@ export class DocCollection {
    * If the `init` parameter is passed, a `surface`, `note`, and `paragraph` block
    * will be created in the doc simultaneously.
    */
-  createDoc(options: { id?: string; query?: Query } = {}) {
-    const { id: docId = this.idGenerator(), query } = options;
+  createDoc(options: CreateDocOptions = {}) {
+    const { id: docId = this.idGenerator(), query, readonly } = options;
     if (this._hasDoc(docId)) {
       throw new BlockSuiteError(
         ErrorCode.DocCollectionError,
@@ -205,7 +210,7 @@ export class DocCollection {
       tags: [],
     });
     this.slots.docCreated.emit(docId);
-    return this.getDoc(docId, { query }) as Doc;
+    return this.getDoc(docId, { query, readonly }) as Doc;
   }
 
   dispose() {

@@ -162,7 +162,7 @@ export class DocDisplayMetaService
     if (!title$) {
       title$ = signal(doc.meta?.title || 'Untitled');
 
-      const disposable = this.std.collection.meta.docMetaUpdated.on(() => {
+      const disposable = this.std.collection.slots.docListUpdated.on(() => {
         title$!.value = doc.meta?.title || 'Untitled';
       });
 

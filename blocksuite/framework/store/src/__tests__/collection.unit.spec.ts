@@ -7,7 +7,7 @@ import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
 import type { BlockModel, BlockSchemaType, Doc } from '../index.js';
 import { DocCollection, IdGeneratorType, Schema } from '../index.js';
-import type { DocMeta } from '../store/index.js';
+import type { DocMeta } from '../store/workspace.js';
 import type { BlockSuiteDoc } from '../yjs/index.js';
 import {
   NoteBlockSchema,
@@ -432,7 +432,7 @@ describe('addBlock', () => {
     );
 
     let called = false;
-    collection.meta.docMetaUpdated.on(() => {
+    collection.slots.docListUpdated.on(() => {
       called = true;
     });
 

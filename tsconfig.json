@@ -44,6 +44,8 @@
     // Projects
     "composite": true,
     "incremental": true,
+    // For dev performance
+    "disableReferencedProjectLoad": true,
     // Completeness
     "skipLibCheck": true, // skip all type checks for .d.ts files
     "paths": {

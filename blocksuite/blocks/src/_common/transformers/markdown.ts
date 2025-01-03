@@ -2,7 +2,7 @@ import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { assertExists, sha } from '@blocksuite/global/utils';
-import type { Doc, DocCollection } from '@blocksuite/store';
+import type { Doc, Workspace } from '@blocksuite/store';
 import { extMimeMap, Job } from '@blocksuite/store';
 
 import { defaultBlockMarkdownAdapterMatchers } from '../adapters/index.js';
@@ -34,13 +34,13 @@ type ImportMarkdownToBlockOptions = {
 };
 
 type ImportMarkdownToDocOptions = {
-  collection: DocCollection;
+  collection: Workspace;
   markdown: string;
   fileName?: string;
 };
 
 type ImportMarkdownZipOptions = {
-  collection: DocCollection;
+  collection: Workspace;
   imported: Blob;
 };
 

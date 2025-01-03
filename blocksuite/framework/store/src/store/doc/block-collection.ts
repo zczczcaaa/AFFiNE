@@ -7,7 +7,7 @@ import { Text } from '../../reactive/text.js';
 import type { BlockModel } from '../../schema/base.js';
 import type { IdGenerator } from '../../utils/id-generator.js';
 import type { AwarenessStore, BlockSuiteDoc } from '../../yjs/index.js';
-import type { DocCollection } from '../collection.js';
+import type { GetDocOptions, Workspace } from '../workspace.js';
 import { Doc } from './doc.js';
 import type { YBlock } from './index.js';
 import type { Query } from './query.js';
@@ -24,15 +24,10 @@ export type BlockProps = BlockSysProps & Record<string, unknown>;
 
 type DocOptions = {
   id: string;
-  collection: DocCollection;
+  collection: Workspace;
   doc: BlockSuiteDoc;
   awarenessStore: AwarenessStore;
   idGenerator?: IdGenerator;
-};
-
-export type GetDocOptions = {
-  query?: Query;
-  readonly?: boolean;
 };
 
 export class BlockCollection {
@@ -42,7 +37,7 @@ export class BlockCollection {
 
   private readonly _canUndo$ = signal(false);
 
-  private readonly _collection: DocCollection;
+  private readonly _collection: Workspace;
 
   private readonly _docMap = {
     undefined: new Map<string, Doc>(),
@@ -144,11 +139,6 @@ export class BlockCollection {
         }
     >(),
   };
-
-  // So, we apply a listener at the top level for the flat structure of the current
-  get awarenessSync() {
-    return this.collection.awarenessSync;
-  }
 
   get blobSync() {
     return this.collection.blobSync;

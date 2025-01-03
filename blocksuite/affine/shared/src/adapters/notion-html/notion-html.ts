@@ -41,7 +41,6 @@ export type NotionHtml = string;
 type NotionHtmlToSliceSnapshotPayload = {
   file: NotionHtml;
   assets?: AssetsManager;
-  blockVersions: Record<string, number>;
   workspaceId: string;
   pageId: string;
 };

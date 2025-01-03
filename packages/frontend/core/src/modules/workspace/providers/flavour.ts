@@ -1,4 +1,4 @@
-import type { DocCollection } from '@blocksuite/affine/store';
+import type { Workspace as BSWorkspace } from '@blocksuite/affine/store';
 import {
   type AwarenessConnection,
   type BlobStorage,
@@ -27,7 +27,7 @@ export interface WorkspaceFlavourProvider {
 
   createWorkspace(
     initial: (
-      docCollection: DocCollection,
+      docCollection: BSWorkspace,
       blobStorage: BlobStorage,
       docStorage: DocStorage
     ) => Promise<void>

@@ -16,7 +16,7 @@ import {
   openFileOrFiles,
   ZipTransformer,
 } from '@blocksuite/affine/blocks';
-import type { DocCollection } from '@blocksuite/affine/store';
+import type { Workspace } from '@blocksuite/affine/store';
 import {
   ExportToHtmlIcon,
   ExportToMarkdownIcon,
@@ -51,7 +51,7 @@ type ImportResult = {
 type ImportConfig = {
   fileOptions: { acceptType: AcceptType; multiple: boolean };
   importFunction: (
-    docCollection: DocCollection,
+    docCollection: Workspace,
     file: File | File[]
   ) => Promise<ImportResult>;
 };

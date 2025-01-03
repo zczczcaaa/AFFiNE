@@ -1,12 +1,12 @@
 import { DebugLogger } from '@affine/debug';
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
-import type { Doc, DocCollection } from '@blocksuite/affine/store';
+import type { Doc, Workspace } from '@blocksuite/affine/store';
 import { useEffect, useState } from 'react';
 
 const logger = new DebugLogger('useBlockSuiteWorkspacePage');
 
 export function useDocCollectionPage(
-  docCollection: DocCollection,
+  docCollection: Workspace,
   pageId: string | null
 ): Doc | null {
   const [page, setPage] = useState(

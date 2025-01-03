@@ -145,18 +145,9 @@ export const markdownToSnapshot = async (
     middlewares: [defaultImageProxyMiddleware, pasteMiddleware(host.std)],
   });
   const markdownAdapter = new MixTextAdapter(job, host.std.provider);
-  const { blockVersions, workspaceVersion, pageVersion } =
-    host.std.doc.collection.meta;
-  if (!blockVersions || !workspaceVersion || !pageVersion)
-    throw new Error(
-      'Need blockVersions, workspaceVersion, pageVersion meta information to get slice'
-    );
   const payload = {
     file: markdown,
     assets: job.assetsManager,
-    blockVersions,
-    pageVersion,
-    workspaceVersion,
     workspaceId: host.std.doc.collection.id,
     pageId: host.std.doc.id,
   };

@@ -4,26 +4,12 @@ import type * as Y from 'yjs';
 import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
 import type { BlockSuiteDoc } from '../yjs/index.js';
 import type { DocCollection } from './collection.js';
+import type {
+  DocMeta,
+  DocsPropertiesMeta,
+  WorkspaceMeta,
+} from './workspace.js';
 
-// please use `declare module '@blocksuite/store'` to extend this interface
-export interface DocMeta {
-  id: string;
-  title: string;
-  tags: string[];
-  createDate: number;
-  updatedDate?: number;
-}
-
-export type Tag = {
-  id: string;
-  value: string;
-  color: string;
-};
-export type DocsPropertiesMeta = {
-  tags?: {
-    options: Tag[];
-  };
-};
 export type DocCollectionMetaState = {
   pages?: unknown[];
   properties?: DocsPropertiesMeta;
@@ -34,7 +20,7 @@ export type DocCollectionMetaState = {
   avatar?: string;
 };
 
-export class DocCollectionMeta {
+export class DocCollectionMeta implements WorkspaceMeta {
   private readonly _handleDocCollectionMetaEvents = (
     events: Y.YEvent<Y.Array<unknown> | Y.Text | Y.Map<unknown>>[]
   ) => {

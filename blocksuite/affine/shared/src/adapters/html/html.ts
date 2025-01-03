@@ -46,7 +46,6 @@ export type Html = string;
 type HtmlToSliceSnapshotPayload = {
   file: Html;
   assets?: AssetsManager;
-  blockVersions: Record<string, number>;
   workspaceId: string;
   pageId: string;
 };

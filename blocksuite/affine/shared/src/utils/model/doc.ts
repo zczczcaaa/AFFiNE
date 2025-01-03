@@ -1,7 +1,7 @@
-import type { DocCollection } from '@blocksuite/store';
+import type { Workspace } from '@blocksuite/store';
 
 export function createDefaultDoc(
-  collection: DocCollection,
+  collection: Workspace,
   options: { id?: string; title?: string } = {}
 ) {
   const doc = collection.createDoc({ id: options.id });

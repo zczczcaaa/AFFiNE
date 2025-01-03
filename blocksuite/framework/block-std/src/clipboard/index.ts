@@ -138,7 +138,6 @@ export class Clipboard extends LifeCycleWatcher {
         const payload = {
           file: item,
           assets: job.assetsManager,
-          blockVersions: doc.collection.meta.blockVersions,
           workspaceId: doc.collection.id,
           pageId: doc.id,
         };

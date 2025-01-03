@@ -295,7 +295,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
     const linkedDoc = this.linkedDoc;
     if (linkedDoc) {
       this.disposables.add(
-        linkedDoc.collection.meta.docMetaUpdated.on(() => {
+        linkedDoc.collection.slots.docListUpdated.on(() => {
           this._load().catch(e => {
             console.error(e);
             this.isError = true;
@@ -328,7 +328,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
 
       this._setDocUpdatedAt();
       this.disposables.add(
-        this.doc.collection.meta.docMetaUpdated.on(() => {
+        this.doc.collection.slots.docListUpdated.on(() => {
           this._setDocUpdatedAt();
         })
       );

@@ -1,8 +1,8 @@
 import { replaceIdMiddleware } from '@blocksuite/blocks';
-import { type DocCollection, type DocSnapshot, Job } from '@blocksuite/store';
+import { type DocSnapshot, Job, type Workspace } from '@blocksuite/store';
 
 export async function importFromSnapshot(
-  collection: DocCollection,
+  collection: Workspace,
   snapshot: DocSnapshot
 ) {
   const job = new Job({

@@ -1,7 +1,7 @@
 // This file should has not side effect
 // oxlint-disable-next-line
 // @ts-ignore FIXME: typecheck error
-import type { DocCollection } from '@blocksuite/affine/store';
+import type { Workspace } from '@blocksuite/affine/store';
 
 declare global {
   // oxlint-disable-next-line no-var
@@ -91,10 +91,10 @@ export const Messages = {
 };
 
 export class PageNotFoundError extends TypeError {
-  readonly docCollection: DocCollection;
+  readonly docCollection: Workspace;
   readonly pageId: string;
 
-  constructor(docCollection: DocCollection, pageId: string) {
+  constructor(docCollection: Workspace, pageId: string) {
     super();
     this.docCollection = docCollection;
     this.pageId = pageId;

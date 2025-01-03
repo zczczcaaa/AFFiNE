@@ -6,7 +6,7 @@ import type {
 } from '@blocksuite/block-std';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import type { StarterDebugMenu } from '@playground/apps/_common/components/starter-debug-menu.js';
-import type { BlockModel, Doc, DocCollection, Job } from '@store/index.js';
+import type { BlockModel, Doc, Job, Workspace } from '@store/index.js';
 
 declare global {
   interface Window {
@@ -36,7 +36,7 @@ declare global {
         mockDocModeService: typeof import('../../packages/playground/apps/_common/mock-services.js').mockDocModeService;
       };
     };
-    collection: DocCollection;
+    collection: Workspace;
     blockSchema: Record<string, typeof BlockModel>;
     doc: Doc;
     debugMenu: StarterDebugMenu;

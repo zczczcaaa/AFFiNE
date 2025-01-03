@@ -1,7 +1,7 @@
 import { HtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
-import type { Doc, DocCollection } from '@blocksuite/store';
+import type { Doc, Workspace } from '@blocksuite/store';
 import { extMimeMap, Job } from '@blocksuite/store';
 
 import { defaultBlockHtmlAdapterMatchers } from '../adapters/html/block-matcher.js';
@@ -16,13 +16,13 @@ import {
 import { createAssetsArchive, download, Unzip } from './utils.js';
 
 type ImportHTMLToDocOptions = {
-  collection: DocCollection;
+  collection: Workspace;
   html: string;
   fileName?: string;
 };
 
 type ImportHTMLZipOptions = {
-  collection: DocCollection;
+  collection: Workspace;
   imported: Blob;
 };
 

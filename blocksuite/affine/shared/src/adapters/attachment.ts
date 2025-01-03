@@ -26,7 +26,6 @@ export type Attachment = File[];
 type AttachmentToSliceSnapshotPayload = {
   file: Attachment;
   assets?: AssetsManager;
-  blockVersions: Record<string, number>;
   workspaceId: string;
   pageId: string;
 };

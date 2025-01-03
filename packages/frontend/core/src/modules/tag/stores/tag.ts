@@ -23,7 +23,7 @@ export class TagStore extends Store {
 
   subscribe(cb: () => void) {
     const disposable =
-      this.workspaceService.workspace.docCollection.meta.docMetaUpdated.on(cb);
+      this.workspaceService.workspace.docCollection.slots.docListUpdated.on(cb);
     return disposable.dispose;
   }
 

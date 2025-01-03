@@ -221,7 +221,7 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
     const doc = this.doc;
     if (doc) {
       this._disposables.add(
-        doc.collection.slots.docUpdated.on(() => this._updateRefMeta(doc))
+        doc.collection.slots.docListUpdated.on(() => this._updateRefMeta(doc))
       );
     }
 

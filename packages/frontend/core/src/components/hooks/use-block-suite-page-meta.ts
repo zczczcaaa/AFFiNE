@@ -1,6 +1,6 @@
 import { DocsService } from '@affine/core/modules/doc';
 import { WorkspaceService } from '@affine/core/modules/workspace';
-import type { DocCollection, DocMeta } from '@blocksuite/affine/store';
+import type { DocMeta, Workspace } from '@blocksuite/affine/store';
 import { useService } from '@toeverything/infra';
 import { useCallback, useMemo } from 'react';
 
@@ -13,7 +13,7 @@ import { useJournalInfoHelper } from './use-journal';
  * If you want to get all pageMetas, use `useAllBlockSuitePageMeta` instead
  * @returns
  */
-export function useBlockSuiteDocMeta(docCollection: DocCollection) {
+export function useBlockSuiteDocMeta(docCollection: Workspace) {
   const pageMetas = useAllBlockSuiteDocMeta(docCollection);
   const { isPageJournal } = useJournalInfoHelper();
   return useMemo(

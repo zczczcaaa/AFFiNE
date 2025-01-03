@@ -1,4 +1,4 @@
-import type { DocCollection } from '@blocksuite/affine/store';
+import type { Workspace } from '@blocksuite/affine/store';
 import {
   type BlobStorage,
   type DocStorage,
@@ -21,7 +21,7 @@ export class WorkspaceFactoryService extends Service {
   create = async (
     flavour: string,
     initial: (
-      docCollection: DocCollection,
+      docCollection: Workspace,
       blobStorage: BlobStorage,
       docStorage: DocStorage
     ) => Promise<void> = () => Promise.resolve()
