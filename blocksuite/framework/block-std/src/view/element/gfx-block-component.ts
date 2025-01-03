@@ -22,7 +22,6 @@ function updateTransform(element: GfxBlockComponent) {
 
 function handleGfxConnection(instance: GfxBlockComponent) {
   instance.style.position = 'absolute';
-  instance.style.willChange = 'transform';
 
   instance.disposables.add(
     instance.gfx.viewport.viewportUpdated.on(() => {
