@@ -324,7 +324,10 @@ const pageToolGroup: KeyboardToolPanelGroup = {
             const inlineEditor = getInlineEditorByModel(std.host, currentModel);
             // Wait for range to be updated
             inlineEditor?.slots.inlineRangeSync.once(() => {
-              linkedDocWidget.show('mobile');
+              linkedDocWidget.show({
+                mode: 'mobile',
+                addTriggerKey: true,
+              });
               closeToolPanel();
             });
           })

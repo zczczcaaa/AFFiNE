@@ -54,22 +54,8 @@ export const getSelectionRectsCommand: Command<
     const range = std.range.textSelectionToRange(textSelection);
 
     if (range) {
-      const nativeRects = Array.from(range.getClientRects());
-      const rectsWithoutFiltered = nativeRects
-        .map(rect => ({
-          width: rect.right - rect.left,
-          height: rect.bottom - rect.top,
-          top:
-            rect.top - (containerRect?.top ?? 0) + (container?.scrollTop ?? 0),
-          left:
-            rect.left -
-            (containerRect?.left ?? 0) +
-            (container?.scrollLeft ?? 0),
-        }))
-        .filter(rect => rect.width > 0 && rect.height > 0);
-
       return next({
-        selectionRects: filterCoveringRects(rectsWithoutFiltered),
+        selectionRects: getRangeRects(range, container),
       });
     }
   } else if (blockSelections && blockSelections.length > 0) {
@@ -197,4 +183,23 @@ export function filterCoveringRects(rects: SelectionRect[]): SelectionRect[] {
   } while (hasChanges);
 
   return mergedRects;
+}
+
+export function getRangeRects(
+  range: Range,
+  container: HTMLElement | null
+): SelectionRect[] {
+  const nativeRects = Array.from(range.getClientRects());
+  const containerRect = container?.getBoundingClientRect();
+  const rectsWithoutFiltered = nativeRects
+    .map(rect => ({
+      width: rect.right - rect.left,
+      height: rect.bottom - rect.top,
+      top: rect.top - (containerRect?.top ?? 0) + (container?.scrollTop ?? 0),
+      left:
+        rect.left - (containerRect?.left ?? 0) + (container?.scrollLeft ?? 0),
+    }))
+    .filter(rect => rect.width > 0 && rect.height > 0);
+
+  return filterCoveringRects(rectsWithoutFiltered);
 }

@@ -36,6 +36,7 @@ export interface LinkedWidgetConfig {
    */
   convertTriggerKey: boolean;
   ignoreBlockTypes: (keyof BlockSuite.BlockModels)[];
+  ignoreSelector: string;
   getMenus: (
     query: string,
     abort: () => void,

@@ -236,7 +236,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         const inlineEditor = getInlineEditorByModel(rootComponent.host, model);
         // Wait for range to be updated
         inlineEditor?.slots.inlineRangeSync.once(() => {
-          linkedDocWidget.show();
+          linkedDocWidget.show({ addTriggerKey: true });
         });
       },
     },

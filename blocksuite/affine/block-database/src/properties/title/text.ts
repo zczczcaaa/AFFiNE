@@ -401,7 +401,7 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
           ? getViewportElement(this.topContenteditableElement.host)
           : null}"
       data-parent-flavour="affine:database"
-      class="data-view-header-area-rich-text can-link-doc"
+      class="data-view-header-area-rich-text"
     ></rich-text>`;
   }
 

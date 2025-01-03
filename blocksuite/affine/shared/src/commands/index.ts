@@ -16,6 +16,7 @@ export {
 export {
   getBlockSelectionsCommand,
   getImageSelectionsCommand,
+  getRangeRects,
   getSelectionRectsCommand,
   getTextSelectionCommand,
   type SelectionRect,
