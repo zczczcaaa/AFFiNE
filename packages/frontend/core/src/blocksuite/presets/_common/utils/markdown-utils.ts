@@ -17,8 +17,8 @@ import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import { assertExists } from '@blocksuite/affine/global/utils';
 import type {
   BlockModel,
+  Blocks,
   BlockSnapshot,
-  Doc,
   DraftModel,
   JobMiddleware,
   Schema,
@@ -166,7 +166,7 @@ export const markdownToSnapshot = async (
 export async function insertFromMarkdown(
   host: EditorHost,
   markdown: string,
-  doc: Doc,
+  doc: Blocks,
   parent?: string,
   index?: number
 ) {
@@ -235,5 +235,5 @@ export async function markDownToDoc(
   if (!doc) {
     console.error('Failed to convert markdown to doc');
   }
-  return doc as Doc;
+  return doc as Blocks;
 }

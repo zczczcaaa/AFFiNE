@@ -1,6 +1,6 @@
 import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace';
 import { AffineSchemas } from '@blocksuite/affine/blocks';
-import type { Doc, DocSnapshot } from '@blocksuite/affine/store';
+import type { Blocks, DocSnapshot } from '@blocksuite/affine/store';
 import { Job, Schema } from '@blocksuite/affine/store';
 
 const getCollection = (() => {
@@ -26,7 +26,7 @@ export type DocName =
   | 'connector'
   | 'mindmap';
 
-const docMap = new Map<DocName, Promise<Doc | undefined>>();
+const docMap = new Map<DocName, Promise<Blocks | undefined>>();
 
 async function loadNote() {
   return (await import('./note.json')).default;

@@ -1,14 +1,13 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type {
   EdgelessRootBlockComponent,
   PageRootBlockComponent,
   SurfaceBlockComponent,
 } from '@blocksuite/blocks';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 
 import type { AffineEditorContainer } from '../../index.js';
 
-export function getSurface(doc: Doc, editor: AffineEditorContainer) {
+export function getSurface(doc: Blocks, editor: AffineEditorContainer) {
   const surfaceModel = doc.getBlockByFlavour('affine:surface');
 
   return editor.host!.view.getBlock(
@@ -17,17 +16,17 @@ export function getSurface(doc: Doc, editor: AffineEditorContainer) {
 }
 
 export function getDocRootBlock(
-  doc: Doc,
+  doc: Blocks,
   editor: AffineEditorContainer,
   mode: 'page'
 ): PageRootBlockComponent;
 export function getDocRootBlock(
-  doc: Doc,
+  doc: Blocks,
   editor: AffineEditorContainer,
   mode: 'edgeless'
 ): EdgelessRootBlockComponent;
 export function getDocRootBlock(
-  doc: Doc,
+  doc: Blocks,
   editor: AffineEditorContainer,
   _?: 'edgeless' | 'page'
 ) {
@@ -36,7 +35,7 @@ export function getDocRootBlock(
     | PageRootBlockComponent;
 }
 
-export function addNote(doc: Doc, props: Record<string, any> = {}) {
+export function addNote(doc: Blocks, props: Record<string, any> = {}) {
   const noteId = doc.addBlock(
     'affine:note',
     {

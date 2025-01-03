@@ -1,6 +1,6 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import { type BlockModel, BlockViewType, Doc } from '@blocksuite/store';
+import { type BlockModel, Blocks, BlockViewType } from '@blocksuite/store';
 import { consume, provide } from '@lit/context';
 import { computed } from '@preact/signals-core';
 import { nothing, type TemplateResult } from 'lit';
@@ -23,7 +23,7 @@ import { ShadowlessElement } from './shadowless-element.js';
 import type { WidgetComponent } from './widget-component.js';
 
 @requiredProperties({
-  doc: PropTypes.instanceOf(Doc),
+  doc: PropTypes.instanceOf(Blocks),
   std: PropTypes.object,
   widgets: PropTypes.recordOf(PropTypes.object),
 })
@@ -307,7 +307,7 @@ export class BlockComponent<
   private accessor _service: Service | null = null;
 
   @consume({ context: docContext })
-  accessor doc!: Doc;
+  accessor doc!: Blocks;
 
   @property({ attribute: false })
   accessor viewType: BlockViewType = BlockViewType.Display;

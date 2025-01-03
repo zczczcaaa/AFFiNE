@@ -1,11 +1,11 @@
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import type { Map as YMap } from 'yjs';
 
 /**
  * TODO(@eyhn): Define error to unexpected state together in the future.
  */
 export class NoPageRootError extends Error {
-  constructor(public page: Doc) {
+  constructor(public page: Blocks) {
     super('Page root not found when render editor!');
 
     // Log info to let sentry collect more message

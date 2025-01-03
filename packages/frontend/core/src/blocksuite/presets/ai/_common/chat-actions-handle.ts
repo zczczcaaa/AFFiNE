@@ -24,7 +24,7 @@ import {
   getCommonBoundWithRotation,
   type SerializedXYWH,
 } from '@blocksuite/affine/global/utils';
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import type { TemplateResult } from 'lit';
 
 import type { ChatMessage } from '../../../blocks';
@@ -101,7 +101,7 @@ export function constructUserInfoWithMessages(
 }
 
 export async function constructRootChatBlockMessages(
-  doc: Doc,
+  doc: Blocks,
   forkSessionId: string
 ) {
   // Convert chat messages to AI chat block messages

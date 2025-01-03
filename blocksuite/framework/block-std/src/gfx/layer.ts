@@ -5,7 +5,7 @@ import {
   last,
   Slot,
 } from '@blocksuite/global/utils';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 import { generateKeyBetween } from 'fractional-indexing';
 
 import {
@@ -100,7 +100,7 @@ export class LayerManager {
   };
 
   constructor(
-    private readonly _doc: Doc,
+    private readonly _doc: Blocks,
     private _surface: SurfaceBlockModel | null,
     options: {
       watch: boolean;
@@ -775,7 +775,7 @@ export class LayerManager {
     }
   }
 
-  watch(blocks: { doc?: Doc; surface: SurfaceBlockModel | null }) {
+  watch(blocks: { doc?: Blocks; surface: SurfaceBlockModel | null }) {
     const { doc, surface } = blocks;
 
     if (doc) {

@@ -5,7 +5,7 @@ import type { EditorHost } from '@blocksuite/affine/block-std';
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import { NotificationProvider } from '@blocksuite/affine/blocks';
 import { debounce, WithDisposable } from '@blocksuite/affine/global/utils';
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import { css, html, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -141,7 +141,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   accessor host!: EditorHost;
 
   @property({ attribute: false })
-  accessor doc!: Doc;
+  accessor doc!: Blocks;
 
   @state()
   accessor isLoading = false;

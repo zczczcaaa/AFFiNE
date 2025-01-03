@@ -24,7 +24,7 @@ import {
   ZERO_WIDTH_NON_JOINER,
   ZERO_WIDTH_SPACE,
 } from '@blocksuite/inline';
-import type { Doc, DocMeta } from '@blocksuite/store';
+import type { Blocks, DocMeta } from '@blocksuite/store';
 import { css, html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
@@ -71,7 +71,7 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
     }
   `;
 
-  private readonly _updateRefMeta = (doc: Doc) => {
+  private readonly _updateRefMeta = (doc: Blocks) => {
     const refAttribute = this.delta.attributes?.reference;
     if (!refAttribute) {
       return;

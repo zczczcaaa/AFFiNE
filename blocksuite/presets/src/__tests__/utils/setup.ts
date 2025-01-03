@@ -1,5 +1,5 @@
 import { effects as blocksEffects } from '@blocksuite/blocks/effects';
-import type { BlockCollection, Doc, Job } from '@blocksuite/store';
+import type { BlockCollection, Blocks, Job } from '@blocksuite/store';
 
 import { effects } from '../../effects.js';
 
@@ -111,12 +111,12 @@ export function cleanup() {
 
 declare global {
   const editor: AffineEditorContainer;
-  const doc: Doc;
+  const doc: Blocks;
   const collection: TestWorkspace;
   const job: Job;
   interface Window {
     editor: AffineEditorContainer;
-    doc: Doc;
+    doc: Blocks;
     job: Job;
     collection: TestWorkspace;
   }

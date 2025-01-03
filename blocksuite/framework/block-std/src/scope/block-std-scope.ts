@@ -1,7 +1,7 @@
 import type { ServiceProvider } from '@blocksuite/global/di';
 import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import { type Doc, Job, type JobMiddleware } from '@blocksuite/store';
+import { type Blocks, Job, type JobMiddleware } from '@blocksuite/store';
 
 import { Clipboard } from '../clipboard/index.js';
 import { CommandManager } from '../command/index.js';
@@ -31,7 +31,7 @@ import { EditorHost } from '../view/element/index.js';
 import { ViewStore } from '../view/view-store.js';
 
 export interface BlockStdOptions {
-  doc: Doc;
+  doc: Blocks;
   extensions: ExtensionType[];
 }
 
@@ -60,7 +60,7 @@ export class BlockStdScope {
 
   readonly container: Container;
 
-  readonly doc: Doc;
+  readonly doc: Blocks;
 
   readonly provider: ServiceProvider;
 

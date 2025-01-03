@@ -8,7 +8,7 @@ import type { BlockModel } from '../../schema/base.js';
 import type { IdGenerator } from '../../utils/id-generator.js';
 import type { AwarenessStore, BlockSuiteDoc } from '../../yjs/index.js';
 import type { GetDocOptions, Workspace } from '../workspace.js';
-import { Doc } from './doc.js';
+import { Blocks } from './doc.js';
 import type { YBlock } from './index.js';
 import type { Query } from './query.js';
 
@@ -40,9 +40,9 @@ export class BlockCollection {
   private readonly _collection: Workspace;
 
   private readonly _docMap = {
-    undefined: new Map<string, Doc>(),
-    true: new Map<string, Doc>(),
-    false: new Map<string, Doc>(),
+    undefined: new Map<string, Blocks>(),
+    true: new Map<string, Blocks>(),
+    false: new Map<string, Blocks>(),
   };
 
   // doc/space container.
@@ -324,7 +324,7 @@ export class BlockCollection {
       return this._docMap[readonlyKey].get(key)!;
     }
 
-    const doc = new Doc({
+    const doc = new Blocks({
       blockCollection: this,
       schema: this.collection.schema,
       readonly,

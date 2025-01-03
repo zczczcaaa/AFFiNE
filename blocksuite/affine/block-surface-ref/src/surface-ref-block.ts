@@ -45,7 +45,7 @@ import {
   DisposableGroup,
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -238,7 +238,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     }
   `;
 
-  private _previewDoc: Doc | null = null;
+  private _previewDoc: Blocks | null = null;
 
   private readonly _previewSpec =
     SpecProvider.getInstance().getSpec('edgeless:preview');

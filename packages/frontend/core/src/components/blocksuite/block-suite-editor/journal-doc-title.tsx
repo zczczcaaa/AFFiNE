@@ -1,12 +1,12 @@
 import { JournalService } from '@affine/core/modules/journal';
 import { i18nTime, useI18n } from '@affine/i18n';
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import dayjs from 'dayjs';
 
 import * as styles from './styles.css';
 
-export const BlocksuiteEditorJournalDocTitle = ({ page }: { page: Doc }) => {
+export const BlocksuiteEditorJournalDocTitle = ({ page }: { page: Blocks }) => {
   const journalService = useService(JournalService);
   const journalDateStr = useLiveData(journalService.journalDate$(page.id));
   const journalDate = journalDateStr ? dayjs(journalDateStr) : null;

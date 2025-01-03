@@ -13,7 +13,7 @@ import {
   SignalWatcher,
   WithDisposable,
 } from '@blocksuite/global/utils';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 import { effect, signal } from '@preact/signals-core';
 import { css, html, LitElement, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -698,7 +698,7 @@ export class OutlinePanelBody extends SignalWatcher(
   private accessor _selected: string[] = [];
 
   @property({ attribute: false })
-  accessor doc!: Doc;
+  accessor doc!: Blocks;
 
   @property({ attribute: false })
   accessor domHost!: Document | HTMLElement;

@@ -6,7 +6,7 @@ import {
 } from '@blocksuite/affine/blocks';
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import { Schema } from '@blocksuite/affine/store';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
@@ -53,7 +53,7 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
   private readonly _editorContainer: Ref<HTMLDivElement> =
     createRef<HTMLDivElement>();
 
-  private _doc!: Doc;
+  private _doc!: Blocks;
 
   private _docCollection: WorkspaceImpl | null = null;
 

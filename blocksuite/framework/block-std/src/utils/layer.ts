@@ -1,5 +1,5 @@
 import { nToLast } from '@blocksuite/global/utils';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 
 import type { GfxLocalElementModel } from '../gfx/index.js';
 import type { Layer } from '../gfx/layer.js';
@@ -82,7 +82,7 @@ export function isInRange(edges: [GfxModel, GfxModel], target: GfxModel) {
 }
 
 export function renderableInEdgeless(
-  doc: Doc,
+  doc: Blocks,
   surface: SurfaceBlockModel,
   block: GfxBlockElementModel
 ) {

@@ -1,7 +1,7 @@
 import { DebugLogger } from '@affine/debug';
 import { BlockStdScope } from '@blocksuite/affine/block-std';
 import { PageEditorBlockSpecs } from '@blocksuite/affine/blocks';
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import { LiveData } from '@toeverything/infra';
 import { useMemo } from 'react';
 import { Observable } from 'rxjs';
@@ -42,7 +42,7 @@ export function signalToLiveData<T>(
 }
 
 // todo(pengx17): use rc pool?
-export function createBlockStdScope(doc: Doc) {
+export function createBlockStdScope(doc: Blocks) {
   logger.debug('createBlockStdScope', doc.id);
   const std = new BlockStdScope({
     doc,
@@ -51,6 +51,6 @@ export function createBlockStdScope(doc: Doc) {
   return std;
 }
 
-export function useBlockStdScope(doc: Doc) {
+export function useBlockStdScope(doc: Blocks) {
   return useMemo(() => createBlockStdScope(doc), [doc]);
 }

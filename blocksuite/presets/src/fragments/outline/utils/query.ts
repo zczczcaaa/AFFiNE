@@ -5,7 +5,7 @@ import {
   type ParagraphBlockModel,
   type RootBlockModel,
 } from '@blocksuite/blocks';
-import type { BlockModel, Doc } from '@blocksuite/store';
+import type { BlockModel, Blocks } from '@blocksuite/store';
 
 import { headingKeys } from '../config.js';
 
@@ -22,7 +22,7 @@ type OutlineNoteItem = {
 };
 
 export function getNotesFromDoc(
-  doc: Doc,
+  doc: Blocks,
   modes: NoteDisplayMode[]
 ): OutlineNoteItem[] {
   const rootModel = doc.root;
@@ -74,7 +74,7 @@ export function getHeadingBlocksFromNote(
 }
 
 export function getHeadingBlocksFromDoc(
-  doc: Doc,
+  doc: Blocks,
   modes: NoteDisplayMode[],
   ignoreEmpty = false
 ) {

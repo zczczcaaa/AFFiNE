@@ -10,7 +10,7 @@ import type {
   EdgelessEditor,
   PageEditor,
 } from '@blocksuite/affine/presets';
-import { type BlockModel, type Doc } from '@blocksuite/affine/store';
+import { type BlockModel, type Blocks } from '@blocksuite/affine/store';
 import clsx from 'clsx';
 import type React from 'react';
 import {
@@ -27,7 +27,7 @@ import { BlocksuiteDocEditor, BlocksuiteEdgelessEditor } from './lit-adaper';
 import * as styles from './styles.css';
 
 interface BlocksuiteEditorContainerProps {
-  page: Doc;
+  page: Blocks;
   mode: DocMode;
   shared?: boolean;
   className?: string;
@@ -191,7 +191,7 @@ export const BlocksuiteEditorContainer = forwardRef<
 });
 
 // copy from '@blocksuite/affine-shared/utils'
-export function getLastNoteBlock(doc: Doc) {
+export function getLastNoteBlock(doc: Blocks) {
   let note: NoteBlockModel | null = null;
   if (!doc.root) return null;
   const { children } = doc.root;

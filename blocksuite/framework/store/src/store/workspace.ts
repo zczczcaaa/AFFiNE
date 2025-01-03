@@ -5,7 +5,7 @@ import type { Schema } from '../schema/schema.js';
 import type { IdGenerator } from '../utils/id-generator.js';
 import type { AwarenessStore } from '../yjs/awareness.js';
 import type { BlockSuiteDoc } from '../yjs/doc.js';
-import type { Doc } from './doc/doc.js';
+import type { Blocks } from './doc/doc.js';
 import type { BlockCollection } from './doc/index.js';
 import type { Query } from './doc/query.js';
 
@@ -78,8 +78,8 @@ export interface Workspace {
     docRemoved: Slot<string>;
   };
 
-  createDoc(options?: CreateDocOptions): Doc;
-  getDoc(docId: string, options?: GetDocOptions): Doc | null;
+  createDoc(options?: CreateDocOptions): Blocks;
+  getDoc(docId: string, options?: GetDocOptions): Blocks | null;
   removeDoc(docId: string): void;
 
   dispose(): void;

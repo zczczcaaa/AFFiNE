@@ -11,9 +11,9 @@ import { BlockStdScope } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
 import {
   type BlockModel,
+  type Blocks,
   type BlockSnapshot,
   BlockViewType,
-  type Doc,
   type DraftModel,
   type Query,
   Slice,
@@ -220,7 +220,7 @@ function filterTextModel(model: BlockModel) {
   return false;
 }
 
-export function getNotesFromDoc(doc: Doc) {
+export function getNotesFromDoc(doc: Blocks) {
   const notes = doc.root?.children.filter(
     child =>
       matchFlavours(child, ['affine:note']) &&
@@ -234,7 +234,7 @@ export function getNotesFromDoc(doc: Doc) {
   return notes;
 }
 
-export function isEmptyDoc(doc: Doc | null, mode: DocMode) {
+export function isEmptyDoc(doc: Blocks | null, mode: DocMode) {
   if (!doc) {
     return true;
   }
@@ -266,7 +266,7 @@ export function isEmptyNote(note: BlockModel) {
 /**
  * Gets the document content with a max length.
  */
-export function getDocContentWithMaxLength(doc: Doc, maxlength = 500) {
+export function getDocContentWithMaxLength(doc: Blocks, maxlength = 500) {
   const notes = getNotesFromDoc(doc);
   if (!notes) return;
 
@@ -326,7 +326,7 @@ export function promptDocTitle(std: BlockStdScope, autofill?: string) {
   });
 }
 
-export function notifyDocCreated(std: BlockStdScope, doc: Doc) {
+export function notifyDocCreated(std: BlockStdScope, doc: Blocks) {
   const notification = std.getOptional(NotificationProvider);
   if (!notification) return;
 
@@ -365,7 +365,7 @@ export function notifyDocCreated(std: BlockStdScope, doc: Doc) {
 
 export async function convertSelectedBlocksToLinkedDoc(
   std: BlockStdScope,
-  doc: Doc,
+  doc: Blocks,
   selectedModels: DraftModel[] | Promise<DraftModel[]>,
   docTitle?: string
 ) {
@@ -399,7 +399,7 @@ export async function convertSelectedBlocksToLinkedDoc(
 
 export function createLinkedDocFromSlice(
   std: BlockStdScope,
-  doc: Doc,
+  doc: Blocks,
   snapshots: BlockSnapshot[],
   docTitle?: string
 ) {

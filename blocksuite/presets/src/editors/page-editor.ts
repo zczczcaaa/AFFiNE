@@ -5,7 +5,7 @@ import {
 } from '@blocksuite/block-std';
 import { PageEditorBlockSpecs, ThemeProvider } from '@blocksuite/blocks';
 import { noop, SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 import { css, html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { guard } from 'lit/directives/guard.js';
@@ -101,7 +101,7 @@ export class PageEditor extends SignalWatcher(
   }
 
   @property({ attribute: false })
-  accessor doc!: Doc;
+  accessor doc!: Blocks;
 
   @property({ type: Boolean })
   accessor hasViewport = true;

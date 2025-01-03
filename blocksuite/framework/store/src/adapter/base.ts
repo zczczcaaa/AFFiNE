@@ -1,6 +1,6 @@
 import { BlockSuiteError } from '@blocksuite/global/exceptions';
 
-import type { Doc } from '../store/index.js';
+import type { Blocks } from '../store/index.js';
 import type { AssetsManager } from '../transformer/assets.js';
 import type { DraftModel, Job, Slice } from '../transformer/index.js';
 import type {
@@ -93,7 +93,7 @@ export abstract class BaseAdapter<AdapterTarget = unknown> {
     | Promise<FromBlockSnapshotResult<AdapterTarget>>
     | FromBlockSnapshotResult<AdapterTarget>;
 
-  async fromDoc(doc: Doc) {
+  async fromDoc(doc: Blocks) {
     try {
       const docSnapshot = this.job.docToSnapshot(doc);
       if (!docSnapshot) return;
@@ -138,7 +138,7 @@ export abstract class BaseAdapter<AdapterTarget = unknown> {
 
   async toBlock(
     payload: ToBlockSnapshotPayload<AdapterTarget>,
-    doc: Doc,
+    doc: Blocks,
     parent?: string,
     index?: number
   ) {
@@ -175,7 +175,7 @@ export abstract class BaseAdapter<AdapterTarget = unknown> {
 
   async toSlice(
     payload: ToSliceSnapshotPayload<AdapterTarget>,
-    doc: Doc,
+    doc: Blocks,
     parent?: string,
     index?: number
   ) {

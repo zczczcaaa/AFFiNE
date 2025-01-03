@@ -5,7 +5,7 @@ import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 
 import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
-import type { BlockModel, BlockSchemaType, Doc } from '../index.js';
+import type { BlockModel, Blocks, BlockSchemaType } from '../index.js';
 import { Schema } from '../index.js';
 import type { DocMeta } from '../store/workspace.js';
 import { TestWorkspace } from '../test/test-workspace.js';
@@ -54,7 +54,7 @@ function waitOnce<T>(slot: Slot<T>) {
   return new Promise<T>(resolve => slot.once(val => resolve(val)));
 }
 
-function createRoot(doc: Doc) {
+function createRoot(doc: Blocks) {
   doc.addBlock('affine:page');
   if (!doc.root) throw new Error('root not found');
   return doc.root;

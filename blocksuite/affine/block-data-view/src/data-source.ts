@@ -11,7 +11,7 @@ import type { EditorHost } from '@blocksuite/block-std';
 import { DataSourceBase, type PropertyMetaConfig } from '@blocksuite/data-view';
 import { propertyPresets } from '@blocksuite/data-view/property-presets';
 import { assertExists, Slot } from '@blocksuite/global/utils';
-import type { Block, Doc } from '@blocksuite/store';
+import type { Block, Blocks } from '@blocksuite/store';
 
 import type { BlockMeta } from './block-meta/base.js';
 import { blockMetaMap } from './block-meta/index.js';
@@ -140,7 +140,7 @@ export class BlockQueryDataSource extends DataSourceBase {
     return this.block.columns.find(v => v.id === id);
   }
 
-  listenToDoc(doc: Doc) {
+  listenToDoc(doc: Blocks) {
     this.docDisposeMap.set(
       doc.id,
       doc.slots.blockUpdated.on(v => {

@@ -1,5 +1,5 @@
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
@@ -32,7 +32,7 @@ export class TestEditorContainer extends SignalWatcher(
   }
 
   @property({ attribute: false })
-  accessor doc!: Doc;
+  accessor doc!: Blocks;
 
   @property({ attribute: false })
   accessor specs: ExtensionType[] = [];

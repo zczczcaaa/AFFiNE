@@ -11,7 +11,7 @@ import {
   ThemeProvider,
 } from '@blocksuite/blocks';
 import { SignalWatcher, Slot, WithDisposable } from '@blocksuite/global/utils';
-import type { BlockModel, Doc } from '@blocksuite/store';
+import type { BlockModel, Blocks } from '@blocksuite/store';
 import { computed, signal } from '@preact/signals-core';
 import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -88,7 +88,7 @@ export class AffineEditorContainer
     }
   `;
 
-  private readonly _doc = signal<Doc>();
+  private readonly _doc = signal<Blocks>();
 
   private readonly _edgelessSpecs = signal<ExtensionType[]>(
     EdgelessEditorBlockSpecs
@@ -123,10 +123,10 @@ export class AffineEditorContainer
   };
 
   get doc() {
-    return this._doc.value as Doc;
+    return this._doc.value as Blocks;
   }
 
-  set doc(doc: Doc) {
+  set doc(doc: Blocks) {
     this._doc.value = doc;
   }
 

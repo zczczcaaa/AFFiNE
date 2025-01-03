@@ -12,7 +12,7 @@ import {
 } from '../../../reactive/index.js';
 import { BlockModel, internalPrimitives } from '../../../schema/base.js';
 import type { Schema } from '../../../schema/schema.js';
-import type { Doc } from '../doc.js';
+import type { Blocks } from '../doc.js';
 import type { YBlock } from './types.js';
 
 /**
@@ -103,7 +103,7 @@ export class SyncController {
   constructor(
     readonly schema: Schema,
     readonly yBlock: YBlock,
-    readonly doc?: Doc,
+    readonly doc?: Blocks,
     readonly onChange?: (key: string, value: unknown) => void
   ) {
     const { id, flavour, version, yChildren, props } = this._parseYBlock();

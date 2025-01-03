@@ -5,7 +5,7 @@ import 'fake-indexeddb/auto';
 
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { assertExists } from '@blocksuite/affine/global/utils';
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import { Schema } from '@blocksuite/store';
 import { TestWorkspace } from '@blocksuite/store/test';
 import { renderHook } from '@testing-library/react';
@@ -22,7 +22,7 @@ beforeEach(async () => {
   vi.useFakeTimers({ toFake: ['requestIdleCallback'] });
   docCollection = new TestWorkspace({ id: 'test', schema });
   docCollection.meta.initialize();
-  const initPage = async (page: Doc) => {
+  const initPage = async (page: Blocks) => {
     page.load();
     expect(page).not.toBeNull();
     assertExists(page);
@@ -37,7 +37,7 @@ beforeEach(async () => {
 
 describe('useBlockSuitePagePreview', () => {
   test('basic', async () => {
-    const page = docCollection.getDoc('page0') as Doc;
+    const page = docCollection.getDoc('page0') as Blocks;
     const id = page.addBlock(
       'affine:paragraph',
       {

@@ -7,9 +7,9 @@ import { NoopLogger, Slot } from '@blocksuite/affine/global/utils';
 import {
   AwarenessStore,
   BlockCollection,
+  type Blocks,
   BlockSuiteDoc,
   type CreateDocOptions,
-  type Doc,
   DocCollectionMeta,
   type GetDocOptions,
   type IdGenerator,
@@ -168,7 +168,7 @@ export class WorkspaceImpl implements Workspace {
       tags: [],
     });
     this.slots.docCreated.emit(docId);
-    return this.getDoc(docId, { query, readonly }) as Doc;
+    return this.getDoc(docId, { query, readonly }) as Blocks;
   }
 
   dispose() {
@@ -190,7 +190,7 @@ export class WorkspaceImpl implements Workspace {
     return space ?? null;
   }
 
-  getDoc(docId: string, options?: GetDocOptions): Doc | null {
+  getDoc(docId: string, options?: GetDocOptions): Blocks | null {
     const collection = this.getBlockCollection(docId);
     return collection?.getDoc(options) ?? null;
   }

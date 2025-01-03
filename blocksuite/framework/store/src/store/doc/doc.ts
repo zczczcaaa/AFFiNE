@@ -18,7 +18,7 @@ type DocOptions = {
   query?: Query;
 };
 
-export class Doc {
+export class Blocks {
   private readonly _runQuery = (block: Block) => {
     runQuery(this._query, block);
   };

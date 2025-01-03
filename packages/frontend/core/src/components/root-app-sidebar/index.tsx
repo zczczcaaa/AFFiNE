@@ -25,7 +25,7 @@ import { CMDKQuickSearchService } from '@affine/core/modules/quicksearch/service
 import type { Workspace } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import {
   AllDocsIcon,
   GithubIcon,
@@ -56,7 +56,7 @@ export type RootAppSidebarProps = {
   onOpenSettingModal: () => void;
   currentWorkspace: Workspace;
   openPage: (pageId: string) => void;
-  createPage: () => Doc;
+  createPage: () => Blocks;
   paths: {
     all: (workspaceId: string) => string;
     trash: (workspaceId: string) => string;

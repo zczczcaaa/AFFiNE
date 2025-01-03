@@ -18,8 +18,8 @@ import { Awareness } from 'y-protocols/awareness.js';
 import type { Schema } from '../schema/index.js';
 import {
   BlockCollection,
+  type Blocks,
   type CreateDocOptions,
-  type Doc,
   DocCollectionMeta,
   type GetDocOptions,
   type Workspace,
@@ -208,7 +208,7 @@ export class TestWorkspace implements Workspace {
       tags: [],
     });
     this.slots.docCreated.emit(docId);
-    return this.getDoc(docId, { query, readonly }) as Doc;
+    return this.getDoc(docId, { query, readonly }) as Blocks;
   }
 
   dispose() {
@@ -230,7 +230,7 @@ export class TestWorkspace implements Workspace {
     return space ?? null;
   }
 
-  getDoc(docId: string, options?: GetDocOptions): Doc | null {
+  getDoc(docId: string, options?: GetDocOptions): Blocks | null {
     const collection = this.getBlockCollection(docId);
     return collection?.getDoc(options) ?? null;
   }

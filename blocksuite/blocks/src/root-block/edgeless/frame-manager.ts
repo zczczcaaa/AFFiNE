@@ -19,7 +19,7 @@ import {
   type IVec,
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 import { Text } from '@blocksuite/store';
 import * as Y from 'yjs';
 
@@ -463,7 +463,7 @@ export class EdgelessFrameManager extends GfxExtension {
 }
 
 export function getNotesInFrameBound(
-  doc: Doc,
+  doc: Blocks,
   frame: FrameBlockModel,
   fullyContained: boolean = true
 ) {
@@ -481,7 +481,7 @@ export function getNotesInFrameBound(
 }
 
 export function getBlocksInFrameBound(
-  doc: Doc,
+  doc: Blocks,
   model: FrameBlockModel,
   fullyContained: boolean = true
 ) {

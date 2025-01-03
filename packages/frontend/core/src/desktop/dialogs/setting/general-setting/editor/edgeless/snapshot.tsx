@@ -19,7 +19,7 @@ import {
   ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
-import type { Block, Doc } from '@blocksuite/affine/store';
+import type { Block, Blocks } from '@blocksuite/affine/store';
 import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
 import type { Container } from '@blocksuite/global/di';
 import type { Signal } from '@preact/signals-core';
@@ -45,8 +45,8 @@ interface Props {
   docName: DocName;
   keyName: keyof EditorSettingSchema;
   height?: number;
-  getElements: (doc: Doc) => Array<Block | GfxPrimitiveElementModel>;
-  firstUpdate?: (doc: Doc, editorHost: EditorHost) => void;
+  getElements: (doc: Blocks) => Array<Block | GfxPrimitiveElementModel>;
+  firstUpdate?: (doc: Blocks, editorHost: EditorHost) => void;
   children?: React.ReactElement;
 }
 
@@ -63,7 +63,7 @@ export const EdgelessSnapshot = (props: Props) => {
     children,
   } = props;
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const docRef = useRef<Doc | null>(null);
+  const docRef = useRef<Blocks | null>(null);
   const editorHostRef = useRef<EditorHost | null>(null);
   const framework = useFramework();
   const { editorSetting } = framework.get(EditorSettingService);

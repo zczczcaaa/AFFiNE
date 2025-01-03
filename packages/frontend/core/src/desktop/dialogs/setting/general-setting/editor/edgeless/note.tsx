@@ -15,7 +15,7 @@ import {
   NoteShadowMap,
   StrokeStyle,
 } from '@blocksuite/affine/blocks';
-import type { Doc } from '@blocksuite/affine/store';
+import type { Blocks } from '@blocksuite/affine/store';
 import { useFramework, useLiveData } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { useCallback, useMemo } from 'react';
@@ -170,7 +170,7 @@ export const NoteSettings = () => {
     return getCurrentColor(background);
   }, [getCurrentColor, settings]);
 
-  const getElements = useCallback((doc: Doc) => {
+  const getElements = useCallback((doc: Blocks) => {
     return doc.getBlocksByFlavour('affine:note') || [];
   }, []);
 

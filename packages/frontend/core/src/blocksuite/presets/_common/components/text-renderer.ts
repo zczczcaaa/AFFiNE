@@ -20,8 +20,8 @@ import {
 import { Container, type ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import {
+  type Blocks,
   BlockViewType,
-  type Doc,
   type JobMiddleware,
   type Query,
   type Schema,
@@ -174,7 +174,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
     }
   };
 
-  private _doc: Doc | null = null;
+  private _doc: Blocks | null = null;
 
   private readonly _query: Query = {
     mode: 'strict',

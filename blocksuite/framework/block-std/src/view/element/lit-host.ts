@@ -4,7 +4,7 @@ import {
   handleError,
 } from '@blocksuite/global/exceptions';
 import { SignalWatcher, Slot, WithDisposable } from '@blocksuite/global/utils';
-import { type BlockModel, BlockViewType, Doc } from '@blocksuite/store';
+import { type BlockModel, Blocks, BlockViewType } from '@blocksuite/store';
 import { createContext, provide } from '@lit/context';
 import { css, LitElement, nothing, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -22,11 +22,11 @@ import type { ViewStore } from '../view-store.js';
 import { BLOCK_ID_ATTR, WIDGET_ID_ATTR } from './consts.js';
 import { ShadowlessElement } from './shadowless-element.js';
 
-export const docContext = createContext<Doc>('doc');
+export const docContext = createContext<Blocks>('doc');
 export const stdContext = createContext<BlockStdScope>('std');
 
 @requiredProperties({
-  doc: PropTypes.instanceOf(Doc),
+  doc: PropTypes.instanceOf(Blocks),
   std: PropTypes.object,
 })
 export class EditorHost extends SignalWatcher(
@@ -189,7 +189,7 @@ export class EditorHost extends SignalWatcher(
 
   @provide({ context: docContext })
   @property({ attribute: false })
-  accessor doc!: Doc;
+  accessor doc!: Blocks;
 
   @provide({ context: stdContext })
   @property({ attribute: false })

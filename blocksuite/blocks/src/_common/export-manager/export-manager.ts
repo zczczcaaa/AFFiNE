@@ -25,7 +25,7 @@ import type { GfxBlockElementModel } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { IBound } from '@blocksuite/global/utils';
 import { Bound } from '@blocksuite/global/utils';
-import type { Doc } from '@blocksuite/store';
+import type { Blocks } from '@blocksuite/store';
 
 import {
   getBlockComponentByModel,
@@ -110,7 +110,7 @@ export class ExportManager {
     await Promise.all(promises);
   };
 
-  get doc(): Doc {
+  get doc(): Blocks {
     return this.std.doc;
   }
 

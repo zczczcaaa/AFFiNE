@@ -1,11 +1,11 @@
 import { sha } from '@blocksuite/global/utils';
-import type { Doc, DocSnapshot, Workspace } from '@blocksuite/store';
+import type { Blocks, DocSnapshot, Workspace } from '@blocksuite/store';
 import { extMimeMap, getAssetName, Job } from '@blocksuite/store';
 
 import { download, Unzip, Zip } from '../transformers/utils.js';
 import { replaceIdMiddleware, titleMiddleware } from './middlewares.js';
 
-async function exportDocs(collection: Workspace, docs: Doc[]) {
+async function exportDocs(collection: Workspace, docs: Blocks[]) {
   const zip = new Zip();
   const job = new Job({
     schema: collection.schema,

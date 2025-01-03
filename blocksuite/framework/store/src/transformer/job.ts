@@ -2,7 +2,7 @@ import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { nextTick, Slot } from '@blocksuite/global/utils';
 
 import type { BlockModel, BlockSchemaType, Schema } from '../schema/index.js';
-import type { Doc } from '../store/index.js';
+import type { Blocks } from '../store/index.js';
 import { AssetsManager } from './assets.js';
 import { BaseBlockTransformer } from './base.js';
 import type { DraftModel } from './draft.js';
@@ -78,7 +78,7 @@ export class Job {
     }
   };
 
-  docToSnapshot = (doc: Doc): DocSnapshot | undefined => {
+  docToSnapshot = (doc: Blocks): DocSnapshot | undefined => {
     try {
       this._slots.beforeExport.emit({
         type: 'page',
@@ -154,7 +154,7 @@ export class Job {
 
   snapshotToBlock = async (
     snapshot: BlockSnapshot,
-    doc: Doc,
+    doc: Blocks,
     parent?: string,
     index?: number
   ): Promise<BlockModel | undefined> => {
@@ -170,7 +170,9 @@ export class Job {
     }
   };
 
-  snapshotToDoc = async (snapshot: DocSnapshot): Promise<Doc | undefined> => {
+  snapshotToDoc = async (
+    snapshot: DocSnapshot
+  ): Promise<Blocks | undefined> => {
     try {
       this._slots.beforeImport.emit({
         type: 'page',
@@ -222,7 +224,7 @@ export class Job {
 
   snapshotToSlice = async (
     snapshot: SliceSnapshot,
-    doc: Doc,
+    doc: Blocks,
     parent?: string,
     index?: number
   ): Promise<Slice | undefined> => {
@@ -418,7 +420,7 @@ export class Job {
     }
   }
 
-  private _exportDocMeta(doc: Doc): DocSnapshot['meta'] {
+  private _exportDocMeta(doc: Blocks): DocSnapshot['meta'] {
     const docMeta = doc.meta;
 
     if (!docMeta) {
@@ -466,7 +468,7 @@ export class Job {
 
   private async _insertBlockTree(
     nodes: DraftBlockTreeNode[],
-    doc: Doc,
+    doc: Blocks,
     parentId?: string,
     startIndex?: number,
     counter: number = 0
@@ -555,7 +557,7 @@ export class Job {
 
   private async _snapshotToBlock(
     snapshot: BlockSnapshot,
-    doc: Doc,
+    doc: Blocks,
     parent?: string,
     index?: number
   ): Promise<BlockModel | null> {

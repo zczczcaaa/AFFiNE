@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Boxed } from '../reactive/boxed.js';
 import { Text } from '../reactive/text.js';
 import type { YBlock } from '../store/doc/block/index.js';
-import type { Doc } from '../store/index.js';
+import type { Blocks } from '../store/index.js';
 import type { BaseBlockTransformer } from '../transformer/base.js';
 
 const FlavourSchema = z.string();
@@ -160,7 +160,7 @@ export class BlockModel<
   /**
    * @deprecated use doc instead
    */
-  page!: Doc;
+  page!: Blocks;
 
   private readonly _childModels = computed(() => {
     const value: BlockModel[] = [];
@@ -224,7 +224,7 @@ export class BlockModel<
     return this.page;
   }
 
-  set doc(doc: Doc) {
+  set doc(doc: Blocks) {
     this.page = doc;
   }
 

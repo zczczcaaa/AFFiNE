@@ -1,6 +1,6 @@
 import type { Slot } from '@blocksuite/global/utils';
 
-import type { Doc } from '../store/index.js';
+import type { Blocks } from '../store/index.js';
 import type { AssetsManager } from './assets.js';
 import type { DraftModel } from './draft.js';
 import type { Slice } from './slice.js';
@@ -38,7 +38,7 @@ export type BeforeExportPayload =
       type: 'block';
     }
   | {
-      page: Doc;
+      page: Blocks;
       type: 'page';
     }
   | {
@@ -60,7 +60,7 @@ export type FinalPayload =
   | {
       snapshot: DocSnapshot;
       type: 'page';
-      page: Doc;
+      page: Blocks;
     }
   | {
       snapshot: SliceSnapshot;

@@ -1,6 +1,6 @@
 import { DebugLogger } from '@affine/debug';
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
-import type { Doc, Workspace } from '@blocksuite/affine/store';
+import type { Blocks, Workspace } from '@blocksuite/affine/store';
 import { useEffect, useState } from 'react';
 
 const logger = new DebugLogger('useBlockSuiteWorkspacePage');
@@ -8,7 +8,7 @@ const logger = new DebugLogger('useBlockSuiteWorkspacePage');
 export function useDocCollectionPage(
   docCollection: Workspace,
   pageId: string | null
-): Doc | null {
+): Blocks | null {
   const [page, setPage] = useState(
     pageId ? docCollection.getDoc(pageId) : null
   );

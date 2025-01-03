@@ -12,7 +12,7 @@ import {
   DisposableGroup,
   WithDisposable,
 } from '@blocksuite/global/utils';
-import { BlockViewType, type Doc, type Query } from '@blocksuite/store';
+import { type Blocks, BlockViewType, type Query } from '@blocksuite/store';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -78,7 +78,7 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
 
   private _frameDisposables: DisposableGroup | null = null;
 
-  private _previewDoc: Doc | null = null;
+  private _previewDoc: Blocks | null = null;
 
   private readonly _previewSpec =
     SpecProvider.getInstance().getSpec('edgeless:preview');

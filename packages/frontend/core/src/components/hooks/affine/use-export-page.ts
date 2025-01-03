@@ -22,7 +22,7 @@ import {
   ZipTransformer,
 } from '@blocksuite/affine/blocks';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
-import { type Doc, Job } from '@blocksuite/affine/store';
+import { type Blocks, Job } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
@@ -32,7 +32,7 @@ import { useAsyncCallback } from '../affine-async-hooks';
 type ExportType = 'pdf' | 'html' | 'png' | 'markdown' | 'snapshot';
 
 interface ExportHandlerOptions {
-  page: Doc;
+  page: Blocks;
   editorContainer: AffineEditorContainer;
   type: ExportType;
 }
@@ -53,7 +53,11 @@ interface AdapterConfig {
   indexFileName: string;
 }
 
-async function exportDoc(doc: Doc, std: BlockStdScope, config: AdapterConfig) {
+async function exportDoc(
+  doc: Blocks,
+  std: BlockStdScope,
+  config: AdapterConfig
+) {
   const job = new Job({
     schema: doc.collection.schema,
     blobCRUD: doc.collection.blobSync,
@@ -99,7 +103,7 @@ async function exportDoc(doc: Doc, std: BlockStdScope, config: AdapterConfig) {
   download(downloadBlob, name);
 }
 
-async function exportToHtml(doc: Doc, std?: BlockStdScope) {
+async function exportToHtml(doc: Blocks, std?: BlockStdScope) {
   if (!std) {
     // If std is not provided, we use the default export method
     await HtmlTransformer.exportDoc(doc);
@@ -113,7 +117,7 @@ async function exportToHtml(doc: Doc, std?: BlockStdScope) {
   }
 }
 
-async function exportToMarkdown(doc: Doc, std?: BlockStdScope) {
+async function exportToMarkdown(doc: Blocks, std?: BlockStdScope) {
   if (!std) {
     // If std is not provided, we use the default export method
     await MarkdownTransformer.exportDoc(doc);
