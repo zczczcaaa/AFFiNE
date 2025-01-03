@@ -1,6 +1,8 @@
 import '../../../style.css';
 
-import { createEmptyDoc, EdgelessEditor } from '@blocksuite/presets';
+import { EdgelessEditor } from '@blocksuite/presets';
+
+import { createEmptyDoc } from '../../../apps/_common/helper';
 
 const container = document.createElement('div');
 container.style.display = 'flex';

@@ -2,7 +2,6 @@ import '@blocksuite/affine-block-surface/effects';
 
 export * from './editors';
 export * from './fragments';
-export * from './helpers';
 
 const env =
   typeof globalThis !== 'undefined'
