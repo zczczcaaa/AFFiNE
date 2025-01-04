@@ -59,7 +59,7 @@ export class BlockQueryDataSource extends DataSourceBase {
   }
 
   get workspace() {
-    return this.host.doc.collection;
+    return this.host.doc.workspace;
   }
 
   constructor(
@@ -73,14 +73,14 @@ export class BlockQueryDataSource extends DataSourceBase {
       this.columnMetaMap.set(property.metaConfig.type, property.metaConfig);
     }
     for (const collection of this.workspace.docs.values()) {
-      for (const block of Object.values(collection.getDoc().blocks.peek())) {
+      for (const block of Object.values(collection.getBlocks().blocks.peek())) {
         if (this.meta.selector(block)) {
           this.blockMap.set(block.id, block);
         }
       }
     }
     this.workspace.docs.forEach(doc => {
-      this.listenToDoc(doc.getDoc());
+      this.listenToDoc(doc.getBlocks());
     });
     this.workspace.slots.docCreated.on(id => {
       const doc = this.workspace.getDoc(id);
@@ -167,7 +167,7 @@ export class BlockQueryDataSource extends DataSourceBase {
       type ?? propertyPresets.multiSelectPropertyConfig.type
     ].create(this.newColumnName());
 
-    const id = doc.collection.idGenerator();
+    const id = doc.workspace.idGenerator();
     if (this.block.columns.some(v => v.id === id)) {
       return id;
     }

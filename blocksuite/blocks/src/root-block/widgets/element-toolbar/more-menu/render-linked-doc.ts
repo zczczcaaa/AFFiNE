@@ -40,7 +40,7 @@ export function createLinkedDocFromNote(
   note: NoteBlockModel,
   docTitle?: string
 ) {
-  const linkedDoc = doc.collection.createDoc({});
+  const linkedDoc = doc.workspace.createDoc({});
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {
       title: new Text(docTitle),
@@ -71,7 +71,7 @@ export function createLinkedDocFromEdgelessElements(
   elements: BlockSuite.EdgelessModel[],
   docTitle?: string
 ) {
-  const linkedDoc = host.doc.collection.createDoc({});
+  const linkedDoc = host.doc.workspace.createDoc({});
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {
       title: new Text(docTitle),

@@ -195,7 +195,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
     if (this._answers.length > 0) {
       const latestAnswer = this._answers.pop();
       this._answers = [];
-      const schema = this.schema ?? this.host?.std.doc.collection.schema;
+      const schema = this.schema ?? this.host?.std.doc.workspace.schema;
       let provider: ServiceProvider;
       if (this.host) {
         provider = this.host.std.provider;
@@ -220,11 +220,11 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
         )
           .then(doc => {
             this.disposeDoc();
-            this._doc = doc.blockCollection.getDoc({
+            this._doc = doc.doc.getBlocks({
               query: this._query,
             });
             this.disposables.add(() => {
-              doc.blockCollection.clearQuery(this._query);
+              doc.doc.clearQuery(this._query);
             });
             this._doc.readonly = true;
             this.requestUpdate();
@@ -256,7 +256,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
 
   private disposeDoc() {
     this._doc?.dispose();
-    this._doc?.collection.dispose();
+    this._doc?.workspace.dispose();
   }
 
   override disconnectedCallback() {

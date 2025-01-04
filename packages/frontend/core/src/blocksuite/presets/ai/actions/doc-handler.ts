@@ -107,7 +107,7 @@ export function actionToStream<T extends keyof BlockSuitePresets.AIActions>(
           control,
           where,
           docId: host.doc.id,
-          workspaceId: host.doc.collection.id,
+          workspaceId: host.doc.workspace.id,
         } as Parameters<typeof action>[0];
         // @ts-expect-error TODO(@Peng): maybe fix this
         stream = action(options);
@@ -238,7 +238,7 @@ export function handleInlineAskAIAction(host: EditorHost) {
           where: 'inline-chat-panel',
           control: 'chat-send',
           docId: host.doc.id,
-          workspaceId: host.doc.collection.id,
+          workspaceId: host.doc.workspace.id,
         });
         bindTextStream(stream, { update, finish, signal });
       })

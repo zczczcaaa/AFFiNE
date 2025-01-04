@@ -58,7 +58,7 @@ export class SelectionManager extends LifeCycleWatcher {
   };
 
   private get _store() {
-    return this.std.collection.awarenessStore;
+    return this.std.workspace.awarenessStore;
   }
 
   get id() {

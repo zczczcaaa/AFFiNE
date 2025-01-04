@@ -336,8 +336,8 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
         ];
       }
 
-      const doc = [...this.std.collection.docs.values()]
-        .map(doc => doc.getDoc())
+      const doc = [...this.std.workspace.docs.values()]
+        .map(doc => doc.getBlocks())
         .find(
           doc =>
             doc.getBlock(this.model.reference) ||
@@ -370,7 +370,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
       this._referencedModel =
         referencedModel && referencedModel.xywh ? referencedModel : null;
-      this._previewDoc = this.doc.collection.getDoc(docId, {
+      this._previewDoc = this.doc.workspace.getDoc(docId, {
         readonly: true,
       });
       this._referenceXYWH = this._referencedModel?.xywh ?? null;

@@ -1,4 +1,4 @@
-import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace';
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
 import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AffineAIPanelWidgetConfig,

@@ -19,7 +19,7 @@ export const titlePurePropertyConfig = titleColumnType.modelConfig<Text>({
   cellToJson: ({ value, dataSource }) => {
     const host = dataSource.contextGet(HostContextKey);
     if (host) {
-      const collection = host.std.collection;
+      const collection = host.std.workspace;
       const deltas = value.deltas$.value;
       const text = deltas
         .map(delta => {

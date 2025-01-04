@@ -30,17 +30,18 @@ export interface DocMeta {
   favorite?: boolean;
 }
 
-export type GetDocOptions = {
+export type GetBlocksOptions = {
   query?: Query;
   readonly?: boolean;
 };
-export type CreateDocOptions = GetDocOptions & {
+export type CreateBlocksOptions = GetBlocksOptions & {
   id?: string;
 };
 
 export interface WorkspaceMeta {
   get docMetas(): DocMeta[];
 
+  addDocMeta(props: DocMeta, index?: number): void;
   getDocMeta(id: string): DocMeta | undefined;
   setDocMeta(id: string, props: Partial<DocMeta>): void;
   removeDocMeta(id: string): void;
@@ -60,6 +61,10 @@ export interface WorkspaceMeta {
   writeVersion(workspace: Workspace): void;
   get docs(): unknown[] | undefined;
   initialize(): void;
+
+  docMetaAdded: Slot<string>;
+  docMetaRemoved: Slot<string>;
+  docMetaUpdated: Slot;
 }
 
 export interface Workspace {
@@ -80,8 +85,8 @@ export interface Workspace {
     docRemoved: Slot<string>;
   };
 
-  createDoc(options?: CreateDocOptions): Blocks;
-  getDoc(docId: string, options?: GetDocOptions): Blocks | null;
+  createDoc(options?: CreateBlocksOptions): Blocks;
+  getDoc(docId: string, options?: GetBlocksOptions): Blocks | null;
   removeDoc(docId: string): void;
 
   dispose(): void;
@@ -111,6 +116,7 @@ export interface Doc {
     >;
   };
 
+  get history(): Y.UndoManager;
   get canRedo(): boolean;
   get canUndo(): boolean;
   undo(): void;
@@ -121,15 +127,14 @@ export interface Doc {
 
   captureSync(): void;
   clear(): void;
-  getDoc(options?: GetDocOptions): Blocks;
+  getBlocks(options?: GetBlocksOptions): Blocks;
   clearQuery(query: Query, readonly?: boolean): void;
 
-  get history(): Y.UndoManager;
   get loaded(): boolean;
   get readonly(): boolean;
   get awarenessStore(): AwarenessStore;
 
-  get collection(): Workspace;
+  get workspace(): Workspace;
 
   get rootDoc(): BlockSuiteDoc;
   get spaceDoc(): Y.Doc;

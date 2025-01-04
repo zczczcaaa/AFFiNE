@@ -265,7 +265,7 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
           workspace.docCollection,
           Array.from(workspace.docCollection.docs.values())
             .filter(doc => (docs ? docs.includes(doc.id) : true))
-            .map(doc => doc.getDoc())
+            .map(doc => doc.getBlocks())
         );
       };
       window.importWorkspaceSnapshot = async () => {

@@ -104,7 +104,7 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
   }
 
   private _initPreviewDoc() {
-    this._previewDoc = this._originalDoc.collection.getDoc(
+    this._previewDoc = this._originalDoc.workspace.getDoc(
       this._originalDoc.id,
       {
         query: this._docFilter,
@@ -112,7 +112,7 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
       }
     );
     this.disposables.add(() => {
-      this._originalDoc.blockCollection.clearQuery(this._docFilter);
+      this._originalDoc.doc.clearQuery(this._docFilter);
     });
   }
 

@@ -14,7 +14,7 @@ import {
   SpecProvider,
 } from '@blocksuite/blocks';
 import { AffineEditorContainer } from '@blocksuite/presets';
-import type { DocCollection } from '@blocksuite/store';
+import type { Workspace } from '@blocksuite/store';
 
 import { AttachmentViewerPanel } from '../../_common/components/attachment-viewer-panel.js';
 import { CollabDebugMenu } from '../../_common/components/collab-debug-menu.js';
@@ -36,7 +36,7 @@ import {
 } from '../../_common/mock-services.js';
 import { getExampleSpecs } from '../specs-examples/index.js';
 
-export async function mountDefaultDocEditor(collection: DocCollection) {
+export async function mountDefaultDocEditor(collection: Workspace) {
   const app = document.getElementById('app');
   if (!app) return;
 

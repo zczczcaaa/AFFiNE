@@ -174,16 +174,16 @@ const frameworkProvider = framework.provider();
     const blockSuiteDoc = doc.blockSuiteDoc;
 
     const job = new Job({
-      schema: blockSuiteDoc.collection.schema,
-      blobCRUD: blockSuiteDoc.collection.blobSync,
+      schema: blockSuiteDoc.workspace.schema,
+      blobCRUD: blockSuiteDoc.workspace.blobSync,
       docCRUD: {
-        create: (id: string) => blockSuiteDoc.collection.createDoc({ id }),
-        get: (id: string) => blockSuiteDoc.collection.getDoc(id),
-        delete: (id: string) => blockSuiteDoc.collection.removeDoc(id),
+        create: (id: string) => blockSuiteDoc.workspace.createDoc({ id }),
+        get: (id: string) => blockSuiteDoc.workspace.getDoc(id),
+        delete: (id: string) => blockSuiteDoc.workspace.removeDoc(id),
       },
       middlewares: [
-        docLinkBaseURLMiddleware(blockSuiteDoc.collection.id),
-        titleMiddleware(blockSuiteDoc.collection.meta.docMetas),
+        docLinkBaseURLMiddleware(blockSuiteDoc.workspace.id),
+        titleMiddleware(blockSuiteDoc.workspace.meta.docMetas),
       ],
     });
     const snapshot = job.docToSnapshot(blockSuiteDoc);

@@ -98,7 +98,7 @@ abstract class BaseTextCell extends BaseCellRenderer<Text> {
     if (!this.docId$.value) {
       return this.value;
     }
-    const doc = this.host?.std.collection.getDoc(this.docId$.value);
+    const doc = this.host?.std.workspace.getDoc(this.docId$.value);
     const root = doc?.root as RootBlockModel;
     return root.title;
   });

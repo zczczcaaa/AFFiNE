@@ -1,4 +1,4 @@
-import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace';
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
 import type {
   EditorHost,
   TextRangePoint,
@@ -80,15 +80,15 @@ export async function getContentFromSlice(
   type: 'markdown' | 'plain-text' = 'markdown'
 ) {
   const job = new Job({
-    schema: host.std.doc.collection.schema,
-    blobCRUD: host.std.doc.collection.blobSync,
+    schema: host.std.doc.workspace.schema,
+    blobCRUD: host.std.doc.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => host.std.doc.collection.createDoc({ id }),
-      get: (id: string) => host.std.doc.collection.getDoc(id),
-      delete: (id: string) => host.std.doc.collection.removeDoc(id),
+      create: (id: string) => host.std.doc.workspace.createDoc({ id }),
+      get: (id: string) => host.std.doc.workspace.getDoc(id),
+      delete: (id: string) => host.std.doc.workspace.removeDoc(id),
     },
     middlewares: [
-      titleMiddleware(host.std.doc.collection.meta.docMetas),
+      titleMiddleware(host.std.doc.workspace.meta.docMetas),
       embedSyncedDocMiddleware('content'),
     ],
   });
@@ -110,14 +110,14 @@ export async function getContentFromSlice(
 
 export async function getPlainTextFromSlice(host: EditorHost, slice: Slice) {
   const job = new Job({
-    schema: host.std.doc.collection.schema,
-    blobCRUD: host.std.doc.collection.blobSync,
+    schema: host.std.doc.workspace.schema,
+    blobCRUD: host.std.doc.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => host.std.doc.collection.createDoc({ id }),
-      get: (id: string) => host.std.doc.collection.getDoc(id),
-      delete: (id: string) => host.std.doc.collection.removeDoc(id),
+      create: (id: string) => host.std.doc.workspace.createDoc({ id }),
+      get: (id: string) => host.std.doc.workspace.getDoc(id),
+      delete: (id: string) => host.std.doc.workspace.removeDoc(id),
     },
-    middlewares: [titleMiddleware(host.std.doc.collection.meta.docMetas)],
+    middlewares: [titleMiddleware(host.std.doc.workspace.meta.docMetas)],
   });
   const snapshot = job.sliceToSnapshot(slice);
   if (!snapshot) {
@@ -137,12 +137,12 @@ export const markdownToSnapshot = async (
   host: EditorHost
 ) => {
   const job = new Job({
-    schema: host.std.doc.collection.schema,
-    blobCRUD: host.std.doc.collection.blobSync,
+    schema: host.std.doc.workspace.schema,
+    blobCRUD: host.std.doc.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => host.std.doc.collection.createDoc({ id }),
-      get: (id: string) => host.std.doc.collection.getDoc(id),
-      delete: (id: string) => host.std.doc.collection.removeDoc(id),
+      create: (id: string) => host.std.doc.workspace.createDoc({ id }),
+      get: (id: string) => host.std.doc.workspace.getDoc(id),
+      delete: (id: string) => host.std.doc.workspace.removeDoc(id),
     },
     middlewares: [defaultImageProxyMiddleware, pasteMiddleware(host.std)],
   });
@@ -150,7 +150,7 @@ export const markdownToSnapshot = async (
   const payload = {
     file: markdown,
     assets: job.assetsManager,
-    workspaceId: host.std.doc.collection.id,
+    workspaceId: host.std.doc.workspace.id,
     pageId: host.std.doc.id,
   };
 

@@ -114,7 +114,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
   };
 
   private readonly _setDocUpdatedAt = () => {
-    const meta = this.doc.collection.meta.getDocMeta(this.model.pageId);
+    const meta = this.doc.workspace.meta.getDocMeta(this.model.pageId);
     if (meta) {
       const date = meta.updatedDate || meta.createDate;
       this._docUpdatedAt = new Date(date);
@@ -241,7 +241,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
   }
 
   get linkedDoc() {
-    return this.std.collection.getDoc(this.model.pageId);
+    return this.std.workspace.getDoc(this.model.pageId);
   }
 
   private _handleDoubleClick(event: MouseEvent) {
@@ -296,7 +296,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
     const linkedDoc = this.linkedDoc;
     if (linkedDoc) {
       this.disposables.add(
-        linkedDoc.collection.slots.docListUpdated.on(() => {
+        linkedDoc.workspace.slots.docListUpdated.on(() => {
           this._load().catch(e => {
             console.error(e);
             this.isError = true;
@@ -329,7 +329,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
 
       this._setDocUpdatedAt();
       this.disposables.add(
-        this.doc.collection.slots.docListUpdated.on(() => {
+        this.doc.workspace.slots.docListUpdated.on(() => {
           this._setDocUpdatedAt();
         })
       );

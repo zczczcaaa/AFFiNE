@@ -53,7 +53,7 @@ todoMeta.addProperty({
   metaConfig: propertyPresets.textPropertyConfig,
   get: block => block.doc.meta?.title ?? '',
   updated: (block, callback) => {
-    return block.doc.collection.slots.docListUpdated.on(() => {
+    return block.doc.workspace.slots.docListUpdated.on(() => {
       callback();
     });
   },

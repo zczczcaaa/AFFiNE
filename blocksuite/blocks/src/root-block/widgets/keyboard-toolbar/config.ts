@@ -275,7 +275,7 @@ const pageToolGroup: KeyboardToolPanelGroup = {
           .chain()
           .getSelectedModels()
           .inline(({ selectedModels }) => {
-            const newDoc = createDefaultDoc(std.doc.collection);
+            const newDoc = createDefaultDoc(std.doc.workspace);
             if (!selectedModels?.length) return;
             insertContent(std.host, selectedModels[0], REFERENCE_NODE, {
               reference: {

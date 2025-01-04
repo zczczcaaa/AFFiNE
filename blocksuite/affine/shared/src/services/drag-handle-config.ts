@@ -54,7 +54,7 @@ export class DNDAPIExtension extends Extension {
       ...snapshot,
       content: [
         {
-          id: this.std.collection.idGenerator(),
+          id: this.std.workspace.idGenerator(),
           type: 'block',
           flavour,
           props,

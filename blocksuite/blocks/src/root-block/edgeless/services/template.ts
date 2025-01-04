@@ -87,12 +87,12 @@ export class TemplateJob {
 
   constructor({ model, type, middlewares }: TemplateJobConfig) {
     this.job = new Job({
-      schema: model.doc.collection.schema,
-      blobCRUD: model.doc.collection.blobSync,
+      schema: model.doc.workspace.schema,
+      blobCRUD: model.doc.workspace.blobSync,
       docCRUD: {
-        create: (id: string) => model.doc.collection.createDoc({ id }),
-        get: (id: string) => model.doc.collection.getDoc(id),
-        delete: (id: string) => model.doc.collection.removeDoc(id),
+        create: (id: string) => model.doc.workspace.createDoc({ id }),
+        get: (id: string) => model.doc.workspace.getDoc(id),
+        delete: (id: string) => model.doc.workspace.removeDoc(id),
       },
       middlewares: [],
     });
@@ -317,7 +317,7 @@ export class TemplateJob {
     to: Y.Map<Y.Map<unknown>>
   ) {
     const schema =
-      this.model.doc.collection.schema.flavourSchemaMap.get('affine:surface');
+      this.model.doc.workspace.schema.flavourSchemaMap.get('affine:surface');
     const surfaceTransformer =
       schema?.transformer?.() as SurfaceBlockTransformer;
 

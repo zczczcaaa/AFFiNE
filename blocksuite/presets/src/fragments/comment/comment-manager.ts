@@ -44,7 +44,7 @@ export class CommentManager {
     }
 
     const { quote, range } = parseResult;
-    const id = this.host.doc.collection.idGenerator();
+    const id = this.host.doc.workspace.idGenerator();
     const comment: Comment = {
       id,
       date: Date.now(),

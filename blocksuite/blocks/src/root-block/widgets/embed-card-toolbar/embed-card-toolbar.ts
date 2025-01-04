@@ -263,7 +263,7 @@ export class EmbedCardToolbar extends WidgetComponent<
     if (!model) return undefined;
 
     const doc = isInternalEmbedModel(model)
-      ? this.std.collection.getDoc(model.pageId)
+      ? this.std.workspace.getDoc(model.pageId)
       : null;
 
     if (doc) {
@@ -282,7 +282,7 @@ export class EmbedCardToolbar extends WidgetComponent<
     if (!model) return undefined;
 
     const doc = isInternalEmbedModel(model)
-      ? this.std.collection.getDoc(model.pageId)
+      ? this.std.workspace.getDoc(model.pageId)
       : null;
 
     return doc?.meta?.title || 'Untitled';

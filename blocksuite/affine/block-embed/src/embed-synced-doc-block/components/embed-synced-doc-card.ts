@@ -100,7 +100,7 @@ export class EmbedSyncedDocCard extends WithDisposable(ShadowlessElement) {
       }
 
       this.disposables.add(
-        syncedDoc.collection.slots.docListUpdated.on(() => {
+        syncedDoc.workspace.slots.docListUpdated.on(() => {
           renderLinkedDocInCard(this);
         })
       );

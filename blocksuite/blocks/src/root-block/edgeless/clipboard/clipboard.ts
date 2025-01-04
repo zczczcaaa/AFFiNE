@@ -370,12 +370,12 @@ export class EdgelessClipboardController extends PageClipboard {
         const elementsRawData = JSON.parse(mayBeSurfaceDataJson);
         const { snapshot, blobs } = elementsRawData;
         const job = new Job({
-          schema: this.std.collection.schema,
-          blobCRUD: this.std.collection.blobSync,
+          schema: this.std.workspace.schema,
+          blobCRUD: this.std.workspace.blobSync,
           docCRUD: {
-            create: (id: string) => this.std.collection.createDoc({ id }),
-            get: (id: string) => this.std.collection.getDoc(id),
-            delete: (id: string) => this.std.collection.removeDoc(id),
+            create: (id: string) => this.std.workspace.createDoc({ id }),
+            get: (id: string) => this.std.workspace.getDoc(id),
+            delete: (id: string) => this.std.workspace.removeDoc(id),
           },
         });
         const map = job.assetsManager.getAssets();
@@ -475,7 +475,7 @@ export class EdgelessClipboardController extends PageClipboard {
     const { xywh, rotate, sourceId, name, size, type, embed, style } =
       attachment.props;
 
-    if (!(await this.host.std.collection.blobSync.get(sourceId as string))) {
+    if (!(await this.host.std.workspace.blobSync.get(sourceId as string))) {
       return null;
     }
     const attachmentId = this.crud.addBlock(
@@ -741,7 +741,7 @@ export class EdgelessClipboardController extends PageClipboard {
     const { xywh, rotate, sourceId, size, width, height, caption } =
       image.props;
 
-    if (!(await this.host.std.collection.blobSync.get(sourceId as string))) {
+    if (!(await this.host.std.workspace.blobSync.get(sourceId as string))) {
       return null;
     }
     return this.crud.addBlock(
@@ -1374,12 +1374,12 @@ export async function prepareClipboardData(
   std: BlockStdScope
 ) {
   const job = new Job({
-    schema: std.collection.schema,
-    blobCRUD: std.collection.blobSync,
+    schema: std.workspace.schema,
+    blobCRUD: std.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => std.collection.createDoc({ id }),
-      get: (id: string) => std.collection.getDoc(id),
-      delete: (id: string) => std.collection.removeDoc(id),
+      create: (id: string) => std.workspace.createDoc({ id }),
+      get: (id: string) => std.workspace.getDoc(id),
+      delete: (id: string) => std.workspace.removeDoc(id),
     },
   });
   const selected = await Promise.all(

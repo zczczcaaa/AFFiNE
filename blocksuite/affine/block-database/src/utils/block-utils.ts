@@ -19,7 +19,7 @@ export function addProperty(
     id?: string;
   }
 ): string {
-  const id = column.id ?? model.doc.collection.idGenerator();
+  const id = column.id ?? model.doc.workspace.idGenerator();
   if (model.columns.some(v => v.id === id)) {
     return id;
   }
@@ -101,7 +101,7 @@ export function deleteView(model: DatabaseBlockModel, id: string) {
 }
 
 export function duplicateView(model: DatabaseBlockModel, id: string): string {
-  const newId = model.doc.collection.idGenerator();
+  const newId = model.doc.workspace.idGenerator();
   model.doc.transact(() => {
     const index = model.views.findIndex(v => v.id === id);
     const view = model.views[index];

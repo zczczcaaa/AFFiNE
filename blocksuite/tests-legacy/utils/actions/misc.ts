@@ -194,7 +194,7 @@ async function initEmptyEditor({
       }
 
       if (noInit) {
-        const firstDoc = collection.docs.values().next().value?.getDoc() as
+        const firstDoc = collection.docs.values().next().value?.getBlocks() as
           | ReturnType<typeof collection.createDoc>
           | undefined;
         if (firstDoc) {

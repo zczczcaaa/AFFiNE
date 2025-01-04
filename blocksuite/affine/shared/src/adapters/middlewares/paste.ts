@@ -400,7 +400,7 @@ class PasteTr {
             op.attributes.link
           );
           if (searchResult) {
-            const doc = this.std.collection.getDoc(searchResult.docId);
+            const doc = this.std.workspace.getDoc(searchResult.docId);
             if (doc) {
               docId = doc.id;
               linkToDocId.set(op.attributes.link, doc.id);

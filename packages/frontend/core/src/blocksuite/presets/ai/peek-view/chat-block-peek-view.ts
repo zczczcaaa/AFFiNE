@@ -269,7 +269,7 @@ export class AIChatBlockPeekView extends LitElement {
     ) {
       const { doc } = this.host;
       if (currentSessionId) {
-        await AIProvider.histories?.cleanup(doc.collection.id, doc.id, [
+        await AIProvider.histories?.cleanup(doc.workspace.id, doc.id, [
           currentSessionId,
         ]);
       }
@@ -323,7 +323,7 @@ export class AIChatBlockPeekView extends LitElement {
         sessionId: currentSessionId,
         retry: true,
         docId: doc.id,
-        workspaceId: doc.collection.id,
+        workspaceId: doc.workspace.id,
         host: this.host,
         stream: true,
         signal: abortController.signal,

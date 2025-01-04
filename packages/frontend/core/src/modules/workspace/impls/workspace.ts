@@ -8,14 +8,15 @@ import {
   AwarenessStore,
   type Blocks,
   BlockSuiteDoc,
-  type CreateDocOptions,
+  type CreateBlocksOptions,
   type Doc,
   DocCollectionMeta,
-  type GetDocOptions,
+  type GetBlocksOptions,
   type IdGenerator,
   nanoid,
   type Schema,
   type Workspace,
+  type WorkspaceMeta,
 } from '@blocksuite/affine/store';
 import {
   AwarenessEngine,
@@ -74,7 +75,7 @@ export class WorkspaceImpl implements Workspace {
 
   readonly idGenerator: IdGenerator;
 
-  meta: DocCollectionMeta;
+  meta: WorkspaceMeta;
 
   slots = {
     docListUpdated: new Slot(),
@@ -153,7 +154,7 @@ export class WorkspaceImpl implements Workspace {
    * If the `init` parameter is passed, a `surface`, `note`, and `paragraph` block
    * will be created in the doc simultaneously.
    */
-  createDoc(options: CreateDocOptions = {}) {
+  createDoc(options: CreateBlocksOptions = {}) {
     const { id: docId = this.idGenerator(), query, readonly } = options;
     if (this._hasDoc(docId)) {
       throw new BlockSuiteError(
@@ -191,9 +192,9 @@ export class WorkspaceImpl implements Workspace {
     return space ?? null;
   }
 
-  getDoc(docId: string, options?: GetDocOptions): Blocks | null {
+  getDoc(docId: string, options?: GetBlocksOptions): Blocks | null {
     const collection = this.getBlockCollection(docId);
-    return collection?.getDoc(options) ?? null;
+    return collection?.getBlocks(options) ?? null;
   }
 
   removeDoc(docId: string) {

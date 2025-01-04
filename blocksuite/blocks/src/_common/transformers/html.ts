@@ -48,13 +48,13 @@ async function exportDoc(doc: Blocks) {
     schema: doc.schema,
     blobCRUD: doc.blobSync,
     docCRUD: {
-      create: (id: string) => doc.collection.createDoc({ id }),
-      get: (id: string) => doc.collection.getDoc(id),
-      delete: (id: string) => doc.collection.removeDoc(id),
+      create: (id: string) => doc.workspace.createDoc({ id }),
+      get: (id: string) => doc.workspace.getDoc(id),
+      delete: (id: string) => doc.workspace.removeDoc(id),
     },
     middlewares: [
-      docLinkBaseURLMiddleware(doc.collection.id),
-      titleMiddleware(doc.collection.meta.docMetas),
+      docLinkBaseURLMiddleware(doc.workspace.id),
+      titleMiddleware(doc.workspace.meta.docMetas),
     ],
   });
   const snapshot = job.docToSnapshot(doc);

@@ -88,7 +88,7 @@ export class DocDisplayMetaService
     pageId: string,
     { params, title, referenced }: DocDisplayMetaParams = {}
   ): Signal<TemplateResult> {
-    const doc = this.std.collection.getDoc(pageId);
+    const doc = this.std.workspace.getDoc(pageId);
 
     if (!doc) {
       return signal(DocDisplayMetaService.icons.deleted);
@@ -114,7 +114,7 @@ export class DocDisplayMetaService
 
       this.disposables.push(disposable);
       this.disposables.push(
-        this.std.collection.slots.docRemoved
+        this.std.workspace.slots.docRemoved
           .filter(docId => docId === doc.id)
           .once(() => {
             const index = this.disposables.findIndex(d => d === disposable);
@@ -152,7 +152,7 @@ export class DocDisplayMetaService
   }
 
   title(pageId: string, { title }: DocDisplayMetaParams = {}): Signal<string> {
-    const doc = this.std.collection.getDoc(pageId);
+    const doc = this.std.workspace.getDoc(pageId);
 
     if (!doc) {
       return signal(title || 'Deleted doc');
@@ -162,13 +162,13 @@ export class DocDisplayMetaService
     if (!title$) {
       title$ = signal(doc.meta?.title || 'Untitled');
 
-      const disposable = this.std.collection.slots.docListUpdated.on(() => {
+      const disposable = this.std.workspace.slots.docListUpdated.on(() => {
         title$!.value = doc.meta?.title || 'Untitled';
       });
 
       this.disposables.push(disposable);
       this.disposables.push(
-        this.std.collection.slots.docRemoved
+        this.std.workspace.slots.docRemoved
           .filter(docId => docId === doc.id)
           .once(() => {
             const index = this.disposables.findIndex(d => d === disposable);

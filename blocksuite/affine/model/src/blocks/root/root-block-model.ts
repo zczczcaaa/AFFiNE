@@ -12,9 +12,9 @@ export class RootBlockModel extends BlockModel<RootBlockProps> {
       this.doc.slots.rootAdded.on(id => {
         const model = this.doc.getBlockById(id);
         if (model instanceof RootBlockModel) {
-          const newDocMeta = this.doc.collection.meta.getDocMeta(model.doc.id);
+          const newDocMeta = this.doc.workspace.meta.getDocMeta(model.doc.id);
           if (!newDocMeta || newDocMeta.title !== model.title.toString()) {
-            this.doc.collection.meta.setDocMeta(model.doc.id, {
+            this.doc.workspace.meta.setDocMeta(model.doc.id, {
               title: model.title.toString(),
             });
           }

@@ -132,7 +132,7 @@ export class LinkCell extends BaseCellRenderer<string> {
   override render() {
     const linkText = this.value ?? '';
     const docName =
-      this.docId && this.std?.collection.getDoc(this.docId)?.meta?.title;
+      this.docId && this.std?.workspace.getDoc(this.docId)?.meta?.title;
     return html`
       <div class="affine-database-link" @click="${this._onClick}">
         ${docName

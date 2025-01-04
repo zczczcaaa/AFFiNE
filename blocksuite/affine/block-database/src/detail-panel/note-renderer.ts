@@ -47,7 +47,7 @@ export class NoteRenderer
   }
 
   addNote() {
-    const collection = this.host?.std.collection;
+    const collection = this.host?.std.workspace;
     if (!collection) {
       return;
     }

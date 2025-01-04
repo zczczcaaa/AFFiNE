@@ -40,12 +40,12 @@ export function getSortedCloneElements(elements: GfxModel[]) {
 export function prepareCloneData(elements: GfxModel[], std: BlockStdScope) {
   elements = sortEdgelessElements(elements);
   const job = new Job({
-    schema: std.collection.schema,
-    blobCRUD: std.collection.blobSync,
+    schema: std.workspace.schema,
+    blobCRUD: std.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => std.collection.createDoc({ id }),
-      get: (id: string) => std.collection.getDoc(id),
-      delete: (id: string) => std.collection.removeDoc(id),
+      create: (id: string) => std.workspace.createDoc({ id }),
+      get: (id: string) => std.workspace.getDoc(id),
+      delete: (id: string) => std.workspace.removeDoc(id),
     },
   });
   const res = elements.map(element => {

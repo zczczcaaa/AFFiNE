@@ -2,7 +2,7 @@ import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-
 import { useDocCollectionPage } from '@affine/core/components/hooks/use-block-suite-workspace-page';
 import { FetchService, GraphQLService } from '@affine/core/modules/cloud';
 import { getAFFiNEWorkspaceSchema } from '@affine/core/modules/workspace';
-import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace';
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
 import { DebugLogger } from '@affine/debug';
 import type { ListHistoryQuery } from '@affine/graphql';
 import { listHistoryQuery, recoverDocMutation } from '@affine/graphql';

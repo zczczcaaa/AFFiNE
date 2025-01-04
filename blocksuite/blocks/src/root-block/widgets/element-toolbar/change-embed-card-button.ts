@@ -501,7 +501,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
   get _originalDocInfo(): AliasInfo | undefined {
     const model = this.model;
     const doc = isInternalEmbedModel(model)
-      ? this.std.collection.getDoc(model.pageId)
+      ? this.std.workspace.getDoc(model.pageId)
       : null;
 
     if (doc) {
@@ -518,7 +518,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
   get _originalDocTitle() {
     const model = this.model;
     const doc = isInternalEmbedModel(model)
-      ? this.std.collection.getDoc(model.pageId)
+      ? this.std.workspace.getDoc(model.pageId)
       : null;
 
     return doc?.meta?.title || 'Untitled';

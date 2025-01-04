@@ -34,7 +34,7 @@ import {
 } from 'yjs';
 
 import { getAFFiNEWorkspaceSchema } from '../../workspace/global-schema';
-import { WorkspaceImpl } from '../../workspace/impl/workspace';
+import { WorkspaceImpl } from '../../workspace/impls/workspace';
 import type { BlockIndexSchema, DocIndexSchema } from '../schema';
 import type {
   WorkerIngoingMessage,

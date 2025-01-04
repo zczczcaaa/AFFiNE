@@ -30,7 +30,7 @@ export abstract class BlockService extends Extension {
   readonly specSlots = getSlots();
 
   get collection() {
-    return this.std.collection;
+    return this.std.workspace;
   }
 
   get doc() {

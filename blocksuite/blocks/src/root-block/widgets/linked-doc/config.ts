@@ -105,7 +105,7 @@ export function createLinkedDocMenuGroup(
   inlineEditor: AffineInlineEditor
 ) {
   const doc = editorHost.doc;
-  const { docMetas } = doc.collection.meta;
+  const { docMetas } = doc.workspace.meta;
   const filteredDocList = docMetas
     .filter(({ id }) => id !== doc.id)
     .filter(({ title }) => isFuzzyMatch(title, query));
@@ -164,7 +164,7 @@ export function createNewDocMenuGroup(
         action: () => {
           abort();
           const docName = query;
-          const newDoc = createDefaultDoc(doc.collection, {
+          const newDoc = createDefaultDoc(doc.workspace, {
             title: docName,
           });
           insertLinkedNode({
@@ -213,7 +213,7 @@ export function createNewDocMenuGroup(
             toast(editorHost, message);
           };
           showImportModal({
-            collection: doc.collection,
+            collection: doc.workspace,
             onSuccess,
             onFail,
           });

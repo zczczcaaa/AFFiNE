@@ -23,7 +23,7 @@ export class Blocks {
     runQuery(this._query, block);
   };
 
-  protected readonly _blockCollection: Doc;
+  protected readonly _doc: Doc;
 
   protected readonly _blocks = signal<Record<string, Block>>({});
 
@@ -136,19 +136,19 @@ export class Blocks {
   };
 
   private get _yBlocks() {
-    return this._blockCollection.yBlocks;
+    return this._doc.yBlocks;
   }
 
   get awarenessStore() {
-    return this._blockCollection.awarenessStore;
+    return this._doc.awarenessStore;
   }
 
   get blobSync() {
-    return this.collection.blobSync;
+    return this.workspace.blobSync;
   }
 
-  get blockCollection() {
-    return this._blockCollection;
+  get doc() {
+    return this._doc;
   }
 
   get blocks() {
@@ -160,31 +160,31 @@ export class Blocks {
   }
 
   get canRedo() {
-    return this._blockCollection.canRedo;
+    return this._doc.canRedo;
   }
 
   get canUndo() {
-    return this._blockCollection.canUndo;
+    return this._doc.canUndo;
   }
 
   get captureSync() {
-    return this._blockCollection.captureSync.bind(this._blockCollection);
+    return this._doc.captureSync.bind(this._doc);
   }
 
   get clear() {
-    return this._blockCollection.clear.bind(this._blockCollection);
+    return this._doc.clear.bind(this._doc);
   }
 
-  get collection() {
-    return this._blockCollection.collection;
+  get workspace() {
+    return this._doc.workspace;
   }
 
   get history() {
-    return this._blockCollection.history;
+    return this._doc.history;
   }
 
   get id() {
-    return this._blockCollection.id;
+    return this._doc.id;
   }
 
   get isEmpty() {
@@ -192,40 +192,37 @@ export class Blocks {
   }
 
   get loaded() {
-    return this._blockCollection.loaded;
+    return this._doc.loaded;
   }
 
   get meta() {
-    return this._blockCollection.meta;
+    return this._doc.meta;
   }
 
   get readonly() {
-    if (this._blockCollection.readonly) {
+    if (this._doc.readonly) {
       return true;
     }
     return this._readonly === true;
   }
 
   set readonly(value: boolean) {
-    this._blockCollection.awarenessStore.setReadonly(
-      this._blockCollection,
-      value
-    );
+    this._doc.awarenessStore.setReadonly(this._doc, value);
     if (this._readonly !== undefined && this._readonly !== value) {
       this._readonly = value;
     }
   }
 
   get ready() {
-    return this._blockCollection.ready;
+    return this._doc.ready;
   }
 
   get redo() {
-    return this._blockCollection.redo.bind(this._blockCollection);
+    return this._doc.redo.bind(this._doc);
   }
 
   get resetHistory() {
-    return this._blockCollection.resetHistory.bind(this._blockCollection);
+    return this._doc.resetHistory.bind(this._doc);
   }
 
   get root() {
@@ -235,7 +232,7 @@ export class Blocks {
   }
 
   get rootDoc() {
-    return this._blockCollection.rootDoc;
+    return this._doc.rootDoc;
   }
 
   get schema() {
@@ -243,31 +240,31 @@ export class Blocks {
   }
 
   get spaceDoc() {
-    return this._blockCollection.spaceDoc;
+    return this._doc.spaceDoc;
   }
 
   get transact() {
-    return this._blockCollection.transact.bind(this._blockCollection);
+    return this._doc.transact.bind(this._doc);
   }
 
   get undo() {
-    return this._blockCollection.undo.bind(this._blockCollection);
+    return this._doc.undo.bind(this._doc);
   }
 
   get withoutTransact() {
-    return this._blockCollection.withoutTransact.bind(this._blockCollection);
+    return this._doc.withoutTransact.bind(this._doc);
   }
 
   constructor({ schema, blockCollection, readonly, query }: DocOptions) {
-    this._blockCollection = blockCollection;
+    this._doc = blockCollection;
 
     this.slots = {
       ready: new Slot(),
       rootAdded: new Slot(),
       rootDeleted: new Slot(),
       blockUpdated: new Slot(),
-      historyUpdated: this._blockCollection.slots.historyUpdated,
-      yBlockUpdated: this._blockCollection.slots.yBlockUpdated,
+      historyUpdated: this._doc.slots.historyUpdated,
+      yBlockUpdated: this._doc.slots.yBlockUpdated,
     };
 
     this._crud = new DocCRUD(this._yBlocks, blockCollection.schema);
@@ -284,7 +281,7 @@ export class Blocks {
       this._onBlockAdded(id, true);
     });
 
-    this._disposeBlockUpdated = this._blockCollection.slots.yBlockUpdated.on(
+    this._disposeBlockUpdated = this._doc.slots.yBlockUpdated.on(
       ({ type, id }) => {
         switch (type) {
           case 'add': {
@@ -424,7 +421,7 @@ export class Blocks {
       );
     }
 
-    const id = blockProps.id ?? this._blockCollection.collection.idGenerator();
+    const id = blockProps.id ?? this._doc.workspace.idGenerator();
 
     this.transact(() => {
       this._crud.addBlock(
@@ -635,7 +632,7 @@ export class Blocks {
   }
 
   load(initFn?: () => void) {
-    this._blockCollection.load(initFn);
+    this._doc.load(initFn);
     this.slots.ready.emit();
     return this;
   }

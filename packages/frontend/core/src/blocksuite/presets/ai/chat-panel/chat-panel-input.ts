@@ -488,7 +488,7 @@ export class ChatPanelInput extends WithDisposable(LitElement) {
         input: content,
         docId: doc.id,
         attachments: images,
-        workspaceId: doc.collection.id,
+        workspaceId: doc.workspace.id,
         host: this.host,
         stream: true,
         signal: abortController.signal,
@@ -519,7 +519,7 @@ export class ChatPanelInput extends WithDisposable(LitElement) {
         const last = items[items.length - 1] as ChatMessage;
         if (!last.id) {
           const historyIds = await AIProvider.histories?.ids(
-            doc.collection.id,
+            doc.workspace.id,
             doc.id,
             { sessionId: this.chatContextValue.chatSessionId }
           );

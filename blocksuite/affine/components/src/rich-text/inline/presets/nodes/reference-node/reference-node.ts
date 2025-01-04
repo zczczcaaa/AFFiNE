@@ -77,7 +77,7 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
       return;
     }
 
-    const refMeta = doc.collection.meta.docMetas.find(
+    const refMeta = doc.workspace.meta.docMetas.find(
       doc => doc.id === refAttribute.pageId
     );
     this.refMeta = refMeta
@@ -221,7 +221,7 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
     const doc = this.doc;
     if (doc) {
       this._disposables.add(
-        doc.collection.slots.docListUpdated.on(() => this._updateRefMeta(doc))
+        doc.workspace.slots.docListUpdated.on(() => this._updateRefMeta(doc))
       );
     }
 

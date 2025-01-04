@@ -18,7 +18,7 @@ export const surfaceRefToEmbed =
         !std.doc.hasBlock(payload.snapshot.id)
       ) {
         const id = payload.snapshot.id;
-        payload.snapshot.id = std.collection.idGenerator();
+        payload.snapshot.id = std.workspace.idGenerator();
         payload.snapshot.flavour = 'affine:embed-linked-doc';
         payload.snapshot.props = {
           blockId: id,

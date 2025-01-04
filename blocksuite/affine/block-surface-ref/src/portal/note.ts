@@ -55,7 +55,7 @@ export class SurfaceRefNotePortal extends WithDisposable(ShadowlessElement) {
 
     const doc = this.model.doc;
     this._disposables.add(() => {
-      doc.blockCollection.clearQuery(query, true);
+      doc.doc.clearQuery(query, true);
     });
   }
 
@@ -114,7 +114,7 @@ export class SurfaceRefNotePortal extends WithDisposable(ShadowlessElement) {
       console.error('Query is not set before rendering note preview');
       return nothing;
     }
-    const doc = this.model.doc.blockCollection.getDoc({
+    const doc = this.model.doc.doc.getBlocks({
       query: this.query,
       readonly: true,
     });

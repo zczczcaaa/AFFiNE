@@ -41,7 +41,7 @@ const BlockSuiteEditorImpl = ({
 }: EditorProps) => {
   useEffect(() => {
     const disposable = page.slots.blockUpdated.once(() => {
-      page.collection.meta.setDocMeta(page.id, {
+      page.workspace.meta.setDocMeta(page.id, {
         updatedDate: Date.now(),
       });
     });

@@ -74,8 +74,8 @@ export class BlockStdScope {
     return this.get(Clipboard);
   }
 
-  get collection() {
-    return this.doc.collection;
+  get workspace() {
+    return this.doc.workspace;
   }
 
   get command() {
@@ -170,12 +170,12 @@ export class BlockStdScope {
 
   getJob(middlewares: JobMiddleware[] = []) {
     return new Job({
-      schema: this.collection.schema,
-      blobCRUD: this.collection.blobSync,
+      schema: this.workspace.schema,
+      blobCRUD: this.workspace.blobSync,
       docCRUD: {
-        create: (id: string) => this.collection.createDoc({ id }),
-        get: (id: string) => this.collection.getDoc(id),
-        delete: (id: string) => this.collection.removeDoc(id),
+        create: (id: string) => this.workspace.createDoc({ id }),
+        get: (id: string) => this.workspace.getDoc(id),
+        delete: (id: string) => this.workspace.removeDoc(id),
       },
       middlewares,
     });

@@ -4,7 +4,7 @@ import {
   Blocks,
   type BlockSuiteDoc,
   type Doc,
-  type GetDocOptions,
+  type GetBlocksOptions,
   type Query,
   type Workspace,
   type YBlock,
@@ -128,7 +128,7 @@ export class DocImpl implements Doc {
   };
 
   get blobSync() {
-    return this.collection.blobSync;
+    return this.workspace.blobSync;
   }
 
   get canRedo() {
@@ -139,12 +139,12 @@ export class DocImpl implements Doc {
     return this._canUndo.peek();
   }
 
-  get collection() {
+  get workspace() {
     return this._collection;
   }
 
   get docSync() {
-    return this.collection.docSync;
+    return this.workspace.docSync;
   }
 
   get history() {
@@ -160,7 +160,7 @@ export class DocImpl implements Doc {
   }
 
   get meta() {
-    return this.collection.meta.getDocMeta(this.id);
+    return this.workspace.meta.getDocMeta(this.id);
   }
 
   get readonly(): boolean {
@@ -172,7 +172,7 @@ export class DocImpl implements Doc {
   }
 
   get schema() {
-    return this.collection.schema;
+    return this.workspace.schema;
   }
 
   get spaceDoc() {
@@ -200,8 +200,8 @@ export class DocImpl implements Doc {
 
   private _handleVersion() {
     // Initialization from empty yDoc, indicating that the document is new.
-    if (!this.collection.meta.hasVersion) {
-      this.collection.meta.writeVersion(this.collection);
+    if (!this.workspace.meta.hasVersion) {
+      this.workspace.meta.writeVersion(this.workspace);
     }
   }
 
@@ -279,7 +279,7 @@ export class DocImpl implements Doc {
     }
   }
 
-  getDoc({ readonly, query }: GetDocOptions = {}) {
+  getBlocks({ readonly, query }: GetBlocksOptions = {}) {
     const readonlyKey = this._getReadonlyKey(readonly);
 
     const key = JSON.stringify(query);
@@ -290,7 +290,7 @@ export class DocImpl implements Doc {
 
     const doc = new Blocks({
       blockCollection: this,
-      schema: this.collection.schema,
+      schema: this.workspace.schema,
       readonly,
       query,
     });
@@ -307,7 +307,7 @@ export class DocImpl implements Doc {
 
     this._ySpaceDoc.load();
 
-    if ((this.collection.meta.docs?.length ?? 0) <= 1) {
+    if ((this.workspace.meta.docs?.length ?? 0) <= 1) {
       this._handleVersion();
     }
 

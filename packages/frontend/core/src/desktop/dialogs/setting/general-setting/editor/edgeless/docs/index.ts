@@ -1,4 +1,4 @@
-import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace';
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
 import { AffineSchemas } from '@blocksuite/affine/blocks';
 import type { Blocks, DocSnapshot } from '@blocksuite/affine/store';
 import { Job, Schema } from '@blocksuite/affine/store';

@@ -150,7 +150,7 @@ function tryConvertToLinkedDoc(std: BlockStdScope, inlineEditor: InlineEditor) {
   });
   inlineEditor.setInlineRange({ index: inlineRange.index - 1, length: 0 });
 
-  const doc = createDefaultDoc(std.doc.collection, {
+  const doc = createDefaultDoc(std.doc.workspace, {
     title: docName,
   });
   insertLinkedNode({

@@ -79,7 +79,7 @@ export class PreviewHelper {
 
       const query = this._calculateQuery(selectedIds);
 
-      const doc = this.widget.doc.blockCollection.getDoc({ query });
+      const doc = this.widget.doc.doc.getBlocks({ query });
 
       const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
       const previewStd = new BlockStdScope({
@@ -96,7 +96,7 @@ export class PreviewHelper {
       dragPreview = new DragPreview(offset);
       dragPreview.template = previewTemplate;
       dragPreview.onRemove = () => {
-        this.widget.doc.blockCollection.clearQuery(query);
+        this.widget.doc.doc.clearQuery(query);
       };
       dragPreview.style.width = `${width / this.widget.scaleInNote.peek()}px`;
       dragPreview.style.transform = `translate(${posX}px, ${posY}px) scale(${this.widget.scaleInNote.peek()})`;

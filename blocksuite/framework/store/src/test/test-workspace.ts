@@ -18,10 +18,11 @@ import { Awareness } from 'y-protocols/awareness.js';
 import type { Schema } from '../schema/index.js';
 import {
   type Blocks,
-  type CreateDocOptions,
+  type CreateBlocksOptions,
   DocCollectionMeta,
-  type GetDocOptions,
+  type GetBlocksOptions,
   type Workspace,
+  type WorkspaceMeta,
 } from '../store/index.js';
 import { type IdGenerator, nanoid } from '../utils/id-generator.js';
 import {
@@ -90,7 +91,7 @@ export class TestWorkspace implements Workspace {
 
   readonly idGenerator: IdGenerator;
 
-  meta: DocCollectionMeta;
+  meta: WorkspaceMeta;
 
   slots = {
     docListUpdated: new Slot(),
@@ -191,7 +192,7 @@ export class TestWorkspace implements Workspace {
    * If the `init` parameter is passed, a `surface`, `note`, and `paragraph` block
    * will be created in the doc simultaneously.
    */
-  createDoc(options: CreateDocOptions = {}) {
+  createDoc(options: CreateBlocksOptions = {}) {
     const { id: docId = this.idGenerator(), query, readonly } = options;
     if (this._hasDoc(docId)) {
       throw new BlockSuiteError(
@@ -229,9 +230,9 @@ export class TestWorkspace implements Workspace {
     return space ?? null;
   }
 
-  getDoc(docId: string, options?: GetDocOptions): Blocks | null {
+  getDoc(docId: string, options?: GetBlocksOptions): Blocks | null {
     const collection = this.getBlockCollection(docId);
-    return collection?.getDoc(options) ?? null;
+    return collection?.getBlocks(options) ?? null;
   }
 
   removeDoc(docId: string) {

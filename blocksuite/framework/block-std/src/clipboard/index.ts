@@ -138,7 +138,7 @@ export class Clipboard extends LifeCycleWatcher {
         const payload = {
           file: item,
           assets: job.assetsManager,
-          workspaceId: doc.collection.id,
+          workspaceId: doc.workspace.id,
           pageId: doc.id,
         };
         const result = await adapterInstance.toSlice(

@@ -196,7 +196,7 @@ async function renderNoteContent(
     mode: 'strict',
     match: ids.map(id => ({ id, viewType: BlockViewType.Display })),
   };
-  const previewDoc = doc.blockCollection.getDoc({ query });
+  const previewDoc = doc.doc.getBlocks({ query });
   const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
   const previewStd = new BlockStdScope({
     doc: previewDoc,
@@ -405,7 +405,7 @@ export function createLinkedDocFromSlice(
   docTitle?: string
 ) {
   // const modelsWithChildren = (list:BlockModel[]):BlockModel[]=>list.flatMap(model=>[model,...modelsWithChildren(model.children)])
-  const linkedDoc = doc.collection.createDoc({});
+  const linkedDoc = doc.workspace.createDoc({});
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {
       title: new Text(docTitle),

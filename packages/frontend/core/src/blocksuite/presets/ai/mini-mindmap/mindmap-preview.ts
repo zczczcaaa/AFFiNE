@@ -1,4 +1,4 @@
-import { WorkspaceImpl } from '@affine/core/modules/workspace/impl/workspace.js';
+import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace.js';
 import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
 import {
   MarkdownAdapter,
@@ -239,12 +239,12 @@ export const markdownToMindmap = (
 ) => {
   let result: Node | null = null;
   const job = new Job({
-    schema: doc.collection.schema,
-    blobCRUD: doc.collection.blobSync,
+    schema: doc.workspace.schema,
+    blobCRUD: doc.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => doc.collection.createDoc({ id }),
-      get: (id: string) => doc.collection.getDoc(id),
-      delete: (id: string) => doc.collection.removeDoc(id),
+      create: (id: string) => doc.workspace.createDoc({ id }),
+      get: (id: string) => doc.workspace.getDoc(id),
+      delete: (id: string) => doc.workspace.removeDoc(id),
     },
   });
   const markdown = new MarkdownAdapter(job, provider);

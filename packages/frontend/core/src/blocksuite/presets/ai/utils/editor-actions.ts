@@ -155,6 +155,6 @@ export const copyText = async (host: EditorHost, text: string) => {
   const slice = Slice.fromModels(previewDoc, models);
   await host.std.clipboard.copySlice(slice);
   previewDoc.dispose();
-  previewDoc.collection.dispose();
+  previewDoc.workspace.dispose();
   return true;
 };

@@ -5,7 +5,7 @@ import * as Y from 'yjs';
 import { Blocks } from '../store/doc/doc.js';
 import type { YBlock } from '../store/doc/index.js';
 import type { Query } from '../store/doc/query.js';
-import type { Doc, GetDocOptions, Workspace } from '../store/workspace.js';
+import type { Doc, GetBlocksOptions, Workspace } from '../store/workspace.js';
 import type { AwarenessStore, BlockSuiteDoc } from '../yjs/index.js';
 
 type DocOptions = {
@@ -124,7 +124,7 @@ export class TestDoc implements Doc {
   };
 
   get blobSync() {
-    return this.collection.blobSync;
+    return this.workspace.blobSync;
   }
 
   get canRedo() {
@@ -143,12 +143,12 @@ export class TestDoc implements Doc {
     return this._canUndo$;
   }
 
-  get collection() {
+  get workspace() {
     return this._collection;
   }
 
   get docSync() {
-    return this.collection.docSync;
+    return this.workspace.docSync;
   }
 
   get history() {
@@ -164,7 +164,7 @@ export class TestDoc implements Doc {
   }
 
   get meta() {
-    return this.collection.meta.getDocMeta(this.id);
+    return this.workspace.meta.getDocMeta(this.id);
   }
 
   get readonly(): boolean {
@@ -176,7 +176,7 @@ export class TestDoc implements Doc {
   }
 
   get schema() {
-    return this.collection.schema;
+    return this.workspace.schema;
   }
 
   get spaceDoc() {
@@ -204,8 +204,8 @@ export class TestDoc implements Doc {
 
   private _handleVersion() {
     // Initialization from empty yDoc, indicating that the document is new.
-    if (!this.collection.meta.hasVersion) {
-      this.collection.meta.writeVersion(this.collection);
+    if (!this.workspace.meta.hasVersion) {
+      this.workspace.meta.writeVersion(this.workspace);
     }
   }
 
@@ -283,7 +283,7 @@ export class TestDoc implements Doc {
     }
   }
 
-  getDoc({ readonly, query }: GetDocOptions = {}) {
+  getBlocks({ readonly, query }: GetBlocksOptions = {}) {
     const readonlyKey = this._getReadonlyKey(readonly);
 
     const key = JSON.stringify(query);
@@ -294,7 +294,7 @@ export class TestDoc implements Doc {
 
     const doc = new Blocks({
       blockCollection: this,
-      schema: this.collection.schema,
+      schema: this.workspace.schema,
       readonly,
       query,
     });
@@ -311,7 +311,7 @@ export class TestDoc implements Doc {
 
     this._ySpaceDoc.load();
 
-    if ((this.collection.meta.docs?.length ?? 0) <= 1) {
+    if ((this.workspace.meta.docs?.length ?? 0) <= 1) {
       this._handleVersion();
     }
 

@@ -37,7 +37,7 @@ const snapshotTest = async (snapshotUrl: string, elementsCount: number) => {
       throw e;
     });
   const [newDoc] = await transformer.importDocs(
-    window.editor.doc.collection,
+    window.editor.doc.workspace,
     snapshotFile
   );
 

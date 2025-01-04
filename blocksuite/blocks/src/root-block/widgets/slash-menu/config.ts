@@ -194,7 +194,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
       action: ({ rootComponent, model }) => {
-        const newDoc = createDefaultDoc(rootComponent.doc.collection);
+        const newDoc = createDefaultDoc(rootComponent.doc.workspace);
         insertContent(rootComponent.host, model, REFERENCE_NODE, {
           reference: {
             type: 'LinkedPage',

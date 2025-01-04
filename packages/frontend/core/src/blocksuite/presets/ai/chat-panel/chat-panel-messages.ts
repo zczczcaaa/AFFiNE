@@ -426,7 +426,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         sessionId: chatSessionId,
         retry: true,
         docId: doc.id,
-        workspaceId: doc.collection.id,
+        workspaceId: doc.workspace.id,
         host: this.host,
         stream: true,
         signal: abortController.signal,

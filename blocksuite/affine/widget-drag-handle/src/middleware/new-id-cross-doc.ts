@@ -10,7 +10,7 @@ export const newIdCrossDoc =
         samePage = payload.snapshot.pageId === std.doc.id;
       }
       if (payload.type === 'block' && !samePage) {
-        payload.snapshot.id = std.collection.idGenerator();
+        payload.snapshot.id = std.workspace.idGenerator();
       }
     });
   };

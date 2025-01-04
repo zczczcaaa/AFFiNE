@@ -27,7 +27,7 @@ import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { assertExists, Bound, getCommonBound } from '@blocksuite/global/utils';
 import {
   BlockViewType,
-  type GetDocOptions,
+  type GetBlocksOptions,
   type Query,
   Text,
 } from '@blocksuite/store';
@@ -365,9 +365,9 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
   }
 
   get syncedDoc() {
-    const options: GetDocOptions = { readonly: true };
+    const options: GetBlocksOptions = { readonly: true };
     if (this.isPageMode) options.query = this._pageFilter;
-    return this.std.collection.getDoc(this.model.pageId, options);
+    return this.std.workspace.getDoc(this.model.pageId, options);
   }
 
   private _checkCycle() {
@@ -440,7 +440,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
   }
 
   private _setDocUpdatedAt() {
-    const meta = this.doc.collection.meta.getDocMeta(this.model.pageId);
+    const meta = this.doc.workspace.meta.getDocMeta(this.model.pageId);
     if (meta) {
       const date = meta.updatedDate || meta.createDate;
       this._docUpdatedAt = new Date(date);
@@ -476,7 +476,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
 
     this._setDocUpdatedAt();
     this.disposables.add(
-      this.doc.collection.slots.docListUpdated.on(() => {
+      this.doc.workspace.slots.docListUpdated.on(() => {
         this._setDocUpdatedAt();
       })
     );

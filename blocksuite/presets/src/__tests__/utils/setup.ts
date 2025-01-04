@@ -59,7 +59,7 @@ async function createEditor(collection: TestWorkspace, mode: DocMode = 'page') {
   const app = document.createElement('div');
   const blockCollection = collection.docs.values().next().value;
   assertExists(blockCollection, 'Need to create a doc first');
-  const doc = blockCollection.getDoc();
+  const doc = blockCollection.getBlocks();
   const editor = new AffineEditorContainer();
   editor.doc = doc;
   editor.mode = mode;

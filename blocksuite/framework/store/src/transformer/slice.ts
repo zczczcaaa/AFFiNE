@@ -25,7 +25,7 @@ export class Slice {
   static fromModels(doc: Blocks, models: DraftModel[]) {
     return new Slice({
       content: models,
-      workspaceId: doc.collection.id,
+      workspaceId: doc.workspace.id,
       pageId: doc.id,
     });
   }

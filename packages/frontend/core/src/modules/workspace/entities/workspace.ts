@@ -5,7 +5,7 @@ import type { Awareness } from 'y-protocols/awareness.js';
 
 import { WorkspaceDBService } from '../../db';
 import { getAFFiNEWorkspaceSchema } from '../global-schema';
-import { WorkspaceImpl } from '../impl/workspace';
+import { WorkspaceImpl } from '../impls/workspace';
 import type { WorkspaceScope } from '../scopes/workspace';
 import { WorkspaceEngineService } from '../services/engine';
 

@@ -19,7 +19,7 @@ import {
   type WorkspaceMetadata,
   type WorkspaceProfileInfo,
 } from '../../workspace';
-import { WorkspaceImpl } from '../../workspace/impl/workspace';
+import { WorkspaceImpl } from '../../workspace/impls/workspace';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { StaticBlobStorage } from './engine/blob-static';

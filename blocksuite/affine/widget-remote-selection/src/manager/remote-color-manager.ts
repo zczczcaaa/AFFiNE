@@ -5,7 +5,7 @@ import { multiPlayersColor } from './color-picker';
 
 export class RemoteColorManager {
   private get awarenessStore() {
-    return this.std.doc.collection.awarenessStore;
+    return this.std.doc.workspace.awarenessStore;
   }
 
   constructor(readonly std: BlockStdScope) {

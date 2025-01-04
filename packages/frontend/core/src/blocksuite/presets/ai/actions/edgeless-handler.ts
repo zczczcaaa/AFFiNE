@@ -189,7 +189,7 @@ function actionToStream<T extends keyof BlockSuitePresets.AIActions>(
             models,
             host,
             docId: host.doc.id,
-            workspaceId: host.doc.collection.id,
+            workspaceId: host.doc.workspace.id,
           } as Parameters<typeof action>[0];
 
           const content = ctx.get().content;
@@ -230,7 +230,7 @@ function actionToStream<T extends keyof BlockSuitePresets.AIActions>(
           control: 'format-bar',
           host,
           docId: host.doc.id,
-          workspaceId: host.doc.collection.id,
+          workspaceId: host.doc.workspace.id,
         } as Parameters<typeof action>[0];
 
         // @ts-expect-error TODO(@Peng): maybe fix this

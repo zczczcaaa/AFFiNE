@@ -59,16 +59,16 @@ async function exportDoc(
   config: AdapterConfig
 ) {
   const job = new Job({
-    schema: doc.collection.schema,
-    blobCRUD: doc.collection.blobSync,
+    schema: doc.workspace.schema,
+    blobCRUD: doc.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => doc.collection.createDoc({ id }),
-      get: (id: string) => doc.collection.getDoc(id),
-      delete: (id: string) => doc.collection.removeDoc(id),
+      create: (id: string) => doc.workspace.createDoc({ id }),
+      get: (id: string) => doc.workspace.getDoc(id),
+      delete: (id: string) => doc.workspace.removeDoc(id),
     },
     middlewares: [
-      docLinkBaseURLMiddleware(doc.collection.id),
-      titleMiddleware(doc.collection.meta.docMetas),
+      docLinkBaseURLMiddleware(doc.workspace.id),
+      titleMiddleware(doc.workspace.meta.docMetas),
       embedSyncedDocMiddleware('content'),
     ],
   });
@@ -148,7 +148,7 @@ async function exportHandler({
       await exportToMarkdown(page, editorRoot?.std);
       return;
     case 'snapshot':
-      await ZipTransformer.exportDocs(page.collection, [page]);
+      await ZipTransformer.exportDocs(page.workspace, [page]);
       return;
     case 'pdf':
       await printToPdf(editorContainer);

@@ -107,8 +107,8 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       const { doc } = this;
 
       const [histories, actions] = await Promise.all([
-        AIProvider.histories?.chats(doc.collection.id, doc.id, { fork: false }),
-        AIProvider.histories?.actions(doc.collection.id, doc.id),
+        AIProvider.histories?.chats(doc.workspace.id, doc.id, { fork: false }),
+        AIProvider.histories?.actions(doc.workspace.id, doc.id),
       ]);
 
       if (counter !== this._resettingCounter) return;
@@ -175,7 +175,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
         cancelText: 'Cancel',
       })
     ) {
-      await AIProvider.histories?.cleanup(this.doc.collection.id, this.doc.id, [
+      await AIProvider.histories?.cleanup(this.doc.workspace.id, this.doc.id, [
         this.chatContextValue.chatSessionId ?? '',
         ...(
           this.chatContextValue.items.filter(
