@@ -825,20 +825,20 @@ test('press arrow down should move caret to the start of line', async ({
   await page.evaluate(() => {
     const { doc } = window;
     const rootId = doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new window.$blocksuite.store.Text(),
     });
     const note = doc.addBlock('affine:note', {}, rootId);
     doc.addBlock(
       'affine:paragraph',
       {
-        text: new doc.Text('0'.repeat(100)),
+        text: new window.$blocksuite.store.Text('0'.repeat(100)),
       },
       note
     );
     doc.addBlock(
       'affine:paragraph',
       {
-        text: new doc.Text('1'),
+        text: new window.$blocksuite.store.Text('1'),
       },
       note
     );
@@ -860,7 +860,7 @@ test('press arrow up in the second line should move caret to the first line', as
   await page.evaluate(() => {
     const { doc } = window;
     const rootId = doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new window.$blocksuite.store.Text(),
     });
     const note = doc.addBlock('affine:note', {}, rootId);
     const delta = Array.from({ length: 150 }, (_, i) => {
@@ -868,7 +868,7 @@ test('press arrow up in the second line should move caret to the first line', as
         ? { insert: 'i', attributes: { italic: true } }
         : { insert: 'b', attributes: { bold: true } };
     }) as DeltaInsert[];
-    const text = new doc.Text(delta);
+    const text = new window.$blocksuite.store.Text(delta);
     doc.addBlock('affine:paragraph', { text }, note);
     doc.addBlock('affine:paragraph', {}, note);
   });
@@ -912,7 +912,7 @@ test('press arrow down in indent line should not move caret to the start of line
   await page.evaluate(() => {
     const { doc } = window;
     const rootId = doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new window.$blocksuite.store.Text(),
     });
     const note = doc.addBlock('affine:note', {}, rootId);
     const p1 = doc.addBlock('affine:paragraph', {}, note);
@@ -921,7 +921,7 @@ test('press arrow down in indent line should not move caret to the start of line
     doc.addBlock(
       'affine:paragraph',
       {
-        text: new doc.Text('0'),
+        text: new window.$blocksuite.store.Text('0'),
       },
       note
     );
@@ -1003,20 +1003,22 @@ test.describe('press ArrowDown when cursor is at the last line of a block', () =
     await page.evaluate(() => {
       const { doc } = window;
       const rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new window.$blocksuite.store.Text(),
       });
       const note = doc.addBlock('affine:note', {}, rootId);
       doc.addBlock(
         'affine:paragraph',
         {
-          text: new doc.Text('This is the 2nd last block.'),
+          text: new window.$blocksuite.store.Text(
+            'This is the 2nd last block.'
+          ),
         },
         note
       );
       doc.addBlock(
         'affine:paragraph',
         {
-          text: new doc.Text('This is the last block.'),
+          text: new window.$blocksuite.store.Text('This is the last block.'),
         },
         note
       );
@@ -1172,7 +1174,7 @@ test('delete at the start of paragraph (multiple notes)', async ({ page }) => {
     const { doc } = window;
 
     const rootId = doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new window.$blocksuite.store.Text(),
     });
     doc.addBlock('affine:surface', {}, rootId);
 
@@ -1181,7 +1183,7 @@ test('delete at the start of paragraph (multiple notes)', async ({ page }) => {
       doc.addBlock(
         'affine:paragraph',
         {
-          text: new doc.Text(text),
+          text: new window.$blocksuite.store.Text(text),
         },
         noteId
       );

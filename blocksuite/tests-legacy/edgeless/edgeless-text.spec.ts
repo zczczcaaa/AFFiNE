@@ -554,7 +554,7 @@ test('press backspace at the start of first line when edgeless text exist', asyn
   await page.evaluate(() => {
     const { doc } = window;
     const rootId = doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new window.$blocksuite.store.Text(),
     });
     doc.addBlock('affine:surface', {}, rootId);
     doc.addBlock('affine:note', {}, rootId);

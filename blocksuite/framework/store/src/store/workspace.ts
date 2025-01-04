@@ -1,12 +1,14 @@
 import type { Slot } from '@blocksuite/global/utils';
 import type { BlobEngine, DocEngine } from '@blocksuite/sync';
+import type * as Y from 'yjs';
 
+import type { BlockModel } from '../schema/base.js';
 import type { Schema } from '../schema/schema.js';
 import type { IdGenerator } from '../utils/id-generator.js';
 import type { AwarenessStore } from '../yjs/awareness.js';
 import type { BlockSuiteDoc } from '../yjs/doc.js';
+import type { YBlock } from './doc/block/types.js';
 import type { Blocks } from './doc/doc.js';
-import type { BlockCollection } from './doc/index.js';
 import type { Query } from './doc/query.js';
 
 export type Tag = {
@@ -70,7 +72,7 @@ export interface Workspace {
 
   get schema(): Schema;
   get doc(): BlockSuiteDoc;
-  get docs(): Map<string, BlockCollection>;
+  get docs(): Map<string, Doc>;
 
   slots: {
     docListUpdated: Slot;
@@ -85,6 +87,77 @@ export interface Workspace {
   dispose(): void;
 }
 
+export interface Doc {
+  readonly id: string;
+  get meta(): DocMeta | undefined;
+  get schema(): Schema;
+
+  remove(): void;
+  load(initFn?: () => void): void;
+  get ready(): boolean;
+  dispose(): void;
+
+  slots: {
+    historyUpdated: Slot;
+    yBlockUpdated: Slot<
+      | {
+          type: 'add';
+          id: string;
+        }
+      | {
+          type: 'delete';
+          id: string;
+        }
+    >;
+  };
+
+  get canRedo(): boolean;
+  get canUndo(): boolean;
+  undo(): void;
+  redo(): void;
+  resetHistory(): void;
+  transact(fn: () => void, shouldTransact?: boolean): void;
+  withoutTransact(fn: () => void): void;
+
+  captureSync(): void;
+  clear(): void;
+  getDoc(options?: GetDocOptions): Blocks;
+  clearQuery(query: Query, readonly?: boolean): void;
+
+  get history(): Y.UndoManager;
+  get loaded(): boolean;
+  get readonly(): boolean;
+  get awarenessStore(): AwarenessStore;
+
+  get collection(): Workspace;
+
+  get rootDoc(): BlockSuiteDoc;
+  get spaceDoc(): Y.Doc;
+  get yBlocks(): Y.Map<YBlock>;
+}
+
 export interface StackItem {
   meta: Map<'selection-state', unknown>;
+}
+
+export type YBlocks = Y.Map<YBlock>;
+
+/** JSON-serializable properties of a block */
+export type BlockSysProps = {
+  id: string;
+  flavour: string;
+  children?: BlockModel[];
+};
+export type BlockProps = BlockSysProps & Record<string, unknown>;
+
+declare global {
+  namespace BlockSuite {
+    interface BlockModels {}
+
+    type Flavour = string & keyof BlockModels;
+
+    type ModelProps<Model> = Partial<
+      Model extends BlockModel<infer U> ? U : never
+    >;
+  }
 }

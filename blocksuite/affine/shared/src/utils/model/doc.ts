@@ -1,4 +1,5 @@
 import type { Workspace } from '@blocksuite/store';
+import { Text } from '@blocksuite/store';
 
 export function createDefaultDoc(
   collection: Workspace,
@@ -9,7 +10,7 @@ export function createDefaultDoc(
   doc.load();
   const title = options.title ?? '';
   const rootId = doc.addBlock('affine:page', {
-    title: new doc.Text(title),
+    title: new Text(title),
   });
   collection.meta.setDocMeta(doc.id, {
     title,

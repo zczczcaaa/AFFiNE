@@ -29,6 +29,7 @@ import {
   BlockViewType,
   type GetDocOptions,
   type Query,
+  Text,
 } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
 import { html, type PropertyValues } from 'lit';
@@ -280,7 +281,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
         ...this.referenceInfo,
       },
     });
-    const text = new doc.Text(yText);
+    const text = new Text(yText);
 
     doc.addBlock(
       'affine:paragraph',

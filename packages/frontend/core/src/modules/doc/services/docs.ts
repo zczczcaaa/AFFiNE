@@ -2,6 +2,7 @@ import { DebugLogger } from '@affine/debug';
 import { Unreachable } from '@affine/env/constant';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import type { DeltaInsert } from '@blocksuite/affine/inline';
+import { Text } from '@blocksuite/affine/store';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { LiveData, ObjectPool, Service } from '@toeverything/infra';
 import { omitBy } from 'lodash-es';
@@ -121,7 +122,7 @@ export class DocsService extends Service {
     const { doc, release } = this.open(targetDocId);
     doc.setPriorityLoad(10);
     await doc.waitForSyncReady();
-    const text = new doc.blockSuiteDoc.Text([
+    const text = new Text([
       {
         insert: ' ',
         attributes: {

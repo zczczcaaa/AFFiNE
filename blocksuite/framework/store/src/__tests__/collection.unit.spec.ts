@@ -7,6 +7,7 @@ import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
 import type { BlockModel, Blocks, BlockSchemaType } from '../index.js';
 import { Schema } from '../index.js';
+import { Text } from '../reactive/text.js';
 import type { DocMeta } from '../store/workspace.js';
 import { TestWorkspace } from '../test/test-workspace.js';
 import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
@@ -166,7 +167,7 @@ describe('basic', () => {
 
     doc.load(() => {
       const rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new Text(),
       });
       expect(rootAddedCallback).toBeCalledTimes(1);
 
@@ -186,7 +187,7 @@ describe('basic', () => {
     });
     doc.load(() => {
       doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new Text(),
       });
     });
     {
@@ -245,7 +246,7 @@ describe('addBlock', () => {
   it('can add single model', () => {
     const doc = createTestDoc();
     doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new Text(),
     });
 
     assert.deepEqual(serializCollection(doc.rootDoc).spaces[spaceId].blocks, {
@@ -264,7 +265,7 @@ describe('addBlock', () => {
 
   it('can add model with props', () => {
     const doc = createTestDoc();
-    doc.addBlock('affine:page', { title: new doc.Text('hello') });
+    doc.addBlock('affine:page', { title: new Text('hello') });
 
     assert.deepEqual(serializCollection(doc.rootDoc).spaces[spaceId].blocks, {
       '0': {
@@ -283,7 +284,7 @@ describe('addBlock', () => {
   it('can add multi models', () => {
     const doc = createTestDoc();
     const rootId = doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new Text(),
     });
     const noteId = doc.addBlock('affine:note', {}, rootId);
     doc.addBlock('affine:paragraph', {}, noteId);
@@ -344,7 +345,7 @@ describe('addBlock', () => {
 
     queueMicrotask(() =>
       doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new Text(),
       })
     );
     const blockId = await waitOnce(doc.slots.rootAdded);
@@ -389,7 +390,7 @@ describe('addBlock', () => {
     assert.equal(collection.docs.size, 2);
 
     doc0.addBlock('affine:page', {
-      title: new doc0.Text(),
+      title: new Text(),
     });
     collection.removeDoc(doc0.id);
 

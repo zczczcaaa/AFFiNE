@@ -1,5 +1,5 @@
 import { effects as blocksEffects } from '@blocksuite/blocks/effects';
-import type { BlockCollection, Blocks, Job } from '@blocksuite/store';
+import type { Blocks, Job } from '@blocksuite/store';
 
 import { effects } from '../../effects.js';
 
@@ -57,9 +57,7 @@ function initCollection(collection: TestWorkspace) {
 
 async function createEditor(collection: TestWorkspace, mode: DocMode = 'page') {
   const app = document.createElement('div');
-  const blockCollection = collection.docs.values().next().value as
-    | BlockCollection
-    | undefined;
+  const blockCollection = collection.docs.values().next().value;
   assertExists(blockCollection, 'Need to create a doc first');
   const doc = blockCollection.getDoc();
   const editor = new AffineEditorContainer();

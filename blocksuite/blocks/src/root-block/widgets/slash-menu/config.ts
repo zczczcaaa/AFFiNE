@@ -709,9 +709,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
           model.flavour as never,
           {
             type: (model as ParagraphBlockModel).type,
-            text: new rootComponent.doc.Text(
-              model.text.toDelta() as DeltaInsert[]
-            ),
+            text: new Text(model.text.toDelta() as DeltaInsert[]),
             // @ts-expect-error FIXME: ts error
             checked: model.checked,
           },

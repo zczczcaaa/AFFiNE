@@ -18,7 +18,7 @@ import {
 } from '@blocksuite/affine-model';
 import { propertyModelPresets } from '@blocksuite/data-view/property-pure-presets';
 import type { BlockModel, Blocks } from '@blocksuite/store';
-import { Schema } from '@blocksuite/store';
+import { Schema, Text } from '@blocksuite/store';
 import {
   createAutoIncrementIdGenerator,
   TestWorkspace,
@@ -71,7 +71,7 @@ describe('DatabaseManager', () => {
     doc = createTestDoc();
 
     rootId = doc.addBlock('affine:page', {
-      title: new doc.Text('database test'),
+      title: new Text('database test'),
     });
     noteBlockId = doc.addBlock('affine:note', {}, rootId);
 
@@ -114,14 +114,14 @@ describe('DatabaseManager', () => {
     p1 = doc.addBlock(
       'affine:paragraph',
       {
-        text: new doc.Text('text1'),
+        text: new Text('text1'),
       },
       databaseBlockId
     );
     p2 = doc.addBlock(
       'affine:paragraph',
       {
-        text: new doc.Text('text2'),
+        text: new Text('text2'),
       },
       databaseBlockId
     );
@@ -173,7 +173,7 @@ describe('DatabaseManager', () => {
     const modelId = doc.addBlock(
       'affine:paragraph',
       {
-        text: new doc.Text('paragraph'),
+        text: new Text('paragraph'),
       },
       noteBlockId
     );
@@ -201,7 +201,7 @@ describe('DatabaseManager', () => {
     const newRowId = doc.addBlock(
       'affine:paragraph',
       {
-        text: new doc.Text('text3'),
+        text: new Text('text3'),
       },
       databaseBlockId
     );

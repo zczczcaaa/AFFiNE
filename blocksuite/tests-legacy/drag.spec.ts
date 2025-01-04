@@ -628,7 +628,7 @@ test.fixme(
       const { doc } = window;
 
       const rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new window.$blocksuite.store.Text(),
       });
       doc.addBlock('affine:surface', {}, rootId);
 
@@ -637,7 +637,7 @@ test.fixme(
         doc.addBlock(
           'affine:paragraph',
           {
-            text: new doc.Text(text),
+            text: new window.$blocksuite.store.Text(text),
           },
           noteId
         );

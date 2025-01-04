@@ -17,6 +17,7 @@ import {
   type DraftModel,
   type Query,
   Slice,
+  Text,
 } from '@blocksuite/store';
 import { render, type TemplateResult } from 'lit';
 
@@ -407,7 +408,7 @@ export function createLinkedDocFromSlice(
   const linkedDoc = doc.collection.createDoc({});
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {
-      title: new doc.Text(docTitle),
+      title: new Text(docTitle),
     });
     linkedDoc.addBlock('affine:surface', {}, rootId);
     const noteId = linkedDoc.addBlock('affine:note', {}, rootId);

@@ -5,7 +5,7 @@ import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import { getBlockProps } from '@blocksuite/affine-shared/utils';
 import type { EditorHost } from '@blocksuite/block-std';
 import { GfxBlockElementModel } from '@blocksuite/block-std/gfx';
-import { type BlockModel, type Blocks } from '@blocksuite/store';
+import { type BlockModel, type Blocks, Text } from '@blocksuite/store';
 
 import {
   getElementProps,
@@ -43,7 +43,7 @@ export function createLinkedDocFromNote(
   const linkedDoc = doc.collection.createDoc({});
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {
-      title: new doc.Text(docTitle),
+      title: new Text(docTitle),
     });
     linkedDoc.addBlock('affine:surface', {}, rootId);
     const blockProps = getBlockProps(note);
@@ -74,7 +74,7 @@ export function createLinkedDocFromEdgelessElements(
   const linkedDoc = host.doc.collection.createDoc({});
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {
-      title: new host.doc.Text(docTitle),
+      title: new Text(docTitle),
     });
     const surfaceId = linkedDoc.addBlock('affine:surface', {}, rootId);
     const surface = getSurfaceBlock(linkedDoc);

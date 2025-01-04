@@ -1,41 +1,30 @@
-import { type Disposable, Slot } from '@blocksuite/global/utils';
+import { type Disposable, Slot } from '@blocksuite/affine/global/utils';
+import {
+  type AwarenessStore,
+  Blocks,
+  type BlockSuiteDoc,
+  type Doc,
+  type GetDocOptions,
+  type Query,
+  type Workspace,
+  type YBlock,
+} from '@blocksuite/affine/store';
 import { signal } from '@preact/signals-core';
-import { uuidv4 } from 'lib0/random.js';
 import * as Y from 'yjs';
-
-import { Text } from '../../reactive/text.js';
-import type { BlockModel } from '../../schema/base.js';
-import type { IdGenerator } from '../../utils/id-generator.js';
-import type { AwarenessStore, BlockSuiteDoc } from '../../yjs/index.js';
-import type { GetDocOptions, Workspace } from '../workspace.js';
-import { Blocks } from './doc.js';
-import type { YBlock } from './index.js';
-import type { Query } from './query.js';
-
-export type YBlocks = Y.Map<YBlock>;
-
-/** JSON-serializable properties of a block */
-export type BlockSysProps = {
-  id: string;
-  flavour: string;
-  children?: BlockModel[];
-};
-export type BlockProps = BlockSysProps & Record<string, unknown>;
 
 type DocOptions = {
   id: string;
   collection: Workspace;
   doc: BlockSuiteDoc;
   awarenessStore: AwarenessStore;
-  idGenerator?: IdGenerator;
 };
 
-export class BlockCollection {
+export class DocImpl implements Doc {
   private _awarenessUpdateDisposable: Disposable | null = null;
 
-  private readonly _canRedo$ = signal(false);
+  private readonly _canRedo = signal(false);
 
-  private readonly _canUndo$ = signal(false);
+  private readonly _canUndo = signal(false);
 
   private readonly _collection: Workspace;
 
@@ -56,8 +45,6 @@ export class BlockCollection {
     this._updateCanUndoRedoSignals();
     this.slots.historyUpdated.emit();
   };
-
-  private readonly _idGenerator: IdGenerator;
 
   private readonly _initSubDoc = () => {
     let subDoc = this.rootDoc.spaces.get(this.id);
@@ -104,11 +91,11 @@ export class BlockCollection {
   private readonly _updateCanUndoRedoSignals = () => {
     const canRedo = this.readonly ? false : this._history.canRedo();
     const canUndo = this.readonly ? false : this._history.canUndo();
-    if (this._canRedo$.peek() !== canRedo) {
-      this._canRedo$.value = canRedo;
+    if (this._canRedo.peek() !== canRedo) {
+      this._canRedo.value = canRedo;
     }
-    if (this._canUndo$.peek() !== canUndo) {
-      this._canUndo$.value = canUndo;
+    if (this._canUndo.peek() !== canUndo) {
+      this._canUndo.value = canUndo;
     }
   };
 
@@ -145,19 +132,11 @@ export class BlockCollection {
   }
 
   get canRedo() {
-    return this._canRedo$.peek();
-  }
-
-  get canRedo$() {
-    return this._canRedo$;
+    return this._canRedo.peek();
   }
 
   get canUndo() {
-    return this._canUndo$.peek();
-  }
-
-  get canUndo$() {
-    return this._canUndo$;
+    return this._canUndo.peek();
   }
 
   get collection() {
@@ -184,7 +163,7 @@ export class BlockCollection {
     return this.collection.meta.getDocMeta(this.id);
   }
 
-  get readonly() {
+  get readonly(): boolean {
     return this.awarenessStore.isReadonly(this);
   }
 
@@ -200,21 +179,11 @@ export class BlockCollection {
     return this._ySpaceDoc;
   }
 
-  get Text() {
-    return Text;
-  }
-
   get yBlocks() {
     return this._yBlocks;
   }
 
-  constructor({
-    id,
-    collection,
-    doc,
-    awarenessStore,
-    idGenerator = uuidv4,
-  }: DocOptions) {
+  constructor({ id, collection, doc, awarenessStore }: DocOptions) {
     this.id = id;
     this.rootDoc = doc;
     this.awarenessStore = awarenessStore;
@@ -223,7 +192,6 @@ export class BlockCollection {
 
     this._yBlocks = this._ySpaceDoc.getMap('blocks');
     this._collection = collection;
-    this._idGenerator = idGenerator;
   }
 
   private _getReadonlyKey(readonly?: boolean): 'true' | 'false' | 'undefined' {
@@ -295,7 +263,7 @@ export class BlockCollection {
     this._docMap[readonlyKey].delete(JSON.stringify(query));
   }
 
-  destroy() {
+  private _destroy() {
     this._ySpaceDoc.destroy();
     this._onLoadSlot.dispose();
     this._loaded = false;
@@ -311,17 +279,13 @@ export class BlockCollection {
     }
   }
 
-  generateBlockId() {
-    return this._idGenerator();
-  }
-
   getDoc({ readonly, query }: GetDocOptions = {}) {
     const readonlyKey = this._getReadonlyKey(readonly);
 
     const key = JSON.stringify(query);
 
     if (this._docMap[readonlyKey].has(key)) {
-      return this._docMap[readonlyKey].get(key)!;
+      return this._docMap[readonlyKey].get(key) as Blocks;
     }
 
     const doc = new Blocks({
@@ -375,8 +339,16 @@ export class BlockCollection {
     this._history.redo();
   }
 
+  undo() {
+    if (this.readonly) {
+      console.error('cannot modify data in readonly mode');
+      return;
+    }
+    this._history.undo();
+  }
+
   remove() {
-    this.destroy();
+    this._destroy();
     this.rootDoc.spaces.delete(this.id);
   }
 
@@ -403,30 +375,9 @@ export class BlockCollection {
     );
   }
 
-  // Handle all the events that happen at _any_ level (potentially deep inside the structure).
-  undo() {
-    if (this.readonly) {
-      console.error('cannot modify data in readonly mode');
-      return;
-    }
-    this._history.undo();
-  }
-
   withoutTransact(callback: () => void) {
     this._shouldTransact = false;
     callback();
     this._shouldTransact = true;
-  }
-}
-
-declare global {
-  namespace BlockSuite {
-    interface BlockModels {}
-
-    type Flavour = string & keyof BlockModels;
-
-    type ModelProps<Model> = Partial<
-      Model extends BlockModel<infer U> ? U : never
-    >;
   }
 }

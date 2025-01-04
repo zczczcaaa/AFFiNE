@@ -6,10 +6,10 @@ import type { BlockSuiteFlags } from '@blocksuite/affine/global/types';
 import { NoopLogger, Slot } from '@blocksuite/affine/global/utils';
 import {
   AwarenessStore,
-  BlockCollection,
   type Blocks,
   BlockSuiteDoc,
   type CreateDocOptions,
+  type Doc,
   DocCollectionMeta,
   type GetDocOptions,
   type IdGenerator,
@@ -26,6 +26,8 @@ import {
   NoopDocSource,
 } from '@blocksuite/affine/sync';
 import { Awareness } from 'y-protocols/awareness.js';
+
+import { DocImpl } from './doc';
 
 type WorkspaceOptions = {
   id?: string;
@@ -62,7 +64,7 @@ export class WorkspaceImpl implements Workspace {
 
   readonly blobSync: BlobEngine;
 
-  readonly blockCollections = new Map<string, BlockCollection>();
+  readonly blockCollections = new Map<string, Doc>();
 
   readonly doc: BlockSuiteDoc;
 
@@ -114,12 +116,11 @@ export class WorkspaceImpl implements Workspace {
 
   private _bindDocMetaEvents() {
     this.meta.docMetaAdded.on(docId => {
-      const doc = new BlockCollection({
+      const doc = new DocImpl({
         id: docId,
         collection: this,
         doc: this.doc,
         awarenessStore: this.awarenessStore,
-        idGenerator: this.idGenerator,
       });
       this.blockCollections.set(doc.id, doc);
     });
@@ -185,8 +186,8 @@ export class WorkspaceImpl implements Workspace {
     this.awarenessSync.disconnect();
   }
 
-  getBlockCollection(docId: string): BlockCollection | null {
-    const space = this.docs.get(docId) as BlockCollection | undefined;
+  getBlockCollection(docId: string): Doc | null {
+    const space = this.docs.get(docId) as Doc | undefined;
     return space ?? null;
   }
 

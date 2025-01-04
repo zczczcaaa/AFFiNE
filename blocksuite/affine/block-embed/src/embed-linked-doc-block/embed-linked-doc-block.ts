@@ -22,6 +22,7 @@ import {
   referenceToNode,
 } from '@blocksuite/affine-shared/utils';
 import { Bound, throttle } from '@blocksuite/global/utils';
+import { Text } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
 import { html, nothing } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
@@ -171,7 +172,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
         ...this.referenceInfo$.peek(),
       },
     });
-    const text = new doc.Text(yText);
+    const text = new Text(yText);
 
     doc.addBlock(
       'affine:paragraph',

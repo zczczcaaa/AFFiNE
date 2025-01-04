@@ -5,7 +5,7 @@ import clonedeep from 'lodash.clonedeep';
 import merge from 'lodash.merge';
 import type { Awareness as YAwareness } from 'y-protocols/awareness.js';
 
-import type { BlockCollection } from '../store/index.js';
+import type { Doc } from '../store/index.js';
 
 export interface UserInfo {
   name: string;
@@ -115,7 +115,7 @@ export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
     return this.awareness.getStates();
   }
 
-  isReadonly(blockCollection: BlockCollection): boolean {
+  isReadonly(blockCollection: Doc): boolean {
     const rd = this.getFlag('readonly');
     if (rd && typeof rd === 'object') {
       return Boolean((rd as Record<string, boolean>)[blockCollection.id]);
@@ -137,7 +137,7 @@ export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
     });
   }
 
-  setReadonly(blockCollection: BlockCollection, value: boolean): void {
+  setReadonly(blockCollection: Doc, value: boolean): void {
     const flags = this.getFlag('readonly') ?? {};
     this.setFlag('readonly', {
       ...flags,

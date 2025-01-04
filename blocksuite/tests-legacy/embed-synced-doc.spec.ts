@@ -140,7 +140,7 @@ test.describe('Embed synced doc', () => {
     await page.evaluate(() => {
       const { doc, collection } = window;
       const rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new window.$blocksuite.store.Text(),
       });
 
       const noteId = doc.addBlock('affine:note', {}, rootId);
@@ -149,14 +149,14 @@ test.describe('Embed synced doc', () => {
       const doc2 = collection.createDoc({ id: 'doc2' });
       doc2.load();
       const rootId2 = doc2.addBlock('affine:page', {
-        title: new doc.Text('Doc 2'),
+        title: new window.$blocksuite.store.Text('Doc 2'),
       });
 
       const noteId2 = doc2.addBlock('affine:note', {}, rootId2);
       doc2.addBlock(
         'affine:paragraph',
         {
-          text: new doc.Text('Hello from Doc 2'),
+          text: new window.$blocksuite.store.Text('Hello from Doc 2'),
         },
         noteId2
       );
@@ -164,14 +164,14 @@ test.describe('Embed synced doc', () => {
       const doc3 = collection.createDoc({ id: 'doc3' });
       doc3.load();
       const rootId3 = doc3.addBlock('affine:page', {
-        title: new doc.Text('Doc 3'),
+        title: new window.$blocksuite.store.Text('Doc 3'),
       });
 
       const noteId3 = doc3.addBlock('affine:note', {}, rootId3);
       doc3.addBlock(
         'affine:paragraph',
         {
-          text: new doc.Text('Hello from Doc 3'),
+          text: new window.$blocksuite.store.Text('Hello from Doc 3'),
         },
         noteId3
       );
@@ -232,7 +232,7 @@ test.describe('Embed synced doc', () => {
         const databaseId = doc2.addBlock(
           'affine:database',
           {
-            title: new doc2.Text('Database 1'),
+            title: new window.$blocksuite.store.Text('Database 1'),
           },
           noteId
         );

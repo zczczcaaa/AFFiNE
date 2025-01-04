@@ -17,7 +17,6 @@ import { Awareness } from 'y-protocols/awareness.js';
 
 import type { Schema } from '../schema/index.js';
 import {
-  BlockCollection,
   type Blocks,
   type CreateDocOptions,
   DocCollectionMeta,
@@ -30,6 +29,7 @@ import {
   BlockSuiteDoc,
   type RawAwarenessState,
 } from '../yjs/index.js';
+import { TestDoc } from './test-doc.js';
 
 export type DocCollectionOptions = {
   schema: Schema;
@@ -80,7 +80,7 @@ export class TestWorkspace implements Workspace {
 
   readonly blobSync: BlobEngine;
 
-  readonly blockCollections = new Map<string, BlockCollection>();
+  readonly blockCollections = new Map<string, TestDoc>();
 
   readonly doc: BlockSuiteDoc;
 
@@ -154,12 +154,11 @@ export class TestWorkspace implements Workspace {
 
   private _bindDocMetaEvents() {
     this.meta.docMetaAdded.on(docId => {
-      const doc = new BlockCollection({
+      const doc = new TestDoc({
         id: docId,
         collection: this,
         doc: this.doc,
         awarenessStore: this.awarenessStore,
-        idGenerator: this.idGenerator,
       });
       this.blockCollections.set(doc.id, doc);
     });
@@ -225,8 +224,8 @@ export class TestWorkspace implements Workspace {
     this.awarenessSync.disconnect();
   }
 
-  getBlockCollection(docId: string): BlockCollection | null {
-    const space = this.docs.get(docId) as BlockCollection | undefined;
+  getBlockCollection(docId: string): TestDoc | null {
+    const space = this.docs.get(docId) as TestDoc | undefined;
     return space ?? null;
   }
 

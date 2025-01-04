@@ -5,7 +5,7 @@ import { native2Y } from '../reactive/index.js';
 import type { BlockModel, BlockSchema } from '../schema/base.js';
 import { internalPrimitives } from '../schema/base.js';
 import type { YBlock } from '../store/doc/block/index.js';
-import type { BlockProps } from '../store/doc/block-collection.js';
+import type { BlockProps } from '../store/workspace.js';
 
 export function syncBlockProps(
   schema: z.infer<typeof BlockSchema>,

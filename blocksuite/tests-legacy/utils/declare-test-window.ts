@@ -6,7 +6,7 @@ import type {
 } from '@blocksuite/block-std';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import type { StarterDebugMenu } from '@playground/apps/_common/components/starter-debug-menu.js';
-import type { BlockModel, Doc, Job, Workspace } from '@store/index.js';
+import type { BlockModel, Blocks, Job, Workspace } from '@store/index.js';
 
 declare global {
   interface Window {
@@ -38,7 +38,7 @@ declare global {
     };
     collection: Workspace;
     blockSchema: Record<string, typeof BlockModel>;
-    doc: Doc;
+    doc: Blocks;
     debugMenu: StarterDebugMenu;
     editor: AffineEditorContainer;
     host: EditorHost;

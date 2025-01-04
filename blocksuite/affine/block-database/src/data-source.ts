@@ -448,7 +448,7 @@ export const databaseViewInitTemplate = (
     const rowId = model.doc.addBlock(
       'affine:paragraph',
       {
-        text: new model.doc.Text(`Task ${i + 1}`),
+        text: new Text(`Task ${i + 1}`),
       },
       model.id
     );

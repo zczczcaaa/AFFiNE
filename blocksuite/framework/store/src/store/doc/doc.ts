@@ -5,15 +5,15 @@ import { signal } from '@preact/signals-core';
 import type { BlockModel, Schema } from '../../schema/index.js';
 import type { DraftModel } from '../../transformer/index.js';
 import { syncBlockProps } from '../../utils/utils.js';
+import type { BlockProps, Doc } from '../workspace.js';
 import type { BlockOptions } from './block/index.js';
 import { Block } from './block/index.js';
-import type { BlockCollection, BlockProps } from './block-collection.js';
 import { DocCRUD } from './crud.js';
 import { type Query, runQuery } from './query.js';
 
 type DocOptions = {
   schema: Schema;
-  blockCollection: BlockCollection;
+  blockCollection: Doc;
   readonly?: boolean;
   query?: Query;
 };
@@ -23,7 +23,7 @@ export class Blocks {
     runQuery(this._query, block);
   };
 
-  protected readonly _blockCollection: BlockCollection;
+  protected readonly _blockCollection: Doc;
 
   protected readonly _blocks = signal<Record<string, Block>>({});
 
@@ -40,7 +40,7 @@ export class Blocks {
 
   protected readonly _schema: Schema;
 
-  readonly slots: BlockCollection['slots'] & {
+  readonly slots: Doc['slots'] & {
     /** This is always triggered after `doc.load` is called. */
     ready: Slot;
     /**
@@ -179,10 +179,6 @@ export class Blocks {
     return this._blockCollection.collection;
   }
 
-  get generateBlockId() {
-    return this._blockCollection.generateBlockId.bind(this._blockCollection);
-  }
-
   get history() {
     return this._blockCollection.history;
   }
@@ -248,10 +244,6 @@ export class Blocks {
 
   get spaceDoc() {
     return this._blockCollection.spaceDoc;
-  }
-
-  get Text() {
-    return this._blockCollection.Text;
   }
 
   get transact() {
@@ -432,7 +424,7 @@ export class Blocks {
       );
     }
 
-    const id = blockProps.id ?? this._blockCollection.generateBlockId();
+    const id = blockProps.id ?? this._blockCollection.collection.idGenerator();
 
     this.transact(() => {
       this._crud.addBlock(

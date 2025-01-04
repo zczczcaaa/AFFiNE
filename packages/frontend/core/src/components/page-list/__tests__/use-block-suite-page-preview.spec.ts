@@ -5,7 +5,7 @@ import 'fake-indexeddb/auto';
 
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { assertExists } from '@blocksuite/affine/global/utils';
-import type { Blocks } from '@blocksuite/affine/store';
+import { type Blocks, Text } from '@blocksuite/affine/store';
 import { Schema } from '@blocksuite/store';
 import { TestWorkspace } from '@blocksuite/store/test';
 import { renderHook } from '@testing-library/react';
@@ -27,7 +27,7 @@ beforeEach(async () => {
     expect(page).not.toBeNull();
     assertExists(page);
     const pageBlockId = page.addBlock('affine:page', {
-      title: new page.Text(''),
+      title: new Text(''),
     });
     const frameId = page.addBlock('affine:note', {}, pageBlockId);
     page.addBlock('affine:paragraph', {}, frameId);
@@ -41,7 +41,7 @@ describe('useBlockSuitePagePreview', () => {
     const id = page.addBlock(
       'affine:paragraph',
       {
-        text: new page.Text('Hello, world!'),
+        text: new Text('Hello, world!'),
       },
       page.getBlockByFlavour('affine:note')[0].id
     );
@@ -58,7 +58,7 @@ describe('useBlockSuitePagePreview', () => {
     page.addBlock(
       'affine:paragraph',
       {
-        text: new page.Text('First block!'),
+        text: new Text('First block!'),
       },
       page.getBlockByFlavour('affine:note')[0].id,
       0

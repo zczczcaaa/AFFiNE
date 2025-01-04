@@ -413,7 +413,7 @@ export async function enterPlaygroundWithList(
     ({ contents, type }: { contents: string[]; type: ListType }) => {
       const { doc } = window;
       const rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new window.$blocksuite.store.Text(),
       });
       const noteId = doc.addBlock('affine:note', {}, rootId);
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
@@ -421,7 +421,7 @@ export async function enterPlaygroundWithList(
         doc.addBlock(
           'affine:list',
           contents.length > 0
-            ? { text: new doc.Text(contents[i]), type }
+            ? { text: new window.$blocksuite.store.Text(contents[i]), type }
             : { type },
           noteId
         );
@@ -439,7 +439,7 @@ export async function initEmptyParagraphState(page: Page, rootId?: string) {
     doc.captureSync();
     if (!rootId) {
       rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new window.$blocksuite.store.Text(),
       });
     }
 
@@ -464,7 +464,7 @@ export async function initMultipleNoteWithParagraphState(
       doc.captureSync();
       if (!rootId) {
         rootId = doc.addBlock('affine:page', {
-          title: new doc.Text(),
+          title: new window.$blocksuite.store.Text(),
         });
       }
 
@@ -490,7 +490,7 @@ export async function initEmptyEdgelessState(page: Page) {
   const ids = await page.evaluate(() => {
     const { doc } = window;
     const rootId = doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new window.$blocksuite.store.Text(),
     });
     doc.addBlock('affine:surface', {}, rootId);
     const noteId = doc.addBlock('affine:note', {}, rootId);
@@ -509,14 +509,14 @@ export async function initEmptyDatabaseState(page: Page, rootId?: string) {
     doc.captureSync();
     if (!rootId) {
       rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new window.$blocksuite.store.Text(),
       });
     }
     const noteId = doc.addBlock('affine:note', {}, rootId);
     const databaseId = doc.addBlock(
       'affine:database',
       {
-        title: new doc.Text('Database 1'),
+        title: new window.$blocksuite.store.Text('Database 1'),
       },
       noteId
     );
@@ -553,14 +553,14 @@ export async function initKanbanViewState(
       doc.captureSync();
       if (!rootId) {
         rootId = doc.addBlock('affine:page', {
-          title: new doc.Text(),
+          title: new window.$blocksuite.store.Text(),
         });
       }
       const noteId = doc.addBlock('affine:note', {}, rootId);
       const databaseId = doc.addBlock(
         'affine:database',
         {
-          title: new doc.Text('Database 1'),
+          title: new window.$blocksuite.store.Text('Database 1'),
         },
         noteId
       );
@@ -572,7 +572,7 @@ export async function initKanbanViewState(
         const rowIds = config.rows.map(rowText => {
           const rowId = doc.addBlock(
             'affine:paragraph',
-            { type: 'text', text: new doc.Text(rowText) },
+            { type: 'text', text: new window.$blocksuite.store.Text(rowText) },
             databaseId
           );
           return rowId;
@@ -590,7 +590,7 @@ export async function initKanbanViewState(
                 columnId,
                 value:
                   column.type === 'rich-text'
-                    ? new doc.Text(value as string)
+                    ? new window.$blocksuite.store.Text(value as string)
                     : value,
               });
             }
@@ -619,14 +619,14 @@ export async function initEmptyDatabaseWithParagraphState(
     doc.captureSync();
     if (!rootId) {
       rootId = doc.addBlock('affine:page', {
-        title: new doc.Text(),
+        title: new window.$blocksuite.store.Text(),
       });
     }
     const noteId = doc.addBlock('affine:note', {}, rootId);
     const databaseId = doc.addBlock(
       'affine:database',
       {
-        title: new doc.Text('Database 1'),
+        title: new window.$blocksuite.store.Text('Database 1'),
       },
       noteId
     );
@@ -1326,7 +1326,7 @@ export async function initImageState(page: Page, prependParagraph = false) {
   await page.evaluate(async prepend => {
     const { doc } = window;
     const rootId = doc.addBlock('affine:page', {
-      title: new doc.Text(),
+      title: new window.$blocksuite.store.Text(),
     });
     const noteId = doc.addBlock('affine:note', {}, rootId);
 
