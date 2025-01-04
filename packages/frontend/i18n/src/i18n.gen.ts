@@ -2476,6 +2476,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.keyboardShortcuts.zoomToFit"](): string;
     /**
+      * `Zoom to selection`
+      */
+    ["com.affine.keyboardShortcuts.zoomToSelection"](): string;
+    /**
       * `Last 30 days`
       */
     ["com.affine.last30Days"](): string;
@@ -4955,6 +4959,14 @@ export function useAFFiNEI18N(): {
       * `Specified by current color mode`
       */
     ["com.affine.settings.editorSettings.page.edgeless-default-theme.specified"](): string;
+    /**
+      * `Scroll wheel zoom`
+      */
+    ["com.affine.settings.editorSettings.page.edgeless-scroll-wheel-zoom.title"](): string;
+    /**
+      * `Use the scroll wheel to zoom in and out.`
+      */
+    ["com.affine.settings.editorSettings.page.edgeless-scroll-wheel-zoom.description"](): string;
     /**
       * `Preferences`
       */
