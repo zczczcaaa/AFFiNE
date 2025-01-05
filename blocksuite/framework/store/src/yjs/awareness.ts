@@ -5,7 +5,7 @@ import clonedeep from 'lodash.clonedeep';
 import merge from 'lodash.merge';
 import type { Awareness as YAwareness } from 'y-protocols/awareness.js';
 
-import type { Doc } from '../store/index.js';
+import type { Doc } from '../model/doc.js';
 
 export interface UserInfo {
   name: string;
@@ -14,25 +14,22 @@ export interface UserInfo {
 type UserSelection = Array<Record<string, unknown>>;
 
 // Raw JSON state in awareness CRDT
-export type RawAwarenessState<Flags extends BlockSuiteFlags = BlockSuiteFlags> =
-  {
-    user?: UserInfo;
-    color?: string;
-    flags: Flags;
-    // use v2 to avoid crush on old clients
-    selectionV2: Record<string, UserSelection>;
-  };
+export type RawAwarenessState = {
+  user?: UserInfo;
+  color?: string;
+  flags: BlockSuiteFlags;
+  // use v2 to avoid crush on old clients
+  selectionV2: Record<string, UserSelection>;
+};
 
-export interface AwarenessEvent<
-  Flags extends BlockSuiteFlags = BlockSuiteFlags,
-> {
+export interface AwarenessEvent {
   id: number;
   type: 'add' | 'update' | 'remove';
-  state?: RawAwarenessState<Flags>;
+  state?: RawAwarenessState;
 }
 
-export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
-  private readonly _flags: Signal<Flags>;
+export class AwarenessStore {
+  private readonly _flags: Signal<BlockSuiteFlags>;
 
   private readonly _onAwarenessChange = (diff: {
     added: number[];
@@ -66,24 +63,24 @@ export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
     });
   };
 
-  readonly awareness: YAwareness<RawAwarenessState<Flags>>;
+  readonly awareness: YAwareness<RawAwarenessState>;
 
   readonly slots = {
-    update: new Slot<AwarenessEvent<Flags>>(),
+    update: new Slot<AwarenessEvent>(),
   };
 
   constructor(
-    awareness: YAwareness<RawAwarenessState<Flags>>,
-    defaultFlags: Flags
+    awareness: YAwareness<RawAwarenessState>,
+    defaultFlags: BlockSuiteFlags
   ) {
-    this._flags = signal<Flags>(defaultFlags);
+    this._flags = signal(defaultFlags);
     this.awareness = awareness;
     this.awareness.on('change', this._onAwarenessChange);
     this.awareness.setLocalStateField('selectionV2', {});
     this._initFlags(defaultFlags);
   }
 
-  private _initFlags(defaultFlags: Flags) {
+  private _initFlags(defaultFlags: BlockSuiteFlags) {
     const upstreamFlags = this.awareness.getLocalState()?.flags;
     const flags = clonedeep(defaultFlags);
     if (upstreamFlags) {
@@ -98,7 +95,7 @@ export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
     this.awareness.destroy();
   }
 
-  getFlag<Key extends keyof Flags>(field: Key) {
+  getFlag<Key extends keyof BlockSuiteFlags>(field: Key) {
     return this._flags.value[field];
   }
 
@@ -111,7 +108,7 @@ export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
     );
   }
 
-  getStates(): Map<number, RawAwarenessState<Flags>> {
+  getStates(): Map<number, RawAwarenessState> {
     return this.awareness.getStates();
   }
 
@@ -124,7 +121,10 @@ export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
     }
   }
 
-  setFlag<Key extends keyof Flags>(field: Key, value: Flags[Key]) {
+  setFlag<Key extends keyof BlockSuiteFlags>(
+    field: Key,
+    value: BlockSuiteFlags[Key]
+  ) {
     const oldFlags = this.awareness.getLocalState()?.flags ?? {};
     this.awareness.setLocalStateField('flags', { ...oldFlags, [field]: value });
   }
@@ -142,6 +142,6 @@ export class AwarenessStore<Flags extends BlockSuiteFlags = BlockSuiteFlags> {
     this.setFlag('readonly', {
       ...flags,
       [blockCollection.id]: value,
-    } as Flags['readonly']);
+    } as BlockSuiteFlags['readonly']);
   }
 }

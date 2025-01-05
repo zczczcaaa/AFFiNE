@@ -16,14 +16,14 @@ import merge from 'lodash.merge';
 import { Awareness } from 'y-protocols/awareness.js';
 import * as Y from 'yjs';
 
+import type {
+  Blocks,
+  CreateBlocksOptions,
+  GetBlocksOptions,
+  Workspace,
+  WorkspaceMeta,
+} from '../model/index.js';
 import type { Schema } from '../schema/index.js';
-import {
-  type Blocks,
-  type CreateBlocksOptions,
-  type GetBlocksOptions,
-  type Workspace,
-  type WorkspaceMeta,
-} from '../store/index.js';
 import { type IdGenerator, nanoid } from '../utils/id-generator.js';
 import { AwarenessStore, type RawAwarenessState } from '../yjs/index.js';
 import { TestDoc } from './test-doc.js';

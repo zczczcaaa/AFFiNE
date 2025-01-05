@@ -1,12 +1,13 @@
 import { literal } from 'lit/static-html.js';
 import { describe, expect, it, vi } from 'vitest';
 
+import type { BlockModel } from '../model/block/block-model.js';
+import { defineBlockSchema } from '../model/block/zod.js';
 // import some blocks
-import { type BlockModel, defineBlockSchema } from '../schema/base.js';
 import { SchemaValidateError } from '../schema/error.js';
 import { Schema } from '../schema/index.js';
+import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
-import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 import {
   DividerBlockSchema,
   ListBlockSchema,

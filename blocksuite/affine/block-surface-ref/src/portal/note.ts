@@ -18,7 +18,7 @@ import {
   ShadowlessElement,
 } from '@blocksuite/block-std';
 import { deserializeXYWH, WithDisposable } from '@blocksuite/global/utils';
-import { type BlockModel, BlockViewType, type Query } from '@blocksuite/store';
+import { type BlockModel, type Query } from '@blocksuite/store';
 import { css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -48,7 +48,7 @@ export class SurfaceRefNotePortal extends WithDisposable(ShadowlessElement) {
       mode: 'include',
       match: Array.from(ancestors).map(id => ({
         id,
-        viewType: BlockViewType.Display,
+        viewType: 'display',
       })),
     };
     this.query = query;

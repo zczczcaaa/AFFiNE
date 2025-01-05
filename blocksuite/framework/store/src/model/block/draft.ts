@@ -1,4 +1,4 @@
-import type { BlockModel } from '../schema/base.js';
+import type { BlockModel } from './block-model.js';
 
 type PropsInDraft = 'version' | 'flavour' | 'role' | 'id' | 'keys' | 'text';
 

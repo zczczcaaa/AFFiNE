@@ -2,9 +2,8 @@ import { expect, test, vi } from 'vitest';
 import * as Y from 'yjs';
 
 import { Schema } from '../schema/index.js';
-import { BlockViewType } from '../store/index.js';
+import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
-import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 import {
   DividerBlockSchema,
   ListBlockSchema,
@@ -220,7 +219,7 @@ test('query', () => {
       match: [
         {
           flavour: 'affine:list',
-          viewType: BlockViewType.Hidden,
+          viewType: 'hidden',
         },
       ],
     },
@@ -233,14 +232,14 @@ test('query', () => {
   const paragraph1 = doc1.addBlock('affine:paragraph', {}, note);
   const list1 = doc1.addBlock('affine:list' as never, {}, note);
 
-  expect(doc2?.getBlock(paragraph1)?.blockViewType).toBe(BlockViewType.Display);
-  expect(doc2?.getBlock(list1)?.blockViewType).toBe(BlockViewType.Display);
-  expect(doc3?.getBlock(list1)?.blockViewType).toBe(BlockViewType.Hidden);
+  expect(doc2?.getBlock(paragraph1)?.blockViewType).toBe('display');
+  expect(doc2?.getBlock(list1)?.blockViewType).toBe('display');
+  expect(doc3?.getBlock(list1)?.blockViewType).toBe('hidden');
 
   const list2 = doc1.addBlock('affine:list' as never, {}, note);
 
-  expect(doc2?.getBlock(list2)?.blockViewType).toBe(BlockViewType.Display);
-  expect(doc3?.getBlock(list2)?.blockViewType).toBe(BlockViewType.Hidden);
+  expect(doc2?.getBlock(list2)?.blockViewType).toBe('display');
+  expect(doc3?.getBlock(list2)?.blockViewType).toBe('hidden');
 });
 
 test('local readonly', () => {

@@ -3,11 +3,6 @@ import { nanoid as nanoidGenerator } from 'nanoid';
 
 export type IdGenerator = () => string;
 
-export function createAutoIncrementIdGenerator(): IdGenerator {
-  let i = 0;
-  return () => (i++).toString();
-}
-
 export const uuidv4: IdGenerator = () => {
   return uuidv4IdGenerator();
 };

@@ -4,13 +4,11 @@ import type { Slot } from '@blocksuite/global/utils';
 import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 import { applyUpdate, type Doc, encodeStateAsUpdate } from 'yjs';
 
-import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
-import type { BlockModel, Blocks, BlockSchemaType } from '../index.js';
+import type { BlockModel, Blocks, BlockSchemaType, DocMeta } from '../index.js';
 import { Schema } from '../index.js';
 import { Text } from '../reactive/text.js';
-import type { DocMeta } from '../store/workspace.js';
+import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
-import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 import {
   NoteBlockSchema,
   ParagraphBlockSchema,
@@ -115,8 +113,8 @@ describe('basic', () => {
             tags: [],
           },
         ],
-        workspaceVersion: COLLECTION_VERSION,
-        pageVersion: PAGE_VERSION,
+        workspaceVersion: 2,
+        pageVersion: 2,
         blockVersions: {
           'affine:note': 1,
           'affine:page': 2,

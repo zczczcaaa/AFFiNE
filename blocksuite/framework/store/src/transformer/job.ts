@@ -1,11 +1,15 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { nextTick, Slot } from '@blocksuite/global/utils';
 
-import type { BlockModel, BlockSchemaType, Schema } from '../schema/index.js';
-import type { Blocks } from '../store/index.js';
+import type {
+  BlockModel,
+  Blocks,
+  BlockSchemaType,
+  DraftModel,
+} from '../model/index.js';
+import type { Schema } from '../schema/index.js';
 import { AssetsManager } from './assets.js';
 import { BaseBlockTransformer } from './base.js';
-import type { DraftModel } from './draft.js';
 import type {
   BeforeExportPayload,
   BeforeImportPayload,

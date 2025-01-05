@@ -1,8 +1,7 @@
 import type { Slot } from '@blocksuite/global/utils';
 
-import type { Blocks } from '../store/index.js';
+import type { Blocks, DraftModel } from '../model/index.js';
 import type { AssetsManager } from './assets.js';
-import type { DraftModel } from './draft.js';
 import type { Slice } from './slice.js';
 import type {
   BlockSnapshot,

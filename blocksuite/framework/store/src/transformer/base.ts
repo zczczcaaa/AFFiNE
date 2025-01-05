@@ -1,7 +1,10 @@
-import type { BlockModel, InternalPrimitives } from '../schema/index.js';
-import { internalPrimitives } from '../schema/index.js';
+import type { BlockModel } from '../model/block/block-model.js';
+import type { DraftModel } from '../model/block/draft.js';
+import {
+  type InternalPrimitives,
+  internalPrimitives,
+} from '../model/block/zod.js';
 import type { AssetsManager } from './assets.js';
-import type { DraftModel } from './draft.js';
 import { fromJSON, toJSON } from './json.js';
 import type { BlockSnapshot } from './type.js';
 

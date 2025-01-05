@@ -2,14 +2,18 @@ import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { type Disposable, Slot } from '@blocksuite/global/utils';
 import { signal } from '@preact/signals-core';
 
-import type { BlockModel, Schema } from '../../schema/index.js';
-import type { DraftModel } from '../../transformer/index.js';
-import { syncBlockProps } from '../../utils/utils.js';
-import type { BlockProps, Doc } from '../workspace.js';
-import type { BlockOptions } from './block/index.js';
-import { Block } from './block/index.js';
+import type { Schema } from '../../schema/index.js';
+import {
+  Block,
+  type BlockModel,
+  type BlockOptions,
+  type BlockProps,
+  type DraftModel,
+} from '../block/index.js';
+import type { Doc } from '../doc.js';
 import { DocCRUD } from './crud.js';
 import { type Query, runQuery } from './query.js';
+import { syncBlockProps } from './utils.js';
 
 type DocOptions = {
   schema: Schema;

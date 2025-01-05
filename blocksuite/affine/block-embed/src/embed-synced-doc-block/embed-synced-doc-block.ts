@@ -25,12 +25,7 @@ import {
 } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { assertExists, Bound, getCommonBound } from '@blocksuite/global/utils';
-import {
-  BlockViewType,
-  type GetBlocksOptions,
-  type Query,
-  Text,
-} from '@blocksuite/store';
+import { type GetBlocksOptions, type Query, Text } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
 import { html, type PropertyValues } from 'lit';
 import { query, state } from 'lit/decorators.js';
@@ -106,7 +101,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
         props: {
           displayMode: NoteDisplayMode.EdgelessOnly,
         },
-        viewType: BlockViewType.Hidden,
+        viewType: 'hidden',
       },
     ],
   };

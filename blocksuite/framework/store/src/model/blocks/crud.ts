@@ -2,12 +2,10 @@ import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import * as Y from 'yjs';
 
 import { native2Y } from '../../reactive/index.js';
-import {
-  type BlockModel,
-  internalPrimitives,
-  type Schema,
-} from '../../schema/index.js';
-import type { YBlock } from './index.js';
+import type { Schema } from '../../schema/index.js';
+import type { BlockModel } from '../block/block-model.js';
+import type { YBlock } from '../block/types.js';
+import { internalPrimitives } from '../block/zod.js';
 
 export class DocCRUD {
   get root(): string | null {

@@ -1,5 +1,6 @@
 import type * as Y from 'yjs';
 
+import type { BlockModel } from './block-model.js';
 import type { Block } from './index.js';
 
 export type YBlock = Y.Map<unknown> & {
@@ -11,3 +12,10 @@ export type YBlock = Y.Map<unknown> & {
 export type BlockOptions = {
   onChange?: (block: Block, key: string, value: unknown) => void;
 };
+
+export type BlockSysProps = {
+  id: string;
+  flavour: string;
+  children?: BlockModel[];
+};
+export type BlockProps = BlockSysProps & Record<string, unknown>;

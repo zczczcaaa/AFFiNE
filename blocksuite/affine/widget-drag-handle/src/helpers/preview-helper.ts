@@ -5,7 +5,7 @@ import {
   type DndEventState,
 } from '@blocksuite/block-std';
 import { Point } from '@blocksuite/global/utils';
-import { BlockViewType, type Query } from '@blocksuite/store';
+import type { BlockViewType, Query } from '@blocksuite/store';
 
 import { DragPreview } from '../components/drag-preview.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
@@ -24,7 +24,7 @@ export class PreviewHelper {
     const ids: Array<{ id: string; viewType: BlockViewType }> = selectedIds.map(
       id => ({
         id,
-        viewType: BlockViewType.Display,
+        viewType: 'display',
       })
     );
 
@@ -33,7 +33,7 @@ export class PreviewHelper {
       let parent: string | null = block;
       do {
         if (!selectedIds.includes(parent)) {
-          ids.push({ viewType: BlockViewType.Bypass, id: parent });
+          ids.push({ viewType: 'bypass', id: parent });
         }
         parent = this.widget.doc.getParent(parent)?.id ?? null;
       } while (parent && !ids.map(({ id }) => id).includes(parent));
@@ -43,7 +43,7 @@ export class PreviewHelper {
     const addChildren = (id: string) => {
       const children = this.widget.doc.getBlock(id)?.model.children ?? [];
       children.forEach(child => {
-        ids.push({ viewType: BlockViewType.Display, id: child.id });
+        ids.push({ viewType: 'display', id: child.id });
         addChildren(child.id);
       });
     };

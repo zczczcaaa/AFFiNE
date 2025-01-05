@@ -1,15 +1,14 @@
-import type { Schema } from '../../../schema/index.js';
-import { BlockViewType } from '../consts.js';
-import type { Blocks } from '../doc.js';
+import type { Schema } from '../../schema/index.js';
+import type { Blocks } from '../blocks/blocks.js';
 import { SyncController } from './sync-controller.js';
 import type { BlockOptions, YBlock } from './types.js';
 
-export * from './types.js';
+export type BlockViewType = 'bypass' | 'display' | 'hidden';
 
 export class Block {
   private readonly _syncController: SyncController;
 
-  blockViewType: BlockViewType = BlockViewType.Display;
+  blockViewType: BlockViewType = 'display';
 
   get flavour() {
     return this._syncController.flavour;

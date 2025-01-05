@@ -1,8 +1,8 @@
 import { BlockSuiteError } from '@blocksuite/global/exceptions';
 
-import type { Blocks } from '../store/index.js';
+import type { Blocks, DraftModel } from '../model/index.js';
 import type { AssetsManager } from '../transformer/assets.js';
-import type { DraftModel, Job, Slice } from '../transformer/index.js';
+import type { Job, Slice } from '../transformer/index.js';
 import type {
   BlockSnapshot,
   DocSnapshot,

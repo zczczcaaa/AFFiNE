@@ -2,12 +2,11 @@
 /// <reference path="../shim.d.ts" />
 
 export * from './adapter/index.js';
+export * from './model/index.js';
 export * from './reactive/index.js';
 export * from './schema/index.js';
-export * from './store/index.js';
 export * from './transformer/index.js';
 export { type IdGenerator, nanoid, uuidv4 } from './utils/id-generator.js';
-export * as Utils from './utils/utils.js';
 export * from './yjs/index.js';
 
 const env =

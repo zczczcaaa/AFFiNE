@@ -21,7 +21,6 @@ import { Container, type ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import {
   type Blocks,
-  BlockViewType,
   type JobMiddleware,
   type Query,
   type Schema,
@@ -186,7 +185,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
       'affine:code',
       'affine:list',
       'affine:divider',
-    ].map(flavour => ({ flavour, viewType: BlockViewType.Display })),
+    ].map(flavour => ({ flavour, viewType: 'display' })),
   };
 
   private _timer?: ReturnType<typeof setInterval> | null = null;

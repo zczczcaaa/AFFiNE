@@ -1,16 +1,18 @@
 import { Slot } from '@blocksuite/global/utils';
 import type * as Y from 'yjs';
 
-import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
-import { createYProxy } from '../reactive/proxy.js';
 import type {
   DocMeta,
   DocsPropertiesMeta,
   Workspace,
   WorkspaceMeta,
-} from '../store/workspace.js';
+} from '../model/index.js';
+import { createYProxy } from '../reactive/proxy.js';
 
-export type DocCollectionMetaState = {
+const COLLECTION_VERSION = 2;
+const PAGE_VERSION = 2;
+
+type DocCollectionMetaState = {
   pages?: unknown[];
   properties?: DocsPropertiesMeta;
   workspaceVersion?: number;

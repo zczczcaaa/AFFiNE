@@ -1,11 +1,11 @@
 import type { z } from 'zod';
 
-import { SYS_KEYS } from '../consts.js';
-import { native2Y } from '../reactive/index.js';
-import type { BlockModel, BlockSchema } from '../schema/base.js';
-import { internalPrimitives } from '../schema/base.js';
-import type { YBlock } from '../store/doc/block/index.js';
-import type { BlockProps } from '../store/workspace.js';
+import { SYS_KEYS } from '../../consts.js';
+import { native2Y } from '../../reactive/index.js';
+import type { BlockModel } from '../block/block-model.js';
+import type { BlockProps, YBlock } from '../block/types.js';
+import type { BlockSchema } from '../block/zod.js';
+import { internalPrimitives } from '../block/zod.js';
 
 export function syncBlockProps(
   schema: z.infer<typeof BlockSchema>,
@@ -35,13 +35,3 @@ export function syncBlockProps(
     model[key] = native2Y(value);
   });
 }
-
-export const hash = (str: string) => {
-  return str
-    .split('')
-    .reduce(
-      (prevHash, currVal) =>
-        ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
-      0
-    );
-};

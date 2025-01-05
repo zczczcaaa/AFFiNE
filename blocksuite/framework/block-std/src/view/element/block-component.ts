@@ -1,6 +1,6 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import { type BlockModel, Blocks, BlockViewType } from '@blocksuite/store';
+import { type BlockModel, Blocks, type BlockViewType } from '@blocksuite/store';
 import { consume, provide } from '@lit/context';
 import { computed } from '@preact/signals-core';
 import { nothing, type TemplateResult } from 'lit';
@@ -187,9 +187,9 @@ export class BlockComponent<
 
   private _renderViewType(content: unknown) {
     return choose(this.viewType, [
-      [BlockViewType.Display, () => content],
-      [BlockViewType.Hidden, () => nothing],
-      [BlockViewType.Bypass, () => this.renderChildren(this.model)],
+      ['display', () => content],
+      ['hidden', () => nothing],
+      ['bypass', () => this.renderChildren(this.model)],
     ]);
   }
 
@@ -310,7 +310,7 @@ export class BlockComponent<
   accessor doc!: Blocks;
 
   @property({ attribute: false })
-  accessor viewType: BlockViewType = BlockViewType.Display;
+  accessor viewType: BlockViewType = 'display';
 
   @property({
     attribute: false,

@@ -2,10 +2,10 @@ import { type Disposable, Slot } from '@blocksuite/global/utils';
 import { signal } from '@preact/signals-core';
 import * as Y from 'yjs';
 
-import { Blocks } from '../store/doc/doc.js';
-import type { YBlock } from '../store/doc/index.js';
-import type { Query } from '../store/doc/query.js';
-import type { Doc, GetBlocksOptions, Workspace } from '../store/workspace.js';
+import type { YBlock } from '../model/block/types.js';
+import { Blocks } from '../model/blocks/blocks.js';
+import type { Query } from '../model/blocks/query.js';
+import type { Doc, GetBlocksOptions, Workspace } from '../model/index.js';
 import type { AwarenessStore } from '../yjs/index.js';
 
 type DocOptions = {

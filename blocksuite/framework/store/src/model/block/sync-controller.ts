@@ -9,11 +9,12 @@ import {
   native2Y,
   type UnRecord,
   y2Native,
-} from '../../../reactive/index.js';
-import { BlockModel, internalPrimitives } from '../../../schema/base.js';
-import type { Schema } from '../../../schema/schema.js';
-import type { Blocks } from '../doc.js';
+} from '../../reactive/index.js';
+import type { Schema } from '../../schema/schema.js';
+import type { Blocks } from '../blocks/blocks.js';
+import { BlockModel } from './block-model.js';
 import type { YBlock } from './types.js';
+import { internalPrimitives } from './zod.js';
 
 /**
  * @internal

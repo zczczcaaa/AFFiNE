@@ -13,7 +13,6 @@ import {
   type BlockModel,
   type Blocks,
   type BlockSnapshot,
-  BlockViewType,
   type DraftModel,
   type Query,
   Slice,
@@ -194,7 +193,7 @@ async function renderNoteContent(
   });
   const query: Query = {
     mode: 'strict',
-    match: ids.map(id => ({ id, viewType: BlockViewType.Display })),
+    match: ids.map(id => ({ id, viewType: 'display' })),
   };
   const previewDoc = doc.doc.getBlocks({ query });
   const previewSpec = SpecProvider.getInstance().getSpec('page:preview');

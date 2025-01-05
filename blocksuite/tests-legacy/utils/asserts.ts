@@ -16,7 +16,6 @@ import { BLOCK_ID_ATTR } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
 import type { InlineRootElement } from '@inline/inline-editor.js';
 import { expect, type Locator, type Page } from '@playwright/test';
-import { COLLECTION_VERSION, PAGE_VERSION } from '@store/consts.js';
 import type { BlockModel } from '@store/index.js';
 
 import {
@@ -88,8 +87,8 @@ export const defaultStore = {
       'affine:surface-ref': 1,
       'affine:edgeless-text': 1,
     },
-    workspaceVersion: COLLECTION_VERSION,
-    pageVersion: PAGE_VERSION,
+    workspaceVersion: 2,
+    pageVersion: 2,
   },
   spaces: {
     'doc:home': {

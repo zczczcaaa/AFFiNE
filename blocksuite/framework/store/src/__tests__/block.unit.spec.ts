@@ -3,14 +3,15 @@ import { describe, expect, test, vi } from 'vitest';
 import * as Y from 'yjs';
 
 import {
+  Block,
   defineBlockSchema,
   internalPrimitives,
-  Schema,
   type SchemaToModel,
-} from '../schema/index.js';
-import { Block, type YBlock } from '../store/doc/block/index.js';
+} from '../model/block/index.js';
+import type { YBlock } from '../model/block/types.js';
+import { Schema } from '../schema/index.js';
+import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
-import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 
 const pageSchema = defineBlockSchema({
   flavour: 'page',

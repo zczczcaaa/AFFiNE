@@ -4,7 +4,7 @@ import {
   handleError,
 } from '@blocksuite/global/exceptions';
 import { SignalWatcher, Slot, WithDisposable } from '@blocksuite/global/utils';
-import { type BlockModel, Blocks, BlockViewType } from '@blocksuite/store';
+import { type BlockModel, Blocks } from '@blocksuite/store';
 import { createContext, provide } from '@lit/context';
 import { css, LitElement, nothing, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -44,7 +44,7 @@ export class EditorHost extends SignalWatcher(
   private readonly _renderModel = (model: BlockModel): TemplateResult => {
     const { flavour } = model;
     const block = this.doc.getBlock(model.id);
-    if (!block || block.blockViewType === BlockViewType.Hidden) {
+    if (!block || block.blockViewType === 'hidden') {
       return html`${nothing}`;
     }
     const schema = this.doc.schema.flavourSchemaMap.get(flavour);

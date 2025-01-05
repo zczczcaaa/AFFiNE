@@ -1,8 +1,6 @@
 import isMatch from 'lodash.ismatch';
 
-import type { BlockModel } from '../../schema/index.js';
-import type { Block } from './block/index.js';
-import { BlockViewType } from './consts.js';
+import type { Block, BlockModel, BlockViewType } from '../block/index.js';
 
 export type QueryMatch = {
   id?: string;
@@ -27,7 +25,7 @@ export function runQuery(query: Query, block: Block) {
   const blockViewType = getBlockViewType(query, block);
   block.blockViewType = blockViewType;
 
-  if (blockViewType !== BlockViewType.Hidden) {
+  if (blockViewType !== 'hidden') {
     const queryMode = query.mode;
     setAncestorsToDisplayIfHidden(queryMode, block);
   }
@@ -46,8 +44,8 @@ function getBlockViewType(query: Query, block: Block): BlockViewType {
     },
     {} as Record<string, unknown>
   );
-  let blockViewType =
-    queryMode === 'loose' ? BlockViewType.Display : BlockViewType.Hidden;
+  let blockViewType: BlockViewType =
+    queryMode === 'loose' ? 'display' : 'hidden';
 
   query.match.some(queryObject => {
     const {
@@ -76,9 +74,8 @@ function setAncestorsToDisplayIfHidden(mode: QueryMode, block: Block) {
   let parent = doc.getParent(block.model);
   while (parent) {
     const parentBlock = doc.getBlock(parent.id);
-    if (parentBlock && parentBlock.blockViewType === BlockViewType.Hidden) {
-      parentBlock.blockViewType =
-        mode === 'include' ? BlockViewType.Display : BlockViewType.Bypass;
+    if (parentBlock && parentBlock.blockViewType === 'hidden') {
+      parentBlock.blockViewType = mode === 'include' ? 'display' : 'bypass';
     }
     parent = doc.getParent(parent);
   }

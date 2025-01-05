@@ -12,7 +12,7 @@ import {
   DisposableGroup,
   WithDisposable,
 } from '@blocksuite/global/utils';
-import { type Blocks, BlockViewType, type Query } from '@blocksuite/store';
+import { type Blocks, type Query } from '@blocksuite/store';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -71,7 +71,7 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
     match: [
       {
         flavour: 'affine:frame',
-        viewType: BlockViewType.Hidden,
+        viewType: 'hidden',
       },
     ],
   };

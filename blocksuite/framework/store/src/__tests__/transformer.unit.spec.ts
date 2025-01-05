@@ -2,16 +2,13 @@ import { expect, test } from 'vitest';
 import * as Y from 'yjs';
 
 import { MemoryBlobCRUD } from '../adapter/index.js';
+import type { BlockModel } from '../model/block/block-model.js';
+import { defineBlockSchema, type SchemaToModel } from '../model/block/zod.js';
 import { Text } from '../reactive/index.js';
-import {
-  type BlockModel,
-  defineBlockSchema,
-  Schema,
-  type SchemaToModel,
-} from '../schema/index.js';
+import { Schema } from '../schema/index.js';
+import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
 import { AssetsManager, BaseBlockTransformer } from '../transformer/index.js';
-import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
 
 const docSchema = defineBlockSchema({
   flavour: 'page',
