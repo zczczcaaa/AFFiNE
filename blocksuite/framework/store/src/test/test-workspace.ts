@@ -20,7 +20,6 @@ import type { Schema } from '../schema/index.js';
 import {
   type Blocks,
   type CreateBlocksOptions,
-  DocCollectionMeta,
   type GetBlocksOptions,
   type Workspace,
   type WorkspaceMeta,
@@ -28,6 +27,7 @@ import {
 import { type IdGenerator, nanoid } from '../utils/id-generator.js';
 import { AwarenessStore, type RawAwarenessState } from '../yjs/index.js';
 import { TestDoc } from './test-doc.js';
+import { TestMeta } from './test-meta.js';
 
 export type DocCollectionOptions = {
   schema: Schema;
@@ -146,7 +146,7 @@ export class TestWorkspace implements Workspace {
 
     this.idGenerator = idGenerator ?? nanoid;
 
-    this.meta = new DocCollectionMeta(this.doc);
+    this.meta = new TestMeta(this.doc);
     this._bindDocMetaEvents();
   }
 

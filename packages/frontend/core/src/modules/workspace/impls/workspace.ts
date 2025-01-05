@@ -9,7 +9,6 @@ import {
   type Blocks,
   type CreateBlocksOptions,
   type Doc,
-  DocCollectionMeta,
   type GetBlocksOptions,
   type IdGenerator,
   nanoid,
@@ -29,6 +28,7 @@ import { Awareness } from 'y-protocols/awareness.js';
 import * as Y from 'yjs';
 
 import { DocImpl } from './doc';
+import { WorkspaceMetaImpl } from './meta';
 
 type WorkspaceOptions = {
   id?: string;
@@ -111,7 +111,7 @@ export class WorkspaceImpl implements Workspace {
 
     this.idGenerator = nanoid;
 
-    this.meta = new DocCollectionMeta(this.doc);
+    this.meta = new WorkspaceMetaImpl(this.doc);
     this._bindDocMetaEvents();
   }
 

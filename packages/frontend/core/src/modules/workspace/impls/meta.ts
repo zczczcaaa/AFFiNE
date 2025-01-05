@@ -1,16 +1,17 @@
-import { Slot } from '@blocksuite/global/utils';
+import { Slot } from '@blocksuite/affine/global/utils';
+import {
+  createYProxy,
+  type DocMeta,
+  type DocsPropertiesMeta,
+  type Workspace,
+  type WorkspaceMeta,
+} from '@blocksuite/affine/store';
 import type * as Y from 'yjs';
 
-import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
-import { createYProxy } from '../reactive/proxy.js';
-import type {
-  DocMeta,
-  DocsPropertiesMeta,
-  Workspace,
-  WorkspaceMeta,
-} from './workspace.js';
+const COLLECTION_VERSION = 2;
+const PAGE_VERSION = 2;
 
-export type DocCollectionMetaState = {
+type MetaState = {
   pages?: unknown[];
   properties?: DocsPropertiesMeta;
   workspaceVersion?: number;
@@ -20,7 +21,12 @@ export type DocCollectionMetaState = {
   avatar?: string;
 };
 
-export class DocCollectionMeta implements WorkspaceMeta {
+export class WorkspaceMetaImpl implements WorkspaceMeta {
+  commonFieldsUpdated = new Slot();
+  docMetaAdded = new Slot<string>();
+  docMetaRemoved = new Slot<string>();
+  docMetaUpdated = new Slot();
+
   private readonly _handleDocCollectionMetaEvents = (
     events: Y.YEvent<Y.Array<unknown> | Y.Text | Y.Map<unknown>>[]
   ) => {
@@ -42,58 +48,30 @@ export class DocCollectionMeta implements WorkspaceMeta {
     });
   };
 
+  private readonly _id: string = 'meta';
+  private readonly _doc: Y.Doc;
+  private readonly _proxy: MetaState;
+  private readonly _yMap: Y.Map<MetaState[keyof MetaState]>;
   private _prevDocs = new Set<string>();
-
-  protected readonly _proxy: DocCollectionMetaState;
-
-  protected readonly _yMap: Y.Map<
-    DocCollectionMetaState[keyof DocCollectionMetaState]
-  >;
-
-  commonFieldsUpdated = new Slot();
-
-  readonly doc: Y.Doc;
-
-  docMetaAdded = new Slot<string>();
-
-  docMetaRemoved = new Slot<string>();
-
-  docMetaUpdated = new Slot();
-
-  readonly id: string = 'meta';
 
   get avatar() {
     return this._proxy.avatar;
   }
 
-  get blockVersions() {
-    return this._proxy.blockVersions;
-  }
-
-  get docMetas() {
-    if (!this._proxy.pages) {
-      return [] as DocMeta[];
-    }
-    return this._proxy.pages as DocMeta[];
-  }
-
-  get docs() {
-    return this._proxy.pages;
-  }
-
-  get hasVersion() {
-    if (!this.blockVersions || !this.pageVersion || !this.workspaceVersion) {
-      return false;
-    }
-    return Object.keys(this.blockVersions).length > 0;
+  setAvatar(avatar: string) {
+    this._doc.transact(() => {
+      this._proxy.avatar = avatar;
+    }, this._doc.clientID);
   }
 
   get name() {
     return this._proxy.name;
   }
 
-  get pageVersion() {
-    return this._proxy.pageVersion;
+  setName(name: string) {
+    this._doc.transact(() => {
+      this._proxy.name = name;
+    }, this._doc.clientID);
   }
 
   get properties(): DocsPropertiesMeta {
@@ -108,7 +86,38 @@ export class DocCollectionMeta implements WorkspaceMeta {
     return meta;
   }
 
-  get workspaceVersion() {
+  setProperties(meta: DocsPropertiesMeta) {
+    this._proxy.properties = meta;
+    this.docMetaUpdated.emit();
+  }
+
+  get docMetas() {
+    if (!this._proxy.pages) {
+      return [] as DocMeta[];
+    }
+    return this._proxy.pages as DocMeta[];
+  }
+
+  get docs() {
+    return this._proxy.pages;
+  }
+
+  get hasVersion() {
+    if (!this._blockVersions || !this._pageVersion || !this._workspaceVersion) {
+      return false;
+    }
+    return Object.keys(this._blockVersions).length > 0;
+  }
+
+  private get _blockVersions() {
+    return this._proxy.blockVersions;
+  }
+
+  private get _pageVersion() {
+    return this._proxy.pageVersion;
+  }
+
+  private get _workspaceVersion() {
     return this._proxy.workspaceVersion;
   }
 
@@ -117,10 +126,8 @@ export class DocCollectionMeta implements WorkspaceMeta {
   }
 
   constructor(doc: Y.Doc) {
-    this.doc = doc;
-    const map = doc.getMap(this.id) as Y.Map<
-      DocCollectionMetaState[keyof DocCollectionMetaState]
-    >;
+    this._doc = doc;
+    const map = doc.getMap(this._id) as Y.Map<MetaState[keyof MetaState]>;
     this._yMap = map;
     this._proxy = createYProxy(map);
     this._yMap.observeDeep(this._handleDocCollectionMetaEvents);
@@ -155,7 +162,7 @@ export class DocCollectionMeta implements WorkspaceMeta {
   }
 
   addDocMeta(doc: DocMeta, index?: number) {
-    this.doc.transact(() => {
+    this._doc.transact(() => {
       if (!this.docs) {
         return;
       }
@@ -165,7 +172,7 @@ export class DocCollectionMeta implements WorkspaceMeta {
       } else {
         docs.splice(index, 0, doc);
       }
-    }, this.doc.clientID);
+    }, this._doc.clientID);
   }
 
   getDocMeta(id: string) {
@@ -189,25 +196,19 @@ export class DocCollectionMeta implements WorkspaceMeta {
     if (index === -1) {
       return;
     }
-    this.doc.transact(() => {
+    this._doc.transact(() => {
       if (!this.docs) {
         return;
       }
       this.docs.splice(index, 1);
-    }, this.doc.clientID);
-  }
-
-  setAvatar(avatar: string) {
-    this.doc.transact(() => {
-      this._proxy.avatar = avatar;
-    }, this.doc.clientID);
+    }, this._doc.clientID);
   }
 
   setDocMeta(id: string, props: Partial<DocMeta>) {
     const docs = (this.docs as DocMeta[]) ?? [];
     const index = docs.findIndex((doc: DocMeta) => id === doc.id);
 
-    this.doc.transact(() => {
+    this._doc.transact(() => {
       if (!this.docs) {
         return;
       }
@@ -217,18 +218,7 @@ export class DocCollectionMeta implements WorkspaceMeta {
       Object.entries(props).forEach(([key, value]) => {
         doc[key] = value;
       });
-    }, this.doc.clientID);
-  }
-
-  setName(name: string) {
-    this.doc.transact(() => {
-      this._proxy.name = name;
-    }, this.doc.clientID);
-  }
-
-  setProperties(meta: DocsPropertiesMeta) {
-    this._proxy.properties = meta;
-    this.docMetaUpdated.emit();
+    }, this._doc.clientID);
   }
 
   /**

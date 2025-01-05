@@ -54,13 +54,12 @@ export interface WorkspaceMeta {
   get name(): string | undefined;
   setName(name: string): void;
 
-  commonFieldsUpdated: Slot;
-
   hasVersion: boolean;
   writeVersion(workspace: Workspace): void;
   get docs(): unknown[] | undefined;
   initialize(): void;
 
+  commonFieldsUpdated: Slot;
   docMetaAdded: Slot<string>;
   docMetaRemoved: Slot<string>;
   docMetaUpdated: Slot;
