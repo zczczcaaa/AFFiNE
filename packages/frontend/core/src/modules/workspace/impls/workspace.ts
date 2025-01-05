@@ -7,7 +7,6 @@ import { NoopLogger, Slot } from '@blocksuite/affine/global/utils';
 import {
   AwarenessStore,
   type Blocks,
-  BlockSuiteDoc,
   type CreateBlocksOptions,
   type Doc,
   DocCollectionMeta,
@@ -27,6 +26,7 @@ import {
   NoopDocSource,
 } from '@blocksuite/affine/sync';
 import { Awareness } from 'y-protocols/awareness.js';
+import * as Y from 'yjs';
 
 import { DocImpl } from './doc';
 
@@ -67,7 +67,7 @@ export class WorkspaceImpl implements Workspace {
 
   readonly blockCollections = new Map<string, Doc>();
 
-  readonly doc: BlockSuiteDoc;
+  readonly doc: Y.Doc;
 
   readonly docSync: DocEngine;
 
@@ -95,7 +95,7 @@ export class WorkspaceImpl implements Workspace {
     this._schema = schema;
 
     this.id = id || '';
-    this.doc = new BlockSuiteDoc({ guid: id });
+    this.doc = new Y.Doc({ guid: id });
     this.awarenessStore = new AwarenessStore(new Awareness(this.doc), {
       ...FLAGS_PRESET,
       readonly: {},

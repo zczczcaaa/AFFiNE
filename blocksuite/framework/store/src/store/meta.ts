@@ -2,7 +2,7 @@ import { Slot } from '@blocksuite/global/utils';
 import type * as Y from 'yjs';
 
 import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
-import type { BlockSuiteDoc } from '../yjs/index.js';
+import { createYProxy } from '../reactive/proxy.js';
 import type {
   DocMeta,
   DocsPropertiesMeta,
@@ -52,7 +52,7 @@ export class DocCollectionMeta implements WorkspaceMeta {
 
   commonFieldsUpdated = new Slot();
 
-  readonly doc: BlockSuiteDoc;
+  readonly doc: Y.Doc;
 
   docMetaAdded = new Slot<string>();
 
@@ -116,10 +116,13 @@ export class DocCollectionMeta implements WorkspaceMeta {
     return this._yMap.get('pages') as unknown as Y.Array<unknown>;
   }
 
-  constructor(doc: BlockSuiteDoc) {
+  constructor(doc: Y.Doc) {
     this.doc = doc;
-    this._yMap = doc.getMap(this.id);
-    this._proxy = doc.getMapProxy<string, DocCollectionMetaState>(this.id);
+    const map = doc.getMap(this.id) as Y.Map<
+      DocCollectionMetaState[keyof DocCollectionMetaState]
+    >;
+    this._yMap = map;
+    this._proxy = createYProxy(map);
     this._yMap.observeDeep(this._handleDocCollectionMetaEvents);
   }
 

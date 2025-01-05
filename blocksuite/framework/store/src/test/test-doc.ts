@@ -6,12 +6,12 @@ import { Blocks } from '../store/doc/doc.js';
 import type { YBlock } from '../store/doc/index.js';
 import type { Query } from '../store/doc/query.js';
 import type { Doc, GetBlocksOptions, Workspace } from '../store/workspace.js';
-import type { AwarenessStore, BlockSuiteDoc } from '../yjs/index.js';
+import type { AwarenessStore } from '../yjs/index.js';
 
 type DocOptions = {
   id: string;
   collection: Workspace;
-  doc: BlockSuiteDoc;
+  doc: Y.Doc;
   awarenessStore: AwarenessStore;
 };
 
@@ -43,12 +43,12 @@ export class TestDoc implements Doc {
   };
 
   private readonly _initSubDoc = () => {
-    let subDoc = this.rootDoc.spaces.get(this.id);
+    let subDoc = this.rootDoc.getMap('spaces').get(this.id);
     if (!subDoc) {
       subDoc = new Y.Doc({
         guid: this.id,
       });
-      this.rootDoc.spaces.set(this.id, subDoc);
+      this.rootDoc.getMap('spaces').set(this.id, subDoc);
       this._loaded = true;
       this._onLoadSlot.emit();
     } else {
@@ -107,7 +107,7 @@ export class TestDoc implements Doc {
 
   readonly id: string;
 
-  readonly rootDoc: BlockSuiteDoc;
+  readonly rootDoc: Y.Doc;
 
   readonly slots = {
     historyUpdated: new Slot(),
@@ -192,7 +192,7 @@ export class TestDoc implements Doc {
     this.rootDoc = doc;
     this.awarenessStore = awarenessStore;
 
-    this._ySpaceDoc = this._initSubDoc();
+    this._ySpaceDoc = this._initSubDoc() as Y.Doc;
 
     this._yBlocks = this._ySpaceDoc.getMap('blocks');
     this._collection = collection;
@@ -353,7 +353,7 @@ export class TestDoc implements Doc {
 
   remove() {
     this._destroy();
-    this.rootDoc.spaces.delete(this.id);
+    this.rootDoc.getMap('spaces').delete(this.id);
   }
 
   resetHistory() {

@@ -14,6 +14,7 @@ import {
 import clonedeep from 'lodash.clonedeep';
 import merge from 'lodash.merge';
 import { Awareness } from 'y-protocols/awareness.js';
+import * as Y from 'yjs';
 
 import type { Schema } from '../schema/index.js';
 import {
@@ -25,11 +26,7 @@ import {
   type WorkspaceMeta,
 } from '../store/index.js';
 import { type IdGenerator, nanoid } from '../utils/id-generator.js';
-import {
-  AwarenessStore,
-  BlockSuiteDoc,
-  type RawAwarenessState,
-} from '../yjs/index.js';
+import { AwarenessStore, type RawAwarenessState } from '../yjs/index.js';
 import { TestDoc } from './test-doc.js';
 
 export type DocCollectionOptions = {
@@ -83,7 +80,7 @@ export class TestWorkspace implements Workspace {
 
   readonly blockCollections = new Map<string, TestDoc>();
 
-  readonly doc: BlockSuiteDoc;
+  readonly doc: Y.Doc;
 
   readonly docSync: DocEngine;
 
@@ -123,7 +120,7 @@ export class TestWorkspace implements Workspace {
     this._schema = schema;
 
     this.id = id || '';
-    this.doc = new BlockSuiteDoc({ guid: id });
+    this.doc = new Y.Doc({ guid: id });
     this.awarenessStore = new AwarenessStore(
       new Awareness<RawAwarenessState>(this.doc),
       merge(clonedeep(FLAGS_PRESET), defaultFlags)

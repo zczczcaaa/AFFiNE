@@ -6,7 +6,6 @@ import type { BlockModel } from '../schema/base.js';
 import type { Schema } from '../schema/schema.js';
 import type { IdGenerator } from '../utils/id-generator.js';
 import type { AwarenessStore } from '../yjs/awareness.js';
-import type { BlockSuiteDoc } from '../yjs/doc.js';
 import type { YBlock } from './doc/block/types.js';
 import type { Blocks } from './doc/doc.js';
 import type { Query } from './doc/query.js';
@@ -76,7 +75,7 @@ export interface Workspace {
   readonly awarenessStore: AwarenessStore;
 
   get schema(): Schema;
-  get doc(): BlockSuiteDoc;
+  get doc(): Y.Doc;
   get docs(): Map<string, Doc>;
 
   slots: {
@@ -136,7 +135,7 @@ export interface Doc {
 
   get workspace(): Workspace;
 
-  get rootDoc(): BlockSuiteDoc;
+  get rootDoc(): Y.Doc;
   get spaceDoc(): Y.Doc;
   get yBlocks(): Y.Map<YBlock>;
 }

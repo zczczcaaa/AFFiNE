@@ -2,7 +2,6 @@ import { type Disposable, Slot } from '@blocksuite/affine/global/utils';
 import {
   type AwarenessStore,
   Blocks,
-  type BlockSuiteDoc,
   type Doc,
   type GetBlocksOptions,
   type Query,
@@ -15,7 +14,7 @@ import * as Y from 'yjs';
 type DocOptions = {
   id: string;
   collection: Workspace;
-  doc: BlockSuiteDoc;
+  doc: Y.Doc;
   awarenessStore: AwarenessStore;
 };
 
@@ -47,12 +46,12 @@ export class DocImpl implements Doc {
   };
 
   private readonly _initSubDoc = () => {
-    let subDoc = this.rootDoc.spaces.get(this.id);
+    let subDoc = this.rootDoc.getMap('spaces').get(this.id);
     if (!subDoc) {
       subDoc = new Y.Doc({
         guid: this.id,
       });
-      this.rootDoc.spaces.set(this.id, subDoc);
+      this.rootDoc.getMap('spaces').set(this.id, subDoc);
       this._loaded = true;
       this._onLoadSlot.emit();
     } else {
@@ -111,7 +110,7 @@ export class DocImpl implements Doc {
 
   readonly id: string;
 
-  readonly rootDoc: BlockSuiteDoc;
+  readonly rootDoc: Y.Doc;
 
   readonly slots = {
     historyUpdated: new Slot(),
@@ -188,7 +187,7 @@ export class DocImpl implements Doc {
     this.rootDoc = doc;
     this.awarenessStore = awarenessStore;
 
-    this._ySpaceDoc = this._initSubDoc();
+    this._ySpaceDoc = this._initSubDoc() as Y.Doc;
 
     this._yBlocks = this._ySpaceDoc.getMap('blocks');
     this._collection = collection;
@@ -349,7 +348,7 @@ export class DocImpl implements Doc {
 
   remove() {
     this._destroy();
-    this.rootDoc.spaces.delete(this.id);
+    this.rootDoc.getMap('spaces').delete(this.id);
   }
 
   resetHistory() {

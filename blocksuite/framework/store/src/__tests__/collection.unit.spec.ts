@@ -2,7 +2,7 @@
 
 import type { Slot } from '@blocksuite/global/utils';
 import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
-import { applyUpdate, encodeStateAsUpdate } from 'yjs';
+import { applyUpdate, type Doc, encodeStateAsUpdate } from 'yjs';
 
 import { COLLECTION_VERSION, PAGE_VERSION } from '../consts.js';
 import type { BlockModel, Blocks, BlockSchemaType } from '../index.js';
@@ -11,7 +11,6 @@ import { Text } from '../reactive/text.js';
 import type { DocMeta } from '../store/workspace.js';
 import { TestWorkspace } from '../test/test-workspace.js';
 import { createAutoIncrementIdGenerator } from '../utils/id-generator.js';
-import type { BlockSuiteDoc } from '../yjs/index.js';
 import {
   NoteBlockSchema,
   ParagraphBlockSchema,
@@ -36,9 +35,9 @@ const defaultDocId = 'doc:home';
 const spaceId = defaultDocId;
 const spaceMetaId = 'meta';
 
-function serializCollection(doc: BlockSuiteDoc): Record<string, any> {
+function serializCollection(doc: Doc): Record<string, any> {
   const spaces = {};
-  doc.spaces.forEach((subDoc, key) => {
+  doc.getMap('spaces').forEach((subDoc, key) => {
     // @ts-expect-error ignore
     spaces[key] = subDoc.toJSON();
   });
@@ -200,7 +199,7 @@ describe('basic', () => {
       expect(collection2.docs.size).toBe(0);
       const update = encodeStateAsUpdate(collection.doc);
       applyUpdate(collection2.doc, update);
-      expect(collection2.doc.toJSON()['spaces']).toEqual({
+      expect(serializCollection(collection2.doc)['spaces']).toEqual({
         'space:0': {
           blocks: {},
         },
@@ -215,7 +214,7 @@ describe('basic', () => {
       const doc2 = collection2.getDoc('space:0');
       assertExists(doc2);
       applyUpdate(doc2.spaceDoc, update);
-      expect(collection2.doc.toJSON()['spaces']).toEqual({
+      expect(serializCollection(collection2.doc)['spaces']).toEqual({
         'space:0': {
           blocks: {
             '0': {
