@@ -1,5 +1,4 @@
 import {
-  CommonUtils,
   EdgelessCRUDIdentifier,
   Overlay,
   type SurfaceBlockComponent,
@@ -7,9 +6,13 @@ import {
 import { isTopLevelBlock } from '@blocksuite/affine-shared/utils';
 import type { PointerEventState } from '@blocksuite/block-std';
 import { BaseTool } from '@blocksuite/block-std/gfx';
-import { Bound, type IVec } from '@blocksuite/global/utils';
-
-const { getSvgPathFromStroke, getStroke, linePolygonIntersects } = CommonUtils;
+import {
+  Bound,
+  getStroke,
+  getSvgPathFromStroke,
+  type IVec,
+  linePolygonIntersects,
+} from '@blocksuite/global/utils';
 
 class EraserOverlay extends Overlay {
   d = '';

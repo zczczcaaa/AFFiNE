@@ -3,8 +3,8 @@ import type {
   SurfaceBlockModel,
 } from '@blocksuite/affine-block-surface';
 import {
-  CommonUtils,
   EdgelessLegacySlotIdentifier,
+  normalizeWheelDeltaY,
 } from '@blocksuite/affine-block-surface';
 import type {
   RootBlockModel,
@@ -48,8 +48,6 @@ import type { EdgelessRootService } from './edgeless-root-service.js';
 import { getBackgroundGrid, isCanvasElement } from './utils/query.js';
 import { mountShapeTextEditor } from './utils/text.js';
 import { fitToScreen } from './utils/viewport.js';
-
-const { normalizeWheelDeltaY } = CommonUtils;
 
 export class EdgelessRootBlockComponent extends BlockComponent<
   RootBlockModel,

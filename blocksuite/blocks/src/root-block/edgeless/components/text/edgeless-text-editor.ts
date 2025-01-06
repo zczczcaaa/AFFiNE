@@ -1,5 +1,4 @@
 import {
-  CommonUtils,
   EdgelessCRUDIdentifier,
   TextUtils,
 } from '@blocksuite/affine-block-surface';
@@ -14,6 +13,7 @@ import {
 import {
   assertExists,
   Bound,
+  toRadian,
   Vec,
   WithDisposable,
 } from '@blocksuite/global/utils';
@@ -23,8 +23,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
 import { deleteElements } from '../../utils/crud.js';
-
-const { toRadian } = CommonUtils;
 
 export class EdgelessTextEditor extends WithDisposable(ShadowlessElement) {
   get crud() {

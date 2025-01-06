@@ -1,5 +1,4 @@
 import {
-  CommonUtils,
   type Options,
   Overlay,
   type RoughCanvas,
@@ -17,7 +16,7 @@ import {
 import type { GfxController, GfxModel } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { XYWH } from '@blocksuite/global/utils';
-import { assertType, Bound } from '@blocksuite/global/utils';
+import { assertType, Bound, normalizeDegAngle } from '@blocksuite/global/utils';
 import * as Y from 'yjs';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
@@ -193,7 +192,7 @@ export function nextBound(
       angle = 270;
       break;
   }
-  angle = CommonUtils.normalizeDegAngle(angle + curShape.rotate);
+  angle = normalizeDegAngle(angle + curShape.rotate);
 
   if (angle >= 45 && angle <= 135) {
     nextBound = new Bound(x, y + h + MAIN_GAP, w, h);

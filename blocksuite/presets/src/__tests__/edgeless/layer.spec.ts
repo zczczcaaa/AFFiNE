@@ -1,5 +1,5 @@
-import { CommonUtils } from '@blocksuite/affine-block-surface';
 import type { BlockComponent } from '@blocksuite/block-std';
+import { generateKeyBetween } from '@blocksuite/block-std/gfx';
 import type {
   EdgelessRootBlockComponent,
   GroupElementModel,
@@ -238,7 +238,7 @@ test('blocks should rerender when their z-index changed', async () => {
 
   service.crud.addElement('shape', {
     shapeType: 'rect',
-    index: CommonUtils.generateKeyBetween(
+    index: generateKeyBetween(
       service.crud.getElementById(blocks[1])!.index,
       service.crud.getElementById(blocks[2])!.index
     ),

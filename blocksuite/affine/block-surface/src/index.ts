@@ -66,34 +66,6 @@ export {
 export { RoughCanvas } from './utils/rough/canvas.js';
 
 import {
-  almostEqual,
-  clamp,
-  getPointFromBoundsWithRotation,
-  getStroke,
-  getSvgPathFromStroke,
-  intersects,
-  isOverlap,
-  isPointIn,
-  lineIntersects,
-  linePolygonIntersects,
-  normalizeDegAngle,
-  polygonGetPointTangent,
-  polygonNearestPoint,
-  polygonPointDistance,
-  polyLineNearestPoint,
-  rotatePoints,
-  sign,
-  toDegree,
-  toRadian,
-} from '@blocksuite/global/utils';
-import { generateKeyBetween } from 'fractional-indexing';
-
-import {
-  generateElementId,
-  getLastPropsKey,
-  normalizeWheelDeltaY,
-} from './utils';
-import {
   addTree,
   containsNode,
   createFromTree,
@@ -107,8 +79,10 @@ export * from './extensions';
 export {
   addNote,
   addNoteAtPoint,
+  generateElementId,
   getLastPropsKey,
   getSurfaceBlock,
+  normalizeWheelDeltaY,
 } from './utils';
 export type { Options } from './utils/rough/core';
 export { sortIndex } from './utils/sort';
@@ -130,32 +104,6 @@ export const TextUtils = {
   getFontFaces,
   getFontFacesByFontFamily,
   isSameFontFamily,
-};
-
-export const CommonUtils = {
-  almostEqual,
-  clamp,
-  generateElementId,
-  generateKeyBetween,
-  getPointFromBoundsWithRotation,
-  getStroke,
-  getSvgPathFromStroke,
-  getLastPropsKey,
-  intersects,
-  isOverlap,
-  isPointIn,
-  lineIntersects,
-  linePolygonIntersects,
-  normalizeDegAngle,
-  normalizeWheelDeltaY,
-  polygonGetPointTangent,
-  polygonNearestPoint,
-  polygonPointDistance,
-  polyLineNearestPoint,
-  rotatePoints,
-  sign,
-  toDegree,
-  toRadian,
 };
 
 export const MindmapUtils = {

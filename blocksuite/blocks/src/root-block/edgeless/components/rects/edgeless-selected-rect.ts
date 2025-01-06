@@ -8,7 +8,6 @@ import {
 } from '@blocksuite/affine-block-embed';
 import {
   CanvasElementType,
-  CommonUtils,
   normalizeShapeBound,
   OverlayIdentifier,
   TextUtils,
@@ -54,6 +53,7 @@ import {
   assertType,
   Bound,
   deserializeXYWH,
+  normalizeDegAngle,
   pickValues,
   Slot,
 } from '@blocksuite/global/utils';
@@ -597,7 +597,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
       } else {
         this.gfx.updateElement(id, {
           xywh: bounds.serialize(),
-          rotate: CommonUtils.normalizeDegAngle(rotate + delta),
+          rotate: normalizeDegAngle(rotate + delta),
         });
       }
     });

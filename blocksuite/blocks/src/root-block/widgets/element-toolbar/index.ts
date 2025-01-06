@@ -1,5 +1,4 @@
 import type { BuiltInEmbedModel } from '@blocksuite/affine-block-bookmark';
-import { CommonUtils } from '@blocksuite/affine-block-surface';
 import { ConnectorCWithArrowIcon } from '@blocksuite/affine-components/icons';
 import {
   cloneGroups,
@@ -31,6 +30,7 @@ import { requestConnectedFrame } from '@blocksuite/affine-shared/utils';
 import { WidgetComponent } from '@blocksuite/block-std';
 import {
   atLeastNMatches,
+  clamp,
   getCommonBoundWithRotation,
   groupBy,
   pickValues,
@@ -238,8 +238,8 @@ export class EdgelessElementToolbarWidget extends WidgetComponent<
         left += 0.5 * (w - rect.width);
       }
 
-      left = CommonUtils.clamp(left, 10, width - rect.width - 10);
-      top = CommonUtils.clamp(top, 10, height - rect.height - 150);
+      left = clamp(left, 10, width - rect.width - 10);
+      top = clamp(top, 10, height - rect.height - 150);
 
       this.style.transform = `translate3d(${left}px, ${top}px, 0)`;
     }, this);
