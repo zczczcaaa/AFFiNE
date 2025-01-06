@@ -22,7 +22,7 @@ import {
   EdgelessIcon,
   LockIcon,
   PageIcon,
-  SingleSelectSelectSolidIcon,
+  SingleSelectCheckSolidIcon,
   ViewIcon,
 } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
@@ -108,7 +108,7 @@ export const AFFiNESharePage = (props: ShareMenuProps) => {
             'com.affine.share-menu.create-public-link.notification.success.message'
           ](),
         style: 'normal',
-        icon: <SingleSelectSelectSolidIcon color={cssVar('primaryColor')} />,
+        icon: <SingleSelectCheckSolidIcon color={cssVar('primaryColor')} />,
       });
     } catch (err) {
       notify.error({

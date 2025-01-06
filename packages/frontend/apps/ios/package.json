@@ -15,7 +15,7 @@
     "@affine/core": "workspace:*",
     "@affine/i18n": "workspace:*",
     "@blocksuite/affine": "workspace:*",
-    "@blocksuite/icons": "2.1.75",
+    "@blocksuite/icons": "2.2.1",
     "@capacitor/app": "^6.0.2",
     "@capacitor/browser": "^6.0.4",
     "@capacitor/core": "^6.2.0",

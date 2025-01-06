@@ -12,7 +12,7 @@ import { i18nTime, Trans, useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import type { Blocks, Workspace } from '@blocksuite/affine/store';
-import { CloseIcon, ToggleCollapseIcon } from '@blocksuite/icons/rc';
+import { CloseIcon, ToggleRightIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import type { DialogContentProps } from '@radix-ui/react-dialog';
 import { useLiveData, useService } from '@toeverything/infra';
@@ -319,7 +319,7 @@ const PageHistoryList = ({
                     data-testid="page-list-group-header-collapsed-button"
                     className={styles.collapsedIconContainer}
                   >
-                    <ToggleCollapseIcon
+                    <ToggleRightIcon
                       className={styles.collapsedIcon}
                       data-collapsed={!!collapsed}
                     />

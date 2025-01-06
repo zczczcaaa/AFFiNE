@@ -9,7 +9,7 @@ import { SubscriptionService } from '@affine/core/modules/cloud';
 import { SubscriptionPlan } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import { SingleSelectSelectSolidIcon } from '@blocksuite/icons/rc';
+import { SingleSelectCheckSolidIcon } from '@blocksuite/icons/rc';
 import { useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { nanoid } from 'nanoid';
@@ -57,7 +57,7 @@ export const AIResume = (btnProps: ButtonProps) => {
           });
         }
         notify({
-          icon: <SingleSelectSelectSolidIcon />,
+          icon: <SingleSelectCheckSolidIcon />,
           iconColor: cssVar('processingColor'),
           title:
             t['com.affine.payment.ai.action.resume.confirm.notify.title'](),

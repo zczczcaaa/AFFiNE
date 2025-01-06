@@ -19,7 +19,7 @@ import { ViewService, WorkbenchService } from '@affine/core/modules/workbench';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import { PlusIcon, PropertyIcon, ToggleExpandIcon } from '@blocksuite/icons/rc';
+import { PlusIcon, PropertyIcon, ToggleDownIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import {
   useLiveData,
@@ -94,7 +94,7 @@ export const DocPropertiesTableHeader = ({
           className={styles.tableHeaderCollapseButtonWrapper}
           data-testid="page-info-collapse"
         >
-          <ToggleExpandIcon
+          <ToggleDownIcon
             className={styles.collapsedIcon}
             data-collapsed={!open}
           />

@@ -1,4 +1,4 @@
-import { ToggleCollapseIcon } from '@blocksuite/icons/rc';
+import { ToggleRightIcon } from '@blocksuite/icons/rc';
 import clsx from 'clsx';
 import { type ForwardedRef, forwardRef, type PropsWithChildren } from 'react';
 
@@ -42,7 +42,7 @@ export const CategoryDivider = forwardRef(
         <div className={styles.label}>
           {label}
           {collapsible ? (
-            <ToggleCollapseIcon
+            <ToggleRightIcon
               width={16}
               height={16}
               data-testid="category-divider-collapse-button"

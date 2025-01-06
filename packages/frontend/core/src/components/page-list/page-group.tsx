@@ -3,7 +3,7 @@ import type { Tag } from '@affine/env/filter';
 import { useI18n } from '@affine/i18n';
 import { assertExists } from '@blocksuite/affine/global/utils';
 import type { DocMeta, Workspace } from '@blocksuite/affine/store';
-import { ToggleCollapseIcon, ViewLayersIcon } from '@blocksuite/icons/rc';
+import { ToggleRightIcon, ViewLayersIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
@@ -90,7 +90,7 @@ export const ItemGroupHeader = memo(function ItemGroupHeader<
         data-testid="page-list-group-header-collapsed-button"
         className={styles.collapsedIconContainer}
       >
-        <ToggleCollapseIcon
+        <ToggleRightIcon
           className={styles.collapsedIcon}
           data-collapsed={!!collapsed}
         />
@@ -156,7 +156,7 @@ export const ItemGroup = <T extends ListItem>({
             data-testid="page-list-group-header-collapsed-button"
             className={styles.collapsedIconContainer}
           >
-            <ToggleCollapseIcon
+            <ToggleRightIcon
               className={styles.collapsedIcon}
               data-collapsed={collapsed !== false}
             />

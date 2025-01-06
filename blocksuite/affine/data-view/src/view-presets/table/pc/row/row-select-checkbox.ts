@@ -1,6 +1,6 @@
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import { CheckBoxCkeckSolidIcon, CheckBoxUnIcon } from '@blocksuite/icons/lit';
+import { CheckBoxCheckSolidIcon, CheckBoxUnIcon } from '@blocksuite/icons/lit';
 import { computed, type ReadonlySignal } from '@preact/signals-core';
 import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -74,7 +74,7 @@ export class RowSelectCheckbox extends SignalWatcher(
     return html`
       <div class="${classString}">
         ${this.isSelected$.value
-          ? CheckBoxCkeckSolidIcon({ style: `color:#1E96EB` })
+          ? CheckBoxCheckSolidIcon({ style: `color:#1E96EB` })
           : CheckBoxUnIcon()}
       </div>
     `;

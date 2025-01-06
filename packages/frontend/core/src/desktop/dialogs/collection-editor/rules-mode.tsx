@@ -17,7 +17,7 @@ import {
   CloseIcon,
   EdgelessIcon,
   PageIcon,
-  ToggleCollapseIcon,
+  ToggleRightIcon,
 } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
@@ -135,7 +135,7 @@ export const RulesMode = ({
                       iconStyle={{
                         transform: expandInclude ? 'rotate(90deg)' : undefined,
                       }}
-                      icon={<ToggleCollapseIcon />}
+                      icon={<ToggleRightIcon />}
                     />
                     <div style={{ color: cssVar('textSecondaryColor') }}>
                       {t['com.affine.editCollection.rules.include.title']()}

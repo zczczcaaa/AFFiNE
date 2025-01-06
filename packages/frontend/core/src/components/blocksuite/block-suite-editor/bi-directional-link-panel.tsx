@@ -20,7 +20,7 @@ import {
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import type { JobMiddleware } from '@blocksuite/affine/store';
-import { ToggleExpandIcon } from '@blocksuite/icons/rc';
+import { ToggleDownIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import {
   LiveData,
@@ -109,7 +109,7 @@ const CollapsibleSection = ({
       <Collapsible.Trigger className={styles.link}>
         {title}
         {length ? (
-          <ToggleExpandIcon
+          <ToggleDownIcon
             className={styles.collapsedIcon}
             data-collapsed={!open}
           />
