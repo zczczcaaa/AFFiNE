@@ -64,6 +64,12 @@ export async function pasteByKeyboard(page: Page) {
   await keyUpCtrlOrMeta(page);
 }
 
+export async function selectAllByKeyboard(page: Page) {
+  await keyDownCtrlOrMeta(page);
+  await page.keyboard.press('a', { delay: 50 });
+  await keyUpCtrlOrMeta(page);
+}
+
 export async function writeTextToClipboard(page: Page, text: string) {
   // paste the url
   await page.evaluate(

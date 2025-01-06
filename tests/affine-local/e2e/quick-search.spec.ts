@@ -1,6 +1,9 @@
 import { test } from '@affine-test/kit/playwright';
 import { clickEdgelessModeButton } from '@affine-test/kit/utils/editor';
 import {
+  copyByKeyboard,
+  pasteByKeyboard,
+  selectAllByKeyboard,
   withCtrlOrMeta,
   writeTextToClipboard,
 } from '@affine-test/kit/utils/keyboard';
@@ -586,4 +589,31 @@ test('can use slash menu to insert an external link', async ({ page }) => {
   await expect(page.locator('.affine-bookmark-content-url')).toContainText(
     link
   );
+});
+
+test('Paste content with keyboard', async ({ page }) => {
+  await openHomePage(page);
+  await waitForEditorLoad(page);
+  await clickNewPageButton(page, 'Test');
+
+  // goto main content
+  await page.keyboard.press('Enter');
+
+  // input hello world to editor
+  await page.keyboard.type('hello world', {
+    delay: 50,
+  });
+
+  await selectAllByKeyboard(page);
+  await copyByKeyboard(page);
+
+  const quickSearchButton = page.locator(
+    '[data-testid=slider-bar-quick-search-button]'
+  );
+  await quickSearchButton.click();
+  const quickSearch = page.locator('[data-testid=cmdk-quick-search]');
+  await expect(quickSearch).toBeVisible();
+
+  await pasteByKeyboard(page);
+  await expect(page.locator('[cmdk-input]')).toHaveValue('hello world');
 });
