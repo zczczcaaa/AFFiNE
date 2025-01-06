@@ -101,7 +101,7 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
 
     if (textSelection) {
       const range = this.std.range.textSelectionToRange(
-        this._selectionManager.create('text', {
+        this._selectionManager.create(TextSelection, {
           from: {
             blockId: textSelection.to
               ? textSelection.to.blockId

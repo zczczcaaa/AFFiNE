@@ -15,7 +15,11 @@ import {
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import { getViewportElement } from '@blocksuite/affine-shared/utils';
 import type { BaseSelection, BlockComponent } from '@blocksuite/block-std';
-import { getInlineRangeProvider } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  getInlineRangeProvider,
+  TextSelection,
+} from '@blocksuite/block-std';
 import type { InlineRangeProvider } from '@blocksuite/inline';
 import { effect } from '@preact/signals-core';
 import { html, nothing, type TemplateResult } from 'lit';
@@ -95,8 +99,10 @@ export class ListBlockComponent extends CaptionedBlockComponent<ListBlockModel> 
     const selection = this.host.selection;
     selection.update(selList => {
       return selList
-        .filter<BaseSelection>(sel => !sel.is('text') && !sel.is('block'))
-        .concat(selection.create('block', { blockId: this.blockId }));
+        .filter<BaseSelection>(
+          sel => !sel.is(TextSelection) && !sel.is(BlockSelection)
+        )
+        .concat(selection.create(BlockSelection, { blockId: this.blockId }));
     });
   }
 

@@ -19,7 +19,11 @@ import {
 } from '@blocksuite/affine-components/toolbar';
 import type { SurfaceRefBlockModel } from '@blocksuite/affine-model';
 import { PAGE_HEADER_HEIGHT } from '@blocksuite/affine-shared/consts';
-import { WidgetComponent } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  TextSelection,
+  WidgetComponent,
+} from '@blocksuite/block-std';
 import { offset, shift } from '@floating-ui/dom';
 import { html, nothing } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
@@ -48,7 +52,7 @@ export class AffineSurfaceRefToolbar extends WidgetComponent<
       const surfaceRefBlock = this.block;
       const selection = this.host.selection;
 
-      const textSelection = selection.find('text');
+      const textSelection = selection.find(TextSelection);
       if (
         !!textSelection &&
         (!!textSelection.to || !!textSelection.from.length)
@@ -56,7 +60,7 @@ export class AffineSurfaceRefToolbar extends WidgetComponent<
         return null;
       }
 
-      const blockSelections = selection.filter('block');
+      const blockSelections = selection.filter(BlockSelection);
       if (
         blockSelections.length > 1 ||
         (blockSelections.length === 1 &&

@@ -3,6 +3,7 @@ import type {
   EmbedFigmaModel,
   EmbedFigmaStyles,
 } from '@blocksuite/affine-model';
+import { BlockSelection, SurfaceSelection } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -41,7 +42,7 @@ export class EmbedFigmaBlockComponent extends EmbedBlockComponent<
 
   private _selectBlock() {
     const selectionManager = this.host.selection;
-    const blockSelection = selectionManager.create('block', {
+    const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.blockId,
     });
     selectionManager.setGroup('note', [blockSelection]);
@@ -77,7 +78,8 @@ export class EmbedFigmaBlockComponent extends EmbedBlockComponent<
     this.disposables.add(
       this.std.selection.slots.changed.on(() => {
         this._isSelected =
-          !!this.selected?.is('block') || !!this.selected?.is('surface');
+          !!this.selected?.is(BlockSelection) ||
+          !!this.selected?.is(SurfaceSelection);
 
         this._showOverlay =
           this._isResizing || this._isDragging || !this._isSelected;

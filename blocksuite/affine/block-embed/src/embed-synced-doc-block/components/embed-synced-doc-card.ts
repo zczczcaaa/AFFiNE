@@ -1,5 +1,9 @@
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
-import { isGfxBlockComponent, ShadowlessElement } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  isGfxBlockComponent,
+  ShadowlessElement,
+} from '@blocksuite/block-std';
 import { throttle, WithDisposable } from '@blocksuite/global/utils';
 import { html, nothing } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
@@ -64,7 +68,7 @@ export class EmbedSyncedDocCard extends WithDisposable(ShadowlessElement) {
 
   private _selectBlock() {
     const selectionManager = this.host.selection;
-    const blockSelection = selectionManager.create('block', {
+    const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.block.blockId,
     });
     selectionManager.setGroup('note', [blockSelection]);

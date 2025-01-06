@@ -3,7 +3,11 @@ import {
   getCurrentNativeRange,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockStdScope, EditorHost } from '@blocksuite/block-std';
+import {
+  type BlockStdScope,
+  type EditorHost,
+  TextSelection,
+} from '@blocksuite/block-std';
 import type { InlineEditor, InlineRange } from '@blocksuite/inline';
 import { BlockModel } from '@blocksuite/store';
 
@@ -81,7 +85,7 @@ export function selectTextModel(
 ) {
   const { selection } = std;
   selection.setGroup('note', [
-    selection.create('text', {
+    selection.create(TextSelection, {
       from: { blockId: id, index, length },
       to: null,
     }),

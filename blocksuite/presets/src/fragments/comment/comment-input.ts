@@ -1,5 +1,4 @@
-import type { TextSelection } from '@blocksuite/block-std';
-import { ShadowlessElement } from '@blocksuite/block-std';
+import { ShadowlessElement, TextSelection } from '@blocksuite/block-std';
 import type { RichText } from '@blocksuite/blocks';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, nothing } from 'lit';
@@ -69,7 +68,7 @@ export class CommentInput extends WithDisposable(ShadowlessElement) {
   }
 
   override render() {
-    const textSelection = this.host.selection.find('text');
+    const textSelection = this.host.selection.find(TextSelection);
     if (!textSelection) {
       this.remove();
       return nothing;

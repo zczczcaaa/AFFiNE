@@ -4,6 +4,7 @@ import {
 } from '@blocksuite/affine-components/caption';
 import type { BookmarkBlockModel } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
+import { BlockSelection } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -73,7 +74,7 @@ export class BookmarkBlockComponent extends CaptionedBlockComponent<
   }
 
   override renderBlock() {
-    const selected = !!this.selected?.is('block');
+    const selected = !!this.selected?.is(BlockSelection);
     return html`
       <div
         draggable="${this.blockDraggable ? 'true' : 'false'}"

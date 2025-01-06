@@ -3,7 +3,11 @@ import type { EdgelessTextBlockModel } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent } from '@blocksuite/block-std';
-import { GfxBlockComponent } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  GfxBlockComponent,
+  TextSelection,
+} from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/utils';
 import { css, html } from 'lit';
 import { query, state } from 'lit/decorators.js';
@@ -88,7 +92,7 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
           .then(() => {
             const command = this.std.command;
             const blockSelections = this.model.children.map(child =>
-              this.std.selection.create('block', {
+              this.std.selection.create(BlockSelection, {
                 blockId: child.id,
               })
             );
@@ -178,7 +182,7 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
 
       if (newParagraphId) {
         std.selection.setGroup('note', [
-          std.selection.create('text', {
+          std.selection.create(TextSelection, {
             from: {
               blockId: newParagraphId,
               index: 0,
@@ -310,7 +314,7 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
     const last = paragraphOrLists.at(-1);
     if (last) {
       this.host.selection.setGroup('note', [
-        this.host.selection.create('text', {
+        this.host.selection.create(TextSelection, {
           from: {
             blockId: last.blockId,
             index: last.model.text?.length ?? 0,

@@ -1,5 +1,5 @@
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 /**
  * Add a paragraph next to the current block.
@@ -17,7 +17,7 @@ export const addParagraphCommand: Command<
 
   let blockId = ctx.blockId;
   if (!blockId) {
-    const text = selection.find('text');
+    const text = selection.find(TextSelection);
     blockId = text?.blockId;
   }
   if (!blockId) return;

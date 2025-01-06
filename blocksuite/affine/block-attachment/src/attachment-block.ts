@@ -13,6 +13,11 @@ import {
 } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { humanFileSize } from '@blocksuite/affine-shared/utils';
+import {
+  BlockSelection,
+  SurfaceSelection,
+  TextSelection,
+} from '@blocksuite/block-std';
 import { Slice } from '@blocksuite/store';
 import { flip, offset } from '@floating-ui/dom';
 import { html, nothing } from 'lit';
@@ -44,7 +49,7 @@ export class AttachmentBlockComponent extends CaptionedBlockComponent<
     this,
     ({ abortController }) => {
       const selection = this.host.selection;
-      const textSelection = selection.find('text');
+      const textSelection = selection.find(TextSelection);
       if (
         !!textSelection &&
         (!!textSelection.to || !!textSelection.from.length)
@@ -52,7 +57,7 @@ export class AttachmentBlockComponent extends CaptionedBlockComponent<
         return null;
       }
 
-      const blockSelections = selection.filter('block');
+      const blockSelections = selection.filter(BlockSelection);
       if (
         blockSelections.length > 1 ||
         (blockSelections.length === 1 &&
@@ -126,7 +131,7 @@ export class AttachmentBlockComponent extends CaptionedBlockComponent<
 
   private _selectBlock() {
     const selectionManager = this.host.selection;
-    const blockSelection = selectionManager.create('block', {
+    const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.blockId,
     });
     selectionManager.setGroup('note', [blockSelection]);
@@ -167,7 +172,8 @@ export class AttachmentBlockComponent extends CaptionedBlockComponent<
     this.disposables.add(
       this.std.selection.slots.changed.on(() => {
         this._isSelected =
-          !!this.selected?.is('block') || !!this.selected?.is('surface');
+          !!this.selected?.is(BlockSelection) ||
+          !!this.selected?.is(SurfaceSelection);
 
         this._showOverlay =
           this._isResizing || this._isDragging || !this._isSelected;

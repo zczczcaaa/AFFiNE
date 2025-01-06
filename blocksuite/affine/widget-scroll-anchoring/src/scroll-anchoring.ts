@@ -1,6 +1,5 @@
-import '@blocksuite/affine-shared/selection';
-
 import type { DocMode } from '@blocksuite/affine-model';
+import { HighlightSelection } from '@blocksuite/affine-shared/selection';
 import { WidgetComponent } from '@blocksuite/block-std';
 import {
   GfxControllerIdentifier,
@@ -65,7 +64,7 @@ export class AffineScrollAnchoringWidget extends WidgetComponent {
   anchorBounds$ = signal<Bound | null>(null);
 
   highlighted$ = computed(() =>
-    this.service.selectionManager.find('highlight')
+    this.service.selectionManager.find(HighlightSelection)
   );
 
   #getBoundsInEdgeless() {

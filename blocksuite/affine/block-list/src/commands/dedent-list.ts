@@ -1,6 +1,6 @@
 import type { IndentContext } from '@blocksuite/affine-shared/types';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 import { correctNumberedListsOrderToPrev } from './utils.js';
 
@@ -13,7 +13,7 @@ export const canDedentListCommand: Command<
   const { std } = ctx;
   const { selection, doc } = std;
   if (!blockId) {
-    const text = selection.find('text');
+    const text = selection.find(TextSelection);
     /**
      * Do nothing if the selection:
      * - is not a text selection
@@ -148,7 +148,7 @@ export const dedentListCommand: Command<'indentContext'> = (ctx, next) => {
   doc.moveBlocks([model], grandParent, parent, false);
   correctNumberedListsOrderToPrev(doc, model);
 
-  const textSelection = selection.find('text');
+  const textSelection = selection.find(TextSelection);
   if (textSelection) {
     host.updateComplete
       .then(() => {

@@ -9,7 +9,7 @@ import {
   calculateCollapsedSiblings,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import { KeymapExtension } from '@blocksuite/block-std';
+import { KeymapExtension, TextSelection } from '@blocksuite/block-std';
 import { IS_MAC } from '@blocksuite/global/env';
 
 import { forwardDelete } from './utils/forward-delete.js';
@@ -19,7 +19,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
   std => {
     return {
       Backspace: ctx => {
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) return;
         const isCollapsed = text.isCollapsed();
         const isStart = isCollapsed && text.from.index === 0;
@@ -52,7 +52,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
       },
       'Mod-Enter': ctx => {
         const { doc } = std;
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) return;
         const model = doc.getBlock(text.from.blockId)?.model;
         if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
@@ -79,7 +79,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
       },
       Enter: ctx => {
         const { doc } = std;
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) return;
         const model = doc.getBlock(text.from.blockId)?.model;
         if (!model || !matchFlavours(model, ['affine:paragraph'])) return;

@@ -1,7 +1,8 @@
-import type {
-  BlockStdScope,
-  EditorHost,
-  TextRangePoint,
+import {
+  type BlockStdScope,
+  type EditorHost,
+  type TextRangePoint,
+  TextSelection,
 } from '@blocksuite/block-std';
 import type {
   BlockSnapshot,
@@ -38,7 +39,7 @@ const sliceText = (slots: JobSlots, std: EditorHost['std']) => {
       const snapshot = payload.snapshot;
 
       const model = payload.model;
-      const text = std.selection.find('text');
+      const text = std.selection.find(TextSelection);
       if (text && text.from.blockId === model.id) {
         handlePoint(text.from, snapshot, model);
         return;

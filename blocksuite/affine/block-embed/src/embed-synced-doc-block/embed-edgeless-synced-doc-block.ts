@@ -8,7 +8,7 @@ import {
   ThemeExtensionIdentifier,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
-import { BlockStdScope } from '@blocksuite/block-std';
+import { BlockSelection, BlockStdScope } from '@blocksuite/block-std';
 import { assertExists, Bound } from '@blocksuite/global/utils';
 import { html } from 'lit';
 import { choose } from 'lit/directives/choose.js';
@@ -52,7 +52,7 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
     }
     const theme = this.isPageMode ? appTheme : edgelessTheme;
 
-    const isSelected = !!this.selected?.is('block');
+    const isSelected = !!this.selected?.is(BlockSelection);
     const scale = this.model.scale ?? 1;
 
     this.dataset.nestedEditor = '';

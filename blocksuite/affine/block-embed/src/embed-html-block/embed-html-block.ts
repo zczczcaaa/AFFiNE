@@ -1,4 +1,5 @@
 import type { EmbedHtmlModel, EmbedHtmlStyles } from '@blocksuite/affine-model';
+import { BlockSelection, SurfaceSelection } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -35,7 +36,7 @@ export class EmbedHtmlBlockComponent extends EmbedBlockComponent<EmbedHtmlModel>
 
   private _selectBlock() {
     const selectionManager = this.host.selection;
-    const blockSelection = selectionManager.create('block', {
+    const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.blockId,
     });
     selectionManager.setGroup('note', [blockSelection]);
@@ -54,7 +55,8 @@ export class EmbedHtmlBlockComponent extends EmbedBlockComponent<EmbedHtmlModel>
     this.disposables.add(
       this.std.selection.slots.changed.on(() => {
         this._isSelected =
-          !!this.selected?.is('block') || !!this.selected?.is('surface');
+          !!this.selected?.is(BlockSelection) ||
+          !!this.selected?.is(SurfaceSelection);
 
         this._showOverlay =
           this._isResizing || this._isDragging || !this._isSelected;

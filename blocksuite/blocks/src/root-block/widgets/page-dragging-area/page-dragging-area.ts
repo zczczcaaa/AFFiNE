@@ -7,6 +7,7 @@ import {
 import {
   BLOCK_ID_ATTR,
   BlockComponent,
+  BlockSelection,
   type PointerEventState,
   WidgetComponent,
 } from '@blocksuite/block-std';
@@ -188,7 +189,7 @@ export class AffinePageDraggingAreaWidget extends WidgetComponent<
       this._allBlocksWithRect,
       userRect
     ).map(blockPath => {
-      return this.host.selection.create('block', {
+      return this.host.selection.create(BlockSelection, {
         blockId: blockPath,
       });
     });

@@ -1,4 +1,4 @@
-import type { EditorHost } from '@blocksuite/affine/block-std';
+import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
 import type {
   AffineAIPanelWidget,
   AffineAIPanelWidgetConfig,
@@ -209,7 +209,7 @@ export function actionToHandler<T extends keyof BlockSuitePresets.AIActions>(
 
 export function handleInlineAskAIAction(host: EditorHost) {
   const panel = getAIPanelWidget(host);
-  const selection = host.selection.find('text');
+  const selection = host.selection.find(TextSelection);
   const lastBlockPath = selection
     ? (selection.to?.blockId ?? selection.blockId)
     : null;

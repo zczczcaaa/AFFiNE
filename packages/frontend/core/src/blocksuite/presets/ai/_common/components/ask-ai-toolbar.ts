@@ -1,4 +1,8 @@
-import type { EditorHost } from '@blocksuite/affine/block-std';
+import {
+  BlockSelection,
+  type EditorHost,
+  TextSelection,
+} from '@blocksuite/affine/block-std';
 import {
   type AffineAIPanelWidgetConfig,
   type AIItemGroupConfig,
@@ -92,8 +96,8 @@ export class AskAIToolbarButton extends WithDisposable(LitElement) {
       this._panelRoot.style.visibility = text ? 'hidden' : 'visible';
     };
 
-    const textSelection = this.host.selection.find('text');
-    const blockSelections = this.host.selection.filter('block');
+    const textSelection = this.host.selection.find(TextSelection);
+    const blockSelections = this.host.selection.filter(BlockSelection);
     let lastBlockId: string | undefined;
     if (textSelection) {
       lastBlockId = textSelection.to?.blockId ?? textSelection.blockId;

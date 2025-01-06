@@ -1,5 +1,5 @@
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { Command, TextSelection } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 import type { Text } from '@blocksuite/store';
 
 export const deleteTextCommand: Command<
@@ -36,7 +36,7 @@ export const deleteTextCommand: Command<
   if (!to) {
     fromText.delete(from.index, from.length);
     ctx.std.selection.setGroup('note', [
-      ctx.std.selection.create('text', {
+      ctx.std.selection.create(TextSelection, {
         from: {
           blockId: from.blockId,
           index: from.index,
@@ -69,7 +69,7 @@ export const deleteTextCommand: Command<
     });
 
   ctx.std.selection.setGroup('note', [
-    ctx.std.selection.create('text', {
+    ctx.std.selection.create(TextSelection, {
       from: {
         blockId: from.blockId,
         index: from.index,

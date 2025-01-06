@@ -9,7 +9,11 @@ import {
 } from '@blocksuite/affine-components/toolbar';
 import type { CodeBlockModel } from '@blocksuite/affine-model';
 import { PAGE_HEADER_HEIGHT } from '@blocksuite/affine-shared/consts';
-import { WidgetComponent } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  TextSelection,
+  WidgetComponent,
+} from '@blocksuite/block-std';
 import { limitShift, shift } from '@floating-ui/dom';
 import { html } from 'lit';
 
@@ -34,7 +38,7 @@ export class AffineCodeToolbarWidget extends WidgetComponent<
         const codeBlock = this.block;
         const selection = this.host.selection;
 
-        const textSelection = selection.find('text');
+        const textSelection = selection.find(TextSelection);
         if (
           !!textSelection &&
           (!!textSelection.to || !!textSelection.from.length)
@@ -42,7 +46,7 @@ export class AffineCodeToolbarWidget extends WidgetComponent<
           return null;
         }
 
-        const blockSelections = selection.filter('block');
+        const blockSelections = selection.filter(BlockSelection);
         if (
           blockSelections.length > 1 ||
           (blockSelections.length === 1 &&

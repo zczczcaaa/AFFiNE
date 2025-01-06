@@ -1,4 +1,4 @@
-import type { Command } from '@blocksuite/block-std';
+import { BlockSelection, type Command } from '@blocksuite/block-std';
 
 export const selectBlocksBetween: Command<
   'focusBlock' | 'anchorBlock',
@@ -14,7 +14,7 @@ export const selectBlocksBetween: Command<
   // In same block
   if (anchorBlock.blockId === focusBlock.blockId) {
     const blockId = focusBlock.blockId;
-    selection.setGroup('note', [selection.create('block', { blockId })]);
+    selection.setGroup('note', [selection.create(BlockSelection, { blockId })]);
     return next();
   }
 
@@ -23,11 +23,11 @@ export const selectBlocksBetween: Command<
   if (selections.every(sel => sel.blockId !== focusBlock.blockId)) {
     if (tail) {
       selections.push(
-        selection.create('block', { blockId: focusBlock.blockId })
+        selection.create(BlockSelection, { blockId: focusBlock.blockId })
       );
     } else {
       selections.unshift(
-        selection.create('block', { blockId: focusBlock.blockId })
+        selection.create(BlockSelection, { blockId: focusBlock.blockId })
       );
     }
   }

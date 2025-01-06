@@ -6,14 +6,18 @@ import {
 } from '@blocksuite/affine-block-embed';
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent, UIEventHandler } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  BlockSelection,
+  type UIEventHandler,
+} from '@blocksuite/block-std';
 import { IS_MAC, IS_WINDOWS } from '@blocksuite/global/env';
 
 export class PageKeyboardManager {
   private readonly _handleDelete: UIEventHandler = ctx => {
     const event = ctx.get('keyboardState').raw;
     const blockSelections = this._currentSelection.filter(sel =>
-      sel.is('block')
+      sel.is(BlockSelection)
     );
     if (blockSelections.length === 0) {
       return;

@@ -12,7 +12,9 @@ import {
 import {
   BLOCK_ID_ATTR,
   type BlockComponent,
+  BlockSelection,
   ShadowlessElement,
+  TextSelection,
 } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { WithDisposable } from '@blocksuite/global/utils';
@@ -108,12 +110,12 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
       if (!selection) {
         return null;
       }
-      const textSelection = selection.find('text');
+      const textSelection = selection.find(TextSelection);
       if (!!textSelection && !textSelection.isCollapsed()) {
         return null;
       }
 
-      const blockSelections = selection.filter('block');
+      const blockSelections = selection.filter(BlockSelection);
       if (blockSelections.length) {
         return null;
       }

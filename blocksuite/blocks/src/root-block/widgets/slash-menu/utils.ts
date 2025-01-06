@@ -3,6 +3,7 @@ import type {
   TextFormatConfig,
 } from '@blocksuite/affine-components/rich-text';
 import { isInsideBlockByFlavour } from '@blocksuite/affine-shared/utils';
+import { BlockSelection } from '@blocksuite/block-std';
 import { assertType } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
@@ -128,7 +129,7 @@ export function createTextFormatItem(
           .chain()
           .formatBlock({
             blockSelections: [
-              std.selection.create('block', {
+              std.selection.create(BlockSelection, {
                 blockId: model.id,
               }),
             ],

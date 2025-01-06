@@ -2,7 +2,7 @@ import {
   calculateCollapsedSiblings,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const dedentBlocks: Command<
   never,
@@ -75,7 +75,7 @@ export const dedentBlocks: Command<
     std.command.exec('dedentBlock', { blockId: id, stopCapture: false });
   });
 
-  const textSelection = selection.find('text');
+  const textSelection = selection.find(TextSelection);
   if (textSelection) {
     host.updateComplete
       .then(() => {

@@ -1,4 +1,4 @@
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const focusBlockEnd: Command<'focusBlock'> = (ctx, next) => {
   const { focusBlock, std } = ctx;
@@ -7,7 +7,7 @@ export const focusBlockEnd: Command<'focusBlock'> = (ctx, next) => {
   const { selection } = std;
 
   selection.setGroup('note', [
-    selection.create('text', {
+    selection.create(TextSelection, {
       from: {
         blockId: focusBlock.blockId,
         index: focusBlock.model.text.length,

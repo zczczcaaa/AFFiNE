@@ -16,7 +16,7 @@ export const getSelectedBlocksCommand: Command<
     blockSelections?: BlockSelection[];
     imageSelections?: ImageSelection[];
     filter?: (el: BlockComponent) => boolean;
-    types?: Extract<BlockSuite.SelectionType, 'block' | 'text' | 'image'>[];
+    types?: Array<'image' | 'text' | 'block'>;
     roles?: RoleType[];
     mode?: 'all' | 'flat' | 'highest';
   }

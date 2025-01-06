@@ -15,7 +15,11 @@ import {
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent, EditorHost } from '@blocksuite/block-std';
-import { ShadowlessElement, toGfxBlockComponent } from '@blocksuite/block-std';
+import {
+  ShadowlessElement,
+  TextSelection,
+  toGfxBlockComponent,
+} from '@blocksuite/block-std';
 import {
   almostEqual,
   Bound,
@@ -305,7 +309,7 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
       this.updateComplete
         .then(() => {
           this.std.selection.setGroup('note', [
-            this.std.selection.create('text', {
+            this.std.selection.create(TextSelection, {
               from: {
                 blockId: pId,
                 index: 0,

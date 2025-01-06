@@ -11,7 +11,7 @@ import {
   getPrevContentBlock,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { EditorHost } from '@blocksuite/block-std';
+import { BlockSelection, type EditorHost } from '@blocksuite/block-std';
 import type { BlockModel, Text } from '@blocksuite/store';
 
 /**
@@ -72,7 +72,7 @@ export function mergeWithPrev(editorHost: EditorHost, model: BlockModel) {
       ...EMBED_BLOCK_FLAVOUR_LIST,
     ])
   ) {
-    const selection = editorHost.selection.create('block', {
+    const selection = editorHost.selection.create(BlockSelection, {
       blockId: prevBlock.id,
     });
     editorHost.selection.setGroup('note', [selection]);

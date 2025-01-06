@@ -11,7 +11,11 @@ import {
   DEFAULT_NOTE_WIDTH,
   DefaultTheme,
 } from '@blocksuite/affine-model';
-import type { BlockComponent, EditorHost } from '@blocksuite/block-std';
+import type {
+  BlockComponent,
+  EditorHost,
+  TextSelection,
+} from '@blocksuite/block-std';
 import { BLOCK_ID_ATTR } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
 import type { InlineRootElement } from '@inline/inline-editor.js';
@@ -1180,7 +1184,7 @@ export async function assertBlockSelections(page: Page, paths: string[]) {
     if (!host) {
       throw new Error('editor-host host not found');
     }
-    return host.selection.filter('block');
+    return host.selection.value.filter(b => b.type === 'block');
   });
   const actualPaths = selections.map(selection => selection.blockId);
   expect(actualPaths).toEqual(paths);
@@ -1199,13 +1203,13 @@ export async function assertTextSelection(
     length: number;
   }
 ) {
-  const selection = await page.evaluate(() => {
+  const selection = (await page.evaluate(() => {
     const host = document.querySelector<EditorHost>('editor-host');
     if (!host) {
       throw new Error('editor-host host not found');
     }
-    return host.selection.find('text');
-  });
+    return host.selection.value.find(b => b.type === 'text');
+  })) as TextSelection | undefined;
 
   if (!from && !to) {
     expect(selection).toBeUndefined();

@@ -8,7 +8,11 @@ import {
   mergeToCodeModel,
   transformModel,
 } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  type Command,
+  TextSelection,
+} from '@blocksuite/block-std';
 import type { BlockModel } from '@blocksuite/store';
 
 type UpdateBlockConfig = {
@@ -108,11 +112,11 @@ export const updateBlockType: Command<
       onModelTextUpdated(host, model)
     );
     const selectionManager = host.selection;
-    const textSelection = selectionManager.find('text');
+    const textSelection = selectionManager.find(TextSelection);
     if (!textSelection) {
       return false;
     }
-    const newTextSelection = selectionManager.create('text', {
+    const newTextSelection = selectionManager.create(TextSelection, {
       from: {
         blockId: firstNewModel.id,
         index: textSelection.from.index,
@@ -143,13 +147,13 @@ export const updateBlockType: Command<
 
     const selectionManager = host.selection;
 
-    const blockSelections = selectionManager.filter('block');
+    const blockSelections = selectionManager.filter(BlockSelection);
     if (blockSelections.length === 0) {
       return false;
     }
     requestAnimationFrame(() => {
       const selections = updatedBlocks.map(model => {
-        return selectionManager.create('block', {
+        return selectionManager.create(BlockSelection, {
           blockId: model.id,
         });
       });

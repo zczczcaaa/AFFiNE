@@ -3,7 +3,7 @@ import {
   calculateCollapsedSiblings,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const canDedentParagraphCommand: Command<
   never,
@@ -13,7 +13,7 @@ export const canDedentParagraphCommand: Command<
   let { blockId, inlineIndex } = ctx;
   const { std } = ctx;
   const { selection, doc } = std;
-  const text = selection.find('text');
+  const text = selection.find(TextSelection);
 
   if (!blockId) {
     /**
@@ -97,7 +97,7 @@ export const dedentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
     doc.moveBlocks([model], grandParent, parent, false);
   }
 
-  const textSelection = selection.find('text');
+  const textSelection = selection.find(TextSelection);
   if (textSelection) {
     host.updateComplete
       .then(() => {

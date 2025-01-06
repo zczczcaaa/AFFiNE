@@ -10,7 +10,11 @@ import {
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
 import type { PointerEventState } from '@blocksuite/block-std';
-import { BlockComponent } from '@blocksuite/block-std';
+import {
+  BlockComponent,
+  BlockSelection,
+  TextSelection,
+} from '@blocksuite/block-std';
 import type { BlockModel, Text } from '@blocksuite/store';
 import { css, html } from 'lit';
 import { query } from 'lit/decorators.js';
@@ -236,7 +240,7 @@ export class PageRootBlockComponent extends BlockComponent<
           })
           .flatMap(model => {
             return model.children.map(child => {
-              return this.std.selection.create('block', {
+              return this.std.selection.create(BlockSelection, {
                 blockId: child.id,
               });
             });
@@ -247,7 +251,7 @@ export class PageRootBlockComponent extends BlockComponent<
       ArrowUp: () => {
         const selection = this.host.selection;
         const sel = selection.value.find(
-          sel => sel.is('text') || sel.is('block')
+          sel => sel.is(TextSelection) || sel.is(BlockSelection)
         );
         if (!sel) return;
         let model: BlockModel | null = null;
@@ -262,8 +266,8 @@ export class PageRootBlockComponent extends BlockComponent<
         if (!model) return;
         const prevNote = this.doc.getPrev(model);
         if (!prevNote || prevNote.flavour !== 'affine:note') {
-          const isFirstText = sel.is('text') && sel.start.index === 0;
-          const isBlock = sel.is('block');
+          const isFirstText = sel.is(TextSelection) && sel.start.index === 0;
+          const isBlock = sel.is(BlockSelection);
           if (isBlock || isFirstText) {
             focusTitle(this.host);
           }
@@ -361,7 +365,7 @@ export class PageRootBlockComponent extends BlockComponent<
         .then(() => {
           if (!newTextSelectionId) return;
           this.host.selection.setGroup('note', [
-            this.host.selection.create('text', {
+            this.host.selection.create(TextSelection, {
               from: {
                 blockId: newTextSelectionId,
                 index: 0,

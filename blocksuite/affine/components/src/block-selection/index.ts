@@ -1,4 +1,7 @@
-import type { BlockComponent } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  BlockSelection as StdBlockSelection,
+} from '@blocksuite/block-std';
 import { SignalWatcher } from '@blocksuite/global/utils';
 import { css, LitElement, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -55,7 +58,9 @@ export class BlockSelection extends SignalWatcher(LitElement) {
   protected override updated(_changedProperties: PropertyValues): void {
     super.updated(_changedProperties);
     if (this.block) {
-      this.style.display = this.block.selected?.is('block') ? 'block' : 'none';
+      this.style.display = this.block.selected?.is(StdBlockSelection)
+        ? 'block'
+        : 'none';
     }
   }
 

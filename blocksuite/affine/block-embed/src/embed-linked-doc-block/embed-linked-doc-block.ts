@@ -21,6 +21,7 @@ import {
   matchFlavours,
   referenceToNode,
 } from '@blocksuite/affine-shared/utils';
+import { BlockSelection } from '@blocksuite/block-std';
 import { Bound, throttle } from '@blocksuite/global/utils';
 import { Text } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
@@ -107,7 +108,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
 
   private readonly _selectBlock = () => {
     const selectionManager = this.host.selection;
-    const blockSelection = selectionManager.create('block', {
+    const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.blockId,
     });
     selectionManager.setGroup('note', [blockSelection]);

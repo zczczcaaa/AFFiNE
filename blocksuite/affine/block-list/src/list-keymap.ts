@@ -3,7 +3,7 @@ import {
   textKeymap,
 } from '@blocksuite/affine-components/rich-text';
 import { ListBlockSchema } from '@blocksuite/affine-model';
-import { KeymapExtension } from '@blocksuite/block-std';
+import { KeymapExtension, TextSelection } from '@blocksuite/block-std';
 import { IS_MAC } from '@blocksuite/global/env';
 
 import { forwardDelete } from './utils/forward-delete.js';
@@ -12,7 +12,7 @@ export const ListKeymapExtension = KeymapExtension(
   std => {
     return {
       Enter: ctx => {
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) return false;
 
         ctx.get('keyboardState').raw.preventDefault();
@@ -23,7 +23,7 @@ export const ListKeymapExtension = KeymapExtension(
         return true;
       },
       'Mod-Enter': ctx => {
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) return false;
 
         ctx.get('keyboardState').raw.preventDefault();
@@ -40,7 +40,7 @@ export const ListKeymapExtension = KeymapExtension(
         if (selectedModels?.length !== 1) {
           return false;
         }
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) return false;
 
         ctx.get('keyboardState').raw.preventDefault();
@@ -61,7 +61,7 @@ export const ListKeymapExtension = KeymapExtension(
         if (selectedModels?.length !== 1) {
           return;
         }
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) return false;
 
         ctx.get('keyboardState').raw.preventDefault();
@@ -76,7 +76,7 @@ export const ListKeymapExtension = KeymapExtension(
         return true;
       },
       Backspace: ctx => {
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) return false;
         const isCollapsed = text.isCollapsed();
         const isStart = isCollapsed && text.from.index === 0;

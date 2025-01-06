@@ -19,6 +19,7 @@ import {
   SpecProvider,
 } from '@blocksuite/affine-shared/utils';
 import {
+  BlockSelection,
   BlockServiceWatcher,
   BlockStdScope,
   type EditorHost,
@@ -164,7 +165,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       edgelessTheme = themeExtension.getEdgelessTheme(this.syncedDoc.id).value;
     }
     const theme = isPageMode ? appTheme : edgelessTheme;
-    const isSelected = !!this.selected?.is('block');
+    const isSelected = !!this.selected?.is(BlockSelection);
 
     this.dataset.nestedEditor = '';
 
@@ -428,7 +429,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
 
   private _selectBlock() {
     const selectionManager = this.host.selection;
-    const blockSelection = selectionManager.create('block', {
+    const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.blockId,
     });
     selectionManager.setGroup('note', [blockSelection]);

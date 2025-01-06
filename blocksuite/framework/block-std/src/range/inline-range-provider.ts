@@ -1,7 +1,7 @@
 import type { InlineRange, InlineRangeProvider } from '@blocksuite/inline';
 import { signal } from '@preact/signals-core';
 
-import type { TextSelection } from '../selection/index.js';
+import { TextSelection } from '../selection/index.js';
 import type { BlockComponent } from '../view/element/block-component.js';
 
 export const getInlineRangeProvider: (
@@ -40,7 +40,7 @@ export const getInlineRangeProvider: (
     }
 
     const elementRange = rangeManager.textSelectionToRange(
-      selectionManager.create('text', {
+      selectionManager.create(TextSelection, {
         from: {
           index: 0,
           blockId: element.blockId,
@@ -72,7 +72,7 @@ export const getInlineRangeProvider: (
     if (!inlineRange) {
       selectionManager.clear(['text']);
     } else {
-      const textSelection = selectionManager.create('text', {
+      const textSelection = selectionManager.create(TextSelection, {
         from: {
           blockId: element.blockId,
           index: inlineRange.index,

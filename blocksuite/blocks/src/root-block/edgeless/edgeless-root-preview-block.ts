@@ -9,11 +9,11 @@ import {
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import { requestThrottledConnectedFrame } from '@blocksuite/affine-shared/utils';
-import type {
-  GfxBlockComponent,
+import {
+  BlockComponent,
+  type GfxBlockComponent,
   SurfaceSelection,
 } from '@blocksuite/block-std';
-import { BlockComponent } from '@blocksuite/block-std';
 import type { GfxViewportElement } from '@blocksuite/block-std/gfx';
 import { assertExists } from '@blocksuite/global/utils';
 import { css, html } from 'lit';
@@ -181,7 +181,7 @@ export class EdgelessRootPreviewBlockComponent
 
     this.handleEvent('selectionChange', () => {
       const surface = this.host.selection.value.find(
-        (sel): sel is SurfaceSelection => sel.is('surface')
+        (sel): sel is SurfaceSelection => sel.is(SurfaceSelection)
       );
       if (!surface) return;
 

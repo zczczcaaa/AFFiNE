@@ -3,7 +3,7 @@ import {
   getInlineEditorByModel,
 } from '@blocksuite/affine-components/rich-text';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const splitParagraphCommand: Command<
   never,
@@ -16,7 +16,7 @@ export const splitParagraphCommand: Command<
   const { doc, host, selection } = std;
   let blockId = ctx.blockId;
   if (!blockId) {
-    const text = selection.find('text');
+    const text = selection.find(TextSelection);
     blockId = text?.blockId;
   }
   if (!blockId) return;

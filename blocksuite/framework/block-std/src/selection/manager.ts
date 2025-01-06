@@ -8,11 +8,12 @@ import { SelectionIdentifier } from '../identifier.js';
 import type { BlockStdScope } from '../scope/index.js';
 import type { BaseSelection } from './base.js';
 
-export interface SelectionConstructor {
+export interface SelectionConstructor<T extends BaseSelection = BaseSelection> {
   type: string;
+  group: string;
 
-  new (...args: any[]): BaseSelection;
-  fromJSON(json: Record<string, unknown>): BaseSelection;
+  new (...args: any[]): T;
+  fromJSON(json: Record<string, unknown>): T;
 }
 
 export class SelectionManager extends LifeCycleWatcher {
@@ -143,18 +144,11 @@ export class SelectionManager extends LifeCycleWatcher {
     }
   }
 
-  create<T extends BlockSuite.SelectionType>(
-    type: T,
-    ...args: ConstructorParameters<BlockSuite.Selection[T]>
-  ): BlockSuite.SelectionInstance[T] {
-    const ctor = this._selectionConstructors[type];
-    if (!ctor) {
-      throw new BlockSuiteError(
-        ErrorCode.SelectionError,
-        `Unknown selection type: ${type}`
-      );
-    }
-    return new ctor(...args) as BlockSuite.SelectionInstance[T];
+  create<T extends SelectionConstructor>(
+    Type: T,
+    ...args: ConstructorParameters<T>
+  ): InstanceType<T> {
+    return new Type(...args) as InstanceType<T>;
   }
 
   dispose() {
@@ -162,27 +156,23 @@ export class SelectionManager extends LifeCycleWatcher {
     this.disposables.dispose();
   }
 
-  filter<T extends BlockSuite.SelectionType>(type: T) {
+  filter<T extends SelectionConstructor>(type: T) {
     return this.filter$(type).value;
   }
 
-  filter$<T extends BlockSuite.SelectionType>(type: T) {
+  filter$<T extends SelectionConstructor>(type: T) {
     return computed(() =>
-      this.value.filter((sel): sel is BlockSuite.SelectionInstance[T] =>
-        sel.is(type)
-      )
+      this.value.filter((sel): sel is InstanceType<T> => sel.is(type))
     );
   }
 
-  find<T extends BlockSuite.SelectionType>(type: T) {
+  find<T extends SelectionConstructor>(type: T) {
     return this.find$(type).value;
   }
 
-  find$<T extends BlockSuite.SelectionType>(type: T) {
+  find$<T extends SelectionConstructor>(type: T) {
     return computed(() =>
-      this.value.find((sel): sel is BlockSuite.SelectionInstance[T] =>
-        sel.is(type)
-      )
+      this.value.find((sel): sel is InstanceType<T> => sel.is(type))
     );
   }
 

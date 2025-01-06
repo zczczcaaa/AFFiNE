@@ -1,7 +1,7 @@
 import { throttle } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
-import type { BaseSelection, TextSelection } from '../selection/index.js';
+import { type BaseSelection, TextSelection } from '../selection/index.js';
 import type { BlockComponent } from '../view/element/block-component.js';
 import { BLOCK_ID_ATTR } from '../view/index.js';
 import { RANGE_SYNC_EXCLUDE_ATTR } from './consts.js';
@@ -30,7 +30,7 @@ export class RangeBinding {
   };
 
   private readonly _onBeforeInput = (event: InputEvent) => {
-    const selection = this.selectionManager.find('text');
+    const selection = this.selectionManager.find(TextSelection);
     if (!selection) return;
 
     if (event.isComposing) return;
@@ -74,7 +74,7 @@ export class RangeBinding {
         });
     });
 
-    const newSelection = this.selectionManager.create('text', {
+    const newSelection = this.selectionManager.create(TextSelection, {
       from: {
         blockId: from.blockId,
         index: from.index + (event.data?.length ?? 0),
@@ -95,7 +95,7 @@ export class RangeBinding {
   };
 
   private readonly _onCompositionStart = () => {
-    const selection = this.selectionManager.find('text');
+    const selection = this.selectionManager.find(TextSelection);
     if (!selection) return;
 
     const { from, to } = selection;
@@ -153,7 +153,7 @@ export class RangeBinding {
 
       await this.host.updateComplete;
 
-      const selection = this.selectionManager.create('text', {
+      const selection = this.selectionManager.create(TextSelection, {
         from: {
           blockId: from.blockId,
           index: from.index + (event.data?.length ?? 0),
@@ -249,7 +249,7 @@ export class RangeBinding {
   private readonly _onStdSelectionChanged = (selections: BaseSelection[]) => {
     const text =
       selections.find((selection): selection is TextSelection =>
-        selection.is('text')
+        selection.is(TextSelection)
       ) ?? null;
 
     if (text === this._prevTextSelection) {

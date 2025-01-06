@@ -4,9 +4,10 @@ import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
   type BaseSelection,
   type BlockComponent,
-  type BlockSelection,
+  BlockSelection,
   BlockService,
   type BlockStdScope,
+  TextSelection,
   type UIEventHandler,
   type UIEventStateContext,
 } from '@blocksuite/block-std';
@@ -95,7 +96,7 @@ export class NoteBlockService extends BlockService {
                       const [codeModel] = newModels;
                       onModelElementUpdated(ctx.std, codeModel, codeElement => {
                         this._std.selection.setGroup('note', [
-                          this._std.selection.create('text', {
+                          this._std.selection.create(TextSelection, {
                             from: {
                               blockId: codeElement.blockId,
                               index: 0,
@@ -439,7 +440,7 @@ export class NoteBlockService extends BlockService {
 
         const blockId = doc.addBlock('affine:paragraph', {}, parent, index + 1);
 
-        const sel = selection.create('text', {
+        const sel = selection.create(TextSelection, {
           from: {
             blockId,
             index: 0,
@@ -469,7 +470,7 @@ export class NoteBlockService extends BlockService {
         }
 
         ctx.std.selection.update(selList => {
-          return selList.filter(sel => !sel.is('block'));
+          return selList.filter(sel => !sel.is(BlockSelection));
         });
 
         return next();
@@ -481,7 +482,7 @@ export class NoteBlockService extends BlockService {
 
   private readonly _onSelectAll: UIEventHandler = ctx => {
     const selection = this._std.selection;
-    const block = selection.find('block');
+    const block = selection.find(BlockSelection);
     if (!block) {
       return;
     }
@@ -492,13 +493,13 @@ export class NoteBlockService extends BlockService {
     ctx.get('defaultState').event.preventDefault();
     const children = note.children;
     const blocks: BlockSelection[] = children.map(child => {
-      return selection.create('block', {
+      return selection.create(BlockSelection, {
         blockId: child.id,
       });
     });
     selection.update(selList => {
       return selList
-        .filter<BaseSelection>(sel => !sel.is('block'))
+        .filter<BaseSelection>(sel => !sel.is(BlockSelection))
         .concat(blocks);
     });
   };

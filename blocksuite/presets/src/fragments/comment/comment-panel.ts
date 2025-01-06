@@ -1,4 +1,4 @@
-import { ShadowlessElement } from '@blocksuite/block-std';
+import { ShadowlessElement, TextSelection } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html } from 'lit';
 import { property, query } from 'lit/decorators.js';
@@ -60,7 +60,7 @@ export class CommentPanel extends WithDisposable(ShadowlessElement) {
   commentManager: CommentManager | null = null;
 
   private _addComment() {
-    const textSelection = this.editor.host?.selection.find('text');
+    const textSelection = this.editor.host?.selection.find(TextSelection);
     if (!textSelection) return;
 
     const commentInput = new CommentInput();

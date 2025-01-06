@@ -1,4 +1,4 @@
-import type { EditorHost } from '@blocksuite/affine/block-std';
+import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
 import {
   GfxBlockElementModel,
   type GfxModel,
@@ -214,7 +214,7 @@ async function insertMarkdownAbove(host: EditorHost) {
 }
 
 function getSelection(host: EditorHost) {
-  const textSelection = host.selection.find('text');
+  const textSelection = host.selection.find(TextSelection);
   const mode = textSelection ? 'flat' : 'highest';
   const { selectedBlocks } = getSelections(host, mode);
   if (!selectedBlocks) return;

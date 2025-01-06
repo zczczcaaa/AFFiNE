@@ -3,7 +3,7 @@ import {
   getNearestHeadingBefore,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const indentBlocks: Command<
   never,
@@ -117,7 +117,7 @@ export const indentBlocks: Command<
     }
   }
 
-  const textSelection = selection.find('text');
+  const textSelection = selection.find(TextSelection);
   if (textSelection) {
     host.updateComplete
       .then(() => {

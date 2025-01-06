@@ -22,12 +22,12 @@ import {
   requestConnectedFrame,
   requestThrottledConnectedFrame,
 } from '@blocksuite/affine-shared/utils';
-import type {
-  GfxBlockComponent,
+import {
+  BlockComponent,
+  type GfxBlockComponent,
   SurfaceSelection,
-  UIEventHandler,
+  type UIEventHandler,
 } from '@blocksuite/block-std';
-import { BlockComponent } from '@blocksuite/block-std';
 import {
   GfxControllerIdentifier,
   type GfxViewportElement,
@@ -454,7 +454,7 @@ export class EdgelessRootBlockComponent extends BlockComponent<
 
     this.handleEvent('selectionChange', () => {
       const surface = this.host.selection.value.find(
-        (sel): sel is SurfaceSelection => sel.is('surface')
+        (sel): sel is SurfaceSelection => sel.is(SurfaceSelection)
       );
       if (!surface) return;
 

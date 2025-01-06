@@ -7,9 +7,10 @@ import {
 import {
   BLOCK_ID_ATTR,
   type BlockComponent,
+  BlockSelection,
   type EditorHost,
   type TextRangePoint,
-  type TextSelection,
+  TextSelection,
 } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { assertExists } from '@blocksuite/global/utils';
@@ -25,6 +26,7 @@ import {
 import * as Y from 'yjs';
 
 import { REFERENCE_NODE } from '../../consts';
+import { ImageSelection } from '../../selection';
 import {
   ParseDocUrlProvider,
   type ParseDocUrlService,
@@ -290,19 +292,19 @@ class PasteTr {
         }
         if (!cursorModel.text) {
           if (matchFlavours(cursorModel, ['affine:image'])) {
-            const selection = this.std.selection.create('image', {
+            const selection = this.std.selection.create(ImageSelection, {
               blockId: target.blockId,
             });
             this.std.selection.setGroup('note', [selection]);
             return;
           }
-          const selection = this.std.selection.create('block', {
+          const selection = this.std.selection.create(BlockSelection, {
             blockId: target.blockId,
           });
           this.std.selection.setGroup('note', [selection]);
           return;
         }
-        const selection = this.std.selection.create('text', {
+        const selection = this.std.selection.create(TextSelection, {
           from: {
             blockId: target.blockId,
             index: cursorModel.text ? this.lastIndex : 0,
@@ -511,7 +513,7 @@ export const pasteMiddleware = (std: EditorHost['std']): JobMiddleware => {
         const { snapshot } = payload;
         flatNote(snapshot);
 
-        const text = std.selection.find('text');
+        const text = std.selection.find(TextSelection);
         if (!text) {
           return;
         }

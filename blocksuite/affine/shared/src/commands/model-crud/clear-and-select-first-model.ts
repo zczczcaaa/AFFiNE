@@ -1,4 +1,4 @@
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const clearAndSelectFirstModelCommand: Command<'selectedModels'> = (
   ctx,
@@ -17,7 +17,7 @@ export const clearAndSelectFirstModelCommand: Command<'selectedModels'> = (
     const firstModel = models[0];
     if (firstModel.text) {
       firstModel.text.clear();
-      const selection = ctx.std.selection.create('text', {
+      const selection = ctx.std.selection.create(TextSelection, {
         from: {
           blockId: firstModel.id,
           index: 0,

@@ -1,5 +1,5 @@
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const dedentBlocksToRoot: Command<
   never,
@@ -13,7 +13,7 @@ export const dedentBlocksToRoot: Command<
   const { std, stopCapture = true } = ctx;
   const { doc } = std;
   if (!blockIds || !blockIds.length) {
-    const text = std.selection.find('text');
+    const text = std.selection.find(TextSelection);
     if (text) {
       // If the text selection is not at the beginning of the block, use default behavior
       if (text.from.index !== 0) return;

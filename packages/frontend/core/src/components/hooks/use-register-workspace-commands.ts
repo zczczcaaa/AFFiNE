@@ -5,6 +5,7 @@ import { I18nService } from '@affine/core/modules/i18n';
 import { UrlService } from '@affine/core/modules/url';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
+import { TextSelection } from '@blocksuite/affine/block-std';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import { useService, useServiceOptional } from '@toeverything/infra';
 import { useStore } from 'jotai';
@@ -29,7 +30,7 @@ import { useActiveBlocksuiteEditor } from './use-block-suite-editor';
 import { useNavigateHelper } from './use-navigate-helper';
 
 function hasLinkPopover(editor: AffineEditorContainer | null) {
-  const textSelection = editor?.host?.std.selection.find('text');
+  const textSelection = editor?.host?.std.selection.find(TextSelection);
   if (editor && textSelection && textSelection.from.length > 0) {
     const formatBar = editor.host?.querySelector('affine-format-bar-widget');
     if (formatBar) {

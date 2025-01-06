@@ -52,7 +52,12 @@ import {
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import { getHostName, referenceToNode } from '@blocksuite/affine-shared/utils';
-import { type BlockStdScope, WidgetComponent } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  type BlockStdScope,
+  TextSelection,
+  WidgetComponent,
+} from '@blocksuite/block-std';
 import { type BlockModel, Text } from '@blocksuite/store';
 import { autoUpdate, computePosition, flip, offset } from '@floating-ui/dom';
 import { html, nothing, type TemplateResult } from 'lit';
@@ -709,13 +714,13 @@ export class EmbedCardToolbar extends WidgetComponent<
 
     this.disposables.add(
       this._selection.slots.changed.on(() => {
-        const hasTextSelection = this._selection.find('text');
+        const hasTextSelection = this._selection.find(TextSelection);
         if (hasTextSelection) {
           this._hide();
           return;
         }
 
-        const blockSelections = this._selection.filter('block');
+        const blockSelections = this._selection.filter(BlockSelection);
         if (!blockSelections || blockSelections.length !== 1) {
           this._hide();
           return;

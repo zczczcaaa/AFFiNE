@@ -16,6 +16,7 @@ import {
 } from '@blocksuite/affine-shared/services';
 import { LassoMode } from '@blocksuite/affine-shared/types';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
+import { SurfaceSelection, TextSelection } from '@blocksuite/block-std';
 import {
   GfxBlockElementModel,
   type GfxToolsMap,
@@ -167,8 +168,8 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
           const std = this.rootComponent.std;
           if (
             std.selection.getGroup('note').length > 0 ||
-            std.selection.find('text') ||
-            Boolean(std.selection.find('surface')?.editing)
+            std.selection.find(TextSelection) ||
+            Boolean(std.selection.find(SurfaceSelection)?.editing)
           ) {
             return;
           }

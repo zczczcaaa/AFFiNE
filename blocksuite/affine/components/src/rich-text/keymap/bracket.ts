@@ -3,7 +3,11 @@ import {
   createDefaultDoc,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockStdScope, UIEventHandler } from '@blocksuite/block-std';
+import {
+  type BlockStdScope,
+  TextSelection,
+  type UIEventHandler,
+} from '@blocksuite/block-std';
 import type { InlineEditor } from '@blocksuite/inline';
 
 import { getInlineEditorByModel } from '../dom.js';
@@ -20,7 +24,7 @@ export const bracketKeymap = (
           const { doc, selection } = std;
           if (doc.readonly) return;
 
-          const textSelection = selection.find('text');
+          const textSelection = selection.find(TextSelection);
           if (!textSelection) return;
           const model = doc.getBlock(textSelection.from.blockId)?.model;
           if (!model) return;
@@ -46,7 +50,7 @@ export const bracketKeymap = (
           const { doc, selection } = std;
           if (doc.readonly) return;
 
-          const textSelection = selection.find('text');
+          const textSelection = selection.find(TextSelection);
           if (!textSelection) return;
           const model = doc.getBlock(textSelection.from.blockId)?.model;
           if (!model) return;
@@ -97,7 +101,7 @@ export const bracketKeymap = (
       const { doc, selection } = std;
       if (doc.readonly) return;
 
-      const textSelection = selection.find('text');
+      const textSelection = selection.find(TextSelection);
       if (!textSelection || textSelection.isCollapsed()) return;
       if (!textSelection.isInSameBlock()) return;
       const model = doc.getBlock(textSelection.from.blockId)?.model;

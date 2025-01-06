@@ -1,5 +1,10 @@
+import { ImageSelection } from '@blocksuite/affine-shared/selection';
 import type { BaseSelection, UIEventStateContext } from '@blocksuite/block-std';
-import { ShadowlessElement } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  ShadowlessElement,
+  TextSelection,
+} from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -66,9 +71,9 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
 
       selection.update(selList =>
         selList
-          .filter<BaseSelection>(sel => !sel.is('image'))
+          .filter<BaseSelection>(sel => !sel.is(ImageSelection))
           .concat(
-            selection.create('text', {
+            selection.create(TextSelection, {
               from: {
                 blockId,
                 index: 0,
@@ -86,9 +91,11 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
         selection.update(selList => {
           return selList.map(sel => {
             const current =
-              sel.is('image') && sel.blockId === this.block.blockId;
+              sel.is(ImageSelection) && sel.blockId === this.block.blockId;
             if (current) {
-              return selection.create('block', { blockId: this.block.blockId });
+              return selection.create(BlockSelection, {
+                blockId: this.block.blockId,
+              });
             }
             return sel;
           });
@@ -119,7 +126,7 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
         const std = this._host.std;
 
         // If the selection is not image selection, we should not handle it.
-        if (!std.selection.find('image')) {
+        if (!std.selection.find(ImageSelection)) {
           return false;
         }
 
@@ -145,7 +152,7 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
 
         // If the selection is not image selection, we should not handle it.
 
-        if (!std.selection.find('image')) {
+        if (!std.selection.find(ImageSelection)) {
           return false;
         }
 
@@ -178,7 +185,7 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
     this._disposables.add(
       selection.slots.changed.on(selList => {
         this._isSelected = selList.some(
-          sel => sel.blockId === this.block.blockId && sel.is('image')
+          sel => sel.blockId === this.block.blockId && sel.is(ImageSelection)
         );
       })
     );
@@ -200,7 +207,9 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
         selection.update(selList => {
           return selList
             .filter(sel => !['block', 'image', 'text'].includes(sel.type))
-            .concat(selection.create('image', { blockId: this.block.blockId }));
+            .concat(
+              selection.create(ImageSelection, { blockId: this.block.blockId })
+            );
         });
         return true;
       }
@@ -213,7 +222,8 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
 
         selection.update(selList =>
           selList.filter(
-            sel => !(sel.is('image') && sel.blockId === this.block.blockId)
+            sel =>
+              !(sel.is(ImageSelection) && sel.blockId === this.block.blockId)
           )
         );
       },

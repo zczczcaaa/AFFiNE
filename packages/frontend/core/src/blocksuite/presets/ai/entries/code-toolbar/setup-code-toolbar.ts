@@ -9,6 +9,8 @@ const buttonOptions: AskAIButtonOptions = {
   panelWidth: 240,
 };
 
+import { BlockSelection } from '@blocksuite/affine/block-std';
+
 import type { AskAIButtonOptions } from '../../_common/components/ask-ai-button';
 import { buildAICodeItemGroups } from '../../_common/config';
 
@@ -22,7 +24,9 @@ export function setupCodeToolbarAIEntry(codeToolbar: AffineCodeToolbarWidget) {
           action: () => {
             const { selection } = host;
             selection.setGroup('note', [
-              selection.create('block', { blockId: blockComponent.blockId }),
+              selection.create(BlockSelection, {
+                blockId: blockComponent.blockId,
+              }),
             ]);
           },
           render: item =>

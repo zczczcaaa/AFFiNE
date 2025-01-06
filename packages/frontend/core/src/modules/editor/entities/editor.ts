@@ -2,6 +2,7 @@ import type { DefaultOpenProperty } from '@affine/core/components/doc-properties
 import {
   type DocMode,
   EdgelessRootService,
+  HighlightSelection,
   type ReferenceParams,
 } from '@blocksuite/affine/blocks';
 import type {
@@ -118,7 +119,6 @@ export class Editor extends Entity {
 
     const stablePrimaryMode = this.doc.getPrimaryMode();
 
-    // eslint-disable-next-line rxjs/finnish
     const viewParams$ = view
       .queryString$<ReferenceParams & { refreshKey?: string }>(
         paramsParseOptions
@@ -235,7 +235,7 @@ export class Editor extends Entity {
 
         if (mode === this.mode$.value) {
           selection?.setGroup('scene', [
-            selection?.create('highlight', {
+            selection?.create(HighlightSelection, {
               mode,
               [key]: [id],
             }),
@@ -290,7 +290,7 @@ export class Editor extends Entity {
         const { id, key, mode } = anchor;
 
         selection.setGroup('scene', [
-          selection.create('highlight', {
+          selection.create(HighlightSelection, {
             mode,
             [key]: [id],
           }),

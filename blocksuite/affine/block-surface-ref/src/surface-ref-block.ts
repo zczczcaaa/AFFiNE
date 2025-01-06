@@ -28,10 +28,12 @@ import {
 import {
   type BaseSelection,
   BlockComponent,
+  BlockSelection,
   BlockServiceWatcher,
   BlockStdScope,
   type EditorHost,
   LifeCycleWatcher,
+  TextSelection,
 } from '@blocksuite/block-std';
 import {
   GfxBlockElementModel,
@@ -267,7 +269,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
   private _focusBlock() {
     this.selection.update(() => {
-      return [this.selection.create('block', { blockId: this.blockId })];
+      return [this.selection.create(BlockSelection, { blockId: this.blockId })];
     });
   }
 
@@ -287,9 +289,9 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       requestConnectedFrame(() => {
         selection.update(selList => {
           return selList
-            .filter<BaseSelection>(sel => !sel.is('block'))
+            .filter<BaseSelection>(sel => !sel.is(BlockSelection))
             .concat(
-              selection.create('text', {
+              selection.create(TextSelection, {
                 from: {
                   blockId: model.id,
                   index: 0,
@@ -415,7 +417,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     this._disposables.add(
       selection.slots.changed.on(selList => {
         this._focused = selList.some(
-          sel => sel.blockId === this.blockId && sel.is('block')
+          sel => sel.blockId === this.blockId && sel.is(BlockSelection)
         );
       })
     );

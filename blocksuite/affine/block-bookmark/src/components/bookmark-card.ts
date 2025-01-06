@@ -2,7 +2,11 @@ import { getEmbedCardIcons } from '@blocksuite/affine-block-embed';
 import { WebIcon16 } from '@blocksuite/affine-components/icons';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { getHostName } from '@blocksuite/affine-shared/utils';
-import { ShadowlessElement } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  ShadowlessElement,
+  SurfaceSelection,
+} from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { OpenInNewIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
@@ -31,7 +35,7 @@ export class BookmarkCard extends WithDisposable(ShadowlessElement) {
 
   private _selectBlock() {
     const selectionManager = this.bookmark.host.selection;
-    const blockSelection = selectionManager.create('block', {
+    const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.bookmark.blockId,
     });
     selectionManager.setGroup('note', [blockSelection]);
@@ -55,8 +59,8 @@ export class BookmarkCard extends WithDisposable(ShadowlessElement) {
     this.disposables.add(
       this.bookmark.selection.slots.changed.on(() => {
         this._isSelected =
-          !!this.bookmark.selected?.is('block') ||
-          !!this.bookmark.selected?.is('surface');
+          !!this.bookmark.selected?.is(BlockSelection) ||
+          !!this.bookmark.selected?.is(SurfaceSelection);
       })
     );
   }

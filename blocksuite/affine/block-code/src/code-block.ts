@@ -11,7 +11,11 @@ import {
 } from '@blocksuite/affine-shared/services';
 import { getViewportElement } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent } from '@blocksuite/block-std';
-import { getInlineRangeProvider } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  getInlineRangeProvider,
+  TextSelection,
+} from '@blocksuite/block-std';
 import { IS_MAC } from '@blocksuite/global/env';
 import { noop } from '@blocksuite/global/utils';
 import {
@@ -178,7 +182,7 @@ export class CodeBlockComponent extends CaptionedBlockComponent<
     this.bindHotKey({
       Backspace: ctx => {
         const state = ctx.get('keyboardState');
-        const textSelection = selectionManager.find('text');
+        const textSelection = selectionManager.find(TextSelection);
         if (!textSelection) {
           state.raw.preventDefault();
           return;
@@ -189,7 +193,7 @@ export class CodeBlockComponent extends CaptionedBlockComponent<
         if (from.index === 0 && from.length === 0) {
           state.raw.preventDefault();
           selectionManager.setGroup('note', [
-            selectionManager.create('block', { blockId: this.blockId }),
+            selectionManager.create(BlockSelection, { blockId: this.blockId }),
           ]);
           return true;
         }

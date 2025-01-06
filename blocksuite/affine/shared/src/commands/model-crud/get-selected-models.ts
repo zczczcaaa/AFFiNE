@@ -32,7 +32,7 @@ export const getSelectedModelsCommand: Command<
   never,
   'selectedModels',
   {
-    types?: Extract<BlockSuite.SelectionType, 'block' | 'text' | 'image'>[];
+    types?: Array<'image' | 'text' | 'block'>;
     mode?: 'all' | 'flat' | 'highest';
   }
 > = (ctx, next) => {

@@ -1,7 +1,7 @@
 import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
-import type {
-  EditorHost,
-  TextRangePoint,
+import {
+  type EditorHost,
+  type TextRangePoint,
   TextSelection,
 } from '@blocksuite/affine/block-std';
 import {
@@ -68,7 +68,7 @@ function processSnapshot(
  */
 function processTextInSnapshot(snapshot: SliceSnapshot, host: EditorHost) {
   const { content } = snapshot;
-  const text = host.selection.find('text');
+  const text = host.selection.find(TextSelection);
   if (!content.length || !text) return;
 
   content.forEach(snapshot => processSnapshot(snapshot, text, host));

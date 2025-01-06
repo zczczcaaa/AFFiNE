@@ -1,7 +1,9 @@
-import type {
-  BlockComponent,
-  EditorHost,
-  TextSelection,
+import {
+  type BlockComponent,
+  BlockSelection,
+  type EditorHost,
+  SurfaceSelection,
+  type TextSelection,
 } from '@blocksuite/affine/block-std';
 import type { AffineAIPanelWidget } from '@blocksuite/affine/blocks';
 import { isInsideEdgelessEditor } from '@blocksuite/affine/blocks';
@@ -32,12 +34,12 @@ const setBlockSelection = (
 ) => {
   const selections = models
     .map(model => model.id)
-    .map(blockId => host.selection.create('block', { blockId }));
+    .map(blockId => host.selection.create(BlockSelection, { blockId }));
 
   if (isInsideEdgelessEditor(host)) {
     const surfaceElementId = getNoteId(parent);
     const surfaceSelection = host.selection.create(
-      'surface',
+      SurfaceSelection,
       selections[0].blockId,
       [surfaceElementId],
       true

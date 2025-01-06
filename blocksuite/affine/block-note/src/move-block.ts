@@ -1,17 +1,21 @@
-import type { BlockSelection, BlockStdScope } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  type BlockStdScope,
+  TextSelection,
+} from '@blocksuite/block-std';
 
 const getSelection = (std: BlockStdScope) => std.selection;
 
 function getBlockSelectionBySide(std: BlockStdScope, tail: boolean) {
   const selection = getSelection(std);
-  const selections = selection.filter('block');
+  const selections = selection.filter(BlockSelection);
   const sel = selections.at(tail ? -1 : 0) as BlockSelection | undefined;
   return sel ?? null;
 }
 
 function getTextSelection(std: BlockStdScope) {
   const selection = getSelection(std);
-  return selection.find('text');
+  return selection.find(TextSelection);
 }
 
 const pathToBlock = (std: BlockStdScope, blockId: string) =>

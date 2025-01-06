@@ -8,12 +8,15 @@ import {
 } from '@blocksuite/affine-components/toolbar';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type {
-  BaseSelection,
-  BlockComponent,
+import {
+  type BaseSelection,
+  type BlockComponent,
+  BlockSelection,
   CursorSelection,
+  TextSelection,
+  WidgetComponent,
 } from '@blocksuite/block-std';
-import { WidgetComponent } from '@blocksuite/block-std';
+import { DatabaseSelection } from '@blocksuite/data-view';
 import {
   assertExists,
   DisposableGroup,
@@ -129,11 +132,12 @@ export class AffineFormatBarWidget extends WidgetComponent {
     this.disposables.add(
       this._selectionManager.slots.changed.on(() => {
         const update = async () => {
-          const textSelection = rootComponent.selection.find('text');
-          const blockSelections = rootComponent.selection.filter('block');
+          const textSelection = rootComponent.selection.find(TextSelection);
+          const blockSelections =
+            rootComponent.selection.filter(BlockSelection);
 
           // Should not re-render format bar when only cursor selection changed in edgeless
-          const cursorSelection = rootComponent.selection.find('cursor');
+          const cursorSelection = rootComponent.selection.find(CursorSelection);
           if (cursorSelection) {
             if (!this._lastCursor) {
               this._lastCursor = cursorSelection;
@@ -202,7 +206,7 @@ export class AffineFormatBarWidget extends WidgetComponent {
     this.disposables.addFromEvent(document, 'selectionchange', () => {
       if (!this.host.event.active) return;
 
-      const databaseSelection = this.host.selection.find('database');
+      const databaseSelection = this.host.selection.find(DatabaseSelection);
       if (!databaseSelection) {
         return;
       }

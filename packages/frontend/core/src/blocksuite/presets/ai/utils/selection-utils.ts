@@ -1,4 +1,4 @@
-import type { EditorHost } from '@blocksuite/affine/block-std';
+import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
 import {
   BlocksUtils,
   type CopilotTool,
@@ -174,7 +174,7 @@ export async function selectAboveBlocks(editorHost: EditorHost, num = 10) {
 
   const { selection } = editorHost;
   selection.set([
-    selection.create('text', {
+    selection.create(TextSelection, {
       from: {
         blockId: startBlock.id,
         index: 0,
@@ -183,7 +183,7 @@ export async function selectAboveBlocks(editorHost: EditorHost, num = 10) {
       to: {
         blockId: lastLeafModel.id,
         index: 0,
-        length: selection.find('text')?.from.index ?? 0,
+        length: selection.find(TextSelection)?.from.index ?? 0,
       },
     }),
   ]);

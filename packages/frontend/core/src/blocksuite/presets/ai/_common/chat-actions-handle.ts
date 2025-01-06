@@ -1,7 +1,7 @@
 import { ChatHistoryOrder } from '@affine/graphql';
-import type {
+import {
   BlockSelection,
-  EditorHost,
+  type EditorHost,
   TextSelection,
 } from '@blocksuite/affine/block-std';
 import type {
@@ -198,8 +198,8 @@ const REPLACE_SELECTION = {
   icon: ReplaceIcon,
   title: 'Replace selection',
   showWhen: (host: EditorHost) => {
-    const textSelection = host.selection.find('text');
-    const blockSelections = host.selection.filter('block');
+    const textSelection = host.selection.find(TextSelection);
+    const blockSelections = host.selection.filter(BlockSelection);
     if (
       (!textSelection || textSelection.from.length === 0) &&
       blockSelections?.length === 0

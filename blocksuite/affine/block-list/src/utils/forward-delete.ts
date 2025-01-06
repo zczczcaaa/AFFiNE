@@ -2,7 +2,7 @@ import {
   getNextContentBlock,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockStdScope } from '@blocksuite/block-std';
+import { type BlockStdScope, TextSelection } from '@blocksuite/block-std';
 import type { Text } from '@blocksuite/store';
 
 // When deleting at line end of a list block,
@@ -20,7 +20,7 @@ import type { Text } from '@blocksuite/store';
  - Line9
  */
 export function forwardDelete(std: BlockStdScope): true | undefined {
-  const text = std.selection.find('text');
+  const text = std.selection.find(TextSelection);
   if (!text) return;
   const isCollapsed = text.isCollapsed();
   const doc = std.doc;

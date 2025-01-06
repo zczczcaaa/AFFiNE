@@ -8,6 +8,7 @@ import {
 } from '@blocksuite/affine-components/icons';
 import type { MenuItemGroup } from '@blocksuite/affine-components/toolbar';
 import { isInsidePageEditor } from '@blocksuite/affine-shared/utils';
+import { BlockSelection } from '@blocksuite/block-std';
 import { noop, sleep } from '@blocksuite/global/utils';
 import { html } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
@@ -134,7 +135,7 @@ export const clipboardGroup: MenuItemGroup<CodeBlockToolbarContext> = {
         host.updateComplete
           .then(() => {
             host.selection.setGroup('note', [
-              host.selection.create('block', {
+              host.selection.create(BlockSelection, {
                 blockId: codeId,
               }),
             ]);

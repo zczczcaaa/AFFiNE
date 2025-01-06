@@ -23,6 +23,7 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import {
   type BlockComponent,
+  BlockSelection,
   type DndEventState,
   isGfxBlockComponent,
   type UIEventHandler,
@@ -158,7 +159,7 @@ export class DragEventWatcher {
 
     const selectBlockAndStartDragging = () => {
       this._std.selection.setGroup('note', [
-        this._std.selection.create('block', {
+        this._std.selection.create(BlockSelection, {
           blockId: hoverBlock.blockId,
         }),
       ]);

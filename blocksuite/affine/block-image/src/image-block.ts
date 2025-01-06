@@ -1,6 +1,7 @@
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import { Peekable } from '@blocksuite/affine-components/peek';
 import type { ImageBlockModel } from '@blocksuite/affine-model';
+import { BlockSelection } from '@blocksuite/block-std';
 import { IS_MOBILE } from '@blocksuite/global/env';
 import { html } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -51,7 +52,7 @@ export class ImageBlockComponent extends CaptionedBlockComponent<
 
     event.stopPropagation();
     const selectionManager = this.host.selection;
-    const blockSelection = selectionManager.create('block', {
+    const blockSelection = selectionManager.create(BlockSelection, {
       blockId: this.blockId,
     });
     selectionManager.setGroup('note', [blockSelection]);

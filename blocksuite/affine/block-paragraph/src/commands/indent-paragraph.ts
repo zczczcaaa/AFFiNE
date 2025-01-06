@@ -5,7 +5,7 @@ import {
   getNearestHeadingBefore,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { Command } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const canIndentParagraphCommand: Command<
   never,
@@ -18,7 +18,7 @@ export const canIndentParagraphCommand: Command<
   const { schema } = doc;
 
   if (!blockId) {
-    const text = selection.find('text');
+    const text = selection.find(TextSelection);
     /**
      * Do nothing if the selection:
      * - is not a text selection
@@ -140,7 +140,7 @@ export const indentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
     } as Partial<ListBlockModel>);
   }
 
-  const textSelection = selection.find('text');
+  const textSelection = selection.find(TextSelection);
   if (textSelection) {
     host.updateComplete
       .then(() => {

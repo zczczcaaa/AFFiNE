@@ -1,10 +1,10 @@
-import type { Command, TextSelection } from '@blocksuite/block-std';
+import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const getTextSelectionCommand: Command<never, 'currentTextSelection'> = (
   ctx,
   next
 ) => {
-  const currentTextSelection = ctx.std.selection.find('text');
+  const currentTextSelection = ctx.std.selection.find(TextSelection);
   if (!currentTextSelection) return;
 
   next({ currentTextSelection });

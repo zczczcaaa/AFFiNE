@@ -9,7 +9,7 @@ import {
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
-import type { BlockService } from '@blocksuite/block-std';
+import { BlockSelection, type BlockService } from '@blocksuite/block-std';
 import type { GfxCompatibleProps } from '@blocksuite/block-std/gfx';
 import type { BlockModel } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
@@ -56,7 +56,7 @@ export class EmbedBlockComponent<
       }
     }
 
-    const selected = !!this.selected?.is('block');
+    const selected = !!this.selected?.is(BlockSelection);
     return html`
       <div
         draggable="${this.blockDraggable ? 'true' : 'false'}"

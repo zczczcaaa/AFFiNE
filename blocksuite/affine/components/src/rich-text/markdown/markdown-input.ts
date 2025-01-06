@@ -2,7 +2,7 @@ import {
   isMarkdownPrefix,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockStdScope } from '@blocksuite/block-std';
+import { type BlockStdScope, TextSelection } from '@blocksuite/block-std';
 
 import { getInlineEditorByModel } from '../dom.js';
 import { toDivider } from './divider.js';
@@ -17,7 +17,7 @@ export function markdownInput(
 ): string | undefined {
   if (!id) {
     const selection = std.selection;
-    const text = selection.find('text');
+    const text = selection.find(TextSelection);
     id = text?.from.blockId;
   }
   if (!id) return;

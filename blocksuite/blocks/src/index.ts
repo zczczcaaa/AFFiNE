@@ -114,6 +114,7 @@ export {
   PlainTextAdapterFactoryExtension,
   PlainTextAdapterFactoryIdentifier,
 } from '@blocksuite/affine-shared/adapters';
+export { HighlightSelection } from '@blocksuite/affine-shared/selection';
 export * from '@blocksuite/affine-shared/services';
 export { scrollbarStyle } from '@blocksuite/affine-shared/styles';
 export {

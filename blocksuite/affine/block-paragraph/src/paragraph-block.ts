@@ -16,7 +16,7 @@ import {
   getViewportElement,
 } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent } from '@blocksuite/block-std';
-import { getInlineRangeProvider } from '@blocksuite/block-std';
+import { getInlineRangeProvider, TextSelection } from '@blocksuite/block-std';
 import type { InlineRangeProvider } from '@blocksuite/inline';
 import { effect, signal } from '@preact/signals-core';
 import { html, nothing, type TemplateResult } from 'lit';
@@ -119,7 +119,7 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
           this._displayPlaceholder.value = false;
           return;
         }
-        const textSelection = this.host.selection.find('text');
+        const textSelection = this.host.selection.find(TextSelection);
         const isCollapsed = textSelection?.isCollapsed() ?? false;
         if (!this.selected || !isCollapsed) {
           this._displayPlaceholder.value = false;
@@ -159,7 +159,7 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
         // reset text selection when selected block is collapsed
         if (this.model.type.startsWith('h') && collapsed) {
           const collapsedSiblings = this.collapsedSiblings;
-          const textSelection = this.host.selection.find('text');
+          const textSelection = this.host.selection.find(TextSelection);
 
           if (
             textSelection &&

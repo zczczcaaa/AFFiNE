@@ -1,4 +1,8 @@
-import type { BlockStdScope, UIEventHandler } from '@blocksuite/block-std';
+import {
+  type BlockStdScope,
+  TextSelection,
+  type UIEventHandler,
+} from '@blocksuite/block-std';
 
 import { textFormatConfigs } from '../format/index.js';
 
@@ -13,7 +17,7 @@ export const textFormatKeymap = (std: BlockStdScope) =>
             const { doc, selection } = std;
             if (doc.readonly) return;
 
-            const textSelection = selection.find('text');
+            const textSelection = selection.find(TextSelection);
             if (!textSelection) return;
 
             config.action(std.host);

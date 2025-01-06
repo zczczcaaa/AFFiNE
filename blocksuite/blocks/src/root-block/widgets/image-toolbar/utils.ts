@@ -3,6 +3,7 @@ import {
   getBlockProps,
   isInsidePageEditor,
 } from '@blocksuite/affine-shared/utils';
+import { BlockSelection } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
 
 export function duplicate(
@@ -38,7 +39,7 @@ export function duplicate(
     .then(() => {
       const { selection } = editorHost;
       selection.setGroup('note', [
-        selection.create('block', {
+        selection.create(BlockSelection, {
           blockId: duplicateId,
         }),
       ]);

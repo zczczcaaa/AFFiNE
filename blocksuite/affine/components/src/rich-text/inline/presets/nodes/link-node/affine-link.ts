@@ -2,7 +2,12 @@ import type { ReferenceInfo } from '@blocksuite/affine-model';
 import { ParseDocUrlProvider } from '@blocksuite/affine-shared/services';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import type { BlockComponent } from '@blocksuite/block-std';
-import { BLOCK_ID_ATTR, ShadowlessElement } from '@blocksuite/block-std';
+import {
+  BLOCK_ID_ATTR,
+  BlockSelection,
+  ShadowlessElement,
+  TextSelection,
+} from '@blocksuite/block-std';
 import {
   type DeltaInsert,
   INLINE_ROOT_ATTR,
@@ -69,12 +74,12 @@ export class AffineLink extends ShadowlessElement {
       }
 
       const selection = this.std?.selection;
-      const textSelection = selection?.find('text');
+      const textSelection = selection?.find(TextSelection);
       if (!!textSelection && !textSelection.isCollapsed()) {
         return null;
       }
 
-      const blockSelections = selection?.filter('block');
+      const blockSelections = selection?.filter(BlockSelection);
       if (blockSelections?.length) {
         return null;
       }

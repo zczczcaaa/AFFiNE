@@ -1,5 +1,10 @@
 import { findNoteBlockModel } from '@blocksuite/affine-shared/utils';
-import type { BlockComponent } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  BlockSelection,
+  SurfaceSelection,
+  TextSelection,
+} from '@blocksuite/block-std';
 
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 
@@ -15,7 +20,7 @@ export class SelectionHelper {
   setSelectedBlocks = (blocks: BlockComponent[], noteId?: string) => {
     const { selection } = this;
     const selections = blocks.map(block =>
-      selection.create('block', {
+      selection.create(BlockSelection, {
         blockId: block.blockId,
       })
     );
@@ -28,7 +33,7 @@ export class SelectionHelper {
         : findNoteBlockModel(blocks[0].model)?.id;
       if (!surfaceElementId) return;
       const surfaceSelection = selection.create(
-        'surface',
+        SurfaceSelection,
         blocks[0]!.blockId,
         [surfaceElementId],
         true
@@ -49,9 +54,9 @@ export class SelectionHelper {
   get selectedBlocks() {
     const selection = this.selection;
 
-    return selection.find('text')
-      ? selection.filter('text')
-      : selection.filter('block');
+    return selection.find(TextSelection)
+      ? selection.filter(TextSelection)
+      : selection.filter(BlockSelection);
   }
 
   get selection() {

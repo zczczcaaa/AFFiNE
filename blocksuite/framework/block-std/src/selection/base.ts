@@ -1,10 +1,6 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 
-type SelectionConstructor<T = unknown> = {
-  type: string;
-  group: string;
-  new (...args: unknown[]): T;
-};
+import type { SelectionConstructor } from './manager';
 
 export type BaseSelectionOptions = {
   blockId: string;
@@ -21,9 +17,8 @@ export abstract class BaseSelection {
     return (this.constructor as SelectionConstructor).group;
   }
 
-  get type(): BlockSuite.SelectionType {
-    return (this.constructor as SelectionConstructor)
-      .type as BlockSuite.SelectionType;
+  get type(): string {
+    return (this.constructor as SelectionConstructor).type as string;
   }
 
   constructor({ blockId }: BaseSelectionOptions) {
@@ -39,10 +34,10 @@ export abstract class BaseSelection {
 
   abstract equals(other: BaseSelection): boolean;
 
-  is<T extends BlockSuite.SelectionType>(
+  is<T extends SelectionConstructor>(
     type: T
-  ): this is BlockSuite.SelectionInstance[T] {
-    return this.type === type;
+  ): this is T extends SelectionConstructor<infer U> ? U : never {
+    return this.type === type.type;
   }
 
   abstract toJSON(): Record<string, unknown>;

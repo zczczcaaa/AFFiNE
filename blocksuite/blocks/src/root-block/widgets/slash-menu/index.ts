@@ -7,7 +7,7 @@ import {
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
 import type { UIEventStateContext } from '@blocksuite/block-std';
-import { WidgetComponent } from '@blocksuite/block-std';
+import { TextSelection, WidgetComponent } from '@blocksuite/block-std';
 import {
   assertExists,
   assertType,
@@ -122,7 +122,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
       }
     }
 
-    const textSelection = this.host.selection.find('text');
+    const textSelection = this.host.selection.find(TextSelection);
     if (!textSelection) return;
 
     const model = this.host.doc.getBlock(textSelection.blockId)?.model;
@@ -149,7 +149,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
     assertType<RootBlockComponent>(rootComponent);
 
     inlineRangeApplyCallback(() => {
-      const textSelection = this.host.selection.find('text');
+      const textSelection = this.host.selection.find(TextSelection);
       if (!textSelection) return;
 
       const model = this.host.doc.getBlock(textSelection.blockId)?.model;

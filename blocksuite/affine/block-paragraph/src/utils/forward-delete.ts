@@ -3,11 +3,15 @@ import {
   getNextContentBlock,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockStdScope } from '@blocksuite/block-std';
+import {
+  BlockSelection,
+  type BlockStdScope,
+  TextSelection,
+} from '@blocksuite/block-std';
 
 export function forwardDelete(std: BlockStdScope) {
   const { doc, host } = std;
-  const text = std.selection.find('text');
+  const text = std.selection.find(TextSelection);
   if (!text) return;
   const isCollapsed = text.isCollapsed();
   const model = doc.getBlock(text.from.blockId)?.model;
@@ -30,7 +34,7 @@ export function forwardDelete(std: BlockStdScope) {
 
   if (matchFlavours(nextSibling, ignoreForwardDeleteFlavourList)) {
     std.selection.setGroup('note', [
-      std.selection.create('block', { blockId: nextSibling.id }),
+      std.selection.create(BlockSelection, { blockId: nextSibling.id }),
     ]);
     return true;
   }
@@ -61,7 +65,7 @@ export function forwardDelete(std: BlockStdScope) {
 
   if (nextBlock) {
     std.selection.setGroup('note', [
-      std.selection.create('block', { blockId: nextBlock.id }),
+      std.selection.create(BlockSelection, { blockId: nextBlock.id }),
     ]);
   }
   return true;
