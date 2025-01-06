@@ -1,7 +1,6 @@
 export * from './block-view.js';
 export * from './command.js';
 export * from './config.js';
-export * from './extension.js';
 export * from './flavour.js';
 export * from './keymap.js';
 export * from './lifecycle-watcher.js';

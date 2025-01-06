@@ -18,14 +18,13 @@ import {
 import {
   type BlockStdScope,
   type EditorHost,
-  type ExtensionType,
   StdIdentifier,
 } from '@blocksuite/block-std';
 import type { GfxBlockElementModel } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { IBound } from '@blocksuite/global/utils';
 import { Bound } from '@blocksuite/global/utils';
-import type { Blocks } from '@blocksuite/store';
+import type { Blocks, ExtensionType } from '@blocksuite/store';
 
 import {
   getBlockComponentByModel,

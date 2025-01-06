@@ -2,13 +2,13 @@ import { AIEdgelessRootBlockSpec } from '@affine/core/blocksuite/presets/ai';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { builtInTemplates as builtInEdgelessTemplates } from '@affine/templates/edgeless';
 import { builtInTemplates as builtInStickersTemplates } from '@affine/templates/stickers';
-import type { ExtensionType } from '@blocksuite/affine/block-std';
 import type { TemplateManager } from '@blocksuite/affine/blocks';
 import {
   EdgelessRootBlockSpec,
   EdgelessTemplatePanel,
   SpecProvider,
 } from '@blocksuite/affine/blocks';
+import type { ExtensionType } from '@blocksuite/affine/store';
 import { type FrameworkProvider } from '@toeverything/infra';
 
 import { enableAffineExtension, enableAIExtension } from './custom/root-block';

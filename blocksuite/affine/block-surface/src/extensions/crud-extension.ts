@@ -1,12 +1,8 @@
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
-import {
-  type BlockStdScope,
-  Extension,
-  StdIdentifier,
-} from '@blocksuite/block-std';
+import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { type Container, createIdentifier } from '@blocksuite/global/di';
-import type { BlockModel } from '@blocksuite/store';
+import { type BlockModel, Extension } from '@blocksuite/store';
 
 import type { SurfaceBlockModel } from '../surface-model';
 import { getLastPropsKey } from '../utils/get-last-props-key';

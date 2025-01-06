@@ -2,10 +2,10 @@ import { ImageSelectionExtension } from '@blocksuite/affine-shared/selection';
 import {
   BlockViewExtension,
   CommandExtension,
-  type ExtensionType,
   FlavourExtension,
   WidgetViewMapExtension,
 } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
 import { ImageBlockAdapterExtensions } from './adapters/extension.js';

@@ -12,10 +12,10 @@ import { AFFINE_SCROLL_ANCHORING_WIDGET } from '@blocksuite/affine-widget-scroll
 import {
   BlockViewExtension,
   CommandExtension,
-  type ExtensionType,
   FlavourExtension,
   WidgetViewMapExtension,
 } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 import { literal, unsafeStatic } from 'lit/static-html.js';
 
 import { ExportManagerExtension } from '../../_common/export-manager/export-manager.js';

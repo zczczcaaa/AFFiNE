@@ -3,7 +3,6 @@ import {
   AdapterFactoryIdentifier,
   MarkdownAdapter,
 } from '@blocksuite/affine-shared/adapters';
-import type { ExtensionType } from '@blocksuite/block-std';
 import type { ServiceProvider } from '@blocksuite/global/di';
 import type { DeltaInsert } from '@blocksuite/inline';
 import {
@@ -13,6 +12,7 @@ import {
   type BlockSnapshot,
   BlockSnapshotSchema,
   type DocSnapshot,
+  type ExtensionType,
   type FromBlockSnapshotPayload,
   type FromBlockSnapshotResult,
   type FromDocSnapshotPayload,

@@ -1,7 +1,8 @@
+import type { ExtensionType } from '@blocksuite/store';
+
 import type { EventOptions, UIEventHandler } from '../event/index.js';
 import { KeymapIdentifier } from '../identifier.js';
 import type { BlockStdScope } from '../scope/index.js';
-import type { ExtensionType } from './extension.js';
 
 let id = 1;
 

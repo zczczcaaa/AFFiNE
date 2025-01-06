@@ -1,9 +1,8 @@
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import type { Blocks } from '@blocksuite/store';
+import type { Blocks, ExtensionType } from '@blocksuite/store';
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-import type { ExtensionType } from '../extension/index.js';
 import { BlockStdScope } from '../scope/index.js';
 import { ShadowlessElement } from '../view/index.js';
 

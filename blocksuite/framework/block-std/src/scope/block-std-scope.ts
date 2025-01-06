@@ -1,12 +1,17 @@
 import type { ServiceProvider } from '@blocksuite/global/di';
 import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import { type Blocks, Job, type JobMiddleware } from '@blocksuite/store';
+import {
+  type Blocks,
+  type ExtensionType,
+  Job,
+  type JobMiddleware,
+} from '@blocksuite/store';
 
 import { Clipboard } from '../clipboard/index.js';
 import { CommandManager } from '../command/index.js';
 import { UIEventDispatcher } from '../event/index.js';
-import type { BlockService, ExtensionType } from '../extension/index.js';
+import type { BlockService } from '../extension/index.js';
 import { GfxController } from '../gfx/controller.js';
 import { GfxSelectionManager } from '../gfx/selection.js';
 import { SurfaceMiddlewareExtension } from '../gfx/surface-middleware.js';

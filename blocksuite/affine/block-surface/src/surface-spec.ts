@@ -2,9 +2,9 @@ import { HighlightSelectionExtension } from '@blocksuite/affine-shared/selection
 import {
   BlockViewExtension,
   CommandExtension,
-  type ExtensionType,
   FlavourExtension,
 } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
 import {

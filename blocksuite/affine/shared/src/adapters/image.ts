@@ -1,4 +1,3 @@
-import type { ExtensionType } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { sha } from '@blocksuite/global/utils';
 import {
@@ -6,6 +5,7 @@ import {
   BaseAdapter,
   type BlockSnapshot,
   type DocSnapshot,
+  type ExtensionType,
   type FromBlockSnapshotPayload,
   type FromBlockSnapshotResult,
   type FromDocSnapshotPayload,

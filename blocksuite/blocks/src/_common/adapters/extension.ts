@@ -7,7 +7,7 @@ import {
   NotionTextAdapterFactoryExtension,
   PlainTextAdapterFactoryExtension,
 } from '@blocksuite/affine-shared/adapters';
-import type { ExtensionType } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 
 import { htmlInlineToDeltaMatchers } from './html/delta-converter/html-inline.js';
 import { inlineDeltaToHtmlAdapterMatchers } from './html/delta-converter/inline-delta.js';

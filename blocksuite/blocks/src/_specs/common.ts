@@ -32,7 +32,7 @@ import {
   EditPropsStore,
   FontLoaderService,
 } from '@blocksuite/affine-shared/services';
-import type { ExtensionType } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 
 import { AdapterFactoryExtensions } from '../_common/adapters/extension.js';
 

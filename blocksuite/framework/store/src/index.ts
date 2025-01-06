@@ -2,6 +2,7 @@
 /// <reference path="../shim.d.ts" />
 
 export * from './adapter/index.js';
+export * from './extension/index.js';
 export * from './model/index.js';
 export * from './reactive/index.js';
 export * from './schema/index.js';

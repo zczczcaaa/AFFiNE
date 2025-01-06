@@ -3,7 +3,7 @@ import {
   InlineDeltaToPlainTextAdapterExtension,
   type TextBuffer,
 } from '@blocksuite/affine-shared/adapters';
-import type { ExtensionType } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 
 export const referenceDeltaMarkdownAdapterMatch =
   InlineDeltaToPlainTextAdapterExtension({

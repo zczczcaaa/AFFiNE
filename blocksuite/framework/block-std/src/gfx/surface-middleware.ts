@@ -1,7 +1,7 @@
 import { type Container, createIdentifier } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import { Extension } from '@blocksuite/store';
 
-import { Extension } from '../extension/extension.js';
 import { LifeCycleWatcher } from '../extension/lifecycle-watcher.js';
 import { StdIdentifier } from '../identifier.js';
 import type { BlockStdScope } from '../scope/block-std-scope.js';

@@ -1,8 +1,5 @@
-import {
-  BlockViewExtension,
-  type ExtensionType,
-  FlavourExtension,
-} from '@blocksuite/block-std';
+import { BlockViewExtension, FlavourExtension } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
 import { EmbedFigmaBlockAdapterExtensions } from './adapters/extension.js';

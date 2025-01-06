@@ -1,8 +1,5 @@
-import {
-  BlockViewExtension,
-  CommandExtension,
-  type ExtensionType,
-} from '@blocksuite/block-std';
+import { BlockViewExtension, CommandExtension } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
 import { EmbedLinkedDocBlockAdapterExtensions } from './adapters/extension.js';

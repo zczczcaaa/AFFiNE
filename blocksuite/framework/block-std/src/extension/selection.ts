@@ -1,6 +1,7 @@
+import type { ExtensionType } from '@blocksuite/store';
+
 import { SelectionIdentifier } from '../identifier.js';
 import type { SelectionConstructor } from '../selection/index.js';
-import type { ExtensionType } from './extension.js';
 
 export function SelectionExtension(
   selectionCtor: SelectionConstructor

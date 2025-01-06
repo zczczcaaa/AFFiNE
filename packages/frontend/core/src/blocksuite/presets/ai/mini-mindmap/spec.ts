@@ -1,6 +1,5 @@
 import {
   BlockViewExtension,
-  type ExtensionType,
   FlavourExtension,
 } from '@blocksuite/affine/block-std';
 import {
@@ -10,7 +9,7 @@ import {
   SurfaceBlockSchema,
   ThemeService,
 } from '@blocksuite/affine/blocks';
-import type { BlockSchema } from '@blocksuite/affine/store';
+import type { BlockSchema, ExtensionType } from '@blocksuite/affine/store';
 import { literal } from 'lit/static-html.js';
 import type { z } from 'zod';
 

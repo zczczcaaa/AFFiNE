@@ -1,8 +1,4 @@
-import {
-  BlockStdScope,
-  type ExtensionType,
-  ShadowlessElement,
-} from '@blocksuite/block-std';
+import { BlockStdScope, ShadowlessElement } from '@blocksuite/block-std';
 import {
   type AbstractEditor,
   type DocMode,
@@ -11,7 +7,7 @@ import {
   ThemeProvider,
 } from '@blocksuite/blocks';
 import { SignalWatcher, Slot, WithDisposable } from '@blocksuite/global/utils';
-import type { BlockModel, Blocks } from '@blocksuite/store';
+import type { BlockModel, Blocks, ExtensionType } from '@blocksuite/store';
 import { computed, signal } from '@preact/signals-core';
 import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';

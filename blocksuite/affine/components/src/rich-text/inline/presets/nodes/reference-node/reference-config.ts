@@ -1,5 +1,6 @@
-import type { BlockStdScope, ExtensionType } from '@blocksuite/block-std';
+import type { BlockStdScope } from '@blocksuite/block-std';
 import { createIdentifier } from '@blocksuite/global/di';
+import type { ExtensionType } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
 
 import type { AffineReference } from './reference-node.js';

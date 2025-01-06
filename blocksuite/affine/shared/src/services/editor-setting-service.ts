@@ -1,6 +1,6 @@
-import type { ExtensionType } from '@blocksuite/block-std';
 import { createIdentifier } from '@blocksuite/global/di';
 import type { DeepPartial } from '@blocksuite/global/utils';
+import type { ExtensionType } from '@blocksuite/store';
 import type { Signal } from '@preact/signals-core';
 import { z } from 'zod';
 

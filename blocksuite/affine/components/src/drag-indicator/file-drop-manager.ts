@@ -8,13 +8,12 @@ import {
 import {
   type BlockStdScope,
   type EditorHost,
-  type ExtensionType,
   LifeCycleWatcher,
 } from '@blocksuite/block-std';
 import { createIdentifier } from '@blocksuite/global/di';
 import type { IVec } from '@blocksuite/global/utils';
 import { Point } from '@blocksuite/global/utils';
-import type { BlockModel } from '@blocksuite/store';
+import type { BlockModel, ExtensionType } from '@blocksuite/store';
 
 import type { DragIndicator } from './index.js';
 

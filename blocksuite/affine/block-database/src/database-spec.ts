@@ -1,10 +1,10 @@
 import {
   BlockViewExtension,
   CommandExtension,
-  type ExtensionType,
   FlavourExtension,
 } from '@blocksuite/block-std';
 import { DatabaseSelectionExtension } from '@blocksuite/data-view';
+import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
 import { DatabaseBlockAdapterExtensions } from './adapters/extension.js';

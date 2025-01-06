@@ -1,5 +1,4 @@
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
-import type { ExtensionType } from '@blocksuite/block-std';
 import type { ServiceProvider } from '@blocksuite/global/di';
 import {
   type AssetsManager,
@@ -8,6 +7,7 @@ import {
   type BlockSnapshot,
   BlockSnapshotSchema,
   type DocSnapshot,
+  type ExtensionType,
   type FromBlockSnapshotPayload,
   type FromBlockSnapshotResult,
   type FromDocSnapshotPayload,

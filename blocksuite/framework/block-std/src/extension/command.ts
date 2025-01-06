@@ -1,6 +1,7 @@
+import type { ExtensionType } from '@blocksuite/store';
+
 import { CommandIdentifier } from '../identifier.js';
 import type { BlockCommands } from '../spec/index.js';
-import type { ExtensionType } from './extension.js';
 
 /**
  * Create a command extension.

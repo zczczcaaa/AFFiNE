@@ -1,8 +1,9 @@
-import type { BlockComponent, ExtensionType } from '@blocksuite/block-std';
+import type { BlockComponent } from '@blocksuite/block-std';
 import {
   KEYBOARD_ALLOW_DEFAULT,
   KEYBOARD_PREVENT_DEFAULT,
 } from '@blocksuite/inline';
+import type { ExtensionType } from '@blocksuite/store';
 
 import { InlineMarkdownExtension } from '../../extension/markdown-matcher.js';
 

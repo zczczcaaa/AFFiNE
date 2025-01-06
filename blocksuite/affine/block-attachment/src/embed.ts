@@ -6,10 +6,10 @@ import {
   transformModel,
   withTempBlobData,
 } from '@blocksuite/affine-shared/utils';
-import type { ExtensionType } from '@blocksuite/block-std';
-import { Extension } from '@blocksuite/block-std';
 import type { Container } from '@blocksuite/global/di';
 import { createIdentifier } from '@blocksuite/global/di';
+import type { ExtensionType } from '@blocksuite/store';
+import { Extension } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
 

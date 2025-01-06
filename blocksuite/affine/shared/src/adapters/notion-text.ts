@@ -1,5 +1,4 @@
 import { DefaultTheme } from '@blocksuite/affine-model';
-import type { ExtensionType } from '@blocksuite/block-std';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { DeltaInsert } from '@blocksuite/inline';
 import {
@@ -7,6 +6,7 @@ import {
   BaseAdapter,
   type BlockSnapshot,
   type DocSnapshot,
+  type ExtensionType,
   type FromBlockSnapshotResult,
   type FromDocSnapshotResult,
   type FromSliceSnapshotResult,

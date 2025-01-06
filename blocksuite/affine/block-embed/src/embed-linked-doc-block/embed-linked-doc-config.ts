@@ -1,6 +1,7 @@
 import type { ReferenceInfo } from '@blocksuite/affine-model';
-import type { EditorHost, ExtensionType } from '@blocksuite/block-std';
+import type { EditorHost } from '@blocksuite/block-std';
 import { createIdentifier } from '@blocksuite/global/di';
+import type { ExtensionType } from '@blocksuite/store';
 
 export interface EmbedLinkedDocBlockConfig {
   handleClick?: (

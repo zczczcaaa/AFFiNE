@@ -4,13 +4,9 @@ import {
   DefaultTheme,
   resolveColor,
 } from '@blocksuite/affine-model';
-import {
-  type BlockStdScope,
-  Extension,
-  type ExtensionType,
-  StdIdentifier,
-} from '@blocksuite/block-std';
+import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
 import { type Container, createIdentifier } from '@blocksuite/global/di';
+import { Extension, type ExtensionType } from '@blocksuite/store';
 import { type Signal, signal } from '@preact/signals-core';
 import {
   type AffineCssVariables,

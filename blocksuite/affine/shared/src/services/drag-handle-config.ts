@@ -1,10 +1,6 @@
-import {
-  type BlockStdScope,
-  Extension,
-  StdIdentifier,
-} from '@blocksuite/block-std';
+import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
 import { type Container, createIdentifier } from '@blocksuite/global/di';
-import { Slice, type SliceSnapshot } from '@blocksuite/store';
+import { Extension, Slice, type SliceSnapshot } from '@blocksuite/store';
 
 export const DndApiExtensionIdentifier = createIdentifier<DNDAPIExtension>(
   'AffineDndApiIdentifier'

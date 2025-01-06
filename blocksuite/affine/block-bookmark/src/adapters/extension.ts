@@ -1,4 +1,4 @@
-import type { ExtensionType } from '@blocksuite/block-std';
+import type { ExtensionType } from '@blocksuite/store';
 
 import { BookmarkBlockHtmlAdapterExtension } from './html.js';
 import { BookmarkBlockMarkdownAdapterExtension } from './markdown.js';

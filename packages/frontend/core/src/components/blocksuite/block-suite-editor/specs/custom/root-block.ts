@@ -11,7 +11,6 @@ import { AppThemeService } from '@affine/core/modules/theme';
 import { mixpanel } from '@affine/track';
 import {
   ConfigExtension,
-  type ExtensionType,
   LifeCycleWatcher,
   StdIdentifier,
 } from '@blocksuite/affine/block-std';
@@ -33,6 +32,7 @@ import {
   TelemetryProvider,
   ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
+import type { ExtensionType } from '@blocksuite/affine/store';
 import {
   createSignalFromObservable,
   referenceToNode,

@@ -1,7 +1,6 @@
 import {
   BlockStdScope,
   type EditorHost,
-  type ExtensionType,
   ShadowlessElement,
 } from '@blocksuite/affine/block-std';
 import type {
@@ -21,6 +20,7 @@ import { Container, type ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import {
   type Blocks,
+  type ExtensionType,
   type JobMiddleware,
   type Query,
   type Schema,

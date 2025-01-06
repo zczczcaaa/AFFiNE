@@ -1,6 +1,5 @@
 import {
   BlockServiceWatcher,
-  type ExtensionType,
   WidgetViewMapIdentifier,
 } from '@blocksuite/affine/block-std';
 import {
@@ -23,6 +22,7 @@ import {
   ParagraphBlockSpec,
 } from '@blocksuite/affine/blocks';
 import { assertInstanceOf } from '@blocksuite/affine/global/utils';
+import type { ExtensionType } from '@blocksuite/affine/store';
 import { literal, unsafeStatic } from 'lit/static-html.js';
 
 import { buildAIPanelConfig } from './ai-panel';

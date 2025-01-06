@@ -1,5 +1,6 @@
+import type { ExtensionType } from '@blocksuite/store';
+
 import { ConfigIdentifier } from '../identifier.js';
-import type { ExtensionType } from './extension.js';
 
 /**
  * Create a config extension.

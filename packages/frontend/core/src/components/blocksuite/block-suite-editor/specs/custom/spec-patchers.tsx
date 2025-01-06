@@ -32,7 +32,6 @@ import {
   BlockServiceWatcher,
   BlockViewIdentifier,
   ConfigIdentifier,
-  type ExtensionType,
   type WidgetComponent,
 } from '@blocksuite/affine/block-std';
 import type {
@@ -60,7 +59,11 @@ import {
   ReferenceNodeConfigExtension,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
-import { type BlockSnapshot, Text } from '@blocksuite/affine/store';
+import {
+  type BlockSnapshot,
+  type ExtensionType,
+  Text,
+} from '@blocksuite/affine/store';
 import type { ReferenceParams } from '@blocksuite/affine-model';
 import { type FrameworkProvider } from '@toeverything/infra';
 import { type TemplateResult } from 'lit';
