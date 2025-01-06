@@ -55,6 +55,7 @@ import {
   patchEdgelessClipboard,
   patchEmbedLinkedDocBlockConfig,
   patchForAttachmentEmbedViews,
+  patchForClipboardInElectron,
   patchForMobile,
   patchForSharedPage,
   patchGenerateDocUrlExtension,
@@ -169,6 +170,9 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     }
     if (BUILD_CONFIG.isMobileEdition) {
       patched = patched.concat(patchForMobile());
+    }
+    if (BUILD_CONFIG.isElectron) {
+      patched = patched.concat(patchForClipboardInElectron(framework));
     }
     patched = patched.concat(
       patchDocModeService(docService, docsService, editorService)

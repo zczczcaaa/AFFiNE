@@ -1,10 +1,12 @@
-import type { IpcMainInvokeEvent } from 'electron';
 import { clipboard, nativeImage } from 'electron';
 
 import type { NamespaceHandlers } from '../type';
 
 export const clipboardHandlers = {
-  copyAsImageFromString: async (_: IpcMainInvokeEvent, dataURL: string) => {
-    clipboard.writeImage(nativeImage.createFromDataURL(dataURL));
+  copyAsPNG: async (_, arrayBuffer: ArrayBuffer) => {
+    const image = nativeImage.createFromBuffer(Buffer.from(arrayBuffer));
+    if (image.isEmpty()) return false;
+    clipboard.writeImage(image);
+    return true;
   },
 } satisfies NamespaceHandlers;
