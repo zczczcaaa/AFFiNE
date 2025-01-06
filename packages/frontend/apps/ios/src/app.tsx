@@ -149,6 +149,14 @@ const frameworkProvider = framework.provider();
 (window as any).getCurrentI18nLocale = () => {
   return I18n.language;
 };
+(window as any).getCurrentWorkspaceId = () => {
+  const globalContextService = frameworkProvider.get(GlobalContextService);
+  return globalContextService.globalContext.workspaceId.get();
+};
+(window as any).getCurrentDocId = () => {
+  const globalContextService = frameworkProvider.get(GlobalContextService);
+  return globalContextService.globalContext.docId.get();
+};
 (window as any).getCurrentDocContentInMarkdown = async () => {
   const globalContextService = frameworkProvider.get(GlobalContextService);
   const currentWorkspaceId =
