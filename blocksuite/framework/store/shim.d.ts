@@ -16,4 +16,5 @@ declare module 'y-protocols/awareness.js' {
       value: State[Field]
     ): void;
   }
+  export { applyAwarenessUpdate, encodeAwarenessUpdate, modifyAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness'
 }

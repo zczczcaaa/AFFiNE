@@ -702,7 +702,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/nbstore@workspace:packages/common/nbstore"
   dependencies:
-    "@affine/electron-api": "workspace:*"
     "@affine/graphql": "workspace:*"
     "@datastructures-js/binary-search-tree": "npm:^5.3.2"
     "@toeverything/infra": "workspace:*"
@@ -717,7 +716,6 @@ __metadata:
     y-protocols: "npm:^1.0.6"
     yjs: "npm:^13.6.21"
   peerDependencies:
-    "@affine/electron-api": "workspace:*"
     "@affine/graphql": "workspace:*"
     idb: ^8.0.0
     socket.io-client: ^4.7.5

@@ -3,7 +3,7 @@ import {
   applyAwarenessUpdate,
   type Awareness,
   encodeAwarenessUpdate,
-} from 'y-protocols/awareness.js';
+} from 'y-protocols/awareness';
 
 import type { AwarenessRecord } from '../storage/awareness';
 import type { AwarenessSync } from '../sync/awareness';

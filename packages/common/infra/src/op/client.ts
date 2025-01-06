@@ -31,7 +31,7 @@ export class OpClient<Ops extends OpSchema> extends AutoMessageHandler {
   private readonly pendingCalls = new Map<string, PendingCall>();
   private readonly obs = new Map<string, Observer<any>>();
   private readonly options: OpClientOptions = {
-    timeout: 3000,
+    timeout: Infinity,
   };
 
   constructor(port: MessageCommunicapable, options: OpClientOptions = {}) {
@@ -139,9 +139,12 @@ export class OpClient<Ops extends OpSchema> extends AutoMessageHandler {
       raise('canceled');
     };
 
-    const timeout = setTimeout(() => {
-      raise('timeout');
-    }, this.options.timeout);
+    const timeout =
+      this.options.timeout === Infinity
+        ? 0
+        : setTimeout(() => {
+            raise('timeout');
+          }, this.options.timeout);
 
     const transferables = fetchTransferables(payload);
 

@@ -1,20 +1,26 @@
 import { type IDBPDatabase, openDB } from 'idb';
 
 import { AutoReconnectConnection } from '../../connection';
-import type { StorageOptions } from '../../storage';
+import type { SpaceType } from '../../utils/universal-id';
 import { type DocStorageSchema, migrator } from './schema';
+
+export interface IDBConnectionOptions {
+  flavour: string;
+  type: SpaceType;
+  id: string;
+}
 
 export class IDBConnection extends AutoReconnectConnection<{
   db: IDBPDatabase<DocStorageSchema>;
   channel: BroadcastChannel;
 }> {
-  readonly dbName = `${this.opts.peer}:${this.opts.type}:${this.opts.id}`;
+  readonly dbName = `${this.opts.flavour}:${this.opts.type}:${this.opts.id}`;
 
   override get shareId() {
     return `idb(${migrator.version}):${this.dbName}`;
   }
 
-  constructor(private readonly opts: StorageOptions) {
+  constructor(private readonly opts: IDBConnectionOptions) {
     super();
   }
 

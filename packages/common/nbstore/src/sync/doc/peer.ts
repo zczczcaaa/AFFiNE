@@ -43,6 +43,7 @@ interface Status {
   remoteClocks: ClockMap;
   syncing: boolean;
   retrying: boolean;
+  skipped: boolean;
   errorMessage: string | null;
 }
 
@@ -50,11 +51,13 @@ interface PeerState {
   total: number;
   syncing: number;
   retrying: boolean;
+  synced: boolean;
   errorMessage: string | null;
 }
 
 interface PeerDocState {
   syncing: boolean;
+  synced: boolean;
   retrying: boolean;
   errorMessage: string | null;
 }
@@ -92,10 +95,11 @@ export class DocSyncPeer {
   /**
    * random unique id for recognize self in "update" event
    */
-  private readonly uniqueId = `sync:${this.local.universalId}:${this.remote.universalId}:${nanoid()}`;
+  private readonly uniqueId = `sync:${this.peerId}:${nanoid()}`;
   private readonly prioritySettings = new Map<string, number>();
 
   constructor(
+    readonly peerId: string,
     readonly local: DocStorage,
     readonly syncMetadata: SyncStorage,
     readonly remote: DocStorage,
@@ -110,43 +114,59 @@ export class DocSyncPeer {
     remoteClocks: new ClockMap(new Map()),
     syncing: false,
     retrying: false,
+    skipped: false,
     errorMessage: null,
   };
   private readonly statusUpdatedSubject$ = new Subject<string | true>();
 
-  peerState$ = new Observable<PeerState>(subscribe => {
-    const next = () => {
-      if (!this.status.syncing) {
-        // if syncing = false, jobMap is empty
-        subscribe.next({
-          total: this.status.docs.size,
-          syncing: this.status.docs.size,
-          retrying: this.status.retrying,
-          errorMessage: this.status.errorMessage,
-        });
-      } else {
-        const syncing = this.status.jobMap.size;
-        subscribe.next({
-          total: this.status.docs.size,
-          syncing: syncing,
-          retrying: this.status.retrying,
-          errorMessage: this.status.errorMessage,
-        });
-      }
-    };
-    next();
-    return this.statusUpdatedSubject$.subscribe(() => {
+  get peerState$() {
+    return new Observable<PeerState>(subscribe => {
+      const next = () => {
+        if (this.status.skipped) {
+          subscribe.next({
+            total: 0,
+            syncing: 0,
+            synced: true,
+            retrying: false,
+            errorMessage: null,
+          });
+        } else if (!this.status.syncing) {
+          // if syncing = false, jobMap is empty
+          subscribe.next({
+            total: this.status.docs.size,
+            syncing: this.status.docs.size,
+            synced: false,
+            retrying: this.status.retrying,
+            errorMessage: this.status.errorMessage,
+          });
+        } else {
+          const syncing = this.status.jobMap.size;
+          subscribe.next({
+            total: this.status.docs.size,
+            syncing: syncing,
+            retrying: this.status.retrying,
+            errorMessage: this.status.errorMessage,
+            synced: syncing === 0,
+          });
+        }
+      };
       next();
+      return this.statusUpdatedSubject$.subscribe(() => {
+        next();
+      });
     });
-  });
+  }
 
   docState$(docId: string) {
     return new Observable<PeerDocState>(subscribe => {
       const next = () => {
+        const syncing =
+          !this.status.connectedDocs.has(docId) ||
+          this.status.jobMap.has(docId);
+
         subscribe.next({
-          syncing:
-            !this.status.connectedDocs.has(docId) ||
-            this.status.jobMap.has(docId),
+          syncing: syncing,
+          synced: !syncing,
           retrying: this.status.retrying,
           errorMessage: this.status.errorMessage,
         });
@@ -161,22 +181,21 @@ export class DocSyncPeer {
   private readonly jobs = createJobErrorCatcher({
     connect: async (docId: string, signal?: AbortSignal) => {
       const pushedClock =
-        (await this.syncMetadata.getPeerPushedClock(this.remote.peer, docId))
+        (await this.syncMetadata.getPeerPushedClock(this.peerId, docId))
           ?.timestamp ?? null;
       const clock = await this.local.getDocTimestamp(docId);
 
       throwIfAborted(signal);
-      if (pushedClock === null || pushedClock !== clock?.timestamp) {
+      if (
+        !this.remote.isReadonly &&
+        (pushedClock === null || pushedClock !== clock?.timestamp)
+      ) {
         await this.jobs.pullAndPush(docId, signal);
       } else {
         // no need to push
         const pulled =
-          (
-            await this.syncMetadata.getPeerPulledRemoteClock(
-              this.remote.peer,
-              docId
-            )
-          )?.timestamp ?? null;
+          (await this.syncMetadata.getPeerPulledRemoteClock(this.peerId, docId))
+            ?.timestamp ?? null;
         if (pulled === null || pulled !== this.status.remoteClocks.get(docId)) {
           await this.jobs.pull(docId, signal);
         }
@@ -214,7 +233,7 @@ export class DocSyncPeer {
           });
         }
         throwIfAborted(signal);
-        await this.syncMetadata.setPeerPushedClock(this.remote.peer, {
+        await this.syncMetadata.setPeerPushedClock(this.peerId, {
           docId,
           timestamp: maxClock,
         });
@@ -249,7 +268,7 @@ export class DocSyncPeer {
           this.uniqueId
         );
         throwIfAborted(signal);
-        await this.syncMetadata.setPeerPulledRemoteClock(this.remote.peer, {
+        await this.syncMetadata.setPeerPulledRemoteClock(this.peerId, {
           docId,
           timestamp: remoteClock,
         });
@@ -273,7 +292,7 @@ export class DocSyncPeer {
           });
         }
         throwIfAborted(signal);
-        await this.syncMetadata.setPeerPushedClock(this.remote.peer, {
+        await this.syncMetadata.setPeerPushedClock(this.peerId, {
           docId,
           timestamp: localClock,
         });
@@ -294,7 +313,7 @@ export class DocSyncPeer {
               remoteClock,
             });
           }
-          await this.syncMetadata.setPeerPushedClock(this.remote.peer, {
+          await this.syncMetadata.setPeerPushedClock(this.peerId, {
             docId,
             timestamp: localDocRecord.timestamp,
           });
@@ -322,7 +341,7 @@ export class DocSyncPeer {
         this.uniqueId
       );
       throwIfAborted(signal);
-      await this.syncMetadata.setPeerPulledRemoteClock(this.remote.peer, {
+      await this.syncMetadata.setPeerPulledRemoteClock(this.peerId, {
         docId,
         timestamp: remoteClock,
       });
@@ -360,7 +379,7 @@ export class DocSyncPeer {
         );
         throwIfAborted(signal);
 
-        await this.syncMetadata.setPeerPulledRemoteClock(this.remote.peer, {
+        await this.syncMetadata.setPeerPulledRemoteClock(this.peerId, {
           docId,
           timestamp: remoteClock,
         });
@@ -372,7 +391,7 @@ export class DocSyncPeer {
     updateRemoteClock: async (docId: string, remoteClock: Date) => {
       const updated = this.status.remoteClocks.setIfBigger(docId, remoteClock);
       if (updated) {
-        await this.syncMetadata.setPeerRemoteClock(this.remote.peer, {
+        await this.syncMetadata.setPeerRemoteClock(this.peerId, {
           docId,
           timestamp: remoteClock,
         });
@@ -455,6 +474,7 @@ export class DocSyncPeer {
           jobMap: new Map(),
           remoteClocks: new ClockMap(new Map()),
           syncing: false,
+          skipped: false,
           // tell ui to show retrying status
           retrying: true,
           // error message from last retry
@@ -482,6 +502,17 @@ export class DocSyncPeer {
 
   private async retryLoop(signal?: AbortSignal) {
     throwIfAborted(signal);
+    if (this.local.isReadonly) {
+      // Local is readonly, skip sync
+      this.status.skipped = true;
+      this.statusUpdatedSubject$.next(true);
+      await new Promise((_, reject) => {
+        signal?.addEventListener('abort', reason => {
+          reject(reason);
+        });
+      });
+      return;
+    }
     const abort = new AbortController();
 
     signal?.addEventListener('abort', reason => {
@@ -536,8 +567,8 @@ export class DocSyncPeer {
           if (
             origin === this.uniqueId ||
             origin?.startsWith(
-              `sync:${this.local.peer}:${this.remote.peer}:`
-              // skip if local and remote is same
+              `sync:${this.peerId}:`
+              // skip if peerId is same
             )
           ) {
             return;
@@ -572,7 +603,7 @@ export class DocSyncPeer {
 
       // get cached clocks from metadata
       const cachedClocks = await this.syncMetadata.getPeerRemoteClocks(
-        this.remote.peer
+        this.peerId
       );
       throwIfAborted(signal);
       for (const [id, v] of Object.entries(cachedClocks)) {

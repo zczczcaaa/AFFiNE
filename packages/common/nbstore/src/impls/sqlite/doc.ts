@@ -1,54 +1,82 @@
 import { share } from '../../connection';
-import { type DocClock, DocStorageBase, type DocUpdate } from '../../storage';
-import { NativeDBConnection } from './db';
+import {
+  type DocClocks,
+  type DocRecord,
+  DocStorageBase,
+  type DocUpdate,
+} from '../../storage';
+import { NativeDBConnection, type SqliteNativeDBOptions } from './db';
 
-export class SqliteDocStorage extends DocStorageBase {
-  override connection = share(
-    new NativeDBConnection(this.peer, this.spaceType, this.spaceId)
-  );
+export class SqliteDocStorage extends DocStorageBase<SqliteNativeDBOptions> {
+  static readonly identifier = 'SqliteDocStorage';
+  override connection = share(new NativeDBConnection(this.options));
 
   get db() {
     return this.connection.apis;
   }
 
-  override async getDoc(docId: string) {
-    return this.db.getDoc(docId);
-  }
-
   override async pushDocUpdate(update: DocUpdate) {
-    return this.db.pushDocUpdate(update);
+    const timestamp = await this.db.pushUpdate(update.docId, update.bin);
+
+    this.emit(
+      'update',
+      {
+        docId: update.docId,
+        bin: update.bin,
+        timestamp,
+        editor: update.editor,
+      },
+      origin
+    );
+
+    return { docId: update.docId, timestamp };
   }
 
   override async deleteDoc(docId: string) {
-    return this.db.deleteDoc(docId);
+    await this.db.deleteDoc(docId);
   }
 
   override async getDocTimestamps(after?: Date) {
-    return this.db.getDocTimestamps(after ? new Date(after) : undefined);
+    const clocks = await this.db.getDocClocks(after);
+
+    return clocks.reduce((ret, cur) => {
+      ret[cur.docId] = cur.timestamp;
+      return ret;
+    }, {} as DocClocks);
   }
 
-  override getDocTimestamp(docId: string): Promise<DocClock | null> {
-    return this.db.getDocTimestamp(docId);
+  override async getDocTimestamp(docId: string) {
+    return this.db.getDocClock(docId);
   }
 
-  protected override async getDocSnapshot() {
-    // handled in db
-    // see electron/src/helper/nbstore/doc.ts
-    return null;
+  protected override async getDocSnapshot(docId: string) {
+    const snapshot = await this.db.getDocSnapshot(docId);
+
+    if (!snapshot) {
+      return null;
+    }
+
+    return snapshot;
   }
 
-  protected override async setDocSnapshot(): Promise<boolean> {
-    // handled in db
-    return true;
+  protected override async setDocSnapshot(
+    snapshot: DocRecord
+  ): Promise<boolean> {
+    return this.db.setDocSnapshot({
+      docId: snapshot.docId,
+      bin: snapshot.bin,
+      timestamp: snapshot.timestamp,
+    });
   }
 
-  protected override async getDocUpdates() {
-    // handled in db
-    return [];
+  protected override async getDocUpdates(docId: string) {
+    return this.db.getDocUpdates(docId);
   }
 
-  protected override markUpdatesMerged() {
-    // handled in db
-    return Promise.resolve(0);
+  protected override markUpdatesMerged(docId: string, updates: DocRecord[]) {
+    return this.db.markUpdatesMerged(
+      docId,
+      updates.map(update => update.timestamp)
+    );
   }
 }

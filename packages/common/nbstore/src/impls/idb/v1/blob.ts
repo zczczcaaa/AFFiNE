@@ -1,12 +1,18 @@
 import { share } from '../../../connection';
 import { BlobStorageBase, type ListedBlobRecord } from '../../../storage';
-import { BlobIDBConnection } from './db';
+import { BlobIDBConnection, type BlobIDBConnectionOptions } from './db';
 
 /**
  * @deprecated readonly
  */
 export class IndexedDBV1BlobStorage extends BlobStorageBase {
-  readonly connection = share(new BlobIDBConnection(this.spaceId));
+  static readonly identifier = 'IndexedDBV1BlobStorage';
+
+  constructor(private readonly options: BlobIDBConnectionOptions) {
+    super();
+  }
+
+  readonly connection = share(new BlobIDBConnection(this.options));
 
   get db() {
     return this.connection.inner;

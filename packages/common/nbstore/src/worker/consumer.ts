@@ -1,27 +1,29 @@
 import type { OpConsumer } from '@toeverything/infra/op';
 import { Observable } from 'rxjs';
 
-import { getAvailableStorageImplementations } from '../impls';
-import { SpaceStorage, type StorageOptions } from '../storage';
+import { type StorageConstructor } from '../impls';
+import { SpaceStorage } from '../storage';
 import type { AwarenessRecord } from '../storage/awareness';
 import { Sync } from '../sync';
-import type { WorkerOps } from './ops';
+import type { PeerStorageOptions } from '../sync/types';
+import type { WorkerInitOptions, WorkerOps } from './ops';
+
+export type { WorkerOps };
 
 export class WorkerConsumer {
-  private remotes: SpaceStorage[] = [];
-  private local: SpaceStorage | null = null;
+  private storages: PeerStorageOptions<SpaceStorage> | null = null;
   private sync: Sync | null = null;
 
   get ensureLocal() {
-    if (!this.local) {
+    if (!this.storages) {
       throw new Error('Not initialized');
     }
-    return this.local;
+    return this.storages.local;
   }
 
   get ensureSync() {
     if (!this.sync) {
-      throw new Error('Not initialized');
+      throw new Error('Sync not initialized');
     }
     return this.sync;
   }
@@ -31,11 +33,7 @@ export class WorkerConsumer {
   }
 
   get docSync() {
-    const docSync = this.ensureSync.doc;
-    if (!docSync) {
-      throw new Error('Doc sync not initialized');
-    }
-    return docSync;
+    return this.ensureSync.doc;
   }
 
   get blobStorage() {
@@ -43,11 +41,7 @@ export class WorkerConsumer {
   }
 
   get blobSync() {
-    const blobSync = this.ensureSync.blob;
-    if (!blobSync) {
-      throw new Error('Blob sync not initialized');
-    }
-    return blobSync;
+    return this.ensureSync.blob;
   }
 
   get syncStorage() {
@@ -59,41 +53,58 @@ export class WorkerConsumer {
   }
 
   get awarenessSync() {
-    const awarenessSync = this.ensureSync.awareness;
-    if (!awarenessSync) {
-      throw new Error('Awareness sync not initialized');
-    }
-    return awarenessSync;
+    return this.ensureSync.awareness;
   }
 
-  constructor(private readonly consumer: OpConsumer<WorkerOps>) {}
-
-  listen() {
+  constructor(
+    private readonly consumer: OpConsumer<WorkerOps>,
+    private readonly availableStorageImplementations: StorageConstructor[]
+  ) {
     this.registerHandlers();
     this.consumer.listen();
   }
 
-  async init(init: {
-    local: { name: string; opts: StorageOptions }[];
-    remotes: { name: string; opts: StorageOptions }[][];
-  }) {
-    this.local = new SpaceStorage(
-      init.local.map(opt => {
-        const Storage = getAvailableStorageImplementations(opt.name);
-        return new Storage(opt.opts);
-      })
-    );
-    this.remotes = init.remotes.map(opts => {
-      return new SpaceStorage(
-        opts.map(opt => {
-          const Storage = getAvailableStorageImplementations(opt.name);
-          return new Storage(opt.opts);
+  init(init: WorkerInitOptions) {
+    this.storages = {
+      local: new SpaceStorage(
+        Object.fromEntries(
+          Object.entries(init.local).map(([type, opt]) => {
+            const Storage = this.availableStorageImplementations.find(
+              impl => impl.identifier === opt.name
+            );
+            if (!Storage) {
+              throw new Error(`Storage implementation ${opt.name} not found`);
+            }
+            return [type, new Storage(opt.opts as any)];
+          })
+        )
+      ),
+      remotes: Object.fromEntries(
+        Object.entries(init.remotes).map(([peer, opts]) => {
+          return [
+            peer,
+            new SpaceStorage(
+              Object.fromEntries(
+                Object.entries(opts).map(([type, opt]) => {
+                  const Storage = this.availableStorageImplementations.find(
+                    impl => impl.identifier === opt.name
+                  );
+                  if (!Storage) {
+                    throw new Error(
+                      `Storage implementation ${opt.name} not found`
+                    );
+                  }
+                  return [type, new Storage(opt.opts as any)];
+                })
+              )
+            ),
+          ];
         })
-      );
-    });
-    this.sync = new Sync(this.local, this.remotes);
-    this.local.connect();
-    for (const remote of this.remotes) {
+      ),
+    };
+    this.sync = new Sync(this.storages);
+    this.storages.local.connect();
+    for (const remote of Object.values(this.storages.remotes)) {
       remote.connect();
     }
     this.sync.start();
@@ -101,9 +112,9 @@ export class WorkerConsumer {
 
   async destroy() {
     this.sync?.stop();
-    this.local?.disconnect();
-    await this.local?.destroy();
-    for (const remote of this.remotes) {
+    this.storages?.local.disconnect();
+    await this.storages?.local.destroy();
+    for (const remote of Object.values(this.storages?.remotes ?? {})) {
       remote.disconnect();
       await remote.destroy();
     }
@@ -144,7 +155,7 @@ export class WorkerConsumer {
               subscriber.next(true);
               subscriber.complete();
             })
-            .catch(error => {
+            .catch((error: any) => {
               subscriber.error(error);
             });
           return () => abortController.abort();
@@ -224,6 +235,29 @@ export class WorkerConsumer {
         }),
       'blobSync.downloadBlob': key => this.blobSync.downloadBlob(key),
       'blobSync.uploadBlob': blob => this.blobSync.uploadBlob(blob),
+      'blobSync.fullSync': () =>
+        new Observable(subscriber => {
+          const abortController = new AbortController();
+          this.blobSync
+            .fullSync(abortController.signal)
+            .then(() => {
+              subscriber.next(true);
+              subscriber.complete();
+            })
+            .catch(error => {
+              subscriber.error(error);
+            });
+          return () => abortController.abort();
+        }),
+      'blobSync.state': () => this.blobSync.state$,
+      'blobSync.setMaxBlobSize': size => this.blobSync.setMaxBlobSize(size),
+      'blobSync.onReachedMaxBlobSize': () =>
+        new Observable(subscriber => {
+          const undo = this.blobSync.onReachedMaxBlobSize(byteSize => {
+            subscriber.next(byteSize);
+          });
+          return () => undo();
+        }),
       'awarenessSync.update': ({ awareness, origin }) =>
         this.awarenessSync.update(awareness, origin),
       'awarenessSync.subscribeUpdate': docId =>

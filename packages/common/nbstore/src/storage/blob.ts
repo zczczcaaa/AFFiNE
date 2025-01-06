@@ -1,6 +1,5 @@
-import { type Storage, StorageBase, type StorageOptions } from './storage';
-
-export interface BlobStorageOptions extends StorageOptions {}
+import type { Connection } from '../connection';
+import { type Storage } from './storage';
 
 export interface BlobRecord {
   key: string;
@@ -29,13 +28,9 @@ export interface BlobStorage extends Storage {
   list(signal?: AbortSignal): Promise<ListedBlobRecord[]>;
 }
 
-export abstract class BlobStorageBase<
-    Options extends BlobStorageOptions = BlobStorageOptions,
-  >
-  extends StorageBase<Options>
-  implements BlobStorage
-{
-  override readonly storageType = 'blob';
+export abstract class BlobStorageBase implements BlobStorage {
+  readonly storageType = 'blob';
+  abstract readonly connection: Connection;
 
   abstract get(key: string, signal?: AbortSignal): Promise<BlobRecord | null>;
   abstract set(blob: BlobRecord, signal?: AbortSignal): Promise<void>;

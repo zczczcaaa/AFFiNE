@@ -19,30 +19,37 @@ test('doc', async () => {
 
   const peerADoc = new IndexedDBDocStorage({
     id: 'ws1',
-    peer: 'a',
+    flavour: 'a',
     type: 'workspace',
   });
 
   const peerASync = new IndexedDBSyncStorage({
     id: 'ws1',
-    peer: 'a',
+    flavour: 'a',
     type: 'workspace',
   });
 
   const peerBDoc = new IndexedDBDocStorage({
     id: 'ws1',
-    peer: 'b',
+    flavour: 'b',
     type: 'workspace',
   });
   const peerCDoc = new IndexedDBDocStorage({
     id: 'ws1',
-    peer: 'c',
+    flavour: 'c',
     type: 'workspace',
   });
 
-  const peerA = new SpaceStorage([peerADoc, peerASync]);
-  const peerB = new SpaceStorage([peerBDoc]);
-  const peerC = new SpaceStorage([peerCDoc]);
+  const peerA = new SpaceStorage({
+    doc: peerADoc,
+    sync: peerASync,
+  });
+  const peerB = new SpaceStorage({
+    doc: peerBDoc,
+  });
+  const peerC = new SpaceStorage({
+    doc: peerCDoc,
+  });
 
   peerA.connect();
   peerB.connect();
@@ -57,7 +64,13 @@ test('doc', async () => {
     bin: update,
   });
 
-  const sync = new Sync(peerA, [peerB, peerC]);
+  const sync = new Sync({
+    local: peerA,
+    remotes: {
+      b: peerB,
+      c: peerC,
+    },
+  });
   sync.start();
 
   await new Promise(resolve => setTimeout(resolve, 1000));
@@ -109,25 +122,31 @@ test('doc', async () => {
 test('blob', async () => {
   const a = new IndexedDBBlobStorage({
     id: 'ws1',
-    peer: 'a',
+    flavour: 'a',
     type: 'workspace',
   });
 
   const b = new IndexedDBBlobStorage({
     id: 'ws1',
-    peer: 'b',
+    flavour: 'b',
     type: 'workspace',
   });
 
   const c = new IndexedDBBlobStorage({
     id: 'ws1',
-    peer: 'c',
+    flavour: 'c',
     type: 'workspace',
   });
 
-  const peerA = new SpaceStorage([a]);
-  const peerB = new SpaceStorage([b]);
-  const peerC = new SpaceStorage([c]);
+  const peerA = new SpaceStorage({
+    blob: a,
+  });
+  const peerB = new SpaceStorage({
+    blob: b,
+  });
+  const peerC = new SpaceStorage({
+    blob: c,
+  });
 
   peerA.connect();
   peerB.connect();
@@ -151,7 +170,13 @@ test('blob', async () => {
     createdAt: new Date(100),
   });
 
-  const sync = new Sync(peerA, [peerB, peerC]);
+  const sync = new Sync({
+    local: peerA,
+    remotes: {
+      b: peerB,
+      c: peerC,
+    },
+  });
   sync.start();
 
   await new Promise(resolve => setTimeout(resolve, 1000));

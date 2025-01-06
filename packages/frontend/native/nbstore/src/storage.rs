@@ -5,7 +5,7 @@ use sqlx::{
   Pool, Row,
 };
 
-pub type Result<T> = std::result::Result<T, sqlx::Error>;
+use super::error::Result;
 
 pub struct SqliteDocStorage {
   pub pool: Pool<Sqlite>,
@@ -52,7 +52,7 @@ impl SqliteDocStorage {
   }
 
   pub async fn connect(&self) -> Result<()> {
-    if !Sqlite::database_exists(&self.path).await.unwrap_or(false) {
+    if !Sqlite::database_exists(&self.path).await? {
       Sqlite::create_database(&self.path).await?;
     };
 
@@ -79,7 +79,6 @@ impl SqliteDocStorage {
   ///
   /// Flush the WAL file to the database file.
   /// See https://www.sqlite.org/pragma.html#pragma_wal_checkpoint:~:text=PRAGMA%20schema.wal_checkpoint%3B
-  ///
   pub async fn checkpoint(&self) -> Result<()> {
     sqlx::query("PRAGMA wal_checkpoint(FULL);")
       .execute(&self.pool)

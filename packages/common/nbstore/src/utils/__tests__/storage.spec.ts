@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseUniversalId, universalId } from '../storage';
+import { parseUniversalId, universalId } from '../universal-id';
 
 describe('parseUniversalId', () => {
   it('should generate universal id', () => {

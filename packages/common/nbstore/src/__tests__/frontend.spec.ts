@@ -9,6 +9,7 @@ import { DocFrontend } from '../frontend/doc';
 import { BroadcastChannelAwarenessStorage } from '../impls/broadcast-channel/awareness';
 import { IndexedDBDocStorage } from '../impls/idb';
 import { AwarenessSyncImpl } from '../sync/awareness';
+import { DocSyncImpl } from '../sync/doc';
 import { expectYjsEqual } from './utils';
 
 test('doc', async () => {
@@ -19,7 +20,7 @@ test('doc', async () => {
 
   const docStorage = new IndexedDBDocStorage({
     id: 'ws1',
-    peer: 'a',
+    flavour: 'a',
     type: 'workspace',
   });
 
@@ -27,7 +28,7 @@ test('doc', async () => {
 
   await docStorage.connection.waitForConnected();
 
-  const frontend1 = new DocFrontend(docStorage, null);
+  const frontend1 = new DocFrontend(docStorage, DocSyncImpl.dummy);
   frontend1.start();
   frontend1.addDoc(doc1);
   await vitest.waitFor(async () => {
@@ -42,7 +43,7 @@ test('doc', async () => {
   const doc2 = new YDoc({
     guid: 'test-doc',
   });
-  const frontend2 = new DocFrontend(docStorage, null);
+  const frontend2 = new DocFrontend(docStorage, DocSyncImpl.dummy);
   frontend2.start();
   frontend2.addDoc(doc2);
 
@@ -57,15 +58,11 @@ test('doc', async () => {
 
 test('awareness', async () => {
   const storage1 = new BroadcastChannelAwarenessStorage({
-    id: 'ws1',
-    peer: 'a',
-    type: 'workspace',
+    id: 'ws1:a',
   });
 
   const storage2 = new BroadcastChannelAwarenessStorage({
-    id: 'ws1',
-    peer: 'b',
-    type: 'workspace',
+    id: 'ws1:b',
   });
 
   storage1.connection.connect();
@@ -90,13 +87,23 @@ test('awareness', async () => {
   const awarenessC = new Awareness(docC);
 
   {
-    const sync = new AwarenessSyncImpl(storage1, [storage2]);
+    const sync = new AwarenessSyncImpl({
+      local: storage1,
+      remotes: {
+        b: storage2,
+      },
+    });
     const frontend = new AwarenessFrontend(sync);
     frontend.connect(awarenessA);
     frontend.connect(awarenessB);
   }
   {
-    const sync = new AwarenessSyncImpl(storage2, [storage1]);
+    const sync = new AwarenessSyncImpl({
+      local: storage2,
+      remotes: {
+        a: storage1,
+      },
+    });
     const frontend = new AwarenessFrontend(sync);
     frontend.connect(awarenessC);
   }

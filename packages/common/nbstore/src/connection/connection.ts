@@ -92,6 +92,7 @@ export abstract class AutoReconnectConnection<T = any>
         })
         .catch(error => {
           if (!this.connectingAbort?.signal.aborted) {
+            console.error('failed to connect', error);
             this.setStatus('error', error as any);
           }
         });

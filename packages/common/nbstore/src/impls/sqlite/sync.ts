@@ -1,18 +1,26 @@
 import { share } from '../../connection';
-import { BasicSyncStorage, type DocClock } from '../../storage';
-import { NativeDBConnection } from './db';
+import { type DocClock, SyncStorageBase } from '../../storage';
+import { NativeDBConnection, type SqliteNativeDBOptions } from './db';
 
-export class SqliteSyncStorage extends BasicSyncStorage {
-  override connection = share(
-    new NativeDBConnection(this.peer, this.spaceType, this.spaceId)
-  );
+export class SqliteSyncStorage extends SyncStorageBase {
+  static readonly identifier = 'SqliteSyncStorage';
+
+  override connection = share(new NativeDBConnection(this.options));
+
+  constructor(private readonly options: SqliteNativeDBOptions) {
+    super();
+  }
 
   get db() {
     return this.connection.apis;
   }
 
   override async getPeerRemoteClocks(peer: string) {
-    return this.db.getPeerRemoteClocks(peer);
+    return this.db
+      .getPeerRemoteClocks(peer)
+      .then(clocks =>
+        Object.fromEntries(clocks.map(clock => [clock.docId, clock.timestamp]))
+      );
   }
 
   override async getPeerRemoteClock(peer: string, docId: string) {
@@ -20,11 +28,15 @@ export class SqliteSyncStorage extends BasicSyncStorage {
   }
 
   override async setPeerRemoteClock(peer: string, clock: DocClock) {
-    await this.db.setPeerRemoteClock(peer, clock);
+    await this.db.setPeerRemoteClock(peer, clock.docId, clock.timestamp);
   }
 
   override async getPeerPulledRemoteClocks(peer: string) {
-    return this.db.getPeerPulledRemoteClocks(peer);
+    return this.db
+      .getPeerPulledRemoteClocks(peer)
+      .then(clocks =>
+        Object.fromEntries(clocks.map(clock => [clock.docId, clock.timestamp]))
+      );
   }
 
   override async getPeerPulledRemoteClock(peer: string, docId: string) {
@@ -32,11 +44,15 @@ export class SqliteSyncStorage extends BasicSyncStorage {
   }
 
   override async setPeerPulledRemoteClock(peer: string, clock: DocClock) {
-    await this.db.setPeerPulledRemoteClock(peer, clock);
+    await this.db.setPeerPulledRemoteClock(peer, clock.docId, clock.timestamp);
   }
 
   override async getPeerPushedClocks(peer: string) {
-    return this.db.getPeerPushedClocks(peer);
+    return this.db
+      .getPeerPushedClocks(peer)
+      .then(clocks =>
+        Object.fromEntries(clocks.map(clock => [clock.docId, clock.timestamp]))
+      );
   }
 
   override async getPeerPushedClock(peer: string, docId: string) {
@@ -44,7 +60,7 @@ export class SqliteSyncStorage extends BasicSyncStorage {
   }
 
   override async setPeerPushedClock(peer: string, clock: DocClock) {
-    await this.db.setPeerPushedClock(peer, clock);
+    await this.db.setPeerPushedClock(peer, clock.docId, clock.timestamp);
   }
 
   override async clearClocks() {

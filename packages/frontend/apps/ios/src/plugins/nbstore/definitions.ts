@@ -27,17 +27,13 @@ export interface DocClock {
 }
 
 export interface NbStorePlugin {
-  getSpaceDBPath: (options: {
-    peer: string;
-    spaceType: string;
+  connect: (options: {
     id: string;
-  }) => Promise<{ path: string }>;
-  create: (options: { id: string; path: string }) => Promise<void>;
-  connect: (options: { id: string }) => Promise<void>;
-  close: (options: { id: string }) => Promise<void>;
-  isClosed: (options: { id: string }) => Promise<{ isClosed: boolean }>;
-  checkpoint: (options: { id: string }) => Promise<void>;
-  validate: (options: { id: string }) => Promise<{ isValidate: boolean }>;
+    spaceId: string;
+    spaceType: string;
+    peer: string;
+  }) => Promise<void>;
+  disconnect: (options: { id: string }) => Promise<void>;
 
   setSpaceId: (options: { id: string; spaceId: string }) => Promise<void>;
   pushUpdate: (options: {
@@ -49,7 +45,7 @@ export interface NbStorePlugin {
     | {
         docId: string;
         // base64 encoded data
-        data: string;
+        bin: string;
         timestamp: number;
       }
     | undefined
@@ -57,23 +53,24 @@ export interface NbStorePlugin {
   setDocSnapshot: (options: {
     id: string;
     docId: string;
-    data: string;
+    bin: string;
+    timestamp: number;
   }) => Promise<{ success: boolean }>;
-  getDocUpdates: (options: { id: string; docId: string }) => Promise<
-    {
+  getDocUpdates: (options: { id: string; docId: string }) => Promise<{
+    updates: {
       docId: string;
-      createdAt: number;
+      timestamp: number;
       // base64 encoded data
-      data: string;
-    }[]
-  >;
+      bin: string;
+    }[];
+  }>;
   markUpdatesMerged: (options: {
     id: string;
     docId: string;
     timestamps: number[];
   }) => Promise<{ count: number }>;
   deleteDoc: (options: { id: string; docId: string }) => Promise<void>;
-  getDocClocks: (options: { id: string; after: number }) => Promise<
+  getDocClocks: (options: { id: string; after?: number | null }) => Promise<
     {
       docId: string;
       timestamp: number;

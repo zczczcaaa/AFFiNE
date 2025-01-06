@@ -11,9 +11,6 @@
       "path": "../../frontend/graphql"
     },
     {
-      "path": "../../frontend/electron-api"
-    },
-    {
       "path": "../infra"
     },
     {

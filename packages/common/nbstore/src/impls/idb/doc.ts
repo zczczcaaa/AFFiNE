@@ -3,10 +3,9 @@ import {
   type DocClocks,
   type DocRecord,
   DocStorageBase,
-  type DocStorageOptions,
   type DocUpdate,
 } from '../../storage';
-import { IDBConnection } from './db';
+import { IDBConnection, type IDBConnectionOptions } from './db';
 import { IndexedDBLocker } from './lock';
 
 interface ChannelMessage {
@@ -15,7 +14,9 @@ interface ChannelMessage {
   origin?: string;
 }
 
-export class IndexedDBDocStorage extends DocStorageBase {
+export class IndexedDBDocStorage extends DocStorageBase<IDBConnectionOptions> {
+  static readonly identifier = 'IndexedDBDocStorage';
+
   readonly connection = new IDBConnection(this.options);
 
   get db() {
@@ -29,10 +30,6 @@ export class IndexedDBDocStorage extends DocStorageBase {
   override locker = new IndexedDBLocker(this.connection);
 
   private _lastTimestamp = new Date(0);
-
-  constructor(options: DocStorageOptions) {
-    super(options);
-  }
 
   private generateTimestamp() {
     const timestamp = new Date();

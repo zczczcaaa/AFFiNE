@@ -1,128 +1,43 @@
-import {
-  type BlobRecord,
-  type DocClock,
-  type DocUpdate,
-} from '@affine/nbstore';
+import path from 'node:path';
 
-import { ensureStorage, getStorage } from './storage';
+import { DocStoragePool } from '@affine/native';
+import { parseUniversalId } from '@affine/nbstore';
+import type { NativeDBApis } from '@affine/nbstore/sqlite';
+import fs from 'fs-extra';
 
-export const nbstoreHandlers = {
-  connect: async (id: string) => {
-    await ensureStorage(id);
+import { getSpaceDBPath } from '../workspace/meta';
+
+const POOL = new DocStoragePool();
+
+export const nbstoreHandlers: NativeDBApis = {
+  connect: async (universalId: string) => {
+    const { peer, type, id } = parseUniversalId(universalId);
+    const dbPath = await getSpaceDBPath(peer, type, id);
+    await fs.ensureDir(path.dirname(dbPath));
+    await POOL.connect(universalId, dbPath);
   },
-
-  close: async (id: string) => {
-    const store = getStorage(id);
-
-    if (store) {
-      store.disconnect();
-      // The store may be shared with other tabs, so we don't delete it from cache
-      // the underlying connection will handle the close correctly
-      // STORE_CACHE.delete(`${spaceType}:${spaceId}`);
-    }
-  },
-
-  pushDocUpdate: async (id: string, update: DocUpdate) => {
-    const store = await ensureStorage(id);
-    return store.get('doc').pushDocUpdate(update);
-  },
-
-  getDoc: async (id: string, docId: string) => {
-    const store = await ensureStorage(id);
-    return store.get('doc').getDoc(docId);
-  },
-
-  deleteDoc: async (id: string, docId: string) => {
-    const store = await ensureStorage(id);
-    return store.get('doc').deleteDoc(docId);
-  },
-
-  getDocTimestamps: async (id: string, after?: Date) => {
-    const store = await ensureStorage(id);
-    return store.get('doc').getDocTimestamps(after);
-  },
-
-  getDocTimestamp: async (id: string, docId: string) => {
-    const store = await ensureStorage(id);
-    return store.get('doc').getDocTimestamp(docId);
-  },
-
-  setBlob: async (id: string, blob: BlobRecord) => {
-    const store = await ensureStorage(id);
-    return store.get('blob').set(blob);
-  },
-
-  getBlob: async (id: string, key: string) => {
-    const store = await ensureStorage(id);
-    return store.get('blob').get(key);
-  },
-
-  deleteBlob: async (id: string, key: string, permanently: boolean) => {
-    const store = await ensureStorage(id);
-    return store.get('blob').delete(key, permanently);
-  },
-
-  listBlobs: async (id: string) => {
-    const store = await ensureStorage(id);
-    return store.get('blob').list();
-  },
-
-  releaseBlobs: async (id: string) => {
-    const store = await ensureStorage(id);
-    return store.get('blob').release();
-  },
-
-  getPeerRemoteClocks: async (id: string, peer: string) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').getPeerRemoteClocks(peer);
-  },
-
-  getPeerRemoteClock: async (id: string, peer: string, docId: string) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').getPeerRemoteClock(peer, docId);
-  },
-
-  setPeerRemoteClock: async (id: string, peer: string, clock: DocClock) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').setPeerRemoteClock(peer, clock);
-  },
-
-  getPeerPulledRemoteClocks: async (id: string, peer: string) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').getPeerPulledRemoteClocks(peer);
-  },
-
-  getPeerPulledRemoteClock: async (id: string, peer: string, docId: string) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').getPeerPulledRemoteClock(peer, docId);
-  },
-
-  setPeerPulledRemoteClock: async (
-    id: string,
-    peer: string,
-    clock: DocClock
-  ) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').setPeerPulledRemoteClock(peer, clock);
-  },
-
-  getPeerPushedClocks: async (id: string, peer: string) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').getPeerPushedClocks(peer);
-  },
-
-  getPeerPushedClock: async (id: string, peer: string, docId: string) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').getPeerPushedClock(peer, docId);
-  },
-
-  setPeerPushedClock: async (id: string, peer: string, clock: DocClock) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').setPeerPushedClock(peer, clock);
-  },
-
-  clearClocks: async (id: string) => {
-    const store = await ensureStorage(id);
-    return store.get('sync').clearClocks();
-  },
+  disconnect: POOL.disconnect.bind(POOL),
+  pushUpdate: POOL.pushUpdate.bind(POOL),
+  getDocSnapshot: POOL.getDocSnapshot.bind(POOL),
+  setDocSnapshot: POOL.setDocSnapshot.bind(POOL),
+  getDocUpdates: POOL.getDocUpdates.bind(POOL),
+  markUpdatesMerged: POOL.markUpdatesMerged.bind(POOL),
+  deleteDoc: POOL.deleteDoc.bind(POOL),
+  getDocClocks: POOL.getDocClocks.bind(POOL),
+  getDocClock: POOL.getDocClock.bind(POOL),
+  getBlob: POOL.getBlob.bind(POOL),
+  setBlob: POOL.setBlob.bind(POOL),
+  deleteBlob: POOL.deleteBlob.bind(POOL),
+  releaseBlobs: POOL.releaseBlobs.bind(POOL),
+  listBlobs: POOL.listBlobs.bind(POOL),
+  getPeerRemoteClocks: POOL.getPeerRemoteClocks.bind(POOL),
+  getPeerRemoteClock: POOL.getPeerRemoteClock.bind(POOL),
+  setPeerRemoteClock: POOL.setPeerRemoteClock.bind(POOL),
+  getPeerPulledRemoteClocks: POOL.getPeerPulledRemoteClocks.bind(POOL),
+  getPeerPulledRemoteClock: POOL.getPeerPulledRemoteClock.bind(POOL),
+  setPeerPulledRemoteClock: POOL.setPeerPulledRemoteClock.bind(POOL),
+  getPeerPushedClocks: POOL.getPeerPushedClocks.bind(POOL),
+  getPeerPushedClock: POOL.getPeerPushedClock.bind(POOL),
+  setPeerPushedClock: POOL.setPeerPushedClock.bind(POOL),
+  clearClocks: POOL.clearClocks.bind(POOL),
 };

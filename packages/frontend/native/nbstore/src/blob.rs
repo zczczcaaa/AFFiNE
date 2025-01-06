@@ -1,18 +1,18 @@
 use std::ops::Deref;
 
-use super::{storage::SqliteDocStorage, Blob, ListedBlob, SetBlob};
-
-type Result<T> = std::result::Result<T, sqlx::Error>;
+use super::{error::Result, storage::SqliteDocStorage, Blob, ListedBlob, SetBlob};
 
 impl SqliteDocStorage {
   pub async fn get_blob(&self, key: String) -> Result<Option<Blob>> {
-    sqlx::query_as!(
+    let result = sqlx::query_as!(
       Blob,
       "SELECT key, data, size, mime, created_at FROM blobs WHERE key = ? AND deleted_at IS NULL",
       key
     )
     .fetch_optional(&self.pool)
-    .await
+    .await?;
+
+    Ok(result)
   }
 
   pub async fn set_blob(&self, blob: SetBlob) -> Result<()> {
@@ -58,12 +58,14 @@ impl SqliteDocStorage {
   }
 
   pub async fn list_blobs(&self) -> Result<Vec<ListedBlob>> {
-    sqlx::query_as!(
+    let result = sqlx::query_as!(
       ListedBlob,
       "SELECT key, size, mime, created_at FROM blobs WHERE deleted_at IS NULL ORDER BY created_at DESC;"
     )
     .fetch_all(&self.pool)
-    .await
+    .await?;
+
+    Ok(result)
   }
 }
 

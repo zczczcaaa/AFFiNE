@@ -68,11 +68,13 @@ dependencies = [
  "affine_schema",
  "anyhow",
  "chrono",
+ "dashmap",
  "dotenvy",
  "napi",
  "napi-build",
  "napi-derive",
  "sqlx",
+ "thiserror 2.0.9",
  "tokio",
  "uniffi",
 ]
@@ -271,6 +273,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "acb1161c6b64d1c3d83108213c2a2533a342ac225aabd0bda218278c2ddb00c0"
 dependencies = [
  "nom",
+]
+
+[[package]]
+name = "async-compat"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7bab94bde396a3f7b4962e396fdad640e241ed797d4d8d77fc8c237d14c58fc0"
+dependencies = [
+ "futures-core",
+ "futures-io",
+ "once_cell",
+ "pin-project-lite",
+ "tokio",
 ]
 
 [[package]]
@@ -2940,6 +2955,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc7687007d2546c454d8ae609b105daceb88175477dac280707ad6d95bcd6f1f"
 dependencies = [
  "anyhow",
+ "async-compat",
  "bytes",
  "log",
  "once_cell",

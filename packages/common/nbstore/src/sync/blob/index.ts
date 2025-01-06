@@ -1,34 +1,48 @@
+import EventEmitter2 from 'eventemitter2';
 import { difference } from 'lodash-es';
+import { BehaviorSubject, type Observable } from 'rxjs';
 
 import type { BlobRecord, BlobStorage } from '../../storage';
+import { OverCapacityError } from '../../storage';
 import { MANUALLY_STOP, throwIfAborted } from '../../utils/throw-if-aborted';
+import type { PeerStorageOptions } from '../types';
+
+export interface BlobSyncState {
+  isStorageOverCapacity: boolean;
+}
 
 export interface BlobSync {
+  readonly state$: Observable<BlobSyncState>;
   downloadBlob(
     blobId: string,
     signal?: AbortSignal
   ): Promise<BlobRecord | null>;
   uploadBlob(blob: BlobRecord, signal?: AbortSignal): Promise<void>;
+  fullSync(signal?: AbortSignal): Promise<void>;
+  setMaxBlobSize(size: number): void;
+  onReachedMaxBlobSize(cb: (byteSize: number) => void): () => void;
 }
 
 export class BlobSyncImpl implements BlobSync {
+  readonly state$ = new BehaviorSubject<BlobSyncState>({
+    isStorageOverCapacity: false,
+  });
   private abort: AbortController | null = null;
+  private maxBlobSize: number = 1024 * 1024 * 100; // 100MB
+  readonly event = new EventEmitter2();
 
-  constructor(
-    readonly local: BlobStorage,
-    readonly remotes: BlobStorage[]
-  ) {}
+  constructor(readonly storages: PeerStorageOptions<BlobStorage>) {}
 
   async downloadBlob(blobId: string, signal?: AbortSignal) {
-    const localBlob = await this.local.get(blobId, signal);
+    const localBlob = await this.storages.local.get(blobId, signal);
     if (localBlob) {
       return localBlob;
     }
 
-    for (const storage of this.remotes) {
+    for (const storage of Object.values(this.storages.remotes)) {
       const data = await storage.get(blobId, signal);
       if (data) {
-        await this.local.set(data, signal);
+        await this.storages.local.set(data, signal);
         return data;
       }
     }
@@ -36,21 +50,35 @@ export class BlobSyncImpl implements BlobSync {
   }
 
   async uploadBlob(blob: BlobRecord, signal?: AbortSignal) {
-    await this.local.set(blob);
+    if (blob.data.length > this.maxBlobSize) {
+      this.event.emit('abort-large-blob', blob.data.length);
+      console.error('blob over limit, abort set');
+    }
+
+    await this.storages.local.set(blob);
     await Promise.allSettled(
-      this.remotes.map(remote => remote.set(blob, signal))
+      Object.values(this.storages.remotes).map(async remote => {
+        try {
+          return await remote.set(blob, signal);
+        } catch (err) {
+          if (err instanceof OverCapacityError) {
+            this.state$.next({ isStorageOverCapacity: true });
+          }
+          throw err;
+        }
+      })
     );
   }
 
-  private async sync(signal?: AbortSignal) {
+  async fullSync(signal?: AbortSignal) {
     throwIfAborted(signal);
 
-    for (const remote of this.remotes) {
+    for (const [remotePeer, remote] of Object.entries(this.storages.remotes)) {
       let localList: string[] = [];
       let remoteList: string[] = [];
 
       try {
-        localList = (await this.local.list(signal)).map(b => b.key);
+        localList = (await this.storages.local.list(signal)).map(b => b.key);
         throwIfAborted(signal);
         remoteList = (await remote.list(signal)).map(b => b.key);
         throwIfAborted(signal);
@@ -65,7 +93,7 @@ export class BlobSyncImpl implements BlobSync {
       const needUpload = difference(localList, remoteList);
       for (const key of needUpload) {
         try {
-          const data = await this.local.get(key, signal);
+          const data = await this.storages.local.get(key, signal);
           throwIfAborted(signal);
           if (data) {
             await remote.set(data, signal);
@@ -76,7 +104,7 @@ export class BlobSyncImpl implements BlobSync {
             throw err;
           }
           console.error(
-            `error when sync ${key} from [${this.local.peer}] to [${remote.peer}]`,
+            `error when sync ${key} from [local] to [${remotePeer}]`,
             err
           );
         }
@@ -89,7 +117,7 @@ export class BlobSyncImpl implements BlobSync {
           const data = await remote.get(key, signal);
           throwIfAborted(signal);
           if (data) {
-            await this.local.set(data, signal);
+            await this.storages.local.set(data, signal);
             throwIfAborted(signal);
           }
         } catch (err) {
@@ -97,7 +125,7 @@ export class BlobSyncImpl implements BlobSync {
             throw err;
           }
           console.error(
-            `error when sync ${key} from [${remote.peer}] to [${this.local.peer}]`,
+            `error when sync ${key} from [${remotePeer}] to [local]`,
             err
           );
         }
@@ -107,13 +135,13 @@ export class BlobSyncImpl implements BlobSync {
 
   start() {
     if (this.abort) {
-      this.abort.abort();
+      this.abort.abort(MANUALLY_STOP);
     }
 
     const abort = new AbortController();
     this.abort = abort;
 
-    this.sync(abort.signal).catch(error => {
+    this.fullSync(abort.signal).catch(error => {
       if (error === MANUALLY_STOP) {
         return;
       }
@@ -129,5 +157,16 @@ export class BlobSyncImpl implements BlobSync {
   addPriority(_id: string, _priority: number): () => void {
     // TODO: implement
     return () => {};
+  }
+
+  setMaxBlobSize(size: number): void {
+    this.maxBlobSize = size;
+  }
+
+  onReachedMaxBlobSize(cb: (byteSize: number) => void): () => void {
+    this.event.on('abort-large-blob', cb);
+    return () => {
+      this.event.off('abort-large-blob', cb);
+    };
   }
 }

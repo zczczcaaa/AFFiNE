@@ -12,6 +12,7 @@ import {
   type DocStorageOptions,
   type DocUpdate,
 } from '../../storage';
+import type { SpaceType } from '../../utils/universal-id';
 import {
   base64ToUint8Array,
   type ServerEventsMap,
@@ -20,14 +21,19 @@ import {
 } from './socket';
 
 interface CloudDocStorageOptions extends DocStorageOptions {
-  socketOptions: SocketOptions;
+  socketOptions?: SocketOptions;
   serverBaseUrl: string;
+  type: SpaceType;
 }
 
 export class CloudDocStorage extends DocStorageBase<CloudDocStorageOptions> {
+  static readonly identifier = 'CloudDocStorage';
+
   get socket() {
     return this.connection.inner;
   }
+
+  readonly spaceType = this.options.type;
 
   onServerUpdate: ServerEventsMap['space:broadcast-doc-update'] = message => {
     if (

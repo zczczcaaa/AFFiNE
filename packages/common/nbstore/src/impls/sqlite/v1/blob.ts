@@ -1,7 +1,7 @@
-import { apis } from '@affine/electron-api';
-
 import { DummyConnection } from '../../../connection';
 import { BlobStorageBase } from '../../../storage';
+import type { SpaceType } from '../../../utils/universal-id';
+import { apis } from './db';
 
 /**
  * @deprecated readonly
@@ -9,18 +9,22 @@ import { BlobStorageBase } from '../../../storage';
 export class SqliteV1BlobStorage extends BlobStorageBase {
   override connection = new DummyConnection();
 
-  get db() {
+  constructor(private readonly options: { type: SpaceType; id: string }) {
+    super();
+  }
+
+  private get db() {
     if (!apis) {
       throw new Error('Not in electron context.');
     }
 
-    return apis.db;
+    return apis;
   }
 
   override async get(key: string) {
     const data: Uint8Array | null = await this.db.getBlob(
-      this.spaceType,
-      this.spaceId,
+      this.options.type,
+      this.options.id,
       key
     );
 
@@ -38,12 +42,12 @@ export class SqliteV1BlobStorage extends BlobStorageBase {
 
   override async delete(key: string, permanently: boolean) {
     if (permanently) {
-      await this.db.deleteBlob(this.spaceType, this.spaceId, key);
+      await this.db.deleteBlob(this.options.type, this.options.id, key);
     }
   }
 
   override async list() {
-    const keys = await this.db.getBlobKeys(this.spaceType, this.spaceId);
+    const keys = await this.db.getBlobKeys(this.options.type, this.options.id);
 
     return keys.map(key => ({
       key,

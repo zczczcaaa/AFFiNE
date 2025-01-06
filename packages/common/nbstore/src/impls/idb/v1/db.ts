@@ -42,19 +42,23 @@ export interface BlobDBSchema extends DBSchema {
   };
 }
 
+export interface BlobIDBConnectionOptions {
+  id: string;
+}
+
 export class BlobIDBConnection extends AutoReconnectConnection<
   IDBPDatabase<BlobDBSchema>
 > {
-  constructor(private readonly workspaceId: string) {
+  constructor(private readonly options: BlobIDBConnectionOptions) {
     super();
   }
 
   override get shareId() {
-    return `idb(old-blob):${this.workspaceId}`;
+    return `idb(old-blob):${this.options.id}`;
   }
 
   override async doConnect() {
-    return openDB<BlobDBSchema>(`${this.workspaceId}_blob`, 1, {
+    return openDB<BlobDBSchema>(`${this.options.id}_blob`, 1, {
       upgrade: db => {
         db.createObjectStore('blob');
       },

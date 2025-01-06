@@ -1,10 +1,11 @@
 import EventEmitter2 from 'eventemitter2';
 import { diffUpdate, encodeStateVectorFromUpdate, mergeUpdates } from 'yjs';
 
+import type { Connection } from '../connection';
 import { isEmptyUpdate } from '../utils/is-empty-update';
 import type { Locker } from './lock';
 import { SingletonLocker } from './lock';
-import { type Storage, StorageBase, type StorageOptions } from './storage';
+import { type Storage } from './storage';
 
 export interface DocClock {
   docId: string;
@@ -33,13 +34,19 @@ export interface Editor {
   avatarUrl: string | null;
 }
 
-export interface DocStorageOptions extends StorageOptions {
+export interface DocStorageOptions {
   mergeUpdates?: (updates: Uint8Array[]) => Promise<Uint8Array> | Uint8Array;
+  id: string;
+
+  /**
+   * open as readonly mode.
+   */
+  readonlyMode?: boolean;
 }
 
 export interface DocStorage extends Storage {
   readonly storageType: 'doc';
-
+  readonly isReadonly: boolean;
   /**
    * Get a doc record with latest binary.
    */
@@ -88,18 +95,22 @@ export interface DocStorage extends Storage {
   ): () => void;
 }
 
-export abstract class DocStorageBase<
-    Opts extends DocStorageOptions = DocStorageOptions,
-  >
-  extends StorageBase<Opts>
-  implements DocStorage
-{
+export abstract class DocStorageBase<Opts = {}> implements DocStorage {
+  get isReadonly(): boolean {
+    return this.options.readonlyMode ?? false;
+  }
   private readonly event = new EventEmitter2();
-  override readonly storageType = 'doc';
+  readonly storageType = 'doc';
+  abstract readonly connection: Connection;
   protected readonly locker: Locker = new SingletonLocker();
+  protected readonly spaceId = this.options.id;
+
+  constructor(protected readonly options: Opts & DocStorageOptions) {}
 
   async getDoc(docId: string) {
-    await using _lock = await this.lockDocForUpdate(docId);
+    await using _lock = this.isReadonly
+      ? undefined
+      : await this.lockDocForUpdate(docId);
 
     const snapshot = await this.getDocSnapshot(docId);
     const updates = await this.getDocUpdates(docId);
@@ -117,10 +128,13 @@ export abstract class DocStorageBase<
         editor,
       };
 
-      await this.setDocSnapshot(newSnapshot, snapshot);
+      // if is readonly, we will not set the new snapshot
+      if (!this.isReadonly) {
+        await this.setDocSnapshot(newSnapshot, snapshot);
 
-      // always mark updates as merged unless throws
-      await this.markUpdatesMerged(docId, updates);
+        // always mark updates as merged unless throws
+        await this.markUpdatesMerged(docId, updates);
+      }
 
       return newSnapshot;
     }

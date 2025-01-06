@@ -1,3 +1,4 @@
+import type { AvailableStorageImplementations } from '../impls';
 import type {
   BlobRecord,
   DocClock,
@@ -6,20 +7,27 @@ import type {
   DocRecord,
   DocUpdate,
   ListedBlobRecord,
-  StorageOptions,
+  StorageType,
 } from '../storage';
 import type { AwarenessRecord } from '../storage/awareness';
+import type { BlobSyncState } from '../sync/blob';
 import type { DocSyncDocState, DocSyncState } from '../sync/doc';
+
+type StorageInitOptions = Values<{
+  [key in keyof AvailableStorageImplementations]: {
+    name: key;
+    opts: ConstructorParameters<AvailableStorageImplementations[key]>[0];
+  };
+}>;
+
+export interface WorkerInitOptions {
+  local: { [key in StorageType]?: StorageInitOptions };
+  remotes: Record<string, { [key in StorageType]?: StorageInitOptions }>;
+}
 
 interface GroupedWorkerOps {
   worker: {
-    init: [
-      {
-        local: { name: string; opts: StorageOptions }[];
-        remotes: { name: string; opts: StorageOptions }[][];
-      },
-      void,
-    ];
+    init: [WorkerInitOptions, void];
     destroy: [void, void];
   };
 
@@ -83,6 +91,10 @@ interface GroupedWorkerOps {
   blobSync: {
     downloadBlob: [string, BlobRecord | null];
     uploadBlob: [BlobRecord, void];
+    fullSync: [void, boolean];
+    setMaxBlobSize: [number, void];
+    onReachedMaxBlobSize: [void, number];
+    state: [void, BlobSyncState];
   };
 
   awarenessSync: {

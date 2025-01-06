@@ -1,24 +1,27 @@
-import { apis } from '@affine/electron-api';
-
 import { DummyConnection } from '../../../connection';
 import {
   type DocRecord,
   DocStorageBase,
   type DocUpdate,
 } from '../../../storage';
+import type { SpaceType } from '../../../utils/universal-id';
+import { apis } from './db';
 
 /**
  * @deprecated readonly
  */
-export class SqliteV1DocStorage extends DocStorageBase {
+export class SqliteV1DocStorage extends DocStorageBase<{
+  type: SpaceType;
+  id: string;
+}> {
   override connection = new DummyConnection();
 
-  get db() {
+  private get db() {
     if (!apis) {
       throw new Error('Not in electron context.');
     }
 
-    return apis.db;
+    return apis;
   }
 
   override async pushDocUpdate(update: DocUpdate) {
@@ -29,8 +32,8 @@ export class SqliteV1DocStorage extends DocStorageBase {
 
   override async getDoc(docId: string) {
     const bin = await this.db.getDocAsUpdates(
-      this.spaceType,
-      this.spaceId,
+      this.options.type,
+      this.options.id,
       docId
     );
 
@@ -41,8 +44,8 @@ export class SqliteV1DocStorage extends DocStorageBase {
     };
   }
 
-  override async deleteDoc(docId: string) {
-    await this.db.deleteDoc(this.spaceType, this.spaceId, docId);
+  override async deleteDoc() {
+    return;
   }
 
   protected override async getDocSnapshot() {
