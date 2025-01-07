@@ -228,6 +228,9 @@ export class ASTWalker<ONode extends object, TNode extends object | never> {
     }
 
     if (this.context._skip) {
+      if (this._leave) {
+        await this._leave(o, this.context);
+      }
       return;
     }
 
