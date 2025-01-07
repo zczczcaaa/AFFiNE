@@ -1,10 +1,10 @@
 import type { MindMapTreeNode } from '../../../types/mindmap.js';
 import { buildMindMapTree } from '../../../utils/mindmap.js';
 import { getShapeText } from '../../../utils/text.js';
-import type { ElementModelToMarkdownAdapterMatcher } from '../type.js';
+import { ElementToMarkdownAdapterExtension } from '../type.js';
 
-export const mindmapToMarkdownAdapterMatcher: ElementModelToMarkdownAdapterMatcher =
-  {
+export const mindmapToMarkdownAdapterMatcher =
+  ElementToMarkdownAdapterExtension({
     name: 'mindmap',
     match: elementModel => elementModel.type === 'mindmap',
     toAST: (elementModel, context) => {
@@ -64,4 +64,4 @@ export const mindmapToMarkdownAdapterMatcher: ElementModelToMarkdownAdapterMatch
 
       return null;
     },
-  };
+  });

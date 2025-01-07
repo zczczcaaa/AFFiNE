@@ -72,6 +72,7 @@ export class MarkdownAdapter extends BaseAdapter<Markdown> {
             configs: this.configs,
             job: this.job,
             deltaConverter: this.deltaConverter,
+            provider: this.provider,
             textBuffer: { content: '' },
             assets,
           };
@@ -92,6 +93,7 @@ export class MarkdownAdapter extends BaseAdapter<Markdown> {
             configs: this.configs,
             job: this.job,
             deltaConverter: this.deltaConverter,
+            provider: this.provider,
             textBuffer: { content: '' },
             assets,
           };
@@ -126,6 +128,7 @@ export class MarkdownAdapter extends BaseAdapter<Markdown> {
             configs: this.configs,
             job: this.job,
             deltaConverter: this.deltaConverter,
+            provider: this.provider,
             textBuffer: { content: '' },
             assets,
             updateAssetIds: (assetsId: string) => {
@@ -149,6 +152,7 @@ export class MarkdownAdapter extends BaseAdapter<Markdown> {
             configs: this.configs,
             job: this.job,
             deltaConverter: this.deltaConverter,
+            provider: this.provider,
             textBuffer: { content: '' },
             assets,
           };
@@ -166,7 +170,10 @@ export class MarkdownAdapter extends BaseAdapter<Markdown> {
 
   readonly blockMatchers: BlockMarkdownAdapterMatcher[];
 
-  constructor(job: Job, provider: ServiceProvider) {
+  constructor(
+    job: Job,
+    readonly provider: ServiceProvider
+  ) {
     super(job);
     const blockMatchers = Array.from(
       provider.getAll(BlockMarkdownAdapterMatcherIdentifier).values()

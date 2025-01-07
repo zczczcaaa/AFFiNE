@@ -4,15 +4,14 @@ import {
   ElementModelAdapter,
   type ElementModelAdapterContext,
 } from '../../type.js';
-import { elementToMarkdownAdapterMatchers } from './elements/index.js';
-import type { ElementModelToMarkdownAdapterMatcher } from './type.js';
+import type { ElementToMarkdownAdapterMatcher } from './type.js';
 
 export class MarkdownElementModelAdapter extends ElementModelAdapter<
   MarkdownAST,
   MarkdownAST
 > {
   constructor(
-    readonly elementModelMatchers: ElementModelToMarkdownAdapterMatcher[] = elementToMarkdownAdapterMatchers
+    readonly elementModelMatchers: ElementToMarkdownAdapterMatcher[]
   ) {
     super();
   }

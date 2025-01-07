@@ -1,3 +1,4 @@
+import { elementToMarkdownAdapterMatchers } from './markdown/element-adapter/elements/index.js';
 import {
   EdgelessSurfaceBlockMarkdownAdapterExtension,
   SurfaceBlockMarkdownAdapterExtension,
@@ -10,12 +11,14 @@ import {
 
 export const SurfaceBlockAdapterExtensions = [
   ...elementToPlainTextAdapterMatchers,
+  ...elementToMarkdownAdapterMatchers,
   SurfaceBlockPlainTextAdapterExtension,
   SurfaceBlockMarkdownAdapterExtension,
 ];
 
 export const EdgelessSurfaceBlockAdapterExtensions = [
   ...elementToPlainTextAdapterMatchers,
+  ...elementToMarkdownAdapterMatchers,
   EdgelessSurfaceBlockPlainTextAdapterExtension,
   EdgelessSurfaceBlockMarkdownAdapterExtension,
 ];
