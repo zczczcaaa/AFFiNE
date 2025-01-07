@@ -17,6 +17,10 @@ export class LanguageListButton extends WithDisposable(
   SignalWatcher(LitElement)
 ) {
   static override styles = css`
+    :host {
+      margin-right: auto;
+    }
+
     .lang-button {
       background-color: var(--affine-background-primary-color);
       box-shadow: var(--affine-shadow-1);

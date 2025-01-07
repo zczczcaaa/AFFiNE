@@ -16,7 +16,7 @@ import {
   getInlineRangeProvider,
   TextSelection,
 } from '@blocksuite/block-std';
-import { IS_MAC } from '@blocksuite/global/env';
+import { IS_MAC, IS_MOBILE } from '@blocksuite/global/env';
 import { noop } from '@blocksuite/global/utils';
 import {
   INLINE_ROOT_ATTR,
@@ -389,6 +389,7 @@ export class CodeBlockComponent extends CaptionedBlockComponent<
       <div
         class=${classMap({
           'affine-code-block-container': true,
+          mobile: IS_MOBILE,
           wrap: this.model.wrap,
         })}
       >

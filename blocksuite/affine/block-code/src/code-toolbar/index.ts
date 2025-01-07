@@ -14,7 +14,7 @@ import {
   TextSelection,
   WidgetComponent,
 } from '@blocksuite/block-std';
-import { limitShift, shift } from '@floating-ui/dom';
+import { limitShift, shift, size } from '@floating-ui/dom';
 import { html } from 'lit';
 
 import type { CodeBlockComponent } from '../code-block.js';
@@ -82,8 +82,13 @@ export class AffineCodeToolbarWidget extends WidgetComponent<
           },
           computePosition: {
             referenceElement: codeBlock,
-            placement: 'right-start',
+            placement: 'top',
             middleware: [
+              size({
+                apply({ rects, elements }) {
+                  elements.floating.style.width = `${rects.reference.width}px`;
+                },
+              }),
               shift({
                 crossAxis: true,
                 padding: {
