@@ -191,7 +191,7 @@ jobs:
         uses: ./.github/actions/setup-node
         timeout-minutes: 10
         with:
-          extra-flags: workspaces focus @affine/android @affine/playstore-auto-bump
+          extra-flags: workspaces focus @affine-tools/cli @affine/android @affine/playstore-auto-bump
           playwright-install: false
           electron-install: false
           hard-link-nm: false
