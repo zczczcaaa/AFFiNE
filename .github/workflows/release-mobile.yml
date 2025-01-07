@@ -139,7 +139,7 @@ jobs:
           enableScripts: false
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: 16.1
       - name: Cap sync
         run: yarn workspace @affine/ios cap sync
       - name: Signing By Apple Developer ID
