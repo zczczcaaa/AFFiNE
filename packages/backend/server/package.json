@@ -22,6 +22,7 @@
     "@apollo/server": "^4.11.2",
     "@aws-sdk/client-s3": "^3.709.0",
     "@fal-ai/serverless-client": "^0.15.0",
+    "@google-cloud/logging-winston": "^6.0.0",
     "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.20.0",
     "@google-cloud/opentelemetry-cloud-trace-exporter": "^2.4.1",
     "@google-cloud/opentelemetry-resource-util": "^2.4.0",
@@ -73,6 +74,7 @@
     "mustache": "^4.2.0",
     "nanoid": "^5.0.9",
     "nest-commander": "^3.15.0",
+    "nest-winston": "^1.9.7",
     "nestjs-throttler-storage-redis": "^0.5.1",
     "nodemailer": "^6.9.16",
     "on-headers": "^1.0.2",
@@ -86,6 +88,7 @@
     "stripe": "^17.4.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
+    "winston": "^3.17.0",
     "yjs": "^13.6.21",
     "zod": "^3.24.1"
   },

@@ -18,6 +18,7 @@ export { EventEmitter, type EventPayload, OnEvent } from './event';
 export type { GraphqlContext } from './graphql';
 export * from './guard';
 export { CryptoHelper, URLHelper } from './helpers';
+export { AFFiNELogger } from './logger';
 export { MailService } from './mailer';
 export { CallMetric, metrics } from './metrics';
 export { Lock, Locker, Mutex, RequestMutex } from './mutex';

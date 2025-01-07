@@ -15,6 +15,7 @@ import { ErrorModule } from './base/error';
 import { EventModule } from './base/event';
 import { GqlModule } from './base/graphql';
 import { HelpersModule } from './base/helpers';
+import { LoggerModule } from './base/logger';
 import { MailModule } from './base/mailer';
 import { MetricsModule } from './base/metrics';
 import { MutexModule } from './base/mutex';
@@ -53,6 +54,7 @@ export const FunctionalityModules = [
   StorageProviderModule,
   HelpersModule,
   ErrorModule,
+  LoggerModule,
 ];
 
 function filterOptionalModule(

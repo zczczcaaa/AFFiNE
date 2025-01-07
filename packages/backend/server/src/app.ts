@@ -20,7 +20,6 @@ export async function createApp() {
     cors: true,
     rawBody: true,
     bodyParser: true,
-    logger: AFFiNE.affine.stable ? ['log'] : ['verbose'],
   });
 
   if (AFFiNE.server.path) {
