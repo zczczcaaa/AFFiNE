@@ -70,9 +70,9 @@ export class BlockModel<
 
   id!: string;
 
-  isEmpty = computed(() => {
-    return this._children.value.length === 0;
-  });
+  isEmpty() {
+    return this.children.length === 0;
+  }
 
   keys!: string[];
 

@@ -111,6 +111,17 @@ export class NoteBlockModel
     if (!this._isSelectable()) return false;
     return super.intersectsBound(bound);
   }
+
+  override isEmpty(): boolean {
+    if (this.children.length === 0) return true;
+    if (this.children.length === 1) {
+      const firstChild = this.children[0];
+      if (firstChild.flavour === 'affine:paragraph') {
+        return firstChild.isEmpty();
+      }
+    }
+    return false;
+  }
 }
 
 declare global {

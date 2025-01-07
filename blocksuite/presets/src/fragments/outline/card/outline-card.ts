@@ -9,7 +9,7 @@ import {
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import type { BlockModel, Blocks } from '@blocksuite/store';
 import { baseTheme } from '@toeverything/theme';
-import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
+import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
@@ -286,7 +286,7 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
     }
   }
 
-  override firstUpdated() {
+  override updated() {
     this._displayModePopper = createButtonPopper(
       this._displayModeButtonGroup,
       this._displayModePanel,
@@ -303,8 +303,6 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
   }
 
   override render() {
-    if (this.note.isEmpty.peek()) return nothing;
-
     const { children, displayMode } = this.note;
     const currentMode = this._getCurrentModeLabel(displayMode);
     const cardHeaderClasses = classMap({

@@ -112,6 +112,10 @@ export class PageRootBlockComponent extends BlockComponent<
 
   clipboardController = new PageClipboard(this);
 
+  /**
+   * Focus the first paragraph in the default note block.
+   * If there is no paragraph, create one.
+   */
   focusFirstParagraph = () => {
     const defaultNote = this._getDefaultNoteBlock();
     const firstText = defaultNote?.children.find(block =>

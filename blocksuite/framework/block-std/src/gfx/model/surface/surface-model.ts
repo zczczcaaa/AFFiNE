@@ -103,6 +103,10 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
     return Object.keys(this._elementCtorMap);
   }
 
+  override isEmpty(): boolean {
+    return this._elementModels.size === 0 && this.children.length === 0;
+  }
+
   constructor() {
     super();
     this.created.once(() => this._init());

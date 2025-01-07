@@ -41,6 +41,10 @@ export class ParagraphBlockModel extends BlockModel<ParagraphProps> {
   override flavour!: 'affine:paragraph';
 
   override text!: Text;
+
+  override isEmpty(): boolean {
+    return this.text$.value.length === 0 && this.children.length === 0;
+  }
 }
 
 declare global {

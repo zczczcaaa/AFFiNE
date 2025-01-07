@@ -192,7 +192,7 @@ export class Blocks {
   }
 
   get isEmpty() {
-    return Object.values(this._blocks.peek()).length === 0;
+    return this.root?.isEmpty() ?? true;
   }
 
   get loaded() {

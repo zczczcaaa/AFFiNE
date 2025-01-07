@@ -61,9 +61,8 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
 
   private readonly _onTitleKeyDown = (event: KeyboardEvent) => {
     if (event.isComposing || this.doc.readonly) return;
-    const hasContent = !this.doc.isEmpty;
 
-    if (event.key === 'Enter' && hasContent && !event.isComposing) {
+    if (event.key === 'Enter' && this._pageRoot) {
       event.preventDefault();
       event.stopPropagation();
 
@@ -73,10 +72,10 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
         const rightText = this._rootModel.title.split(inlineRange.index);
         this._pageRoot.prependParagraphWithText(rightText);
       }
-    } else if (event.key === 'ArrowDown' && hasContent) {
+    } else if (event.key === 'ArrowDown') {
       event.preventDefault();
       event.stopPropagation();
-      this._pageRoot.focusFirstParagraph();
+      this._pageRoot?.focusFirstParagraph();
     } else if (event.key === 'Tab') {
       event.preventDefault();
       event.stopPropagation();
@@ -94,9 +93,7 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
   }
 
   private get _pageRoot() {
-    const pageRoot = this._viewport.querySelector('affine-page-root');
-    assertExists(pageRoot);
-    return pageRoot;
+    return this._viewport.querySelector('affine-page-root');
   }
 
   private get _rootModel() {

@@ -33,7 +33,7 @@ export function getDropRectByPoint(
     }
 
     let bounds = table.getBoundingClientRect();
-    if (model.isEmpty.value) {
+    if (model.children.length === 0) {
       result.flag = DropFlags.EmptyDatabase;
 
       if (point.y < bounds.top) return result;
