@@ -35,6 +35,7 @@ export {
   MarkdownDeltaConverter,
 } from './markdown';
 export * from './middlewares';
+export * from './mix-text';
 export {
   BlockNotionHtmlAdapterExtension,
   type BlockNotionHtmlAdapterMatcher,

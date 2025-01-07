@@ -1,8 +1,4 @@
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
-import {
-  AdapterFactoryIdentifier,
-  MarkdownAdapter,
-} from '@blocksuite/affine-shared/adapters';
 import type { ServiceProvider } from '@blocksuite/global/di';
 import type { DeltaInsert } from '@blocksuite/inline';
 import {
@@ -25,6 +21,9 @@ import {
   type ToBlockSnapshotPayload,
   type ToDocSnapshotPayload,
 } from '@blocksuite/store';
+
+import { MarkdownAdapter } from './markdown/markdown';
+import { AdapterFactoryIdentifier } from './types/adapter';
 
 export type MixText = string;
 
