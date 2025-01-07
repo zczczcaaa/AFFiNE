@@ -110,6 +110,16 @@ export const replaceIdMiddleware = (job: TemplateJob) => {
 
       blockJson.props.elements = elements;
     }
+
+    // remap childElementIds of frame
+    if (blockJson.flavour === 'affine:frame') {
+      assertType<Record<string, boolean>>(blockJson.props.childElementIds);
+      const newChildElementIds: Record<string, boolean> = {};
+      Object.entries(blockJson.props.childElementIds).forEach(([key, val]) => {
+        newChildElementIds[regeneratedIdMap.get(key) ?? key] = val;
+      });
+      blockJson.props.childElementIds = newChildElementIds;
+    }
   };
 };
 

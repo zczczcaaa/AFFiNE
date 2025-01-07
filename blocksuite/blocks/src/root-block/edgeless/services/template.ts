@@ -23,7 +23,11 @@ import type * as Y from 'yjs';
  * Those block contains other block's id
  * should defer the loading
  */
-const DEFERED_BLOCK = ['affine:surface', 'affine:surface-ref'] as const;
+const DEFERED_BLOCK = [
+  'affine:surface',
+  'affine:surface-ref',
+  'affine:frame',
+] as const;
 
 /**
  * Those block should not be inserted directly
