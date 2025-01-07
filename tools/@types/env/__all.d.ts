@@ -1,4 +1,5 @@
 import '@affine/env/constant';
+import '@blocksuite/affine/global/types'
 
 import type { BUILD_CONFIG_TYPE, Environment } from '@affine/env/global';
 

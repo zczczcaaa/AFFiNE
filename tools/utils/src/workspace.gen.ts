@@ -477,7 +477,6 @@ export const PackageList = [
     name: '@affine/nbstore',
     workspaceDependencies: [
       'packages/common/infra',
-      'packages/frontend/electron-api',
       'packages/frontend/graphql',
     ],
   },
@@ -648,7 +647,7 @@ export const PackageList = [
   {
     location: 'tools/@types/env',
     name: '@types/affine__env',
-    workspaceDependencies: ['packages/common/env'],
+    workspaceDependencies: ['packages/common/env', 'blocksuite/affine/all'],
   },
   {
     location: 'tools/changelog',

@@ -13987,6 +13987,7 @@ __metadata:
   resolution: "@types/affine__env@workspace:tools/@types/env"
   dependencies:
     "@affine/env": "workspace:*"
+    "@blocksuite/affine": "workspace:*"
   languageName: unknown
   linkType: soft
 
