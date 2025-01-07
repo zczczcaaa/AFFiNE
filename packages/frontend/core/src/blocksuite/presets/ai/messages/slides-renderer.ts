@@ -226,7 +226,6 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
       id: 'SLIDES_PREVIEW',
     });
     collection.meta.initialize();
-    collection.start();
     const doc = collection.createDoc();
 
     doc.load(() => {

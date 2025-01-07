@@ -1,5 +1,5 @@
 import type { Slot } from '@blocksuite/global/utils';
-import type { BlobEngine, DocEngine } from '@blocksuite/sync';
+import type { BlobEngine } from '@blocksuite/sync';
 import type * as Y from 'yjs';
 
 import type { Schema } from '../schema/schema.js';
@@ -13,7 +13,6 @@ export interface Workspace {
   readonly id: string;
   readonly meta: WorkspaceMeta;
   readonly idGenerator: IdGenerator;
-  readonly docSync: DocEngine;
   readonly blobSync: BlobEngine;
   readonly awarenessStore: AwarenessStore;
 

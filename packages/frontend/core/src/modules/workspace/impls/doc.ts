@@ -142,10 +142,6 @@ export class DocImpl implements Doc {
     return this._collection;
   }
 
-  get docSync() {
-    return this.workspace.docSync;
-  }
-
   get history() {
     return this._history;
   }

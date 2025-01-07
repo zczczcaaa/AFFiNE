@@ -102,8 +102,6 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
       schema,
     });
     collection.meta.initialize();
-    collection.start();
-
     const doc = collection.createDoc({ id: 'doc:home' }).load();
     const rootId = doc.addBlock('affine:page', {});
     const surfaceId = doc.addBlock('affine:surface', {}, rootId);

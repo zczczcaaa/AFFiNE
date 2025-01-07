@@ -17,12 +17,9 @@ import {
   type WorkspaceMeta,
 } from '@blocksuite/affine/store';
 import {
-  AwarenessEngine,
   BlobEngine,
   type BlobSource,
-  DocEngine,
   MemoryBlobSource,
-  NoopDocSource,
 } from '@blocksuite/affine/sync';
 import { Awareness } from 'y-protocols/awareness.js';
 import * as Y from 'yjs';
@@ -61,15 +58,11 @@ export class WorkspaceImpl implements Workspace {
 
   readonly awarenessStore: AwarenessStore;
 
-  readonly awarenessSync: AwarenessEngine;
-
   readonly blobSync: BlobEngine;
 
   readonly blockCollections = new Map<string, Doc>();
 
   readonly doc: Y.Doc;
-
-  readonly docSync: DocEngine;
 
   readonly id: string;
 
@@ -102,11 +95,8 @@ export class WorkspaceImpl implements Workspace {
     });
 
     blobSource = blobSource ?? new MemoryBlobSource();
-    const docSource = new NoopDocSource();
     const logger = new NoopLogger();
 
-    this.awarenessSync = new AwarenessEngine(this.awarenessStore.awareness, []);
-    this.docSync = new DocEngine(this.doc, docSource, [], logger);
     this.blobSync = new BlobEngine(blobSource, [], logger);
 
     this.idGenerator = nanoid;
@@ -129,24 +119,16 @@ export class WorkspaceImpl implements Workspace {
     this.meta.docMetaUpdated.on(() => this.slots.docListUpdated.emit());
 
     this.meta.docMetaRemoved.on(id => {
-      const space = this.getBlockCollection(id);
-      if (!space) return;
+      const doc = this._getDoc(id);
+      if (!doc) return;
       this.blockCollections.delete(id);
-      space.remove();
+      doc.remove();
       this.slots.docRemoved.emit(id);
     });
   }
 
   private _hasDoc(docId: string) {
     return this.docs.has(docId);
-  }
-
-  /**
-   * Verify that all data has been successfully saved to the primary storage.
-   * Return true if the data transfer is complete and it is secure to terminate the synchronization operation.
-   */
-  canGracefulStop() {
-    this.docSync.canGracefulStop();
   }
 
   /**
@@ -177,23 +159,13 @@ export class WorkspaceImpl implements Workspace {
     this.awarenessStore.destroy();
   }
 
-  /**
-   * Terminate the data sync process forcefully, which may cause data loss.
-   * It is advised to invoke `canGracefulStop` before calling this method.
-   */
-  forceStop() {
-    this.docSync.forceStop();
-    this.blobSync.stop();
-    this.awarenessSync.disconnect();
-  }
-
-  getBlockCollection(docId: string): Doc | null {
+  private _getDoc(docId: string): Doc | null {
     const space = this.docs.get(docId) as Doc | undefined;
     return space ?? null;
   }
 
   getDoc(docId: string, options?: GetBlocksOptions): Blocks | null {
-    const collection = this.getBlockCollection(docId);
+    const collection = this._getDoc(docId);
     return collection?.getBlocks(options) ?? null;
   }
 
@@ -206,31 +178,11 @@ export class WorkspaceImpl implements Workspace {
       );
     }
 
-    const blockCollection = this.getBlockCollection(docId);
+    const blockCollection = this._getDoc(docId);
     if (!blockCollection) return;
 
     blockCollection.dispose();
     this.meta.removeDocMeta(docId);
     this.blockCollections.delete(docId);
-  }
-
-  /**
-   * Start the data sync process
-   */
-  start() {
-    this.docSync.start();
-    this.blobSync.start();
-    this.awarenessSync.connect();
-  }
-
-  /**
-   * Wait for all data has been successfully saved to the primary storage.
-   */
-  waitForGracefulStop(abort?: AbortSignal) {
-    return this.docSync.waitForGracefulStop(abort);
-  }
-
-  waitForSynced() {
-    return this.docSync.waitForSynced();
   }
 }
