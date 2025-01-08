@@ -96,7 +96,6 @@ export const showTabContextMenu = async (
   ];
   const menu = Menu.buildFromTemplate(template);
   menu.popup();
-
   let unsub: (() => void) | undefined;
   const subscription = WebContentViewsManager.instance.tabAction$.subscribe(
     action => {

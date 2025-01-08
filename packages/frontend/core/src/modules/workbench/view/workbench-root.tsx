@@ -48,8 +48,8 @@ export const WorkbenchRoot = memo(() => {
 
   useAdapter(workbench, basename);
 
-  const panelRenderer = useCallback((view: View, index: number) => {
-    return <WorkbenchView key={view.id} view={view} index={index} />;
+  const panelRenderer = useCallback((view: View) => {
+    return <WorkbenchView view={view} />;
   }, []);
 
   const onMove = useCallback(
@@ -78,12 +78,12 @@ export const WorkbenchRoot = memo(() => {
 
 WorkbenchRoot.displayName = 'memo(WorkbenchRoot)';
 
-const WorkbenchView = ({ view, index }: { view: View; index: number }) => {
+const WorkbenchView = ({ view }: { view: View }) => {
   const workbench = useService(WorkbenchService).workbench;
 
   const handleOnFocus = useCallback(() => {
-    workbench.active(index);
-  }, [workbench, index]);
+    workbench.active(view);
+  }, [workbench, view]);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -149,7 +149,7 @@ const WorkbenchSidebar = () => {
     <ResizePanel
       floating={floating}
       resizeHandlePos="left"
-      resizeHandleOffset={0}
+      resizeHandleOffset={clientBorder && sidebarOpen ? 3 : 0}
       width={width}
       resizing={resizing}
       onResizing={setResizing}

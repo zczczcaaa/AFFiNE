@@ -1,10 +1,12 @@
+import { useDraggable } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
+import type { AffineDNDData, AffineDNDEntity } from '@affine/core/types/dnd';
 import { isNewTabTrigger } from '@affine/core/utils';
 import { useLiveData, useServices } from '@toeverything/infra';
 import { type To } from 'history';
 import { forwardRef, type MouseEvent } from 'react';
 
-import { FeatureFlagService } from '../../feature-flag';
+import { resolveRouteLinkMeta } from '../../navigation/utils';
 import { WorkbenchService } from '../services/workbench';
 
 export type WorkbenchLinkProps = React.PropsWithChildren<
@@ -15,20 +17,45 @@ export type WorkbenchLinkProps = React.PropsWithChildren<
   } & React.HTMLProps<HTMLAnchorElement>
 >;
 
+function resolveToEntity(
+  to: To,
+  basename: string
+): AffineDNDEntity | undefined {
+  const link =
+    basename +
+    (typeof to === 'string' ? to : `${to.pathname}${to.search}${to.hash}`);
+  const info = resolveRouteLinkMeta(link);
+
+  if (info?.moduleName === 'doc') {
+    return {
+      type: 'doc',
+      id: info.docId,
+    };
+  } else if (info?.moduleName === 'collection') {
+    return {
+      type: 'collection',
+      id: info.subModuleName,
+    };
+  } else if (info?.moduleName === 'tag') {
+    return {
+      type: 'tag',
+      id: info.subModuleName,
+    };
+  }
+
+  return undefined;
+}
+
 export const WorkbenchLink = forwardRef<HTMLAnchorElement, WorkbenchLinkProps>(
   function WorkbenchLink({ to, onClick, replaceHistory, ...other }, ref) {
-    const { featureFlagService, workbenchService } = useServices({
-      FeatureFlagService,
+    const { workbenchService } = useServices({
       WorkbenchService,
     });
-    const enableMultiView = useLiveData(
-      featureFlagService.flags.enable_multi_view.$
-    );
     const workbench = workbenchService.workbench;
     const basename = useLiveData(workbench.basename$);
-    const link =
-      basename +
-      (typeof to === 'string' ? to : `${to.pathname}${to.search}${to.hash}`);
+    const stringTo =
+      typeof to === 'string' ? to : `${to.pathname}${to.search}${to.hash}`;
+    const link = basename + stringTo;
     const handleClick = useAsyncCallback(
       async (event: React.MouseEvent<HTMLAnchorElement>) => {
         onClick?.(event);
@@ -37,9 +64,7 @@ export const WorkbenchLink = forwardRef<HTMLAnchorElement, WorkbenchLinkProps>(
         }
         const at = (() => {
           if (isNewTabTrigger(event)) {
-            return BUILD_CONFIG.isElectron && event.altKey && enableMultiView
-              ? 'tail'
-              : 'new-tab';
+            return BUILD_CONFIG.isElectron && event.altKey ? 'tail' : 'new-tab';
           }
           return 'active';
         })();
@@ -47,15 +72,32 @@ export const WorkbenchLink = forwardRef<HTMLAnchorElement, WorkbenchLinkProps>(
         event.preventDefault();
         event.stopPropagation();
       },
-      [enableMultiView, onClick, replaceHistory, to, workbench]
+      [onClick, replaceHistory, to, workbench]
     );
 
-    // eslint suspicious runtime error
-    // eslint-disable-next-line react/no-danger-with-children
+    const { dragRef } = useDraggable<AffineDNDData>(() => {
+      return {
+        data: {
+          entity: resolveToEntity(to, basename),
+          from: {
+            at: 'workbench:link',
+            to: stringTo,
+          },
+        },
+      };
+    }, [to, basename, stringTo]);
+
     return (
       <a
         {...other}
-        ref={ref}
+        ref={node => {
+          dragRef.current = node;
+          if (typeof ref === 'function') {
+            ref(node);
+          } else if (ref) {
+            ref.current = node;
+          }
+        }}
         href={link}
         onClick={handleClick}
         onAuxClick={handleClick}
