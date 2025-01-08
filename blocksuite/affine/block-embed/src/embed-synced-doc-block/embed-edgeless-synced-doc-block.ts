@@ -10,7 +10,6 @@ import {
 } from '@blocksuite/affine-shared/services';
 import { BlockSelection, BlockStdScope } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/utils';
-import { Store } from '@blocksuite/store';
 import { html, nothing } from 'lit';
 import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -30,8 +29,6 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
       console.error('Synced doc is not found');
       return html`${nothing}`;
     }
-
-    const store = new Store({ blocks: syncedDoc });
 
     let containerStyleMap = styleMap({
       position: 'relative',
@@ -70,7 +67,7 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
           () => html`
             <div class="affine-page-viewport" data-theme=${appTheme}>
               ${new BlockStdScope({
-                store,
+                store: syncedDoc,
                 extensions: this._buildPreviewSpec('page:preview'),
               }).render()}
             </div>
@@ -81,7 +78,7 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
           () => html`
             <div class="affine-edgeless-viewport" data-theme=${edgelessTheme}>
               ${new BlockStdScope({
-                store,
+                store: syncedDoc,
                 extensions: this._buildPreviewSpec('edgeless:preview'),
               }).render()}
             </div>

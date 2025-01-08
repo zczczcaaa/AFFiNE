@@ -11,7 +11,7 @@ import type { EditorHost } from '@blocksuite/block-std';
 import { DataSourceBase, type PropertyMetaConfig } from '@blocksuite/data-view';
 import { propertyPresets } from '@blocksuite/data-view/property-presets';
 import { assertExists, Slot } from '@blocksuite/global/utils';
-import type { Block, Blocks } from '@blocksuite/store';
+import type { Block, Store } from '@blocksuite/store';
 
 import type { BlockMeta } from './block-meta/base.js';
 import { blockMetaMap } from './block-meta/index.js';
@@ -73,14 +73,14 @@ export class BlockQueryDataSource extends DataSourceBase {
       this.columnMetaMap.set(property.metaConfig.type, property.metaConfig);
     }
     for (const collection of this.workspace.docs.values()) {
-      for (const block of Object.values(collection.getBlocks().blocks.peek())) {
+      for (const block of Object.values(collection.getStore().blocks.peek())) {
         if (this.meta.selector(block)) {
           this.blockMap.set(block.id, block);
         }
       }
     }
     this.workspace.docs.forEach(doc => {
-      this.listenToDoc(doc.getBlocks());
+      this.listenToDoc(doc.getStore());
     });
     this.workspace.slots.docCreated.on(id => {
       const doc = this.workspace.getDoc(id);
@@ -140,7 +140,7 @@ export class BlockQueryDataSource extends DataSourceBase {
     return this.block.columns.find(v => v.id === id);
   }
 
-  listenToDoc(doc: Blocks) {
+  listenToDoc(doc: Store) {
     this.docDisposeMap.set(
       doc.id,
       doc.slots.blockUpdated.on(v => {

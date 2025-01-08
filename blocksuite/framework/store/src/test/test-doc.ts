@@ -3,9 +3,9 @@ import { signal } from '@preact/signals-core';
 import * as Y from 'yjs';
 
 import type { YBlock } from '../model/block/types.js';
-import { Blocks } from '../model/blocks/blocks.js';
-import type { Query } from '../model/blocks/query.js';
 import type { Doc, GetBlocksOptions, Workspace } from '../model/index.js';
+import type { Query } from '../model/store/query.js';
+import { Store } from '../model/store/store.js';
 import type { AwarenessStore } from '../yjs/index.js';
 
 type DocOptions = {
@@ -25,9 +25,9 @@ export class TestDoc implements Doc {
   private readonly _collection: Workspace;
 
   private readonly _docMap = {
-    undefined: new Map<string, Blocks>(),
-    true: new Map<string, Blocks>(),
-    false: new Map<string, Blocks>(),
+    undefined: new Map<string, Store>(),
+    true: new Map<string, Store>(),
+    false: new Map<string, Store>(),
   };
 
   // doc/space container.
@@ -279,7 +279,7 @@ export class TestDoc implements Doc {
     }
   }
 
-  getBlocks({ readonly, query }: GetBlocksOptions = {}) {
+  getStore({ readonly, query, provider, extensions }: GetBlocksOptions = {}) {
     const readonlyKey = this._getReadonlyKey(readonly);
 
     const key = JSON.stringify(query);
@@ -288,11 +288,13 @@ export class TestDoc implements Doc {
       return this._docMap[readonlyKey].get(key)!;
     }
 
-    const doc = new Blocks({
-      blockCollection: this,
+    const doc = new Store({
+      doc: this,
       schema: this.workspace.schema,
       readonly,
       query,
+      provider,
+      extensions,
     });
 
     this._docMap[readonlyKey].set(key, doc);

@@ -17,7 +17,7 @@ import {
   RootBlockSchema,
 } from '@blocksuite/affine-model';
 import { propertyModelPresets } from '@blocksuite/data-view/property-pure-presets';
-import type { BlockModel, Blocks } from '@blocksuite/store';
+import type { BlockModel, Store } from '@blocksuite/store';
 import { Schema, Text } from '@blocksuite/store';
 import {
   createAutoIncrementIdGenerator,
@@ -49,7 +49,7 @@ function createTestDoc(docId = 'doc0') {
 }
 
 describe('DatabaseManager', () => {
-  let doc: Blocks;
+  let doc: Store;
   let db: DatabaseBlockModel;
 
   let rootId: BlockModel['id'];

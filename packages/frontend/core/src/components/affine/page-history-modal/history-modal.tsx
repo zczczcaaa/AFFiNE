@@ -11,7 +11,7 @@ import { WorkspaceService } from '@affine/core/modules/workspace';
 import { i18nTime, Trans, useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { DocMode } from '@blocksuite/affine/blocks';
-import type { Blocks, Workspace } from '@blocksuite/affine/store';
+import type { Store, Workspace } from '@blocksuite/affine/store';
 import { CloseIcon, ToggleRightIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import type { DialogContentProps } from '@radix-ui/react-dialog';
@@ -87,7 +87,7 @@ const ModalContainer = ({
 interface HistoryEditorPreviewProps {
   ts?: string;
   historyList: HistoryList;
-  snapshotPage?: Blocks;
+  snapshotPage?: Store;
   mode: DocMode;
   onModeChange: (mode: DocMode) => void;
   title: string;

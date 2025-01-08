@@ -47,7 +47,7 @@ import {
   DisposableGroup,
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
-import { type Blocks, Store } from '@blocksuite/store';
+import { type Store } from '@blocksuite/store';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -240,7 +240,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     }
   `;
 
-  private _previewDoc: Blocks | null = null;
+  private _previewDoc: Store | null = null;
 
   private readonly _previewSpec =
     SpecProvider.getInstance().getSpec('edgeless:preview');
@@ -339,7 +339,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       }
 
       const doc = [...this.std.workspace.docs.values()]
-        .map(doc => doc.getBlocks())
+        .map(doc => doc.getStore())
         .find(
           doc =>
             doc.getBlock(this.model.reference) ||
@@ -546,9 +546,8 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
     if (!this._viewportEditor) {
       if (this._previewDoc) {
-        const store = new Store({ blocks: this._previewDoc });
         this._viewportEditor = new BlockStdScope({
-          store,
+          store: this._previewDoc,
           extensions: _previewSpec,
         }).render();
       } else {

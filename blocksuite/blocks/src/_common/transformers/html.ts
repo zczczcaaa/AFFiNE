@@ -1,7 +1,7 @@
 import { HtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
-import type { Blocks, Workspace } from '@blocksuite/store';
+import type { Store, Workspace } from '@blocksuite/store';
 import { extMimeMap, Job } from '@blocksuite/store';
 
 import { defaultBlockHtmlAdapterMatchers } from '../adapters/html/block-matcher.js';
@@ -43,7 +43,7 @@ const provider = container.provider();
  * @param doc - The doc to be exported.
  * @returns A Promise that resolves when the export is complete.
  */
-async function exportDoc(doc: Blocks) {
+async function exportDoc(doc: Store) {
   const job = new Job({
     schema: doc.schema,
     blobCRUD: doc.blobSync,

@@ -2,7 +2,7 @@ import { type Disposable, Slot } from '@blocksuite/global/utils';
 import { computed, type Signal, signal } from '@preact/signals-core';
 
 import type { Text } from '../../reactive/index.js';
-import type { Blocks } from '../blocks/blocks.js';
+import type { Store } from '../store/store.js';
 import type { YBlock } from './types.js';
 import type { RoleType } from './zod.js';
 
@@ -38,7 +38,7 @@ export class BlockModel<
   /**
    * @deprecated use doc instead
    */
-  page!: Blocks;
+  page!: Store;
 
   private readonly _childModels = computed(() => {
     const value: BlockModel[] = [];
@@ -102,7 +102,7 @@ export class BlockModel<
     return this.page;
   }
 
-  set doc(doc: Blocks) {
+  set doc(doc: Store) {
     this.page = doc;
   }
 

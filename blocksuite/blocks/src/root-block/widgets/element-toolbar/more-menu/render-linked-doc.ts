@@ -5,7 +5,7 @@ import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import { getBlockProps } from '@blocksuite/affine-shared/utils';
 import type { EditorHost } from '@blocksuite/block-std';
 import { GfxBlockElementModel } from '@blocksuite/block-std/gfx';
-import { type BlockModel, type Blocks, Text } from '@blocksuite/store';
+import { type BlockModel, type Store, Text } from '@blocksuite/store';
 
 import {
   getElementProps,
@@ -14,11 +14,7 @@ import {
 } from '../../../edgeless/utils/clone-utils.js';
 import { isFrameBlock, isNoteBlock } from '../../../edgeless/utils/query.js';
 
-function addBlocksToDoc(
-  targetDoc: Blocks,
-  model: BlockModel,
-  parentId: string
-) {
+function addBlocksToDoc(targetDoc: Store, model: BlockModel, parentId: string) {
   // Add current block to linked doc
   const blockProps = getBlockProps(model);
   const newModelId = targetDoc.addBlock(
@@ -36,7 +32,7 @@ function addBlocksToDoc(
 }
 
 export function createLinkedDocFromNote(
-  doc: Blocks,
+  doc: Store,
   note: NoteBlockModel,
   docTitle?: string
 ) {

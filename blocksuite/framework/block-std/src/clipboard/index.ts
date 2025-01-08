@@ -2,11 +2,11 @@ import type { ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type {
   BaseAdapter,
-  Blocks,
   BlockSnapshot,
   Job,
   JobMiddleware,
   Slice,
+  Store,
 } from '@blocksuite/store';
 import DOMPurify from 'dompurify';
 import type { RootContentMap } from 'hast';
@@ -110,7 +110,7 @@ export class Clipboard extends LifeCycleWatcher {
 
   private readonly _getSnapshotByPriority = async (
     getItem: (type: string) => string | File[],
-    doc: Blocks,
+    doc: Store,
     parent?: string,
     index?: number
   ) => {
@@ -182,7 +182,7 @@ export class Clipboard extends LifeCycleWatcher {
 
   duplicateSlice = async (
     slice: Slice,
-    doc: Blocks,
+    doc: Store,
     parent?: string,
     index?: number,
     type = 'BLOCKSUITE/SNAPSHOT'
@@ -201,7 +201,7 @@ export class Clipboard extends LifeCycleWatcher {
 
   paste = async (
     event: ClipboardEvent,
-    doc: Blocks,
+    doc: Store,
     parent?: string,
     index?: number
   ) => {
@@ -238,7 +238,7 @@ export class Clipboard extends LifeCycleWatcher {
 
   pasteBlockSnapshot = async (
     snapshot: BlockSnapshot,
-    doc: Blocks,
+    doc: Store,
     parent?: string,
     index?: number
   ) => {

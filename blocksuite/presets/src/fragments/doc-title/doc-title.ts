@@ -2,7 +2,7 @@ import type { EditorHost } from '@blocksuite/block-std';
 import { ShadowlessElement } from '@blocksuite/block-std';
 import type { RichText, RootBlockModel } from '@blocksuite/blocks';
 import { assertExists, WithDisposable } from '@blocksuite/global/utils';
-import type { Blocks } from '@blocksuite/store';
+import type { Store } from '@blocksuite/store';
 import { css, html } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
@@ -175,7 +175,7 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
   private accessor _richTextElement!: RichText;
 
   @property({ attribute: false })
-  accessor doc!: Blocks;
+  accessor doc!: Store;
 }
 
 export function getDocTitleByEditorHost(

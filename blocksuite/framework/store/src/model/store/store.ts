@@ -1,7 +1,9 @@
+import { Container, type ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { type Disposable, Slot } from '@blocksuite/global/utils';
 import { signal } from '@preact/signals-core';
 
+import type { ExtensionType } from '../../extension/extension.js';
 import type { Schema } from '../../schema/index.js';
 import {
   Block,
@@ -12,17 +14,22 @@ import {
 } from '../block/index.js';
 import type { Doc } from '../doc.js';
 import { DocCRUD } from './crud.js';
+import { StoreIdentifier } from './identifier.js';
 import { type Query, runQuery } from './query.js';
 import { syncBlockProps } from './utils.js';
 
-type DocOptions = {
+export type StoreOptions = {
   schema: Schema;
-  blockCollection: Doc;
+  doc: Doc;
   readonly?: boolean;
   query?: Query;
+  provider?: ServiceProvider;
+  extensions?: ExtensionType[];
 };
 
-export class Blocks {
+export class Store {
+  private readonly _provider: ServiceProvider;
+
   private readonly _runQuery = (block: Block) => {
     runQuery(this._query, block);
   };
@@ -147,6 +154,10 @@ export class Blocks {
     return this._doc.awarenessStore;
   }
 
+  get provider() {
+    return this._provider;
+  }
+
   get blobSync() {
     return this.workspace.blobSync;
   }
@@ -259,8 +270,24 @@ export class Blocks {
     return this._doc.withoutTransact.bind(this._doc);
   }
 
-  constructor({ schema, blockCollection, readonly, query }: DocOptions) {
-    this._doc = blockCollection;
+  constructor({
+    schema,
+    doc,
+    readonly,
+    query,
+    provider,
+    extensions,
+  }: StoreOptions) {
+    const container = new Container();
+    container.addImpl(StoreIdentifier, () => this);
+
+    const userExtensions = extensions ?? [];
+    userExtensions.forEach(extension => {
+      extension.setup(container);
+    });
+
+    this._provider = container.provider(undefined, provider);
+    this._doc = doc;
 
     this.slots = {
       ready: new Slot(),
@@ -271,7 +298,7 @@ export class Blocks {
       yBlockUpdated: this._doc.slots.yBlockUpdated,
     };
 
-    this._crud = new DocCRUD(this._yBlocks, blockCollection.schema);
+    this._crud = new DocCRUD(this._yBlocks, doc.schema);
     this._schema = schema;
     this._readonly = readonly;
     if (query) {
@@ -565,7 +592,7 @@ export class Blocks {
     return (this.getBlock(id)?.model ?? null) as Model | null;
   }
 
-  getBlocks() {
+  getStore() {
     return Object.values(this._blocks.peek()).map(block => block.model);
   }
 

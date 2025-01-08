@@ -3,7 +3,7 @@ import { SettingRow } from '@affine/component/setting-components';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { useI18n } from '@affine/i18n';
 import { DefaultTheme } from '@blocksuite/affine/blocks';
-import type { Blocks } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import { useFramework, useLiveData } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { useCallback, useMemo } from 'react';
@@ -59,7 +59,7 @@ export const PenSettings = () => {
     [editorSetting]
   );
 
-  const getElements = useCallback((doc: Blocks) => {
+  const getElements = useCallback((doc: Store) => {
     const surface = getSurfaceBlock(doc);
     return surface?.getElementsByType('brush') || [];
   }, []);

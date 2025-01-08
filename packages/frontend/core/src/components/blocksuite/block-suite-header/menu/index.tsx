@@ -22,7 +22,7 @@ import { ViewService } from '@affine/core/modules/workbench/services/view';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import type { Blocks } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import {
   DuplicateIcon,
   EdgelessIcon,
@@ -52,7 +52,7 @@ import { HistoryTipsModal } from './history-tips-modal';
 
 type PageMenuProps = {
   rename?: () => void;
-  page: Blocks;
+  page: Store;
   isJournal?: boolean;
   containerWidth: number;
 };

@@ -1,4 +1,4 @@
-import type { BlockModel, Blocks, DraftModel } from '@blocksuite/store';
+import type { BlockModel, DraftModel, Store } from '@blocksuite/store';
 import { minimatch } from 'minimatch';
 
 export function matchFlavours<Key extends (keyof BlockSuite.BlockModels)[]>(
@@ -14,7 +14,7 @@ export function matchFlavours<Key extends (keyof BlockSuite.BlockModels)[]>(
 }
 
 export function isInsideBlockByFlavour(
-  doc: Blocks,
+  doc: Store,
   block: BlockModel | string,
   flavour: string
 ): boolean {

@@ -24,7 +24,7 @@ import {
   getCommonBoundWithRotation,
   type SerializedXYWH,
 } from '@blocksuite/affine/global/utils';
-import type { Blocks } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import type { TemplateResult } from 'lit';
 
 import type { ChatMessage } from '../../../blocks';
@@ -101,7 +101,7 @@ export function constructUserInfoWithMessages(
 }
 
 export async function constructRootChatBlockMessages(
-  doc: Blocks,
+  doc: Store,
   forkSessionId: string
 ) {
   // Convert chat messages to AI chat block messages
@@ -152,7 +152,7 @@ function addAIChatBlock(
 
   const { doc } = host;
   const surfaceBlock = doc
-    .getBlocks()
+    .getStore()
     .find(block => block.flavour === 'affine:surface');
   if (!surfaceBlock) {
     return;
@@ -462,7 +462,7 @@ const CREATE_AS_LINKED_DOC = {
 
     const { doc } = host;
     const surfaceBlock = doc
-      .getBlocks()
+      .getStore()
       .find(block => block.flavour === 'affine:surface');
     if (!surfaceBlock) {
       return false;

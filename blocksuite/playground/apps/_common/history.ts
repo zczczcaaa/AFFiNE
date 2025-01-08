@@ -15,7 +15,7 @@ export function getDocFromUrlParams(collection: Workspace, url: URL) {
   if (!doc) {
     const blockCollection = collection.docs.values().next().value as Doc;
     assertExists(blockCollection, 'Need to create a doc first');
-    doc = blockCollection.getBlocks();
+    doc = blockCollection.getStore();
   }
 
   doc.load();

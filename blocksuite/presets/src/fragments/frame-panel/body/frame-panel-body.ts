@@ -13,7 +13,7 @@ import {
   SignalWatcher,
   WithDisposable,
 } from '@blocksuite/global/utils';
-import type { Blocks } from '@blocksuite/store';
+import type { Store } from '@blocksuite/store';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { keyed } from 'lit/directives/keyed.js';
@@ -326,7 +326,7 @@ export class FramePanelBody extends SignalWatcher(
     }
   }
 
-  private _setDocDisposables(doc: Blocks) {
+  private _setDocDisposables(doc: Store) {
     this._clearDocDisposables();
     this._docDisposables = new DisposableGroup();
     this._docDisposables.add(

@@ -26,7 +26,7 @@ import {
   StrokeStyle,
   TextAlign,
 } from '@blocksuite/affine/blocks';
-import type { Blocks } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import { useFramework, useLiveData } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { useCallback, useMemo, useState } from 'react';
@@ -339,7 +339,7 @@ export const ShapeSettings = () => {
   }, [editorSetting, settings, currentShape, strokeColorPalettes]);
 
   const getElements = useCallback(
-    (doc: Blocks) => {
+    (doc: Store) => {
       const surface = getSurfaceBlock(doc);
       if (!surface) return [];
       return surface.getElementsByType('shape').filter(node => {
@@ -353,7 +353,7 @@ export const ShapeSettings = () => {
   );
 
   const firstUpdate = useCallback(
-    (doc: Blocks, editorHost: EditorHost) => {
+    (doc: Store, editorHost: EditorHost) => {
       const edgelessService = editorHost.std.getService(
         'affine:page'
       ) as EdgelessRootService;

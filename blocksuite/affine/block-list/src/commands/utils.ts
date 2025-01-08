@@ -3,7 +3,7 @@ import {
   getNextContinuousNumberedLists,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
-import type { BlockModel, Blocks } from '@blocksuite/store';
+import type { BlockModel, Store } from '@blocksuite/store';
 
 /**
  * correct target is a numbered list, which is divided into two steps:
@@ -12,7 +12,7 @@ import type { BlockModel, Blocks } from '@blocksuite/store';
  * 2. find continuous lists starting from the target list and keep their order continuous
  */
 export function correctNumberedListsOrderToPrev(
-  doc: Blocks,
+  doc: Store,
   modelOrId: BlockModel | string,
   transact = true
 ) {
@@ -58,7 +58,7 @@ export function correctNumberedListsOrderToPrev(
   }
 }
 
-export function correctListOrder(doc: Blocks, model: ListBlockModel) {
+export function correctListOrder(doc: Store, model: ListBlockModel) {
   // old numbered list has no order
   if (model.type === 'numbered' && !Number.isInteger(model.order)) {
     correctNumberedListsOrderToPrev(doc, model, false);

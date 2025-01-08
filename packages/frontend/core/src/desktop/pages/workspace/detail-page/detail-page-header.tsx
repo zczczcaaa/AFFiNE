@@ -24,7 +24,7 @@ import type { Workspace } from '@affine/core/modules/workspace';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import type { Blocks } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -49,7 +49,7 @@ const Header = forwardRef<
 Header.displayName = 'forwardRef(Header)';
 
 interface PageHeaderProps {
-  page: Blocks;
+  page: Store;
   workspace: Workspace;
 }
 export function JournalPageHeader({ page, workspace }: PageHeaderProps) {

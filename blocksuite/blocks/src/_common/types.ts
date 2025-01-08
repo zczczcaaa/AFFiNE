@@ -5,7 +5,7 @@ import type {
   GroupElementModel,
 } from '@blocksuite/affine-model';
 import type { Slot } from '@blocksuite/global/utils';
-import type { Blocks } from '@blocksuite/store';
+import type { Store } from '@blocksuite/store';
 
 /** Common context interface definition for block models. */
 
@@ -14,7 +14,7 @@ type EditorSlots = {
 };
 
 export type AbstractEditor = {
-  doc: Blocks;
+  doc: Store;
   mode: DocMode;
   readonly slots: EditorSlots;
 } & HTMLElement;

@@ -1,6 +1,6 @@
 import { type NoteBlockModel, NoteDisplayMode } from '@blocksuite/affine-model';
 import type { BlockComponent, EditorHost } from '@blocksuite/block-std';
-import type { BlockModel, Blocks } from '@blocksuite/store';
+import type { BlockModel, Store } from '@blocksuite/store';
 
 import { matchFlavours } from './checker.js';
 
@@ -41,7 +41,7 @@ export function findNoteBlockModel(model: BlockModel) {
   ) as NoteBlockModel | null;
 }
 
-export function getLastNoteBlock(doc: Blocks) {
+export function getLastNoteBlock(doc: Store) {
   let note: NoteBlockModel | null = null;
   if (!doc.root) return null;
   const { children } = doc.root;

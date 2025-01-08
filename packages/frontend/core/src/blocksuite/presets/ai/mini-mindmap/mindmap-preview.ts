@@ -12,7 +12,7 @@ import {
 } from '@blocksuite/affine/blocks';
 import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import { type Blocks, Job, Schema, Store } from '@blocksuite/affine/store';
+import { Job, Schema, type Store } from '@blocksuite/affine/store';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -79,7 +79,7 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
     }
   `;
 
-  doc?: Blocks;
+  doc?: Store;
 
   mindmapId?: string;
 
@@ -129,7 +129,7 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
     this.requestUpdate();
   }
 
-  private _toMindmapNode(answer: string, doc: Blocks) {
+  private _toMindmapNode(answer: string, doc: Store) {
     return markdownToMindmap(answer, doc, this.host.std.provider);
   }
 
@@ -175,7 +175,7 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
         })}
       >
         ${new BlockStdScope({
-          store: new Store({ blocks: this.doc }),
+          store: this.doc,
           extensions: MiniMindmapSpecs,
         }).render()}
       </div>
@@ -232,7 +232,7 @@ type Node = {
 
 export const markdownToMindmap = (
   answer: string,
-  doc: Blocks,
+  doc: Store,
   provider: ServiceProvider
 ) => {
   let result: Node | null = null;

@@ -18,12 +18,11 @@ import {
 } from '@blocksuite/affine/blocks';
 import { Container, type ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import {
-  type Blocks,
-  type ExtensionType,
-  type JobMiddleware,
-  type Query,
-  type Schema,
+import type {
+  ExtensionType,
+  JobMiddleware,
+  Query,
+  Schema,
   Store,
 } from '@blocksuite/affine/store';
 import { css, html, nothing, type PropertyValues } from 'lit';
@@ -174,7 +173,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
     }
   };
 
-  private _doc: Blocks | null = null;
+  private _doc: Store | null = null;
 
   private readonly _query: Query = {
     mode: 'strict',
@@ -220,7 +219,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
         )
           .then(doc => {
             this.disposeDoc();
-            this._doc = doc.doc.getBlocks({
+            this._doc = doc.doc.getStore({
               query: this._query,
             });
             this.disposables.add(() => {
@@ -287,7 +286,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
           this._doc,
           html`<div class="ai-answer-text-editor affine-page-viewport">
             ${new BlockStdScope({
-              store: new Store({ blocks: this._doc }),
+              store: this._doc,
               extensions: this.options.extensions ?? CustomPageEditorBlockSpecs,
             }).render()}
           </div>`

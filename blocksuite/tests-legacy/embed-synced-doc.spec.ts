@@ -225,7 +225,7 @@ test.describe('Embed synced doc', () => {
         };
 
         const doc2Collection = getDocCollection();
-        const doc2 = doc2Collection!.getBlocks();
+        const doc2 = doc2Collection!.getStore();
         const [noteBlock] = doc2!.getBlocksByFlavour('affine:note');
         const noteId = noteBlock.id;
 

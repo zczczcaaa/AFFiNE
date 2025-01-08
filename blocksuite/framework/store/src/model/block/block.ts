@@ -1,5 +1,5 @@
 import type { Schema } from '../../schema/index.js';
-import type { Blocks } from '../blocks/blocks.js';
+import type { Store } from '../store/store.js';
 import { SyncController } from './sync-controller.js';
 import type { BlockOptions, YBlock } from './types.js';
 
@@ -37,7 +37,7 @@ export class Block {
   constructor(
     readonly schema: Schema,
     readonly yBlock: YBlock,
-    readonly doc?: Blocks,
+    readonly doc?: Store,
     readonly options: BlockOptions = {}
   ) {
     const onChange = !options.onChange

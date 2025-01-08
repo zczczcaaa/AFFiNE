@@ -4,7 +4,7 @@ import {
 } from '@blocksuite/affine-model';
 import { BlockService } from '@blocksuite/block-std';
 import { viewPresets } from '@blocksuite/data-view/view-presets';
-import type { BlockModel, Blocks } from '@blocksuite/store';
+import type { BlockModel, Store } from '@blocksuite/store';
 
 import {
   databaseViewAddView,
@@ -36,7 +36,7 @@ export class DatabaseBlockService extends BlockService {
   viewPresets = viewPresets;
 
   initDatabaseBlock(
-    doc: Blocks,
+    doc: Store,
     model: BlockModel,
     databaseId: string,
     viewType: string,

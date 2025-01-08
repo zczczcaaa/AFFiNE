@@ -26,12 +26,7 @@ import {
 } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { assertExists, Bound, getCommonBound } from '@blocksuite/global/utils';
-import {
-  type GetBlocksOptions,
-  type Query,
-  Store,
-  Text,
-} from '@blocksuite/store';
+import { type GetBlocksOptions, type Query, Text } from '@blocksuite/store';
 import { computed } from '@preact/signals-core';
 import { html, nothing, type PropertyValues } from 'lit';
 import { query, state } from 'lit/decorators.js';
@@ -156,8 +151,6 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       return html`${nothing}`;
     }
 
-    const store = new Store({ blocks: syncedDoc });
-
     if (isPageMode) {
       this.dataset.pageMode = '';
     }
@@ -186,7 +179,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
           () => html`
             <div class="affine-page-viewport" data-theme=${appTheme}>
               ${new BlockStdScope({
-                store,
+                store: syncedDoc,
                 extensions: this._buildPreviewSpec('page:preview'),
               }).render()}
             </div>
@@ -197,7 +190,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
           () => html`
             <div class="affine-edgeless-viewport" data-theme=${edgelessTheme}>
               ${new BlockStdScope({
-                store,
+                store: syncedDoc,
                 extensions: this._buildPreviewSpec('edgeless:preview'),
               }).render()}
             </div>

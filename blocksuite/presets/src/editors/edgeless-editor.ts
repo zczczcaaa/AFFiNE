@@ -1,7 +1,7 @@
 import { BlockStdScope, ShadowlessElement } from '@blocksuite/block-std';
 import { EdgelessEditorBlockSpecs, ThemeProvider } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import { type Blocks, Store } from '@blocksuite/store';
+import type { Store } from '@blocksuite/store';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { guard } from 'lit/directives/guard.js';
@@ -48,9 +48,8 @@ export class EdgelessEditor extends SignalWatcher(
     this._disposables.add(
       this.doc.slots.rootAdded.on(() => this.requestUpdate())
     );
-    const store = new Store({ blocks: this.doc });
     this.std = new BlockStdScope({
-      store,
+      store: this.doc,
       extensions: this.specs,
     });
   }
@@ -78,16 +77,15 @@ export class EdgelessEditor extends SignalWatcher(
   ) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('doc')) {
-      const store = new Store({ blocks: this.doc });
       this.std = new BlockStdScope({
-        store,
+        store: this.doc,
         extensions: this.specs,
       });
     }
   }
 
   @property({ attribute: false })
-  accessor doc!: Blocks;
+  accessor doc!: Store;
 
   @property({ attribute: false })
   accessor editor!: TemplateResult;

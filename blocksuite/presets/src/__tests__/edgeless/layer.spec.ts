@@ -5,7 +5,7 @@ import type {
   GroupElementModel,
   NoteBlockModel,
 } from '@blocksuite/blocks';
-import { type BlockModel, type Blocks } from '@blocksuite/store';
+import type { BlockModel, Store } from '@blocksuite/store';
 import { beforeEach, describe, expect, test } from 'vitest';
 import * as Y from 'yjs';
 
@@ -19,7 +19,7 @@ import { setupEditor } from '../utils/setup.js';
 
 let service!: EdgelessRootBlockComponent['service'];
 
-const addNote = (doc: Blocks, props: Record<string, unknown> = {}) => {
+const addNote = (doc: Store, props: Record<string, unknown> = {}) => {
   return _addNote(doc, {
     index: service.layer.generateIndex(),
     ...props,

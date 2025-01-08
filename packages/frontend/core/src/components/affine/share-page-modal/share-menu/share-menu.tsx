@@ -4,7 +4,7 @@ import { Menu } from '@affine/component/ui/menu';
 import { ShareInfoService } from '@affine/core/modules/share-doc';
 import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import type { Blocks } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import { LockIcon, PublishIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { forwardRef, type PropsWithChildren, type Ref, useEffect } from 'react';
@@ -15,7 +15,7 @@ import { SharePage } from './share-page';
 
 export interface ShareMenuProps extends PropsWithChildren {
   workspaceMetadata: WorkspaceMetadata;
-  currentPage: Blocks;
+  currentPage: Store;
   onEnableAffineCloud: () => void;
   onOpenShareModal?: (open: boolean) => void;
 }

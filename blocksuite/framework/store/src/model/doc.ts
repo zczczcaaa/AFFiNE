@@ -4,15 +4,12 @@ import type * as Y from 'yjs';
 import type { Schema } from '../schema/schema.js';
 import type { AwarenessStore } from '../yjs/awareness.js';
 import type { YBlock } from './block/types.js';
-import type { Blocks } from './blocks/blocks.js';
-import type { Query } from './blocks/query.js';
+import type { Query } from './store/query.js';
+import type { Store, StoreOptions } from './store/store.js';
 import type { Workspace } from './workspace.js';
 import type { DocMeta } from './workspace-meta.js';
 
-export type GetBlocksOptions = {
-  query?: Query;
-  readonly?: boolean;
-};
+export type GetBlocksOptions = Omit<StoreOptions, 'schema' | 'doc'>;
 export type CreateBlocksOptions = GetBlocksOptions & {
   id?: string;
 };
@@ -53,7 +50,7 @@ export interface Doc {
 
   captureSync(): void;
   clear(): void;
-  getBlocks(options?: GetBlocksOptions): Blocks;
+  getStore(options?: GetBlocksOptions): Store;
   clearQuery(query: Query, readonly?: boolean): void;
 
   get loaded(): boolean;

@@ -5,8 +5,8 @@ import type * as Y from 'yjs';
 import type { Schema } from '../schema/schema.js';
 import type { IdGenerator } from '../utils/id-generator.js';
 import type { AwarenessStore } from '../yjs/awareness.js';
-import type { Blocks } from './blocks/blocks.js';
 import type { CreateBlocksOptions, Doc, GetBlocksOptions } from './doc.js';
+import type { Store } from './store/store.js';
 import type { WorkspaceMeta } from './workspace-meta.js';
 
 export interface Workspace {
@@ -26,8 +26,8 @@ export interface Workspace {
     docRemoved: Slot<string>;
   };
 
-  createDoc(options?: CreateBlocksOptions): Blocks;
-  getDoc(docId: string, options?: GetBlocksOptions): Blocks | null;
+  createDoc(options?: CreateBlocksOptions): Store;
+  getDoc(docId: string, options?: GetBlocksOptions): Store | null;
   removeDoc(docId: string): void;
 
   dispose(): void;

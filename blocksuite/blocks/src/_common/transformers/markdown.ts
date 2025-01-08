@@ -2,7 +2,7 @@ import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { assertExists, sha } from '@blocksuite/global/utils';
-import type { Blocks, Workspace } from '@blocksuite/store';
+import type { Store, Workspace } from '@blocksuite/store';
 import { extMimeMap, Job } from '@blocksuite/store';
 
 import { defaultBlockMarkdownAdapterMatchers } from '../adapters/index.js';
@@ -28,7 +28,7 @@ const container = new Container();
 const provider = container.provider();
 
 type ImportMarkdownToBlockOptions = {
-  doc: Blocks;
+  doc: Store;
   markdown: string;
   blockId: string;
 };
@@ -49,7 +49,7 @@ type ImportMarkdownZipOptions = {
  * @param doc The doc to export
  * @returns A Promise that resolves when the export is complete
  */
-async function exportDoc(doc: Blocks) {
+async function exportDoc(doc: Store) {
   const job = new Job({
     schema: doc.schema,
     blobCRUD: doc.blobSync,

@@ -17,13 +17,13 @@ import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import { assertExists } from '@blocksuite/affine/global/utils';
 import type {
   BlockModel,
-  Blocks,
   BlockSnapshot,
   DraftModel,
   JobMiddleware,
   Schema,
   Slice,
   SliceSnapshot,
+  Store,
 } from '@blocksuite/affine/store';
 import { Job } from '@blocksuite/affine/store';
 
@@ -166,7 +166,7 @@ export const markdownToSnapshot = async (
 export async function insertFromMarkdown(
   host: EditorHost,
   markdown: string,
-  doc: Blocks,
+  doc: Store,
   parent?: string,
   index?: number
 ) {
@@ -235,5 +235,5 @@ export async function markDownToDoc(
   if (!doc) {
     console.error('Failed to convert markdown to doc');
   }
-  return doc as Blocks;
+  return doc as Store;
 }

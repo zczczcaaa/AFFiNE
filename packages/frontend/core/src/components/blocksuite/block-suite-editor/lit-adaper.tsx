@@ -23,7 +23,7 @@ import {
   EdgelessEditor,
   PageEditor,
 } from '@blocksuite/affine/presets';
-import type { Blocks } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import {
   useFramework,
   useLiveData,
@@ -86,7 +86,7 @@ const adapted = {
 };
 
 interface BlocksuiteEditorProps {
-  page: Blocks;
+  page: Store;
   shared?: boolean;
   defaultOpenProperty?: DefaultOpenProperty;
 }

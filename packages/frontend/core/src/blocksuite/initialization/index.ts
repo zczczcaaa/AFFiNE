@@ -5,7 +5,7 @@ import {
   type ParagraphProps,
   type RootBlockProps,
 } from '@blocksuite/affine/blocks';
-import { type Blocks, Text } from '@blocksuite/affine/store';
+import { type Store, Text } from '@blocksuite/affine/store';
 
 export interface DocProps {
   page?: Partial<RootBlockProps>;
@@ -14,7 +14,7 @@ export interface DocProps {
   paragraph?: Partial<ParagraphProps>;
 }
 
-export function initEmptyDoc(doc: Blocks, title?: string) {
+export function initEmptyDoc(doc: Store, title?: string) {
   doc.load(() => {
     initDocFromProps(doc, {
       page: {
@@ -24,7 +24,7 @@ export function initEmptyDoc(doc: Blocks, title?: string) {
   });
 }
 
-export function initDocFromProps(doc: Blocks, props?: DocProps) {
+export function initDocFromProps(doc: Store, props?: DocProps) {
   doc.load(() => {
     const pageBlockId = doc.addBlock(
       'affine:page',

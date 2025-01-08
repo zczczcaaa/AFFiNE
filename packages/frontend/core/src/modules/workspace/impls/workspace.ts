@@ -6,13 +6,13 @@ import type { BlockSuiteFlags } from '@blocksuite/affine/global/types';
 import { NoopLogger, Slot } from '@blocksuite/affine/global/utils';
 import {
   AwarenessStore,
-  type Blocks,
   type CreateBlocksOptions,
   type Doc,
   type GetBlocksOptions,
   type IdGenerator,
   nanoid,
   type Schema,
+  type Store,
   type Workspace,
   type WorkspaceMeta,
 } from '@blocksuite/affine/store';
@@ -152,7 +152,7 @@ export class WorkspaceImpl implements Workspace {
       tags: [],
     });
     this.slots.docCreated.emit(docId);
-    return this.getDoc(docId, { query, readonly }) as Blocks;
+    return this.getDoc(docId, { query, readonly }) as Store;
   }
 
   dispose() {
@@ -164,9 +164,9 @@ export class WorkspaceImpl implements Workspace {
     return space ?? null;
   }
 
-  getDoc(docId: string, options?: GetBlocksOptions): Blocks | null {
+  getDoc(docId: string, options?: GetBlocksOptions): Store | null {
     const collection = this._getDoc(docId);
-    return collection?.getBlocks(options) ?? null;
+    return collection?.getStore(options) ?? null;
   }
 
   removeDoc(docId: string) {

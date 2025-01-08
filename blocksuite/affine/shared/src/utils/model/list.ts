@@ -1,6 +1,6 @@
 import type { ListBlockModel } from '@blocksuite/affine-model';
 import type { BlockStdScope } from '@blocksuite/block-std';
-import type { BlockModel, Blocks } from '@blocksuite/store';
+import type { BlockModel, Store } from '@blocksuite/store';
 
 import { matchFlavours } from './checker.js';
 
@@ -9,7 +9,7 @@ import { matchFlavours } from './checker.js';
  * typically used for updating list numbers. The result not contains the list passed in.
  */
 export function getNextContinuousNumberedLists(
-  doc: Blocks,
+  doc: Store,
   modelOrId: BlockModel | string
 ): ListBlockModel[] {
   const model =

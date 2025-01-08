@@ -1,10 +1,10 @@
-import type { Blocks, Workspace } from '@blocksuite/affine/store';
+import type { Store, Workspace } from '@blocksuite/affine/store';
 import { useMemo } from 'react';
 
 export function useDocCollectionHelper(docCollection: Workspace) {
   return useMemo(
     () => ({
-      createDoc: (pageId?: string): Blocks => {
+      createDoc: (pageId?: string): Store => {
         return docCollection.createDoc({ id: pageId });
       },
     }),

@@ -5,7 +5,7 @@ import {
   last,
   Slot,
 } from '@blocksuite/global/utils';
-import type { Blocks } from '@blocksuite/store';
+import type { Store } from '@blocksuite/store';
 import { generateKeyBetween } from 'fractional-indexing';
 
 import {
@@ -100,7 +100,7 @@ export class LayerManager {
   };
 
   constructor(
-    private readonly _doc: Blocks,
+    private readonly _doc: Store,
     private _surface: SurfaceBlockModel | null,
     options: {
       watch: boolean;
@@ -476,7 +476,7 @@ export class LayerManager {
   private _reset() {
     const elements = (
       this._doc
-        .getBlocks()
+        .getStore()
         .filter(
           model =>
             model instanceof GfxBlockElementModel &&
@@ -775,7 +775,7 @@ export class LayerManager {
     }
   }
 
-  watch(blocks: { doc?: Blocks; surface: SurfaceBlockModel | null }) {
+  watch(blocks: { doc?: Store; surface: SurfaceBlockModel | null }) {
     const { doc, surface } = blocks;
 
     if (doc) {

@@ -11,12 +11,11 @@ import { BlockStdScope } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
 import {
   type BlockModel,
-  type Blocks,
   type BlockSnapshot,
   type DraftModel,
   type Query,
   Slice,
-  Store,
+  type Store,
   Text,
 } from '@blocksuite/store';
 import { render, type TemplateResult } from 'lit';
@@ -196,11 +195,10 @@ async function renderNoteContent(
     mode: 'strict',
     match: ids.map(id => ({ id, viewType: 'display' })),
   };
-  const previewDoc = doc.doc.getBlocks({ query });
+  const previewDoc = doc.doc.getStore({ query });
   const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
-  const store = new Store({ blocks: previewDoc });
   const previewStd = new BlockStdScope({
-    store,
+    store: previewDoc,
     extensions: previewSpec.value,
   });
   const previewTemplate = previewStd.render();
@@ -222,7 +220,7 @@ function filterTextModel(model: BlockModel) {
   return false;
 }
 
-export function getNotesFromDoc(doc: Blocks) {
+export function getNotesFromDoc(doc: Store) {
   const notes = doc.root?.children.filter(
     child =>
       matchFlavours(child, ['affine:note']) &&
@@ -236,7 +234,7 @@ export function getNotesFromDoc(doc: Blocks) {
   return notes;
 }
 
-export function isEmptyDoc(doc: Blocks | null, mode: DocMode) {
+export function isEmptyDoc(doc: Store | null, mode: DocMode) {
   if (!doc) {
     return true;
   }
@@ -268,7 +266,7 @@ export function isEmptyNote(note: BlockModel) {
 /**
  * Gets the document content with a max length.
  */
-export function getDocContentWithMaxLength(doc: Blocks, maxlength = 500) {
+export function getDocContentWithMaxLength(doc: Store, maxlength = 500) {
   const notes = getNotesFromDoc(doc);
   if (!notes) return;
 
@@ -328,7 +326,7 @@ export function promptDocTitle(std: BlockStdScope, autofill?: string) {
   });
 }
 
-export function notifyDocCreated(std: BlockStdScope, doc: Blocks) {
+export function notifyDocCreated(std: BlockStdScope, doc: Store) {
   const notification = std.getOptional(NotificationProvider);
   if (!notification) return;
 
@@ -367,7 +365,7 @@ export function notifyDocCreated(std: BlockStdScope, doc: Blocks) {
 
 export async function convertSelectedBlocksToLinkedDoc(
   std: BlockStdScope,
-  doc: Blocks,
+  doc: Store,
   selectedModels: DraftModel[] | Promise<DraftModel[]>,
   docTitle?: string
 ) {
@@ -401,7 +399,7 @@ export async function convertSelectedBlocksToLinkedDoc(
 
 export function createLinkedDocFromSlice(
   std: BlockStdScope,
-  doc: Blocks,
+  doc: Store,
   snapshots: BlockSnapshot[],
   docTitle?: string
 ) {

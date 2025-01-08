@@ -7,7 +7,7 @@ import {
   once,
 } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import type { BlockModel, Blocks } from '@blocksuite/store';
+import type { BlockModel, Store } from '@blocksuite/store';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -393,7 +393,7 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
   accessor activeHeadingId: string | null = null;
 
   @property({ attribute: false })
-  accessor doc!: Blocks;
+  accessor doc!: Store;
 
   @property({ attribute: false })
   accessor editorMode: 'page' | 'edgeless' = 'page';

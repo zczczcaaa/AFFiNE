@@ -17,9 +17,9 @@ import { Awareness } from 'y-protocols/awareness.js';
 import * as Y from 'yjs';
 
 import type {
-  Blocks,
   CreateBlocksOptions,
   GetBlocksOptions,
+  Store,
   Workspace,
   WorkspaceMeta,
 } from '../model/index.js';
@@ -205,7 +205,7 @@ export class TestWorkspace implements Workspace {
       tags: [],
     });
     this.slots.docCreated.emit(docId);
-    return this.getDoc(docId, { query, readonly }) as Blocks;
+    return this.getDoc(docId, { query, readonly }) as Store;
   }
 
   dispose() {
@@ -227,9 +227,9 @@ export class TestWorkspace implements Workspace {
     return space ?? null;
   }
 
-  getDoc(docId: string, options?: GetBlocksOptions): Blocks | null {
+  getDoc(docId: string, options?: GetBlocksOptions): Store | null {
     const collection = this.getBlockCollection(docId);
-    return collection?.getBlocks(options) ?? null;
+    return collection?.getStore(options) ?? null;
   }
 
   removeDoc(docId: string) {

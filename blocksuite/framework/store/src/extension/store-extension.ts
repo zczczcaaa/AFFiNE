@@ -1,8 +1,8 @@
 import { type Container, createIdentifier } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 
-import { StoreIdentifier } from '../store/identifier';
-import type { Store } from '../store/store';
+import type { Store } from '../model/store';
+import { StoreIdentifier } from '../model/store/identifier';
 import { Extension } from './extension';
 
 export const StoreExtensionIdentifier =

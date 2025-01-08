@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { Blocks } from '../model/blocks/blocks.js';
+import type { Store } from '../model/store/store.js';
 import type { DocMeta, DocsPropertiesMeta } from '../model/workspace-meta.js';
 
 export type BlockSnapshot = {
@@ -75,7 +75,7 @@ export interface BlobCRUD {
 }
 
 export interface DocCRUD {
-  create: (id: string) => Blocks;
-  get: (id: string) => Blocks | null;
+  create: (id: string) => Store;
+  get: (id: string) => Store | null;
   delete: (id: string) => void;
 }

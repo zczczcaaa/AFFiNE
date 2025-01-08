@@ -3,9 +3,9 @@ import { nextTick, Slot } from '@blocksuite/global/utils';
 
 import type {
   BlockModel,
-  Blocks,
   BlockSchemaType,
   DraftModel,
+  Store,
 } from '../model/index.js';
 import type { Schema } from '../schema/index.js';
 import { AssetsManager } from './assets.js';
@@ -82,7 +82,7 @@ export class Job {
     }
   };
 
-  docToSnapshot = (doc: Blocks): DocSnapshot | undefined => {
+  docToSnapshot = (doc: Store): DocSnapshot | undefined => {
     try {
       this._slots.beforeExport.emit({
         type: 'page',
@@ -158,7 +158,7 @@ export class Job {
 
   snapshotToBlock = async (
     snapshot: BlockSnapshot,
-    doc: Blocks,
+    doc: Store,
     parent?: string,
     index?: number
   ): Promise<BlockModel | undefined> => {
@@ -174,9 +174,7 @@ export class Job {
     }
   };
 
-  snapshotToDoc = async (
-    snapshot: DocSnapshot
-  ): Promise<Blocks | undefined> => {
+  snapshotToDoc = async (snapshot: DocSnapshot): Promise<Store | undefined> => {
     try {
       this._slots.beforeImport.emit({
         type: 'page',
@@ -228,7 +226,7 @@ export class Job {
 
   snapshotToSlice = async (
     snapshot: SliceSnapshot,
-    doc: Blocks,
+    doc: Store,
     parent?: string,
     index?: number
   ): Promise<Slice | undefined> => {
@@ -424,7 +422,7 @@ export class Job {
     }
   }
 
-  private _exportDocMeta(doc: Blocks): DocSnapshot['meta'] {
+  private _exportDocMeta(doc: Store): DocSnapshot['meta'] {
     const docMeta = doc.meta;
 
     if (!docMeta) {
@@ -472,7 +470,7 @@ export class Job {
 
   private async _insertBlockTree(
     nodes: DraftBlockTreeNode[],
-    doc: Blocks,
+    doc: Store,
     parentId?: string,
     startIndex?: number,
     counter: number = 0
@@ -561,7 +559,7 @@ export class Job {
 
   private async _snapshotToBlock(
     snapshot: BlockSnapshot,
-    doc: Blocks,
+    doc: Store,
     parent?: string,
     index?: number
   ): Promise<BlockModel | null> {

@@ -11,7 +11,7 @@ import {
 } from '@blocksuite/affine/blocks';
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
-import type { Blocks } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 
@@ -20,7 +20,7 @@ import { BlocksuiteEditorContainer } from './blocksuite-editor-container';
 import { NoPageRootError } from './no-page-error';
 
 export type EditorProps = {
-  page: Blocks;
+  page: Store;
   mode: DocMode;
   shared?: boolean;
   defaultOpenProperty?: DefaultOpenProperty;

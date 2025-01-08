@@ -9,7 +9,7 @@ import {
 } from '@blocksuite/affine-shared/adapters';
 import type { BlockComponent, UIEventHandler } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/utils';
-import type { Blocks, BlockSnapshot } from '@blocksuite/store';
+import type { BlockSnapshot, Store } from '@blocksuite/store';
 
 import {
   defaultImageProxyMiddleware,
@@ -99,7 +99,7 @@ export class PageClipboard {
 
   onBlockSnapshotPaste = async (
     snapshot: BlockSnapshot,
-    doc: Blocks,
+    doc: Store,
     parent?: string,
     index?: number
   ) => {

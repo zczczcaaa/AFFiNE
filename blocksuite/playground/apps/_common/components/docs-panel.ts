@@ -73,7 +73,7 @@ export class DocsPanel extends WithDisposable(ShadowlessElement) {
       ?.generateDocUrl(doc.id);
     if (url) history.pushState({}, '', url);
 
-    this.editor.doc = doc.getBlocks();
+    this.editor.doc = doc.getStore();
     this.editor.doc.load();
     this.editor.doc.resetHistory();
     this.requestUpdate();
@@ -146,7 +146,7 @@ export class DocsPanel extends WithDisposable(ShadowlessElement) {
             removeModeFromStorage(doc.id);
             // When delete the current doc, we need to set the editor doc to the first remaining doc
             if (isDeleteCurrent) {
-              this.editor.doc = this.docs[0].getBlocks();
+              this.editor.doc = this.docs[0].getStore();
             }
           };
           return html`<div class="doc-item" @click="${click}" style="${style}">

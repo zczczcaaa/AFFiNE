@@ -11,7 +11,7 @@ import {
   LinkedPageIcon,
   PageIcon,
 } from '@blocksuite/icons/lit';
-import type { Blocks } from '@blocksuite/store';
+import type { Store } from '@blocksuite/store';
 import { computed, type Signal, signal } from '@preact/signals-core';
 import type { TemplateResult } from 'lit';
 
@@ -70,9 +70,9 @@ export class DocDisplayMetaService
 
   readonly disposables: Disposable[] = [];
 
-  readonly iconMap = new WeakMap<Blocks, Signal<TemplateResult>>();
+  readonly iconMap = new WeakMap<Store, Signal<TemplateResult>>();
 
-  readonly titleMap = new WeakMap<Blocks, Signal<string>>();
+  readonly titleMap = new WeakMap<Store, Signal<string>>();
 
   static override setup(di: Container) {
     di.addImpl(DocDisplayMetaProvider, this, [StdIdentifier]);

@@ -1,5 +1,5 @@
 import { on, once } from '@blocksuite/blocks';
-import type { Blocks } from '@blocksuite/store';
+import type { Store } from '@blocksuite/store';
 
 import type { OutlinePanelBody } from '../body/outline-panel-body.js';
 import type { OutlineNoteCard } from '../card/outline-card.js';
@@ -15,7 +15,7 @@ export function startDragging(options: {
   document: Document;
   host: Document | HTMLElement;
   container: OutlinePanelBody;
-  doc: Blocks;
+  doc: Store;
 }) {
   const {
     document,

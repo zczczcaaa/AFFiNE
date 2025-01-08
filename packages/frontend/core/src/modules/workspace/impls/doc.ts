@@ -1,10 +1,10 @@
 import { type Disposable, Slot } from '@blocksuite/affine/global/utils';
 import {
   type AwarenessStore,
-  Blocks,
   type Doc,
   type GetBlocksOptions,
   type Query,
+  Store,
   type Workspace,
   type YBlock,
 } from '@blocksuite/affine/store';
@@ -28,9 +28,9 @@ export class DocImpl implements Doc {
   private readonly _collection: Workspace;
 
   private readonly _docMap = {
-    undefined: new Map<string, Blocks>(),
-    true: new Map<string, Blocks>(),
-    false: new Map<string, Blocks>(),
+    undefined: new Map<string, Store>(),
+    true: new Map<string, Store>(),
+    false: new Map<string, Store>(),
   };
 
   // doc/space container.
@@ -274,20 +274,22 @@ export class DocImpl implements Doc {
     }
   }
 
-  getBlocks({ readonly, query }: GetBlocksOptions = {}) {
+  getStore({ readonly, query, provider, extensions }: GetBlocksOptions = {}) {
     const readonlyKey = this._getReadonlyKey(readonly);
 
     const key = JSON.stringify(query);
 
     if (this._docMap[readonlyKey].has(key)) {
-      return this._docMap[readonlyKey].get(key) as Blocks;
+      return this._docMap[readonlyKey].get(key) as Store;
     }
 
-    const doc = new Blocks({
-      blockCollection: this,
+    const doc = new Store({
+      doc: this,
       schema: this.workspace.schema,
       readonly,
       query,
+      provider,
+      extensions,
     });
 
     this._docMap[readonlyKey].set(key, doc);

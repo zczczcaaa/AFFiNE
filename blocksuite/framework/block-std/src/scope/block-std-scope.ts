@@ -75,7 +75,7 @@ export class BlockStdScope {
   }
 
   get doc() {
-    return this.store.blocks;
+    return this.store;
   }
 
   get clipboard() {

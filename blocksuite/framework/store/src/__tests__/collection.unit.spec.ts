@@ -4,7 +4,7 @@ import type { Slot } from '@blocksuite/global/utils';
 import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 import { applyUpdate, type Doc, encodeStateAsUpdate } from 'yjs';
 
-import type { BlockModel, Blocks, BlockSchemaType, DocMeta } from '../index.js';
+import type { BlockModel, BlockSchemaType, DocMeta, Store } from '../index.js';
 import { Schema } from '../index.js';
 import { Text } from '../reactive/text.js';
 import { createAutoIncrementIdGenerator } from '../test/index.js';
@@ -52,7 +52,7 @@ function waitOnce<T>(slot: Slot<T>) {
   return new Promise<T>(resolve => slot.once(val => resolve(val)));
 }
 
-function createRoot(doc: Blocks) {
+function createRoot(doc: Store) {
   doc.addBlock('affine:page');
   if (!doc.root) throw new Error('root not found');
   return doc.root;

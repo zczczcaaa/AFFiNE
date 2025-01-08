@@ -11,7 +11,7 @@ import {
   y2Native,
 } from '../../reactive/index.js';
 import type { Schema } from '../../schema/schema.js';
-import type { Blocks } from '../blocks/blocks.js';
+import type { Store } from '../store/store.js';
 import { BlockModel } from './block-model.js';
 import type { YBlock } from './types.js';
 import { internalPrimitives } from './zod.js';
@@ -104,7 +104,7 @@ export class SyncController {
   constructor(
     readonly schema: Schema,
     readonly yBlock: YBlock,
-    readonly doc?: Blocks,
+    readonly doc?: Store,
     readonly onChange?: (key: string, value: unknown) => void
   ) {
     const { id, flavour, version, yChildren, props } = this._parseYBlock();
