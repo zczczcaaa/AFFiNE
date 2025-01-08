@@ -44,8 +44,9 @@ export function escapeFilename(name: string) {
   // replace all special characters with '_' and replace repeated '_' with a single '_' and remove trailing '_'
   return name
     .replaceAll(/[\\/!@#$%^&*()+~`"':;,?<>|]/g, '_')
-    .replaceAll(/_+/g, '_')
-    .replace(/_+$/, '');
+    .split('_')
+    .filter(Boolean)
+    .join('_');
 }
 
 export async function getSpaceDBPath(
