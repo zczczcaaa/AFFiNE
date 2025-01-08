@@ -24,6 +24,7 @@ import {
   type JobMiddleware,
   type Query,
   type Schema,
+  Store,
 } from '@blocksuite/affine/store';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
@@ -286,7 +287,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
           this._doc,
           html`<div class="ai-answer-text-editor affine-page-viewport">
             ${new BlockStdScope({
-              doc: this._doc,
+              store: new Store({ blocks: this._doc }),
               extensions: this.options.extensions ?? CustomPageEditorBlockSpecs,
             }).render()}
           </div>`

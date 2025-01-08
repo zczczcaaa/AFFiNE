@@ -5,7 +5,7 @@ import {
   type DndEventState,
 } from '@blocksuite/block-std';
 import { Point } from '@blocksuite/global/utils';
-import type { BlockViewType, Query } from '@blocksuite/store';
+import { type BlockViewType, type Query, Store } from '@blocksuite/store';
 
 import { DragPreview } from '../components/drag-preview.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
@@ -82,8 +82,9 @@ export class PreviewHelper {
       const doc = this.widget.doc.doc.getBlocks({ query });
 
       const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
+      const store = new Store({ blocks: doc });
       const previewStd = new BlockStdScope({
-        doc,
+        store,
         extensions: previewSpec.value,
       });
       const previewTemplate = previewStd.render();

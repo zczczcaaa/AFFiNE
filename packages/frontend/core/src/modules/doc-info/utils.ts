@@ -1,7 +1,7 @@
 import { DebugLogger } from '@affine/debug';
 import { BlockStdScope } from '@blocksuite/affine/block-std';
 import { PageEditorBlockSpecs } from '@blocksuite/affine/blocks';
-import type { Blocks } from '@blocksuite/affine/store';
+import { type Blocks, Store } from '@blocksuite/affine/store';
 import { LiveData } from '@toeverything/infra';
 import { useMemo } from 'react';
 import { Observable } from 'rxjs';
@@ -45,7 +45,7 @@ export function signalToLiveData<T>(
 export function createBlockStdScope(doc: Blocks) {
   logger.debug('createBlockStdScope', doc.id);
   const std = new BlockStdScope({
-    doc,
+    store: new Store({ blocks: doc }),
     extensions: PageEditorBlockSpecs,
   });
   return std;

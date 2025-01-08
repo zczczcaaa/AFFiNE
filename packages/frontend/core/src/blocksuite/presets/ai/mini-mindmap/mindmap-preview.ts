@@ -12,7 +12,7 @@ import {
 } from '@blocksuite/affine/blocks';
 import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import { type Blocks, Job, Schema } from '@blocksuite/affine/store';
+import { type Blocks, Job, Schema, Store } from '@blocksuite/affine/store';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -175,7 +175,7 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
         })}
       >
         ${new BlockStdScope({
-          doc: this.doc,
+          store: new Store({ blocks: this.doc }),
           extensions: MiniMindmapSpecs,
         }).render()}
       </div>

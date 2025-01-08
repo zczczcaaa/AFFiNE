@@ -1,11 +1,10 @@
-import type { ServiceProvider } from '@blocksuite/global/di';
-import { Container } from '@blocksuite/global/di';
+import { Container, type ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import {
-  type Blocks,
   type ExtensionType,
   Job,
   type JobMiddleware,
+  type Store,
 } from '@blocksuite/store';
 
 import { Clipboard } from '../clipboard/index.js';
@@ -36,7 +35,7 @@ import { EditorHost } from '../view/element/index.js';
 import { ViewStore } from '../view/view-store.js';
 
 export interface BlockStdOptions {
-  doc: Blocks;
+  store: Store;
   extensions: ExtensionType[];
 }
 
@@ -65,7 +64,7 @@ export class BlockStdScope {
 
   readonly container: Container;
 
-  readonly doc: Blocks;
+  readonly store: Store;
 
   readonly provider: ServiceProvider;
 
@@ -73,6 +72,10 @@ export class BlockStdScope {
 
   private get _lifeCycleWatchers() {
     return this.provider.getAll(LifeCycleWatcherIdentifier);
+  }
+
+  get doc() {
+    return this.store.blocks;
   }
 
   get clipboard() {
@@ -122,7 +125,7 @@ export class BlockStdScope {
         'Host is not ready to use, the `render` method should be called first'
       );
     };
-    this.doc = options.doc;
+    this.store = options.store;
     this.userExtensions = options.extensions;
     this.container = new Container();
     this.container.addImpl(StdIdentifier, () => this);
@@ -137,7 +140,7 @@ export class BlockStdScope {
       ext.setup(container);
     });
 
-    this.provider = this.container.provider();
+    this.provider = this.container.provider(undefined, this.store.provider);
 
     this._lifeCycleWatchers.forEach(watcher => {
       watcher.created.call(watcher);

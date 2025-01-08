@@ -1,5 +1,5 @@
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import type { Blocks, ExtensionType } from '@blocksuite/store';
+import { type Blocks, type ExtensionType, Store } from '@blocksuite/store';
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
@@ -18,8 +18,9 @@ export class TestEditorContainer extends SignalWatcher(
 
   override connectedCallback() {
     super.connectedCallback();
+    const store = new Store({ blocks: this.doc });
     this._std = new BlockStdScope({
-      doc: this.doc,
+      store,
       extensions: this.specs,
     });
   }

@@ -7,7 +7,7 @@ import {
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import type { Blocks } from '@blocksuite/affine/store';
-import { Schema } from '@blocksuite/affine/store';
+import { Schema, Store } from '@blocksuite/affine/store';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -208,7 +208,7 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
           ${ref(this._editorContainer)}
         >
           ${new BlockStdScope({
-            doc: this._doc,
+            store: new Store({ blocks: this._doc }),
             extensions:
               SpecProvider.getInstance().getSpec('edgeless:preview').value,
           }).render()}

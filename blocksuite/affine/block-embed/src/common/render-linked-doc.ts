@@ -16,6 +16,7 @@ import {
   type DraftModel,
   type Query,
   Slice,
+  Store,
   Text,
 } from '@blocksuite/store';
 import { render, type TemplateResult } from 'lit';
@@ -197,8 +198,9 @@ async function renderNoteContent(
   };
   const previewDoc = doc.doc.getBlocks({ query });
   const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
+  const store = new Store({ blocks: previewDoc });
   const previewStd = new BlockStdScope({
-    doc: previewDoc,
+    store,
     extensions: previewSpec.value,
   });
   const previewTemplate = previewStd.render();

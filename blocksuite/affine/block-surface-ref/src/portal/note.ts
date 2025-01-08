@@ -18,7 +18,7 @@ import {
   ShadowlessElement,
 } from '@blocksuite/block-std';
 import { deserializeXYWH, WithDisposable } from '@blocksuite/global/utils';
-import { type BlockModel, type Query } from '@blocksuite/store';
+import { type BlockModel, type Query, Store } from '@blocksuite/store';
 import { css, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -118,9 +118,10 @@ export class SurfaceRefNotePortal extends WithDisposable(ShadowlessElement) {
       query: this.query,
       readonly: true,
     });
+    const store = new Store({ blocks: doc });
     const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
     return new BlockStdScope({
-      doc,
+      store,
       extensions: previewSpec.value.slice(),
     }).render();
   }

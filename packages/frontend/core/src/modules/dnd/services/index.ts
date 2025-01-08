@@ -7,7 +7,7 @@ import { createPageModeSpecs } from '@affine/core/components/blocksuite/block-su
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { BlockStdScope } from '@blocksuite/affine/block-std';
 import { DndApiExtensionIdentifier } from '@blocksuite/affine/blocks';
-import { type SliceSnapshot } from '@blocksuite/affine/store';
+import { type SliceSnapshot, Store } from '@blocksuite/affine/store';
 import { Service } from '@toeverything/infra';
 
 import type { DocsService } from '../../doc';
@@ -69,7 +69,7 @@ export class DndService extends Service {
     }
 
     const std = new BlockStdScope({
-      doc,
+      store: new Store({ blocks: doc }),
       extensions: createPageModeSpecs(this.framework),
     });
     const dndAPI = std.get(DndApiExtensionIdentifier);

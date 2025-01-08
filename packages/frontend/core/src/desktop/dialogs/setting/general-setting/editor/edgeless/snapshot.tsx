@@ -19,7 +19,7 @@ import {
   ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
-import type { Block, Blocks } from '@blocksuite/affine/store';
+import { type Block, type Blocks, Store } from '@blocksuite/affine/store';
 import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
 import type { Container } from '@blocksuite/global/di';
 import type { Signal } from '@preact/signals-core';
@@ -90,7 +90,7 @@ export const EdgelessSnapshot = (props: Props) => {
     if (!doc) return;
 
     const editorHost = new BlockStdScope({
-      doc,
+      store: new Store({ blocks: doc }),
       extensions: [
         ...SpecProvider.getInstance().getSpec('edgeless:preview').value,
         getThemeExtension(framework),

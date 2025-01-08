@@ -6,6 +6,7 @@ export * from './extension';
 export * from './model';
 export * from './reactive';
 export * from './schema';
+export * from './store';
 export * from './transformer';
 export { type IdGenerator, nanoid, uuidv4 } from './utils/id-generator';
 export * from './yjs';

@@ -47,7 +47,7 @@ import {
   DisposableGroup,
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
-import type { Blocks } from '@blocksuite/store';
+import { type Blocks, Store } from '@blocksuite/store';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -545,10 +545,15 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
     const _previewSpec = this._previewSpec.value;
 
     if (!this._viewportEditor) {
-      this._viewportEditor = new BlockStdScope({
-        doc: this._previewDoc!,
-        extensions: _previewSpec,
-      }).render();
+      if (this._previewDoc) {
+        const store = new Store({ blocks: this._previewDoc });
+        this._viewportEditor = new BlockStdScope({
+          store,
+          extensions: _previewSpec,
+        }).render();
+      } else {
+        console.error('Preview doc is not found');
+      }
     }
 
     return html`<div class="ref-content">

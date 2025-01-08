@@ -9,8 +9,9 @@ import {
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import { BlockSelection, BlockStdScope } from '@blocksuite/block-std';
-import { assertExists, Bound } from '@blocksuite/global/utils';
-import { html } from 'lit';
+import { Bound } from '@blocksuite/global/utils';
+import { Store } from '@blocksuite/store';
+import { html, nothing } from 'lit';
 import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { guard } from 'lit/directives/guard.js';
@@ -25,7 +26,12 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
   protected override _renderSyncedView = () => {
     const { syncedDoc, editorMode } = this;
 
-    assertExists(syncedDoc, 'Doc should exist');
+    if (!syncedDoc) {
+      console.error('Synced doc is not found');
+      return html`${nothing}`;
+    }
+
+    const store = new Store({ blocks: syncedDoc });
 
     let containerStyleMap = styleMap({
       position: 'relative',
@@ -64,7 +70,7 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
           () => html`
             <div class="affine-page-viewport" data-theme=${appTheme}>
               ${new BlockStdScope({
-                doc: syncedDoc,
+                store,
                 extensions: this._buildPreviewSpec('page:preview'),
               }).render()}
             </div>
@@ -75,7 +81,7 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
           () => html`
             <div class="affine-edgeless-viewport" data-theme=${edgelessTheme}>
               ${new BlockStdScope({
-                doc: syncedDoc,
+                store,
                 extensions: this._buildPreviewSpec('edgeless:preview'),
               }).render()}
             </div>
