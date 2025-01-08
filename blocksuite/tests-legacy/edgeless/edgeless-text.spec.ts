@@ -54,11 +54,7 @@ async function assertEdgelessTextModelRect(
 
 test.describe('edgeless text block', () => {
   test.beforeEach(async ({ page }) => {
-    await enterPlaygroundRoom(page, {
-      flags: {
-        enable_edgeless_text: true,
-      },
-    });
+    await enterPlaygroundRoom(page);
     await initEmptyEdgelessState(page);
     await switchEditorMode(page);
   });
@@ -546,11 +542,7 @@ test.describe('edgeless text block', () => {
 test('press backspace at the start of first line when edgeless text exist', async ({
   page,
 }, testInfo) => {
-  await enterPlaygroundRoom(page, {
-    flags: {
-      enable_edgeless_text: true,
-    },
-  });
+  await enterPlaygroundRoom(page);
   await page.evaluate(() => {
     const { doc } = window;
     const rootId = doc.addBlock('affine:page', {

@@ -1,5 +1,6 @@
 import type { ReferenceInfo } from '@blocksuite/affine-model';
 import {
+  FeatureFlagService,
   GenerateDocUrlProvider,
   type LinkEventType,
   type TelemetryEvent,
@@ -305,10 +306,10 @@ export class ReferencePopup extends WithDisposable(LitElement) {
   }
 
   private _viewSelector() {
-    // synced doc entry controlled by awareness flag
-    const isSyncedDocEnabled = this.doc.awarenessStore.getFlag(
-      'enable_synced_doc_block'
-    );
+    // synced doc entry controlled by flag
+    const isSyncedDocEnabled = this.doc
+      .get(FeatureFlagService)
+      .getFlag('enable_synced_doc_block');
     const buttons = [];
 
     buttons.push({

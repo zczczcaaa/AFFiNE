@@ -1,6 +1,9 @@
 import { CanvasElementType } from '@blocksuite/affine-block-surface';
 import { type MindmapStyle, TextElementModel } from '@blocksuite/affine-model';
-import { TelemetryProvider } from '@blocksuite/affine-shared/services';
+import {
+  FeatureFlagService,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import { assertInstanceOf, Bound } from '@blocksuite/global/utils';
 import type { TemplateResult } from 'lit';
 import * as Y from 'yjs';
@@ -103,7 +106,9 @@ export const textRender: DraggableTool['render'] = (
   const w = 100;
   const h = 32;
 
-  const flag = edgeless.doc.awarenessStore.getFlag('enable_edgeless_text');
+  const flag = edgeless.doc
+    .get(FeatureFlagService)
+    .getFlag('enable_edgeless_text');
   let id: string;
   if (flag) {
     const { textId } = edgeless.std.command.exec('insertEdgelessText', {

@@ -16,6 +16,7 @@ import merge from 'lodash.merge';
 import { Awareness } from 'y-protocols/awareness.js';
 import * as Y from 'yjs';
 
+import type { ExtensionType } from '../extension/extension.js';
 import type {
   CreateBlocksOptions,
   GetBlocksOptions,
@@ -46,22 +47,6 @@ export type DocCollectionOptions = {
 };
 
 const FLAGS_PRESET = {
-  enable_synced_doc_block: false,
-  enable_pie_menu: false,
-  enable_database_number_formatting: false,
-  enable_database_attachment_note: false,
-  enable_database_full_width: false,
-  enable_block_query: false,
-  enable_lasso_tool: false,
-  enable_edgeless_text: true,
-  enable_ai_onboarding: false,
-  enable_ai_chat_block: false,
-  enable_color_picker: false,
-  enable_mind_map_import: false,
-  enable_advanced_block_visibility: false,
-  enable_shape_shadow_blur: false,
-  enable_mobile_keyboard_toolbar: false,
-  enable_mobile_linked_doc_menu: false,
   readonly: {},
 } satisfies BlockSuiteFlags;
 
@@ -71,6 +56,8 @@ const FLAGS_PRESET = {
  */
 export class TestWorkspace implements Workspace {
   protected readonly _schema: Schema;
+
+  storeExtensions: ExtensionType[] = [];
 
   readonly awarenessStore: AwarenessStore;
 

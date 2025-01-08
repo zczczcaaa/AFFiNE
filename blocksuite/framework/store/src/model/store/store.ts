@@ -688,4 +688,12 @@ export class Store {
       );
     });
   }
+
+  get get() {
+    return this.provider.get.bind(this.provider);
+  }
+
+  get getOptional() {
+    return this.provider.getOptional.bind(this.provider);
+  }
 }

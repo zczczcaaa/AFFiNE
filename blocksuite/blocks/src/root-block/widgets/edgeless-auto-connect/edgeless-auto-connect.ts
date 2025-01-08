@@ -12,6 +12,7 @@ import {
   type RootBlockModel,
   type SurfaceRefBlockModel,
 } from '@blocksuite/affine-model';
+import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import {
   matchFlavours,
   stopPropagation,
@@ -555,9 +556,9 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
   }
 
   override render() {
-    const advancedVisibilityEnabled = this.doc.awarenessStore.getFlag(
-      'enable_advanced_block_visibility'
-    );
+    const advancedVisibilityEnabled = this.doc
+      .get(FeatureFlagService)
+      .getFlag('enable_advanced_block_visibility');
 
     if (!this._show || this._dragging || !advancedVisibilityEnabled) {
       return nothing;

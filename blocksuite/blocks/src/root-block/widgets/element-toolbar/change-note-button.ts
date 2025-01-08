@@ -28,7 +28,10 @@ import {
   resolveColor,
   type StrokeStyle,
 } from '@blocksuite/affine-model';
-import { ThemeProvider } from '@blocksuite/affine-shared/services';
+import {
+  FeatureFlagService,
+  ThemeProvider,
+} from '@blocksuite/affine-shared/services';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
   assertExists,
@@ -133,7 +136,9 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
   };
 
   private get _advancedVisibilityEnabled() {
-    return this.doc.awarenessStore.getFlag('enable_advanced_block_visibility');
+    return this.doc
+      .get(FeatureFlagService)
+      .getFlag('enable_advanced_block_visibility');
   }
 
   private get doc() {
@@ -301,7 +306,9 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
       isDocOnly
         ? nothing
         : when(
-            this.edgeless.doc.awarenessStore.getFlag('enable_color_picker'),
+            this.edgeless.doc
+              .get(FeatureFlagService)
+              .getFlag('enable_color_picker'),
             () => {
               const { type, colors } = packColorsWithColorScheme(
                 colorScheme,

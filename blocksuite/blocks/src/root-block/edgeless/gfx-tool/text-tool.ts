@@ -1,5 +1,8 @@
 import type { TextElementModel } from '@blocksuite/affine-model';
-import { TelemetryProvider } from '@blocksuite/affine-shared/services';
+import {
+  FeatureFlagService,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import type { PointerEventState } from '@blocksuite/block-std';
 import { BaseTool, type GfxController } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
@@ -38,9 +41,9 @@ export class TextTool extends BaseTool {
   static override toolName: string = 'text';
 
   override click(e: PointerEventState): void {
-    const textFlag = this.gfx.doc.awarenessStore.getFlag(
-      'enable_edgeless_text'
-    );
+    const textFlag = this.gfx.doc
+      .get(FeatureFlagService)
+      .getFlag('enable_edgeless_text');
 
     if (textFlag) {
       const [x, y] = this.gfx.viewport.toModelCoord(e.x, e.y);

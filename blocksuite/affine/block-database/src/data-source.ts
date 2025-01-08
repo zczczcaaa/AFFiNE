@@ -1,4 +1,5 @@
 import type { DatabaseBlockModel } from '@blocksuite/affine-model';
+import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import {
   insertPositionToIndex,
   type InsertToPosition,
@@ -57,10 +58,12 @@ export class DatabaseBlockDataSource extends DataSourceBase {
   private readonly _model: DatabaseBlockModel;
 
   override featureFlags$: ReadonlySignal<DatabaseFlags> = computed(() => {
+    const featureFlagService = this.doc.get(FeatureFlagService);
+    const flag = featureFlagService.getFlag(
+      'enable_database_number_formatting'
+    );
     return {
-      enable_number_formatting:
-        this.doc.awarenessStore.getFlag('enable_database_number_formatting') ??
-        false,
+      enable_number_formatting: flag ?? false,
     };
   });
 

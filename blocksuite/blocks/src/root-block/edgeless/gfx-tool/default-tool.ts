@@ -15,7 +15,10 @@ import {
   ShapeElementModel,
   TextElementModel,
 } from '@blocksuite/affine-model';
-import { TelemetryProvider } from '@blocksuite/affine-shared/services';
+import {
+  FeatureFlagService,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import {
   clamp,
   handleNativeRangeAtPoint,
@@ -783,7 +786,9 @@ export class DefaultTool extends BaseTool {
     }
 
     if (!selected) {
-      const textFlag = this.doc.awarenessStore.getFlag('enable_edgeless_text');
+      const textFlag = this.doc
+        .get(FeatureFlagService)
+        .getFlag('enable_edgeless_text');
 
       if (textFlag) {
         const [x, y] = this.gfx.viewport.toModelCoord(e.x, e.y);

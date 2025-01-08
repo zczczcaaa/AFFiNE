@@ -1,3 +1,4 @@
+import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import { Job, type JobMiddleware, Schema } from '@blocksuite/store';
 import { TestWorkspace } from '@blocksuite/store/test';
 
@@ -22,6 +23,7 @@ export function createJob(middlewares?: JobMiddleware[]) {
   testMiddlewares.push(defaultImageProxyMiddleware);
   const schema = new Schema().register(AffineSchemas);
   const docCollection = new TestWorkspace({ schema });
+  docCollection.storeExtensions = [FeatureFlagService];
   docCollection.meta.initialize();
   return new Job({
     schema,

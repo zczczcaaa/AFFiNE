@@ -1,6 +1,7 @@
 import { type Framework } from '@toeverything/infra';
 
 import { DocScope, DocService } from '../doc';
+import { FeatureFlagService } from '../feature-flag';
 import { WorkspaceScope, WorkspaceService } from '../workspace';
 import { Editor } from './entities/editor';
 import { EditorScope } from './scopes/editor';
@@ -18,7 +19,7 @@ export function configureEditorModule(framework: Framework) {
     .scope(WorkspaceScope)
     .scope(DocScope)
     .service(EditorsService)
-    .entity(Editor, [DocService, WorkspaceService])
+    .entity(Editor, [DocService, WorkspaceService, FeatureFlagService])
     .scope(EditorScope)
     .service(EditorService, [EditorScope]);
 }

@@ -7,6 +7,7 @@ import type { Doc, GetBlocksOptions, Workspace } from '../model/index.js';
 import type { Query } from '../model/store/query.js';
 import { Store } from '../model/store/store.js';
 import type { AwarenessStore } from '../yjs/index.js';
+import type { TestWorkspace } from './test-workspace.js';
 
 type DocOptions = {
   id: string;
@@ -294,7 +295,9 @@ export class TestDoc implements Doc {
       readonly,
       query,
       provider,
-      extensions,
+      extensions: (this.workspace as TestWorkspace).storeExtensions.concat(
+        extensions ?? []
+      ),
     });
 
     this._docMap[readonlyKey].set(key, doc);

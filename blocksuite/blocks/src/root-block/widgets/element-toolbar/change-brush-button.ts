@@ -17,6 +17,7 @@ import {
   LineWidth,
   resolveColor,
 } from '@blocksuite/affine-model';
+import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { countBy, maxBy, WithDisposable } from '@blocksuite/global/utils';
 import { html, LitElement, nothing } from 'lit';
@@ -120,7 +121,9 @@ export class EdgelessChangeBrushButton extends WithDisposable(LitElement) {
       <editor-toolbar-separator></editor-toolbar-separator>
 
       ${when(
-        this.edgeless.doc.awarenessStore.getFlag('enable_color_picker'),
+        this.edgeless.doc
+          .get(FeatureFlagService)
+          .getFlag('enable_color_picker'),
         () => {
           const { type, colors } = packColorsWithColorScheme(
             colorScheme,

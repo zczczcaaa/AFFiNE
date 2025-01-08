@@ -95,6 +95,9 @@ async function initEmptyEditor({
         }
         const createEditor = () => {
           const editor = document.createElement('affine-editor-container');
+          doc
+            .get(window.$blocksuite.blocks.FeatureFlagService)
+            .setFlag('enable_advanced_block_visibility', true);
           editor.doc = doc;
           editor.autofocus = true;
           const defaultExtensions: ExtensionType[] = [

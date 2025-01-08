@@ -66,11 +66,7 @@ test.describe('pasting blocks', () => {
     await expect(blocks.nth(3)).toContainText('code');
   });
   test('pasting a edgeless block', async ({ page }) => {
-    await enterPlaygroundRoom(page, {
-      flags: {
-        enable_edgeless_text: true,
-      },
-    });
+    await enterPlaygroundRoom(page);
     await initEmptyEdgelessState(page);
     await switchEditorMode(page);
     await setEdgelessTool(page, 'default');

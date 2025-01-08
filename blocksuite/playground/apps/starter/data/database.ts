@@ -7,18 +7,14 @@ import {
 } from '@blocksuite/blocks';
 import { viewPresets } from '@blocksuite/data-view/view-presets';
 import { assertExists } from '@blocksuite/global/utils';
-import { type DocCollection, Text } from '@blocksuite/store';
+import { Text, type Workspace } from '@blocksuite/store';
 
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { propertyPresets } from '../../../../affine/data-view/src/property-presets';
 import type { InitFn } from './utils.js';
 
-export const database: InitFn = (collection: DocCollection, id: string) => {
+export const database: InitFn = (collection: Workspace, id: string) => {
   const doc = collection.createDoc({ id });
-  doc.awarenessStore.setFlag('enable_database_number_formatting', true);
-  doc.awarenessStore.setFlag('enable_database_attachment_note', true);
-  doc.awarenessStore.setFlag('enable_database_full_width', true);
-  doc.awarenessStore.setFlag('enable_block_query', true);
 
   doc.load(() => {
     // Add root block and surface block at root level

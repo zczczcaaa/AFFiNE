@@ -1,4 +1,4 @@
-import { AffineSchemas, TestUtils } from '@blocksuite/blocks';
+import { AffineSchemas, SpecProvider, TestUtils } from '@blocksuite/blocks';
 import type { BlockSuiteFlags } from '@blocksuite/global/types';
 import { assertExists } from '@blocksuite/global/utils';
 import { type BlockCollection, Job, nanoid, Schema } from '@blocksuite/store';
@@ -75,6 +75,8 @@ export function createStarterDocCollection() {
     blobSources,
   };
   const collection = new TestWorkspace(options);
+  collection.storeExtensions =
+    SpecProvider.getInstance().getSpec('store').value;
   collection.start();
 
   // debug info

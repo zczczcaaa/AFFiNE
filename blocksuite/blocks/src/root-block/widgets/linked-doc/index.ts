@@ -3,6 +3,7 @@ import {
   getRangeRects,
   type SelectionRect,
 } from '@blocksuite/affine-shared/commands';
+import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import { getViewportElement } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent } from '@blocksuite/block-std';
 import { BLOCK_ID_ATTR, WidgetComponent } from '@blocksuite/block-std';
@@ -256,9 +257,9 @@ export class AffineLinkedDocWidget extends WidgetComponent<
       },
     };
 
-    const enableMobile = this.doc.awarenessStore.getFlag(
-      'enable_mobile_linked_doc_menu'
-    );
+    const enableMobile = this.doc
+      .get(FeatureFlagService)
+      .getFlag('enable_mobile_linked_doc_menu');
     this._mode$.value = enableMobile ? mode : 'desktop';
   }
 

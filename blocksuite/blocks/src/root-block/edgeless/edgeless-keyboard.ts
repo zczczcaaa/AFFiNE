@@ -12,6 +12,7 @@ import {
 } from '@blocksuite/affine-model';
 import {
   EditPropsStore,
+  FeatureFlagService,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
 import { LassoMode } from '@blocksuite/affine-shared/types';
@@ -72,7 +73,11 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
           this._setEdgelessTool('connector', { mode });
         },
         l: () => {
-          if (!rootComponent.doc.awarenessStore.getFlag('enable_lasso_tool')) {
+          if (
+            !rootComponent.doc
+              .get(FeatureFlagService)
+              .getFlag('enable_lasso_tool')
+          ) {
             return;
           }
 
@@ -81,7 +86,11 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
           });
         },
         'Shift-l': () => {
-          if (!rootComponent.doc.awarenessStore.getFlag('enable_lasso_tool')) {
+          if (
+            !rootComponent.doc
+              .get(FeatureFlagService)
+              .getFlag('enable_lasso_tool')
+          ) {
             return;
           }
           // toggle between lasso modes

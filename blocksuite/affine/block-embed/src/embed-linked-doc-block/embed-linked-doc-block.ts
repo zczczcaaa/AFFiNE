@@ -13,6 +13,7 @@ import {
 import {
   DocDisplayMetaProvider,
   DocModeProvider,
+  FeatureFlagService,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import {
@@ -129,10 +130,10 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
 
     const { doc, caption } = this.model;
 
-    // synced doc entry controlled by awareness flag
-    const isSyncedDocEnabled = doc.awarenessStore.getFlag(
-      'enable_synced_doc_block'
-    );
+    // synced doc entry controlled by flag
+    const isSyncedDocEnabled = doc
+      .get(FeatureFlagService)
+      .getFlag('enable_synced_doc_block');
     if (!isSyncedDocEnabled) {
       return;
     }

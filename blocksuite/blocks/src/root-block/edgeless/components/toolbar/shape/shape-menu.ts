@@ -12,6 +12,7 @@ import {
 } from '@blocksuite/affine-model';
 import {
   EditPropsStore,
+  FeatureFlagService,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
@@ -173,9 +174,9 @@ export class EdgelessShapeMenu extends SignalWatcher(
             .value=${fillColor}
             .theme=${this._theme$.value}
             .palettes=${DefaultTheme.FillColorPalettes}
-            .hasTransparent=${!this.edgeless.doc.awarenessStore.getFlag(
-              'enable_color_picker'
-            )}
+            .hasTransparent=${!this.edgeless.doc
+              .get(FeatureFlagService)
+              .getFlag('enable_color_picker')}
             @select=${(e: ColorEvent) => this._setFillColor(e.detail)}
           ></edgeless-color-panel>
         </div>

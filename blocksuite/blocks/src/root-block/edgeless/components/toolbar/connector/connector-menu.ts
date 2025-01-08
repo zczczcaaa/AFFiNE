@@ -6,6 +6,7 @@ import {
 import { ConnectorMode, DefaultTheme } from '@blocksuite/affine-model';
 import {
   EditPropsStore,
+  FeatureFlagService,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
@@ -130,9 +131,9 @@ export class EdgelessConnectorMenu extends EdgelessToolbarToolMixin(
             .value=${stroke}
             .theme=${this._theme$.value}
             .palettes=${DefaultTheme.StrokeColorPalettes}
-            .hasTransparent=${!this.edgeless.doc.awarenessStore.getFlag(
-              'enable_color_picker'
-            )}
+            .hasTransparent=${!this.edgeless.doc
+              .get(FeatureFlagService)
+              .getFlag('enable_color_picker')}
             @select=${(e: ColorEvent) =>
               this.onChange({ stroke: e.detail.value })}
           ></edgeless-color-panel>

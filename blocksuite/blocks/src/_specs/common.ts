@@ -30,6 +30,7 @@ import {
 import {
   DocDisplayMetaService,
   EditPropsStore,
+  FeatureFlagService,
   FontLoaderService,
 } from '@blocksuite/affine-shared/services';
 import type { ExtensionType } from '@blocksuite/store';
@@ -73,3 +74,5 @@ export const EdgelessFirstPartyBlockSpecs: ExtensionType[] = [
   EdgelessTextBlockSpec,
   FontLoaderService,
 ].flat();
+
+export const StoreExtensions: ExtensionType[] = [FeatureFlagService];

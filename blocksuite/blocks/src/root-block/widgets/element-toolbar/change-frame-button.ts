@@ -22,6 +22,7 @@ import {
   NoteDisplayMode,
   resolveColor,
 } from '@blocksuite/affine-model';
+import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import { GfxExtensionIdentifier } from '@blocksuite/block-std/gfx';
@@ -190,7 +191,9 @@ export class EdgelessChangeFrameButton extends WithDisposable(LitElement) {
         `,
 
         when(
-          this.edgeless.doc.awarenessStore.getFlag('enable_color_picker'),
+          this.edgeless.doc
+            .get(FeatureFlagService)
+            .getFlag('enable_color_picker'),
           () => {
             const { type, colors } = packColorsWithColorScheme(
               colorScheme,

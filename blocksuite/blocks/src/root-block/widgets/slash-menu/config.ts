@@ -39,7 +39,10 @@ import type {
   ParagraphBlockModel,
 } from '@blocksuite/affine-model';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
-import { TelemetryProvider } from '@blocksuite/affine-shared/services';
+import {
+  FeatureFlagService,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import {
   createDefaultDoc,
   openFileOrFiles,
@@ -574,7 +577,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:database') &&
         !insideEdgelessText(model) &&
-        !!model.doc.awarenessStore.getFlag('enable_block_query'),
+        !!model.doc.get(FeatureFlagService).getFlag('enable_block_query'),
 
       action: ({ model, rootComponent }) => {
         const parent = rootComponent.doc.getParent(model);

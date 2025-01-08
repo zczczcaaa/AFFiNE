@@ -26,6 +26,7 @@ import {
 } from '@blocksuite/affine-model';
 import {
   EditPropsStore,
+  FeatureFlagService,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import { captureEventTarget } from '@blocksuite/affine-shared/utils';
@@ -249,9 +250,9 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
     const { xywh, position } = target;
     const bound = Bound.fromXYWH(xywh);
 
-    const textFlag = this.edgeless.doc.awarenessStore.getFlag(
-      'enable_edgeless_text'
-    );
+    const textFlag = this.edgeless.doc
+      .get(FeatureFlagService)
+      .getFlag('enable_edgeless_text');
     if (textFlag) {
       const { textId } = this.edgeless.std.command.exec('insertEdgelessText', {
         x: bound.x,

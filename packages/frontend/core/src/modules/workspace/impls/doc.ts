@@ -1,3 +1,4 @@
+import { SpecProvider } from '@blocksuite/affine/blocks';
 import { type Disposable, Slot } from '@blocksuite/affine/global/utils';
 import {
   type AwarenessStore,
@@ -283,13 +284,18 @@ export class DocImpl implements Doc {
       return this._docMap[readonlyKey].get(key) as Store;
     }
 
+    const storeExtensions = SpecProvider.getInstance().getSpec('store');
+    const extensionSet = new Set(
+      storeExtensions.value.concat(extensions ?? [])
+    );
+
     const doc = new Store({
       doc: this,
       schema: this.workspace.schema,
       readonly,
       query,
       provider,
-      extensions,
+      extensions: Array.from(extensionSet),
     });
 
     this._docMap[readonlyKey].set(key, doc);

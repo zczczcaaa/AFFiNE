@@ -1,10 +1,12 @@
-import { AffineSchemas } from '@blocksuite/blocks';
+import { AffineSchemas, SpecProvider } from '@blocksuite/blocks';
 import { Schema } from '@blocksuite/store';
 import { TestWorkspace } from '@blocksuite/store/test';
 
 export function createEmptyDoc() {
   const schema = new Schema().register(AffineSchemas);
   const collection = new TestWorkspace({ schema });
+  collection.storeExtensions =
+    SpecProvider.getInstance().getSpec('store').value;
   collection.meta.initialize();
   const doc = collection.createDoc();
 

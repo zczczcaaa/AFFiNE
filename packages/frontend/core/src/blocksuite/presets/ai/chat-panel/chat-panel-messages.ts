@@ -3,6 +3,7 @@ import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import {
   type AIError,
   DocModeProvider,
+  FeatureFlagService,
   isInsidePageEditor,
   PaymentRequiredError,
   UnauthorizedError,
@@ -141,7 +142,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
 
   private _renderAIOnboarding() {
     return this.isLoading ||
-      !this.host?.doc.awarenessStore.getFlag('enable_ai_onboarding')
+      !this.host?.doc.get(FeatureFlagService).getFlag('enable_ai_onboarding')
       ? nothing
       : html`<div
           style=${styleMap({
