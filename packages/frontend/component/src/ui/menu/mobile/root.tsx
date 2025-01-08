@@ -20,6 +20,7 @@ import { MobileMenuSubRaw } from './sub';
 export const MobileMenu = ({
   children,
   items,
+  title,
   contentOptions: {
     className,
     onPointerDownOutside,
@@ -108,7 +109,7 @@ export const MobileMenu = ({
    */
   if (pSetOpen) {
     return (
-      <MobileMenuSubRaw items={items} subOptions={rootOptions}>
+      <MobileMenuSubRaw title={title} items={items} subOptions={rootOptions}>
         {children}
       </MobileMenuSubRaw>
     );

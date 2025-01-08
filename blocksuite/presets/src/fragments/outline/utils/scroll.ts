@@ -53,33 +53,28 @@ export const observeActiveHeadingDuringScroll = (
   getEditor: () => AffineEditorContainer, // workaround for editor changed
   update: (activeHeading: string | null) => void
 ) => {
-  const editor = getEditor();
-  update(editor.doc.root?.id ?? null);
+  const handler = () => {
+    const { host } = getEditor();
+    if (!host) return;
+
+    const headings = getHeadingBlocksFromDoc(
+      host.doc,
+      [NoteDisplayMode.DocAndEdgeless, NoteDisplayMode.DocOnly],
+      true
+    );
+
+    let activeHeadingId = host.doc.root?.id ?? null;
+    headings.forEach(heading => {
+      if (isBlockBeforeViewportCenter(heading.id, host)) {
+        activeHeadingId = heading.id;
+      }
+    });
+    update(activeHeadingId);
+  };
+  handler();
 
   const disposables = new DisposableGroup();
-  disposables.addFromEvent(
-    window,
-    'scroll',
-    () => {
-      const { host } = getEditor();
-      if (!host) return;
-
-      const headings = getHeadingBlocksFromDoc(
-        host.doc,
-        [NoteDisplayMode.DocAndEdgeless, NoteDisplayMode.DocOnly],
-        true
-      );
-
-      let activeHeadingId = host.doc.root?.id ?? null;
-      headings.forEach(heading => {
-        if (isBlockBeforeViewportCenter(heading.id, host)) {
-          activeHeadingId = heading.id;
-        }
-      });
-      update(activeHeadingId);
-    },
-    true
-  );
+  disposables.addFromEvent(window, 'scroll', handler, true);
 
   return disposables;
 };

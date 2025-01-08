@@ -11,6 +11,7 @@ import type { ReactNode } from 'react';
 export interface MenuProps {
   children: ReactNode;
   items: ReactNode;
+  title?: string;
   portalOptions?: Omit<DropdownMenuPortalProps, 'children'>;
   rootOptions?: Omit<DropdownMenuProps, 'children'>;
   contentOptions?: Omit<DropdownMenuContentProps, 'children'>;

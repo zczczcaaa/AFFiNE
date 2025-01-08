@@ -34,11 +34,13 @@ import {
 } from './fragments/frame-panel/header/frames-setting-menu.js';
 import {
   AFFINE_FRAME_PANEL,
+  AFFINE_MOBILE_OUTLINE_MENU,
   AFFINE_OUTLINE_PANEL,
   AFFINE_OUTLINE_VIEWER,
   CommentPanel,
   DocTitle,
   FramePanel,
+  MobileOutlineMenu,
   OutlinePanel,
   OutlineViewer,
 } from './fragments/index.js';
@@ -87,6 +89,7 @@ export function effects() {
   customElements.define('edgeless-editor', EdgelessEditor);
   customElements.define(AFFINE_FRAME_CARD, FrameCard);
   customElements.define(AFFINE_OUTLINE_VIEWER, OutlineViewer);
+  customElements.define(AFFINE_MOBILE_OUTLINE_MENU, MobileOutlineMenu);
   customElements.define(AFFINE_FRAME_CARD_TITLE, FrameCardTitle);
   customElements.define(AFFINE_OUTLINE_BLOCK_PREVIEW, OutlineBlockPreview);
   customElements.define(AFFINE_FRAME_PANEL_BODY, FramePanelBody);

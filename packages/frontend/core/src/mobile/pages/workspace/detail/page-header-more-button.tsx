@@ -7,8 +7,8 @@ import {
 } from '@affine/component/ui/menu';
 import { useFavorite } from '@affine/core/components/blocksuite/block-suite-header/favorite';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
-import { EditorOutlinePanel } from '@affine/core/desktop/pages/workspace/detail-page/tabs/outline';
 import { DocInfoSheet } from '@affine/core/mobile/components';
+import { MobileTocMenu } from '@affine/core/mobile/components/toc-menu';
 import { DocService } from '@affine/core/modules/doc';
 import { EditorService } from '@affine/core/modules/editor';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
@@ -120,9 +120,10 @@ export const PageHeaderMenuButton = () => {
         <span>{t['com.affine.page-properties.page-info.view']()}</span>
       </MenuSub>
       <MobileMenu
+        title={t['com.affine.header.menu.toc']()}
         items={
           <div className={styles.outlinePanel}>
-            <EditorOutlinePanel editor={editorContainer} />
+            <MobileTocMenu editor={editorContainer} />
           </div>
         }
       >

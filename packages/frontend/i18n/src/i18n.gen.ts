@@ -2080,6 +2080,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.header.option.view-toc"](): string;
     /**
+      * `Table of contents`
+      */
+    ["com.affine.header.menu.toc"](): string;
+    /**
       * `Contact us`
       */
     ["com.affine.helpIsland.contactUs"](): string;
