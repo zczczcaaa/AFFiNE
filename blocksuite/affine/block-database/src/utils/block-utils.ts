@@ -168,20 +168,30 @@ export function updateCell(
   rowId: string,
   cell: Cell
 ) {
-  if (
-    rowId === '__proto__' ||
-    rowId === 'constructor' ||
-    rowId === 'prototype'
-  ) {
-    throw new Error('Invalid rowId');
-  }
-  const hasRow = rowId in model.cells;
-  if (!hasRow) {
-    model.cells[rowId] = Object.create(null);
-  }
   model.doc.transact(() => {
-    model.cells[rowId][cell.columnId] = {
-      columnId: cell.columnId,
+    const columnId = cell.columnId;
+    if (
+      rowId === '__proto__' ||
+      rowId === 'constructor' ||
+      rowId === 'prototype'
+    ) {
+      console.error('Invalid rowId');
+      return;
+    }
+    if (
+      columnId === '__proto__' ||
+      columnId === 'constructor' ||
+      columnId === 'prototype'
+    ) {
+      console.error('Invalid columnId');
+      return;
+    }
+    const hasRow = rowId in model.cells;
+    if (!hasRow) {
+      model.cells[rowId] = Object.create(null);
+    }
+    model.cells[rowId][columnId] = {
+      columnId: columnId,
       value: cell.value,
     };
   });
