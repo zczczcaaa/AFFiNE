@@ -1,7 +1,7 @@
 import { throttle } from '@blocksuite/global/utils';
-import type { BlockModel } from '@blocksuite/store';
+import type { BaseSelection, BlockModel } from '@blocksuite/store';
 
-import { type BaseSelection, TextSelection } from '../selection/index.js';
+import { TextSelection } from '../selection/index.js';
 import type { BlockComponent } from '../view/element/block-component.js';
 import { BLOCK_ID_ATTR } from '../view/index.js';
 import { RANGE_SYNC_EXCLUDE_ATTR } from './consts.js';
@@ -247,6 +247,9 @@ export class RangeBinding {
   };
 
   private readonly _onStdSelectionChanged = (selections: BaseSelection[]) => {
+    const closestHost = document.activeElement?.closest('editor-host');
+    if (closestHost && closestHost !== this.host) return;
+
     const text =
       selections.find((selection): selection is TextSelection =>
         selection.is(TextSelection)

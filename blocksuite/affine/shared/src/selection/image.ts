@@ -1,4 +1,4 @@
-import { BaseSelection, SelectionExtension } from '@blocksuite/block-std';
+import { BaseSelection, SelectionExtension } from '@blocksuite/store';
 import z from 'zod';
 
 const ImageSelectionSchema = z.object({

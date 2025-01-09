@@ -1,28 +1,27 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import { DisposableGroup, Slot } from '@blocksuite/global/utils';
-import { nanoid, type StackItem } from '@blocksuite/store';
+import { Slot } from '@blocksuite/global/utils';
 import { computed, signal } from '@preact/signals-core';
 
-import { LifeCycleWatcher } from '../extension/index.js';
-import { SelectionIdentifier } from '../identifier.js';
-import type { BlockStdScope } from '../scope/index.js';
-import type { BaseSelection } from './base.js';
+import type { Store } from '../../model';
+import { nanoid } from '../../utils/id-generator';
+import type { StackItem } from '../../yjs';
+import { StoreExtension } from '../store-extension';
+import type { BaseSelection } from './base';
+import { SelectionIdentifier } from './identifier';
+import type { SelectionConstructor } from './types';
 
-export interface SelectionConstructor<T extends BaseSelection = BaseSelection> {
-  type: string;
-  group: string;
+export class StoreSelectionExtension extends StoreExtension {
+  static override readonly key = 'selection';
 
-  new (...args: any[]): T;
-  fromJSON(json: Record<string, unknown>): T;
-}
-
-export class SelectionManager extends LifeCycleWatcher {
-  static override readonly key = 'selectionManager';
-
-  private readonly _id: string;
+  private readonly _id = `${this.store.id}:${nanoid()}`;
+  private _selectionConstructors: Record<string, SelectionConstructor> = {};
+  private readonly _selections = signal<BaseSelection[]>([]);
+  private readonly _remoteSelections = signal<Map<number, BaseSelection[]>>(
+    new Map()
+  );
 
   private readonly _itemAdded = (event: { stackItem: StackItem }) => {
-    event.stackItem.meta.set('selection-state', this.value);
+    event.stackItem.meta.set('selection-state', this._selections.value);
   };
 
   private readonly _itemPopped = (event: { stackItem: StackItem }) => {
@@ -43,50 +42,30 @@ export class SelectionManager extends LifeCycleWatcher {
     return ctor.fromJSON(json);
   };
 
-  private readonly _remoteSelections = signal<Map<number, BaseSelection[]>>(
-    new Map()
-  );
-
-  private _selectionConstructors: Record<string, SelectionConstructor> = {};
-
-  private readonly _selections = signal<BaseSelection[]>([]);
-
-  disposables = new DisposableGroup();
-
   slots = {
     changed: new Slot<BaseSelection[]>(),
     remoteChanged: new Slot<Map<number, BaseSelection[]>>(),
   };
 
-  private get _store() {
-    return this.std.workspace.awarenessStore;
-  }
+  constructor(store: Store) {
+    super(store);
 
-  get id() {
-    return this._id;
-  }
+    this.store.provider.getAll(SelectionIdentifier).forEach(ctor => {
+      [ctor].flat().forEach(ctor => {
+        this._selectionConstructors[ctor.type] = ctor;
+      });
+    });
 
-  get remoteSelections() {
-    return this._remoteSelections.value;
-  }
-
-  get value() {
-    return this._selections.value;
-  }
-
-  constructor(std: BlockStdScope) {
-    super(std);
-    this._id = `${this.std.store.id}:${nanoid()}`;
-    this._setupDefaultSelections();
-    this._store.awareness.on(
+    this.store.awarenessStore.awareness.on(
       'change',
       (change: { updated: number[]; added: number[]; removed: number[] }) => {
         const all = change.updated.concat(change.added).concat(change.removed);
-        const localClientID = this._store.awareness.clientID;
+        const localClientID = this.store.awarenessStore.awareness.clientID;
         const exceptLocal = all.filter(id => id !== localClientID);
         const hasLocal = all.includes(localClientID);
         if (hasLocal) {
-          const localSelectionJson = this._store.getLocalSelection(this.id);
+          const localSelectionJson =
+            this.store.awarenessStore.getLocalSelection(this._id);
           const localSelection = localSelectionJson.map(json => {
             return this._jsonToSelection(json);
           });
@@ -96,11 +75,11 @@ export class SelectionManager extends LifeCycleWatcher {
         // Only consider remote selections from other clients
         if (exceptLocal.length > 0) {
           const map = new Map<number, BaseSelection[]>();
-          this._store.getStates().forEach((state, id) => {
-            if (id === this._store.awareness.clientID) return;
+          this.store.awarenessStore.getStates().forEach((state, id) => {
+            if (id === this.store.awarenessStore.awareness.clientID) return;
             // selection id starts with the same block collection id from others clients would be considered as remote selections
             const selection = Object.entries(state.selectionV2)
-              .filter(([key]) => key.startsWith(this.std.store.id))
+              .filter(([key]) => key.startsWith(this.store.id))
               .flatMap(([_, selection]) => selection);
 
             const selections = selection
@@ -122,15 +101,21 @@ export class SelectionManager extends LifeCycleWatcher {
             map.set(id, selections);
           });
           this._remoteSelections.value = map;
+          this.slots.remoteChanged.emit(map);
         }
       }
     );
+
+    this.store.history.on('stack-item-added', this._itemAdded);
+    this.store.history.on('stack-item-popped', this._itemPopped);
   }
 
-  private _setupDefaultSelections() {
-    this.std.provider.getAll(SelectionIdentifier).forEach(ctor => {
-      this.register(ctor);
-    });
+  get value() {
+    return this._selections.value;
+  }
+
+  get remoteSelections() {
+    return this._remoteSelections.value;
   }
 
   clear(types?: string[]) {
@@ -151,9 +136,8 @@ export class SelectionManager extends LifeCycleWatcher {
     return new Type(...args) as InstanceType<T>;
   }
 
-  dispose() {
-    Object.values(this.slots).forEach(slot => slot.dispose());
-    this.disposables.dispose();
+  getGroup(group: string) {
+    return this.value.filter(s => s.group === group);
   }
 
   filter<T extends SelectionConstructor>(type: T) {
@@ -176,43 +160,9 @@ export class SelectionManager extends LifeCycleWatcher {
     );
   }
 
-  fromJSON(json: Record<string, unknown>[]) {
-    const selections = json.map(json => {
-      return this._jsonToSelection(json);
-    });
-    return this.set(selections);
-  }
-
-  getGroup(group: string) {
-    return this.value.filter(s => s.group === group);
-  }
-
-  override mounted() {
-    if (this.disposables.disposed) {
-      this.disposables = new DisposableGroup();
-    }
-    this.std.store.history.on('stack-item-added', this._itemAdded);
-    this.std.store.history.on('stack-item-popped', this._itemPopped);
-    this.disposables.add(
-      this._store.slots.update.on(({ id }) => {
-        if (id === this._store.awareness.clientID) {
-          return;
-        }
-        this.slots.remoteChanged.emit(this.remoteSelections);
-      })
-    );
-  }
-
-  register(ctor: SelectionConstructor | SelectionConstructor[]) {
-    [ctor].flat().forEach(ctor => {
-      this._selectionConstructors[ctor.type] = ctor;
-    });
-    return this;
-  }
-
   set(selections: BaseSelection[]) {
-    this._store.setLocalSelection(
-      this.id,
+    this.store.awarenessStore.setLocalSelection(
+      this._id,
       selections.map(s => s.toJSON())
     );
     this.slots.changed.emit(selections);
@@ -223,16 +173,15 @@ export class SelectionManager extends LifeCycleWatcher {
     this.set([...current, ...selections]);
   }
 
-  override unmounted() {
-    this.std.store.history.off('stack-item-added', this._itemAdded);
-    this.std.store.history.off('stack-item-popped', this._itemPopped);
-    this.slots.changed.dispose();
-    this.disposables.dispose();
-    this.clear();
-  }
-
   update(fn: (currentSelections: BaseSelection[]) => BaseSelection[]) {
     const selections = fn(this.value);
     this.set(selections);
+  }
+
+  fromJSON(json: Record<string, unknown>[]) {
+    const selections = json.map(json => {
+      return this._jsonToSelection(json);
+    });
+    return this.set(selections);
   }
 }

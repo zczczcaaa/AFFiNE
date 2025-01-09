@@ -5,6 +5,7 @@ import {
   Job,
   type JobMiddleware,
   type Store,
+  StoreSelectionExtension,
 } from '@blocksuite/store';
 
 import { Clipboard } from '../clipboard/index.js';
@@ -23,13 +24,6 @@ import {
   StdIdentifier,
 } from '../identifier.js';
 import { RangeManager } from '../range/index.js';
-import {
-  BlockSelectionExtension,
-  CursorSelectionExtension,
-  SelectionManager,
-  SurfaceSelectionExtension,
-  TextSelectionExtension,
-} from '../selection/index.js';
 import { ServiceManager } from '../service/index.js';
 import { EditorHost } from '../view/element/index.js';
 import { ViewStore } from '../view/view-store.js';
@@ -43,15 +37,10 @@ const internalExtensions = [
   ServiceManager,
   CommandManager,
   UIEventDispatcher,
-  SelectionManager,
   RangeManager,
   ViewStore,
   Clipboard,
   GfxController,
-  BlockSelectionExtension,
-  TextSelectionExtension,
-  SurfaceSelectionExtension,
-  CursorSelectionExtension,
   GfxSelectionManager,
   SurfaceMiddlewareExtension,
   ViewManager,
@@ -107,7 +96,7 @@ export class BlockStdScope {
   }
 
   get selection() {
-    return this.get(SelectionManager);
+    return this.get(StoreSelectionExtension);
   }
 
   get view() {

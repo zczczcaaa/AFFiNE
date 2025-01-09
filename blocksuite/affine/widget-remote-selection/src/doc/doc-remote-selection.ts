@@ -1,12 +1,11 @@
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
-  type BaseSelection,
   BlockSelection,
   TextSelection,
   WidgetComponent,
 } from '@blocksuite/block-std';
 import { throttle } from '@blocksuite/global/utils';
-import type { UserInfo } from '@blocksuite/store';
+import type { BaseSelection, UserInfo } from '@blocksuite/store';
 import { computed, effect } from '@preact/signals-core';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { state } from 'lit/decorators.js';

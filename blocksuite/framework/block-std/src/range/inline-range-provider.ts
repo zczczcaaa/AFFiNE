@@ -84,18 +84,21 @@ export const getInlineRangeProvider: (
     }
   };
   const inlineRange$: InlineRangeProvider['inlineRange$'] = signal(null);
-  selectionManager.slots.changed.on(selections => {
-    const textSelection = selections.find(s => s.type === 'text') as
-      | TextSelection
-      | undefined;
-    const range = rangeManager.value;
-    if (!range || !textSelection) {
-      inlineRange$.value = null;
-      return;
-    }
-    const inlineRange = calculateInlineRange(range, textSelection);
-    inlineRange$.value = inlineRange;
-  });
+
+  editorHost.disposables.add(
+    selectionManager.slots.changed.on(selections => {
+      const textSelection = selections.find(s => s.type === 'text') as
+        | TextSelection
+        | undefined;
+      const range = rangeManager.value;
+      if (!range || !textSelection) {
+        inlineRange$.value = null;
+        return;
+      }
+      const inlineRange = calculateInlineRange(range, textSelection);
+      inlineRange$.value = inlineRange;
+    })
+  );
 
   return {
     setInlineRange,

@@ -26,7 +26,6 @@ import {
   SpecProvider,
 } from '@blocksuite/affine-shared/utils';
 import {
-  type BaseSelection,
   BlockComponent,
   BlockSelection,
   BlockServiceWatcher,
@@ -47,7 +46,7 @@ import {
   DisposableGroup,
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
-import { type Store } from '@blocksuite/store';
+import type { BaseSelection, Store } from '@blocksuite/store';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';

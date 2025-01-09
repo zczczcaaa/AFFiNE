@@ -1,4 +1,4 @@
-import type { BaseSelection, EditorHost } from '@blocksuite/affine/block-std';
+import type { EditorHost } from '@blocksuite/affine/block-std';
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import {
   type AIError,
@@ -9,6 +9,7 @@ import {
   UnauthorizedError,
 } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
+import type { BaseSelection } from '@blocksuite/affine/store';
 import { css, html, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';

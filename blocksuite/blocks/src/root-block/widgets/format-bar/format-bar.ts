@@ -9,7 +9,6 @@ import {
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
-  type BaseSelection,
   type BlockComponent,
   BlockSelection,
   CursorSelection,
@@ -22,6 +21,7 @@ import {
   DisposableGroup,
   nextTick,
 } from '@blocksuite/global/utils';
+import type { BaseSelection } from '@blocksuite/store';
 import {
   autoUpdate,
   computePosition,

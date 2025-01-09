@@ -9,8 +9,8 @@ effects();
 import {
   CommunityCanvasTextFonts,
   type DocMode,
-  FeatureFlagService,
   FontConfigExtension,
+  StoreExtensions,
 } from '@blocksuite/blocks';
 import { AffineSchemas } from '@blocksuite/blocks/schemas';
 import { assertExists } from '@blocksuite/global/utils';
@@ -85,7 +85,7 @@ async function createEditor(collection: TestWorkspace, mode: DocMode = 'page') {
 
 export async function setupEditor(mode: DocMode = 'page') {
   const collection = new TestWorkspace(createCollectionOptions());
-  collection.storeExtensions = [FeatureFlagService];
+  collection.storeExtensions = StoreExtensions;
   collection.meta.initialize();
 
   window.collection = collection;

@@ -3,7 +3,6 @@ import {
   CommandExtension,
   FlavourExtension,
 } from '@blocksuite/block-std';
-import { DatabaseSelectionExtension } from '@blocksuite/data-view';
 import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
@@ -16,6 +15,5 @@ export const DatabaseBlockSpec: ExtensionType[] = [
   DatabaseBlockService,
   CommandExtension(commands),
   BlockViewExtension('affine:database', literal`affine-database`),
-  DatabaseSelectionExtension,
   DatabaseBlockAdapterExtensions,
 ].flat();

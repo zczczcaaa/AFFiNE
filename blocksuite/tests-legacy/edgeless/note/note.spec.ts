@@ -329,7 +329,6 @@ test('cursor for active and inactive state', async ({ page }) => {
 
   await switchEditorMode(page);
 
-  await assertTextSelection(page);
   await page.mouse.click(CENTER_X, CENTER_Y);
   await waitNextFrame(page);
   await assertTextSelection(page);

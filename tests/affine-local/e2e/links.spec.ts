@@ -62,6 +62,7 @@ test('not allowed to switch to embed view when linking to the same document', as
   await expect(peekViewModel.locator('page-editor')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(peekViewModel).not.toBeVisible();
+  await page.click('body');
 
   await cardLink.click();
   await cardToolbar.getByLabel('Switch view').click();
@@ -103,6 +104,7 @@ test('not allowed to switch to embed view when linking to block', async ({
   await page.keyboard.press('Escape');
   await expect(peekViewModel).not.toBeVisible();
 
+  await page.click('body');
   await cardLink.click();
 
   await cardToolbar.getByLabel('More').click();
@@ -131,6 +133,7 @@ test('not allowed to switch to embed view when linking to block', async ({
   await page.keyboard.press('Escape');
   await expect(peekViewModel).not.toBeVisible();
 
+  await page.click('body');
   await otherCardLink.click();
   await cardToolbar.getByLabel('Switch view').click();
 

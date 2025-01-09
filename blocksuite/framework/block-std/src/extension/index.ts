@@ -4,7 +4,6 @@ export * from './config.js';
 export * from './flavour.js';
 export * from './keymap.js';
 export * from './lifecycle-watcher.js';
-export * from './selection.js';
 export * from './service.js';
 export * from './service-watcher.js';
 export * from './widget-view-map.js';

@@ -4,6 +4,7 @@ import { type Disposable, Slot } from '@blocksuite/global/utils';
 import { signal } from '@preact/signals-core';
 
 import type { ExtensionType } from '../../extension/extension.js';
+import { StoreSelectionExtension } from '../../extension/index.js';
 import type { Schema } from '../../schema/index.js';
 import {
   Block,
@@ -27,29 +28,33 @@ export type StoreOptions = {
   extensions?: ExtensionType[];
 };
 
+const internalExtensions = [StoreSelectionExtension];
+
 export class Store {
+  readonly userExtensions: ExtensionType[];
+
   private readonly _provider: ServiceProvider;
 
   private readonly _runQuery = (block: Block) => {
     runQuery(this._query, block);
   };
 
-  protected readonly _doc: Doc;
+  private readonly _doc: Doc;
 
-  protected readonly _blocks = signal<Record<string, Block>>({});
+  private readonly _blocks = signal<Record<string, Block>>({});
 
-  protected readonly _crud: DocCRUD;
+  private readonly _crud: DocCRUD;
 
-  protected readonly _disposeBlockUpdated: Disposable;
+  private readonly _disposeBlockUpdated: Disposable;
 
-  protected readonly _query: Query = {
+  private readonly _query: Query = {
     match: [],
     mode: 'loose',
   };
 
-  protected _readonly = signal(false);
+  private readonly _readonly = signal(false);
 
-  protected readonly _schema: Schema;
+  private readonly _schema: Schema;
 
   readonly slots: Doc['slots'] & {
     /** This is always triggered after `doc.load` is called. */
@@ -295,7 +300,12 @@ export class Store {
     const container = new Container();
     container.addImpl(StoreIdentifier, () => this);
 
+    internalExtensions.forEach(ext => {
+      ext.setup(container);
+    });
+
     const userExtensions = extensions ?? [];
+    this.userExtensions = userExtensions;
     userExtensions.forEach(extension => {
       extension.setup(container);
     });

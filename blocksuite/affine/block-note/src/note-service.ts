@@ -2,7 +2,6 @@ import { textConversionConfigs } from '@blocksuite/affine-components/rich-text';
 import { NoteBlockSchema } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
-  type BaseSelection,
   type BlockComponent,
   BlockSelection,
   BlockService,
@@ -11,7 +10,7 @@ import {
   type UIEventHandler,
   type UIEventStateContext,
 } from '@blocksuite/block-std';
-import type { BlockModel } from '@blocksuite/store';
+import type { BaseSelection, BlockModel } from '@blocksuite/store';
 
 import { moveBlockConfigs } from './move-block';
 import { quickActionConfig } from './quick-action';

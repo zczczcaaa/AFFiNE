@@ -1,6 +1,6 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 
-import type { SelectionConstructor } from './manager';
+import type { SelectionConstructor } from './types';
 
 export type BaseSelectionOptions = {
   blockId: string;

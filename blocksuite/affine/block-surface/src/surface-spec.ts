@@ -1,4 +1,3 @@
-import { HighlightSelectionExtension } from '@blocksuite/affine-shared/selection';
 import {
   BlockViewExtension,
   CommandExtension,
@@ -23,7 +22,6 @@ const CommonSurfaceBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:surface'),
   SurfaceBlockService,
   CommandExtension(commands),
-  HighlightSelectionExtension,
   MindMapView,
   EdgelessCRUDExtension,
   EdgelessLegacySlotExtension,

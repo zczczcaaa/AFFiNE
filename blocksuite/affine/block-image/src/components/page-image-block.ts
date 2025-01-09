@@ -1,11 +1,12 @@
 import { ImageSelection } from '@blocksuite/affine-shared/selection';
-import type { BaseSelection, UIEventStateContext } from '@blocksuite/block-std';
+import type { UIEventStateContext } from '@blocksuite/block-std';
 import {
   BlockSelection,
   ShadowlessElement,
   TextSelection,
 } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
+import type { BaseSelection } from '@blocksuite/store';
 import { css, html, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';

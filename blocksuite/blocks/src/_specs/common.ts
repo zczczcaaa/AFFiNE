@@ -28,12 +28,23 @@ import {
   RichTextExtensions,
 } from '@blocksuite/affine-components/rich-text';
 import {
+  HighlightSelectionExtension,
+  ImageSelectionExtension,
+} from '@blocksuite/affine-shared/selection';
+import {
   DefaultOpenDocExtension,
   DocDisplayMetaService,
   EditPropsStore,
   FeatureFlagService,
   FontLoaderService,
 } from '@blocksuite/affine-shared/services';
+import {
+  BlockSelectionExtension,
+  CursorSelectionExtension,
+  SurfaceSelectionExtension,
+  TextSelectionExtension,
+} from '@blocksuite/block-std';
+import { DatabaseSelectionExtension } from '@blocksuite/data-view';
 import type { ExtensionType } from '@blocksuite/store';
 
 import { AdapterFactoryExtensions } from '../_common/adapters/extension.js';
@@ -77,4 +88,13 @@ export const EdgelessFirstPartyBlockSpecs: ExtensionType[] = [
   FontLoaderService,
 ].flat();
 
-export const StoreExtensions: ExtensionType[] = [FeatureFlagService];
+export const StoreExtensions: ExtensionType[] = [
+  FeatureFlagService,
+  BlockSelectionExtension,
+  TextSelectionExtension,
+  SurfaceSelectionExtension,
+  CursorSelectionExtension,
+  HighlightSelectionExtension,
+  ImageSelectionExtension,
+  DatabaseSelectionExtension,
+];

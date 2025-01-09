@@ -7,9 +7,9 @@ import {
   getPageRootByElement,
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
-import type { BaseSelection } from '@blocksuite/block-std';
 import { WidgetComponent } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
+import type { BaseSelection } from '@blocksuite/store';
 import {
   autoPlacement,
   autoUpdate,

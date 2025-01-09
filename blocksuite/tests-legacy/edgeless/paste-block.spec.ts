@@ -43,6 +43,7 @@ test.describe('pasting blocks', () => {
     await focusRichText(page);
     await initContent(page);
     await switchEditorMode(page);
+    await click(page, { x: 0, y: 0 });
     const box = await getNoteBoundBoxInEdgeless(page, noteId);
     await click(page, {
       x: box.x + 10,
