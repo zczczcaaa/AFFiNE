@@ -256,7 +256,26 @@ export class Job {
 
       const blockTree = await this._convertFlatSnapshots(flatSnapshots);
 
-      await this._insertBlockTree(blockTree.children, doc, parent, index);
+      const first = content[0];
+      // check if the slice is already in the doc
+      if (first && doc.hasBlock(first.id)) {
+        // if the slice is already in the doc, we need to move the blocks instead of adding them
+        const models = flatSnapshots
+          .map(flat => doc.getBlock(flat.snapshot.id)?.model)
+          .filter(Boolean) as BlockModel[];
+        const parentModel = parent ? doc.getBlock(parent)?.model : undefined;
+        if (!parentModel) {
+          throw new BlockSuiteError(
+            ErrorCode.TransformerError,
+            'Parent block not found in doc when moving slice'
+          );
+        }
+        const targetSibling =
+          index !== undefined ? parentModel.children[index] : null;
+        doc.moveBlocks(models, parentModel, targetSibling);
+      } else {
+        await this._insertBlockTree(blockTree.children, doc, parent, index);
+      }
 
       const contentBlocks = blockTree.children
         .map(tree => doc.getBlockById(tree.draft.id))

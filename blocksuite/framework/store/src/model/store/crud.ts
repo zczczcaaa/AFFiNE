@@ -58,73 +58,48 @@ export class DocCRUD {
       );
     }
 
+    const hasBlock = this._yBlocks.has(id);
+    if (hasBlock) {
+      throw new BlockSuiteError(
+        ErrorCode.ModelCRUDError,
+        `Should not add existing block: ${id}`
+      );
+    }
+
     const parentFlavour = parent
       ? this._yBlocks.get(parent)?.get('sys:flavour')
       : undefined;
 
     this._schema.validate(flavour, parentFlavour as string);
 
-    const hasBlock = this._yBlocks.has(id);
+    const yBlock = new Y.Map() as YBlock;
+    this._yBlocks.set(id, yBlock);
 
-    if (hasBlock) {
-      const yBlock = this._yBlocks.get(id);
-      const existedParent = this.getParent(id);
-      if (yBlock && existedParent) {
-        const yParent = this._yBlocks.get(existedParent) as YBlock;
-        const yParentChildren = yParent.get('sys:children') as Y.Array<string>;
-        const index = yParentChildren.toArray().indexOf(id);
-        yParentChildren.delete(index, 1);
-        if (
-          parentIndex != null &&
-          index != null &&
-          existedParent === parent &&
-          index < parentIndex
-        ) {
-          parentIndex--;
-        }
-        const props = {
-          ...initialProps,
-        };
-        delete props.id;
-        delete props.flavour;
-        delete props.children;
+    const version = schema.version;
+    const children = (
+      initialProps.children as undefined | (string | BlockModel)[]
+    )?.map(child => (typeof child === 'string' ? child : child.id));
 
-        Object.entries(props).forEach(([key, value]) => {
-          if (value === undefined) return;
+    yBlock.set('sys:id', id);
+    yBlock.set('sys:flavour', flavour);
+    yBlock.set('sys:version', version);
+    yBlock.set('sys:children', Y.Array.from(children ?? []));
 
-          yBlock.set(`prop:${key}`, native2Y(value));
-        });
-      }
-    } else {
-      const yBlock = new Y.Map() as YBlock;
-      this._yBlocks.set(id, yBlock);
+    const defaultProps = schema.model.props?.(internalPrimitives) ?? {};
+    const props = {
+      ...defaultProps,
+      ...initialProps,
+    };
 
-      const version = schema.version;
-      const children = (
-        initialProps.children as undefined | (string | BlockModel)[]
-      )?.map(child => (typeof child === 'string' ? child : child.id));
+    delete props.id;
+    delete props.flavour;
+    delete props.children;
 
-      yBlock.set('sys:id', id);
-      yBlock.set('sys:flavour', flavour);
-      yBlock.set('sys:version', version);
-      yBlock.set('sys:children', Y.Array.from(children ?? []));
+    Object.entries(props).forEach(([key, value]) => {
+      if (value === undefined) return;
 
-      const defaultProps = schema.model.props?.(internalPrimitives) ?? {};
-      const props = {
-        ...defaultProps,
-        ...initialProps,
-      };
-
-      delete props.id;
-      delete props.flavour;
-      delete props.children;
-
-      Object.entries(props).forEach(([key, value]) => {
-        if (value === undefined) return;
-
-        yBlock.set(`prop:${key}`, native2Y(value));
-      });
-    }
+      yBlock.set(`prop:${key}`, native2Y(value));
+    });
 
     const parentId =
       parent ?? (schema.model.role === 'root' ? null : this.root);
@@ -355,14 +330,12 @@ export class DocCRUD {
             return;
           }
 
-          const targetIndex = targetParentChildren
+          let targetIndex = targetParentChildren
             .toArray()
             .findIndex(id => id === targetSibling);
           if (targetIndex === -1) {
-            throw new BlockSuiteError(
-              ErrorCode.ModelCRUDError,
-              'Target sibling not found'
-            );
+            console.error('Target sibling not found, just insert to the end');
+            targetIndex = targetParentChildren.length;
           }
           insertIndex = shouldInsertBeforeSibling
             ? targetIndex
