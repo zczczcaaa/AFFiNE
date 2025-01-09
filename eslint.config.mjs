@@ -159,6 +159,10 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-function-type': 'error',
       '@typescript-eslint/no-wrapper-object-types': 'error',
       '@typescript-eslint/unified-signatures': 'error',
+      '@typescript-eslint/return-await': [
+        'error',
+        'error-handling-correctness-only',
+      ],
       '@typescript-eslint/no-restricted-imports': [
         'error',
         {
@@ -269,7 +273,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ['packages/frontend/apps/electron/scripts/**/*'],
+    files: [
+      'packages/frontend/apps/electron/scripts/**/*',
+      'blocksuite/tests-legacy/**/*.{ts,tsx}',
+      'blocksuite/**/__tests__/**/*.{ts,tsx}',
+    ],
     rules: {
       'import-x/no-extraneous-dependencies': 'off',
     },
@@ -278,15 +286,6 @@ export default tseslint.config(
     files: ['blocksuite/**/*.{ts,tsx}'],
     rules: {
       'rxjs/finnish': 'off',
-    },
-  },
-  {
-    files: [
-      'blocksuite/tests-legacy/**/*.{ts,tsx}',
-      'blocksuite/**/__tests__/**/*.{ts,tsx}',
-    ],
-    rules: {
-      'import-x/no-extraneous-dependencies': 'off',
     },
   },
   eslintConfigPrettier

@@ -183,7 +183,7 @@ export class AuthService extends Service {
       this.session.revalidate();
 
       track.$.$.auth.signedIn({ method: 'oauth', provider });
-      return res.json();
+      return await res.json();
     } catch (e) {
       track.$.$.auth.signInFail({
         method: 'oauth',

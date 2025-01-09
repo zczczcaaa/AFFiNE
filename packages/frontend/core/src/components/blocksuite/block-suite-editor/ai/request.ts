@@ -91,7 +91,7 @@ async function resizeImage(blob: Blob | File): Promise<Blob | null> {
     if (ctx) {
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      return new Promise(resolve =>
+      return await new Promise(resolve =>
         canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.8)
       );
     }

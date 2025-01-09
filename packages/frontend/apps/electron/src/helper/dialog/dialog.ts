@@ -195,7 +195,7 @@ export async function loadDBFile(): Promise<LoadDBFileResult> {
     }
 
     const workspaceId = nanoid(10);
-    return loadV1DBFile(originalPath, workspaceId);
+    return await loadV1DBFile(originalPath, workspaceId);
 
     // TODO(forehalo): use `nbstore` when it is ready
     // let storage = new DocStorage(originalPath);
