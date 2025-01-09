@@ -808,6 +808,7 @@ __metadata:
     cookie-parser: "npm:^1.4.7"
     cross-env: "npm:^7.0.3"
     dotenv: "npm:^16.4.7"
+    eventsource-parser: "npm:^3.0.0"
     express: "npm:^4.21.2"
     fast-xml-parser: "npm:^4.5.0"
     get-stream: "npm:^9.0.1"
@@ -21162,6 +21163,13 @@ __metadata:
   version: 1.1.2
   resolution: "eventsource-parser@npm:1.1.2"
   checksum: 10/14e94997dff896fb7bc85b29e89d6a62e747650d905b006249bcf48ba13efcbf3ee2b67948f4fa2638836b5a77ea079e25e941c0e41a720323e7867b1ebdda14
+  languageName: node
+  linkType: hard
+
+"eventsource-parser@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "eventsource-parser@npm:3.0.0"
+  checksum: 10/8215adf5d8404105ecd0658030b0407e06987ceb9aadcea28a38d69bacf02e5d0fc8bba5fa7c3954552c89509c8ef5e1fa3895e000c061411c055b4bbc26f4b0
   languageName: node
   linkType: hard
 

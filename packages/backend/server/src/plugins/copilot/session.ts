@@ -10,6 +10,7 @@ import {
   CopilotQuotaExceeded,
   CopilotSessionDeleted,
   CopilotSessionNotFound,
+  PrismaTransaction,
 } from '../../base';
 import { FeatureManagementService } from '../../core/features';
 import { QuotaService } from '../../core/quota';
@@ -22,6 +23,7 @@ import {
   ChatMessageSchema,
   ChatSessionForkOptions,
   ChatSessionOptions,
+  ChatSessionPromptUpdateOptions,
   ChatSessionState,
   getTokenEncoder,
   ListHistoriesOptions,
@@ -198,6 +200,22 @@ export class ChatSessionService {
     private readonly prompt: PromptService
   ) {}
 
+  private async haveSession(
+    sessionId: string,
+    userId: string,
+    tx?: PrismaTransaction
+  ) {
+    const executor = tx ?? this.db;
+    return await executor.aiSession
+      .count({
+        where: {
+          id: sessionId,
+          userId,
+        },
+      })
+      .then(c => c > 0);
+  }
+
   private async setSession(state: ChatSessionState): Promise<string> {
     return await this.db.$transaction(async tx => {
       let sessionId = state.sessionId;
@@ -226,15 +244,7 @@ export class ChatSessionService {
         if (id) sessionId = id;
       }
 
-      const haveSession = await tx.aiSession
-        .count({
-          where: {
-            id: sessionId,
-            userId: state.userId,
-          },
-        })
-        .then(c => c > 0);
-
+      const haveSession = await this.haveSession(sessionId, state.userId, tx);
       if (haveSession) {
         // message will only exists when setSession call by session.save
         if (state.messages.length) {
@@ -567,6 +577,27 @@ export class ChatSessionService {
       messages: [],
       // when client create chat session, we always find root session
       parentSessionId: null,
+    });
+  }
+
+  async updateSessionPrompt(
+    options: ChatSessionPromptUpdateOptions
+  ): Promise<string> {
+    const prompt = await this.prompt.get(options.promptName);
+    if (!prompt) {
+      this.logger.error(`Prompt not found: ${options.promptName}`);
+      throw new CopilotPromptNotFound({ name: options.promptName });
+    }
+    return await this.db.$transaction(async tx => {
+      let sessionId = options.sessionId;
+      const haveSession = await this.haveSession(sessionId, options.userId, tx);
+      if (haveSession) {
+        await tx.aiSession.update({
+          where: { id: sessionId },
+          data: { promptName: prompt.name },
+        });
+      }
+      return sessionId;
     });
   }
 

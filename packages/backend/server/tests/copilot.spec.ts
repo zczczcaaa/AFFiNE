@@ -16,6 +16,7 @@ import {
   registerCopilotProvider,
   unregisterCopilotProvider,
 } from '../src/plugins/copilot/providers';
+import { CitationParser } from '../src/plugins/copilot/providers/perplexity';
 import { ChatSessionService } from '../src/plugins/copilot/session';
 import {
   CopilotCapability,
@@ -68,7 +69,10 @@ test.beforeEach(async t => {
               apiKey: process.env.COPILOT_OPENAI_API_KEY ?? '1',
             },
             fal: {
-              apiKey: '1',
+              apiKey: process.env.COPILOT_FAL_API_KEY ?? '1',
+            },
+            perplexity: {
+              apiKey: process.env.COPILOT_PERPLEXITY_API_KEY ?? '1',
             },
           },
         },
@@ -272,6 +276,41 @@ test('should be able to manage chat session', async t => {
     });
     t.is(newSessionId, sessionId, 'should get same session id');
   }
+});
+
+test('should be able to update chat session prompt', async t => {
+  const { prompt, session } = t.context;
+
+  // Set up a prompt to be used in the session
+  await prompt.set('prompt', 'model', [
+    { role: 'system', content: 'hello {{word}}' },
+  ]);
+
+  // Create a session
+  const sessionId = await session.create({
+    promptName: 'prompt',
+    docId: 'test',
+    workspaceId: 'test',
+    userId,
+  });
+  t.truthy(sessionId, 'should create session');
+
+  // Update the session
+  const updatedSessionId = await session.updateSessionPrompt({
+    sessionId,
+    promptName: 'Search With AFFiNE AI',
+    userId,
+  });
+  t.is(updatedSessionId, sessionId, 'should update session with same id');
+
+  // Verify the session was updated
+  const updatedSession = await session.get(sessionId);
+  t.truthy(updatedSession, 'should retrieve updated session');
+  t.is(
+    updatedSession?.config.promptName,
+    'Search With AFFiNE AI',
+    'should have updated prompt name'
+  );
 });
 
 test('should be able to fork chat session', async t => {
@@ -1049,4 +1088,89 @@ test('should be able to run image executor', async t => {
   Sinon.restore();
   unregisterCopilotProvider(MockCopilotTestProvider.type);
   registerCopilotProvider(OpenAIProvider);
+});
+
+test('CitationParser should replace citation placeholders with URLs', t => {
+  const content =
+    'This is [a] test sentence with [citations [1]] and [[2]] and [3].';
+  const citations = ['https://example1.com', 'https://example2.com'];
+
+  const parser = new CitationParser();
+  const result = parser.parse(content, citations);
+
+  const expected =
+    'This is [a] test sentence with [citations [[1](https://example1.com)]] and [[2](https://example2.com)] and [3].';
+  t.is(result, expected);
+});
+
+test('CitationParser should replace chunks of citation placeholders with URLs', t => {
+  const contents = [
+    '[[]]',
+    'This is [',
+    'a] test sentence ',
+    'with citations [1',
+    '] and [',
+    '[2]] and [[',
+    '3]] and [[4',
+    ']] and [[5]',
+    '] and [[6]]',
+    ' and [7',
+  ];
+  const citations = [
+    'https://example1.com',
+    'https://example2.com',
+    'https://example3.com',
+    'https://example4.com',
+    'https://example5.com',
+    'https://example6.com',
+    'https://example7.com',
+  ];
+
+  const parser = new CitationParser();
+  let result = contents.reduce((acc, current) => {
+    return acc + parser.parse(current, citations);
+  }, '');
+  result += parser.flush();
+
+  const expected =
+    '[[]]This is [a] test sentence with citations [[1](https://example1.com)] and [[2](https://example2.com)] and [[3](https://example3.com)] and [[4](https://example4.com)] and [[5](https://example5.com)] and [[6](https://example6.com)] and [7';
+  t.is(result, expected);
+});
+
+test('CitationParser should not replace citation already with URLs', t => {
+  const content =
+    'This is [a] test sentence with citations [1](https://example1.com) and [[2]](https://example2.com) and [[3](https://example3.com)].';
+  const citations = [
+    'https://example4.com',
+    'https://example5.com',
+    'https://example6.com',
+  ];
+
+  const parser = new CitationParser();
+  const result = parser.parse(content, citations);
+
+  const expected = content;
+  t.is(result, expected);
+});
+
+test('CitationParser should not replace chunks of citation already with URLs', t => {
+  const contents = [
+    'This is [a] test sentence with citations [1',
+    '](https://example1.com) and [[2]',
+    '](https://example2.com) and [[3](https://example3.com)].',
+  ];
+  const citations = [
+    'https://example4.com',
+    'https://example5.com',
+    'https://example6.com',
+  ];
+
+  const parser = new CitationParser();
+  let result = contents.reduce((acc, current) => {
+    return acc + parser.parse(current, citations);
+  }, '');
+  result += parser.flush();
+
+  const expected = contents.join('');
+  t.is(result, expected);
 });

@@ -22,6 +22,7 @@ import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 import {
   CallMetric,
   CopilotFailedToCreateMessage,
+  CopilotSessionNotFound,
   FileUpload,
   RequestMutex,
   Throttle,
@@ -55,6 +56,17 @@ class CreateChatSessionInput {
 
   @Field(() => String)
   docId!: string;
+
+  @Field(() => String, {
+    description: 'The prompt name to use for the session',
+  })
+  promptName!: string;
+}
+
+@InputType()
+class UpdateChatSessionInput {
+  @Field(() => String)
+  sessionId!: string;
 
   @Field(() => String, {
     description: 'The prompt name to use for the session',
@@ -367,6 +379,38 @@ export class CopilotResolver {
     await this.chatSession.checkQuota(user.id);
 
     return await this.chatSession.create({
+      ...options,
+      userId: user.id,
+    });
+  }
+
+  @Mutation(() => String, {
+    description: 'Update a chat session',
+  })
+  @CallMetric('ai', 'chat_session_update')
+  async updateCopilotSession(
+    @CurrentUser() user: CurrentUser,
+    @Args({ name: 'options', type: () => UpdateChatSessionInput })
+    options: UpdateChatSessionInput
+  ) {
+    const session = await this.chatSession.get(options.sessionId);
+    if (!session) {
+      throw new CopilotSessionNotFound();
+    }
+    const { workspaceId, docId } = session.config;
+    await this.permissions.checkCloudPagePermission(
+      workspaceId,
+      docId,
+      user.id
+    );
+    const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${workspaceId}`;
+    await using lock = await this.mutex.acquire(lockFlag);
+    if (!lock) {
+      return new TooManyRequest('Server is busy');
+    }
+
+    await this.chatSession.checkQuota(user.id);
+    return await this.chatSession.updateSessionPrompt({
       ...options,
       userId: user.id,
     });
