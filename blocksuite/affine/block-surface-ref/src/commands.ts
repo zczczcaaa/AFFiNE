@@ -27,11 +27,11 @@ export const insertSurfaceRefBlockCommand: Command<
     reference,
   };
 
-  const surface = getSurfaceBlock(std.doc);
+  const surface = getSurfaceBlock(std.store);
   if (!surface) return;
 
   const element = surface.getElementById(reference);
-  const blockModel = std.doc.getBlock(reference)?.model ?? null;
+  const blockModel = std.store.getBlock(reference)?.model ?? null;
 
   if (element?.type === 'group') {
     surfaceRefProps.refFlavour = 'group';
@@ -42,7 +42,7 @@ export const insertSurfaceRefBlockCommand: Command<
     return;
   }
 
-  const result = std.doc.addSiblingBlocks(
+  const result = std.store.addSiblingBlocks(
     targetModel,
     [surfaceRefProps],
     place
@@ -50,7 +50,7 @@ export const insertSurfaceRefBlockCommand: Command<
   if (result.length === 0) return;
 
   if (removeEmptyLine && targetModel.text?.length === 0) {
-    std.doc.deleteBlock(targetModel);
+    std.store.deleteBlock(targetModel);
   }
 
   next({

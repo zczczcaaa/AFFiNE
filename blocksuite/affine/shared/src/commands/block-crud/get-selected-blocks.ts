@@ -51,7 +51,7 @@ export const getSelectedBlocksCommand: Command<
   const blockSelections = ctx.blockSelections ?? ctx.currentBlockSelections;
   if (types.includes('block') && blockSelections) {
     const viewStore = ctx.std.view;
-    const doc = ctx.std.doc;
+    const doc = ctx.std.store;
     const selectedBlockComponents = blockSelections.flatMap(selection => {
       const el = viewStore.getBlock(selection.blockId);
       if (!el) {

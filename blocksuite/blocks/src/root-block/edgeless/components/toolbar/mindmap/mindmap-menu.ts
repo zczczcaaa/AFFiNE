@@ -317,7 +317,9 @@ export class EdgelessMindmapMenu extends EdgelessToolbarToolMixin(
             </div>
           `;
         })}
-        ${this.std.doc.get(FeatureFlagService).getFlag('enable_mind_map_import')
+        ${this.std.store
+          .get(FeatureFlagService)
+          .getFlag('enable_mind_map_import')
           ? this._importMindMapEntry()
           : nothing}
       </div>

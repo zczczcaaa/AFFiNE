@@ -116,7 +116,7 @@ export class EditPropsStore extends LifeCycleWatcher {
   }
 
   private _getStorageKey<T extends StoragePropsKey>(key: T) {
-    const id = this.std.doc.id;
+    const id = this.std.store.id;
     switch (key) {
       case 'viewport':
         return 'blocksuite:' + id + ':edgelessViewport';

@@ -15,7 +15,7 @@ export const copySelectedModelsCommand: Command<'draftedModels' | 'onCopy'> = (
 
   models
     .then(models => {
-      const slice = Slice.fromModels(ctx.std.doc, models);
+      const slice = Slice.fromModels(ctx.std.store, models);
 
       return ctx.std.clipboard.copy(slice);
     })

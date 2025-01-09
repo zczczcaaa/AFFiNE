@@ -32,7 +32,7 @@ export const moveBlockConfigs: MoveBlockConfig[] = [
     name: 'Move Up',
     hotkey: ['Mod-Alt-ArrowUp', 'Mod-Shift-ArrowUp'],
     action: std => {
-      const doc = std.doc;
+      const doc = std.store;
       const textSelection = getTextSelection(std);
       if (textSelection) {
         const currentModel = pathToBlock(
@@ -44,10 +44,10 @@ export const moveBlockConfigs: MoveBlockConfig[] = [
         const previousSiblingModel = doc.getPrev(currentModel);
         if (!previousSiblingModel) return;
 
-        const parentModel = std.doc.getParent(previousSiblingModel);
+        const parentModel = std.store.getParent(previousSiblingModel);
         if (!parentModel) return;
 
-        std.doc.moveBlocks(
+        std.store.moveBlocks(
           [currentModel],
           parentModel,
           previousSiblingModel,
@@ -86,7 +86,7 @@ export const moveBlockConfigs: MoveBlockConfig[] = [
     name: 'Move Down',
     hotkey: ['Mod-Alt-ArrowDown', 'Mod-Shift-ArrowDown'],
     action: std => {
-      const doc = std.doc;
+      const doc = std.store;
       const textSelection = getTextSelection(std);
       if (textSelection) {
         const currentModel = pathToBlock(

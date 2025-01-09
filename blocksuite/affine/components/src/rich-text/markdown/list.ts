@@ -16,7 +16,7 @@ export function toList(
   if (!matchFlavours(model, ['affine:paragraph'])) {
     return;
   }
-  const { doc } = std;
+  const { store: doc } = std;
   const parent = doc.getParent(model);
   if (!parent) return;
 

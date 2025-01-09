@@ -62,7 +62,7 @@ export const deleteTextCommand: Command<
   selectedElements
     .filter(el => el.model.id !== fromElement.model.id)
     .forEach(el => {
-      ctx.std.doc.deleteBlock(el.model, {
+      ctx.std.store.deleteBlock(el.model, {
         bringChildrenTo:
           el.model.id === toElement.model.id ? fromElement.model : undefined,
       });

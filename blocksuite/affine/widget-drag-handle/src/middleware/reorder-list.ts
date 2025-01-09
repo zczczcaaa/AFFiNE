@@ -13,10 +13,10 @@ export const reorderList =
           matchFlavours(model, ['affine:list']) &&
           model.type === 'numbered'
         ) {
-          const next = std.doc.getNext(model);
-          correctNumberedListsOrderToPrev(std.doc, model);
+          const next = std.store.getNext(model);
+          correctNumberedListsOrderToPrev(std.store, model);
           if (next) {
-            correctNumberedListsOrderToPrev(std.doc, next);
+            correctNumberedListsOrderToPrev(std.store, next);
           }
         }
       }

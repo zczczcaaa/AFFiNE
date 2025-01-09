@@ -15,7 +15,7 @@ export const surfaceRefToEmbed =
         pageId &&
         payload.type === 'block' &&
         payload.snapshot.flavour === 'affine:surface-ref' &&
-        !std.doc.hasBlock(payload.snapshot.id)
+        !std.store.hasBlock(payload.snapshot.id)
       ) {
         const id = payload.snapshot.id;
         payload.snapshot.id = std.workspace.idGenerator();

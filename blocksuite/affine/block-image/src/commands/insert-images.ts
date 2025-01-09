@@ -35,7 +35,7 @@ export const insertImagesCommand: Command<
         place
       );
       if (removeEmptyLine && targetModel.text?.length === 0) {
-        std.doc.deleteBlock(targetModel);
+        std.store.deleteBlock(targetModel);
       }
 
       return result ?? [];

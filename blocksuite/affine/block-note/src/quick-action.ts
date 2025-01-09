@@ -43,7 +43,7 @@ export const quickActionConfig: QuickActionConfig[] = [
 
       std.selection.clear();
 
-      const doc = std.doc;
+      const doc = std.store;
       const autofill = getTitleFromSelectedModels(selectedModels);
       promptDocTitle(std, autofill)
         .then(title => {

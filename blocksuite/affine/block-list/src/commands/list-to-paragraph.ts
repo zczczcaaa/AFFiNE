@@ -12,7 +12,7 @@ export const listToParagraphCommand: Command<
 > = (ctx, next) => {
   const { id, stopCapturing = true } = ctx;
   const std = ctx.std;
-  const doc = std.doc;
+  const doc = std.store;
   const model = doc.getBlock(id)?.model;
 
   if (!model || !matchFlavours(model, ['affine:list'])) return false;
@@ -26,7 +26,7 @@ export const listToParagraphCommand: Command<
     text: model.text?.clone(),
     children: model.children,
   };
-  if (stopCapturing) std.doc.captureSync();
+  if (stopCapturing) std.store.captureSync();
   doc.deleteBlock(model, {
     deleteChildren: false,
   });

@@ -10,7 +10,7 @@ export function toDivider(
   model: BlockModel,
   prefix: string
 ) {
-  const { doc } = std;
+  const { store: doc } = std;
   if (
     matchFlavours(model, ['affine:divider']) ||
     (matchFlavours(model, ['affine:paragraph']) && model.type === 'quote')

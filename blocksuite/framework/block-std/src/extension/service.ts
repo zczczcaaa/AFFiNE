@@ -34,7 +34,7 @@ export abstract class BlockService extends Extension {
   }
 
   get doc() {
-    return this.std.doc;
+    return this.std.store;
   }
 
   get host() {

@@ -155,7 +155,7 @@ const textToolActionItems: KeyboardToolbarActionItem[] = [
     name: 'Text',
     icon: TextIcon(),
     showWhen: ({ std }) =>
-      std.doc.schema.flavourSchemaMap.has('affine:paragraph'),
+      std.store.schema.flavourSchemaMap.has('affine:paragraph'),
     action: ({ std }) => {
       std.command.exec('updateBlockType', {
         flavour: 'affine:paragraph',
@@ -167,7 +167,7 @@ const textToolActionItems: KeyboardToolbarActionItem[] = [
     name: `Heading ${i}`,
     icon: HeadingIcon(i),
     showWhen: ({ std }: KeyboardToolbarContext) =>
-      std.doc.schema.flavourSchemaMap.has('affine:paragraph'),
+      std.store.schema.flavourSchemaMap.has('affine:paragraph'),
     action: ({ std }: KeyboardToolbarContext) => {
       std.command.exec('updateBlockType', {
         flavour: 'affine:paragraph',
@@ -177,7 +177,7 @@ const textToolActionItems: KeyboardToolbarActionItem[] = [
   })),
   {
     name: 'CodeBlock',
-    showWhen: ({ std }) => std.doc.schema.flavourSchemaMap.has('affine:code'),
+    showWhen: ({ std }) => std.store.schema.flavourSchemaMap.has('affine:code'),
     icon: CodeBlockIcon(),
     action: ({ std }) => {
       std.command.exec('updateBlockType', {
@@ -188,7 +188,7 @@ const textToolActionItems: KeyboardToolbarActionItem[] = [
   {
     name: 'Quote',
     showWhen: ({ std }) =>
-      std.doc.schema.flavourSchemaMap.has('affine:paragraph'),
+      std.store.schema.flavourSchemaMap.has('affine:paragraph'),
     icon: QuoteIcon(),
     action: ({ std }) => {
       std.command.exec('updateBlockType', {
@@ -201,7 +201,7 @@ const textToolActionItems: KeyboardToolbarActionItem[] = [
     name: 'Divider',
     icon: DividerIcon(),
     showWhen: ({ std }) =>
-      std.doc.schema.flavourSchemaMap.has('affine:divider'),
+      std.store.schema.flavourSchemaMap.has('affine:divider'),
     action: ({ std }) => {
       std.command.exec('updateBlockType', {
         flavour: 'affine:divider',
@@ -213,7 +213,7 @@ const textToolActionItems: KeyboardToolbarActionItem[] = [
     name: 'Inline equation',
     icon: TeXIcon(),
     showWhen: ({ std }) =>
-      std.doc.schema.flavourSchemaMap.has('affine:paragraph'),
+      std.store.schema.flavourSchemaMap.has('affine:paragraph'),
     action: ({ std }) => {
       std.command.chain().getTextSelection().insertInlineLatex().run();
     },
@@ -224,7 +224,7 @@ const listToolActionItems: KeyboardToolbarActionItem[] = [
   {
     name: 'BulletedList',
     icon: BulletedListIcon(),
-    showWhen: ({ std }) => std.doc.schema.flavourSchemaMap.has('affine:list'),
+    showWhen: ({ std }) => std.store.schema.flavourSchemaMap.has('affine:list'),
     action: ({ std }) => {
       std.command.exec('updateBlockType', {
         flavour: 'affine:list',
@@ -237,7 +237,7 @@ const listToolActionItems: KeyboardToolbarActionItem[] = [
   {
     name: 'NumberedList',
     icon: NumberedListIcon(),
-    showWhen: ({ std }) => std.doc.schema.flavourSchemaMap.has('affine:list'),
+    showWhen: ({ std }) => std.store.schema.flavourSchemaMap.has('affine:list'),
     action: ({ std }) => {
       std.command.exec('updateBlockType', {
         flavour: 'affine:list',
@@ -250,7 +250,7 @@ const listToolActionItems: KeyboardToolbarActionItem[] = [
   {
     name: 'CheckBox',
     icon: CheckBoxCheckLinearIcon(),
-    showWhen: ({ std }) => std.doc.schema.flavourSchemaMap.has('affine:list'),
+    showWhen: ({ std }) => std.store.schema.flavourSchemaMap.has('affine:list'),
     action: ({ std }) => {
       std.command.exec('updateBlockType', {
         flavour: 'affine:list',
@@ -269,13 +269,13 @@ const pageToolGroup: KeyboardToolPanelGroup = {
       name: 'NewPage',
       icon: NewPageIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
+        std.store.schema.flavourSchemaMap.has('affine:embed-linked-doc'),
       action: ({ std }) => {
         std.command
           .chain()
           .getSelectedModels()
           .inline(({ selectedModels }) => {
-            const newDoc = createDefaultDoc(std.doc.workspace);
+            const newDoc = createDefaultDoc(std.store.workspace);
             if (!selectedModels?.length) return;
             insertContent(std.host, selectedModels[0], REFERENCE_NODE, {
               reference: {
@@ -297,7 +297,7 @@ const pageToolGroup: KeyboardToolPanelGroup = {
         );
         if (!linkedDocWidget) return false;
 
-        return std.doc.schema.flavourSchemaMap.has('affine:embed-linked-doc');
+        return std.store.schema.flavourSchemaMap.has('affine:embed-linked-doc');
       },
       action: ({ rootComponent, closeToolPanel }) => {
         const { std } = rootComponent;
@@ -344,7 +344,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
       name: 'Image',
       icon: ImageIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:image'),
+        std.store.schema.flavourSchemaMap.has('affine:image'),
       action: ({ std }) => {
         std.command
           .chain()
@@ -357,13 +357,13 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
       name: 'Link',
       icon: LinkIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:bookmark'),
+        std.store.schema.flavourSchemaMap.has('affine:bookmark'),
       action: async ({ std }) => {
         const { selectedModels } = std.command.exec('getSelectedModels');
         const model = selectedModels?.[0];
         if (!model) return;
 
-        const parentModel = std.doc.getParent(model);
+        const parentModel = std.store.getParent(model);
         if (!parentModel) return;
 
         const index = parentModel.children.indexOf(model) + 1;
@@ -374,7 +374,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
           { mode: 'page', parentModel, index }
         );
         if (model.text?.length === 0) {
-          std.doc.deleteBlock(model);
+          std.store.deleteBlock(model);
         }
       },
     },
@@ -382,7 +382,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
       name: 'Attachment',
       icon: AttachmentIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:attachment'),
+        std.store.schema.flavourSchemaMap.has('affine:attachment'),
       action: async ({ std }) => {
         const { selectedModels } = std.command.exec('getSelectedModels');
         const model = selectedModels?.[0];
@@ -397,7 +397,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
 
         await addSiblingAttachmentBlocks(std.host, [file], maxFileSize, model);
         if (model.text?.length === 0) {
-          std.doc.deleteBlock(model);
+          std.store.deleteBlock(model);
         }
       },
     },
@@ -407,13 +407,13 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
         style: `color: white`,
       }),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:embed-youtube'),
+        std.store.schema.flavourSchemaMap.has('affine:embed-youtube'),
       action: async ({ std }) => {
         const { selectedModels } = std.command.exec('getSelectedModels');
         const model = selectedModels?.[0];
         if (!model) return;
 
-        const parentModel = std.doc.getParent(model);
+        const parentModel = std.store.getParent(model);
         if (!parentModel) return;
 
         const index = parentModel.children.indexOf(model) + 1;
@@ -424,7 +424,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
           { mode: 'page', parentModel, index }
         );
         if (model.text?.length === 0) {
-          std.doc.deleteBlock(model);
+          std.store.deleteBlock(model);
         }
       },
     },
@@ -432,13 +432,13 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
       name: 'Github',
       icon: GithubIcon({ style: `color: black` }),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:embed-github'),
+        std.store.schema.flavourSchemaMap.has('affine:embed-github'),
       action: async ({ std }) => {
         const { selectedModels } = std.command.exec('getSelectedModels');
         const model = selectedModels?.[0];
         if (!model) return;
 
-        const parentModel = std.doc.getParent(model);
+        const parentModel = std.store.getParent(model);
         if (!parentModel) return;
 
         const index = parentModel.children.indexOf(model) + 1;
@@ -449,7 +449,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
           { mode: 'page', parentModel, index }
         );
         if (model.text?.length === 0) {
-          std.doc.deleteBlock(model);
+          std.store.deleteBlock(model);
         }
       },
     },
@@ -457,13 +457,13 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
       name: 'Figma',
       icon: FigmaDuotoneIcon,
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:embed-figma'),
+        std.store.schema.flavourSchemaMap.has('affine:embed-figma'),
       action: async ({ std }) => {
         const { selectedModels } = std.command.exec('getSelectedModels');
         const model = selectedModels?.[0];
         if (!model) return;
 
-        const parentModel = std.doc.getParent(model);
+        const parentModel = std.store.getParent(model);
         if (!parentModel) {
           return;
         }
@@ -475,7 +475,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
           { mode: 'page', parentModel, index }
         );
         if (model.text?.length === 0) {
-          std.doc.deleteBlock(model);
+          std.store.deleteBlock(model);
         }
       },
     },
@@ -483,13 +483,13 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
       name: 'Loom',
       icon: LoomLogoIcon({ style: `color: #625DF5` }),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:embed-loom'),
+        std.store.schema.flavourSchemaMap.has('affine:embed-loom'),
       action: async ({ std }) => {
         const { selectedModels } = std.command.exec('getSelectedModels');
         const model = selectedModels?.[0];
         if (!model) return;
 
-        const parentModel = std.doc.getParent(model);
+        const parentModel = std.store.getParent(model);
         if (!parentModel) return;
 
         const index = parentModel.children.indexOf(model) + 1;
@@ -500,7 +500,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
           { mode: 'page', parentModel, index }
         );
         if (model.text?.length === 0) {
-          std.doc.deleteBlock(model);
+          std.store.deleteBlock(model);
         }
       },
     },
@@ -508,7 +508,7 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
       name: 'Equation',
       icon: TeXIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:latex'),
+        std.store.schema.flavourSchemaMap.has('affine:latex'),
       action: ({ std }) => {
         std.command
           .chain()
@@ -526,9 +526,9 @@ const contentMediaToolGroup: KeyboardToolPanelGroup = {
 const documentGroupFrameToolGroup: DynamicKeyboardToolPanelGroup = ({
   std,
 }) => {
-  const { doc } = std;
+  const { store } = std;
 
-  const frameModels = doc
+  const frameModels = store
     .getBlocksByFlavour('affine:frame')
     .map(block => block.model) as FrameBlockModel[];
 
@@ -548,7 +548,7 @@ const documentGroupFrameToolGroup: DynamicKeyboardToolPanelGroup = ({
     },
   }));
 
-  const surfaceModel = getSurfaceBlock(doc);
+  const surfaceModel = getSurfaceBlock(store);
 
   const groupElements = surfaceModel
     ? surfaceModel.getElementsByType('group')
@@ -641,7 +641,7 @@ const databaseToolGroup: KeyboardToolPanelGroup = {
       name: 'Table view',
       icon: DatabaseTableViewIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:database'),
+        std.store.schema.flavourSchemaMap.has('affine:database'),
       action: ({ std }) => {
         std.command
           .chain()
@@ -658,7 +658,7 @@ const databaseToolGroup: KeyboardToolPanelGroup = {
       name: 'Kanban view',
       icon: DatabaseKanbanViewIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:database'),
+        std.store.schema.flavourSchemaMap.has('affine:database'),
       action: ({ std }) => {
         std.command
           .chain()
@@ -896,7 +896,7 @@ export const defaultKeyboardToolbarConfig: KeyboardToolbarConfig = {
       name: 'Image',
       icon: ImageIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:image'),
+        std.store.schema.flavourSchemaMap.has('affine:image'),
       action: ({ std }) => {
         std.command
           .chain()
@@ -909,7 +909,7 @@ export const defaultKeyboardToolbarConfig: KeyboardToolbarConfig = {
       name: 'Attachment',
       icon: AttachmentIcon(),
       showWhen: ({ std }) =>
-        std.doc.schema.flavourSchemaMap.has('affine:attachment'),
+        std.store.schema.flavourSchemaMap.has('affine:attachment'),
       action: async ({ std }) => {
         const { selectedModels } = std.command.exec('getSelectedModels');
         const model = selectedModels?.[0];
@@ -924,24 +924,24 @@ export const defaultKeyboardToolbarConfig: KeyboardToolbarConfig = {
 
         await addSiblingAttachmentBlocks(std.host, [file], maxFileSize, model);
         if (model.text?.length === 0) {
-          std.doc.deleteBlock(model);
+          std.store.deleteBlock(model);
         }
       },
     },
     {
       name: 'Undo',
       icon: UndoIcon(),
-      disableWhen: ({ std }) => !std.doc.canUndo,
+      disableWhen: ({ std }) => !std.store.canUndo,
       action: ({ std }) => {
-        std.doc.undo();
+        std.store.undo();
       },
     },
     {
       name: 'Redo',
       icon: RedoIcon(),
-      disableWhen: ({ std }) => !std.doc.canRedo,
+      disableWhen: ({ std }) => !std.store.canRedo,
       action: ({ std }) => {
-        std.doc.redo();
+        std.store.redo();
       },
     },
     {

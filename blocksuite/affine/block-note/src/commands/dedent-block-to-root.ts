@@ -11,24 +11,24 @@ export const dedentBlockToRoot: Command<
 > = (ctx, next) => {
   let { blockId } = ctx;
   const { std, stopCapture = true } = ctx;
-  const { doc } = std;
+  const { store } = std;
   if (!blockId) {
     const sel = std.selection.getGroup('note').at(0);
     blockId = sel?.blockId;
   }
   if (!blockId) return;
-  const model = std.doc.getBlock(blockId)?.model;
+  const model = std.store.getBlock(blockId)?.model;
   if (!model) return;
 
-  let parent = doc.getParent(model);
+  let parent = store.getParent(model);
   let changed = false;
   while (parent && !matchFlavours(parent, ['affine:note'])) {
     if (!changed) {
-      if (stopCapture) doc.captureSync();
+      if (stopCapture) store.captureSync();
       changed = true;
     }
     std.command.exec('dedentBlock', { blockId: model.id, stopCapture: true });
-    parent = doc.getParent(model);
+    parent = store.getParent(model);
   }
 
   if (!changed) {

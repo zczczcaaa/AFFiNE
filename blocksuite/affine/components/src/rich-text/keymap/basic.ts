@@ -41,7 +41,7 @@ export const textCommonKeymap = (
       const text = std.selection.find(TextSelection);
       if (!text) return;
 
-      const model = std.doc.getBlock(text.from.blockId)?.model;
+      const model = std.store.getBlock(text.from.blockId)?.model;
       if (!model || !model.text) return;
 
       ctx.get('keyboardState').raw.preventDefault();
@@ -62,7 +62,7 @@ export const textCommonKeymap = (
       const blockId = blocks.at(-1)?.blockId;
 
       if (!blockId) return;
-      const model = std.doc.getBlock(blockId)?.model;
+      const model = std.store.getBlock(blockId)?.model;
       if (!model || !model.text) return;
 
       ctx.get('keyboardState').raw.preventDefault();

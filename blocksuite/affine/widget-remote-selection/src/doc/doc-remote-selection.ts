@@ -287,7 +287,7 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
     );
 
     this.disposables.add(
-      this.std.doc.slots.blockUpdated.on(() => {
+      this.std.store.slots.blockUpdated.on(() => {
         this._updateSelections(this._remoteSelections.peek());
       })
     );

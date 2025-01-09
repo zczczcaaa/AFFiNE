@@ -71,7 +71,7 @@ export class FileDropExtension extends LifeCycleWatcher {
     let result: DropResult | null = null;
     if (element) {
       const model = element.model;
-      const parent = this.std.doc.getParent(model);
+      const parent = this.std.store.getParent(model);
       if (!matchFlavours(parent, ['affine:surface' as BlockSuite.Flavour])) {
         result = calcDropTarget(point, model, element);
       }
@@ -119,7 +119,7 @@ export class FileDropExtension extends LifeCycleWatcher {
   }
 
   get doc() {
-    return this.std.doc;
+    return this.std.store;
   }
 
   get editorHost(): EditorHost {
@@ -155,7 +155,7 @@ export class FileDropExtension extends LifeCycleWatcher {
     let result: DropResult | null = null;
     if (element) {
       const model = element.model;
-      const parent = this.std.doc.getParent(model);
+      const parent = this.std.store.getParent(model);
       if (!matchFlavours(parent, ['affine:surface' as BlockSuite.Flavour])) {
         result = calcDropTarget(point, model, element);
       }

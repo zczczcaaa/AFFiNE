@@ -14,7 +14,7 @@ export const canIndentListCommand: Command<
 > = (ctx, next) => {
   let { blockId, inlineIndex } = ctx;
   const { std } = ctx;
-  const { selection, doc } = std;
+  const { selection, store } = std;
   if (!blockId) {
     const text = selection.find(TextSelection);
     /**
@@ -52,17 +52,17 @@ export const canIndentListCommand: Command<
   /**
    * ccc
    */
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model || !matchFlavours(model, ['affine:list'])) {
     return;
   }
-  const schema = std.doc.schema;
+  const schema = std.store.schema;
   /**
    * aaa
    */
-  const previousSibling = doc.getPrev(model);
+  const previousSibling = store.getPrev(model);
   if (
-    doc.readonly ||
+    store.readonly ||
     !previousSibling ||
     !schema.isValid(model.flavour, previousSibling.flavour)
   ) {
@@ -72,7 +72,7 @@ export const canIndentListCommand: Command<
   /**
    * eee
    */
-  // const nextSibling = doc.getNext(model);
+  // const nextSibling = store.getNext(model);
 
   return next({
     indentContext: {
@@ -101,21 +101,21 @@ export const indentListCommand: Command<'indentContext', never> = (
   }
 
   const { blockId } = indentContext;
-  const { doc, selection, host, range } = std;
+  const { store, selection, host, range } = std;
 
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model) return;
 
-  const previousSibling = doc.getPrev(model);
+  const previousSibling = store.getPrev(model);
   if (!previousSibling) return;
 
-  const nextSibling = doc.getNext(model);
+  const nextSibling = store.getNext(model);
 
-  doc.captureSync();
+  store.captureSync();
 
-  doc.moveBlocks([model], previousSibling);
-  correctNumberedListsOrderToPrev(doc, model);
-  if (nextSibling) correctNumberedListsOrderToPrev(doc, nextSibling);
+  store.moveBlocks([model], previousSibling);
+  correctNumberedListsOrderToPrev(store, model);
+  if (nextSibling) correctNumberedListsOrderToPrev(store, nextSibling);
 
   // 123
   //   > # 456
@@ -128,7 +128,7 @@ export const indentListCommand: Command<'indentContext', never> = (
     matchFlavours(nearestHeading, ['affine:paragraph']) &&
     nearestHeading.collapsed
   ) {
-    doc.updateBlock(nearestHeading, {
+    store.updateBlock(nearestHeading, {
       collapsed: false,
     });
   }

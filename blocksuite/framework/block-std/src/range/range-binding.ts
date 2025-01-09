@@ -16,7 +16,7 @@ export class RangeBinding {
     | null = null;
 
   private readonly _computePath = (modelId: string) => {
-    const block = this.host.std.doc.getBlock(modelId)?.model;
+    const block = this.host.std.store.getBlock(modelId)?.model;
     if (!block) return [];
 
     const path: string[] = [];

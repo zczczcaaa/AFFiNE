@@ -21,7 +21,7 @@ export const bracketKeymap = (
       return {
         ...acc,
         [pair.right]: ctx => {
-          const { doc, selection } = std;
+          const { store: doc, selection } = std;
           if (doc.readonly) return;
 
           const textSelection = selection.find(TextSelection);
@@ -47,7 +47,7 @@ export const bracketKeymap = (
           }
         },
         [pair.left]: ctx => {
-          const { doc, selection } = std;
+          const { store: doc, selection } = std;
           if (doc.readonly) return;
 
           const textSelection = selection.find(TextSelection);
@@ -98,7 +98,7 @@ export const bracketKeymap = (
   return {
     ...keymap,
     '`': ctx => {
-      const { doc, selection } = std;
+      const { store: doc, selection } = std;
       if (doc.readonly) return;
 
       const textSelection = selection.find(TextSelection);
@@ -128,7 +128,7 @@ export const bracketKeymap = (
 };
 
 function tryConvertToLinkedDoc(std: BlockStdScope, inlineEditor: InlineEditor) {
-  const root = std.doc.root;
+  const root = std.store.root;
   if (!root) return false;
   const linkedDocWidgetEle = std.view.getWidget(
     'affine-linked-doc-widget',
@@ -154,7 +154,7 @@ function tryConvertToLinkedDoc(std: BlockStdScope, inlineEditor: InlineEditor) {
   });
   inlineEditor.setInlineRange({ index: inlineRange.index - 1, length: 0 });
 
-  const doc = createDefaultDoc(std.doc.workspace, {
+  const doc = createDefaultDoc(std.store.workspace, {
     title: docName,
   });
   insertLinkedNode({

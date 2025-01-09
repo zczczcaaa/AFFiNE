@@ -460,7 +460,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       override mounted() {
         const crud = this.std.get(EdgelessCRUDExtension);
         const { _disposable } = this;
-        const surfaceModel = getSurfaceBlock(this.std.doc);
+        const surfaceModel = getSurfaceBlock(this.std.store);
         if (!surfaceModel) return;
 
         const referenceElement = crud.getElementById(referenceId);

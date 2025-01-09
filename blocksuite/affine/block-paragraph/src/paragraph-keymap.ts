@@ -25,11 +25,10 @@ export const ParagraphKeymapExtension = KeymapExtension(
         const isStart = isCollapsed && text.from.index === 0;
         if (!isStart) return;
 
-        const { doc } = std;
-        const model = doc.getBlock(text.from.blockId)?.model;
+        const { store } = std;
+        const model = store.getBlock(text.from.blockId)?.model;
         if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
 
-        // const { model, doc } = this;
         const event = ctx.get('keyboardState').raw;
         event.preventDefault();
 
@@ -37,8 +36,8 @@ export const ParagraphKeymapExtension = KeymapExtension(
         // firstly switch it to normal text, then delete this empty block.
         if (model.type !== 'text') {
           // Try to switch to normal text
-          doc.captureSync();
-          doc.updateBlock(model, { type: 'text' });
+          store.captureSync();
+          store.updateBlock(model, { type: 'text' });
           return true;
         }
 
@@ -51,10 +50,10 @@ export const ParagraphKeymapExtension = KeymapExtension(
         return true;
       },
       'Mod-Enter': ctx => {
-        const { doc } = std;
+        const { store } = std;
         const text = std.selection.find(TextSelection);
         if (!text) return;
-        const model = doc.getBlock(text.from.blockId)?.model;
+        const model = store.getBlock(text.from.blockId)?.model;
         if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
         const inlineEditor = getInlineEditorByModel(
           std.host,
@@ -65,7 +64,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
         const raw = ctx.get('keyboardState').raw;
         raw.preventDefault();
         if (model.type === 'quote') {
-          doc.captureSync();
+          store.captureSync();
           inlineEditor.insertText(inlineRange, '\n');
           inlineEditor.setInlineRange({
             index: inlineRange.index + 1,
@@ -78,10 +77,10 @@ export const ParagraphKeymapExtension = KeymapExtension(
         return true;
       },
       Enter: ctx => {
-        const { doc } = std;
+        const { store } = std;
         const text = std.selection.find(TextSelection);
         if (!text) return;
-        const model = doc.getBlock(text.from.blockId)?.model;
+        const model = store.getBlock(text.from.blockId)?.model;
         if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
         const inlineEditor = getInlineEditorByModel(
           std.host,
@@ -112,7 +111,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
             textStr === '\n' || textStr.endsWith('\n');
           if (isEnd && endWithTwoBlankLines) {
             raw.preventDefault();
-            doc.captureSync();
+            store.captureSync();
             model.text.delete(range.index - 1, 1);
             std.command.exec('addParagraph');
             return true;
@@ -127,14 +126,14 @@ export const ParagraphKeymapExtension = KeymapExtension(
         }
 
         if (model.type.startsWith('h') && model.collapsed) {
-          const parent = doc.getParent(model);
+          const parent = store.getParent(model);
           if (!parent) return true;
           const index = parent.children.indexOf(model);
           if (index === -1) return true;
           const collapsedSiblings = calculateCollapsedSiblings(model);
 
           const rightText = model.text.split(range.index);
-          const newId = doc.addBlock(
+          const newId = store.addBlock(
             model.flavour,
             { type: model.type, text: rightText },
             parent,

@@ -12,8 +12,8 @@ export const addParagraphCommand: Command<
   }
 > = (ctx, next) => {
   const { std } = ctx;
-  const { doc, selection } = std;
-  doc.captureSync();
+  const { store, selection } = std;
+  store.captureSync();
 
   let blockId = ctx.blockId;
   if (!blockId) {
@@ -22,7 +22,7 @@ export const addParagraphCommand: Command<
   }
   if (!blockId) return;
 
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model) return;
 
   let id: string;
@@ -35,9 +35,9 @@ export const addParagraphCommand: Command<
     // aaa
     //   |
     //   bbb
-    id = doc.addBlock('affine:paragraph', {}, model, 0);
+    id = store.addBlock('affine:paragraph', {}, model, 0);
   } else {
-    const parent = doc.getParent(model);
+    const parent = store.getParent(model);
     if (!parent) return;
     const index = parent.children.indexOf(model);
     if (index < 0) return;
@@ -47,7 +47,7 @@ export const addParagraphCommand: Command<
     // after:
     // aaa
     // |
-    id = doc.addBlock('affine:paragraph', {}, parent, index + 1);
+    id = store.addBlock('affine:paragraph', {}, parent, index + 1);
   }
 
   focusTextModel(std, id);

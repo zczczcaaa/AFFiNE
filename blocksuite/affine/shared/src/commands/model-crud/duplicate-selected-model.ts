@@ -9,17 +9,17 @@ export const duplicateSelectedModelsCommand: Command<
 
   const model = selectedModels[selectedModels.length - 1];
 
-  const parentModel = std.doc.getParent(model.id);
+  const parentModel = std.store.getParent(model.id);
   if (!parentModel) return;
 
   const index = parentModel.children.findIndex(x => x.id === model.id);
 
   draftedModels
     .then(models => {
-      const slice = Slice.fromModels(std.doc, models);
+      const slice = Slice.fromModels(std.store, models);
       return std.clipboard.duplicateSlice(
         slice,
-        std.doc,
+        std.store,
         parentModel.id,
         index + 1
       );

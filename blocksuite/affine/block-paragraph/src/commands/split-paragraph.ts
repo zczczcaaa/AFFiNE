@@ -13,7 +13,7 @@ export const splitParagraphCommand: Command<
   }
 > = (ctx, next) => {
   const { std } = ctx;
-  const { doc, host, selection } = std;
+  const { store, host, selection } = std;
   let blockId = ctx.blockId;
   if (!blockId) {
     const text = selection.find(TextSelection);
@@ -21,7 +21,7 @@ export const splitParagraphCommand: Command<
   }
   if (!blockId) return;
 
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
 
   const inlineEditor = getInlineEditorByModel(host, model);
@@ -38,9 +38,9 @@ export const splitParagraphCommand: Command<
   if (model.text.yText.length < splitIndex + splitLength) return;
 
   if (model.children.length > 0 && splitIndex > 0) {
-    doc.captureSync();
+    store.captureSync();
     const right = model.text.split(splitIndex, splitLength);
-    const id = doc.addBlock(
+    const id = store.addBlock(
       model.flavour as BlockSuite.Flavour,
       {
         text: right,
@@ -53,13 +53,13 @@ export const splitParagraphCommand: Command<
     return next({ paragraphConvertedId: id });
   }
 
-  const parent = doc.getParent(model);
+  const parent = store.getParent(model);
   if (!parent) return;
   const index = parent.children.indexOf(model);
   if (index < 0) return;
-  doc.captureSync();
+  store.captureSync();
   const right = model.text.split(splitIndex, splitLength);
-  const id = doc.addBlock(
+  const id = store.addBlock(
     model.flavour,
     {
       text: right,
@@ -68,9 +68,9 @@ export const splitParagraphCommand: Command<
     parent,
     index + 1
   );
-  const newModel = doc.getBlock(id)?.model;
+  const newModel = store.getBlock(id)?.model;
   if (newModel) {
-    doc.moveBlocks(model.children, newModel);
+    store.moveBlocks(model.children, newModel);
   } else {
     console.error('Failed to find the new model split from the paragraph');
   }

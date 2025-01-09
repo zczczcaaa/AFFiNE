@@ -14,7 +14,7 @@ export const getBlockIndexCommand: Command<
     '`path` is required, you need to pass it in args or ctx before adding this command to the pipeline.'
   );
 
-  const parentModel = ctx.std.doc.getParent(path);
+  const parentModel = ctx.std.store.getParent(path);
   if (!parentModel) return;
 
   const parent = ctx.std.view.getBlock(parentModel.id);

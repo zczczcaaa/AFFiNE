@@ -74,16 +74,12 @@ export class BlockStdScope {
     return this.provider.getAll(LifeCycleWatcherIdentifier);
   }
 
-  get doc() {
-    return this.store;
-  }
-
   get clipboard() {
     return this.get(Clipboard);
   }
 
   get workspace() {
-    return this.doc.workspace;
+    return this.store.workspace;
   }
 
   get command() {
@@ -198,7 +194,7 @@ export class BlockStdScope {
   render() {
     const element = new EditorHost();
     element.std = this;
-    element.doc = this.doc;
+    element.doc = this.store;
     this._getHost = () => element;
     this._lifeCycleWatchers.forEach(watcher => {
       watcher.rendered.call(watcher);

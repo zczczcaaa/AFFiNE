@@ -11,7 +11,7 @@ export const dedentBlocksToRoot: Command<
 > = (ctx, next) => {
   let { blockIds } = ctx;
   const { std, stopCapture = true } = ctx;
-  const { doc } = std;
+  const { store } = std;
   if (!blockIds || !blockIds.length) {
     const text = std.selection.find(TextSelection);
     if (text) {
@@ -26,12 +26,12 @@ export const dedentBlocksToRoot: Command<
     }
   }
 
-  if (!blockIds || !blockIds.length || doc.readonly) return;
+  if (!blockIds || !blockIds.length || store.readonly) return;
 
-  if (stopCapture) doc.captureSync();
+  if (stopCapture) store.captureSync();
   for (let i = blockIds.length - 1; i >= 0; i--) {
     const model = blockIds[i];
-    const parent = doc.getParent(model);
+    const parent = store.getParent(model);
     if (parent && !matchFlavours(parent, ['affine:note'])) {
       std.command.exec('dedentBlockToRoot', {
         blockId: model,

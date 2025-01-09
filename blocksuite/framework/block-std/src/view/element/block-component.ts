@@ -218,7 +218,7 @@ export class BlockComponent<
 
     this.std.view.setBlock(this);
 
-    const disposable = this.std.doc.slots.blockUpdated.on(({ type, id }) => {
+    const disposable = this.std.store.slots.blockUpdated.on(({ type, id }) => {
       if (id === this.model.id && type === 'delete') {
         this.std.view.deleteBlock(this);
         disposable.dispose();

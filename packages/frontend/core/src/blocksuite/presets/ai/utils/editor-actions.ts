@@ -147,7 +147,7 @@ export const copyTextAnswer = async (panel: AffineAIPanelWidget) => {
 export const copyText = async (host: EditorHost, text: string) => {
   const previewDoc = await markDownToDoc(
     host.std.provider,
-    host.std.doc.schema,
+    host.std.store.schema,
     text
   );
   const models = previewDoc

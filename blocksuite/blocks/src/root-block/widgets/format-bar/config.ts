@@ -383,10 +383,10 @@ export const BUILT_IN_GROUPS: MenuItemGroup<FormatBarContext>[] = [
 
               ctx.draftedModels
                 .then(models => {
-                  const slice = Slice.fromModels(ctx.std.doc, models);
+                  const slice = Slice.fromModels(ctx.std.store, models);
                   return ctx.std.clipboard.duplicateSlice(
                     slice,
-                    ctx.std.doc,
+                    ctx.std.store,
                     ctx.parentBlock?.model.id,
                     ctx.blockIndex ? ctx.blockIndex + 1 : 1
                   );

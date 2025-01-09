@@ -9,7 +9,7 @@ export class ViewStore extends LifeCycleWatcher {
   private readonly _fromId = (
     blockId: string | undefined | null
   ): BlockComponent | null => {
-    const id = blockId ?? this.std.doc.root?.id;
+    const id = blockId ?? this.std.store.root?.id;
     if (!id) {
       return null;
     }

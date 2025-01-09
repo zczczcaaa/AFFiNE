@@ -35,7 +35,7 @@ export class DNDAPIExtension extends Extension {
   }): SliceSnapshot | null {
     const { docId, flavour = 'affine:embed-linked-doc', blockId } = options;
 
-    const slice = Slice.fromModels(this.std.doc, []);
+    const slice = Slice.fromModels(this.std.store, []);
     const job = this.std.getJob();
     const snapshot = job.sliceToSnapshot(slice);
     if (!snapshot) {

@@ -107,7 +107,7 @@ export class ViewManager extends GfxExtension {
       updateViewOnElementChange(this.gfx.surface);
     } else {
       this._disposable.add(
-        onSurfaceAdded(this.std.doc, surface => {
+        onSurfaceAdded(this.std.store, surface => {
           if (surface) {
             updateViewOnElementChange(surface);
           }

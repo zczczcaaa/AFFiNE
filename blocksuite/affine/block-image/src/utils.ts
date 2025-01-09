@@ -468,7 +468,7 @@ export async function addImages(
     );
     const center = Vec.toVec(point);
     const bound = calcBoundByOrigin(center, inTopLeft);
-    const blockId = std.doc.addBlock(
+    const blockId = std.store.addBlock(
       'affine:image',
       {
         size: file.size,
@@ -484,7 +484,7 @@ export async function addImages(
   const uploadPromises = imageFiles.map(async (file, index) => {
     const { point, blockId } = dropInfos[index];
 
-    const sourceId = await std.doc.blobSync.set(file);
+    const sourceId = await std.store.blobSync.set(file);
     const imageSize = await readImageSize(file);
 
     const center = Vec.toVec(point);
@@ -498,7 +498,7 @@ export async function addImages(
       : imageSize.height;
     const bound = calcBoundByOrigin(center, inTopLeft, width, height);
 
-    std.doc.withoutTransact(() => {
+    std.store.withoutTransact(() => {
       gfx.updateElement(blockId, {
         sourceId,
         ...imageSize,

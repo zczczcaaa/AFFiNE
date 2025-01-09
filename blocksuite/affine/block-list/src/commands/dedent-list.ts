@@ -11,7 +11,7 @@ export const canDedentListCommand: Command<
 > = (ctx, next) => {
   let { blockId, inlineIndex } = ctx;
   const { std } = ctx;
-  const { selection, doc } = std;
+  const { selection, store } = std;
   if (!blockId) {
     const text = selection.find(TextSelection);
     /**
@@ -51,25 +51,25 @@ export const canDedentListCommand: Command<
   /**
    * ccc
    */
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model || !matchFlavours(model, ['affine:list'])) {
     return;
   }
   /**
    * bbb
    */
-  const parent = doc.getParent(model);
+  const parent = store.getParent(model);
   if (!parent) {
     return;
   }
-  if (doc.readonly || parent.role !== 'content') {
+  if (store.readonly || parent.role !== 'content') {
     // Top most list cannot be unindent
     return;
   }
   /**
    * aaa
    */
-  const grandParent = doc.getParent(parent);
+  const grandParent = store.getParent(parent);
   if (!grandParent) {
     return;
   }
@@ -93,7 +93,7 @@ export const canDedentListCommand: Command<
 
 export const dedentListCommand: Command<'indentContext'> = (ctx, next) => {
   const { indentContext: dedentContext, std } = ctx;
-  const { doc, selection, range, host } = std;
+  const { store, selection, range, host } = std;
 
   if (
     !dedentContext ||
@@ -108,16 +108,16 @@ export const dedentListCommand: Command<'indentContext'> = (ctx, next) => {
 
   const { blockId } = dedentContext;
 
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model) return;
 
-  const parent = doc.getParent(model);
+  const parent = store.getParent(model);
   if (!parent) return;
 
-  const grandParent = doc.getParent(parent);
+  const grandParent = store.getParent(parent);
   if (!grandParent) return;
 
-  doc.captureSync();
+  store.captureSync();
 
   /**
    * step 1:
@@ -128,13 +128,13 @@ export const dedentListCommand: Command<'indentContext'> = (ctx, next) => {
    *       - eee <- make eee as ccc's child
    *   - fff
    */
-  const nextSiblings = doc.getNexts(model); // [eee]
-  doc.moveBlocks(nextSiblings, model);
+  const nextSiblings = store.getNexts(model); // [eee]
+  store.moveBlocks(nextSiblings, model);
   /**
    * eee
    */
   const nextSibling = nextSiblings.at(0);
-  if (nextSibling) correctNumberedListsOrderToPrev(doc, nextSibling);
+  if (nextSibling) correctNumberedListsOrderToPrev(store, nextSibling);
 
   /**
    * step 2:
@@ -145,8 +145,8 @@ export const dedentListCommand: Command<'indentContext'> = (ctx, next) => {
    *     - eee
    *   - fff
    */
-  doc.moveBlocks([model], grandParent, parent, false);
-  correctNumberedListsOrderToPrev(doc, model);
+  store.moveBlocks([model], grandParent, parent, false);
+  correctNumberedListsOrderToPrev(store, model);
 
   const textSelection = selection.find(TextSelection);
   if (textSelection) {

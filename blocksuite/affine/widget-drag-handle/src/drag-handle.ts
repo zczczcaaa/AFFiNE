@@ -85,7 +85,7 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
       matchFlavours(this.draggingElements[0].model, ['affine:note']);
 
     if (isDraggedElementNote) {
-      const parent = this.std.doc.getParent(closestBlock.model);
+      const parent = this.std.store.getParent(closestBlock.model);
       if (!parent) return null;
       const parentElement = this._getBlockView(parent.id);
       if (!parentElement) return null;

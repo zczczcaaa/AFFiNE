@@ -12,7 +12,7 @@ export const canDedentParagraphCommand: Command<
 > = (ctx, next) => {
   let { blockId, inlineIndex } = ctx;
   const { std } = ctx;
-  const { selection, doc } = std;
+  const { selection, store } = std;
   const text = selection.find(TextSelection);
 
   if (!blockId) {
@@ -32,18 +32,18 @@ export const canDedentParagraphCommand: Command<
     return;
   }
 
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model || !matchFlavours(model, ['affine:paragraph'])) {
     return;
   }
 
-  const parent = doc.getParent(model);
-  if (doc.readonly || !parent || parent.role !== 'content') {
+  const parent = store.getParent(model);
+  if (store.readonly || !parent || parent.role !== 'content') {
     // Top most, can not unindent, do nothing
     return;
   }
 
-  const grandParent = doc.getParent(parent);
+  const grandParent = store.getParent(parent);
   if (!grandParent) return;
 
   return next({
@@ -58,7 +58,7 @@ export const canDedentParagraphCommand: Command<
 
 export const dedentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
   const { indentContext: dedentContext, std } = ctx;
-  const { doc, selection, range, host } = std;
+  const { store, selection, range, host } = std;
 
   if (
     !dedentContext ||
@@ -73,16 +73,16 @@ export const dedentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
 
   const { blockId } = dedentContext;
 
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model) return;
 
-  const parent = doc.getParent(model);
+  const parent = store.getParent(model);
   if (!parent) return;
 
-  const grandParent = doc.getParent(parent);
+  const grandParent = store.getParent(parent);
   if (!grandParent) return;
 
-  doc.captureSync();
+  store.captureSync();
 
   if (
     matchFlavours(model, ['affine:paragraph']) &&
@@ -90,11 +90,11 @@ export const dedentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
     model.collapsed
   ) {
     const collapsedSiblings = calculateCollapsedSiblings(model);
-    doc.moveBlocks([model, ...collapsedSiblings], grandParent, parent, false);
+    store.moveBlocks([model, ...collapsedSiblings], grandParent, parent, false);
   } else {
-    const nextSiblings = doc.getNexts(model);
-    doc.moveBlocks(nextSiblings, model);
-    doc.moveBlocks([model], grandParent, parent, false);
+    const nextSiblings = store.getNexts(model);
+    store.moveBlocks(nextSiblings, model);
+    store.moveBlocks([model], grandParent, parent, false);
   }
 
   const textSelection = selection.find(TextSelection);

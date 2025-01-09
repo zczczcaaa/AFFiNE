@@ -5,7 +5,7 @@ import { getNextContentBlock } from '../../utils/index.js';
 
 function getNextBlock(std: BlockSuite.Std, path: string) {
   const view = std.view;
-  const model = std.doc.getBlock(path)?.model;
+  const model = std.store.getBlock(path)?.model;
   if (!model) return null;
   const nextModel = getNextContentBlock(std.host, model);
   if (!nextModel) return null;

@@ -110,7 +110,7 @@ export class ExportManager {
   };
 
   get doc(): Store {
-    return this.std.doc;
+    return this.std.store;
   }
 
   get editorHost(): EditorHost {

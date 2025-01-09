@@ -12,7 +12,7 @@ export function toParagraph(
   type: ParagraphType,
   prefix: string
 ) {
-  const { doc } = std;
+  const { store: doc } = std;
   if (!matchFlavours(model, ['affine:paragraph'])) {
     const parent = doc.getParent(model);
     if (!parent) return;

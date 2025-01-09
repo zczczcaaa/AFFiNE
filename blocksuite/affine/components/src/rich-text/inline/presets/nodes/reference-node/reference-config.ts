@@ -38,7 +38,7 @@ export class ReferenceNodeConfigProvider {
   }
 
   get doc() {
-    return this.std.doc;
+    return this.std.store;
   }
 
   get hidePopup() {

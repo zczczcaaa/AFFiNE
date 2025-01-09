@@ -14,7 +14,7 @@ export const deleteSelectedModelsCommand: Command<'selectedModels'> = (
   }
 
   models.forEach(model => {
-    ctx.std.doc.deleteBlock(model);
+    ctx.std.store.deleteBlock(model);
   });
 
   return next();

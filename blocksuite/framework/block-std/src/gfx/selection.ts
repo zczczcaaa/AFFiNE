@@ -316,7 +316,7 @@ export class GfxSelectionManager extends GfxExtension {
     }
 
     const { blocks = [], elements = [] } = groupBy(selection.elements, id => {
-      return this.std.doc.getBlockById(id) ? 'blocks' : 'elements';
+      return this.std.store.getBlockById(id) ? 'blocks' : 'elements';
     });
     let instances: (SurfaceSelection | CursorSelection)[] = [];
 

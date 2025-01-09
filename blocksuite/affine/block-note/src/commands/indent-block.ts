@@ -31,19 +31,19 @@ export const indentBlock: Command<
 > = (ctx, next) => {
   let { blockId } = ctx;
   const { std, stopCapture = true } = ctx;
-  const { doc } = std;
-  const { schema } = doc;
+  const { store } = std;
+  const { schema } = store;
   if (!blockId) {
     const sel = std.selection.getGroup('note').at(0);
     blockId = sel?.blockId;
   }
   if (!blockId) return;
-  const model = std.doc.getBlock(blockId)?.model;
+  const model = std.store.getBlock(blockId)?.model;
   if (!model) return;
 
-  const previousSibling = doc.getPrev(model);
+  const previousSibling = store.getPrev(model);
   if (
-    doc.readonly ||
+    store.readonly ||
     !previousSibling ||
     !schema.isValid(model.flavour, previousSibling.flavour)
   ) {
@@ -51,7 +51,7 @@ export const indentBlock: Command<
     return;
   }
 
-  if (stopCapture) doc.captureSync();
+  if (stopCapture) store.captureSync();
 
   if (
     matchFlavours(model, ['affine:paragraph']) &&
@@ -59,9 +59,9 @@ export const indentBlock: Command<
     model.collapsed
   ) {
     const collapsedSiblings = calculateCollapsedSiblings(model);
-    doc.moveBlocks([model, ...collapsedSiblings], previousSibling);
+    store.moveBlocks([model, ...collapsedSiblings], previousSibling);
   } else {
-    doc.moveBlocks([model], previousSibling);
+    store.moveBlocks([model], previousSibling);
   }
 
   // update collapsed state of affine list
@@ -69,7 +69,7 @@ export const indentBlock: Command<
     matchFlavours(previousSibling, ['affine:list']) &&
     previousSibling.collapsed
   ) {
-    doc.updateBlock(previousSibling, {
+    store.updateBlock(previousSibling, {
       collapsed: false,
     } as Partial<ListBlockModel>);
   }

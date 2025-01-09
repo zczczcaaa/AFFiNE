@@ -28,7 +28,7 @@ export const autoArrangeElementsCommand: Command<never, never, {}> = (
   ctx,
   next
 ) => {
-  const { updateBlock } = ctx.std.doc;
+  const { updateBlock } = ctx.std.store;
   const gfx = ctx.std.get(GfxControllerIdentifier);
 
   const elements = gfx.selection.selectedElements;
@@ -46,7 +46,7 @@ export const autoResizeElementsCommand: Command<never, never, {}> = (
   ctx,
   next
 ) => {
-  const { updateBlock } = ctx.std.doc;
+  const { updateBlock } = ctx.std.store;
   const gfx = ctx.std.get(GfxControllerIdentifier);
 
   const elements = gfx.selection.selectedElements;

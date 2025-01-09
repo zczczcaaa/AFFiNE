@@ -108,7 +108,7 @@ export class AffineScrollAnchoringWidget extends WidgetComponent {
 
       // listen for document updates
       this.disposables.add(
-        this.std.doc.slots.blockUpdated
+        this.std.store.slots.blockUpdated
           .filter(v => v.type === 'add' && v.id === id)
           .once(() => this.#moveToAnchorInEdgeless(id))
       );
@@ -157,7 +157,7 @@ export class AffineScrollAnchoringWidget extends WidgetComponent {
 
       // listen for document updates
       this.disposables.add(
-        this.std.doc.slots.blockUpdated
+        this.std.store.slots.blockUpdated
           .filter(v => v.type === 'add' && v.id === id)
           .once(() => this.#moveToAnchorInPage(id))
       );

@@ -15,8 +15,8 @@ export const indentBlocks: Command<
 > = (ctx, next) => {
   let { blockIds } = ctx;
   const { std, stopCapture = true } = ctx;
-  const { doc, selection, range, host } = std;
-  const { schema } = doc;
+  const { store, selection, range, host } = std;
+  const { schema } = store;
 
   if (!blockIds || !blockIds.length) {
     const nativeRange = range.value;
@@ -33,13 +33,13 @@ export const indentBlocks: Command<
     }
   }
 
-  if (!blockIds || !blockIds.length || doc.readonly) return;
+  if (!blockIds || !blockIds.length || store.readonly) return;
 
   // Find the first model that can be indented
   let firstIndentIndex = -1;
   for (let i = 0; i < blockIds.length; i++) {
-    const previousSibling = doc.getPrev(blockIds[i]);
-    const model = doc.getBlock(blockIds[i])?.model;
+    const previousSibling = store.getPrev(blockIds[i]);
+    const model = store.getBlock(blockIds[i])?.model;
     if (
       model &&
       previousSibling &&
@@ -53,11 +53,11 @@ export const indentBlocks: Command<
   // No model can be indented
   if (firstIndentIndex === -1) return;
 
-  if (stopCapture) doc.captureSync();
+  if (stopCapture) store.captureSync();
 
   const collapsedIds: string[] = [];
   blockIds.slice(firstIndentIndex).forEach(id => {
-    const model = doc.getBlock(id)?.model;
+    const model = store.getBlock(id)?.model;
     if (!model) return;
     if (
       matchFlavours(model, ['affine:paragraph']) &&
@@ -72,7 +72,7 @@ export const indentBlocks: Command<
   const indentIds = blockIds
     .slice(firstIndentIndex)
     .filter(id => !collapsedIds.includes(id));
-  const firstModel = doc.getBlock(indentIds[0])?.model;
+  const firstModel = store.getBlock(indentIds[0])?.model;
   if (!firstModel) return;
 
   {
@@ -88,7 +88,7 @@ export const indentBlocks: Command<
       matchFlavours(nearestHeading, ['affine:paragraph']) &&
       nearestHeading.collapsed
     ) {
-      doc.updateBlock(nearestHeading, {
+      store.updateBlock(nearestHeading, {
         collapsed: false,
       });
     }
@@ -111,7 +111,7 @@ export const indentBlocks: Command<
       matchFlavours(nearestHeading, ['affine:paragraph']) &&
       nearestHeading.collapsed
     ) {
-      doc.updateBlock(nearestHeading, {
+      store.updateBlock(nearestHeading, {
         collapsed: false,
       });
     }

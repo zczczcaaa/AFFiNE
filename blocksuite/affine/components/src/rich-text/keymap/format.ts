@@ -14,7 +14,7 @@ export const textFormatKeymap = (std: BlockStdScope) =>
         return {
           ...acc,
           [config.hotkey as string]: ctx => {
-            const { doc, selection } = std;
+            const { store: doc, selection } = std;
             if (doc.readonly) return;
 
             const textSelection = selection.find(TextSelection);

@@ -76,7 +76,7 @@ export class SelectionManager extends LifeCycleWatcher {
 
   constructor(std: BlockStdScope) {
     super(std);
-    this._id = `${this.std.doc.id}:${nanoid()}`;
+    this._id = `${this.std.store.id}:${nanoid()}`;
     this._setupDefaultSelections();
     this._store.awareness.on(
       'change',
@@ -100,7 +100,7 @@ export class SelectionManager extends LifeCycleWatcher {
             if (id === this._store.awareness.clientID) return;
             // selection id starts with the same block collection id from others clients would be considered as remote selections
             const selection = Object.entries(state.selectionV2)
-              .filter(([key]) => key.startsWith(this.std.doc.id))
+              .filter(([key]) => key.startsWith(this.std.store.id))
               .flatMap(([_, selection]) => selection);
 
             const selections = selection
@@ -191,8 +191,8 @@ export class SelectionManager extends LifeCycleWatcher {
     if (this.disposables.disposed) {
       this.disposables = new DisposableGroup();
     }
-    this.std.doc.history.on('stack-item-added', this._itemAdded);
-    this.std.doc.history.on('stack-item-popped', this._itemPopped);
+    this.std.store.history.on('stack-item-added', this._itemAdded);
+    this.std.store.history.on('stack-item-popped', this._itemPopped);
     this.disposables.add(
       this._store.slots.update.on(({ id }) => {
         if (id === this._store.awareness.clientID) {
@@ -224,8 +224,8 @@ export class SelectionManager extends LifeCycleWatcher {
   }
 
   override unmounted() {
-    this.std.doc.history.off('stack-item-added', this._itemAdded);
-    this.std.doc.history.off('stack-item-popped', this._itemPopped);
+    this.std.store.history.off('stack-item-added', this._itemAdded);
+    this.std.store.history.off('stack-item-popped', this._itemPopped);
     this.slots.changed.dispose();
     this.disposables.dispose();
     this.clear();

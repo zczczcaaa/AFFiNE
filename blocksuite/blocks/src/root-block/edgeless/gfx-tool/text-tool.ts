@@ -29,7 +29,7 @@ export function addText(gfx: GfxController, event: PointerEventState) {
     });
     gfx.doc.captureSync();
     const textElement = gfx.getElementById(id) as TextElementModel;
-    const edgelessView = gfx.std.view.getBlock(gfx.std.doc.root!.id);
+    const edgelessView = gfx.std.view.getBlock(gfx.std.store.root!.id);
     mountTextElementEditor(
       textElement,
       edgelessView as EdgelessRootBlockComponent

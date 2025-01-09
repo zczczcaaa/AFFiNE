@@ -6,7 +6,7 @@ import { getPrevContentBlock } from '../../utils/index.js';
 function getPrevBlock(std: BlockSuite.Std, path: string) {
   const view = std.view;
 
-  const model = std.doc.getBlock(path)?.model;
+  const model = std.store.getBlock(path)?.model;
   if (!model) return null;
   const prevModel = getPrevContentBlock(std.host, model);
   if (!prevModel) return null;

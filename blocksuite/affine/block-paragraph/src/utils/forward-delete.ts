@@ -10,18 +10,18 @@ import {
 } from '@blocksuite/block-std';
 
 export function forwardDelete(std: BlockStdScope) {
-  const { doc, host } = std;
+  const { store, host } = std;
   const text = std.selection.find(TextSelection);
   if (!text) return;
   const isCollapsed = text.isCollapsed();
-  const model = doc.getBlock(text.from.blockId)?.model;
+  const model = store.getBlock(text.from.blockId)?.model;
   if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
   const isEnd = isCollapsed && text.from.index === model.text.length;
   if (!isEnd) return;
-  const parent = doc.getParent(model);
+  const parent = store.getParent(model);
   if (!parent) return;
 
-  const nextSibling = doc.getNext(model);
+  const nextSibling = store.getNext(model);
   const ignoreForwardDeleteFlavourList: BlockSuite.Flavour[] = [
     'affine:attachment',
     'affine:bookmark',
@@ -42,12 +42,12 @@ export function forwardDelete(std: BlockStdScope) {
   if (nextSibling?.text) {
     model.text.join(nextSibling.text);
     if (nextSibling.children) {
-      const parent = doc.getParent(nextSibling);
+      const parent = store.getParent(nextSibling);
       if (!parent) return false;
-      doc.moveBlocks(nextSibling.children, parent, model, false);
+      store.moveBlocks(nextSibling.children, parent, model, false);
     }
 
-    doc.deleteBlock(nextSibling);
+    store.deleteBlock(nextSibling);
     return true;
   }
 
@@ -55,11 +55,16 @@ export function forwardDelete(std: BlockStdScope) {
   if (nextBlock?.text) {
     model.text.join(nextBlock.text);
     if (nextBlock.children) {
-      const parent = doc.getParent(nextBlock);
+      const parent = store.getParent(nextBlock);
       if (!parent) return false;
-      doc.moveBlocks(nextBlock.children, parent, doc.getParent(model), false);
+      store.moveBlocks(
+        nextBlock.children,
+        parent,
+        store.getParent(model),
+        false
+      );
     }
-    doc.deleteBlock(nextBlock);
+    store.deleteBlock(nextBlock);
     return true;
   }
 

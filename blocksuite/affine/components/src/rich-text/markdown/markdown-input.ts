@@ -21,7 +21,7 @@ export function markdownInput(
     id = text?.from.blockId;
   }
   if (!id) return;
-  const model = std.doc.getBlock(id)?.model;
+  const model = std.store.getBlock(id)?.model;
   if (!model) return;
   const inline = getInlineEditorByModel(std.host, model);
   if (!inline) return;

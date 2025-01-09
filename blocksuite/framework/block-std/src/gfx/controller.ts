@@ -50,7 +50,7 @@ export class GfxController extends LifeCycleWatcher {
   readonly viewport: Viewport = new Viewport();
 
   get doc() {
-    return this.std.doc;
+    return this.std.store;
   }
 
   get elementsBound() {

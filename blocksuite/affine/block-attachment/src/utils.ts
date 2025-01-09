@@ -303,7 +303,7 @@ export async function addAttachments(
         EMBED_CARD_WIDTH.cubeThick,
         EMBED_CARD_HEIGHT.cubeThick
       );
-      const blockId = std.doc.addBlock(
+      const blockId = std.store.addBlock(
         'affine:attachment',
         {
           name: file.name,

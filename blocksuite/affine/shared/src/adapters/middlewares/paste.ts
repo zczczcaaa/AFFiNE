@@ -239,10 +239,10 @@ class PasteTr {
           linkToDocId,
           parseDocUrlService
         );
-        const model = this.std.doc.getBlock(blockSnapshot.id)?.model;
+        const model = this.std.store.getBlock(blockSnapshot.id)?.model;
         if (transformed && model) {
-          this.std.doc.captureSync();
-          this.std.doc.transact(() => {
+          this.std.store.captureSync();
+          this.std.store.transact(() => {
             const text = model.text as Text;
             text.clear();
             text.applyDelta(delta);
@@ -263,8 +263,8 @@ class PasteTr {
     if (!transformed) {
       return;
     }
-    this.std.doc.captureSync();
-    this.std.doc.transact(() => {
+    this.std.store.captureSync();
+    this.std.store.transact(() => {
       fromPointStateText.clear();
       fromPointStateText.applyDelta(delta);
     });
@@ -275,8 +275,8 @@ class PasteTr {
 
     const cursorBlock =
       this.pointState.model.flavour === 'affine:code' || !this.lastSnapshot
-        ? this.std.doc.getBlock(this.pointState.model.id)
-        : this.std.doc.getBlock(this.lastSnapshot.id);
+        ? this.std.store.getBlock(this.pointState.model.id)
+        : this.std.store.getBlock(this.lastSnapshot.id);
     if (!cursorBlock) {
       return;
     }
@@ -323,22 +323,22 @@ class PasteTr {
     }
 
     if (this.lastSnapshot) {
-      const lastModel = this.std.doc.getBlock(this.lastSnapshot.id)?.model;
+      const lastModel = this.std.store.getBlock(this.lastSnapshot.id)?.model;
       if (!lastModel) {
         return;
       }
-      this.std.doc.moveBlocks(this.pointState.model.children, lastModel);
+      this.std.store.moveBlocks(this.pointState.model.children, lastModel);
     }
 
-    this.std.doc.moveBlocks(
-      this.std.doc
+    this.std.store.moveBlocks(
+      this.std.store
         .getNexts(this.pointState.model.id)
         .slice(0, this.pasteStartModelChildrenCount),
       this.pointState.model
     );
 
     if (!this.firstSnapshotIsPlainText && this.pointState.text.length == 0) {
-      this.std.doc.deleteBlock(this.pointState.model);
+      this.std.store.deleteBlock(this.pointState.model);
     }
   };
 

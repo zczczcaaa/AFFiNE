@@ -75,7 +75,7 @@ export class EdgelessCRUDExtension extends Extension {
       index: gfx.layer.generateIndex(),
     };
 
-    return this.std.doc.addBlock(
+    return this.std.store.addBlock(
       flavour as never,
       nProps,
       parentId,
@@ -123,14 +123,14 @@ export class EdgelessCRUDExtension extends Extension {
       return;
     }
 
-    const block = this.std.doc.getBlockById(id);
+    const block = this.std.store.getBlockById(id);
     if (block) {
       const key = getLastPropsKey(
         block.flavour as BlockSuite.EdgelessModelKeys,
         { ...block.yBlock.toJSON(), ...props }
       );
       key && this.std.get(EditPropsStore).recordLastProps(key, props);
-      this.std.doc.updateBlock(block, props);
+      this.std.store.updateBlock(block, props);
     }
   };
 
@@ -141,7 +141,7 @@ export class EdgelessCRUDExtension extends Extension {
     }
     const el =
       surface.getElementById(id) ??
-      (this.std.doc.getBlockById(
+      (this.std.store.getBlockById(
         id
       ) as BlockSuite.EdgelessBlockModelType | null);
     return el;

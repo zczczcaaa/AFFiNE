@@ -12,15 +12,19 @@ export const appendParagraphCommand: Command<
   { text?: string }
 > = (ctx, next) => {
   const { std, text = '' } = ctx;
-  const { doc } = std;
-  if (!doc.root) return;
+  const { store } = std;
+  if (!store.root) return;
 
-  const note = getLastNoteBlock(doc);
+  const note = getLastNoteBlock(store);
   let noteId = note?.id;
   if (!noteId) {
-    noteId = doc.addBlock('affine:note', {}, doc.root.id);
+    noteId = store.addBlock('affine:note', {}, store.root.id);
   }
-  const id = doc.addBlock('affine:paragraph', { text: new Text(text) }, noteId);
+  const id = store.addBlock(
+    'affine:paragraph',
+    { text: new Text(text) },
+    noteId
+  );
 
   focusTextModel(std, id, text.length);
   next();

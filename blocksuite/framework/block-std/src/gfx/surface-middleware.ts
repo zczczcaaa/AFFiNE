@@ -51,7 +51,7 @@ export class SurfaceMiddlewareExtension extends LifeCycleWatcher {
       this.std.provider.getAll(SurfaceMiddlewareBuilderIdentifier).values()
     );
 
-    const dispose = onSurfaceAdded(this.std.doc, surface => {
+    const dispose = onSurfaceAdded(this.std.store, surface => {
       if (surface) {
         surface.applyMiddlewares(builders.map(builder => builder.middleware));
         queueMicrotask(() => dispose());

@@ -80,15 +80,15 @@ export async function getContentFromSlice(
   type: 'markdown' | 'plain-text' = 'markdown'
 ) {
   const job = new Job({
-    schema: host.std.doc.workspace.schema,
-    blobCRUD: host.std.doc.workspace.blobSync,
+    schema: host.std.store.workspace.schema,
+    blobCRUD: host.std.store.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => host.std.doc.workspace.createDoc({ id }),
-      get: (id: string) => host.std.doc.workspace.getDoc(id),
-      delete: (id: string) => host.std.doc.workspace.removeDoc(id),
+      create: (id: string) => host.std.store.workspace.createDoc({ id }),
+      get: (id: string) => host.std.store.workspace.getDoc(id),
+      delete: (id: string) => host.std.store.workspace.removeDoc(id),
     },
     middlewares: [
-      titleMiddleware(host.std.doc.workspace.meta.docMetas),
+      titleMiddleware(host.std.store.workspace.meta.docMetas),
       embedSyncedDocMiddleware('content'),
     ],
   });
@@ -110,14 +110,14 @@ export async function getContentFromSlice(
 
 export async function getPlainTextFromSlice(host: EditorHost, slice: Slice) {
   const job = new Job({
-    schema: host.std.doc.workspace.schema,
-    blobCRUD: host.std.doc.workspace.blobSync,
+    schema: host.std.store.workspace.schema,
+    blobCRUD: host.std.store.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => host.std.doc.workspace.createDoc({ id }),
-      get: (id: string) => host.std.doc.workspace.getDoc(id),
-      delete: (id: string) => host.std.doc.workspace.removeDoc(id),
+      create: (id: string) => host.std.store.workspace.createDoc({ id }),
+      get: (id: string) => host.std.store.workspace.getDoc(id),
+      delete: (id: string) => host.std.store.workspace.removeDoc(id),
     },
-    middlewares: [titleMiddleware(host.std.doc.workspace.meta.docMetas)],
+    middlewares: [titleMiddleware(host.std.store.workspace.meta.docMetas)],
   });
   const snapshot = job.sliceToSnapshot(slice);
   if (!snapshot) {
@@ -137,12 +137,12 @@ export const markdownToSnapshot = async (
   host: EditorHost
 ) => {
   const job = new Job({
-    schema: host.std.doc.workspace.schema,
-    blobCRUD: host.std.doc.workspace.blobSync,
+    schema: host.std.store.workspace.schema,
+    blobCRUD: host.std.store.workspace.blobSync,
     docCRUD: {
-      create: (id: string) => host.std.doc.workspace.createDoc({ id }),
-      get: (id: string) => host.std.doc.workspace.getDoc(id),
-      delete: (id: string) => host.std.doc.workspace.removeDoc(id),
+      create: (id: string) => host.std.store.workspace.createDoc({ id }),
+      get: (id: string) => host.std.store.workspace.getDoc(id),
+      delete: (id: string) => host.std.store.workspace.removeDoc(id),
     },
     middlewares: [defaultImageProxyMiddleware, pasteMiddleware(host.std)],
   });
@@ -150,8 +150,8 @@ export const markdownToSnapshot = async (
   const payload = {
     file: markdown,
     assets: job.assetsManager,
-    workspaceId: host.std.doc.workspace.id,
-    pageId: host.std.doc.id,
+    workspaceId: host.std.store.workspace.id,
+    pageId: host.std.store.id,
   };
 
   const snapshot = await markdownAdapter.toSliceSnapshot(payload);

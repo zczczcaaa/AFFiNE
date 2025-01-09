@@ -28,7 +28,7 @@ export const insertLatexBlockCommand: Command<
     latex: latex ?? '',
   };
 
-  const result = std.doc.addSiblingBlocks(
+  const result = std.store.addSiblingBlocks(
     targetModel,
     [latexBlockProps],
     place
@@ -36,7 +36,7 @@ export const insertLatexBlockCommand: Command<
   if (result.length === 0) return;
 
   if (removeEmptyLine && targetModel.text?.length === 0) {
-    std.doc.deleteBlock(targetModel);
+    std.store.deleteBlock(targetModel);
   }
 
   next({

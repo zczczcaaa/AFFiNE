@@ -63,7 +63,7 @@ export class ThemeService extends Extension {
     const extension = this.std.getOptional(ThemeExtensionIdentifier);
     this.app$ = extension?.getAppTheme?.() || getThemeObserver().theme$;
     this.edgeless$ =
-      extension?.getEdgelessTheme?.(this.std.doc.id) ||
+      extension?.getEdgelessTheme?.(this.std.store.id) ||
       getThemeObserver().theme$;
   }
 

@@ -20,17 +20,17 @@ export const insertDatabaseBlockCommand: Command<
   const service = std.getService('affine:database');
   if (!service) return;
 
-  const result = std.doc.addSiblingBlocks(
+  const result = std.store.addSiblingBlocks(
     targetModel,
     [{ flavour: 'affine:database' }],
     place
   );
   if (result.length === 0) return;
 
-  service.initDatabaseBlock(std.doc, targetModel, result[0], viewType, false);
+  service.initDatabaseBlock(std.store, targetModel, result[0], viewType, false);
 
   if (removeEmptyLine && targetModel.text?.length === 0) {
-    std.doc.deleteBlock(targetModel);
+    std.store.deleteBlock(targetModel);
   }
 
   next({ insertedDatabaseBlockId: result[0] });

@@ -23,7 +23,7 @@ export function forwardDelete(std: BlockStdScope): true | undefined {
   const text = std.selection.find(TextSelection);
   if (!text) return;
   const isCollapsed = text.isCollapsed();
-  const doc = std.doc;
+  const doc = std.store;
   const model = doc.getBlock(text.from.blockId)?.model;
   if (!model || !matchFlavours(model, ['affine:list'])) return;
   const isEnd = isCollapsed && text.from.index === model.text.length;

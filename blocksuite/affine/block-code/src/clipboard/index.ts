@@ -36,7 +36,7 @@ export class CodeClipboardController {
     const e = ctx.get('clipboardState').raw;
     e.preventDefault();
 
-    this._std.doc.captureSync();
+    this._std.store.captureSync();
     this._std.command
       .chain()
       .try(cmd => [
@@ -63,7 +63,7 @@ export class CodeClipboardController {
         this._clipboard
           .paste(
             e,
-            this._std.doc,
+            this._std.store,
             ctx.parentBlock.model.id,
             ctx.blockIndex ? ctx.blockIndex + 1 : 1
           )

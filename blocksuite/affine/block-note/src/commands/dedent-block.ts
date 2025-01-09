@@ -30,23 +30,23 @@ export const dedentBlock: Command<
 > = (ctx, next) => {
   let { blockId } = ctx;
   const { std, stopCapture = true } = ctx;
-  const { doc } = std;
+  const { store } = std;
   if (!blockId) {
     const sel = std.selection.getGroup('note').at(0);
     blockId = sel?.blockId;
   }
   if (!blockId) return;
-  const model = std.doc.getBlock(blockId)?.model;
+  const model = std.store.getBlock(blockId)?.model;
   if (!model) return;
 
-  const parent = doc.getParent(model);
-  const grandParent = parent && doc.getParent(parent);
-  if (doc.readonly || !parent || parent.role !== 'content' || !grandParent) {
+  const parent = store.getParent(model);
+  const grandParent = parent && store.getParent(parent);
+  if (store.readonly || !parent || parent.role !== 'content' || !grandParent) {
     // Top most, can not unindent, do nothing
     return;
   }
 
-  if (stopCapture) doc.captureSync();
+  if (stopCapture) store.captureSync();
 
   if (
     matchFlavours(model, ['affine:paragraph']) &&
@@ -54,14 +54,14 @@ export const dedentBlock: Command<
     model.collapsed
   ) {
     const collapsedSiblings = calculateCollapsedSiblings(model);
-    doc.moveBlocks([model, ...collapsedSiblings], grandParent, parent, false);
+    store.moveBlocks([model, ...collapsedSiblings], grandParent, parent, false);
     return next();
   }
 
   try {
-    const nextSiblings = doc.getNexts(model);
-    doc.moveBlocks(nextSiblings, model);
-    doc.moveBlocks([model], grandParent, parent, false);
+    const nextSiblings = store.getNexts(model);
+    store.moveBlocks(nextSiblings, model);
+    store.moveBlocks([model], grandParent, parent, false);
   } catch {
     return;
   }

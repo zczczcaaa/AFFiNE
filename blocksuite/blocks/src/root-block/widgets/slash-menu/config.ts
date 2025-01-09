@@ -673,7 +673,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       icon: CopyIcon,
       tooltip: slashMenuToolTips['Copy'],
       action: ({ rootComponent, model }) => {
-        const slice = Slice.fromModels(rootComponent.std.doc, [model]);
+        const slice = Slice.fromModels(rootComponent.std.store, [model]);
 
         rootComponent.std.clipboard
           .copy(slice)

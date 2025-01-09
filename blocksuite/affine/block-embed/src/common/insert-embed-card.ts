@@ -50,7 +50,7 @@ export function insertEmbedCard(
     const index = parent.children.indexOf(block.model);
     host.doc.addBlock(flavour as never, props, parent, index + 1);
   } else {
-    const rootId = std.doc.root?.id;
+    const rootId = std.store.root?.id;
     if (!rootId) return;
     const edgelessRoot = std.view.getBlock(rootId);
     if (!edgelessRoot) return;

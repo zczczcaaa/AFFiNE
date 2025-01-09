@@ -124,7 +124,7 @@ export async function getTextContentFromBlockModels(
   );
   const drafts = selectedTextModels.map(toDraftModel);
   drafts.forEach(draft => traverse(draft, drafts));
-  const slice = Slice.fromModels(editorHost.std.doc, drafts);
+  const slice = Slice.fromModels(editorHost.std.store, drafts);
   return getContentFromSlice(editorHost, slice, type);
 }
 

@@ -27,7 +27,7 @@ export const updateBlockType: Command<
 > = (ctx, next) => {
   const { std, flavour, props } = ctx;
   const host = std.host;
-  const doc = std.doc;
+  const doc = std.store;
 
   const getSelectedBlocks = () => {
     let { selectedBlocks } = ctx;

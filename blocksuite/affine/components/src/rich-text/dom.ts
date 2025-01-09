@@ -39,7 +39,7 @@ export function getInlineEditorByModel(
 ) {
   const blockModel =
     typeof model === 'string'
-      ? editorHost.std.doc.getBlock(model)?.model
+      ? editorHost.std.store.getBlock(model)?.model
       : model;
   if (!blockModel || matchFlavours(blockModel, ['affine:database'])) {
     // Not support database model since it's may be have multiple inline editor instances.

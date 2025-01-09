@@ -14,8 +14,8 @@ export const canIndentParagraphCommand: Command<
 > = (cxt, next) => {
   let { blockId, inlineIndex } = cxt;
   const { std } = cxt;
-  const { selection, doc } = std;
-  const { schema } = doc;
+  const { selection, store } = std;
+  const { schema } = store;
 
   if (!blockId) {
     const text = selection.find(TextSelection);
@@ -35,14 +35,14 @@ export const canIndentParagraphCommand: Command<
     return;
   }
 
-  const model = std.doc.getBlock(blockId)?.model;
+  const model = std.store.getBlock(blockId)?.model;
   if (!model || !matchFlavours(model, ['affine:paragraph'])) {
     return;
   }
 
-  const previousSibling = doc.getPrev(model);
+  const previousSibling = store.getPrev(model);
   if (
-    doc.readonly ||
+    store.readonly ||
     !previousSibling ||
     !schema.isValid(model.flavour, previousSibling.flavour)
   ) {
@@ -62,7 +62,7 @@ export const canIndentParagraphCommand: Command<
 
 export const indentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
   const { indentContext, std } = ctx;
-  const { doc, selection, host, range } = std;
+  const { store, selection, host, range } = std;
 
   if (
     !indentContext ||
@@ -76,13 +76,13 @@ export const indentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
   }
   const { blockId } = indentContext;
 
-  const model = doc.getBlock(blockId)?.model;
+  const model = store.getBlock(blockId)?.model;
   if (!model) return;
 
-  const previousSibling = doc.getPrev(model);
+  const previousSibling = store.getPrev(model);
   if (!previousSibling) return;
 
-  doc.captureSync();
+  store.captureSync();
 
   {
     // > # 123
@@ -95,7 +95,7 @@ export const indentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
       matchFlavours(nearestHeading, ['affine:paragraph']) &&
       nearestHeading.collapsed
     ) {
-      doc.updateBlock(nearestHeading, {
+      store.updateBlock(nearestHeading, {
         collapsed: false,
       });
     }
@@ -107,9 +107,9 @@ export const indentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
     model.collapsed
   ) {
     const collapsedSiblings = calculateCollapsedSiblings(model);
-    doc.moveBlocks([model, ...collapsedSiblings], previousSibling);
+    store.moveBlocks([model, ...collapsedSiblings], previousSibling);
   } else {
-    doc.moveBlocks([model], previousSibling);
+    store.moveBlocks([model], previousSibling);
   }
 
   {
@@ -124,7 +124,7 @@ export const indentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
       matchFlavours(nearestHeading, ['affine:paragraph']) &&
       nearestHeading.collapsed
     ) {
-      doc.updateBlock(nearestHeading, {
+      store.updateBlock(nearestHeading, {
         collapsed: false,
       });
     }
@@ -135,7 +135,7 @@ export const indentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
     matchFlavours(previousSibling, ['affine:list']) &&
     previousSibling.collapsed
   ) {
-    doc.updateBlock(previousSibling, {
+    store.updateBlock(previousSibling, {
       collapsed: false,
     } as Partial<ListBlockModel>);
   }

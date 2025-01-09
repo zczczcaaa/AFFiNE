@@ -45,7 +45,7 @@ export function toNumberedList(
   model: BlockModel,
   order: number
 ) {
-  const { doc } = std;
+  const { store: doc } = std;
   if (!model.text) return;
   const parent = doc.getParent(model);
   if (!parent) return;
