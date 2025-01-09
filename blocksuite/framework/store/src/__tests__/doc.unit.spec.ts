@@ -259,7 +259,7 @@ test('local readonly', () => {
 
   expect(doc1.readonly).toBeTruthy();
   expect(doc2?.readonly).toBeTruthy();
-  expect(doc3?.readonly).toBeTruthy();
+  expect(doc3?.readonly).toBeFalsy();
 
   doc1.readonly = false;
 

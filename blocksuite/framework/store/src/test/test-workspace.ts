@@ -1,5 +1,4 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import type { BlockSuiteFlags } from '@blocksuite/global/types';
 import { NoopLogger, Slot } from '@blocksuite/global/utils';
 import {
   AwarenessEngine,
@@ -11,8 +10,6 @@ import {
   MemoryBlobSource,
   NoopDocSource,
 } from '@blocksuite/sync';
-import clonedeep from 'lodash.clonedeep';
-import merge from 'lodash.merge';
 import { Awareness } from 'y-protocols/awareness.js';
 import * as Y from 'yjs';
 
@@ -26,7 +23,7 @@ import type {
 } from '../model/index.js';
 import type { Schema } from '../schema/index.js';
 import { type IdGenerator, nanoid } from '../utils/id-generator.js';
-import { AwarenessStore, type RawAwarenessState } from '../yjs/index.js';
+import { AwarenessStore } from '../yjs/index.js';
 import { TestDoc } from './test-doc.js';
 import { TestMeta } from './test-meta.js';
 
@@ -34,7 +31,6 @@ export type DocCollectionOptions = {
   schema: Schema;
   id?: string;
   idGenerator?: IdGenerator;
-  defaultFlags?: Partial<BlockSuiteFlags>;
   docSources?: {
     main: DocSource;
     shadows?: DocSource[];
@@ -45,10 +41,6 @@ export type DocCollectionOptions = {
   };
   awarenessSources?: AwarenessSource[];
 };
-
-const FLAGS_PRESET = {
-  readonly: {},
-} satisfies BlockSuiteFlags;
 
 /**
  * Test only
@@ -95,7 +87,6 @@ export class TestWorkspace implements Workspace {
     id,
     schema,
     idGenerator,
-    defaultFlags,
     awarenessSources = [],
     docSources = {
       main: new NoopDocSource(),
@@ -108,10 +99,7 @@ export class TestWorkspace implements Workspace {
 
     this.id = id || '';
     this.doc = new Y.Doc({ guid: id });
-    this.awarenessStore = new AwarenessStore(
-      new Awareness<RawAwarenessState>(this.doc),
-      merge(clonedeep(FLAGS_PRESET), defaultFlags)
-    );
+    this.awarenessStore = new AwarenessStore(new Awareness(this.doc));
 
     const logger = new NoopLogger();
 

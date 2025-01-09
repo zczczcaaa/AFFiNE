@@ -54,7 +54,6 @@ export interface Doc {
   clearQuery(query: Query, readonly?: boolean): void;
 
   get loaded(): boolean;
-  get readonly(): boolean;
   get awarenessStore(): AwarenessStore;
 
   get workspace(): Workspace;

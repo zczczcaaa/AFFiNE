@@ -2,7 +2,6 @@ import {
   BlockSuiteError,
   ErrorCode,
 } from '@blocksuite/affine/global/exceptions';
-import type { BlockSuiteFlags } from '@blocksuite/affine/global/types';
 import { NoopLogger, Slot } from '@blocksuite/affine/global/utils';
 import {
   AwarenessStore,
@@ -32,10 +31,6 @@ type WorkspaceOptions = {
   schema: Schema;
   blobSource?: BlobSource;
 };
-
-const FLAGS_PRESET = {
-  readonly: {},
-} satisfies BlockSuiteFlags;
 
 export class WorkspaceImpl implements Workspace {
   protected readonly _schema: Schema;
@@ -73,10 +68,7 @@ export class WorkspaceImpl implements Workspace {
 
     this.id = id || '';
     this.doc = new Y.Doc({ guid: id });
-    this.awarenessStore = new AwarenessStore(new Awareness(this.doc), {
-      ...FLAGS_PRESET,
-      readonly: {},
-    });
+    this.awarenessStore = new AwarenessStore(new Awareness(this.doc));
 
     blobSource = blobSource ?? new MemoryBlobSource();
     const logger = new NoopLogger();

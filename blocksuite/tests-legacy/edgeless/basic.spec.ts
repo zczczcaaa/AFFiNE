@@ -19,7 +19,6 @@ import {
   Shape,
   shiftClickView,
   switchEditorMode,
-  toggleEditorReadonly,
   ZOOM_BAR_RESPONSIVE_SCREEN_WIDTH,
   zoomByMouseWheel,
   zoomResetByKeyboard,
@@ -33,6 +32,7 @@ import {
   focusRichText,
   initEmptyEdgelessState,
   redoByClick,
+  switchReadonly,
   type,
   undoByClick,
   waitNextFrame,
@@ -203,7 +203,7 @@ test('zoom by pinch when edgeless is readonly', async ({ page }) => {
   await zoomResetByKeyboard(page);
   await assertZoomLevel(page, 100);
 
-  await toggleEditorReadonly(page);
+  await switchReadonly(page);
 
   const from = [
     { x: CENTER_X - 100, y: CENTER_Y },
@@ -217,7 +217,8 @@ test('zoom by pinch when edgeless is readonly', async ({ page }) => {
   await multiTouchMove(page, from, to);
   await multiTouchUp(page, to);
 
-  await toggleEditorReadonly(page);
+  await switchReadonly(page, false);
+  await waitNextFrame(page);
   await assertZoomLevel(page, 50);
 });
 

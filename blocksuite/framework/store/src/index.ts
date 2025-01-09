@@ -1,6 +1,3 @@
-// oxlint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../shim.d.ts" />
-
 export * from './adapter';
 export * from './extension';
 export * from './model';

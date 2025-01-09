@@ -1,5 +1,5 @@
 import { SpecProvider } from '@blocksuite/affine/blocks';
-import { type Disposable, Slot } from '@blocksuite/affine/global/utils';
+import { Slot } from '@blocksuite/affine/global/utils';
 import {
   type AwarenessStore,
   type Doc,
@@ -20,8 +20,6 @@ type DocOptions = {
 };
 
 export class DocImpl implements Doc {
-  private _awarenessUpdateDisposable: Disposable | null = null;
-
   private readonly _canRedo = signal(false);
 
   private readonly _canUndo = signal(false);
@@ -89,8 +87,8 @@ export class DocImpl implements Doc {
   private _shouldTransact = true;
 
   private readonly _updateCanUndoRedoSignals = () => {
-    const canRedo = this.readonly ? false : this._history.canRedo();
-    const canUndo = this.readonly ? false : this._history.canUndo();
+    const canRedo = this._history.canRedo();
+    const canUndo = this._history.canUndo();
     if (this._canRedo.peek() !== canRedo) {
       this._canRedo.value = canRedo;
     }
@@ -157,10 +155,6 @@ export class DocImpl implements Doc {
 
   get meta() {
     return this.workspace.meta.getDocMeta(this.id);
-  }
-
-  get readonly(): boolean {
-    return this.awarenessStore.isReadonly(this);
   }
 
   get ready() {
@@ -267,7 +261,6 @@ export class DocImpl implements Doc {
 
   dispose() {
     this.slots.historyUpdated.dispose();
-    this._awarenessUpdateDisposable?.dispose();
 
     if (this.ready) {
       this._yBlocks.unobserveDeep(this._handleYEvents);
@@ -320,13 +313,6 @@ export class DocImpl implements Doc {
       this._handleYBlockAdd(id);
     });
 
-    this._awarenessUpdateDisposable = this.awarenessStore.slots.update.on(
-      () => {
-        // change readonly state will affect the undo/redo state
-        this._updateCanUndoRedoSignals();
-      }
-    );
-
     initFn?.();
 
     this._ready = true;
@@ -335,18 +321,10 @@ export class DocImpl implements Doc {
   }
 
   redo() {
-    if (this.readonly) {
-      console.error('cannot modify data in readonly mode');
-      return;
-    }
     this._history.redo();
   }
 
   undo() {
-    if (this.readonly) {
-      console.error('cannot modify data in readonly mode');
-      return;
-    }
     this._history.undo();
   }
 

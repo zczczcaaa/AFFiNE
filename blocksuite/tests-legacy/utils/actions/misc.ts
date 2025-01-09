@@ -85,9 +85,6 @@ async function initEmptyEditor({
           await new Promise(resolve => doc.slots.rootAdded.once(resolve));
         }
 
-        for (const [key, value] of Object.entries(flags)) {
-          doc.awarenessStore.setFlag(key as keyof typeof flags, value);
-        }
         // add app root from https://github.com/toeverything/blocksuite/commit/947201981daa64c5ceeca5fd549460c34e2dabfa
         const appRoot = document.querySelector('#app');
         if (!appRoot) {
@@ -95,6 +92,11 @@ async function initEmptyEditor({
         }
         const createEditor = () => {
           const editor = document.createElement('affine-editor-container');
+          for (const [key, value] of Object.entries(flags)) {
+            doc
+              .get(window.$blocksuite.blocks.FeatureFlagService)
+              .setFlag(key, value);
+          }
           doc
             .get(window.$blocksuite.blocks.FeatureFlagService)
             .setFlag('enable_advanced_block_visibility', true);

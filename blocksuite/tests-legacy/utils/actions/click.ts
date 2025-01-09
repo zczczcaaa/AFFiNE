@@ -1,5 +1,6 @@
 import type { IPoint } from '@blocksuite/global/utils';
 import type { Page } from '@playwright/test';
+import type { Store } from '@store/index.js';
 
 import { toViewCoord } from './edgeless.js';
 import { waitNextFrame } from './misc.js';
@@ -110,14 +111,12 @@ export async function clickTestOperationsMenuItem(page: Page, name: string) {
 export async function switchReadonly(page: Page, value = true) {
   await page.evaluate(_value => {
     const defaultPage = document.querySelector(
-      'affine-page-root'
+      'affine-page-root,affine-edgeless-root'
     ) as HTMLElement & {
-      doc: {
-        awarenessStore: { setFlag: (key: string, value: unknown) => void };
-      };
+      doc: Store;
     };
     const doc = defaultPage.doc;
-    doc.awarenessStore.setFlag('readonly', { 'doc:home': _value });
+    doc.readonly = _value;
   }, value);
 }
 

@@ -1,11 +1,5 @@
-import type { BlockSuiteFlags } from '@blocksuite/global/types';
 import { Slot } from '@blocksuite/global/utils';
-import { type Signal, signal } from '@preact/signals-core';
-import clonedeep from 'lodash.clonedeep';
-import merge from 'lodash.merge';
-import type { Awareness as YAwareness } from 'y-protocols/awareness.js';
-
-import type { Doc } from '../model/doc.js';
+import type { Awareness } from 'y-protocols/awareness.js';
 
 export interface UserInfo {
   name: string;
@@ -17,7 +11,6 @@ type UserSelection = Array<Record<string, unknown>>;
 export type RawAwarenessState = {
   user?: UserInfo;
   color?: string;
-  flags: BlockSuiteFlags;
   // use v2 to avoid crush on old clients
   selectionV2: Record<string, UserSelection>;
 };
@@ -29,18 +22,14 @@ export interface AwarenessEvent {
 }
 
 export class AwarenessStore {
-  private readonly _flags: Signal<BlockSuiteFlags>;
-
   private readonly _onAwarenessChange = (diff: {
     added: number[];
     removed: number[];
     updated: number[];
   }) => {
-    this._flags.value = this.awareness.getLocalState()?.flags ?? {};
-
     const { added, removed, updated } = diff;
 
-    const states = this.awareness.getStates();
+    const states = this.getStates();
     added.forEach(id => {
       this.slots.update.emit({
         id,
@@ -63,40 +52,22 @@ export class AwarenessStore {
     });
   };
 
-  readonly awareness: YAwareness<RawAwarenessState>;
+  readonly awareness: Awareness;
 
   readonly slots = {
     update: new Slot<AwarenessEvent>(),
   };
 
-  constructor(
-    awareness: YAwareness<RawAwarenessState>,
-    defaultFlags: BlockSuiteFlags
-  ) {
-    this._flags = signal(defaultFlags);
+  constructor(awareness: Awareness) {
     this.awareness = awareness;
     this.awareness.on('change', this._onAwarenessChange);
     this.awareness.setLocalStateField('selectionV2', {});
-    this._initFlags(defaultFlags);
-  }
-
-  private _initFlags(defaultFlags: BlockSuiteFlags) {
-    const upstreamFlags = this.awareness.getLocalState()?.flags;
-    const flags = clonedeep(defaultFlags);
-    if (upstreamFlags) {
-      merge(flags, upstreamFlags);
-    }
-    this.awareness.setLocalStateField('flags', flags);
   }
 
   destroy() {
     this.awareness.off('change', this._onAwarenessChange);
     this.slots.update.dispose();
     this.awareness.destroy();
-  }
-
-  getFlag<Key extends keyof BlockSuiteFlags>(field: Key) {
-    return this._flags.value[field];
   }
 
   getLocalSelection(
@@ -109,24 +80,22 @@ export class AwarenessStore {
   }
 
   getStates(): Map<number, RawAwarenessState> {
-    return this.awareness.getStates();
+    return this.awareness.getStates() as Map<number, RawAwarenessState>;
   }
 
-  isReadonly(blockCollection: Doc): boolean {
-    const rd = this.getFlag('readonly');
-    if (rd && typeof rd === 'object') {
-      return Boolean((rd as Record<string, boolean>)[blockCollection.id]);
-    } else {
-      return false;
-    }
+  getLocalState(): RawAwarenessState {
+    return this.awareness.getLocalState() as RawAwarenessState;
   }
 
-  setFlag<Key extends keyof BlockSuiteFlags>(
-    field: Key,
-    value: BlockSuiteFlags[Key]
-  ) {
-    const oldFlags = this.awareness.getLocalState()?.flags ?? {};
-    this.awareness.setLocalStateField('flags', { ...oldFlags, [field]: value });
+  setLocalState(state: RawAwarenessState): void {
+    this.awareness.setLocalState(state);
+  }
+
+  setLocalStateField<Field extends keyof RawAwarenessState>(
+    field: Field,
+    value: RawAwarenessState[Field]
+  ): void {
+    this.awareness.setLocalStateField(field, value);
   }
 
   setLocalSelection(selectionManagerId: string, selection: UserSelection) {
@@ -135,13 +104,5 @@ export class AwarenessStore {
       ...oldSelection,
       [selectionManagerId]: selection,
     });
-  }
-
-  setReadonly(blockCollection: Doc, value: boolean): void {
-    const flags = this.getFlag('readonly') ?? {};
-    this.setFlag('readonly', {
-      ...flags,
-      [blockCollection.id]: value,
-    } as BlockSuiteFlags['readonly']);
   }
 }

@@ -47,7 +47,7 @@ export class Store {
     mode: 'loose',
   };
 
-  protected _readonly?: boolean;
+  protected _readonly = signal(false);
 
   protected readonly _schema: Schema;
 
@@ -175,10 +175,16 @@ export class Store {
   }
 
   get canRedo() {
+    if (this.readonly) {
+      return false;
+    }
     return this._doc.canRedo;
   }
 
   get canUndo() {
+    if (this.readonly) {
+      return false;
+    }
     return this._doc.canUndo;
   }
 
@@ -214,18 +220,16 @@ export class Store {
     return this._doc.meta;
   }
 
+  get readonly$() {
+    return this._readonly;
+  }
+
   get readonly() {
-    if (this._doc.readonly) {
-      return true;
-    }
-    return this._readonly === true;
+    return this._readonly.value === true;
   }
 
   set readonly(value: boolean) {
-    this._doc.awarenessStore.setReadonly(this._doc, value);
-    if (this._readonly !== undefined && this._readonly !== value) {
-      this._readonly = value;
-    }
+    this._readonly.value = value;
   }
 
   get ready() {
@@ -233,6 +237,11 @@ export class Store {
   }
 
   get redo() {
+    if (this.readonly) {
+      return () => {
+        console.error('cannot undo in readonly mode');
+      };
+    }
     return this._doc.redo.bind(this._doc);
   }
 
@@ -263,6 +272,11 @@ export class Store {
   }
 
   get undo() {
+    if (this.readonly) {
+      return () => {
+        console.error('cannot undo in readonly mode');
+      };
+    }
     return this._doc.undo.bind(this._doc);
   }
 
@@ -300,7 +314,9 @@ export class Store {
 
     this._crud = new DocCRUD(this._yBlocks, doc.schema);
     this._schema = schema;
-    this._readonly = readonly;
+    if (readonly !== undefined) {
+      this._readonly.value = readonly;
+    }
     if (query) {
       this._query = query;
     }

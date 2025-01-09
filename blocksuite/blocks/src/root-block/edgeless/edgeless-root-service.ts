@@ -154,7 +154,7 @@ export class EdgelessRootService extends RootService implements SurfaceContext {
 
     let readonly = doc.readonly;
     this.disposables.add(
-      doc.awarenessStore.slots.update.on(() => {
+      effect(() => {
         if (readonly !== doc.readonly) {
           readonly = doc.readonly;
           slots.readonlyUpdated.emit(readonly);
