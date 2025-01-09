@@ -80,6 +80,12 @@ export function setupAIProvider(
           workspaceId,
           docId,
           promptName,
+        }).then(sessionId => {
+          return updateChatSession({
+            sessionId,
+            client,
+            promptName,
+          });
         }),
         promptName,
       });
