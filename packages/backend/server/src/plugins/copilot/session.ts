@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import { Injectable, Logger } from '@nestjs/common';
-import { AiPromptRole, PrismaClient } from '@prisma/client';
+import { AiPromptRole, Prisma, PrismaClient } from '@prisma/client';
 
 import {
   CopilotActionTaken,
@@ -203,7 +203,8 @@ export class ChatSessionService {
   private async haveSession(
     sessionId: string,
     userId: string,
-    tx?: PrismaTransaction
+    tx?: PrismaTransaction,
+    params?: Prisma.AiSessionCountArgs['where']
   ) {
     const executor = tx ?? this.db;
     return await executor.aiSession
@@ -211,6 +212,7 @@ export class ChatSessionService {
         where: {
           id: sessionId,
           userId,
+          ...params,
         },
       })
       .then(c => c > 0);
@@ -590,7 +592,12 @@ export class ChatSessionService {
     }
     return await this.db.$transaction(async tx => {
       let sessionId = options.sessionId;
-      const haveSession = await this.haveSession(sessionId, options.userId, tx);
+      const haveSession = await this.haveSession(
+        sessionId,
+        options.userId,
+        tx,
+        { prompt: { action: null } }
+      );
       if (haveSession) {
         await tx.aiSession.update({
           where: { id: sessionId },
