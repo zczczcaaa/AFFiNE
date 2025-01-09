@@ -2,7 +2,6 @@ import '../../style.css';
 import '../dev-format.js';
 
 import {
-  type ExtensionType,
   WidgetViewMapExtension,
   WidgetViewMapIdentifier,
 } from '@blocksuite/block-std';
@@ -19,6 +18,7 @@ import { effects as blocksEffects } from '@blocksuite/blocks/effects';
 import * as globalUtils from '@blocksuite/global/utils';
 import * as editor from '@blocksuite/presets';
 import { effects as presetsEffects } from '@blocksuite/presets/effects';
+import type { ExtensionType } from '@blocksuite/store';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import * as store from '@blocksuite/store';
 

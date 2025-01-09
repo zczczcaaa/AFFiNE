@@ -1,4 +1,4 @@
-import type { EditorHost, ExtensionType } from '@blocksuite/block-std';
+import type { EditorHost } from '@blocksuite/block-std';
 import {
   CommunityCanvasTextFonts,
   DocModeExtension,
@@ -14,7 +14,7 @@ import {
   SpecProvider,
 } from '@blocksuite/blocks';
 import { AffineEditorContainer } from '@blocksuite/presets';
-import type { Workspace } from '@blocksuite/store';
+import type { ExtensionType, Workspace } from '@blocksuite/store';
 
 import { AttachmentViewerPanel } from '../../_common/components/attachment-viewer-panel.js';
 import { CollabDebugMenu } from '../../_common/components/collab-debug-menu.js';

@@ -20,7 +20,7 @@ import {
 } from '@blocksuite/blocks';
 import { Slot } from '@blocksuite/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/presets';
-import { type DocCollection } from '@blocksuite/store';
+import { type Workspace } from '@blocksuite/store';
 import { Signal, signal } from '@preact/signals-core';
 import type { TemplateResult } from 'lit';
 
@@ -109,14 +109,14 @@ export function mockNotificationService(editor: AffineEditorContainer) {
   return notificationService;
 }
 
-export function mockParseDocUrlService(collection: DocCollection) {
+export function mockParseDocUrlService(collection: Workspace) {
   const parseDocUrlService: ParseDocUrlService = {
     parseDocUrl: (url: string) => {
       if (url && URL.canParse(url)) {
         const path = decodeURIComponent(new URL(url).hash.slice(1));
         const item =
           path.length > 0
-            ? [...collection.docs.values()].find(doc => doc.id === path)
+            ? Array.from(collection.docs.values()).find(doc => doc.id === path)
             : null;
         if (item) {
           return {
@@ -185,7 +185,7 @@ export function mockPeekViewExtension(
   } satisfies PeekViewService);
 }
 
-export function mockGenerateDocUrlService(collection: DocCollection) {
+export function mockGenerateDocUrlService(collection: Workspace) {
   const generateDocUrlService: GenerateDocUrlService = {
     generateDocUrl: (docId: string, params?: ReferenceParams) => {
       const doc = collection.getDoc(docId);

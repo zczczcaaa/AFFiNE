@@ -1,12 +1,9 @@
-import { type DocCollection, Text } from '@blocksuite/store';
+import { Text, type Workspace } from '@blocksuite/store';
 import * as Y from 'yjs';
 
 import type { InitFn } from './utils.js';
 
-export const pendingStructs: InitFn = (
-  collection: DocCollection,
-  id: string
-) => {
+export const pendingStructs: InitFn = (collection: Workspace, id: string) => {
   const doc = collection.createDoc({ id });
   const tempDoc = collection.createDoc({ id: 'tempDoc' });
   doc.load();
