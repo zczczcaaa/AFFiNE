@@ -1,5 +1,4 @@
 import '../../style.css';
-import '../dev-format.js';
 
 import {
   WidgetViewMapExtension,
