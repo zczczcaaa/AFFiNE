@@ -369,7 +369,7 @@ export class MobileMenuComponent
 
 declare global {
   interface HTMLElementTagNameMap {
-    'affine-menu-mobile': MobileMenuComponent;
+    'mobile-menu': MobileMenuComponent;
   }
 }
 
