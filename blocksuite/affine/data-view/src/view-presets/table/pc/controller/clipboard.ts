@@ -89,11 +89,35 @@ export class TableClipboardController implements ReactiveController {
       return;
     }
     if (tableSelection) {
-      const json = await this.clipboard.readFromClipboard(clipboardData);
-      const dataString = json[BLOCKSUITE_DATABASE_TABLE];
-      if (!dataString) return;
-      const jsonAreaData = JSON.parse(dataString) as JsonAreaData;
-      pasteToCells(view, jsonAreaData, tableSelection);
+      try {
+        // First try to read internal format data
+        const json = await this.clipboard.readFromClipboard(clipboardData);
+        const dataString = json[BLOCKSUITE_DATABASE_TABLE];
+
+        if (dataString) {
+          // If internal format data exists, use it
+          const jsonAreaData = JSON.parse(dataString) as JsonAreaData;
+          pasteToCells(view, jsonAreaData, tableSelection);
+          return true;
+        }
+      } catch {
+        // Ignore error when reading internal format, will fallback to plain text
+        console.debug('No internal format data found, trying plain text');
+      }
+
+      // Try reading plain text (possibly copied from Excel)
+      const plainText = clipboardData.getData('text/plain');
+      if (plainText) {
+        // Split text by newlines and then by tabs for each line
+        const rows = plainText
+          .split(/\r?\n/)
+          .map(line => line.split('\t').map(cell => cell.trim()))
+          .filter(row => row.some(cell => cell !== '')); // Filter out empty rows
+
+        if (rows.length > 0) {
+          pasteToCells(view, rows, tableSelection);
+        }
+      }
     }
 
     return true;
