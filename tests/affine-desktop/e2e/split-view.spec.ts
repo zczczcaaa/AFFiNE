@@ -39,14 +39,14 @@ test('open split view', async ({ page }) => {
     'true'
   );
 
-  const firstDragHandel = page
+  const firstDragHandle = page
     .getByTestId('split-view-panel')
     .first()
     .getByTestId('split-view-indicator');
 
   await dragTo(
     page,
-    firstDragHandel,
+    firstDragHandle,
     page.getByTestId('split-view-panel').last(),
     'center',
     true

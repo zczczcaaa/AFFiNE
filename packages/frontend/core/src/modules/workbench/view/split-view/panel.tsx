@@ -156,7 +156,8 @@ export const SplitViewPanel = memo(function SplitViewPanel({
       canDrop(data) {
         const entityType = data.source.data.entity?.type;
         return (
-          data.source.data.from?.at === 'workbench:view' ||
+          (BUILD_CONFIG.isElectron &&
+            data.source.data.from?.at === 'workbench:view') ||
           data.source.data.from?.at === 'workbench:link' ||
           (!!entityType && allowedSplitViewEntityTypes.has(entityType))
         );
@@ -166,7 +167,7 @@ export const SplitViewPanel = memo(function SplitViewPanel({
     };
   }, [index, isFirst, order, setDraggingOverView, view, views]);
 
-  const { dragRef, dragHandleRef } = useDraggable<AffineDNDData>(() => {
+  const { dragRef } = useDraggable<AffineDNDData>(() => {
     return {
       data: () => {
         return {
@@ -189,6 +190,9 @@ export const SplitViewPanel = memo(function SplitViewPanel({
           index: order,
         });
       },
+      canDrag() {
+        return BUILD_CONFIG.isElectron && views.length > 1;
+      },
       disableDragPreview: true,
     };
   }, [
@@ -199,6 +203,7 @@ export const SplitViewPanel = memo(function SplitViewPanel({
     setDraggingOverView,
     setDraggingView,
     view,
+    views.length,
   ]);
 
   const dragging = draggingView?.view.id === view.id;
@@ -222,7 +227,6 @@ export const SplitViewPanel = memo(function SplitViewPanel({
       data-is-first={isFirst}
       data-is-last={isLast}
       data-testid="split-view-panel"
-      draggable={false} // only drag via drag handle
     >
       {isFirst ? (
         <ResizeHandle
@@ -236,10 +240,7 @@ export const SplitViewPanel = memo(function SplitViewPanel({
         />
       ) : null}
       <div
-        ref={node => {
-          dropTargetRef.current = node;
-          dragRef.current = node;
-        }}
+        ref={dropTargetRef}
         data-is-active={isActive && views.length > 1 && !draggingEntity}
         className={styles.splitViewPanelDrag}
       >
@@ -251,7 +252,7 @@ export const SplitViewPanel = memo(function SplitViewPanel({
             view={view}
             isActive={isActive}
             isDragging={dragging}
-            dragHandleRef={dragHandleRef}
+            dragHandleRef={dragRef}
             menuItems={<SplitViewMenu view={view} onMove={onMove} />}
           />
         ) : null}

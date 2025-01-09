@@ -13,7 +13,7 @@ const dropIndicatorRadius = createVar();
 const expandDropIndicator = keyframes({
   from: {
     vars: {
-      [resizeHandleWidth]: '30px',
+      [resizeHandleWidth]: '50px',
       [dropIndicatorWidth]: '3px',
       [dropIndicatorOpacity]: '1',
       [dropIndicatorRadius]: '10px',
@@ -110,7 +110,7 @@ export const resizeHandle = style({
 
     '&[data-state="drop-indicator"]': {
       vars: {
-        [resizeHandleWidth]: '20px',
+        [resizeHandleWidth]: '50px',
       },
     },
     '&[data-edge="left"]': {
