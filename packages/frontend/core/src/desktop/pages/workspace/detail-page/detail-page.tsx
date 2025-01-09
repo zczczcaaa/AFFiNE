@@ -11,9 +11,11 @@ import { DocService } from '@affine/core/modules/doc';
 import { EditorService } from '@affine/core/modules/editor';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { GlobalContextService } from '@affine/core/modules/global-context';
+import { PeekViewService } from '@affine/core/modules/peek-view';
 import { RecentDocsService } from '@affine/core/modules/quicksearch';
 import { ViewService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
+import { isNewTabTrigger } from '@affine/core/utils';
 import { RefNodeSlotsProvider } from '@blocksuite/affine/blocks';
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
 import { type AffineEditorContainer } from '@blocksuite/affine/presets';
@@ -39,7 +41,6 @@ import { GlobalPageHistoryModal } from '../../../../components/affine/page-histo
 import { useRegisterBlocksuiteEditorCommands } from '../../../../components/hooks/affine/use-register-blocksuite-editor-commands';
 import { useActiveBlocksuiteEditor } from '../../../../components/hooks/use-block-suite-editor';
 import { usePageDocumentTitle } from '../../../../components/hooks/use-global-state';
-import { useNavigateHelper } from '../../../../components/hooks/use-navigate-helper';
 import { PageDetailEditor } from '../../../../components/page-detail-editor';
 import { TrashPageFooter } from '../../../../components/pure/trash-page-footer';
 import { TopTip } from '../../../../components/top-tip';
@@ -81,7 +82,6 @@ const DetailPageImpl = memo(function DetailPageImpl() {
   const editor = editorService.editor;
   const view = viewService.view;
   const workspace = workspaceService.workspace;
-  const docCollection = workspace.docCollection;
   const globalContext = globalContextService.globalContext;
   const doc = docService.doc;
 
@@ -89,13 +89,14 @@ const DetailPageImpl = memo(function DetailPageImpl() {
   const activeSidebarTab = useLiveData(view.activeSidebarTab$);
 
   const isInTrash = useLiveData(doc.meta$.map(meta => meta.trash));
-  const { openPage, jumpToPageBlock } = useNavigateHelper();
   const editorContainer = useLiveData(editor.editorContainer$);
 
   const isSideBarOpen = useLiveData(workbench.sidebarOpen$);
   const { appSettings } = useAppSettingHelper();
   const chatPanelRef = useRef<ChatPanel | null>(null);
   const { setDocReadonly } = useDocMetaHelper();
+
+  const peekView = useService(PeekViewService).peekView;
 
   const isActiveView = useIsActiveView();
   // TODO(@eyhn): remove jotai here
@@ -178,25 +179,50 @@ const DetailPageImpl = memo(function DetailPageImpl() {
         const refNodeSlots = std.getOptional(RefNodeSlotsProvider);
         if (refNodeSlots) {
           disposable.add(
-            refNodeSlots.docLinkClicked.on(({ pageId, params }) => {
-              if (params) {
-                const { mode, blockIds, elementIds } = params;
-                jumpToPageBlock(
-                  docCollection.id,
-                  pageId,
-                  mode,
-                  blockIds,
-                  elementIds
-                );
-                return;
+            // the event should not be emitted by AffineReference
+            refNodeSlots.docLinkClicked.on(
+              ({ pageId, params, openMode, event }) => {
+                openMode ??=
+                  event && isNewTabTrigger(event)
+                    ? 'open-in-new-tab'
+                    : 'open-in-active-view';
+                if (openMode !== 'open-in-center-peek') {
+                  const at = (() => {
+                    if (openMode === 'open-in-active-view') {
+                      return 'active';
+                    }
+                    // split view is only supported on electron
+                    if (openMode === 'open-in-new-view') {
+                      return BUILD_CONFIG.isElectron ? 'tail' : 'new-tab';
+                    }
+                    if (openMode === 'open-in-new-tab') {
+                      return 'new-tab';
+                    }
+                    return 'active';
+                  })();
+                  workbench.openDoc(
+                    {
+                      docId: pageId,
+                      blockIds: params?.blockIds,
+                      elementIds: params?.elementIds,
+                    },
+                    {
+                      at: at,
+                      show: true,
+                    }
+                  );
+                } else {
+                  peekView
+                    .open({
+                      docRef: {
+                        docId: pageId,
+                      },
+                      ...params,
+                    })
+                    .catch(console.error);
+                }
               }
-
-              if (editor.doc.id === pageId) {
-                return;
-              }
-
-              openPage(docCollection.id, pageId);
-            })
+            )
           );
         }
       }
@@ -212,7 +238,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
         disposable.dispose();
       };
     },
-    [editor, openPage, docCollection.id, jumpToPageBlock]
+    [editor, workbench, peekView]
   );
 
   const [hasScrollTop, setHasScrollTop] = useState(false);

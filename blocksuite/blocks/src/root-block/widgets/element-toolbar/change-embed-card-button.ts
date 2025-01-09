@@ -13,7 +13,6 @@ import {
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import {
   CaptionIcon,
-  CenterPeekIcon,
   CopyIcon,
   EditIcon,
   ExpandFullSmallIcon,
@@ -44,6 +43,8 @@ import {
   GenerateDocUrlProvider,
   type GenerateDocUrlService,
   type LinkEventType,
+  OpenDocExtensionIdentifier,
+  type OpenDocMode,
   type TelemetryEvent,
   TelemetryProvider,
   ThemeProvider,
@@ -266,8 +267,8 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     return bound.h / EMBED_CARD_HEIGHT[this.model.style];
   };
 
-  private readonly _open = () => {
-    this._blockComponent?.open();
+  private readonly _open = ({ openMode }: { openMode?: OpenDocMode } = {}) => {
+    this._blockComponent?.open({ openMode });
   };
 
   private readonly _openEditPopup = (e: MouseEvent) => {
@@ -493,12 +494,6 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     );
   }
 
-  get _openButtonDisabled() {
-    return (
-      isEmbedLinkedDocBlock(this.model) && this.model.pageId === this._doc.id
-    );
-  }
-
   get _originalDocInfo(): AliasInfo | undefined {
     const model = this.model;
     const doc = isInternalEmbedModel(model)
@@ -543,20 +538,46 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
   }
 
   private _openMenuButton() {
-    const buttons: MenuItem[] = [];
+    const openDocConfig = this.std.get(OpenDocExtensionIdentifier);
+    const buttons: MenuItem[] = openDocConfig.items
+      .map(item => {
+        if (
+          item.type === 'open-in-center-peek' &&
+          this._blockComponent &&
+          !isPeekable(this._blockComponent)
+        ) {
+          return null;
+        }
 
-    if (
-      isEmbedLinkedDocBlock(this.model) ||
-      isEmbedSyncedDocBlock(this.model)
-    ) {
-      buttons.push({
-        type: 'open-this-doc',
-        label: 'Open this doc',
-        icon: ExpandFullSmallIcon,
-        action: this._open,
-        disabled: this._openButtonDisabled,
-      });
-    } else if (this._canShowFullScreenButton) {
+        if (
+          !(
+            isEmbedLinkedDocBlock(this.model) ||
+            isEmbedSyncedDocBlock(this.model)
+          )
+        ) {
+          return null;
+        }
+
+        return {
+          label: item.label,
+          type: item.type,
+          icon: item.icon,
+          disabled:
+            this.model.pageId === this._doc.id &&
+            item.type === 'open-in-active-view',
+          action: () => {
+            if (item.type === 'open-in-center-peek') {
+              this._peek();
+            } else {
+              this._open({ openMode: item.type });
+            }
+          },
+        };
+      })
+      .filter(item => item !== null);
+
+    // todo: abstract this?
+    if (this._canShowFullScreenButton) {
       buttons.push({
         type: 'open-this-doc',
         label: 'Open this doc',
@@ -564,19 +585,6 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
         action: this._open,
       });
     }
-
-    // open in new tab
-
-    if (this._blockComponent && isPeekable(this._blockComponent)) {
-      buttons.push({
-        type: 'open-in-center-peek',
-        label: 'Open in center peek',
-        icon: CenterPeekIcon,
-        action: () => this._peek(),
-      });
-    }
-
-    // open in split view
 
     if (buttons.length === 0) {
       return nothing;

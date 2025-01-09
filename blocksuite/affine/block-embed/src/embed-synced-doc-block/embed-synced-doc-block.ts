@@ -1,5 +1,8 @@
 import { Peekable } from '@blocksuite/affine-components/peek';
-import { RefNodeSlotsProvider } from '@blocksuite/affine-components/rich-text';
+import {
+  type DocLinkClickedEvent,
+  RefNodeSlotsProvider,
+} from '@blocksuite/affine-components/rich-text';
 import {
   type AliasInfo,
   type DocMode,
@@ -305,11 +308,13 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       .icon(pageId, { params, referenced: true }).value;
   });
 
-  open = () => {
+  open = (event?: Partial<DocLinkClickedEvent>) => {
     const pageId = this.model.pageId;
     if (pageId === this.doc.id) return;
 
-    this.std.getOptional(RefNodeSlotsProvider)?.docLinkClicked.emit({ pageId });
+    this.std
+      .getOptional(RefNodeSlotsProvider)
+      ?.docLinkClicked.emit({ ...event, pageId });
   };
 
   refreshData = () => {

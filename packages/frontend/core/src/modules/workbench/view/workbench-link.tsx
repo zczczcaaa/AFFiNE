@@ -1,7 +1,7 @@
 import { useDraggable } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import type { AffineDNDData, AffineDNDEntity } from '@affine/core/types/dnd';
-import { isNewTabTrigger } from '@affine/core/utils';
+import { inferOpenMode as inferOpenAt } from '@affine/core/utils';
 import { useLiveData, useServices } from '@toeverything/infra';
 import { type To } from 'history';
 import { forwardRef, type MouseEvent } from 'react';
@@ -62,13 +62,8 @@ export const WorkbenchLink = forwardRef<HTMLAnchorElement, WorkbenchLinkProps>(
         if (event.defaultPrevented) {
           return;
         }
-        const at = (() => {
-          if (isNewTabTrigger(event)) {
-            return BUILD_CONFIG.isElectron && event.altKey ? 'tail' : 'new-tab';
-          }
-          return 'active';
-        })();
-        workbench.open(to, { at, replaceHistory });
+        const at = inferOpenAt(event);
+        workbench.open(to, { at, replaceHistory, show: false });
         event.preventDefault();
         event.stopPropagation();
       },

@@ -26,7 +26,16 @@ export const usePageHelper = (docCollection: Workspace) => {
   const appSidebar = appSidebarService.sidebar;
 
   const createPageAndOpen = useCallback(
-    (mode?: DocMode, open?: boolean | 'new-tab') => {
+    (
+      mode?: DocMode,
+      options: {
+        at?: 'new-tab' | 'tail' | 'active';
+        show?: boolean;
+      } = {
+        at: 'active',
+        show: true,
+      }
+    ) => {
       appSidebar.setHovering(false);
       const docProps: DocProps = {
         note: editorSettingService.editorSetting.get('affine:note'),
@@ -37,10 +46,12 @@ export const usePageHelper = (docCollection: Workspace) => {
         docRecordList.doc$(page.id).value?.setPrimaryMode(mode);
       }
 
-      if (open !== false)
+      if (options.show !== false) {
         workbench.openDoc(page.id, {
-          at: open === 'new-tab' ? 'new-tab' : 'active',
+          at: options.at,
+          show: options.show,
         });
+      }
       return page;
     },
     [
@@ -53,8 +64,16 @@ export const usePageHelper = (docCollection: Workspace) => {
   );
 
   const createEdgelessAndOpen = useCallback(
-    (open?: boolean | 'new-tab') => {
-      return createPageAndOpen('edgeless', open);
+    (
+      options: {
+        at?: 'new-tab' | 'tail' | 'active';
+        show?: boolean;
+      } = {
+        at: 'active',
+        show: true,
+      }
+    ) => {
+      return createPageAndOpen('edgeless', options);
     },
     [createPageAndOpen]
   );
@@ -103,8 +122,13 @@ export const usePageHelper = (docCollection: Workspace) => {
 
   return useMemo(() => {
     return {
-      createPage: (mode?: DocMode, open?: boolean | 'new-tab') =>
-        createPageAndOpen(mode, open),
+      createPage: (
+        mode?: DocMode,
+        options?: {
+          at?: 'new-tab' | 'tail' | 'active';
+          show?: boolean;
+        }
+      ) => createPageAndOpen(mode, options),
       createEdgeless: createEdgelessAndOpen,
       importFile: importFileAndOpen,
     };

@@ -74,7 +74,7 @@ export const splitViewPanelDrag = style({
       transition: 'box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
     },
 
-    '[data-is-active="true"] &::after': {
+    '[data-is-active="true"]&::after': {
       boxShadow: `inset 0 0 0 1px ${cssVarV2('button/primary')}`,
     },
 

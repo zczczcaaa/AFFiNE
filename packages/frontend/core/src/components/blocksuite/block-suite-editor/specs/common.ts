@@ -11,6 +11,7 @@ import {
   CodeBlockSpec,
   DatabaseBlockSpec,
   DataViewBlockSpec,
+  DefaultOpenDocExtension,
   DividerBlockSpec,
   EditPropsStore,
   EmbedExtensions,
@@ -38,6 +39,7 @@ const CommonBlockSpecs: ExtensionType[] = [
   AttachmentBlockSpec,
   AdapterFactoryExtensions,
   FontLoaderService,
+  DefaultOpenDocExtension,
 ].flat();
 
 export const DefaultBlockSpecs: ExtensionType[] = [

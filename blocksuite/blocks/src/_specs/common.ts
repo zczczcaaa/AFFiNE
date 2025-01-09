@@ -28,6 +28,7 @@ import {
   RichTextExtensions,
 } from '@blocksuite/affine-components/rich-text';
 import {
+  DefaultOpenDocExtension,
   DocDisplayMetaService,
   EditPropsStore,
   FeatureFlagService,
@@ -54,6 +55,7 @@ export const CommonBlockSpecs: ExtensionType[] = [
   CodeBlockSpec,
   ImageBlockSpec,
   ParagraphBlockSpec,
+  DefaultOpenDocExtension,
 ].flat();
 
 export const PageFirstPartyBlockSpecs: ExtensionType[] = [

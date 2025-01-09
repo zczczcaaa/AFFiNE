@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import identity from 'lodash-es/identity';
+import { identity } from 'lodash-es';
 
 export const newLineSeparator = /\r\n|[\n\r\x85\u2028\u2029]/g;
 

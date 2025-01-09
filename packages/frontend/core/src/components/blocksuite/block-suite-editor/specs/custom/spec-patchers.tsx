@@ -24,10 +24,9 @@ import {
 } from '@affine/core/modules/quicksearch';
 import { ExternalLinksQuickSearchSession } from '@affine/core/modules/quicksearch/impls/external-links';
 import { JournalsQuickSearchSession } from '@affine/core/modules/quicksearch/impls/journals';
-import { WorkbenchService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
-import { isNewTabTrigger } from '@affine/core/utils';
 import { DebugLogger } from '@affine/debug';
+import { I18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
   BlockServiceWatcher,
@@ -39,6 +38,8 @@ import type {
   AffineReference,
   DocMode,
   DocModeProvider,
+  OpenDocConfig,
+  OpenDocConfigItem,
   PeekOptions,
   PeekViewService as BSPeekViewService,
   QuickSearchResult,
@@ -50,11 +51,11 @@ import {
   DocModeExtension,
   EdgelessRootBlockComponent,
   EmbedLinkedDocBlockComponent,
-  EmbedLinkedDocBlockConfigExtension,
   GenerateDocUrlExtension,
   MobileSpecsPatches,
   NativeClipboardExtension,
   NotificationExtension,
+  OpenDocExtension,
   ParseDocUrlExtension,
   PeekViewExtension,
   QuickSearchExtension,
@@ -67,6 +68,12 @@ import {
   Text,
 } from '@blocksuite/affine/store';
 import type { ReferenceParams } from '@blocksuite/affine-model';
+import {
+  CenterPeekIcon,
+  ExpandFullIcon,
+  OpenInNewIcon,
+  SplitViewIcon,
+} from '@blocksuite/icons/lit';
 import { type FrameworkProvider } from '@toeverything/infra';
 import { type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
@@ -236,18 +243,35 @@ export function patchNotificationService({
   });
 }
 
-export function patchEmbedLinkedDocBlockConfig(framework: FrameworkProvider) {
-  const getWorkbench = () => framework.get(WorkbenchService).workbench;
-
-  return EmbedLinkedDocBlockConfigExtension({
-    handleClick(e, _, refInfo) {
-      if (isNewTabTrigger(e)) {
-        const workbench = getWorkbench();
-        workbench.openDoc(refInfo.pageId, { at: 'new-tab' });
-        e.preventDefault();
-      }
-    },
-  });
+export function patchOpenDocExtension() {
+  const openDocConfig: OpenDocConfig = {
+    items: [
+      {
+        type: 'open-in-active-view',
+        label: I18n['com.affine.peek-view-controls.open-doc'](),
+        icon: ExpandFullIcon(),
+      },
+      BUILD_CONFIG.isElectron
+        ? {
+            type: 'open-in-new-view',
+            label:
+              I18n['com.affine.peek-view-controls.open-doc-in-split-view'](),
+            icon: SplitViewIcon(),
+          }
+        : null,
+      {
+        type: 'open-in-new-tab',
+        label: I18n['com.affine.peek-view-controls.open-doc-in-new-tab'](),
+        icon: OpenInNewIcon(),
+      },
+      {
+        type: 'open-in-center-peek',
+        label: I18n['com.affine.peek-view-controls.open-doc-in-center-peek'](),
+        icon: CenterPeekIcon(),
+      },
+    ].filter((item): item is OpenDocConfigItem => item !== null),
+  };
+  return OpenDocExtension(openDocConfig);
 }
 
 export function patchPeekViewService(service: PeekViewService) {

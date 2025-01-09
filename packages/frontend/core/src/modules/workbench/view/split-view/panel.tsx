@@ -240,6 +240,7 @@ export const SplitViewPanel = memo(function SplitViewPanel({
           dropTargetRef.current = node;
           dragRef.current = node;
         }}
+        data-is-active={isActive && views.length > 1 && !draggingEntity}
         className={styles.splitViewPanelDrag}
       >
         <div draggable={false} className={styles.splitViewPanelContent}>

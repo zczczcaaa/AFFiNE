@@ -1,4 +1,4 @@
-import once from 'lodash-es/once';
+import { once } from 'lodash-es';
 
 import { Logger } from './logger';
 import { Package, readPackageJson } from './package';

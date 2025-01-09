@@ -17,7 +17,6 @@ import type {
   insertEmbedLinkedDocCommand,
 } from './embed-linked-doc-block/commands/insert-embed-linked-doc';
 import { EmbedEdgelessLinkedDocBlockComponent } from './embed-linked-doc-block/embed-edgeless-linked-doc-block';
-import type { EmbedLinkedDocBlockConfig } from './embed-linked-doc-block/embed-linked-doc-config';
 import {
   EmbedLoomBlockComponent,
   type EmbedLoomBlockService,
@@ -123,9 +122,7 @@ declare global {
     interface CommandContext {
       insertedLinkType?: Promise<InsertedLinkType>;
     }
-    interface BlockConfigs {
-      'affine:embed-linked-doc': EmbedLinkedDocBlockConfig;
-    }
+
     interface Commands {
       insertEmbedLinkedDoc: typeof insertEmbedLinkedDocCommand;
     }

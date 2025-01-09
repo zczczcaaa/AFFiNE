@@ -12,10 +12,8 @@ import {
 } from '@blocksuite/affine-block-embed';
 import {
   CaptionIcon,
-  CenterPeekIcon,
   CopyIcon,
   EditIcon,
-  ExpandFullSmallIcon,
   MoreVerticalIcon,
   OpenIcon,
   PaletteIcon,
@@ -48,6 +46,7 @@ import {
   GenerateDocUrlProvider,
   type GenerateDocUrlService,
   type LinkEventType,
+  OpenDocExtensionIdentifier,
   type TelemetryEvent,
   TelemetryProvider,
   ThemeProvider,
@@ -503,34 +502,42 @@ export class EmbedCardToolbar extends WidgetComponent<
   }
 
   private _openMenuButton() {
-    const buttons: MenuItem[] = [];
-
-    if (
-      this.focusModel &&
-      (isEmbedLinkedDocBlock(this.focusModel) ||
-        isEmbedSyncedDocBlock(this.focusModel))
-    ) {
-      buttons.push({
-        type: 'open-this-doc',
-        label: 'Open this doc',
-        icon: ExpandFullSmallIcon,
-        action: () => this.focusBlock?.open(),
-      });
-    }
-
-    // open in new tab
-
+    const openDocConfig = this.std.get(OpenDocExtensionIdentifier);
     const element = this.focusBlock;
-    if (element && isPeekable(element)) {
-      buttons.push({
-        type: 'open-in-center-peek',
-        label: 'Open in center peek',
-        icon: CenterPeekIcon,
-        action: () => peek(element),
-      });
-    }
+    const buttons: MenuItem[] = openDocConfig.items
+      .map(item => {
+        if (
+          item.type === 'open-in-center-peek' &&
+          element &&
+          !isPeekable(element)
+        ) {
+          return null;
+        }
 
-    // open in split view
+        if (
+          !(
+            this.focusModel &&
+            (isEmbedLinkedDocBlock(this.focusModel) ||
+              isEmbedSyncedDocBlock(this.focusModel))
+          )
+        ) {
+          return null;
+        }
+
+        return {
+          label: item.label,
+          type: item.type,
+          icon: item.icon,
+          action: () => {
+            if (item.type === 'open-in-center-peek') {
+              element && peek(element);
+            } else {
+              this.focusBlock?.open({ openMode: item.type });
+            }
+          },
+        };
+      })
+      .filter(item => item !== null);
 
     if (buttons.length === 0) {
       return nothing;

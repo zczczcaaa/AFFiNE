@@ -44,6 +44,16 @@ export function isControlledKeyboardEvent(e: KeyboardEvent) {
   return e.ctrlKey || e.metaKey || e.altKey;
 }
 
+export function isNewTabTrigger(event?: MouseEvent) {
+  return event
+    ? (event.ctrlKey || event.metaKey || event.button === 1) && !event.altKey
+    : false;
+}
+
+export function isNewViewTrigger(event?: MouseEvent) {
+  return event ? (event.ctrlKey || event.metaKey) && event.altKey : false;
+}
+
 export function on<
   T extends HTMLElement,
   K extends keyof M,

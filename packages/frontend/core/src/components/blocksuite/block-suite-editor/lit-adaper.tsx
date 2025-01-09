@@ -53,13 +53,13 @@ import { extendEdgelessPreviewSpec } from './specs/custom/root-block';
 import {
   patchDocModeService,
   patchEdgelessClipboard,
-  patchEmbedLinkedDocBlockConfig,
   patchForAttachmentEmbedViews,
   patchForClipboardInElectron,
   patchForMobile,
   patchForSharedPage,
   patchGenerateDocUrlExtension,
   patchNotificationService,
+  patchOpenDocExtension,
   patchParseDocUrlExtension,
   patchPeekViewService,
   patchQuickSearchService,
@@ -160,11 +160,11 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
 
     patched = patched.concat(patchNotificationService(confirmModal));
     patched = patched.concat(patchPeekViewService(peekViewService));
+    patched = patched.concat(patchOpenDocExtension());
     patched = patched.concat(patchEdgelessClipboard());
     patched = patched.concat(patchParseDocUrlExtension(framework));
     patched = patched.concat(patchGenerateDocUrlExtension(framework));
     patched = patched.concat(patchQuickSearchService(framework));
-    patched = patched.concat(patchEmbedLinkedDocBlockConfig(framework));
     if (shared) {
       patched = patched.concat(patchForSharedPage());
     }

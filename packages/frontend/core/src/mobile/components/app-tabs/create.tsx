@@ -18,7 +18,7 @@ export const AppTabCreate = ({ tab }: AppTabCustomFCProps) => {
   const createPage = useCallback(
     (isActive: boolean) => {
       if (isActive) return;
-      const doc = pageHelper.createPage(undefined, false);
+      const doc = pageHelper.createPage(undefined, { show: false });
       workbench.openDoc({ docId: doc.id, fromTab: 'true' });
       track.$.navigationPanel.$.createDoc();
     },

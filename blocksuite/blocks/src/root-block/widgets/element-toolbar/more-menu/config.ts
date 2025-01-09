@@ -12,7 +12,10 @@ import type { ImageBlockComponent } from '@blocksuite/affine-block-image';
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import { isPeekable, peek } from '@blocksuite/affine-components/peek';
 import type { MenuItemGroup } from '@blocksuite/affine-components/toolbar';
-import { TelemetryProvider } from '@blocksuite/affine-shared/services';
+import {
+  OpenDocExtensionIdentifier,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import { Bound, getCommonBoundWithRotation } from '@blocksuite/global/utils';
 import {
   ArrowDownBigBottomIcon,
@@ -23,11 +26,13 @@ import {
   CopyIcon,
   DeleteIcon,
   DuplicateIcon,
+  ExpandFullIcon,
   FrameIcon,
   GroupIcon,
   LinkedPageIcon,
   OpenInNewIcon,
   ResetIcon,
+  SplitViewIcon,
 } from '@blocksuite/icons/lit';
 
 import { duplicate } from '../../../edgeless/utils/clipboard-utils.js';
@@ -135,11 +140,12 @@ export const reorderGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
 };
 
 // Open Group
+// TODO: construct this group dynamically
 export const openGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
   type: 'open',
   items: [
     {
-      icon: OpenInNewIcon({ width: '20', height: '20' }),
+      icon: ExpandFullIcon({ width: '20', height: '20' }),
       label: 'Open this doc',
       type: 'open',
       generate: ctx => {
@@ -163,6 +169,62 @@ export const openGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
           disabled,
         };
       },
+      when: ctx => {
+        const openDocService = ctx.std.get(OpenDocExtensionIdentifier);
+        return openDocService.isAllowed('open-in-active-view');
+      },
+    },
+    {
+      icon: SplitViewIcon({ width: '20', height: '20' }),
+      label: 'Open in split view',
+      type: 'open-in-split-view',
+      generate: ctx => {
+        const linkedDocBlock = ctx.getLinkedDocBlock();
+
+        if (!linkedDocBlock) return;
+
+        return {
+          action: () => {
+            const blockComponent = ctx.firstBlockComponent;
+
+            if (!blockComponent) return;
+            if (!('open' in blockComponent)) return;
+            if (typeof blockComponent.open !== 'function') return;
+
+            blockComponent.open({ openMode: 'open-in-new-view' });
+          },
+        };
+      },
+      when: ctx => {
+        const openDocService = ctx.std.get(OpenDocExtensionIdentifier);
+        return openDocService.isAllowed('open-in-new-view');
+      },
+    },
+    {
+      icon: OpenInNewIcon({ width: '20', height: '20' }),
+      label: 'Open in new tab',
+      type: 'open-in-new-tab',
+      generate: ctx => {
+        const linkedDocBlock = ctx.getLinkedDocBlock();
+
+        if (!linkedDocBlock) return;
+
+        return {
+          action: () => {
+            const blockComponent = ctx.firstBlockComponent;
+
+            if (!blockComponent) return;
+            if (!('open' in blockComponent)) return;
+            if (typeof blockComponent.open !== 'function') return;
+
+            blockComponent.open({ openMode: 'open-in-new-tab' });
+          },
+        };
+      },
+      when: ctx => {
+        const openDocService = ctx.std.get(OpenDocExtensionIdentifier);
+        return openDocService.isAllowed('open-in-new-tab');
+      },
     },
     {
       icon: CenterPeekIcon({ width: '20', height: '20' }),
@@ -183,6 +245,10 @@ export const openGroup: MenuItemGroup<ElementToolbarMoreMenuContext> = {
             peek(ctx.firstBlockComponent);
           },
         };
+      },
+      when: ctx => {
+        const openDocService = ctx.std.get(OpenDocExtensionIdentifier);
+        return openDocService.isAllowed('open-in-center-peek');
       },
     },
   ],

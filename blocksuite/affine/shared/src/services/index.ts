@@ -9,6 +9,7 @@ export * from './font-loader';
 export * from './generate-url-service';
 export * from './native-clipboard-service';
 export * from './notification-service';
+export * from './open-doc-config';
 export * from './page-viewport-service';
 export * from './parse-url-service';
 export * from './quick-search-service';
