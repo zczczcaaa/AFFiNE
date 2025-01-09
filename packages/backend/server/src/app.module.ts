@@ -37,6 +37,7 @@ import { StorageModule } from './core/storage';
 import { SyncModule } from './core/sync';
 import { UserModule } from './core/user';
 import { WorkspaceModule } from './core/workspaces';
+import { ModelModules } from './models';
 import { REGISTERED_PLUGINS } from './plugins';
 import { ENABLED_PLUGINS } from './plugins/registry';
 
@@ -154,6 +155,7 @@ export function buildAppModule() {
   factor
     // basic
     .use(...FunctionalityModules)
+    .use(ModelModules)
     .useIf(config => config.flavor.sync, WebSocketModule)
 
     // auth

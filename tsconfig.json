@@ -35,7 +35,6 @@
 
     // Composite
     "composite": true,
-    "disableReferencedProjectLoad": true,
 
     // NOTE(@forehalo):
     //   We now "fully" resolve package exports by standard "exports" field in package.json

@@ -233,6 +233,7 @@ export class UserService {
       }
     }
 
+    // @ts-expect-error will be removed
     this.emitter.emit('user.updated', user);
 
     return user;
