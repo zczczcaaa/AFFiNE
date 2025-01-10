@@ -383,12 +383,12 @@ test('should be able to revoke team member', async t => {
 
   {
     // no permission
-    t.throwsAsync(
+    await t.throwsAsync(
       revokeUser(app, read.token.token, ws.id, read.id),
       { instanceOf: Error },
       'should throw error if not admin'
     );
-    t.throwsAsync(
+    await t.throwsAsync(
       revokeUser(app, read.token.token, ws.id, write.id),
       { instanceOf: Error },
       'should throw error if not admin'
