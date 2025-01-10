@@ -191,10 +191,7 @@ function buildPageResponseConfig<T extends keyof BlockSuitePresets.AIActions>(
           icon: ChatWithAIIcon,
           handler: () => {
             reportResponse('result:continue-in-chat');
-            AIProvider.slots.requestOpenWithChat.emit({
-              host,
-              appendCard: true,
-            });
+            AIProvider.slots.requestOpenWithChat.emit({ host });
             panel.hide();
           },
         },

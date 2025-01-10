@@ -313,8 +313,6 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
         <div
           class="close-wrapper"
           @click=${() => {
-            AIProvider.slots.toggleChatCards.emit({ visible: true });
-
             if (this.curIndex >= 0 && this.curIndex < images.length) {
               const newImages = [...images];
               newImages.splice(this.curIndex, 1);
@@ -356,7 +354,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
           if (this.host === host) {
             context && this.updateContext(context);
             await this.updateComplete;
-            input && (await this.send(input));
+            await this.send(input);
           }
         }
       )
@@ -392,7 +390,6 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
               <div
                 class="chat-quote-close"
                 @click=${() => {
-                  AIProvider.slots.toggleChatCards.emit({ visible: true });
                   this.updateContext({ quote: '', markdown: '' });
                 }}
               >

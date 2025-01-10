@@ -15,7 +15,7 @@ import { property } from 'lit/decorators.js';
 
 import { AIProvider } from '../../provider';
 import { getAIPanelWidget } from '../../utils/ai-widgets';
-import { extractContext } from '../../utils/extract';
+import { extractSelectedContent } from '../../utils/extract';
 
 export class AskAIToolbarButton extends WithDisposable(LitElement) {
   static override styles = css`
@@ -75,8 +75,7 @@ export class AskAIToolbarButton extends WithDisposable(LitElement) {
       finish('success');
       const aiPanel = getAIPanelWidget(this.host);
       aiPanel.discard();
-      AIProvider.slots.requestOpenWithChat.emit({ host: this.host });
-      extractContext(this.host)
+      extractSelectedContent(this.host)
         .then(context => {
           AIProvider.slots.requestSendWithChat.emit({
             input,

@@ -25,7 +25,6 @@ import {
   AIPresentationIconWithAnimation,
   AISearchIcon,
   AIStarIconWithAnimation,
-  ChatWithAIIcon,
   CommentIcon,
   ExplainIcon,
   ImproveWritingIcon,
@@ -336,19 +335,6 @@ const OthersAIGroup: AIItemGroupConfig = {
         AIProvider.slots.requestOpenWithChat.emit({
           host,
           autoSelect: true,
-          appendCard: true,
-        });
-        panel.hide();
-      },
-    },
-    {
-      name: 'Open AI Chat',
-      icon: ChatWithAIIcon,
-      handler: host => {
-        const panel = getAIPanelWidget(host);
-        AIProvider.slots.requestOpenWithChat.emit({
-          host,
-          appendCard: true,
         });
         panel.hide();
       },

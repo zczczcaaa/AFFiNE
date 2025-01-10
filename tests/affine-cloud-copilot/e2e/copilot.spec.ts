@@ -599,20 +599,6 @@ test.describe('chat with block', () => {
           .waitForSelector('chat-panel-input .chat-panel-images')
           .then(el => el.waitForElementState('visible'));
       });
-
-      test('open ai chat', async ({ page }) => {
-        await page
-          .waitForSelector('.ai-item-open-ai-chat')
-          .then(i => i.click());
-        const cards = await page.waitForSelector('chat-panel chat-cards');
-        await cards.waitForElementState('visible');
-        const cardTitles = await Promise.all(
-          await cards
-            .$$('.card-wrapper .card-title')
-            .then(els => els.map(async el => await el.innerText()))
-        );
-        expect(cardTitles).toContain('Start with this Image');
-      });
     });
 
     // TODO(@darkskygit): block by BS-1709, enable this after bug fix

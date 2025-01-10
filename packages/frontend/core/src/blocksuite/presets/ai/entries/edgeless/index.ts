@@ -12,7 +12,7 @@ import { html } from 'lit';
 import { AIProvider } from '../../provider';
 import { getAIPanelWidget } from '../../utils/ai-widgets';
 import { getEdgelessCopilotWidget } from '../../utils/edgeless';
-import { extractContext } from '../../utils/extract';
+import { extractSelectedContent } from '../../utils/extract';
 import { edgelessAIGroups } from './actions-config';
 
 noop(EdgelessCopilotToolbarEntry);
@@ -48,8 +48,7 @@ export function setupEdgelessElementToolbarAIEntry(
           aiPanel.config.generateAnswer = ({ finish, input }) => {
             finish('success');
             aiPanel.discard();
-            AIProvider.slots.requestOpenWithChat.emit({ host: edgeless.host });
-            extractContext(edgeless.host)
+            extractSelectedContent(edgeless.host)
               .then(context => {
                 AIProvider.slots.requestSendWithChat.emit({
                   input,

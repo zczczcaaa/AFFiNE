@@ -11,7 +11,11 @@ import {
   type EdgelessRootService,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
-import { Bound, DisposableGroup } from '@blocksuite/affine/global/utils';
+import {
+  Bound,
+  type Disposable,
+  DisposableGroup,
+} from '@blocksuite/affine/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import {
   FrameworkScope,
@@ -123,17 +127,17 @@ function DocPeekPreviewEditor({
   );
 
   useEffect(() => {
-    const disposable = AIProvider.slots.requestOpenWithChat.on(() => {
+    const disposables: Disposable[] = [];
+    const openHandler = () => {
       if (doc) {
         workbench.openDoc(doc.id);
         peekView.close();
         // chat panel open is already handled in <DetailPageImpl />
       }
-    });
-
-    return () => {
-      disposable.dispose();
     };
+    disposables.push(AIProvider.slots.requestOpenWithChat.on(openHandler));
+    disposables.push(AIProvider.slots.requestSendWithChat.on(openHandler));
+    return () => disposables.forEach(d => d.dispose());
   }, [doc, peekView, workbench, workspace.id]);
 
   const openOutlinePanel = useCallback(() => {

@@ -12,6 +12,7 @@ import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
 import { AIHelpIcon, SmallHintIcon } from '../_common/icons';
 import { AIProvider } from '../provider';
+import { extractSelectedContent } from '../utils/extract';
 import {
   getSelectedImagesAsBlobs,
   getSelectedTextContent,
@@ -222,30 +223,34 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     super.connectedCallback();
     if (!this.doc) throw new Error('doc is required');
 
-    AIProvider.slots.actions.on(({ action, event }) => {
-      const { status } = this.chatContextValue;
-
-      if (
-        action !== 'chat' &&
-        event === 'finished' &&
-        (status === 'idle' || status === 'success')
-      ) {
-        this._resetItems();
-      }
-
-      if (action === 'chat' && event === 'finished') {
-        AIProvider.slots.toggleChatCards.emit({
-          visible: true,
-          ok: status === 'success',
-        });
-      }
-    });
-
-    AIProvider.slots.userInfo.on(userInfo => {
-      if (userInfo) {
-        this._resetItems();
-      }
-    });
+    this._disposables.add(
+      AIProvider.slots.actions.on(({ action, event }) => {
+        const { status } = this.chatContextValue;
+        if (
+          action !== 'chat' &&
+          event === 'finished' &&
+          (status === 'idle' || status === 'success')
+        ) {
+          this._resetItems();
+        }
+      })
+    );
+    this._disposables.add(
+      AIProvider.slots.userInfo.on(userInfo => {
+        if (userInfo) {
+          this._resetItems();
+        }
+      })
+    );
+    this._disposables.add(
+      AIProvider.slots.requestOpenWithChat.on(async ({ host }) => {
+        if (this.host === host) {
+          const context = await extractSelectedContent(host);
+          if (!context) return;
+          this.updateContext(context);
+        }
+      })
+    );
   }
 
   updateContext = (context: Partial<ChatContextValue>) => {

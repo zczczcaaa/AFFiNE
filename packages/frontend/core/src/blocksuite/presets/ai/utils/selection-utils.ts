@@ -14,6 +14,7 @@ import {
   Slice,
   toDraftModel,
 } from '@blocksuite/affine/store';
+import type { GfxModel } from '@blocksuite/block-std/gfx';
 
 import { getContentFromSlice } from '../../_common';
 import { getEdgelessCopilotWidget, getService } from './edgeless';
@@ -39,11 +40,22 @@ export function getEdgelessService(editor: EditorHost) {
   throw new Error('Please open switch to edgeless mode');
 }
 
-export async function selectedToCanvas(editor: EditorHost) {
-  const edgelessRoot = getEdgelessRootFromEditor(editor);
-  const { notes, frames, shapes, images } = BlocksUtils.splitElements(
+export async function selectedToCanvas(host: EditorHost) {
+  const edgelessRoot = getEdgelessRootFromEditor(host);
+  return elementsToCanvas(
+    host,
     edgelessRoot.service.selection.selectedElements
   );
+}
+
+export async function allToCanvas(host: EditorHost) {
+  const edgelessRoot = getEdgelessRootFromEditor(host);
+  return elementsToCanvas(host, edgelessRoot.gfx.gfxElements);
+}
+
+export async function elementsToCanvas(host: EditorHost, elements: GfxModel[]) {
+  const edgelessRoot = getEdgelessRootFromEditor(host);
+  const { notes, frames, shapes, images } = BlocksUtils.splitElements(elements);
   if (notes.length + frames.length + images.length + shapes.length === 0) {
     return;
   }

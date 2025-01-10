@@ -15,7 +15,6 @@ import { ActionMindmap } from './ai/chat-panel/actions/mindmap';
 import { ActionSlides } from './ai/chat-panel/actions/slides';
 import { ActionText } from './ai/chat-panel/actions/text';
 import { AILoading } from './ai/chat-panel/ai-loading';
-import { ChatCards } from './ai/chat-panel/chat-cards';
 import { ChatPanelInput } from './ai/chat-panel/chat-panel-input';
 import { ChatPanelMessages } from './ai/chat-panel/chat-panel-messages';
 import { AIErrorWrapper } from './ai/messages/error';
@@ -55,7 +54,6 @@ export function registerBlocksuitePresetsCustomComponents() {
   customElements.define('action-slides', ActionSlides);
   customElements.define('action-text', ActionText);
   customElements.define('ai-loading', AILoading);
-  customElements.define('chat-cards', ChatCards);
   customElements.define('chat-panel-input', ChatPanelInput);
   customElements.define('chat-panel-messages', ChatPanelMessages);
   customElements.define('chat-panel', ChatPanel);

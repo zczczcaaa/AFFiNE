@@ -40,12 +40,6 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
       height: 100%;
       position: relative;
       overflow-y: auto;
-
-      chat-cards {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-      }
     }
 
     .chat-panel-messages-placeholder {
@@ -137,9 +131,6 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
 
   @query('.chat-panel-messages')
   accessor messagesContainer: HTMLDivElement | null = null;
-
-  @state()
-  accessor showChatCards = true;
 
   private _renderAIOnboarding() {
     return this.isLoading ||
@@ -251,12 +242,6 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
                 </div>`;
               }
             )}
-        <chat-cards
-          .updateContext=${this.updateContext}
-          .host=${this.host}
-          .isEmpty=${items.length === 0}
-          ?data-show=${this.showChatCards}
-        ></chat-cards>
       </div>
       ${this.showDownIndicator
         ? html`<div class="down-indicator" @click=${this.scrollToEnd}>
@@ -287,11 +272,6 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         ) {
           this.updateContext({ status: 'idle', error: null });
         }
-      })
-    );
-    disposables.add(
-      AIProvider.slots.toggleChatCards.on(({ visible }) => {
-        this.showChatCards = visible;
       })
     );
     disposables.add(

@@ -17,7 +17,10 @@ import { ViewService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { isNewTabTrigger } from '@affine/core/utils';
 import { RefNodeSlotsProvider } from '@blocksuite/affine/blocks';
-import { DisposableGroup } from '@blocksuite/affine/global/utils';
+import {
+  type Disposable,
+  DisposableGroup,
+} from '@blocksuite/affine/global/utils';
 import { type AffineEditorContainer } from '@blocksuite/affine/presets';
 import {
   AiIcon,
@@ -111,16 +114,14 @@ const DetailPageImpl = memo(function DetailPageImpl() {
   }, [editorContainer, isActiveView, setActiveBlockSuiteEditor]);
 
   useEffect(() => {
-    const disposable = AIProvider.slots.requestOpenWithChat.on(params => {
+    const disposables: Disposable[] = [];
+    const openHandler = () => {
       workbench.openSidebar();
       view.activeSidebarTab('chat');
-
-      if (chatPanelRef.current) {
-        const chatCards = chatPanelRef.current.querySelector('chat-cards');
-        if (chatCards) chatCards.temporaryParams = params;
-      }
-    });
-    return () => disposable.dispose();
+    };
+    disposables.push(AIProvider.slots.requestOpenWithChat.on(openHandler));
+    disposables.push(AIProvider.slots.requestSendWithChat.on(openHandler));
+    return () => disposables.forEach(d => d.dispose());
   }, [activeSidebarTab, view, workbench]);
 
   useEffect(() => {

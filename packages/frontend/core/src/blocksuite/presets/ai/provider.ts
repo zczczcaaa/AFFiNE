@@ -20,12 +20,11 @@ export interface AIChatParams {
   mode?: 'page' | 'edgeless';
   // Auto select and append selection to input via `Continue with AI` action.
   autoSelect?: boolean;
-  appendCard?: boolean;
 }
 
 export interface AISendParams {
   host: EditorHost;
-  input?: string;
+  input: string;
   context?: Partial<ChatContextValue | null>;
 }
 
@@ -128,11 +127,6 @@ export class AIProvider {
     }>(),
     // downstream can emit this slot to notify ai presets that user info has been updated
     userInfo: new Slot<AIUserInfo | null>(),
-    // add more if needed
-    toggleChatCards: new Slot<{
-      visible: boolean;
-      ok?: boolean;
-    }>(),
   };
 
   // track the history of triggered actions (in memory only)
