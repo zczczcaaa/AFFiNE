@@ -2,7 +2,7 @@ import { assertEquals } from '@blocksuite/affine/global/utils';
 import { Service } from '@toeverything/infra';
 import { applyUpdate } from 'yjs';
 
-import { transformWorkspaceDBLocalToCloud } from '../../db';
+import { transformWorkspaceDBLocalToCloud } from '../../db/utils';
 import type { Workspace } from '../entities/workspace';
 import type { WorkspaceMetadata } from '../metadata';
 import type { WorkspaceDestroyService } from './destroy';
