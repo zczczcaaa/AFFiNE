@@ -1,11 +1,10 @@
 import { test } from '@affine-test/kit/playwright';
-import { openHomePage } from '@affine-test/kit/utils/load-page';
-import { waitForEditorLoad } from '@affine-test/kit/utils/page-logic';
 
 import {
-  initDatabaseWithRows,
-  pasteExcelData,
-  selectFirstCell,
+  addRows,
+  initDatabaseByOneStep,
+  pasteString,
+  selectCell,
   verifyCellContents,
 } from './utils';
 
@@ -14,16 +13,14 @@ test.describe('Database Clipboard Operations', () => {
     page,
   }) => {
     // Open the home page and wait for the editor to load
-    await openHomePage(page);
-    await waitForEditorLoad(page);
-
+    await initDatabaseByOneStep(page);
     // Create a database block with two rows
-    await initDatabaseWithRows(page, 2);
+    await addRows(page, 2);
 
     // Select the first cell and paste data
-    await selectFirstCell(page);
+    await selectCell(page, 0, false);
     const mockExcelData = 'Cell 1A\tCell 1B\nCell 2A\tCell 2B';
-    await pasteExcelData(page, mockExcelData);
+    await pasteString(page, mockExcelData);
 
     // Verify cell contents
     await verifyCellContents(page, [
@@ -38,16 +35,14 @@ test.describe('Database Clipboard Operations', () => {
     page,
   }) => {
     // Open the home page and wait for the editor to load
-    await openHomePage(page);
-    await waitForEditorLoad(page);
-
+    await initDatabaseByOneStep(page);
     // Create a database block with two rows
-    await initDatabaseWithRows(page, 2);
+    await addRows(page, 2);
 
     // Select the first cell and paste data with empty cells
-    await selectFirstCell(page);
+    await selectCell(page, 0, false);
     const mockExcelData = 'Cell 1A\t\nCell 2A\tCell 2B';
-    await pasteExcelData(page, mockExcelData);
+    await pasteString(page, mockExcelData);
 
     // Verify cell contents including empty cells
     await verifyCellContents(page, ['Cell 1A', '', 'Cell 2A', 'Cell 2B']);
@@ -55,16 +50,14 @@ test.describe('Database Clipboard Operations', () => {
 
   test('handle pasting data larger than selected area', async ({ page }) => {
     // Open the home page and wait for the editor to load
-    await openHomePage(page);
-    await waitForEditorLoad(page);
-
+    await initDatabaseByOneStep(page);
     // Create a database block with one row
-    await initDatabaseWithRows(page, 1);
+    await addRows(page, 1);
 
     // Select the first cell and paste data larger than table
-    await selectFirstCell(page);
+    await selectCell(page, 0, false);
     const mockExcelData = 'Cell 1A\tCell 1B\nCell 2A\tCell 2B';
-    await pasteExcelData(page, mockExcelData);
+    await pasteString(page, mockExcelData);
 
     // Verify only the cells that exist are filled
     await verifyCellContents(page, ['Cell 1A', 'Cell 1B']);

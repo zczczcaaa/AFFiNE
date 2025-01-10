@@ -1,45 +1,36 @@
+import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   addDatabase,
   clickNewPageButton,
+  waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-/**
- * Create a new database block in the current page
- */
-export async function createDatabaseBlock(page: Page) {
+export async function createNewPage(page: Page) {
   await clickNewPageButton(page);
-  await page.waitForTimeout(500);
+}
+
+export const gotoContentFromTitle = async (page: Page) => {
   await page.keyboard.press('Enter');
+};
+
+export async function createDatabaseBlock(page: Page) {
   await addDatabase(page);
 }
 
-/**
- * Initialize a database with specified number of rows
- */
-export async function initDatabaseWithRows(page: Page, rowCount: number) {
-  await createDatabaseBlock(page);
+export async function addRows(page: Page, rowCount: number) {
   for (let i = 0; i < rowCount; i++) {
     await addDatabaseRow(page);
   }
 }
 
-/**
- * Add a new row to the database
- */
 export async function addDatabaseRow(page: Page) {
   const addButton = page.locator('.data-view-table-group-add-row');
-  await addButton.waitFor();
   await addButton.click();
 }
 
-/**
- * Simulate pasting Excel data into database
- * @param page Playwright page object
- * @param data Tab-separated text data with newlines for rows
- */
-export async function pasteExcelData(page: Page, data: string) {
+export async function pasteString(page: Page, data: string) {
   await page.evaluate(data => {
     const clipboardData = new DataTransfer();
     clipboardData.setData('text/plain', data);
@@ -48,24 +39,25 @@ export async function pasteExcelData(page: Page, data: string) {
       bubbles: true,
       cancelable: true,
     });
-    document.activeElement?.dispatchEvent(pasteEvent);
+    const activeElement = document.activeElement;
+    if (activeElement) {
+      pasteEvent.preventDefault();
+      activeElement.dispatchEvent(pasteEvent);
+    }
   }, data);
 }
 
-/**
- * Select the first cell in the database
- */
-export async function selectFirstCell(page: Page) {
-  const firstCell = page.locator('affine-database-cell-container').first();
-  await firstCell.waitFor();
-  await firstCell.click();
+export async function selectCell(page: Page, nth: number, editing = true) {
+  const firstCell = page.locator('affine-database-cell-container').nth(nth);
+  // First click for focus
+  await firstCell.click({ delay: 100 });
+  // Second click for edit mode
+  if (editing) {
+    await firstCell.click({ delay: 100 });
+  }
+  return firstCell;
 }
 
-/**
- * Verify the contents of multiple cells in sequence
- * @param page Playwright page object
- * @param expectedContents Array of expected cell contents in order
- */
 export async function verifyCellContents(
   page: Page,
   expectedContents: string[]
@@ -78,3 +70,43 @@ export async function verifyCellContents(
     );
   }
 }
+
+export async function selectColumnType(page: Page, columnType: string) {
+  const typeMenu = page.locator('affine-menu').getByText('Type');
+  await page.waitForTimeout(100);
+  await typeMenu.hover();
+  await page.waitForTimeout(100);
+  await page.keyboard.type(columnType);
+  await page.waitForTimeout(100);
+  await page.keyboard.press('ArrowDown');
+  await page.waitForTimeout(100);
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(100);
+}
+
+export async function addColumn(page: Page, type: string) {
+  await clickAddColumnButton(page);
+  await selectColumnType(page, type);
+}
+
+export async function clickAddColumnButton(page: Page) {
+  const addColumnButton = page.locator('.header-add-column-button');
+  await addColumnButton.click();
+}
+
+export async function changeColumnType(
+  page: Page,
+  columnIndex: number,
+  columnType: string
+) {
+  const header = page.locator('affine-database-header-column').nth(columnIndex);
+  await header.click();
+  await selectColumnType(page, columnType);
+}
+export const initDatabaseByOneStep = async (page: Page) => {
+  await openHomePage(page);
+  await createNewPage(page);
+  await waitForEditorLoad(page);
+  await gotoContentFromTitle(page);
+  await createDatabaseBlock(page);
+};
