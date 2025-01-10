@@ -9,7 +9,7 @@ import {
 } from '../dom/index.js';
 import { matchFlavours } from '../model/index.js';
 import { getDropRectByPoint } from './get-drop-rect-by-point.js';
-import { DropFlags, type DroppingType, type DropResult } from './types.js';
+import { DropFlags, type DropPlacement, type DropTarget } from './types.js';
 
 function getVisiblePreviousElementSibling(element: Element | null) {
   if (!element) return null;
@@ -43,7 +43,7 @@ export function calcDropTarget(
    * Allow the dragging block to be dropped as sublist
    */
   allowSublist: boolean = true
-): DropResult | null {
+): DropTarget | null {
   const schema = model.doc.getSchemaByFlavour('affine:database');
   const children = schema?.model.children ?? [];
 
@@ -64,7 +64,7 @@ export function calcDropTarget(
     }
   }
 
-  let type: DroppingType = 'none';
+  let placement: DropPlacement = 'none';
   const height = 3 * scale;
   const dropResult = getDropRectByPoint(point, model, element);
   if (!dropResult) return null;
@@ -75,10 +75,10 @@ export function calcDropTarget(
     const rect = Rect.fromDOMRect(domRect);
     rect.top -= height / 2;
     rect.height = height;
-    type = 'database';
+    placement = 'database';
 
     return {
-      type,
+      placement,
       rect,
       modelState: {
         model,
@@ -91,10 +91,10 @@ export function calcDropTarget(
     const distanceToTop = Math.abs(domRect.top - point.y);
     const distanceToBottom = Math.abs(domRect.bottom - point.y);
     const before = distanceToTop < distanceToBottom;
-    type = before ? 'before' : 'after';
+    placement = before ? 'before' : 'after';
 
     return {
-      type,
+      placement,
       rect: Rect.fromLWTH(
         domRect.left,
         domRect.width,
@@ -113,10 +113,10 @@ export function calcDropTarget(
   const distanceToBottom = Math.abs(domRect.bottom - point.y);
   const before = distanceToTop < distanceToBottom;
 
-  type = before ? 'before' : 'after';
+  placement = before ? 'before' : 'after';
   let offsetY = 4;
 
-  if (type === 'before') {
+  if (placement === 'before') {
     // before
     let prev;
     let prevRect;
@@ -127,7 +127,7 @@ export function calcDropTarget(
         draggingElements.length &&
         prev === draggingElements[draggingElements.length - 1]
       ) {
-        type = 'none';
+        placement = 'none';
       } else {
         prevRect = getRectByBlockComponent(prev);
       }
@@ -153,7 +153,7 @@ export function calcDropTarget(
       !hasChild &&
       point.x > domRect.x + BLOCK_CHILDREN_CONTAINER_PADDING_LEFT
     ) {
-      type = 'in';
+      placement = 'in';
     }
     // after
     let next;
@@ -162,11 +162,11 @@ export function calcDropTarget(
     next = getVisibleNextElementSibling(element);
     if (next) {
       if (
-        type === 'after' &&
+        placement === 'after' &&
         draggingElements.length &&
         next === draggingElements[0]
       ) {
-        type = 'none';
+        placement = 'none';
         next = null;
       }
     } else {
@@ -181,22 +181,22 @@ export function calcDropTarget(
     }
   }
 
-  if (type === 'none') return null;
+  if (placement === 'none') return null;
 
   let top = domRect.top;
-  if (type === 'before') {
+  if (placement === 'before') {
     top -= offsetY;
   } else {
     top += domRect.height + offsetY;
   }
 
-  if (type === 'in') {
+  if (placement === 'in') {
     domRect.x += BLOCK_CHILDREN_CONTAINER_PADDING_LEFT;
     domRect.width -= BLOCK_CHILDREN_CONTAINER_PADDING_LEFT;
   }
 
   return {
-    type,
+    placement,
     rect: Rect.fromLWTH(domRect.left, domRect.width, top - height / 2, height),
     modelState: {
       model,

@@ -3,7 +3,7 @@ import type { ParagraphBlockModel } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import {
   calcDropTarget,
-  type DropResult,
+  type DropTarget,
   findClosestBlockComponent,
   getBlockProps,
   getClosestBlockComponentByPoint,
@@ -174,7 +174,7 @@ export const getClosestBlockByPoint = (
 export const getDropResult = (
   event: MouseEvent,
   scale: number = 1
-): DropResult | null => {
+): DropTarget | null => {
   let dropIndicator = null;
   const point = new Point(event.x, event.y);
   const closestBlock = getClosestBlockComponentByPoint(point) as BlockComponent;

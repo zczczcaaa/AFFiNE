@@ -18,12 +18,12 @@ export enum DropFlags {
 }
 
 /**
- * A dropping type.
+ * A drop placement.
  */
-export type DroppingType = 'none' | 'before' | 'after' | 'database' | 'in';
+export type DropPlacement = 'none' | 'before' | 'after' | 'database' | 'in';
 
-export type DropResult = {
-  type: DroppingType;
+export type DropTarget = {
+  placement: DropPlacement;
   rect: Rect;
   modelState: EditingState;
 };

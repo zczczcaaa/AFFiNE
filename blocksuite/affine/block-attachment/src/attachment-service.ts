@@ -21,12 +21,11 @@ export class AttachmentBlockService extends BlockService {
 
 export const AttachmentDropOption = FileDropConfigExtension({
   flavour: AttachmentBlockSchema.model.flavour,
-  onDrop: ({ files, targetModel, place, point, std }) => {
+  onDrop: ({ files, targetModel, placement, point, std }) => {
     // generic attachment block for all files except images
     const attachmentFiles = files.filter(
       file => !file.type.startsWith('image/')
     );
-
     if (!attachmentFiles.length) return false;
 
     if (targetModel && !matchFlavours(targetModel, ['affine:surface'])) {
@@ -36,7 +35,7 @@ export const AttachmentDropOption = FileDropConfigExtension({
         // TODO: use max file size from service
         maxFileSize,
         targetModel,
-        place
+        placement
       ).catch(console.error);
 
       return true;

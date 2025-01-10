@@ -16,7 +16,7 @@ import {
 import {
   calcDropTarget,
   captureEventTarget,
-  type DropResult,
+  type DropTarget,
   getBlockComponentsExcludeSubtrees,
   getClosestBlockComponentByPoint,
   matchFlavours,
@@ -290,11 +290,11 @@ export class DragEventWatcher {
     if (matchFlavours(parent, ['affine:surface'])) {
       return;
     }
-    const result: DropResult | null = calcDropTarget(point, model, element);
-    if (!result) return;
+    const target: DropTarget | null = calcDropTarget(point, model, element);
+    if (!target) return;
 
     const index =
-      parent.children.indexOf(model) + (result.type === 'before' ? 0 : 1);
+      parent.children.indexOf(model) + (target.placement === 'before' ? 0 : 1);
 
     if (matchFlavours(parent, ['affine:note'])) {
       const snapshot = this._deserializeSnapshot(state);

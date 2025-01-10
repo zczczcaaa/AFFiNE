@@ -24,7 +24,7 @@ export class ImageBlockService extends BlockService {
 
 export const ImageDropOption = FileDropConfigExtension({
   flavour: ImageBlockSchema.model.flavour,
-  onDrop: ({ files, targetModel, place, point, std }) => {
+  onDrop: ({ files, targetModel, placement, point, std }) => {
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
     if (!imageFiles.length) return false;
 
@@ -35,7 +35,7 @@ export const ImageDropOption = FileDropConfigExtension({
         // TODO: use max file size from service
         maxFileSize,
         targetModel,
-        place
+        placement
       );
       return true;
     }

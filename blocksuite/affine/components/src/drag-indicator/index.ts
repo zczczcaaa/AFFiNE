@@ -1,10 +1,10 @@
-import { DragIndicator } from './drag-indicator.js';
+import { DragIndicator } from './drag-indicator';
 export {
+  type DropProps,
   FileDropConfigExtension,
   FileDropExtension,
   type FileDropOptions,
-  type onDropProps,
-} from './file-drop-manager.js';
+} from './file-drop-manager';
 
 export { DragIndicator };
 

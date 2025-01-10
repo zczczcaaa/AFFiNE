@@ -262,7 +262,7 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<
         const model = this.doc.getBlock(id)?.model;
         const target = result.modelState.model;
         let parent = this.doc.getParent(target.id);
-        const shouldInsertIn = result.type === 'in';
+        const shouldInsertIn = result.placement === 'in';
         if (shouldInsertIn) {
           parent = target;
         }
@@ -274,7 +274,7 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<
               [model],
               parent,
               target,
-              result.type === 'before'
+              result.placement === 'before'
             );
           }
         }

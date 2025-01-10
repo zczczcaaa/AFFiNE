@@ -146,8 +146,8 @@ export function getClosestBlockComponentByPoint(
         }
       }
     } else {
-      // Indented paragraphs or list
       bounds = getRectByBlockComponent(element);
+      // Indented paragraphs or list
       childBounds = element
         .querySelector('.affine-block-children-container')
         ?.firstElementChild?.getBoundingClientRect();
@@ -263,8 +263,8 @@ export function getClosestBlockComponentByElement(
  * https://github.com/toeverything/blocksuite/pull/1121
  */
 export function getRectByBlockComponent(element: Element | BlockComponent) {
-  if (isDatabase(element)) return element.getBoundingClientRect();
-  return (element.firstElementChild ?? element).getBoundingClientRect();
+  if (!isDatabase(element)) element = element.firstElementChild ?? element;
+  return element.getBoundingClientRect();
 }
 
 /**
@@ -303,9 +303,8 @@ function findBlockComponent(elements: Element[], parent?: Element) {
     if (hasBlockId(element) && isBlock(element)) return element;
     if (isImage(element)) {
       const element = elements[i];
-      if (i < len && hasBlockId(element) && isBlock(element)) {
-        return elements[i];
-      }
+      if (!element) return null;
+      if (hasBlockId(element) && isBlock(element)) return element;
       return getClosestBlockComponentByElement(element);
     }
   }

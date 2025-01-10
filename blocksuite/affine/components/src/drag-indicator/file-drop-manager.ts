@@ -1,39 +1,43 @@
 import {
   calcDropTarget,
-  type DropResult,
+  type DropTarget,
   getClosestBlockComponentByPoint,
   isInsidePageEditor,
   matchFlavours,
 } from '@blocksuite/affine-shared/utils';
 import {
+  type BlockComponent,
   type BlockStdScope,
   type EditorHost,
   LifeCycleWatcher,
 } from '@blocksuite/block-std';
 import { createIdentifier } from '@blocksuite/global/di';
 import type { IVec } from '@blocksuite/global/utils';
-import { Point } from '@blocksuite/global/utils';
+import { Point, throttle } from '@blocksuite/global/utils';
 import type { BlockModel, ExtensionType } from '@blocksuite/store';
+import { computed, signal } from '@preact/signals-core';
 
-import type { DragIndicator } from './index.js';
+import type { DragIndicator } from './drag-indicator';
 
-export type onDropProps = {
+export type DropProps = {
   std: BlockStdScope;
   files: File[];
   targetModel: BlockModel | null;
-  place: 'before' | 'after';
+  placement: 'before' | 'after';
   point: IVec;
 };
 
 export type FileDropOptions = {
   flavour: string;
-  onDrop?: (onDropProps: onDropProps) => boolean;
+  onDrop?: (props: DropProps) => boolean;
 };
 
+/**
+ * Handles resources from outside.
+ * Uses `drag over` to handle it.
+ */
 export class FileDropExtension extends LifeCycleWatcher {
   static override readonly key = 'FileDropExtension';
-
-  static dropResult: DropResult | null = null;
 
   static get indicator() {
     let indicator = document.querySelector<DragIndicator>(
@@ -50,73 +54,103 @@ export class FileDropExtension extends LifeCycleWatcher {
     return indicator;
   }
 
-  onDragLeave = () => {
-    FileDropExtension.dropResult = null;
-    FileDropExtension.indicator.rect = null;
-  };
+  point$ = signal<Point>(new Point(0, 0));
 
-  onDragMove = (event: DragEvent) => {
-    event.preventDefault();
+  closestElement$ = signal<BlockComponent | null>(null);
 
+  dropTarget$ = computed<DropTarget | null>(() => {
+    let target = null;
+    const element = this.closestElement$.value;
+    if (!element) return null;
+
+    const model = element.model;
+    const parent = this.std.store.getParent(model);
+    if (!matchFlavours(parent, ['affine:surface' as BlockSuite.Flavour])) {
+      const point = this.point$.value;
+      target = calcDropTarget(point, model, element);
+    }
+
+    return target;
+  });
+
+  getDropTargetModel(model: BlockModel | null) {
+    // Existed or In Edgeless
+    if (model || !isInsidePageEditor(this.editorHost)) return model;
+
+    const rootModel = this.doc.root;
+    if (!rootModel) return null;
+
+    let lastNote = rootModel.children[rootModel.children.length - 1];
+    if (!lastNote || !matchFlavours(lastNote, ['affine:note'])) {
+      const newNoteId = this.doc.addBlock('affine:note', {}, rootModel.id);
+      const newNote = this.doc.getBlock(newNoteId)?.model;
+      if (!newNote) return null;
+      lastNote = newNote;
+    }
+
+    const lastItem = lastNote.children[lastNote.children.length - 1];
+    if (lastItem) {
+      model = lastItem;
+    } else {
+      const newParagraphId = this.doc.addBlock(
+        'affine:paragraph',
+        {},
+        lastNote,
+        0
+      );
+      model = this.doc.getBlock(newParagraphId)?.model ?? null;
+    }
+
+    return model;
+  }
+
+  shouldIgnoreEvent = (event: DragEvent, shouldCheckFiles?: boolean) => {
     const dataTransfer = event.dataTransfer;
-    if (!dataTransfer) return;
+    if (!dataTransfer) return true;
 
     const effectAllowed = dataTransfer.effectAllowed;
-    if (effectAllowed === 'none') return;
+    if (effectAllowed === 'none') return true;
 
-    const { clientX, clientY } = event;
-    const point = new Point(clientX, clientY);
-    const element = getClosestBlockComponentByPoint(point.clone());
+    if (!shouldCheckFiles) return false;
 
-    let result: DropResult | null = null;
-    if (element) {
-      const model = element.model;
-      const parent = this.std.store.getParent(model);
-      if (!matchFlavours(parent, ['affine:surface' as BlockSuite.Flavour])) {
-        result = calcDropTarget(point, model, element);
-      }
-    }
-    if (result) {
-      FileDropExtension.dropResult = result;
-      FileDropExtension.indicator.rect = result.rect;
-    } else {
-      FileDropExtension.dropResult = null;
-      FileDropExtension.indicator.rect = null;
-    }
+    const droppedFiles = dataTransfer.files;
+    if (!droppedFiles || !droppedFiles.length) return true;
+
+    return false;
   };
 
-  get targetModel(): BlockModel | null {
-    let targetModel = FileDropExtension.dropResult?.modelState.model || null;
+  updatePoint = (event: DragEvent) => {
+    const { clientX, clientY } = event;
+    const oldPoint = this.point$.peek();
 
-    if (!targetModel && isInsidePageEditor(this.editorHost)) {
-      const rootModel = this.doc.root;
-      if (!rootModel) return null;
+    if (
+      Math.round(oldPoint.x) === Math.round(clientX) &&
+      Math.round(oldPoint.y) === Math.round(clientY)
+    )
+      return;
 
-      let lastNote = rootModel.children[rootModel.children.length - 1];
-      if (!lastNote || !matchFlavours(lastNote, ['affine:note'])) {
-        const newNoteId = this.doc.addBlock('affine:note', {}, rootModel.id);
-        const newNote = this.doc.getBlockById(newNoteId);
-        if (!newNote) return null;
-        lastNote = newNote;
-      }
+    this.point$.value = new Point(clientX, clientY);
+  };
 
-      const lastItem = lastNote.children[lastNote.children.length - 1];
-      if (lastItem) {
-        targetModel = lastItem;
-      } else {
-        const newParagraphId = this.doc.addBlock(
-          'affine:paragraph',
-          {},
-          lastNote,
-          0
-        );
-        const newParagraph = this.doc.getBlockById(newParagraphId);
-        if (!newParagraph) return null;
-        targetModel = newParagraph;
-      }
-    }
-    return targetModel;
-  }
+  onDragLeave = () => {
+    this.closestElement$.value = null;
+  };
+
+  onDragOver = (event: DragEvent) => {
+    event.preventDefault();
+
+    if (this.shouldIgnoreEvent(event)) return;
+
+    this.updatePoint(event);
+  };
+
+  onDrop = (event: DragEvent) => {
+    event.preventDefault();
+
+    if (this.shouldIgnoreEvent(event, true)) return;
+
+    this.updatePoint(event);
+  };
 
   get doc() {
     return this.std.store;
@@ -126,66 +160,34 @@ export class FileDropExtension extends LifeCycleWatcher {
     return this.std.host;
   }
 
-  get type(): 'before' | 'after' {
-    return !FileDropExtension.dropResult ||
-      FileDropExtension.dropResult.type !== 'before'
-      ? 'after'
-      : 'before';
-  }
-
-  private readonly _onDrop = (event: DragEvent, options: FileDropOptions) => {
-    FileDropExtension.indicator.rect = null;
-
-    const { onDrop } = options;
-    if (!onDrop) return;
-
-    const dataTransfer = event.dataTransfer;
-    if (!dataTransfer) return;
-
-    const effectAllowed = dataTransfer.effectAllowed;
-    if (effectAllowed === 'none') return;
-
-    const droppedFiles = dataTransfer.files;
-    if (!droppedFiles || !droppedFiles.length) return;
-
-    const { clientX, clientY } = event;
-    const point = new Point(clientX, clientY);
-    const element = getClosestBlockComponentByPoint(point.clone());
-
-    let result: DropResult | null = null;
-    if (element) {
-      const model = element.model;
-      const parent = this.std.store.getParent(model);
-      if (!matchFlavours(parent, ['affine:surface' as BlockSuite.Flavour])) {
-        result = calcDropTarget(point, model, element);
-      }
-    }
-    FileDropExtension.dropResult = result;
-
-    const { x, y } = event;
-    const { targetModel, type: place } = this;
-    const drop = onDrop({
-      std: this.std,
-      files: [...droppedFiles],
-      targetModel,
-      place,
-      point: [x, y],
-    });
-
-    if (drop) {
-      event.preventDefault();
-    }
-    return drop;
-  };
-
   override mounted() {
     super.mounted();
     const std = this.std;
 
     std.event.disposables.add(
-      std.event.add('nativeDragMove', context => {
+      this.point$.subscribe(
+        throttle(
+          value => {
+            if (value.x * value.y === 0) return;
+
+            this.closestElement$.value = getClosestBlockComponentByPoint(value);
+          },
+          233,
+          { leading: true, trailing: true }
+        )
+      )
+    );
+
+    std.event.disposables.add(
+      this.dropTarget$.subscribe(target => {
+        FileDropExtension.indicator.rect = target?.rect ?? null;
+      })
+    );
+
+    std.event.disposables.add(
+      std.event.add('nativeDragOver', context => {
         const event = context.get('dndState');
-        this.onDragMove(event.raw);
+        this.onDragOver(event.raw);
       })
     );
     std.event.disposables.add(
@@ -195,19 +197,43 @@ export class FileDropExtension extends LifeCycleWatcher {
     );
     std.event.disposables.add(
       std.event.add('nativeDrop', context => {
+        const event = context.get('dndState').raw;
+        const { x, y, dataTransfer } = event;
+        const droppedFiles = dataTransfer?.files;
+
+        if (!droppedFiles || !droppedFiles.length) {
+          this.onDragLeave();
+          return;
+        }
+
+        this.onDrop(event);
+
+        const target = this.dropTarget$.peek();
+        const std = this.std;
+        const targetModel = this.getDropTargetModel(
+          target?.modelState.model ?? null
+        );
+        const placement = target?.placement === 'before' ? 'before' : 'after';
+
         const values = std.provider
           .getAll(FileDropConfigExtensionIdentifier)
           .values();
 
-        for (const value of values) {
-          if (value.onDrop) {
-            const event = context.get('dndState');
-            const drop = this._onDrop(event.raw, value);
-            if (drop) {
-              return;
-            }
-          }
+        for (const ext of values) {
+          if (!ext.onDrop) continue;
+
+          const options = {
+            std,
+            files: [...droppedFiles],
+            targetModel,
+            placement,
+            point: [x, y],
+          } satisfies DropProps;
+
+          if (ext.onDrop(options)) break;
         }
+
+        this.onDragLeave();
       })
     );
   }
