@@ -5,6 +5,7 @@ import { PageViewportService } from '@blocksuite/affine-shared/services';
 import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
   focusTitle,
+  getClosestBlockComponentByPoint,
   getDocTitleInlineEditor,
   getScrollContainer,
   matchFlavours,
@@ -15,6 +16,7 @@ import {
   BlockSelection,
   TextSelection,
 } from '@blocksuite/block-std';
+import { Point } from '@blocksuite/global/utils';
 import type { BlockModel, Text } from '@blocksuite/store';
 import { css, html } from 'lit';
 import { query } from 'lit/decorators.js';
@@ -303,7 +305,7 @@ export class PageRootBlockComponent extends BlockComponent<
       },
     });
 
-    this.handleEvent('click', ctx => {
+    this.handleEvent('pointerDown', ctx => {
       const event = ctx.get('pointerState');
       if (
         event.raw.target !== this &&
@@ -312,7 +314,6 @@ export class PageRootBlockComponent extends BlockComponent<
       ) {
         return;
       }
-
       const { paddingLeft, paddingRight } = window.getComputedStyle(
         this.rootElementContainer
       );
@@ -325,8 +326,53 @@ export class PageRootBlockComponent extends BlockComponent<
         parseFloat(paddingLeft),
         parseFloat(paddingRight)
       );
-      if (isClickOnBlankArea) {
-        this.host.selection.clear(['block']);
+      if (!isClickOnBlankArea) {
+        return;
+      }
+
+      const hostRect = this.host.getBoundingClientRect();
+      const x = hostRect.width / 2 + hostRect.left;
+      const point = new Point(x, event.raw.clientY);
+      const side = event.raw.clientX < x ? 'left' : 'right';
+
+      const nearestBlock = getClosestBlockComponentByPoint(point);
+      event.raw.preventDefault();
+      if (nearestBlock) {
+        const text = nearestBlock.model.text;
+        if (text) {
+          this.host.selection.setGroup('note', [
+            this.host.selection.create(TextSelection, {
+              from: {
+                blockId: nearestBlock.model.id,
+                index: side === 'left' ? 0 : text.length,
+                length: 0,
+              },
+              to: null,
+            }),
+          ]);
+        } else {
+          this.host.selection.setGroup('note', [
+            this.host.selection.create(BlockSelection, {
+              blockId: nearestBlock.model.id,
+            }),
+          ]);
+        }
+      } else {
+        if (this.host.selection.find(BlockSelection)) {
+          this.host.selection.clear(['block']);
+        }
+      }
+
+      return;
+    });
+
+    this.handleEvent('click', ctx => {
+      const event = ctx.get('pointerState');
+      if (
+        event.raw.target !== this &&
+        event.raw.target !== this.viewportElement &&
+        event.raw.target !== this.rootElementContainer
+      ) {
         return;
       }
 

@@ -4,6 +4,7 @@ import type { BaseSelection, BlockModel } from '@blocksuite/store';
 import { TextSelection } from '../selection/index.js';
 import type { BlockComponent } from '../view/element/block-component.js';
 import { BLOCK_ID_ATTR } from '../view/index.js';
+import { isActiveInEditor } from './active.js';
 import { RANGE_SYNC_EXCLUDE_ATTR } from './consts.js';
 import type { RangeManager } from './range-manager.js';
 
@@ -169,6 +170,7 @@ export class RangeBinding {
   private readonly _onNativeSelectionChanged = async () => {
     if (this.isComposing) return;
     if (!this.host) return; // Unstable when switching views, card <-> embed
+    if (!isActiveInEditor(this.host)) return;
 
     await this.host.updateComplete;
 
@@ -247,6 +249,7 @@ export class RangeBinding {
   };
 
   private readonly _onStdSelectionChanged = (selections: BaseSelection[]) => {
+    // TODO(@mirone): this is a trade-off, we need to use separate awareness store for every store to make sure the selection is isolated.
     const closestHost = document.activeElement?.closest('editor-host');
     if (closestHost && closestHost !== this.host) return;
 

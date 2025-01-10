@@ -3,6 +3,7 @@ import { signal } from '@preact/signals-core';
 
 import { TextSelection } from '../selection/index.js';
 import type { BlockComponent } from '../view/element/block-component.js';
+import { isActiveInEditor } from './active.js';
 
 export const getInlineRangeProvider: (
   element: BlockComponent
@@ -87,6 +88,8 @@ export const getInlineRangeProvider: (
 
   editorHost.disposables.add(
     selectionManager.slots.changed.on(selections => {
+      if (!isActiveInEditor(editorHost)) return;
+
       const textSelection = selections.find(s => s.type === 'text') as
         | TextSelection
         | undefined;
