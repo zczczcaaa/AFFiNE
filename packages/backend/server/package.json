@@ -11,9 +11,9 @@
     "build": "tsc",
     "dev": "nodemon ./src/index.ts",
     "test": "ava --concurrency 1 --serial",
-    "test:copilot": "ava \"tests/**/copilot-*.spec.ts\"",
+    "test:copilot": "ava \"src/__tests__/**/copilot-*.spec.ts\"",
     "test:coverage": "c8 ava --concurrency 1 --serial",
-    "test:copilot:coverage": "c8 ava --timeout=5m \"tests/**/copilot-*.spec.ts\"",
+    "test:copilot:coverage": "c8 ava --timeout=5m \"src/__tests__/**/copilot-*.spec.ts\"",
     "data-migration": "cross-env NODE_ENV=script r ./src/data/index.ts",
     "predeploy": "yarn prisma migrate deploy && NODE_ENV=script node --import ./scripts/register.js ./dist/data/index.js run",
     "postinstall": "prisma generate"
@@ -96,6 +96,7 @@
   "devDependencies": {
     "@affine-test/kit": "workspace:*",
     "@affine-tools/cli": "workspace:*",
+    "@affine-tools/utils": "workspace:*",
     "@affine/server-native": "workspace:*",
     "@nestjs/testing": "^10.4.15",
     "@types/cookie-parser": "^1.4.8",
@@ -134,8 +135,7 @@
     },
     "files": [
       "**/__tests__/**/*.spec.ts",
-      "tests/**/*.spec.ts",
-      "tests/**/*.e2e.ts"
+      "**/__tests__/**/*.e2e.ts"
     ],
     "require": [
       "./src/prelude.ts"

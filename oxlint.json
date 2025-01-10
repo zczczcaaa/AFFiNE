@@ -200,9 +200,9 @@
     {
       "files": [
         "*.{spec,test,e2e,stories}.{ts,tsx}",
-        "tests/**/*.ts",
-        "packages/backend/server/tests/**/*.ts",
-        "tools/**.*"
+        "tests/**/*",
+        "**/__tests__/**/*",
+        "tools/**/*"
       ],
       "rules": {
         "typescript/no-non-null-assertion": "off",

@@ -451,6 +451,7 @@ export const PackageList = [
     workspaceDependencies: [
       'tests/kit',
       'tools/cli',
+      'tools/utils',
       'packages/backend/native',
     ],
   },

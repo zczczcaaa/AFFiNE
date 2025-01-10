@@ -751,6 +751,7 @@ __metadata:
   dependencies:
     "@affine-test/kit": "workspace:*"
     "@affine-tools/cli": "workspace:*"
+    "@affine-tools/utils": "workspace:*"
     "@affine/server-native": "workspace:*"
     "@apollo/server": "npm:^4.11.2"
     "@aws-sdk/client-s3": "npm:^3.709.0"
