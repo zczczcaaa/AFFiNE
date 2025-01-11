@@ -3,7 +3,7 @@ import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { assertExists, sha } from '@blocksuite/global/utils';
 import type { Store, Workspace } from '@blocksuite/store';
-import { extMimeMap, Job } from '@blocksuite/store';
+import { extMimeMap, Transformer } from '@blocksuite/store';
 
 import { defaultBlockMarkdownAdapterMatchers } from '../adapters/index.js';
 import { inlineDeltaToMarkdownAdapterMatchers } from '../adapters/markdown/delta-converter/inline-delta.js';
@@ -50,7 +50,7 @@ type ImportMarkdownZipOptions = {
  * @returns A Promise that resolves when the export is complete
  */
 async function exportDoc(doc: Store) {
-  const job = new Job({
+  const job = new Transformer({
     schema: doc.schema,
     blobCRUD: doc.blobSync,
     docCRUD: {
@@ -109,7 +109,7 @@ async function importMarkdownToBlock({
   markdown,
   blockId,
 }: ImportMarkdownToBlockOptions) {
-  const job = new Job({
+  const job = new Transformer({
     schema: doc.schema,
     blobCRUD: doc.blobSync,
     docCRUD: {
@@ -154,7 +154,7 @@ async function importMarkdownToDoc({
   markdown,
   fileName,
 }: ImportMarkdownToDocOptions) {
-  const job = new Job({
+  const job = new Transformer({
     schema: collection.schema,
     blobCRUD: collection.blobSync,
     docCRUD: {
@@ -218,7 +218,7 @@ async function importMarkdownZip({
   await Promise.all(
     markdownBlobs.map(async ([fileName, blob]) => {
       const fileNameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
-      const job = new Job({
+      const job = new Transformer({
         schema: collection.schema,
         blobCRUD: collection.blobSync,
         docCRUD: {

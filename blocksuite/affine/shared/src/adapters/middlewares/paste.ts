@@ -19,9 +19,9 @@ import {
   type BlockSnapshot,
   type DeltaOperation,
   fromJSON,
-  type JobMiddleware,
   type SliceSnapshot,
   type Text,
+  type TransformerMiddleware,
 } from '@blocksuite/store';
 import * as Y from 'yjs';
 
@@ -505,7 +505,9 @@ function flatNote(snapshot: SliceSnapshot) {
   }
 }
 
-export const pasteMiddleware = (std: EditorHost['std']): JobMiddleware => {
+export const pasteMiddleware = (
+  std: EditorHost['std']
+): TransformerMiddleware => {
   return ({ slots }) => {
     let tr: PasteTr | undefined;
     slots.beforeImport.on(payload => {

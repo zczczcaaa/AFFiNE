@@ -1,7 +1,7 @@
 import { NotionHtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
-import { extMimeMap, Job, type Workspace } from '@blocksuite/store';
+import { extMimeMap, Transformer, type Workspace } from '@blocksuite/store';
 
 import { defaultBlockNotionHtmlAdapterMatchers } from '../adapters/notion-html/block-matcher.js';
 import { notionHtmlInlineToDeltaMatchers } from '../adapters/notion-html/delta-converter/html-inline.js';
@@ -117,7 +117,7 @@ async function importNotionZip({
       pendingAssets.set(key, new File([blob], fileName, { type: mime }));
     }
     const pagePromises = Array.from(pagePaths).map(async path => {
-      const job = new Job({
+      const job = new Transformer({
         schema: collection.schema,
         blobCRUD: collection.blobSync,
         docCRUD: {

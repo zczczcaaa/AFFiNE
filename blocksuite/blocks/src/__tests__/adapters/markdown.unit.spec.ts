@@ -4,8 +4,8 @@ import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
   DocSnapshot,
-  JobMiddleware,
   SliceSnapshot,
+  TransformerMiddleware,
 } from '@blocksuite/store';
 import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
@@ -1931,7 +1931,7 @@ hhh
 
 hhh
 `;
-    const middleware: JobMiddleware = ({ adapterConfigs }) => {
+    const middleware: TransformerMiddleware = ({ adapterConfigs }) => {
       adapterConfigs.set('title:deadbeef', 'test');
       adapterConfigs.set('docLinkBaseUrl', 'https://example.com');
     };
@@ -3847,7 +3847,7 @@ hhh
         },
       ],
     };
-    const middleware: JobMiddleware = ({ adapterConfigs }) => {
+    const middleware: TransformerMiddleware = ({ adapterConfigs }) => {
       adapterConfigs.set('docLinkBaseUrl', 'https://example.com');
     };
     const mdAdapter = new MarkdownAdapter(createJob([middleware]), provider);

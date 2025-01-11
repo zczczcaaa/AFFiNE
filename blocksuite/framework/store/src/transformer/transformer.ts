@@ -14,8 +14,8 @@ import type {
   BeforeExportPayload,
   BeforeImportPayload,
   FinalPayload,
-  JobMiddleware,
-  JobSlots,
+  TransformerMiddleware,
+  TransformerSlots,
 } from './middleware.js';
 import { Slice } from './slice.js';
 import type {
@@ -31,11 +31,11 @@ import {
   SliceSnapshotSchema,
 } from './type.js';
 
-export type JobConfig = {
+export type TransformerOptions = {
   schema: Schema;
   blobCRUD: BlobCRUD;
   docCRUD: DocCRUD;
-  middlewares?: JobMiddleware[];
+  middlewares?: TransformerMiddleware[];
 };
 
 interface FlatSnapshot {
@@ -53,7 +53,7 @@ interface DraftBlockTreeNode {
 // The number of blocks to insert in one batch
 const BATCH_SIZE = 100;
 
-export class Job {
+export class Transformer {
   private readonly _adapterConfigs = new Map<string, string>();
 
   private readonly _assetsManager: AssetsManager;
@@ -62,7 +62,7 @@ export class Job {
 
   private readonly _docCRUD: DocCRUD;
 
-  private readonly _slots: JobSlots = {
+  private readonly _slots: TransformerSlots = {
     beforeImport: new Slot<BeforeImportPayload>(),
     afterImport: new Slot<FinalPayload>(),
     beforeExport: new Slot<BeforeExportPayload>(),
@@ -338,7 +338,12 @@ export class Job {
     return this._docCRUD;
   }
 
-  constructor({ blobCRUD, schema, docCRUD, middlewares = [] }: JobConfig) {
+  constructor({
+    blobCRUD,
+    schema,
+    docCRUD,
+    middlewares = [],
+  }: TransformerOptions) {
     this._assetsManager = new AssetsManager({ blob: blobCRUD });
     this._schema = schema;
     this._docCRUD = docCRUD;

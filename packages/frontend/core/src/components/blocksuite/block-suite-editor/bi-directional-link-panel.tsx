@@ -19,7 +19,7 @@ import {
 } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
-import type { JobMiddleware } from '@blocksuite/affine/store';
+import type { TransformerMiddleware } from '@blocksuite/affine/store';
 import { ToggleDownIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import {
@@ -198,7 +198,9 @@ export const BacklinkGroups = () => {
 
   const backlinkGroups = useBacklinkGroups();
   const textRendererOptions = useMemo(() => {
-    const docLinkBaseURLMiddleware: JobMiddleware = ({ adapterConfigs }) => {
+    const docLinkBaseURLMiddleware: TransformerMiddleware = ({
+      adapterConfigs,
+    }) => {
       adapterConfigs.set(
         'docLinkBaseUrl',
         `/workspace/${workspaceService.workspace.id}`

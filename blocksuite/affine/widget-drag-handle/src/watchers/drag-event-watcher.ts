@@ -545,7 +545,7 @@ export class DragEventWatcher {
 
   private _getJob() {
     const std = this._std;
-    return std.getJob([
+    return std.getTransformer([
       newIdCrossDoc(std),
       reorderList(std),
       surfaceRefToEmbed(std),

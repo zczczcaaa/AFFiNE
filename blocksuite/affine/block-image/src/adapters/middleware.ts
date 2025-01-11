@@ -1,9 +1,9 @@
 import { DEFAULT_IMAGE_PROXY_ENDPOINT } from '@blocksuite/affine-shared/consts';
-import type { JobMiddleware } from '@blocksuite/store';
+import type { TransformerMiddleware } from '@blocksuite/store';
 
 export const customImageProxyMiddleware = (
   imageProxyURL: string
-): JobMiddleware => {
+): TransformerMiddleware => {
   return ({ adapterConfigs }) => {
     adapterConfigs.set('imageProxy', imageProxyURL);
   };

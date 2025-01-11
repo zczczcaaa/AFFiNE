@@ -14,9 +14,9 @@ import {
   type FromDocSnapshotResult,
   type FromSliceSnapshotPayload,
   type FromSliceSnapshotResult,
-  type Job,
   nanoid,
   type SliceSnapshot,
+  type Transformer,
 } from '@blocksuite/store';
 import rehypeParse from 'rehype-parse';
 import { unified } from 'unified';
@@ -115,7 +115,7 @@ export class NotionHtmlAdapter extends BaseAdapter<NotionHtml> {
 
   readonly blockMatchers: BlockNotionHtmlAdapterMatcher[];
 
-  constructor(job: Job, provider: ServiceProvider) {
+  constructor(job: Transformer, provider: ServiceProvider) {
     super(job);
     const blockMatchers = Array.from(
       provider.getAll(BlockNotionHtmlAdapterMatcherIdentifier).values()
@@ -294,7 +294,7 @@ export const NotionHtmlAdapterFactoryIdentifier =
 export const NotionHtmlAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(NotionHtmlAdapterFactoryIdentifier, provider => ({
-      get: (job: Job) => new NotionHtmlAdapter(job, provider),
+      get: (job: Transformer) => new NotionHtmlAdapter(job, provider),
     }));
   },
 };

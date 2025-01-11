@@ -1,8 +1,8 @@
 import type { BlockStdScope } from '@blocksuite/block-std';
-import type { JobMiddleware } from '@blocksuite/store';
+import type { TransformerMiddleware } from '@blocksuite/store';
 
 export const newIdCrossDoc =
-  (std: BlockStdScope): JobMiddleware =>
+  (std: BlockStdScope): TransformerMiddleware =>
   ({ slots }) => {
     let samePage = false;
     slots.beforeImport.on(payload => {

@@ -14,11 +14,11 @@ import {
   type FromDocSnapshotResult,
   type FromSliceSnapshotPayload,
   type FromSliceSnapshotResult,
-  type Job,
   nanoid,
   type SliceSnapshot,
   type ToBlockSnapshotPayload,
   type ToDocSnapshotPayload,
+  type Transformer,
 } from '@blocksuite/store';
 
 import {
@@ -50,7 +50,7 @@ export class PlainTextAdapter extends BaseAdapter<PlainText> {
   readonly blockMatchers: BlockPlainTextAdapterMatcher[];
 
   constructor(
-    job: Job,
+    job: Transformer,
     readonly provider: ServiceProvider
   ) {
     super(job);
@@ -321,7 +321,7 @@ export const PlainTextAdapterFactoryIdentifier =
 export const PlainTextAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(PlainTextAdapterFactoryIdentifier, provider => ({
-      get: (job: Job) => new PlainTextAdapter(job, provider),
+      get: (job: Transformer) => new PlainTextAdapter(job, provider),
     }));
   },
 };

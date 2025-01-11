@@ -14,11 +14,11 @@ import {
   type FromDocSnapshotResult,
   type FromSliceSnapshotPayload,
   type FromSliceSnapshotResult,
-  type Job,
   nanoid,
   type SliceSnapshot,
   type ToBlockSnapshotPayload,
   type ToDocSnapshotPayload,
+  type Transformer,
 } from '@blocksuite/store';
 import type { Root } from 'hast';
 import rehypeParse from 'rehype-parse';
@@ -172,7 +172,7 @@ export class HtmlAdapter extends BaseAdapter<Html> {
 
   readonly blockMatchers: BlockHtmlAdapterMatcher[];
 
-  constructor(job: Job, provider: ServiceProvider) {
+  constructor(job: Transformer, provider: ServiceProvider) {
     super(job);
     const blockMatchers = Array.from(
       provider.getAll(BlockHtmlAdapterMatcherIdentifier).values()

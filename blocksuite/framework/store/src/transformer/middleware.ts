@@ -71,18 +71,20 @@ export type FinalPayload =
       type: 'info';
     };
 
-export type JobSlots = {
+export type TransformerSlots = {
   beforeImport: Slot<BeforeImportPayload>;
   afterImport: Slot<FinalPayload>;
   beforeExport: Slot<BeforeExportPayload>;
   afterExport: Slot<FinalPayload>;
 };
 
-type JobMiddlewareOptions = {
+type TransformerMiddlewareOptions = {
   assetsManager: AssetsManager;
-  slots: JobSlots;
+  slots: TransformerSlots;
   docCRUD: DocCRUD;
   adapterConfigs: Map<string, string>;
 };
 
-export type JobMiddleware = (options: JobMiddlewareOptions) => void;
+export type TransformerMiddleware = (
+  options: TransformerMiddlewareOptions
+) => void;

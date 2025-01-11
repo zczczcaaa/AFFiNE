@@ -4,7 +4,7 @@ import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
   DocSnapshot,
-  JobMiddleware,
+  TransformerMiddleware,
 } from '@blocksuite/store';
 import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
@@ -1514,7 +1514,7 @@ describe('snapshot to html', () => {
       ],
     };
 
-    const middleware: JobMiddleware = ({ adapterConfigs }) => {
+    const middleware: TransformerMiddleware = ({ adapterConfigs }) => {
       adapterConfigs.set('title:4T5ObMgEIMII-4Bexyta1', 'Test Doc');
       adapterConfigs.set('docLinkBaseUrl', 'https://example.com');
     };

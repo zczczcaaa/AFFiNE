@@ -14,11 +14,11 @@ import {
   type FromDocSnapshotResult,
   type FromSliceSnapshotPayload,
   type FromSliceSnapshotResult,
-  type Job,
   nanoid,
   type SliceSnapshot,
   type ToBlockSnapshotPayload,
   type ToDocSnapshotPayload,
+  type Transformer,
 } from '@blocksuite/store';
 import type { Root } from 'mdast';
 import remarkMath from 'remark-math';
@@ -171,7 +171,7 @@ export class MarkdownAdapter extends BaseAdapter<Markdown> {
   readonly blockMatchers: BlockMarkdownAdapterMatcher[];
 
   constructor(
-    job: Job,
+    job: Transformer,
     readonly provider: ServiceProvider
   ) {
     super(job);
@@ -456,7 +456,7 @@ export const MarkdownAdapterFactoryIdentifier =
 export const MarkdownAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(MarkdownAdapterFactoryIdentifier, provider => ({
-      get: (job: Job) => new MarkdownAdapter(job, provider),
+      get: (job: Transformer) => new MarkdownAdapter(job, provider),
     }));
   },
 };

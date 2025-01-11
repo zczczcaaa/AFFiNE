@@ -1,10 +1,10 @@
 import { correctNumberedListsOrderToPrev } from '@blocksuite/affine-block-list';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import type { BlockStdScope } from '@blocksuite/block-std';
-import type { JobMiddleware } from '@blocksuite/store';
+import type { TransformerMiddleware } from '@blocksuite/store';
 
 export const reorderList =
-  (std: BlockStdScope): JobMiddleware =>
+  (std: BlockStdScope): TransformerMiddleware =>
   ({ slots }) => {
     slots.afterImport.on(payload => {
       if (payload.type === 'block') {

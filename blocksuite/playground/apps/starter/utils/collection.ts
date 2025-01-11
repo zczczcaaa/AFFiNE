@@ -1,6 +1,6 @@
 import { AffineSchemas, SpecProvider, TestUtils } from '@blocksuite/blocks';
 import type { BlockSuiteFlags } from '@blocksuite/global/types';
-import { Job, nanoid, Schema } from '@blocksuite/store';
+import { nanoid, Schema, Transformer } from '@blocksuite/store';
 import {
   createAutoIncrementIdGenerator,
   type DocCollectionOptions,
@@ -81,7 +81,7 @@ export function createStarterDocCollection() {
   // debug info
   window.collection = collection;
   window.blockSchemas = AffineSchemas;
-  window.job = new Job({
+  window.job = new Transformer({
     schema: collection.schema,
     blobCRUD: collection.blobSync,
     docCRUD: {

@@ -1,4 +1,4 @@
-import type { DraftModel, Store } from '../model/index.js';
+import type { DraftModel, Store } from '../model/index';
 
 type SliceData = {
   content: DraftModel[];

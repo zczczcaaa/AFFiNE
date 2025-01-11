@@ -12,11 +12,11 @@ import {
   type FromDocSnapshotResult,
   type FromSliceSnapshotPayload,
   type FromSliceSnapshotResult,
-  type Job,
   nanoid,
   type SliceSnapshot,
   type ToBlockSnapshotPayload,
   type ToDocSnapshotPayload,
+  type Transformer,
 } from '@blocksuite/store';
 
 import { AdapterFactoryIdentifier } from './types/adapter';
@@ -132,7 +132,7 @@ export const AttachmentAdapterFactoryIdentifier =
 export const AttachmentAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(AttachmentAdapterFactoryIdentifier, () => ({
-      get: (job: Job) => new AttachmentAdapter(job),
+      get: (job: Transformer) => new AttachmentAdapter(job),
     }));
   },
 };

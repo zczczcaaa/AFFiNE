@@ -2,10 +2,10 @@ import { Container, type ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import {
   type ExtensionType,
-  Job,
-  type JobMiddleware,
   type Store,
   StoreSelectionExtension,
+  Transformer,
+  type TransformerMiddleware,
 } from '@blocksuite/store';
 
 import { Clipboard } from '../clipboard/index.js';
@@ -161,8 +161,8 @@ export class BlockStdScope {
     return this.getOptional(BlockViewIdentifier(flavour));
   }
 
-  getJob(middlewares: JobMiddleware[] = []) {
-    return new Job({
+  getTransformer(middlewares: TransformerMiddleware[] = []) {
+    return new Transformer({
       schema: this.workspace.schema,
       blobCRUD: this.workspace.blobSync,
       docCRUD: {

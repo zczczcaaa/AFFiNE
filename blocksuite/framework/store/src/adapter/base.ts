@@ -2,7 +2,7 @@ import { BlockSuiteError } from '@blocksuite/global/exceptions';
 
 import type { DraftModel, Store } from '../model/index.js';
 import type { AssetsManager } from '../transformer/assets.js';
-import type { Job, Slice } from '../transformer/index.js';
+import type { Slice, Transformer } from '../transformer/index.js';
 import type {
   BlockSnapshot,
   DocSnapshot,
@@ -62,13 +62,13 @@ export function wrapFakeNote(snapshot: SliceSnapshot) {
 }
 
 export abstract class BaseAdapter<AdapterTarget = unknown> {
-  job: Job;
+  job: Transformer;
 
   get configs() {
     return this.job.adapterConfigs;
   }
 
-  constructor(job: Job) {
+  constructor(job: Transformer) {
     this.job = job;
   }
 

@@ -1,7 +1,7 @@
 import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
 import { AffineSchemas } from '@blocksuite/affine/blocks';
 import type { DocSnapshot, Store } from '@blocksuite/affine/store';
-import { Job, Schema } from '@blocksuite/affine/store';
+import { Schema, Transformer } from '@blocksuite/affine/store';
 
 const getCollection = (() => {
   let collection: WorkspaceImpl | null = null;
@@ -79,7 +79,7 @@ export async function getDocByName(name: DocName) {
 async function initDoc(name: DocName) {
   const snapshot = (await loaders[name]()) as DocSnapshot;
   const collection = await getCollection();
-  const job = new Job({
+  const transformer = new Transformer({
     schema: collection.schema,
     blobCRUD: collection.blobSync,
     docCRUD: {
@@ -90,5 +90,5 @@ async function initDoc(name: DocName) {
     middlewares: [],
   });
 
-  return await job.snapshotToDoc(snapshot);
+  return await transformer.snapshotToDoc(snapshot);
 }

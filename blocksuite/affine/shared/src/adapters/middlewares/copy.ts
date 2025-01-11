@@ -7,8 +7,8 @@ import {
 import type {
   BlockSnapshot,
   DraftModel,
-  JobMiddleware,
-  JobSlots,
+  TransformerMiddleware,
+  TransformerSlots,
 } from '@blocksuite/store';
 
 import { matchFlavours } from '../../utils';
@@ -33,7 +33,7 @@ const handlePoint = (
     model.text?.sliceToDelta(index, length + index);
 };
 
-const sliceText = (slots: JobSlots, std: EditorHost['std']) => {
+const sliceText = (slots: TransformerSlots, std: EditorHost['std']) => {
   slots.afterExport.on(payload => {
     if (payload.type === 'block') {
       const snapshot = payload.snapshot;
@@ -52,7 +52,7 @@ const sliceText = (slots: JobSlots, std: EditorHost['std']) => {
   });
 };
 
-export const copyMiddleware = (std: BlockStdScope): JobMiddleware => {
+export const copyMiddleware = (std: BlockStdScope): TransformerMiddleware => {
   return ({ slots }) => {
     sliceText(slots, std);
   };

@@ -58,8 +58,8 @@ import {
   type BlockSnapshot,
   BlockSnapshotSchema,
   fromJSON,
-  Job,
   type SliceSnapshot,
+  Transformer,
 } from '@blocksuite/store';
 import DOMPurify from 'dompurify';
 import * as Y from 'yjs';
@@ -369,7 +369,7 @@ export class EdgelessClipboardController extends PageClipboard {
       if (mayBeSurfaceDataJson !== undefined) {
         const elementsRawData = JSON.parse(mayBeSurfaceDataJson);
         const { snapshot, blobs } = elementsRawData;
-        const job = new Job({
+        const job = new Transformer({
           schema: this.std.workspace.schema,
           blobCRUD: this.std.workspace.blobSync,
           docCRUD: {
@@ -1373,7 +1373,7 @@ export async function prepareClipboardData(
   selectedAll: BlockSuite.EdgelessModel[],
   std: BlockStdScope
 ) {
-  const job = new Job({
+  const job = new Transformer({
     schema: std.workspace.schema,
     blobCRUD: std.workspace.blobSync,
     docCRUD: {

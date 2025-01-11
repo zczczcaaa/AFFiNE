@@ -36,7 +36,7 @@ export class DNDAPIExtension extends Extension {
     const { docId, flavour = 'affine:embed-linked-doc', blockId } = options;
 
     const slice = Slice.fromModels(this.std.store, []);
-    const job = this.std.getJob();
+    const job = this.std.getTransformer();
     const snapshot = job.sliceToSnapshot(slice);
     if (!snapshot) {
       console.error('Failed to convert slice to snapshot');

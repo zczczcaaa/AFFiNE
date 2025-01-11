@@ -8,10 +8,14 @@ import type {
 } from '@blocksuite/affine-model';
 import { DEFAULT_IMAGE_PROXY_ENDPOINT } from '@blocksuite/affine-shared/consts';
 import { assertExists } from '@blocksuite/global/utils';
-import type { DeltaOperation, DocMeta, JobMiddleware } from '@blocksuite/store';
+import type {
+  DeltaOperation,
+  DocMeta,
+  TransformerMiddleware,
+} from '@blocksuite/store';
 
 export const replaceIdMiddleware =
-  (idGenerator: () => string): JobMiddleware =>
+  (idGenerator: () => string): TransformerMiddleware =>
   ({ slots, docCRUD }) => {
     const idMap = new Map<string, string>();
     slots.afterImport.on(payload => {
@@ -202,7 +206,7 @@ export const replaceIdMiddleware =
 
 export const customImageProxyMiddleware = (
   imageProxyURL: string
-): JobMiddleware => {
+): TransformerMiddleware => {
   return ({ adapterConfigs }) => {
     adapterConfigs.set('imageProxy', imageProxyURL);
   };
@@ -211,7 +215,7 @@ export const customImageProxyMiddleware = (
 const customDocLinkBaseUrlMiddleware = (
   baseUrl: string,
   collectionId: string
-): JobMiddleware => {
+): TransformerMiddleware => {
   return ({ adapterConfigs }) => {
     const docLinkBaseUrl = baseUrl
       ? `${baseUrl}/workspace/${collectionId}`
@@ -221,7 +225,7 @@ const customDocLinkBaseUrlMiddleware = (
 };
 
 export const titleMiddleware =
-  (metas: DocMeta[]): JobMiddleware =>
+  (metas: DocMeta[]): TransformerMiddleware =>
   ({ slots, adapterConfigs }) => {
     slots.beforeExport.on(() => {
       for (const meta of metas) {
@@ -273,13 +277,13 @@ export const defaultImageProxyMiddleware =
   defaultImageProxyMiddlewarBuilder.get();
 
 export const embedSyncedDocMiddleware =
-  (type: 'content'): JobMiddleware =>
+  (type: 'content'): TransformerMiddleware =>
   ({ adapterConfigs }) => {
     adapterConfigs.set('embedSyncedDocExportType', type);
   };
 
 export const fileNameMiddleware =
-  (fileName?: string): JobMiddleware =>
+  (fileName?: string): TransformerMiddleware =>
   ({ slots }) => {
     slots.beforeImport.on(payload => {
       if (payload.type !== 'page') {

@@ -1,6 +1,6 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 
-import type { BlobCRUD } from './type.js';
+import type { BlobCRUD } from './type';
 
 type AssetsManagerConfig = {
   blob: BlobCRUD;

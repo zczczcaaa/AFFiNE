@@ -15,11 +15,11 @@ import {
   type FromDocSnapshotResult,
   type FromSliceSnapshotPayload,
   type FromSliceSnapshotResult,
-  type Job,
   nanoid,
   type SliceSnapshot,
   type ToBlockSnapshotPayload,
   type ToDocSnapshotPayload,
+  type Transformer,
 } from '@blocksuite/store';
 
 import { MarkdownAdapter } from './markdown/markdown';
@@ -37,7 +37,7 @@ type MixTextToSliceSnapshotPayload = {
 export class MixTextAdapter extends BaseAdapter<MixText> {
   private readonly _markdownAdapter: MarkdownAdapter;
 
-  constructor(job: Job, provider: ServiceProvider) {
+  constructor(job: Transformer, provider: ServiceProvider) {
     super(job);
     this._markdownAdapter = new MarkdownAdapter(job, provider);
   }
@@ -354,7 +354,7 @@ export const MixTextAdapterFactoryIdentifier =
 export const MixTextAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(MixTextAdapterFactoryIdentifier, provider => ({
-      get: (job: Job) => new MixTextAdapter(job, provider),
+      get: (job: Transformer) => new MixTextAdapter(job, provider),
     }));
   },
 };

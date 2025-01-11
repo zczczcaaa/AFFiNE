@@ -22,7 +22,7 @@ import {
   ZipTransformer,
 } from '@blocksuite/affine/blocks';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
-import { Job, type Store } from '@blocksuite/affine/store';
+import { type Store, Transformer } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
@@ -58,7 +58,7 @@ async function exportDoc(
   std: BlockStdScope,
   config: AdapterConfig
 ) {
-  const job = new Job({
+  const transformer = new Transformer({
     schema: doc.workspace.schema,
     blobCRUD: doc.workspace.blobSync,
     docCRUD: {
@@ -74,7 +74,7 @@ async function exportDoc(
   });
 
   const adapterFactory = std.provider.get(config.identifier);
-  const adapter = adapterFactory.get(job);
+  const adapter = adapterFactory.get(transformer);
   const result = (await adapter.fromDoc(doc)) as AdapterResult;
 
   if (!result || (!result.file && !result.assetsIds.length)) {
@@ -88,10 +88,10 @@ async function exportDoc(
   let name: string;
 
   if (result.assetsIds.length > 0) {
-    if (!job.assets) {
+    if (!transformer.assets) {
       throw new Error('No assets found');
     }
-    const zip = await createAssetsArchive(job.assets, result.assetsIds);
+    const zip = await createAssetsArchive(transformer.assets, result.assetsIds);
     await zip.file(config.indexFileName, contentBlob);
     downloadBlob = await zip.generate();
     name = `${docTitle}.zip`;

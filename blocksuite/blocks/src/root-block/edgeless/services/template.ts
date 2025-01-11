@@ -15,8 +15,8 @@ import {
   type BlockSnapshot,
   type DocSnapshot,
   DocSnapshotSchema,
-  Job,
   type SnapshotNode,
+  Transformer,
 } from '@blocksuite/store';
 import type * as Y from 'yjs';
 /**
@@ -72,7 +72,7 @@ export class TemplateJob {
 
   private _template: DocSnapshot | null = null;
 
-  job: Job;
+  job: Transformer;
 
   model: SurfaceBlockModel;
 
@@ -90,7 +90,7 @@ export class TemplateJob {
   type: TemplateType;
 
   constructor({ model, type, middlewares }: TemplateJobConfig) {
-    this.job = new Job({
+    this.job = new Transformer({
       schema: model.doc.workspace.schema,
       blobCRUD: model.doc.workspace.blobSync,
       docCRUD: {

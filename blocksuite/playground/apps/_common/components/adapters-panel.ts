@@ -16,7 +16,7 @@ import {
 } from '@blocksuite/blocks';
 import { WithDisposable } from '@blocksuite/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/presets';
-import { type DocSnapshot, Job } from '@blocksuite/store';
+import { type DocSnapshot, Transformer } from '@blocksuite/store';
 import { effect } from '@preact/signals-core';
 import type SlTabPanel from '@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js';
 import { css, html, type PropertyValues } from 'lit';
@@ -101,7 +101,7 @@ export class AdaptersPanel extends WithDisposable(ShadowlessElement) {
   }
 
   private _createJob() {
-    return new Job({
+    return new Transformer({
       schema: this.doc.collection.schema,
       blobCRUD: this.doc.collection.blobSync,
       docCRUD: {

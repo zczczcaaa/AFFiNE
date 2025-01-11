@@ -15,8 +15,8 @@ import { Container } from '@blocksuite/affine/global/di';
 import {
   createYProxy,
   type DraftModel,
-  Job,
-  type JobMiddleware,
+  Transformer,
+  type TransformerMiddleware,
   type YBlock,
 } from '@blocksuite/affine/store';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
@@ -155,7 +155,7 @@ function generateMarkdownPreviewBuilder(
     };
   }
 
-  const titleMiddleware: JobMiddleware = ({ adapterConfigs }) => {
+  const titleMiddleware: TransformerMiddleware = ({ adapterConfigs }) => {
     const pages = yRootDoc.getMap('meta').get('pages');
     if (!(pages instanceof YArray)) {
       return;
@@ -176,7 +176,9 @@ function generateMarkdownPreviewBuilder(
     return `${baseUrl}/${docId}?${searchParams.toString()}`;
   }
 
-  const docLinkBaseURLMiddleware: JobMiddleware = ({ adapterConfigs }) => {
+  const docLinkBaseURLMiddleware: TransformerMiddleware = ({
+    adapterConfigs,
+  }) => {
     adapterConfigs.set('docLinkBaseUrl', baseUrl);
   };
 
@@ -191,7 +193,7 @@ function generateMarkdownPreviewBuilder(
 
   const provider = container.provider();
   const markdownAdapter = new MarkdownAdapter(
-    new Job({
+    new Transformer({
       schema: markdownPreviewDocCollection.schema,
       blobCRUD: markdownPreviewDocCollection.blobSync,
       docCRUD: {

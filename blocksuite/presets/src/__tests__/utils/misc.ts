@@ -1,11 +1,15 @@
 import { replaceIdMiddleware } from '@blocksuite/blocks';
-import { type DocSnapshot, Job, type Workspace } from '@blocksuite/store';
+import {
+  type DocSnapshot,
+  Transformer,
+  type Workspace,
+} from '@blocksuite/store';
 
 export async function importFromSnapshot(
   collection: Workspace,
   snapshot: DocSnapshot
 ) {
-  const job = new Job({
+  const job = new Transformer({
     schema: collection.schema,
     blobCRUD: collection.blobSync,
     docCRUD: {

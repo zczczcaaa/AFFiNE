@@ -10,9 +10,9 @@ import {
   type FromBlockSnapshotResult,
   type FromDocSnapshotResult,
   type FromSliceSnapshotResult,
-  type Job,
   nanoid,
   type SliceSnapshot,
+  type Transformer,
 } from '@blocksuite/store';
 
 import type { AffineTextAttributes } from '../types';
@@ -164,7 +164,7 @@ export const NotionTextAdapterFactoryIdentifier =
 export const NotionTextAdapterFactoryExtension: ExtensionType = {
   setup: di => {
     di.addImpl(NotionTextAdapterFactoryIdentifier, () => ({
-      get: (job: Job) => new NotionTextAdapter(job),
+      get: (job: Transformer) => new NotionTextAdapter(job),
     }));
   },
 };

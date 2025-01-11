@@ -1,5 +1,5 @@
 import { effects as blocksEffects } from '@blocksuite/blocks/effects';
-import type { Job, Store } from '@blocksuite/store';
+import type { Store, Transformer } from '@blocksuite/store';
 
 import { effects } from '../../effects.js';
 
@@ -113,11 +113,11 @@ declare global {
   const editor: AffineEditorContainer;
   const doc: Store;
   const collection: TestWorkspace;
-  const job: Job;
+  const job: Transformer;
   interface Window {
     editor: AffineEditorContainer;
     doc: Store;
-    job: Job;
+    job: Transformer;
     collection: TestWorkspace;
   }
 }
