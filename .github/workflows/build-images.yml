@@ -27,7 +27,9 @@ jobs:
           electron-install: false
           extra-flags: workspaces focus @affine/server
       - name: Build Server
-        run: yarn workspace @affine/server build
+        run: |
+          rm -rf packages/backend/server/src/__tests__
+          yarn workspace @affine/server build
       - name: Upload server dist
         uses: actions/upload-artifact@v4
         with:
