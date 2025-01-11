@@ -54,20 +54,21 @@ export class FileDropExtension extends LifeCycleWatcher {
     return indicator;
   }
 
-  point$ = signal<Point>(new Point(0, 0));
+  point$ = signal<Point | null>(null);
 
   closestElement$ = signal<BlockComponent | null>(null);
 
   dropTarget$ = computed<DropTarget | null>(() => {
     let target = null;
     const element = this.closestElement$.value;
-    if (!element) return null;
+    if (!element) return target;
 
     const model = element.model;
     const parent = this.std.store.getParent(model);
+
     if (!matchFlavours(parent, ['affine:surface' as BlockSuite.Flavour])) {
       const point = this.point$.value;
-      target = calcDropTarget(point, model, element);
+      target = point && calcDropTarget(point, model, element);
     }
 
     return target;
@@ -124,6 +125,7 @@ export class FileDropExtension extends LifeCycleWatcher {
     const oldPoint = this.point$.peek();
 
     if (
+      oldPoint &&
       Math.round(oldPoint.x) === Math.round(clientX) &&
       Math.round(oldPoint.y) === Math.round(clientY)
     )
@@ -133,7 +135,7 @@ export class FileDropExtension extends LifeCycleWatcher {
   };
 
   onDragLeave = () => {
-    this.closestElement$.value = null;
+    this.point$.value = null;
   };
 
   onDragOver = (event: DragEvent) => {
@@ -168,9 +170,21 @@ export class FileDropExtension extends LifeCycleWatcher {
       this.point$.subscribe(
         throttle(
           value => {
-            if (value.x * value.y === 0) return;
+            if (!value) {
+              this.closestElement$.value = null;
+              return;
+            }
 
-            this.closestElement$.value = getClosestBlockComponentByPoint(value);
+            const element = getClosestBlockComponentByPoint(value);
+            if (!element) {
+              return;
+            }
+
+            if (element === this.closestElement$.value) {
+              return;
+            }
+
+            this.closestElement$.value = element;
           },
           233,
           { leading: true, trailing: true }
