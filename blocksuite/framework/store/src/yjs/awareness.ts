@@ -1,4 +1,3 @@
-import { Slot } from '@blocksuite/global/utils';
 import type { Awareness } from 'y-protocols/awareness.js';
 
 export interface UserInfo {
@@ -11,7 +10,6 @@ type UserSelection = Array<Record<string, unknown>>;
 export type RawAwarenessState = {
   user?: UserInfo;
   color?: string;
-  // use v2 to avoid crush on old clients
   selectionV2: Record<string, UserSelection>;
 };
 
@@ -22,51 +20,14 @@ export interface AwarenessEvent {
 }
 
 export class AwarenessStore {
-  private readonly _onAwarenessChange = (diff: {
-    added: number[];
-    removed: number[];
-    updated: number[];
-  }) => {
-    const { added, removed, updated } = diff;
-
-    const states = this.getStates();
-    added.forEach(id => {
-      this.slots.update.emit({
-        id,
-        type: 'add',
-        state: states.get(id),
-      });
-    });
-    updated.forEach(id => {
-      this.slots.update.emit({
-        id,
-        type: 'update',
-        state: states.get(id),
-      });
-    });
-    removed.forEach(id => {
-      this.slots.update.emit({
-        id,
-        type: 'remove',
-      });
-    });
-  };
-
   readonly awareness: Awareness;
-
-  readonly slots = {
-    update: new Slot<AwarenessEvent>(),
-  };
 
   constructor(awareness: Awareness) {
     this.awareness = awareness;
-    this.awareness.on('change', this._onAwarenessChange);
     this.awareness.setLocalStateField('selectionV2', {});
   }
 
   destroy() {
-    this.awareness.off('change', this._onAwarenessChange);
-    this.slots.update.dispose();
     this.awareness.destroy();
   }
 
