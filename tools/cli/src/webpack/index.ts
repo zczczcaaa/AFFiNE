@@ -265,7 +265,7 @@ export function createWebpackConfig(
                         pkg.join('tailwind.config.js').exists()
                           ? [
                               require('tailwindcss')(
-                                require(pkg.join('tailwind.config.js').path)
+                                require(pkg.join('tailwind.config.js').value)
                               ),
                               'autoprefixer',
                             ]

@@ -1,10 +1,12 @@
 import { existsSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join, relative } from 'node:path/posix';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export class Path {
+  private readonly path: string;
+
   static dir(url: string) {
-    return new Path(join(fileURLToPath(url), '..'));
+    return new Path(fileURLToPath(url)).join('..');
   }
 
   get value() {
@@ -15,7 +17,9 @@ export class Path {
     return './' + this.path.slice(ProjectRoot.path.length).replace(/\\/g, '/');
   }
 
-  constructor(public readonly path: string) {}
+  constructor(path: string) {
+    this.path = path.replaceAll('\\', '/');
+  }
 
   join(...paths: string[]) {
     return new Path(join(this.path, ...paths));
