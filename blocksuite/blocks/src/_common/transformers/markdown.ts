@@ -1,3 +1,7 @@
+import {
+  InlineDeltaToMarkdownAdapterExtensions,
+  MarkdownInlineToDeltaAdapterExtensions,
+} from '@blocksuite/affine-components/rich-text';
 import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
@@ -6,8 +10,6 @@ import type { Store, Workspace } from '@blocksuite/store';
 import { extMimeMap, Transformer } from '@blocksuite/store';
 
 import { defaultBlockMarkdownAdapterMatchers } from '../adapters/index.js';
-import { inlineDeltaToMarkdownAdapterMatchers } from '../adapters/markdown/delta-converter/inline-delta.js';
-import { markdownInlineToDeltaMatchers } from '../adapters/markdown/delta-converter/markdown-inline.js';
 import {
   defaultImageProxyMiddleware,
   docLinkBaseURLMiddleware,
@@ -18,9 +20,9 @@ import { createAssetsArchive, download, Unzip } from './utils.js';
 
 const container = new Container();
 [
-  ...markdownInlineToDeltaMatchers,
+  ...MarkdownInlineToDeltaAdapterExtensions,
   ...defaultBlockMarkdownAdapterMatchers,
-  ...inlineDeltaToMarkdownAdapterMatchers,
+  ...InlineDeltaToMarkdownAdapterExtensions,
 ].forEach(ext => {
   ext.setup(container);
 });

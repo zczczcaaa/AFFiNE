@@ -221,7 +221,7 @@ export const htmlBrElementToDeltaMatcher = HtmlASTToDeltaExtension({
   },
 });
 
-export const htmlInlineToDeltaMatchers = [
+export const HtmlInlineToDeltaAdapterExtensions = [
   htmlTextToDeltaMatcher,
   htmlTextLikeElementToDeltaMatcher,
   htmlStrongElementToDeltaMatcher,

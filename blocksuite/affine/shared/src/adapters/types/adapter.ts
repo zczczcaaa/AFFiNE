@@ -152,7 +152,8 @@ export type InlineDeltaMatcher<TNode extends object = never> = {
     context: {
       configs: Map<string, string>;
       current: TNode;
-    }
+    },
+    provider?: ServiceProvider
   ) => TNode;
 };
 

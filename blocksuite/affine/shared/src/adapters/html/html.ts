@@ -132,6 +132,7 @@ export class HtmlAdapter extends BaseAdapter<Html> {
             configs: this.configs,
             job: this.job,
             deltaConverter: this.deltaConverter,
+            provider: this.provider,
             textBuffer: { content: '' },
             assets,
             updateAssetIds: (assetsId: string) => {
@@ -155,6 +156,7 @@ export class HtmlAdapter extends BaseAdapter<Html> {
             configs: this.configs,
             job: this.job,
             deltaConverter: this.deltaConverter,
+            provider: this.provider,
             textBuffer: { content: '' },
             assets,
           };
@@ -172,7 +174,10 @@ export class HtmlAdapter extends BaseAdapter<Html> {
 
   readonly blockMatchers: BlockHtmlAdapterMatcher[];
 
-  constructor(job: Transformer, provider: ServiceProvider) {
+  constructor(
+    job: Transformer,
+    readonly provider: ServiceProvider
+  ) {
     super(job);
     const blockMatchers = Array.from(
       provider.getAll(BlockHtmlAdapterMatcherIdentifier).values()
@@ -187,7 +192,8 @@ export class HtmlAdapter extends BaseAdapter<Html> {
     this.deltaConverter = new HtmlDeltaConverter(
       job.adapterConfigs,
       inlineDeltaToHtmlAdapterMatchers,
-      htmlInlineToDeltaMatchers
+      htmlInlineToDeltaMatchers,
+      provider
     );
   }
 

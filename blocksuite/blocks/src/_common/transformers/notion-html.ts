@@ -1,10 +1,10 @@
+import { NotionHtmlInlineToDeltaAdapterExtensions } from '@blocksuite/affine-components/rich-text';
 import { NotionHtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
 import { extMimeMap, Transformer, type Workspace } from '@blocksuite/store';
 
 import { defaultBlockNotionHtmlAdapterMatchers } from '../adapters/notion-html/block-matcher.js';
-import { notionHtmlInlineToDeltaMatchers } from '../adapters/notion-html/delta-converter/html-inline.js';
 import { defaultImageProxyMiddleware } from './middlewares.js';
 import { Unzip } from './utils.js';
 
@@ -15,7 +15,7 @@ type ImportNotionZipOptions = {
 
 const container = new Container();
 [
-  ...notionHtmlInlineToDeltaMatchers,
+  ...NotionHtmlInlineToDeltaAdapterExtensions,
   ...defaultBlockNotionHtmlAdapterMatchers,
 ].forEach(ext => {
   ext.setup(container);

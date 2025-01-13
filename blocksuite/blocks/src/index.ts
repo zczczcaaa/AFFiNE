@@ -7,7 +7,6 @@ import { splitElements } from './root-block/edgeless/utils/clipboard-utils.js';
 import { isCanvasElement } from './root-block/edgeless/utils/query.js';
 
 export * from './_common/adapters/index.js';
-export * from './_common/adapters/markdown';
 export { type NavigatorMode } from './_common/edgeless/frame/consts.js';
 export {
   ExportManager,

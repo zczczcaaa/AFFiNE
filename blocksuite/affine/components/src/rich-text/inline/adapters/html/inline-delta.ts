@@ -1,6 +1,9 @@
-import { generateDocUrl } from '@blocksuite/affine-block-embed';
 import type { InlineHtmlAST } from '@blocksuite/affine-shared/adapters';
-import { InlineDeltaToHtmlAdapterExtension } from '@blocksuite/affine-shared/adapters';
+import {
+  InlineDeltaToHtmlAdapterExtension,
+  TextUtils,
+} from '@blocksuite/affine-shared/adapters';
+import { ThemeProvider } from '@blocksuite/affine-shared/services';
 
 export const boldDeltaToHtmlAdapterMatcher = InlineDeltaToHtmlAdapterExtension({
   name: 'bold',
@@ -43,7 +46,7 @@ export const strikeDeltaToHtmlAdapterMatcher =
     },
   });
 
-export const inlineCodeDeltaToMarkdownAdapterMatcher =
+export const inlineCodeDeltaToHtmlAdapterMatcher =
   InlineDeltaToHtmlAdapterExtension({
     name: 'inlineCode',
     match: delta => !!delta.attributes?.code,
@@ -87,7 +90,7 @@ export const referenceDeltaToHtmlAdapterMatcher =
 
       const { configs } = context;
       const title = configs.get(`title:${reference.pageId}`);
-      const url = generateDocUrl(
+      const url = TextUtils.generateDocUrl(
         configs.get('docLinkBaseUrl') ?? '',
         String(reference.pageId),
         reference.params ?? Object.create(null)
@@ -131,12 +134,86 @@ export const linkDeltaToHtmlAdapterMatcher = InlineDeltaToHtmlAdapterExtension({
   },
 });
 
-export const inlineDeltaToHtmlAdapterMatchers = [
+export const highlightBackgroundDeltaToHtmlAdapterMatcher =
+  InlineDeltaToHtmlAdapterExtension({
+    name: 'highlight-background',
+    match: delta => !!delta.attributes?.background,
+    toAST: (delta, context, provider) => {
+      const hast: InlineHtmlAST = {
+        type: 'element',
+        tagName: 'span',
+        properties: {},
+        children: [context.current],
+      };
+      if (!provider || !delta.attributes?.background) {
+        return hast;
+      }
+
+      const theme = provider.getOptional(ThemeProvider);
+      if (!theme) {
+        return hast;
+      }
+
+      const backgroundVar = delta.attributes?.background.substring(
+        'var('.length,
+        delta.attributes?.background.indexOf(')')
+      );
+      const background = theme.getCssVariableColor(backgroundVar);
+      return {
+        type: 'element',
+        tagName: 'mark',
+        properties: {
+          style: `background-color: ${background};`,
+        },
+        children: [context.current],
+      };
+    },
+  });
+
+export const highlightColorDeltaToHtmlAdapterMatcher =
+  InlineDeltaToHtmlAdapterExtension({
+    name: 'highlight-color',
+    match: delta => !!delta.attributes?.color,
+    toAST: (delta, context, provider) => {
+      const hast: InlineHtmlAST = {
+        type: 'element',
+        tagName: 'span',
+        properties: {},
+        children: [context.current],
+      };
+      if (!provider || !delta.attributes?.color) {
+        return hast;
+      }
+
+      const theme = provider.getOptional(ThemeProvider);
+      if (!theme) {
+        return hast;
+      }
+
+      const colorVar = delta.attributes?.color.substring(
+        'var('.length,
+        delta.attributes?.color.indexOf(')')
+      );
+      const color = theme.getCssVariableColor(colorVar);
+      return {
+        type: 'element',
+        tagName: 'mark',
+        properties: {
+          style: `color: ${color};background-color: transparent`,
+        },
+        children: [context.current],
+      };
+    },
+  });
+
+export const InlineDeltaToHtmlAdapterExtensions = [
   boldDeltaToHtmlAdapterMatcher,
   italicDeltaToHtmlAdapterMatcher,
   strikeDeltaToHtmlAdapterMatcher,
   underlineDeltaToHtmlAdapterMatcher,
-  inlineCodeDeltaToMarkdownAdapterMatcher,
+  highlightBackgroundDeltaToHtmlAdapterMatcher,
+  highlightColorDeltaToHtmlAdapterMatcher,
+  inlineCodeDeltaToHtmlAdapterMatcher,
   referenceDeltaToHtmlAdapterMatcher,
   linkDeltaToHtmlAdapterMatcher,
 ];

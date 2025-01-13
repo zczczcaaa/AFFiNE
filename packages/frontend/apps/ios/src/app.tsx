@@ -32,9 +32,9 @@ import { I18n } from '@affine/i18n';
 import {
   defaultBlockMarkdownAdapterMatchers,
   docLinkBaseURLMiddleware,
-  inlineDeltaToMarkdownAdapterMatchers,
+  InlineDeltaToMarkdownAdapterExtensions,
   MarkdownAdapter,
-  markdownInlineToDeltaMatchers,
+  MarkdownInlineToDeltaAdapterExtensions,
   titleMiddleware,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
@@ -198,9 +198,9 @@ const frameworkProvider = framework.provider();
 
     const container = new Container();
     [
-      ...markdownInlineToDeltaMatchers,
+      ...MarkdownInlineToDeltaAdapterExtensions,
       ...defaultBlockMarkdownAdapterMatchers,
-      ...inlineDeltaToMarkdownAdapterMatchers,
+      ...InlineDeltaToMarkdownAdapterExtensions,
     ].forEach(ext => {
       ext.setup(container);
     });

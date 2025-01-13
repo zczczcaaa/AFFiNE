@@ -1,7 +1,7 @@
-import { generateDocUrl } from '@blocksuite/affine-block-embed';
 import {
   InlineDeltaToPlainTextAdapterExtension,
   type TextBuffer,
+  TextUtils,
 } from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/store';
 
@@ -20,7 +20,7 @@ export const referenceDeltaMarkdownAdapterMatch =
 
       const { configs } = context;
       const title = configs.get(`title:${reference.pageId}`) ?? '';
-      const url = generateDocUrl(
+      const url = TextUtils.generateDocUrl(
         configs.get('docLinkBaseUrl') ?? '',
         String(reference.pageId),
         reference.params ?? Object.create(null)
@@ -71,7 +71,7 @@ export const latexDeltaMarkdownAdapterMatch =
     },
   });
 
-export const inlineDeltaToPlainTextAdapterMatchers: ExtensionType[] = [
+export const InlineDeltaToPlainTextAdapterExtensions: ExtensionType[] = [
   referenceDeltaMarkdownAdapterMatch,
   linkDeltaMarkdownAdapterMatch,
   latexDeltaMarkdownAdapterMatch,

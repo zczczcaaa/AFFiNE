@@ -1,7 +1,7 @@
 import {
   defaultBlockMarkdownAdapterMatchers,
-  inlineDeltaToMarkdownAdapterMatchers,
-  markdownInlineToDeltaMatchers,
+  InlineDeltaToMarkdownAdapterExtensions,
+  MarkdownInlineToDeltaAdapterExtensions,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
 import { Schema } from '@blocksuite/store';
@@ -12,9 +12,9 @@ import { markdownToMindmap } from '../mindmap-preview.js';
 
 const container = new Container();
 [
-  ...markdownInlineToDeltaMatchers,
+  ...MarkdownInlineToDeltaAdapterExtensions,
   ...defaultBlockMarkdownAdapterMatchers,
-  ...inlineDeltaToMarkdownAdapterMatchers,
+  ...InlineDeltaToMarkdownAdapterExtensions,
 ].forEach(ext => {
   ext.setup(container);
 });

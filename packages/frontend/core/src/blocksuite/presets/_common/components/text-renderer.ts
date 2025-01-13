@@ -11,9 +11,9 @@ import {
   CodeBlockComponent,
   defaultBlockMarkdownAdapterMatchers,
   DividerBlockComponent,
-  inlineDeltaToMarkdownAdapterMatchers,
+  InlineDeltaToMarkdownAdapterExtensions,
   ListBlockComponent,
-  markdownInlineToDeltaMatchers,
+  MarkdownInlineToDeltaAdapterExtensions,
   ParagraphBlockComponent,
 } from '@blocksuite/affine/blocks';
 import { Container, type ServiceProvider } from '@blocksuite/affine/global/di';
@@ -201,9 +201,9 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
       } else {
         const container = new Container();
         [
-          ...markdownInlineToDeltaMatchers,
+          ...MarkdownInlineToDeltaAdapterExtensions,
           ...defaultBlockMarkdownAdapterMatchers,
-          ...inlineDeltaToMarkdownAdapterMatchers,
+          ...InlineDeltaToMarkdownAdapterExtensions,
         ].forEach(ext => {
           ext.setup(container);
         });

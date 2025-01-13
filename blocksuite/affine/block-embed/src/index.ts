@@ -21,7 +21,6 @@ export const EmbedExtensions: ExtensionType[] = [
 export { createEmbedBlockHtmlAdapterMatcher } from './common/adapters/html';
 export { createEmbedBlockMarkdownAdapterMatcher } from './common/adapters/markdown';
 export { createEmbedBlockPlainTextAdapterMatcher } from './common/adapters/plain-text';
-export { generateDocUrl } from './common/adapters/utils';
 export { EmbedBlockComponent } from './common/embed-block-element';
 export { insertEmbedCard } from './common/insert-embed-card.js';
 export {

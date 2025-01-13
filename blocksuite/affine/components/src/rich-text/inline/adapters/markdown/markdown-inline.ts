@@ -138,7 +138,7 @@ export const markdownInlineMathToDeltaMatcher = MarkdownASTToDeltaExtension({
   },
 });
 
-export const markdownInlineToDeltaMatchers = [
+export const MarkdownInlineToDeltaAdapterExtensions = [
   markdownTextToDeltaMatcher,
   markdownInlineCodeToDeltaMatcher,
   markdownStrongToDeltaMatcher,

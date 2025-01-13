@@ -1,5 +1,7 @@
-import { generateDocUrl } from '@blocksuite/affine-block-embed';
-import { InlineDeltaToMarkdownAdapterExtension } from '@blocksuite/affine-shared/adapters';
+import {
+  InlineDeltaToMarkdownAdapterExtension,
+  TextUtils,
+} from '@blocksuite/affine-shared/adapters';
 import type { PhrasingContent } from 'mdast';
 import type RemarkMath from 'remark-math';
 
@@ -71,7 +73,7 @@ export const referenceDeltaToMarkdownAdapterMatcher =
       const { configs } = context;
       const title = configs.get(`title:${reference.pageId}`);
       const params = reference.params ?? {};
-      const url = generateDocUrl(
+      const url = TextUtils.generateDocUrl(
         configs.get('docLinkBaseUrl') ?? '',
         String(reference.pageId),
         params
@@ -144,7 +146,7 @@ export const latexDeltaToMarkdownAdapterMatcher =
     },
   });
 
-export const inlineDeltaToMarkdownAdapterMatchers = [
+export const InlineDeltaToMarkdownAdapterExtensions = [
   referenceDeltaToMarkdownAdapterMatcher,
   linkDeltaToMarkdownAdapterMatcher,
   inlineCodeDeltaToMarkdownAdapterMatcher,

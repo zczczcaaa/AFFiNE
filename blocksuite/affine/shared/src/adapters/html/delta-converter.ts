@@ -1,6 +1,7 @@
 import {
   createIdentifier,
   type ServiceIdentifier,
+  type ServiceProvider,
 } from '@blocksuite/global/di';
 import type { DeltaInsert } from '@blocksuite/inline';
 import type { ExtensionType } from '@blocksuite/store';
@@ -62,7 +63,8 @@ export class HtmlDeltaConverter extends DeltaASTConverter<
   constructor(
     readonly configs: Map<string, string>,
     readonly inlineDeltaMatchers: InlineDeltaToHtmlAdapterMatcher[],
-    readonly htmlASTToDeltaMatchers: HtmlASTToDeltaMatcher[]
+    readonly htmlASTToDeltaMatchers: HtmlASTToDeltaMatcher[],
+    readonly provider: ServiceProvider
   ) {
     super();
   }
@@ -84,7 +86,7 @@ export class HtmlDeltaConverter extends DeltaASTConverter<
     };
     for (const matcher of this.inlineDeltaMatchers) {
       if (matcher.match(delta)) {
-        hast = matcher.toAST(delta, context);
+        hast = matcher.toAST(delta, context, this.provider);
         context.current = hast;
       }
     }

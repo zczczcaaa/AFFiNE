@@ -283,7 +283,7 @@ export const notionHtmlStyleElementToDeltaMatcher =
     },
   });
 
-export const notionHtmlInlineToDeltaMatchers: ExtensionType[] = [
+export const NotionHtmlInlineToDeltaAdapterExtensions: ExtensionType[] = [
   notionHtmlTextToDeltaMatcher,
   notionHtmlSpanElementToDeltaMatcher,
   notionHtmlStrongElementToDeltaMatcher,

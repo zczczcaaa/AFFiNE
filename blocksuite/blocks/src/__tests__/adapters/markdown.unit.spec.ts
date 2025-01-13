@@ -1,3 +1,7 @@
+import {
+  InlineDeltaToMarkdownAdapterExtensions,
+  MarkdownInlineToDeltaAdapterExtensions,
+} from '@blocksuite/affine-components/rich-text';
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
 import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
@@ -10,18 +14,16 @@ import type {
 import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { inlineDeltaToMarkdownAdapterMatchers } from '../../_common/adapters/markdown/delta-converter/inline-delta.js';
-import { markdownInlineToDeltaMatchers } from '../../_common/adapters/markdown/delta-converter/markdown-inline.js';
-import { defaultBlockMarkdownAdapterMatchers } from '../../_common/adapters/markdown/index.js';
+import { defaultBlockMarkdownAdapterMatchers } from '../../_common/adapters/markdown/block-matcher.js';
 import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';
 
 const container = new Container();
 [
-  ...markdownInlineToDeltaMatchers,
+  ...MarkdownInlineToDeltaAdapterExtensions,
   ...defaultBlockMarkdownAdapterMatchers,
-  ...inlineDeltaToMarkdownAdapterMatchers,
+  ...InlineDeltaToMarkdownAdapterExtensions,
 ].forEach(ext => {
   ext.setup(container);
 });

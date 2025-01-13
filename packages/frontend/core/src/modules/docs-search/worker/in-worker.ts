@@ -7,9 +7,9 @@ import type {
 } from '@blocksuite/affine/blocks';
 import {
   defaultBlockMarkdownAdapterMatchers,
-  inlineDeltaToMarkdownAdapterMatchers,
+  InlineDeltaToMarkdownAdapterExtensions,
   MarkdownAdapter,
-  markdownInlineToDeltaMatchers,
+  MarkdownInlineToDeltaAdapterExtensions,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
 import {
@@ -184,9 +184,9 @@ function generateMarkdownPreviewBuilder(
 
   const container = new Container();
   [
-    ...markdownInlineToDeltaMatchers,
+    ...MarkdownInlineToDeltaAdapterExtensions,
     ...defaultBlockMarkdownAdapterMatchers,
-    ...inlineDeltaToMarkdownAdapterMatchers,
+    ...InlineDeltaToMarkdownAdapterExtensions,
   ].forEach(ext => {
     ext.setup(container);
   });

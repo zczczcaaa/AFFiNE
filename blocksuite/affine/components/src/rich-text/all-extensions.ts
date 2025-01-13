@@ -6,6 +6,7 @@ import {
   BoldInlineSpecExtension,
   CodeInlineSpecExtension,
   ColorInlineSpecExtension,
+  InlineAdapterExtensions,
   InlineSpecExtensions,
   ItalicInlineSpecExtension,
   LatexInlineSpecExtension,
@@ -38,4 +39,5 @@ export const RichTextExtensions: ExtensionType[] = [
   MarkdownExtensions,
   LatexEditorInlineManagerExtension,
   DefaultInlineManagerExtension,
+  InlineAdapterExtensions,
 ].flat();
