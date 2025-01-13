@@ -8,6 +8,7 @@
   "include": ["./src"],
   "references": [
     { "path": "../block-embed" },
+    { "path": "../block-surface" },
     { "path": "../components" },
     { "path": "../model" },
     { "path": "../shared" },

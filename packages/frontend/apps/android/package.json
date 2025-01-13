@@ -16,6 +16,7 @@
     "@capacitor/android": "^6.2.0",
     "@capacitor/core": "^6.2.0",
     "@sentry/react": "^8.44.0",
+    "@toeverything/infra": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^6.28.0"

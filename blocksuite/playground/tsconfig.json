@@ -10,6 +10,7 @@
   "references": [
     { "path": "../affine/components" },
     { "path": "../affine/model" },
+    { "path": "../affine/shared" },
     { "path": "../framework/block-std" },
     { "path": "../blocks" },
     { "path": "../affine/data-view" },
