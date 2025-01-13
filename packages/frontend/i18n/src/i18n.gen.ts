@@ -4200,6 +4200,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.peek-view-controls.open-attachment-in-split-view"](): string;
     /**
+      * `Open in center peek`
+      */
+    ["com.affine.peek-view-controls.open-doc-in-center-peek"](): string;
+    /**
       * `New`
       */
     ["com.affine.quicksearch.group.creation"](): string;
@@ -5135,6 +5139,14 @@ export function useAFFiNEI18N(): {
       * `Enable or disable ALL AI features.`
       */
     ["com.affine.settings.workspace.experimental-features.enable-ai.description"](): string;
+    /**
+      * `Enable AI Network Search`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-ai-network-search.name"](): string;
+    /**
+      * `Enable or disable AI Network Search feature.`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-ai-network-search.description"](): string;
     /**
       * `Database Full Width`
       */
