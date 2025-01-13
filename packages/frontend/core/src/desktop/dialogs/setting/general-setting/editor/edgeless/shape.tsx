@@ -324,7 +324,7 @@ export const ShapeSettings = () => {
       const handler = () => {
         editorSetting.set(`shape:${currentShape}`, { color: value });
       };
-      const isSelected = color === value;
+      const isSelected = isEqual(color, value);
       return (
         <MenuItem
           key={key}

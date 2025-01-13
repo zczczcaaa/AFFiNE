@@ -223,13 +223,14 @@ export class EdgelessColorPanel extends LitElement {
         palette => palette.key,
         palette => {
           const resolvedColor = resolveColor(palette.value, this.theme);
+          const activated = isEqual(resolvedColor, resolvedValue);
           return html`<edgeless-color-button
             class=${classMap({ large: true })}
             .label=${palette.key}
             .color=${palette.value}
             .theme=${this.theme}
             .hollowCircle=${this.hollowCircle}
-            ?active=${isEqual(resolvedColor, resolvedValue)}
+            ?active=${activated}
             @click=${() => {
               this.onSelect(palette);
               this.value = resolvedColor;

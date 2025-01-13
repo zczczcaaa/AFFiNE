@@ -32,10 +32,7 @@
             "e6t9tKz8Sy": {
               "index": "a5",
               "seed": 338503204,
-              "color": {
-                "dark": "#ffffff",
-                "light": "#000000"
-              },
+              "color": "#000000ff",
               "fillColor": "#fffbd5",
               "filled": true,
               "fontFamily": "blocksuite:surface:Inter",
@@ -59,10 +56,7 @@
             "F8qB_zDC5Q": {
               "index": "a6",
               "seed": 1896265661,
-              "color": {
-                "dark": "#ffffff",
-                "light": "#000000"
-              },
+              "color": "#000000ff",
               "fillColor": "#fffbd5",
               "filled": true,
               "fontFamily": "blocksuite:surface:Inter",
@@ -86,10 +80,7 @@
             "mPR44JBpcd": {
               "index": "a7",
               "seed": 2073974140,
-              "color": {
-                "dark": "#ffffff",
-                "light": "#000000"
-              },
+              "color": "#000000ff",
               "fillColor": "#fffbd5",
               "filled": true,
               "fontFamily": "blocksuite:surface:Inter",
@@ -113,10 +104,7 @@
             "cmtluc3FWR": {
               "index": "a8",
               "seed": 1457248130,
-              "color": {
-                "dark": "#ffffff",
-                "light": "#000000"
-              },
+              "color": "#000000ff",
               "fillColor": "#fffbd5",
               "filled": true,
               "fontFamily": "blocksuite:surface:Inter",
@@ -140,10 +128,7 @@
             "knt_TKvACR": {
               "index": "a9",
               "seed": 1896265661,
-              "color": {
-                "dark": "#ffffff",
-                "light": "#000000"
-              },
+              "color": "#000000ff",
               "fillColor": "#fffbd5",
               "filled": true,
               "fontFamily": "blocksuite:surface:Inter",
