@@ -1017,6 +1017,9 @@ export class SelectionElement extends WithDisposable(ShadowlessElement) {
     this.disposables.add(
       effect(() => {
         this.startUpdate(this.selection$.value);
+        return () => {
+          this.cancelSelectionUpdate();
+        };
       })
     );
   }
@@ -1033,11 +1036,15 @@ export class SelectionElement extends WithDisposable(ShadowlessElement) {
     `;
   }
 
-  startUpdate(selection?: TableViewSelection) {
+  cancelSelectionUpdate() {
     if (this.preTask) {
       cancelAnimationFrame(this.preTask);
       this.preTask = 0;
     }
+  }
+
+  startUpdate(selection?: TableViewSelection) {
+    this.cancelSelectionUpdate();
     if (
       selection?.selectionType === 'area' &&
       !this.controller.host.props.view.readonly$.value
