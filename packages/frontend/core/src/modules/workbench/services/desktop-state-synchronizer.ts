@@ -1,35 +1,36 @@
-import { apis, appInfo, events } from '@affine/electron-api';
 import { LiveData, Service } from '@toeverything/infra';
 
+import type { DesktopApiService } from '../../desktop-api';
 import type { WorkbenchService } from '../../workbench';
 
 /**
  * Synchronize workbench state with state stored in main process
  */
 export class DesktopStateSynchronizer extends Service {
-  constructor(private readonly workbenchService: WorkbenchService) {
+  constructor(
+    private readonly workbenchService: WorkbenchService,
+    private readonly electronApi: DesktopApiService
+  ) {
     super();
     this.startSync();
   }
 
   startSync = () => {
-    if (!environment.isElectron) {
+    if (!BUILD_CONFIG.isElectron) {
       return;
     }
 
     const workbench = this.workbenchService.workbench;
+    const appInfo = this.electronApi.appInfo;
 
-    events?.ui.onTabAction(event => {
+    this.electronApi.events.ui.onTabAction(event => {
       if (
         event.type === 'open-in-split-view' &&
         event.payload.tabId === appInfo?.viewId
       ) {
-        const to =
-          event.payload.view?.path ??
-          workbench.activeView$.value?.location$.value;
-
-        workbench.open(to, {
+        workbench.openAll({
           at: 'beside',
+          show: false,
         });
       }
 
@@ -51,7 +52,7 @@ export class DesktopStateSynchronizer extends Service {
       }
     });
 
-    events?.ui.onToggleRightSidebar(tabId => {
+    this.electronApi.events.ui.onToggleRightSidebar(tabId => {
       if (tabId === appInfo?.viewId) {
         workbench.sidebarOpen$.next(!workbench.sidebarOpen$.value);
       }
@@ -74,11 +75,11 @@ export class DesktopStateSynchronizer extends Service {
         };
       });
     }).subscribe(views => {
-      if (!apis || !appInfo?.viewId) {
+      if (!appInfo?.viewId) {
         return;
       }
 
-      apis.ui
+      this.electronApi.handler.ui
         .updateWorkbenchMeta(appInfo.viewId, {
           views,
         })
@@ -86,11 +87,11 @@ export class DesktopStateSynchronizer extends Service {
     });
 
     workbench.activeViewIndex$.subscribe(activeViewIndex => {
-      if (!apis || !appInfo?.viewId) {
+      if (!appInfo?.viewId) {
         return;
       }
 
-      apis.ui
+      this.electronApi.handler.ui
         .updateWorkbenchMeta(appInfo.viewId, {
           activeViewIndex: activeViewIndex,
         })
@@ -98,11 +99,11 @@ export class DesktopStateSynchronizer extends Service {
     });
 
     workbench.basename$.subscribe(basename => {
-      if (!apis || !appInfo?.viewId) {
+      if (!appInfo?.viewId) {
         return;
       }
 
-      apis.ui
+      this.electronApi.handler.ui
         .updateWorkbenchMeta(appInfo.viewId, {
           basename: basename,
         })

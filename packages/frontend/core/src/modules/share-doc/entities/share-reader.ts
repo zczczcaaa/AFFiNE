@@ -1,5 +1,5 @@
 import { UserFriendlyError } from '@affine/graphql';
-import type { DocMode } from '@blocksuite/blocks';
+import type { DocMode } from '@blocksuite/affine/blocks';
 import {
   effect,
   Entity,
@@ -31,8 +31,18 @@ export class ShareReader extends Entity {
 
   loadShare = effect(
     switchMap(
-      ({ workspaceId, docId }: { workspaceId: string; docId: string }) => {
-        return fromPromise(this.store.loadShare(workspaceId, docId)).pipe(
+      ({
+        serverId,
+        workspaceId,
+        docId,
+      }: {
+        serverId: string;
+        workspaceId: string;
+        docId: string;
+      }) => {
+        return fromPromise(
+          this.store.loadShare(serverId, workspaceId, docId)
+        ).pipe(
           mergeMap(data => {
             if (!data) {
               this.data$.next(null);

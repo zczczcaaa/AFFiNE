@@ -2,20 +2,21 @@ import { Loading, Scrollable } from '@affine/component';
 import { EditorLoading } from '@affine/component/page-detail-skeleton';
 import { Button, IconButton } from '@affine/component/ui/button';
 import { Modal, useConfirmModal } from '@affine/component/ui/modal';
-import { openSettingModalAtom } from '@affine/core/atoms';
-import { useDocCollectionPageTitle } from '@affine/core/hooks/use-block-suite-workspace-page-title';
-import { track } from '@affine/core/mixpanel';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorService } from '@affine/core/modules/editor';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { i18nTime, Trans, useI18n } from '@affine/i18n';
-import type { DocMode } from '@blocksuite/blocks';
-import { CloseIcon, ToggleCollapseIcon } from '@blocksuite/icons/rc';
-import type { Doc as BlockSuiteDoc, DocCollection } from '@blocksuite/store';
+import { track } from '@affine/track';
+import type { DocMode } from '@blocksuite/affine/blocks';
+import type { Store, Workspace } from '@blocksuite/affine/store';
+import { CloseIcon, ToggleRightIcon } from '@blocksuite/icons/rc';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import type { DialogContentProps } from '@radix-ui/react-dialog';
-import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
-import { atom, useAtom, useSetAtom } from 'jotai';
+import { useLiveData, useService } from '@toeverything/infra';
+import { atom, useAtom } from 'jotai';
 import type { PropsWithChildren } from 'react';
 import {
   Fragment,
@@ -28,7 +29,7 @@ import {
 } from 'react';
 import { encodeStateAsUpdate } from 'yjs';
 
-import { pageHistoryModalAtom } from '../../../atoms/page-history';
+import { pageHistoryModalAtom } from '../../atoms/page-history';
 import { BlockSuiteEditor } from '../../blocksuite/block-suite-editor';
 import { PureEditorModeSwitch } from '../../blocksuite/block-suite-mode-switch';
 import { AffineErrorBoundary } from '../affine-error-boundary';
@@ -44,7 +45,7 @@ import * as styles from './styles.css';
 export interface PageHistoryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  docCollection: DocCollection;
+  docCollection: Workspace;
   pageId: string;
 }
 
@@ -86,7 +87,7 @@ const ModalContainer = ({
 interface HistoryEditorPreviewProps {
   ts?: string;
   historyList: HistoryList;
-  snapshotPage?: BlockSuiteDoc;
+  snapshotPage?: Store;
   mode: DocMode;
   onModeChange: (mode: DocMode) => void;
   title: string;
@@ -185,21 +186,19 @@ const PlanPrompt = () => {
     permissionService.permission.revalidate();
   }, [permissionService]);
 
-  const setSettingModalAtom = useSetAtom(openSettingModalAtom);
   const [planPromptClosed, setPlanPromptClosed] = useAtom(planPromptClosedAtom);
-
+  const globalDialogService = useService(GlobalDialogService);
   const closeFreePlanPrompt = useCallback(() => {
     setPlanPromptClosed(true);
   }, [setPlanPromptClosed]);
 
   const onClickUpgrade = useCallback(() => {
-    setSettingModalAtom({
-      open: true,
+    globalDialogService.open('setting', {
       activeTab: 'plans',
       scrollAnchor: 'cloudPricingPlan',
     });
     track.$.docHistory.$.viewPlans();
-  }, [setSettingModalAtom]);
+  }, [globalDialogService]);
 
   const t = useI18n();
 
@@ -320,7 +319,7 @@ const PageHistoryList = ({
                     data-testid="page-list-group-header-collapsed-button"
                     className={styles.collapsedIconContainer}
                   >
-                    <ToggleCollapseIcon
+                    <ToggleRightIcon
                       className={styles.collapsedIcon}
                       data-collapsed={!!collapsed}
                     />
@@ -398,7 +397,7 @@ const PageHistoryManager = ({
   pageId,
   onClose,
 }: {
-  docCollection: DocCollection;
+  docCollection: Workspace;
   pageId: string;
   onClose: () => void;
 }) => {
@@ -432,7 +431,10 @@ const PageHistoryManager = ({
   const editor = useService(EditorService).editor;
   const [mode, setMode] = useState<DocMode>(editor.mode$.value);
 
-  const title = useDocCollectionPageTitle(docCollection, pageId);
+  const docDisplayMetaService = useService(DocDisplayMetaService);
+  const i18n = useI18n();
+
+  const title = useLiveData(docDisplayMetaService.title$(pageId));
 
   const onConfirmRestore = useCallback(() => {
     openConfirmModal({
@@ -466,7 +468,7 @@ const PageHistoryManager = ({
           snapshotPage={snapshotPage}
           mode={mode}
           onModeChange={setMode}
-          title={title}
+          title={i18n.t(title)}
         />
 
         <PageHistoryList

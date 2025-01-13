@@ -8,48 +8,27 @@ import {
   EmbedLoomBlockService,
   EmbedYoutubeBlockService,
   ImageBlockService,
-} from '@blocksuite/blocks';
-import { DisposableGroup } from '@blocksuite/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/presets';
-import type { Doc } from '@blocksuite/store';
-import { use } from 'foxact/use';
+} from '@blocksuite/affine/blocks';
+import { DisposableGroup } from '@blocksuite/affine/global/utils';
+import type { AffineEditorContainer } from '@blocksuite/affine/presets';
+import type { Store } from '@blocksuite/affine/store';
 import type { CSSProperties } from 'react';
-import { Suspense, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
+import type { DefaultOpenProperty } from '../../doc-properties';
 import { BlocksuiteEditorContainer } from './blocksuite-editor-container';
 import { NoPageRootError } from './no-page-error';
 
 export type EditorProps = {
-  page: Doc;
+  page: Store;
   mode: DocMode;
   shared?: boolean;
+  defaultOpenProperty?: DefaultOpenProperty;
   // on Editor ready
   onEditorReady?: (editor: AffineEditorContainer) => (() => void) | void;
   style?: CSSProperties;
   className?: string;
 };
-
-function usePageRoot(page: Doc) {
-  if (!page.ready) {
-    page.load();
-  }
-
-  if (!page.root) {
-    use(
-      new Promise<void>((resolve, reject) => {
-        const disposable = page.slots.rootAdded.once(() => {
-          resolve();
-        });
-        window.setTimeout(() => {
-          disposable.dispose();
-          reject(new NoPageRootError(page));
-        }, 20 * 1000);
-      })
-    );
-  }
-
-  return page.root;
-}
 
 const BlockSuiteEditorImpl = ({
   mode,
@@ -58,12 +37,11 @@ const BlockSuiteEditorImpl = ({
   shared,
   style,
   onEditorReady,
+  defaultOpenProperty,
 }: EditorProps) => {
-  usePageRoot(page);
-
   useEffect(() => {
     const disposable = page.slots.blockUpdated.once(() => {
-      page.collection.setDocMeta(page.id, {
+      page.workspace.meta.setDocMeta(page.id, {
         updatedDate: Date.now(),
       });
     });
@@ -89,22 +67,22 @@ const BlockSuiteEditorImpl = ({
 
             // provide image proxy endpoint to blocksuite
             editor.host?.std.clipboard.use(
-              customImageProxyMiddleware(runtimeConfig.imageProxyUrl)
+              customImageProxyMiddleware(BUILD_CONFIG.imageProxyUrl)
             );
-            ImageBlockService.setImageProxyURL(runtimeConfig.imageProxyUrl);
+            ImageBlockService.setImageProxyURL(BUILD_CONFIG.imageProxyUrl);
 
             // provide link preview endpoint to blocksuite
             BookmarkBlockService.setLinkPreviewEndpoint(
-              runtimeConfig.linkPreviewUrl
+              BUILD_CONFIG.linkPreviewUrl
             );
             EmbedGithubBlockService.setLinkPreviewEndpoint(
-              runtimeConfig.linkPreviewUrl
+              BUILD_CONFIG.linkPreviewUrl
             );
             EmbedYoutubeBlockService.setLinkPreviewEndpoint(
-              runtimeConfig.linkPreviewUrl
+              BUILD_CONFIG.linkPreviewUrl
             );
             EmbedLoomBlockService.setLinkPreviewEndpoint(
-              runtimeConfig.linkPreviewUrl
+              BUILD_CONFIG.linkPreviewUrl
             );
 
             return editor.host?.updateComplete;
@@ -134,6 +112,7 @@ const BlockSuiteEditorImpl = ({
       mode={mode}
       page={page}
       shared={shared}
+      defaultOpenProperty={defaultOpenProperty}
       ref={editorRef}
       className={className}
       style={style}
@@ -142,9 +121,35 @@ const BlockSuiteEditorImpl = ({
 };
 
 export const BlockSuiteEditor = (props: EditorProps) => {
-  return (
-    <Suspense fallback={<EditorLoading />}>
-      <BlockSuiteEditorImpl key={props.page.id} {...props} />
-    </Suspense>
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (props.page.root) {
+      setIsLoading(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      disposable.dispose();
+      setError(new NoPageRootError(props.page));
+    }, 20 * 1000);
+    const disposable = props.page.slots.rootAdded.once(() => {
+      setIsLoading(false);
+      clearTimeout(timer);
+    });
+    return () => {
+      disposable.dispose();
+      clearTimeout(timer);
+    };
+  }, [props.page]);
+
+  if (error) {
+    throw error;
+  }
+
+  return isLoading ? (
+    <EditorLoading />
+  ) : (
+    <BlockSuiteEditorImpl key={props.page.id} {...props} />
   );
 };

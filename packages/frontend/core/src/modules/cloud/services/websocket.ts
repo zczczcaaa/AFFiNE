@@ -1,22 +1,41 @@
-import { ApplicationStarted, OnEvent, Service } from '@toeverything/infra';
+import { OnEvent, Service } from '@toeverything/infra';
 import { Manager } from 'socket.io-client';
 
-import { getAffineCloudBaseUrl } from '../services/fetch';
+import { ApplicationStarted } from '../../lifecycle';
+import { AccountChanged } from '../events/account-changed';
+import type { WebSocketAuthProvider } from '../provider/websocket-auth';
 import type { AuthService } from './auth';
-import { AccountChanged } from './auth';
+import type { ServerService } from './server';
 
 @OnEvent(AccountChanged, e => e.update)
 @OnEvent(ApplicationStarted, e => e.update)
 export class WebSocketService extends Service {
-  ioManager: Manager = new Manager(`${getAffineCloudBaseUrl()}/`, {
+  ioManager: Manager = new Manager(`${this.serverService.server.baseUrl}/`, {
     autoConnect: false,
     transports: ['websocket'],
     secure: location.protocol === 'https:',
   });
-  socket = this.ioManager.socket('/');
+  socket = this.ioManager.socket('/', {
+    auth: this.webSocketAuthProvider
+      ? cb => {
+          this.webSocketAuthProvider
+            ?.getAuthToken(`${this.serverService.server.baseUrl}/`)
+            .then(v => {
+              cb(v ?? {});
+            })
+            .catch(e => {
+              console.error('Failed to get auth token for websocket', e);
+            });
+        }
+      : undefined,
+  });
   refCount = 0;
 
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    private readonly serverService: ServerService,
+    private readonly authService: AuthService,
+    private readonly webSocketAuthProvider?: WebSocketAuthProvider
+  ) {
     super();
   }
 

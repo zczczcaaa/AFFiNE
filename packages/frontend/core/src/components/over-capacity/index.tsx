@@ -1,9 +1,9 @@
 import { notify } from '@affine/component';
-import { openSettingModalAtom } from '@affine/core/atoms';
+import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import { useLiveData, useService, WorkspaceService } from '@toeverything/infra';
-import { useSetAtom } from 'jotai';
+import { useLiveData, useService } from '@toeverything/infra';
 import { debounce } from 'lodash-es';
 import { useCallback, useEffect } from 'react';
 
@@ -20,14 +20,13 @@ export const OverCapacityNotification = () => {
     permissionService.permission.revalidate();
   }, [permissionService]);
 
-  const setSettingModalAtom = useSetAtom(openSettingModalAtom);
+  const globalDialogService = useService(GlobalDialogService);
   const jumpToPricePlan = useCallback(() => {
-    setSettingModalAtom({
-      open: true,
+    globalDialogService.open('setting', {
       activeTab: 'plans',
       scrollAnchor: 'cloudPricingPlan',
     });
-  }, [setSettingModalAtom]);
+  }, [globalDialogService]);
 
   // debounce sync engine status
   useEffect(() => {
@@ -40,17 +39,17 @@ export const OverCapacityNotification = () => {
           }
           if (isOwner) {
             notify.warning({
-              title: t['com.affine.payment.storage-limit.title'](),
+              title: t['com.affine.payment.storage-limit.new-title'](),
               message:
-                t['com.affine.payment.storage-limit.description.owner'](),
+                t['com.affine.payment.storage-limit.new-description.owner'](),
               action: {
-                label: t['com.affine.payment.storage-limit.view'](),
+                label: t['com.affine.payment.upgrade'](),
                 onClick: jumpToPricePlan,
               },
             });
           } else {
             notify.warning({
-              title: t['com.affine.payment.storage-limit.title'](),
+              title: t['com.affine.payment.storage-limit.new-title'](),
               message:
                 t['com.affine.payment.storage-limit.description.member'](),
             });

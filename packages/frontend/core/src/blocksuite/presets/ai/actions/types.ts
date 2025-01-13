@@ -1,6 +1,6 @@
 import type { getCopilotHistoriesQuery, RequestOptions } from '@affine/graphql';
-import type { EditorHost } from '@blocksuite/block-std';
-import type { BlockModel } from '@blocksuite/store';
+import type { EditorHost } from '@blocksuite/affine/block-std';
+import type { BlockModel } from '@blocksuite/affine/store';
 
 export const translateLangs = [
   'English',
@@ -35,11 +35,6 @@ export const imageProcessingTypes = [
   'Remove background',
   'Convert to sticker',
 ] as const;
-
-export type CtxRecord = {
-  get(): Record<string, unknown>;
-  set(data: Record<string, unknown>): void;
-};
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -87,7 +82,6 @@ declare global {
     }
 
     interface AIImageActionOptions extends AITextActionOptions {
-      content?: string;
       seed?: string;
     }
 

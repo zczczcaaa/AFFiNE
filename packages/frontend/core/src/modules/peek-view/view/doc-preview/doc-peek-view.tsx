@@ -4,12 +4,19 @@ import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
 import { BlockSuiteEditor } from '@affine/core/components/blocksuite/block-suite-editor';
 import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
+import { PageNotFound } from '@affine/core/desktop/pages/404';
 import { EditorService } from '@affine/core/modules/editor';
-import { PageNotFound } from '@affine/core/pages/404';
 import { DebugLogger } from '@affine/debug';
-import type { DocMode, EdgelessRootService } from '@blocksuite/blocks';
-import { Bound, DisposableGroup } from '@blocksuite/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import {
+  type EdgelessRootService,
+  RefNodeSlotsProvider,
+} from '@blocksuite/affine/blocks';
+import {
+  Bound,
+  type Disposable,
+  DisposableGroup,
+} from '@blocksuite/affine/global/utils';
+import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import {
   FrameworkScope,
   useLiveData,
@@ -20,6 +27,7 @@ import clsx from 'clsx';
 import { useCallback, useEffect } from 'react';
 
 import { WorkbenchService } from '../../../workbench';
+import type { DocReferenceInfo } from '../../entities/peek-view';
 import { PeekViewService } from '../../services/peek-view';
 import { useEditor } from '../utils';
 import * as styles from './doc-peek-view.css';
@@ -77,6 +85,7 @@ function DocPeekPreviewEditor({
   const doc = editor.doc;
   const workspace = editor.doc.workspace;
   const mode = useLiveData(editor.mode$);
+  const defaultOpenProperty = useLiveData(editor.defaultOpenProperty$);
   const workbench = useService(WorkbenchService).workbench;
   const peekView = useService(PeekViewService).peekView;
   const editorElement = useLiveData(editor.editorContainer$);
@@ -87,28 +96,23 @@ function DocPeekPreviewEditor({
         return;
       }
       const disposableGroup = new DisposableGroup();
-      const rootService = editorContainer.host.std.getService('affine:page');
-      if (!rootService) {
-        return;
-      }
+      const refNodeSlots =
+        editorContainer.host.std.getOptional(RefNodeSlotsProvider);
+      if (!refNodeSlots) return;
       // doc change event inside peek view should be handled by peek view
       disposableGroup.add(
-        rootService.slots.docLinkClicked.on(options => {
+        // todo(@pengx17): seems not working
+        refNodeSlots.docLinkClicked.on(options => {
           peekView
             .open({
-              type: 'doc',
-              docId: options.pageId,
+              docRef: { docId: options.pageId },
               ...options.params,
             })
             .catch(console.error);
         })
       );
 
-      editor.setEditorContainer(editorContainer);
-      const unbind = editor.bindEditorContainer(
-        editorContainer,
-        (editorContainer as any).title
-      );
+      const unbind = editor.bindEditorContainer(editorContainer);
 
       if (mode === 'edgeless') {
         fitViewport(editorContainer, xywh);
@@ -116,7 +120,6 @@ function DocPeekPreviewEditor({
 
       return () => {
         unbind();
-        editor.setEditorContainer(null);
         disposableGroup.dispose();
       };
     },
@@ -124,17 +127,17 @@ function DocPeekPreviewEditor({
   );
 
   useEffect(() => {
-    const disposable = AIProvider.slots.requestOpenWithChat.on(() => {
+    const disposables: Disposable[] = [];
+    const openHandler = () => {
       if (doc) {
         workbench.openDoc(doc.id);
         peekView.close();
         // chat panel open is already handled in <DetailPageImpl />
       }
-    });
-
-    return () => {
-      disposable.dispose();
     };
+    disposables.push(AIProvider.slots.requestOpenWithChat.on(openHandler));
+    disposables.push(AIProvider.slots.requestSendWithChat.on(openHandler));
+    return () => disposables.forEach(d => d.dispose());
   }, [doc, peekView, workbench, workspace.id]);
 
   const openOutlinePanel = useCallback(() => {
@@ -155,37 +158,49 @@ function DocPeekPreviewEditor({
             mode={mode}
             page={doc.blockSuiteDoc}
             onEditorReady={handleOnEditorReady}
-          />
-          <EditorOutlineViewer
-            editor={editorElement}
-            show={mode === 'page'}
-            openOutlinePanel={openOutlinePanel}
+            defaultOpenProperty={defaultOpenProperty}
           />
         </Scrollable.Viewport>
-
         <Scrollable.Scrollbar />
       </Scrollable.Root>
+      {!BUILD_CONFIG.isMobileEdition && !BUILD_CONFIG.isMobileWeb ? (
+        <EditorOutlineViewer
+          editor={editorElement}
+          show={mode === 'page'}
+          openOutlinePanel={openOutlinePanel}
+        />
+      ) : null}
     </AffineErrorBoundary>
   );
 }
 
-export function DocPeekPreview({
-  docId,
-  blockIds,
-  elementIds,
-  mode,
-  xywh,
-}: {
-  docId: string;
-  blockIds?: string[];
-  elementIds?: string[];
-  mode?: DocMode;
-  xywh?: `[${number},${number},${number},${number}]`;
-}) {
-  const { doc, editor, loading } = useEditor(docId, mode, {
+export function DocPeekPreview({ docRef }: { docRef: DocReferenceInfo }) {
+  const {
+    docId,
     blockIds,
     elementIds,
-  });
+    mode,
+    xywh,
+    databaseId,
+    databaseDocId,
+    databaseRowId,
+  } = docRef;
+  const { doc, editor, loading } = useEditor(
+    docId,
+    mode,
+    {
+      blockIds,
+      elementIds,
+    },
+    databaseId && databaseRowId && databaseDocId
+      ? {
+          docId: databaseDocId,
+          databaseId,
+          databaseRowId,
+          type: 'database',
+        }
+      : undefined
+  );
 
   // if sync engine has been synced and the page is null, show 404 page.
   if (!doc || !editor) {

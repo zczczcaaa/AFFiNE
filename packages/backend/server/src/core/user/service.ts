@@ -8,9 +8,11 @@ import {
   EventEmitter,
   type EventPayload,
   OnEvent,
+  Runtime,
   WrongSignInCredentials,
   WrongSignInMethod,
-} from '../../fundamentals';
+} from '../../base';
+import { PermissionService } from '../permission';
 import { Quota_FreePlanV1_1 } from '../quota/schema';
 import { validators } from '../utils/validators';
 
@@ -32,9 +34,11 @@ export class UserService {
 
   constructor(
     private readonly config: Config,
+    private readonly runtime: Runtime,
     private readonly crypto: CryptoHelper,
     private readonly prisma: PrismaClient,
-    private readonly emitter: EventEmitter
+    private readonly emitter: EventEmitter,
+    private readonly permission: PermissionService
   ) {}
 
   get userCreatingData() {
@@ -58,7 +62,7 @@ export class UserService {
     validators.assertValidEmail(data.email);
 
     if (data.password) {
-      const config = await this.config.runtime.fetchAll({
+      const config = await this.runtime.fetchAll({
         'auth/password.max': true,
         'auth/password.min': true,
       });
@@ -182,7 +186,7 @@ export class UserService {
     const user = await this.findUserWithHashedPasswordByEmail(email);
 
     if (!user) {
-      throw new WrongSignInCredentials();
+      throw new WrongSignInCredentials({ email });
     }
 
     if (!user.password) {
@@ -195,7 +199,7 @@ export class UserService {
     );
 
     if (!passwordMatches) {
-      throw new WrongSignInCredentials();
+      throw new WrongSignInCredentials({ email });
     }
 
     return user;
@@ -229,6 +233,7 @@ export class UserService {
       }
     }
 
+    // @ts-expect-error will be removed
     this.emitter.emit('user.updated', user);
 
     return user;
@@ -240,7 +245,7 @@ export class UserService {
     select: Prisma.UserSelect = this.defaultUserSelect
   ) {
     if (data.password) {
-      const config = await this.config.runtime.fetchAll({
+      const config = await this.runtime.fetchAll({
         'auth/password.max': true,
         'auth/password.min': true,
       });
@@ -276,12 +281,13 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
+    const ownedWorkspaces = await this.permission.getOwnedWorkspaces(id);
     const user = await this.prisma.user.delete({ where: { id } });
-    this.emitter.emit('user.deleted', user);
+    this.emitter.emit('user.deleted', { ...user, ownedWorkspaces });
   }
 
   @OnEvent('user.updated')
-  async onUserUpdated(user: EventPayload<'user.deleted'>) {
+  async onUserUpdated(user: EventPayload<'user.updated'>) {
     const { enabled, customerIo } = this.config.metrics;
     if (enabled && customerIo?.token) {
       const payload = {

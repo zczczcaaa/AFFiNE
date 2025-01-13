@@ -1,54 +1,77 @@
-import { apis } from '@affine/electron-api';
-import { WorkspaceFlavour } from '@affine/env/workspace';
-import { DocCollection } from '@blocksuite/store';
+import { DebugLogger } from '@affine/debug';
 import type {
   BlobStorage,
   DocStorage,
-  WorkspaceEngineProvider,
-  WorkspaceFlavourProvider,
-  WorkspaceMetadata,
-  WorkspaceProfileInfo,
+  FrameworkProvider,
 } from '@toeverything/infra';
-import { globalBlockSuiteSchema, LiveData, Service } from '@toeverything/infra';
+import { LiveData, Service } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import { Observable } from 'rxjs';
-import { applyUpdate, encodeStateAsUpdate } from 'yjs';
+import { encodeStateAsUpdate } from 'yjs';
 
+import { DesktopApiService } from '../../desktop-api';
+import {
+  getAFFiNEWorkspaceSchema,
+  type WorkspaceEngineProvider,
+  type WorkspaceFlavourProvider,
+  type WorkspaceFlavoursProvider,
+  type WorkspaceMetadata,
+  type WorkspaceProfileInfo,
+} from '../../workspace';
+import { WorkspaceImpl } from '../../workspace/impls/workspace';
 import type { WorkspaceEngineStorageProvider } from '../providers/engine';
 import { BroadcastChannelAwarenessConnection } from './engine/awareness-broadcast-channel';
 import { StaticBlobStorage } from './engine/blob-static';
+import { getWorkspaceProfileWorker } from './out-worker';
 
 export const LOCAL_WORKSPACE_LOCAL_STORAGE_KEY = 'affine-local-workspace';
 const LOCAL_WORKSPACE_CHANGED_BROADCAST_CHANNEL_KEY =
   'affine-local-workspace-changed';
 
-export class LocalWorkspaceFlavourProvider
-  extends Service
-  implements WorkspaceFlavourProvider
-{
-  constructor(
-    private readonly storageProvider: WorkspaceEngineStorageProvider
-  ) {
-    super();
-  }
+const logger = new DebugLogger('local-workspace');
 
-  flavour: WorkspaceFlavour = WorkspaceFlavour.LOCAL;
+export function getLocalWorkspaceIds(): string[] {
+  try {
+    return JSON.parse(
+      localStorage.getItem(LOCAL_WORKSPACE_LOCAL_STORAGE_KEY) ?? '[]'
+    );
+  } catch (e) {
+    logger.error('Failed to get local workspace ids', e);
+    return [];
+  }
+}
+
+export function setLocalWorkspaceIds(
+  idsOrUpdater: string[] | ((ids: string[]) => string[])
+) {
+  localStorage.setItem(
+    LOCAL_WORKSPACE_LOCAL_STORAGE_KEY,
+    JSON.stringify(
+      typeof idsOrUpdater === 'function'
+        ? idsOrUpdater(getLocalWorkspaceIds())
+        : idsOrUpdater
+    )
+  );
+}
+
+class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
+  constructor(
+    private readonly storageProvider: WorkspaceEngineStorageProvider,
+    private readonly framework: FrameworkProvider
+  ) {}
+
+  flavour = 'local';
   notifyChannel = new BroadcastChannel(
     LOCAL_WORKSPACE_CHANGED_BROADCAST_CHANNEL_KEY
   );
 
   async deleteWorkspace(id: string): Promise<void> {
-    const allWorkspaceIDs: string[] = JSON.parse(
-      localStorage.getItem(LOCAL_WORKSPACE_LOCAL_STORAGE_KEY) ?? '[]'
-    );
-    localStorage.setItem(
-      LOCAL_WORKSPACE_LOCAL_STORAGE_KEY,
-      JSON.stringify(allWorkspaceIDs.filter(x => x !== id))
-    );
+    setLocalWorkspaceIds(ids => ids.filter(x => x !== id));
 
-    if (apis && environment.isElectron) {
-      await apis.workspace.delete(id);
+    if (BUILD_CONFIG.isElectron) {
+      const electronApi = this.framework.get(DesktopApiService);
+      await electronApi.handler.workspace.delete(id);
     }
 
     // notify all browser tabs, so they can update their workspace list
@@ -56,7 +79,7 @@ export class LocalWorkspaceFlavourProvider
   }
   async createWorkspace(
     initial: (
-      docCollection: DocCollection,
+      docCollection: WorkspaceImpl,
       blobStorage: BlobStorage,
       docStorage: DocStorage
     ) => Promise<void>
@@ -67,44 +90,41 @@ export class LocalWorkspaceFlavourProvider
     const blobStorage = this.storageProvider.getBlobStorage(id);
     const docStorage = this.storageProvider.getDocStorage(id);
 
-    const docCollection = new DocCollection({
+    const docCollection = new WorkspaceImpl({
       id: id,
-      idGenerator: () => nanoid(),
-      schema: globalBlockSuiteSchema,
-      blobSources: { main: blobStorage },
+      schema: getAFFiNEWorkspaceSchema(),
+      blobSource: blobStorage,
     });
 
-    // apply initial state
-    await initial(docCollection, blobStorage, docStorage);
+    try {
+      // apply initial state
+      await initial(docCollection, blobStorage, docStorage);
 
-    // save workspace to local storage, should be vary fast
-    await docStorage.doc.set(id, encodeStateAsUpdate(docCollection.doc));
-    for (const subdocs of docCollection.doc.getSubdocs()) {
-      await docStorage.doc.set(subdocs.guid, encodeStateAsUpdate(subdocs));
+      // save workspace to local storage, should be vary fast
+      await docStorage.doc.set(id, encodeStateAsUpdate(docCollection.doc));
+      for (const subdocs of docCollection.doc.getSubdocs()) {
+        await docStorage.doc.set(subdocs.guid, encodeStateAsUpdate(subdocs));
+      }
+
+      // save workspace id to local storage
+      setLocalWorkspaceIds(ids => [...ids, id]);
+
+      // notify all browser tabs, so they can update their workspace list
+      this.notifyChannel.postMessage(id);
+    } finally {
+      docCollection.dispose();
     }
 
-    // save workspace id to local storage
-    const allWorkspaceIDs: string[] = JSON.parse(
-      localStorage.getItem(LOCAL_WORKSPACE_LOCAL_STORAGE_KEY) ?? '[]'
-    );
-    allWorkspaceIDs.push(id);
-    localStorage.setItem(
-      LOCAL_WORKSPACE_LOCAL_STORAGE_KEY,
-      JSON.stringify(allWorkspaceIDs)
-    );
-
-    // notify all browser tabs, so they can update their workspace list
-    this.notifyChannel.postMessage(id);
-
-    return { id, flavour: WorkspaceFlavour.LOCAL };
+    return { id, flavour: 'local' };
   }
   workspaces$ = LiveData.from(
     new Observable<WorkspaceMetadata[]>(subscriber => {
       let last: WorkspaceMetadata[] | null = null;
       const emit = () => {
-        const value = JSON.parse(
-          localStorage.getItem(LOCAL_WORKSPACE_LOCAL_STORAGE_KEY) ?? '[]'
-        ).map((id: string) => ({ id, flavour: WorkspaceFlavour.LOCAL }));
+        const value = getLocalWorkspaceIds().map(id => ({
+          id,
+          flavour: 'local',
+        }));
         if (isEqual(last, value)) return;
         subscriber.next(value);
         last = value;
@@ -141,16 +161,16 @@ export class LocalWorkspaceFlavourProvider
       };
     }
 
-    const bs = new DocCollection({
-      id,
-      schema: globalBlockSuiteSchema,
-    });
+    const client = getWorkspaceProfileWorker();
 
-    if (localData) applyUpdate(bs.doc, localData);
+    const result = await client.call(
+      'renderWorkspaceProfile',
+      [localData].filter(Boolean) as Uint8Array[]
+    );
 
     return {
-      name: bs.meta.name,
-      avatar: bs.meta.avatar,
+      name: result.name,
+      avatar: result.avatar,
       isOwner: true,
     };
   }
@@ -177,4 +197,19 @@ export class LocalWorkspaceFlavourProvider
       },
     };
   }
+}
+
+export class LocalWorkspaceFlavoursProvider
+  extends Service
+  implements WorkspaceFlavoursProvider
+{
+  constructor(
+    private readonly storageProvider: WorkspaceEngineStorageProvider
+  ) {
+    super();
+  }
+
+  workspaceFlavours$ = new LiveData<WorkspaceFlavourProvider[]>([
+    new LocalWorkspaceFlavourProvider(this.storageProvider, this.framework),
+  ]);
 }

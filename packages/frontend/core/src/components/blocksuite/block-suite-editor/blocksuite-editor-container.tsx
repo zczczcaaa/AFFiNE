@@ -1,12 +1,16 @@
-import type { ReferenceInfo } from '@blocksuite/affine-model';
-import type { DocMode } from '@blocksuite/blocks';
+import {
+  type DocMode,
+  type NoteBlockModel,
+  NoteDisplayMode,
+} from '@blocksuite/affine/blocks';
+import { Slot } from '@blocksuite/affine/global/utils';
 import type {
   AffineEditorContainer,
   DocTitle,
   EdgelessEditor,
   PageEditor,
-} from '@blocksuite/presets';
-import { type Doc, Slot } from '@blocksuite/store';
+} from '@blocksuite/affine/presets';
+import { type BlockModel, type Store } from '@blocksuite/affine/store';
 import clsx from 'clsx';
 import type React from 'react';
 import {
@@ -18,29 +22,16 @@ import {
   useRef,
 } from 'react';
 
+import type { DefaultOpenProperty } from '../../doc-properties';
 import { BlocksuiteDocEditor, BlocksuiteEdgelessEditor } from './lit-adaper';
 import * as styles from './styles.css';
 
-// copy forwardSlot from blocksuite, but it seems we need to dispose the pipe
-// after the component is unmounted right?
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function forwardSlot<T extends Record<string, Slot<any>>>(
-  from: T,
-  to: Partial<T>
-) {
-  Object.entries(from).forEach(([key, slot]) => {
-    const target = to[key];
-    if (target) {
-      slot.pipe(target);
-    }
-  });
-}
-
 interface BlocksuiteEditorContainerProps {
-  page: Doc;
+  page: Store;
   mode: DocMode;
   shared?: boolean;
   className?: string;
+  defaultOpenProperty?: DefaultOpenProperty;
   style?: React.CSSProperties;
 }
 
@@ -55,7 +46,7 @@ export const BlocksuiteEditorContainer = forwardRef<
   AffineEditorContainer,
   BlocksuiteEditorContainerProps
 >(function AffineEditorContainer(
-  { page, mode, className, style, shared },
+  { page, mode, className, style, shared, defaultOpenProperty },
   ref
 ) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -65,37 +56,14 @@ export const BlocksuiteEditorContainer = forwardRef<
 
   const slots: BlocksuiteEditorContainerRef['slots'] = useMemo(() => {
     return {
-      docLinkClicked: new Slot<ReferenceInfo>(),
       editorModeSwitched: new Slot(),
       docUpdated: new Slot(),
-      tagClicked: new Slot(),
     };
   }, []);
-
-  // forward the slot to the webcomponent
-  useLayoutEffect(() => {
-    requestAnimationFrame(() => {
-      const docPage = rootRef.current?.querySelector('affine-page-root');
-      const edgelessPage = rootRef.current?.querySelector(
-        'affine-edgeless-root'
-      );
-      if (docPage) {
-        forwardSlot(docPage.slots, slots);
-      }
-
-      if (edgelessPage) {
-        forwardSlot(edgelessPage.slots, slots);
-      }
-    });
-  }, [page, slots]);
 
   useLayoutEffect(() => {
     slots.docUpdated.emit({ newDocId: page.id });
   }, [page, slots.docUpdated]);
-
-  useLayoutEffect(() => {
-    slots.editorModeSwitched.emit(mode);
-  }, [mode, slots.editorModeSwitched]);
 
   /**
    * mimic an AffineEditorContainer using proxy
@@ -131,6 +99,9 @@ export const BlocksuiteEditorContainer = forwardRef<
       get origin() {
         return rootRef.current;
       },
+      get std() {
+        return mode === 'page' ? docRef.current?.std : edgelessRef.current?.std;
+      },
     };
 
     const proxy = new Proxy(api, {
@@ -165,10 +136,26 @@ export const BlocksuiteEditorContainer = forwardRef<
 
   const handleClickPageModeBlank = useCallback(() => {
     if (shared || page.readonly) return;
-    affineEditorContainerProxy.host?.std.command.exec(
-      'appendParagraph' as never,
-      {}
-    );
+    const std = affineEditorContainerProxy.host?.std;
+    if (!std) {
+      return;
+    }
+    const note = getLastNoteBlock(page);
+    if (note) {
+      const lastBlock = note.lastChild();
+      if (
+        lastBlock &&
+        lastBlock.flavour === 'affine:paragraph' &&
+        lastBlock.text?.length === 0
+      ) {
+        std.command.exec('focusBlockEnd' as never, {
+          focusBlock: std.view.getBlock(lastBlock.id) as never,
+        });
+        return;
+      }
+    }
+
+    std.command.exec('appendParagraph' as never, {});
   }, [affineEditorContainerProxy, page, shared]);
 
   return (
@@ -190,6 +177,7 @@ export const BlocksuiteEditorContainer = forwardRef<
           ref={docRef}
           titleRef={docTitleRef}
           onClickBlank={handleClickPageModeBlank}
+          defaultOpenProperty={defaultOpenProperty}
         />
       ) : (
         <BlocksuiteEdgelessEditor
@@ -201,3 +189,32 @@ export const BlocksuiteEditorContainer = forwardRef<
     </div>
   );
 });
+
+// copy from '@blocksuite/affine-shared/utils'
+export function getLastNoteBlock(doc: Store) {
+  let note: NoteBlockModel | null = null;
+  if (!doc.root) return null;
+  const { children } = doc.root;
+  for (let i = children.length - 1; i >= 0; i--) {
+    const child = children[i];
+    if (
+      matchFlavours(child, ['affine:note']) &&
+      child.displayMode !== NoteDisplayMode.EdgelessOnly
+    ) {
+      note = child as NoteBlockModel;
+      break;
+    }
+  }
+  return note;
+}
+export function matchFlavours<Key extends (keyof BlockSuite.BlockModels)[]>(
+  model: BlockModel | null,
+  expected: Key
+): model is BlockSuite.BlockModels[Key[number]] {
+  return (
+    !!model &&
+    expected.some(
+      key => (model.flavour as keyof BlockSuite.BlockModels) === key
+    )
+  );
+}

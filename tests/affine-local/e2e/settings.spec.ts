@@ -34,6 +34,10 @@ test('change language using keyboard', async ({ page }) => {
   await page.keyboard.press('ArrowDown', {
     delay: 50,
   });
+  // incase the current language is the top one
+  await page.keyboard.press('ArrowDown', {
+    delay: 50,
+  });
   await page.keyboard.press('Enter', {
     delay: 50,
   });
@@ -64,7 +68,7 @@ test('Change layout width', async ({ page }) => {
   await waitForEditorLoad(page);
   await openEditorSetting(page);
 
-  await page.getByTestId('full-width-layout-trigger').click();
+  await page.getByTestId('full-width-trigger').click();
 
   const editorWrapper = page.locator('.editor-wrapper');
   const className = await editorWrapper.getAttribute('class');

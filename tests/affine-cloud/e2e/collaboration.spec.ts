@@ -1,6 +1,4 @@
-import { resolve } from 'node:path';
-
-import { skipOnboarding, test } from '@affine-test/kit/playwright';
+import { Path, skipOnboarding, test } from '@affine-test/kit/playwright';
 import {
   addUserToWorkspace,
   createRandomUser,
@@ -32,7 +30,7 @@ test.beforeEach(async () => {
 });
 
 test.beforeEach(async ({ page }) => {
-  await loginUser(page, user.email);
+  await loginUser(page, user);
 });
 
 // SKIP until BS-671 fix
@@ -57,7 +55,7 @@ test.skip('can collaborate with other user and name should display when editing'
   const context = await browser.newContext();
   await skipOnboarding(context);
   const page2 = await context.newPage();
-  await loginUser(page2, userB.email);
+  await loginUser(page2, userB);
   await addUserToWorkspace(workspaceId, userB.id, 1 /* READ */);
   await page2.reload();
   await waitForEditorLoad(page2);
@@ -119,16 +117,16 @@ test('can sync collections between different browser', async ({
   );
   await enableCloudWorkspace(page);
   await page.getByTestId('explorer-bar-add-collection-button').click();
-  const title = page.getByTestId('input-collection-title');
+  const title = page.getByTestId('prompt-modal-input');
   await title.isVisible();
   await title.fill('test collection');
-  await page.getByTestId('save-collection').click();
+  await page.getByTestId('prompt-modal-confirm').click();
 
   {
     const context = await browser.newContext();
     await skipOnboarding(context);
     const page2 = await context.newPage();
-    await loginUser(page2, user.email);
+    await loginUser(page2, user);
     await page2.goto(page.url());
     const collections = page2.getByTestId('explorer-collections');
     await collections.getByTestId('category-divider-collapse-button').click();
@@ -172,7 +170,7 @@ test('can sync svg between different browsers', async ({ page, browser }) => {
   const fileChooserPromise = page.waitForEvent('filechooser');
   await page.keyboard.press('Enter', { delay: 50 });
   const fileChooser = await fileChooserPromise;
-  fileChooser.setFiles(resolve(__dirname, 'logo.svg'));
+  fileChooser.setFiles(Path.dir(import.meta.url).join('logo.svg').value);
   await expect(image).toBeVisible();
 
   // the user should see the svg
@@ -193,7 +191,7 @@ test('can sync svg between different browsers', async ({ page, browser }) => {
     const context = await browser.newContext();
     await skipOnboarding(context);
     const page2 = await context.newPage();
-    await loginUser(page2, user.email);
+    await loginUser(page2, user);
     await page2.goto(page.url());
 
     // second user should see the svg
@@ -237,7 +235,7 @@ test('When the first sync is not completed, should always show loading', async (
   const context = await browser.newContext();
   await skipOnboarding(context);
   const page2 = await context.newPage();
-  await loginUser(page2, user.email);
+  await loginUser(page2, user);
 
   // simulate sync stuck
   await page2.evaluate(() => {

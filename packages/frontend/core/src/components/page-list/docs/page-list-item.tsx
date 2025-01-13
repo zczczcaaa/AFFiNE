@@ -180,7 +180,8 @@ export const PageListItem = (props: PageListItemProps) => {
         },
       },
     }),
-    [props.draggable, props.pageId]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.draggable, props.pageId, props.selectable]
   );
 
   return (
@@ -345,6 +346,7 @@ const PageListItemWrapper = forwardRef(
 
     const commonProps = useMemo(
       () => ({
+        role: 'list-item',
         'data-testid': 'page-list-item',
         'data-page-id': pageId,
         'data-draggable': draggable,
