@@ -26,12 +26,12 @@ import {
   URLHelper,
   UseNamedGuard,
 } from '../../base';
+import { Models, TokenType } from '../../models';
 import { UserService } from '../user';
 import { validators } from '../utils/validators';
 import { Public } from './guard';
 import { AuthService } from './service';
 import { CurrentUser, Session } from './session';
-import { TokenService, TokenType } from './token';
 
 interface PreflightResponse {
   registered: boolean;
@@ -57,7 +57,7 @@ export class AuthController {
     private readonly url: URLHelper,
     private readonly auth: AuthService,
     private readonly user: UserService,
-    private readonly token: TokenService,
+    private readonly models: Models,
     private readonly config: Config,
     private readonly runtime: Runtime
   ) {
@@ -194,7 +194,10 @@ export class AuthController {
       }
     }
 
-    const token = await this.token.createToken(TokenType.SignIn, email);
+    const token = await this.models.verificationToken.create(
+      TokenType.SignIn,
+      email
+    );
 
     const magicLink = this.url.link(callbackUrl, {
       token,
@@ -248,9 +251,13 @@ export class AuthController {
 
     validators.assertValidEmail(email);
 
-    const tokenRecord = await this.token.verifyToken(TokenType.SignIn, token, {
-      credential: email,
-    });
+    const tokenRecord = await this.models.verificationToken.verify(
+      TokenType.SignIn,
+      token,
+      {
+        credential: email,
+      }
+    );
 
     if (!tokenRecord) {
       throw new InvalidEmailToken();
