@@ -68,6 +68,7 @@ import {
 } from './specs/custom/spec-patchers';
 import { createEdgelessModeSpecs } from './specs/edgeless';
 import { createPageModeSpecs } from './specs/page';
+import { StarterBar } from './starter-bar';
 import * as styles from './styles.css';
 
 const adapted = {
@@ -334,6 +335,7 @@ export const BlocksuiteDocEditor = forwardRef<
           data-testid="page-editor-blank"
           onClick={onClickBlank}
         ></div>
+        <StarterBar doc={page} />
         {!shared && displayBiDirectionalLink ? (
           <BiDirectionalLinkPanel />
         ) : null}

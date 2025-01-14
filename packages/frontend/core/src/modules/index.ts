@@ -43,6 +43,7 @@ import {
 import { configureSystemFontFamilyModule } from './system-font-family';
 import { configureTagModule } from './tag';
 import { configureTelemetryModule } from './telemetry';
+import { configureTemplateDocModule } from './template-doc';
 import { configureAppThemeModule } from './theme';
 import { configureThemeEditorModule } from './theme-editor';
 import { configureUrlModule } from './url';
@@ -94,4 +95,5 @@ export function configureCommonModules(framework: Framework) {
   configureCommonGlobalStorageImpls(framework);
   configureAINetworkSearchModule(framework);
   configureAIButtonModule(framework);
+  configureTemplateDocModule(framework);
 }

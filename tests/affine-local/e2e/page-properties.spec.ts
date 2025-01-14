@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-dom-node-dataset */
 import { test } from '@affine-test/kit/playwright';
 import {
   openHomePage,
@@ -126,6 +125,7 @@ test('property table reordering', async ({ page }) => {
     'Tags',
     'Doc mode',
     'Journal',
+    'Template',
     'Created',
     'Updated',
     'Created by',
@@ -171,6 +171,7 @@ test('page info show more will show all properties', async ({ page }) => {
     'Tags',
     'Doc mode',
     'Journal',
+    'Template',
     'Created',
     'Updated',
     'Created by',

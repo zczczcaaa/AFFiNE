@@ -5,7 +5,7 @@ import type { DocCustomPropertyInfo } from '../db';
  *
  * 'id' and 'type' is request, 'index' is a manually maintained incremental key.
  */
-export const BUILT_IN_CUSTOM_PROPERTY_TYPE = [
+export const BUILT_IN_CUSTOM_PROPERTY_TYPE: DocCustomPropertyInfo[] = [
   {
     id: 'tags',
     type: 'tags',
@@ -22,6 +22,12 @@ export const BUILT_IN_CUSTOM_PROPERTY_TYPE = [
     type: 'journal',
     show: 'always-hide',
     index: 'a0000003',
+  },
+  {
+    id: 'template',
+    type: 'template',
+    index: 'a00000031',
+    show: 'always-hide',
   },
   {
     id: 'createdAt',
@@ -51,4 +57,4 @@ export const BUILT_IN_CUSTOM_PROPERTY_TYPE = [
     show: 'always-hide',
     index: 'a0000008',
   },
-] as DocCustomPropertyInfo[];
+];
