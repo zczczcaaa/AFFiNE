@@ -1,3 +1,5 @@
+import { createRequire } from 'node:module';
+
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
@@ -5,6 +7,7 @@ import {
   waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
 import { clickSideBarSettingButton } from '@affine-test/kit/utils/sidebar';
+import { Package } from '@affine-tools/utils/workspace';
 import { faker } from '@faker-js/faker';
 import { hash } from '@node-rs/argon2';
 import type { BrowserContext, Cookie, Page } from '@playwright/test';
@@ -50,6 +53,9 @@ const cloudUserSchema = z.object({
   password: z.string(),
 });
 
+const server = new Package('@affine/server');
+const require = createRequire(server.srcPath.join('index.ts').toFileUrl());
+
 export const runPrisma = async <T>(
   cb: (
     prisma: InstanceType<
@@ -58,12 +64,7 @@ export const runPrisma = async <T>(
     >
   ) => Promise<T>
 ): Promise<T> => {
-  const {
-    PrismaClient,
-    // oxlint-disable-next-line @typescript-eslint/consistent-type-imports
-  } = await import(
-    '../../../../packages/backend/server/node_modules/@prisma/client'
-  );
+  const { PrismaClient } = require('@prisma/client');
   const client = new PrismaClient({
     datasourceUrl:
       process.env.DATABASE_URL ||
