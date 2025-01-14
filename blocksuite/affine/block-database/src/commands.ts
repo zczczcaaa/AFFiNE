@@ -18,22 +18,24 @@ export const insertDatabaseBlockCommand: Command<
       : selectedModels[selectedModels.length - 1];
 
   const service = std.getService('affine:database');
-  if (!service) return;
+  if (!service || !targetModel) return;
 
   const result = std.store.addSiblingBlocks(
     targetModel,
     [{ flavour: 'affine:database' }],
     place
   );
-  if (result.length === 0) return;
+  const string = result[0];
 
-  service.initDatabaseBlock(std.store, targetModel, result[0], viewType, false);
+  if (string == null) return;
+
+  service.initDatabaseBlock(std.store, targetModel, string, viewType, false);
 
   if (removeEmptyLine && targetModel.text?.length === 0) {
     std.store.deleteBlock(targetModel);
   }
 
-  next({ insertedDatabaseBlockId: result[0] });
+  next({ insertedDatabaseBlockId: string });
 };
 
 export const commands: BlockCommands = {

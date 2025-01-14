@@ -8,12 +8,12 @@ import { presetPropertyConverts } from '@blocksuite/data-view/property-presets';
 import { propertyModelPresets } from '@blocksuite/data-view/property-pure-presets';
 import { nanoid, Text } from '@blocksuite/store';
 
-import { richTextColumnModelConfig } from './rich-text/define.js';
+import { richTextPropertyModelConfig } from './rich-text/define.js';
 
 export const databasePropertyConverts = [
   ...presetPropertyConverts,
   createPropertyConvert(
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     propertyModelPresets.selectPropertyModelConfig,
     (_property, cells) => {
       const options: Record<string, SelectTag> = {};
@@ -43,7 +43,7 @@ export const databasePropertyConverts = [
     }
   ),
   createPropertyConvert(
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     propertyModelPresets.multiSelectPropertyModelConfig,
     (_property, cells) => {
       const options: Record<string, SelectTag> = {};
@@ -77,7 +77,7 @@ export const databasePropertyConverts = [
     }
   ),
   createPropertyConvert(
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     propertyModelPresets.numberPropertyModelConfig,
     (_property, cells) => {
       return {
@@ -93,7 +93,7 @@ export const databasePropertyConverts = [
     }
   ),
   createPropertyConvert(
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     propertyModelPresets.progressPropertyModelConfig,
     (_property, cells) => {
       return {
@@ -106,7 +106,7 @@ export const databasePropertyConverts = [
     }
   ),
   createPropertyConvert(
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     propertyModelPresets.checkboxPropertyModelConfig,
     (_property, cells) => {
       const truthyValues = new Set(['yes', 'true']);
@@ -120,7 +120,7 @@ export const databasePropertyConverts = [
   ),
   createPropertyConvert(
     propertyModelPresets.checkboxPropertyModelConfig,
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     (_property, cells) => {
       return {
         property: {},
@@ -130,7 +130,7 @@ export const databasePropertyConverts = [
   ),
   createPropertyConvert(
     propertyModelPresets.multiSelectPropertyModelConfig,
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     (property, cells) => {
       const optionMap = Object.fromEntries(
         property.options.map(v => [v.id, v])
@@ -146,7 +146,7 @@ export const databasePropertyConverts = [
   ),
   createPropertyConvert(
     propertyModelPresets.numberPropertyModelConfig,
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     (_property, cells) => ({
       property: {},
       cells: cells.map(v => new Text(v?.toString()).yText),
@@ -154,7 +154,7 @@ export const databasePropertyConverts = [
   ),
   createPropertyConvert(
     propertyModelPresets.progressPropertyModelConfig,
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     (_property, cells) => ({
       property: {},
       cells: cells.map(v => new Text(v?.toString()).yText),
@@ -162,7 +162,7 @@ export const databasePropertyConverts = [
   ),
   createPropertyConvert(
     propertyModelPresets.selectPropertyModelConfig,
-    richTextColumnModelConfig,
+    richTextPropertyModelConfig,
     (property, cells) => {
       const optionMap = Object.fromEntries(
         property.options.map(v => [v.id, v])

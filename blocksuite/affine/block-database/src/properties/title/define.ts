@@ -6,7 +6,7 @@ import { isLinkedDoc } from '../../utils/title-doc.js';
 
 export const titleColumnType = propertyType('title');
 
-export const titlePurePropertyConfig = titleColumnType.modelConfig<Text>({
+export const titlePropertyModelConfig = titleColumnType.modelConfig<Text>({
   name: 'Title',
   type: () => t.richText.instance(),
   defaultData: () => ({}),

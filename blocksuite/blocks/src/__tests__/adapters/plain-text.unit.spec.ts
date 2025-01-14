@@ -1417,7 +1417,7 @@ describe('snapshot to plain text', () => {
     const plainText = `\
 | Title  | Status      | Date       | Number | Progress | MultiSelect | RichText                  | Link               | Checkbox |
 | ------ | ----------- | ---------- | ------ | -------- | ----------- | ------------------------- | ------------------ | -------- |
-| Task 1 | TODO        | 2023-12-15 | 1      | 65       | test1,test2 | test2: https://google.com | https://google.com | true     |
+| Task 1 | TODO        | 2023-12-15 | 1      | 65       | test1,test2 | test2: https://google.com | https://google.com | True     |
 | Task 2 | In Progress | 2023-12-20 |        |          |             | test1                     |                    |          |
 `;
     const plainTextAdapter = new PlainTextAdapter(createJob(), provider);

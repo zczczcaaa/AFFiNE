@@ -38,12 +38,7 @@ export type PropertyConfig<
       value?: Value;
     }>
   ) => unknown[];
-  cellToString: (
-    config: WithCommonPropertyConfig<{
-      value: Value;
-      data: Data;
-    }>
-  ) => string;
+  cellToString: (config: { value: Value; data: Data }) => string;
   cellFromString: (
     config: WithCommonPropertyConfig<{
       value: string;

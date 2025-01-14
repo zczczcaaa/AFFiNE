@@ -31,7 +31,7 @@ import { html } from 'lit/static-html.js';
 
 import { HostContextKey } from '../../context/host-context.js';
 import type { DatabaseBlockComponent } from '../../database-block.js';
-import { richTextColumnModelConfig } from './define.js';
+import { richTextPropertyModelConfig } from './define.js';
 
 function toggleStyle(
   inlineEditor: AffineInlineEditor | null,
@@ -581,7 +581,7 @@ declare global {
 }
 
 export const richTextColumnConfig =
-  richTextColumnModelConfig.createPropertyMeta({
+  richTextPropertyModelConfig.createPropertyMeta({
     icon: createIcon('TextIcon'),
 
     cellRenderer: {

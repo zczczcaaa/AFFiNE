@@ -62,8 +62,8 @@ export function copyCellsByProperty(
 ) {
   model.doc.transact(() => {
     Object.keys(model.cells).forEach(rowId => {
-      const cell = model.cells[rowId][fromId];
-      if (cell) {
+      const cell = model.cells[rowId]?.[fromId];
+      if (cell && model.cells[rowId]) {
         model.cells[rowId][toId] = {
           ...cell,
           columnId: toId,
@@ -186,14 +186,15 @@ export function updateCell(
       console.error('Invalid columnId');
       return;
     }
-    const hasRow = rowId in model.cells;
-    if (!hasRow) {
+    if (!model.cells[rowId]) {
       model.cells[rowId] = Object.create(null);
     }
-    model.cells[rowId][columnId] = {
-      columnId: columnId,
-      value: cell.value,
-    };
+    if (model.cells[rowId]) {
+      model.cells[rowId][columnId] = {
+        columnId: columnId,
+        value: cell.value,
+      };
+    }
   });
 }
 
@@ -214,10 +215,12 @@ export function updateCells(
       if (!model.cells[rowId]) {
         model.cells[rowId] = Object.create(null);
       }
-      model.cells[rowId][columnId] = {
-        columnId,
-        value,
-      };
+      if (model.cells[rowId]) {
+        model.cells[rowId][columnId] = {
+          columnId,
+          value,
+        };
+      }
     });
   });
 }
@@ -233,6 +236,9 @@ export function updateProperty(
   }
   model.doc.transact(() => {
     const column = model.columns[index];
+    if (!column) {
+      return;
+    }
     const result = updater(column);
     model.columns[index] = { ...column, ...result };
   });

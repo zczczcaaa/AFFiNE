@@ -1,3 +1,6 @@
+import { format } from 'date-fns/format';
+import { parse } from 'date-fns/parse';
+
 import { t } from '../../core/logical/type-presets.js';
 import { propertyType } from '../../core/property/property-config.js';
 
@@ -6,12 +9,12 @@ export const datePropertyModelConfig = datePropertyType.modelConfig<number>({
   name: 'Date',
   type: () => t.date.instance(),
   defaultData: () => ({}),
-  cellToString: ({ value }) => value?.toString() ?? '',
+  cellToString: ({ value }) => format(value, 'yyyy-MM-dd'),
   cellFromString: ({ value }) => {
-    const isDateFormat = !isNaN(Date.parse(value));
+    const date = parse(value, 'yyyy-MM-dd', new Date());
 
     return {
-      value: isDateFormat ? +new Date(value) : null,
+      value: +date,
     };
   },
   cellToJson: ({ value }) => value ?? null,

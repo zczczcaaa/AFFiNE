@@ -286,7 +286,6 @@ export abstract class SingleViewBase<
       this.dataSource.propertyMetaGet(type).config.cellToString({
         value: this.dataSource.cellValueGet(rowId, propertyId),
         data: this.propertyDataGet(propertyId),
-        dataSource: this.dataSource,
       }) ?? ''
     );
   }

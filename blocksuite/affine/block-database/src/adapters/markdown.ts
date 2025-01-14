@@ -9,10 +9,10 @@ import {
   type MarkdownAST,
   TextUtils,
 } from '@blocksuite/affine-shared/adapters';
-import type { DeltaInsert } from '@blocksuite/inline';
-import { type BlockSnapshot, nanoid } from '@blocksuite/store';
-import { format } from 'date-fns/format';
+import { nanoid } from '@blocksuite/store';
 import type { TableRow } from 'mdast';
+
+import { processTable } from './utils';
 
 const DATABASE_NODE_TYPES = new Set(['table', 'tableRow']);
 
@@ -28,7 +28,7 @@ export const databaseBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher =
       enter: (o, context) => {
         const { walkerContext } = context;
         if (o.node.type === 'table') {
-          const viewsColumns = o.node.children[0].children.map(() => {
+          const viewsColumns = o.node.children[0]?.children.map(() => {
             return {
               id: nanoid(),
               hide: false,
@@ -40,8 +40,12 @@ export const databaseBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher =
             const rowId = nanoid();
             cells[rowId] = Object.create(null);
             row.children.slice(1).forEach((cell, index) => {
-              cells[rowId][viewsColumns[index + 1].id] = {
-                columnId: viewsColumns[index + 1].id,
+              const column = viewsColumns?.[index + 1];
+              if (!column) {
+                return;
+              }
+              cells[rowId][column.id] = {
+                columnId: column.id,
                 value: TextUtils.createText(
                   cell.children
                     .map(child => ('value' in child ? child.value : ''))
@@ -50,14 +54,14 @@ export const databaseBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher =
               };
             });
           });
-          const columns = o.node.children[0].children.map((_child, index) => {
+          const columns = o.node.children[0]?.children.map((_child, index) => {
             return {
               type: index === 0 ? 'title' : 'rich-text',
               name: _child.children
                 .map(child => ('value' in child ? child.value : ''))
                 .join(''),
               data: {},
-              id: viewsColumns[index].id,
+              id: viewsColumns?.[index]?.id,
             };
           });
           walkerContext.openNode(
@@ -78,7 +82,7 @@ export const databaseBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher =
                       conditions: [],
                     },
                     header: {
-                      titleColumn: viewsColumns[0]?.id,
+                      titleColumn: viewsColumns?.[0]?.id,
                       iconColumn: 'type',
                     },
                   },
@@ -103,6 +107,10 @@ export const databaseBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher =
 
         if (o.node.type === 'tableRow') {
           const { deltaConverter } = context;
+          const firstChild = o.node.children[0];
+          if (!firstChild) {
+            return;
+          }
           walkerContext
             .openNode({
               type: 'block',
@@ -116,7 +124,7 @@ export const databaseBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher =
               props: {
                 text: {
                   '$blocksuite:internal:text$': true,
-                  delta: deltaConverter.astToDelta(o.node.children[0]),
+                  delta: deltaConverter.astToDelta(firstChild),
                 },
                 type: 'text',
               },
@@ -140,101 +148,25 @@ export const databaseBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher =
         const columns = o.node.props.columns as Array<Column>;
         const children = o.node.children;
         const cells = o.node.props.cells as SerializedCells;
-        const createAstCell = (children: MarkdownAST[]) => ({
-          type: 'tableCell',
-          children,
+        const table = processTable(columns, children, cells);
+        rows.push({
+          type: 'tableRow',
+          children: table.headers.map(v => ({
+            type: 'tableCell',
+            children: [{ type: 'text', value: v.name }],
+          })),
         });
-        const mdAstCells = Array.prototype.map.call(
-          children,
-          (v: BlockSnapshot) =>
-            Array.prototype.map.call(columns, col => {
-              const cell = cells[v.id]?.[col.id];
-              if (!cell && col.type !== 'title') {
-                return createAstCell([{ type: 'text', value: '' }]);
-              }
-              switch (col.type) {
-                case 'link':
-                case 'progress':
-                case 'number':
-                  return createAstCell([
-                    {
-                      type: 'text',
-                      value: cell.value as string,
-                    },
-                  ]);
-                case 'rich-text':
-                  return createAstCell(
-                    deltaConverter.deltaToAST(
-                      (cell.value as { delta: DeltaInsert[] }).delta
-                    )
-                  );
-                case 'title':
-                  return createAstCell(
-                    deltaConverter.deltaToAST(
-                      (v.props.text as { delta: DeltaInsert[] }).delta
-                    )
-                  );
-                case 'date':
-                  return createAstCell([
-                    {
-                      type: 'text',
-                      value: format(
-                        new Date(cell.value as number),
-                        'yyyy-MM-dd'
-                      ),
-                    },
-                  ]);
-                case 'select': {
-                  const value = col.data.options.find(
-                    (opt: Record<string, string>) => opt.id === cell.value
-                  )?.value;
-                  return createAstCell([{ type: 'text', value }]);
-                }
-                case 'multi-select': {
-                  const value = Array.prototype.map
-                    .call(
-                      cell.value,
-                      val =>
-                        col.data.options.find(
-                          (opt: Record<string, string>) => val === opt.id
-                        ).value
-                    )
-                    .filter(Boolean)
-                    .join(',');
-                  return createAstCell([{ type: 'text', value }]);
-                }
-                case 'checkbox': {
-                  return createAstCell([
-                    { type: 'text', value: cell.value as string },
-                  ]);
-                }
-                // eslint-disable-next-line sonarjs/no-duplicated-branches
-                default:
-                  return createAstCell([
-                    { type: 'text', value: cell.value as string },
-                  ]);
-              }
-            })
-        );
-
-        // Handle first row.
-        if (Array.isArray(columns)) {
+        table.rows.forEach(v => {
           rows.push({
             type: 'tableRow',
-            children: Array.prototype.map.call(columns, v =>
-              createAstCell([
-                {
-                  type: 'text',
-                  value: v.name,
-                },
-              ])
-            ) as [],
+            children: v.cells.map(v => ({
+              type: 'tableCell',
+              children:
+                typeof v.value === 'string'
+                  ? [{ type: 'text', value: v.value }]
+                  : deltaConverter.deltaToAST(v.value.delta),
+            })),
           });
-        }
-
-        // Handle 2-... rows
-        Array.prototype.forEach.call(mdAstCells, children => {
-          rows.push({ type: 'tableRow', children });
         });
 
         walkerContext

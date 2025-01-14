@@ -31,7 +31,7 @@ type Create<
 };
 export type PropertyModel<
   Type extends string = string,
-  PropertyData extends Record<string, unknown> = Record<string, never>,
+  PropertyData extends Record<string, unknown> = Record<string, unknown>,
   CellData = unknown,
 > = {
   type: Type;

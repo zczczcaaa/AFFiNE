@@ -10,10 +10,10 @@ import {
   type InlineHtmlAST,
   TextUtils,
 } from '@blocksuite/affine-shared/adapters';
-import type { DeltaInsert } from '@blocksuite/inline';
-import { type BlockSnapshot, nanoid } from '@blocksuite/store';
-import { format } from 'date-fns/format';
+import { nanoid } from '@blocksuite/store';
 import type { Element } from 'hast';
+
+import { processTable } from './utils';
 
 const DATABASE_NODE_TYPES = new Set(['table', 'thead', 'tbody', 'th', 'tr']);
 
@@ -53,8 +53,12 @@ export const databaseBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
           const rowId = nanoid();
           cells[rowId] = Object.create(null);
           (row as Element).children.forEach((cell, index) => {
-            cells[rowId][viewsColumns[index].id] = {
-              columnId: viewsColumns[index].id,
+            const column = viewsColumns[index];
+            if (!column) {
+              return;
+            }
+            cells[rowId][column.id] = {
+              columnId: column.id,
               value: TextUtils.createText(
                 (cell as Element).children
                   .map(child => ('value' in child ? child.value : ''))
@@ -65,14 +69,18 @@ export const databaseBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
         });
 
         // Build database columns from table header row
-        const columns = tableHeaderRow.children.map((_child, index) => {
+        const columns = tableHeaderRow.children.flatMap((_child, index) => {
+          const column = viewsColumns[index];
+          if (!column) {
+            return [];
+          }
           return {
             type: index === 0 ? 'title' : 'rich-text',
             name: (_child as Element).children
               .map(child => ('value' in child ? child.value : ''))
               .join(''),
             data: {},
-            id: viewsColumns[index].id,
+            id: column.id,
           };
         });
 
@@ -117,6 +125,10 @@ export const databaseBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
       // The first child of each table body row is the database title cell
       if (o.node.tagName === 'tr') {
         const { deltaConverter } = context;
+        const firstChild = o.node.children[0];
+        if (!firstChild) {
+          return;
+        }
         walkerContext
           .openNode({
             type: 'block',
@@ -130,7 +142,7 @@ export const databaseBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
             props: {
               text: {
                 '$blocksuite:internal:text$': true,
-                delta: deltaConverter.astToDelta(o.node.children[0]),
+                delta: deltaConverter.astToDelta(firstChild),
               },
               type: 'text',
             },
@@ -156,7 +168,7 @@ export const databaseBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
       const columns = o.node.props.columns as Array<Column>;
       const children = o.node.children;
       const cells = o.node.props.cells as SerializedCells;
-
+      const table = processTable(columns, children, cells);
       const createAstTableCell = (
         children: InlineHtmlAST[]
       ): InlineHtmlAST => ({
@@ -183,94 +195,40 @@ export const databaseBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
       });
 
       const { deltaConverter } = context;
-      const htmlAstRows = Array.prototype.map.call(
-        children,
-        (v: BlockSnapshot) => {
-          const rowCells = Array.prototype.map.call(columns, col => {
-            const cell = cells[v.id]?.[col.id];
-            if (!cell && col.type !== 'title') {
-              return createAstTableCell([{ type: 'text', value: '' }]);
-            }
-            switch (col.type) {
-              case 'rich-text':
-                return createAstTableCell(
-                  deltaConverter.deltaToAST(
-                    (cell.value as { delta: DeltaInsert[] }).delta
-                  )
-                );
-              case 'title':
-                return createAstTableCell(
-                  deltaConverter.deltaToAST(
-                    (v.props.text as { delta: DeltaInsert[] }).delta
-                  )
-                );
-              case 'date':
-                return createAstTableCell([
-                  {
-                    type: 'text',
-                    value: format(new Date(cell.value as number), 'yyyy-MM-dd'),
-                  },
-                ]);
-              case 'select': {
-                const value =
-                  (col.data.options.find(
-                    (opt: Record<string, string>) => opt.id === cell.value
-                  )?.value as string) ?? '';
-                return createAstTableCell([{ type: 'text', value }]);
-              }
-              case 'multi-select': {
-                const value = Array.prototype.map
-                  .call(
-                    cell.value,
-                    val =>
-                      col.data.options.find(
-                        (opt: Record<string, string>) => val === opt.id
-                      ).value ?? ''
-                  )
-                  .filter(Boolean)
-                  .join(',');
-                return createAstTableCell([{ type: 'text', value }]);
-              }
-              case 'checkbox': {
-                return createAstTableCell([
-                  { type: 'text', value: String(cell.value) },
-                ]);
-              }
-              // eslint-disable-next-line sonarjs/no-duplicated-branches
-              default:
-                return createAstTableCell([
-                  { type: 'text', value: String(cell.value) },
-                ]);
-            }
-          }) as InlineHtmlAST[];
-          return createAstTableRow(rowCells);
-        }
-      ) as Element[];
-
-      // Handle first row (header).
-      const headerRow = createAstTableRow(
-        Array.prototype.map.call(columns, v =>
-          createAstTableHeaderCell([
-            {
-              type: 'text',
-              value: v.name ?? '',
-            },
-          ])
-        ) as Element[]
-      );
 
       const tableHeaderAst: Element = {
         type: 'element',
         tagName: 'thead',
         properties: Object.create(null),
-        children: [headerRow],
+        children: [
+          createAstTableRow(
+            table.headers.map(v =>
+              createAstTableHeaderCell([
+                {
+                  type: 'text',
+                  value: v.name ?? '',
+                },
+              ])
+            )
+          ),
+        ],
       };
 
       const tableBodyAst: Element = {
         type: 'element',
         tagName: 'tbody',
         properties: Object.create(null),
-        children: [...htmlAstRows],
+        children: table.rows.map(v => {
+          return createAstTableRow(
+            v.cells.map(cell => {
+              return createAstTableCell(
+                typeof cell.value === 'string'
+                  ? [{ type: 'text', value: cell.value }]
+                  : deltaConverter.deltaToAST(cell.value.delta)
+              );
+            })
+          );
+        }),
       };
 
       walkerContext

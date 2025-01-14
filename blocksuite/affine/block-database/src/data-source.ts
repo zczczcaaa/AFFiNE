@@ -18,6 +18,7 @@ import {
 } from '@blocksuite/data-view';
 import { propertyPresets } from '@blocksuite/data-view/property-presets';
 import { IS_MOBILE } from '@blocksuite/global/env';
+import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { assertExists } from '@blocksuite/global/utils';
 import { type BlockModel, nanoid, Text } from '@blocksuite/store';
 import { computed, type ReadonlySignal } from '@preact/signals-core';
@@ -28,7 +29,7 @@ import {
   databaseBlockPropertyList,
   databasePropertyConverts,
 } from './properties/index.js';
-import { titlePurePropertyConfig } from './properties/title/define.js';
+import { titlePropertyModelConfig } from './properties/title/define.js';
 import {
   addProperty,
   applyCellsUpdate,
@@ -180,12 +181,13 @@ export class DatabaseBlockDataSource extends DataSourceBase {
 
   propertyAdd(insertToPosition: InsertToPosition, type?: string): string {
     this.doc.captureSync();
+    const property = this.propertyMetaGet(
+      type ?? propertyPresets.multiSelectPropertyConfig.type
+    );
     const result = addProperty(
       this._model,
       insertToPosition,
-      databaseBlockAllPropertyMap[
-        type ?? propertyPresets.multiSelectPropertyConfig.type
-      ].create(this.newPropertyName())
+      property.create(this.newPropertyName())
     );
     applyPropertyUpdate(this._model);
     return result;
@@ -251,7 +253,14 @@ export class DatabaseBlockDataSource extends DataSourceBase {
   }
 
   propertyMetaGet(type: string): PropertyMetaConfig {
-    return databaseBlockAllPropertyMap[type];
+    const property = databaseBlockAllPropertyMap[type];
+    if (!property) {
+      throw new BlockSuiteError(
+        ErrorCode.DatabaseBlockError,
+        `Unknown property type: ${type}`
+      );
+    }
+    return property;
   }
 
   propertyNameGet(propertyId: string): string {
@@ -298,7 +307,7 @@ export class DatabaseBlockDataSource extends DataSourceBase {
 
       currentCells as any
     ) ?? {
-      property: databaseBlockAllPropertyMap[toType].config.defaultData(),
+      property: this.propertyMetaGet(toType).config.defaultData(),
       cells: currentCells.map(() => undefined),
     };
     this.doc.captureSync();
@@ -309,7 +318,10 @@ export class DatabaseBlockDataSource extends DataSourceBase {
     const cells: Record<string, unknown> = {};
     currentCells.forEach((value, i) => {
       if (value != null || result.cells[i] != null) {
-        cells[rows[i]] = result.cells[i];
+        const rowId = rows[i];
+        if (rowId) {
+          cells[rowId] = result.cells[i];
+        }
       }
     });
     updateCells(this._model, propertyId, cells);
@@ -381,7 +393,14 @@ export class DatabaseBlockDataSource extends DataSourceBase {
   }
 
   viewMetaGet(type: string): ViewMeta {
-    return databaseBlockViewMap[type];
+    const view = databaseBlockViewMap[type];
+    if (!view) {
+      throw new BlockSuiteError(
+        ErrorCode.DatabaseBlockError,
+        `Unknown view type: ${type}`
+      );
+    }
+    return view;
   }
 
   viewMetaGetById(viewId: string): ViewMeta {
@@ -404,7 +423,7 @@ export const databaseViewInitEmpty = (
   addProperty(
     model,
     'start',
-    titlePurePropertyConfig.create(titlePurePropertyConfig.config.name)
+    titlePropertyModelConfig.create(titlePropertyModelConfig.config.name)
   );
   databaseViewAddView(model, viewType);
 };
@@ -423,7 +442,7 @@ export const databaseViewInitTemplate = (
   model: DatabaseBlockModel,
   viewType: string
 ) => {
-  const ids = [nanoid(), nanoid(), nanoid()];
+  const ids = [nanoid(), nanoid(), nanoid()] as const;
   const statusId = addProperty(
     model,
     'end',
@@ -470,11 +489,12 @@ export const convertToDatabase = (host: EditorHost, viewType: string) => {
     })
     .run();
   const { selectedModels } = ctx;
-  if (!selectedModels || selectedModels.length === 0) return;
+  const firstModel = selectedModels?.[0];
+  if (!firstModel) return;
 
   host.doc.captureSync();
 
-  const parentModel = host.doc.getParent(selectedModels[0]);
+  const parentModel = host.doc.getParent(firstModel);
   if (!parentModel) {
     return;
   }
@@ -483,7 +503,7 @@ export const convertToDatabase = (host: EditorHost, viewType: string) => {
     'affine:database',
     {},
     parentModel,
-    parentModel.children.indexOf(selectedModels[0])
+    parentModel.children.indexOf(firstModel)
   );
   const databaseModel = host.doc.getBlock(id)?.model as
     | DatabaseBlockModel

@@ -1441,7 +1441,7 @@ describe('snapshot to html', () => {
       ],
     };
     const html = template(
-      '<table><thead><tr><th>Title</th><th>Status</th><th>Date</th><th>Number</th><th>Progress</th><th>MultiSelect</th><th>RichText</th><th>Link</th><th>Checkbox</th></tr></thead><tbody><tr><td>Task 1</td><td>TODO</td><td>2023-12-15</td><td>1</td><td>65</td><td>test1,test2</td><td><a href="https://google.com">test2</a></td><td>https://google.com</td><td>true</td></tr><tr><td>Task 2</td><td>In Progress</td><td>2023-12-20</td><td></td><td></td><td></td><td>test1</td><td></td><td></td></tr></tbody></table>'
+      '<table><thead><tr><th>Title</th><th>Status</th><th>Date</th><th>Number</th><th>Progress</th><th>MultiSelect</th><th>RichText</th><th>Link</th><th>Checkbox</th></tr></thead><tbody><tr><td>Task 1</td><td>TODO</td><td>2023-12-15</td><td>1</td><td>65</td><td>test1,test2</td><td><a href="https://google.com">test2</a></td><td>https://google.com</td><td>True</td></tr><tr><td>Task 2</td><td>In Progress</td><td>2023-12-20</td><td></td><td></td><td></td><td>test1</td><td></td><td></td></tr></tbody></table>'
     );
     const htmlAdapter = new HtmlAdapter(createJob(), provider);
     const target = await htmlAdapter.fromBlockSnapshot({
