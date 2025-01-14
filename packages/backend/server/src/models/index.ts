@@ -1,12 +1,16 @@
 import { Global, Injectable, Module } from '@nestjs/common';
 
+import { SessionModel } from './session';
 import { UserModel } from './user';
 
-const models = [UserModel] as const;
+const models = [UserModel, SessionModel] as const;
 
 @Injectable()
 export class Models {
-  constructor(public readonly user: UserModel) {}
+  constructor(
+    public readonly user: UserModel,
+    public readonly session: SessionModel
+  ) {}
 }
 
 @Global()
