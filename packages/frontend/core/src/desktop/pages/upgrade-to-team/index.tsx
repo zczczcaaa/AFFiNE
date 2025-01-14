@@ -7,6 +7,7 @@ import {
   MenuTrigger,
   Modal,
   notify,
+  Scrollable,
 } from '@affine/component';
 import { AuthPageContainer } from '@affine/component/auth-components';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
@@ -238,13 +239,18 @@ const WorkspaceSelector = ({
   return (
     <div>
       {cloudWorkspaces.length > 0 ? (
-        cloudWorkspaces.map(workspace => (
-          <WorkspaceItem
-            key={workspace.id}
-            meta={workspace}
-            onSelect={handleSelect}
-          />
-        ))
+        <Scrollable.Root>
+          <Scrollable.Viewport style={{ maxHeight: '40vh' }}>
+            {cloudWorkspaces.map(workspace => (
+              <WorkspaceItem
+                key={workspace.id}
+                meta={workspace}
+                onSelect={handleSelect}
+              />
+            ))}
+          </Scrollable.Viewport>
+          <Scrollable.Scrollbar />
+        </Scrollable.Root>
       ) : (
         <div className={styles.noWorkspaceItem}>
           {t['com.affine.upgrade-to-team-page.no-workspace-available']()}
