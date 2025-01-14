@@ -9,8 +9,13 @@ export class TemplateDocSetting extends Entity {
 
   loading$ = this.store.watchIsLoading();
   setting$ = this.store.watchSetting();
+  enablePageTemplate$ = this.store.watchSettingKey('enablePageTemplate');
   pageTemplateDocId$ = this.store.watchSettingKey('pageTemplateId');
   journalTemplateDocId$ = this.store.watchSettingKey('journalTemplateId');
+
+  togglePageTemplate(enable: boolean) {
+    this.store.updateSetting('enablePageTemplate', enable);
+  }
 
   updatePageTemplateDocId(id?: string) {
     this.store.updateSetting('pageTemplateId', id);

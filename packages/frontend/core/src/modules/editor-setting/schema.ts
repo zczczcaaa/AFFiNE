@@ -19,7 +19,7 @@ export const fontStyleOptions = [
 const AffineEditorSettingSchema = z.object({
   fontFamily: z.enum(['Sans', 'Serif', 'Mono', 'Custom']).default('Sans'),
   customFontFamily: z.string().default(''),
-  newDocDefaultMode: z.enum(['edgeless', 'page']).default('page'),
+  newDocDefaultMode: z.enum(['edgeless', 'page', 'ask']).default('page'),
   fullWidthLayout: z.boolean().default(false),
   displayDocInfo: z.boolean().default(true),
   displayBiDirectionalLink: z.boolean().default(true),

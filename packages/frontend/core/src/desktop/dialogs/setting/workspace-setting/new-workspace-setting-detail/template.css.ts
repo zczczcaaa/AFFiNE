@@ -5,10 +5,7 @@ export const menuItem = style({
   alignItems: 'center',
   gap: 8,
 });
-export const menuItemIcon = style({
-  fontSize: 24,
-  lineHeight: 0,
-});
+export const menuItemIcon = style({});
 export const menuItemText = style({
   fontSize: 14,
   width: 0,
@@ -16,4 +13,7 @@ export const menuItemText = style({
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   overflow: 'hidden',
+});
+export const menuTrigger = style({
+  width: 250,
 });

@@ -1,3 +1,4 @@
+import { DocsService } from '@affine/core/modules/doc';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import {
   TemplateDocService,
@@ -20,6 +21,7 @@ import {
   useState,
 } from 'react';
 
+import { useAsyncCallback } from '../../hooks/affine-async-hooks';
 import * as styles from './starter-bar.css';
 
 const Badge = forwardRef<
@@ -48,6 +50,7 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
 
   const templateDocService = useService(TemplateDocService);
   const featureFlagService = useService(FeatureFlagService);
+  const docsService = useService(DocsService);
 
   const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
 
@@ -59,6 +62,13 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
   );
   const enableTemplateDoc = useLiveData(
     featureFlagService.flags.enable_template_doc.$
+  );
+
+  const handleSelectTemplate = useAsyncCallback(
+    async (templateId: string) => {
+      await docsService.duplicateFromTemplate(templateId, doc.id);
+    },
+    [doc.id, docsService]
   );
 
   const showAI = false;
@@ -82,7 +92,7 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
 
         {showTemplate ? (
           <TemplateListMenu
-            target={doc.id}
+            onSelect={handleSelectTemplate}
             rootOptions={{
               open: templateMenuOpen,
               onOpenChange: setTemplateMenuOpen,

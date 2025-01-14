@@ -19,6 +19,7 @@ import { LabelsPanel } from './labels';
 import { MembersPanel } from './members';
 import { ProfilePanel } from './profile';
 import { SharingPanel } from './sharing';
+import { TemplateDocSetting } from './template';
 import type { WorkspaceSettingDetailProps } from './types';
 import { WorkspaceQuotaPanel } from './workspace-quota';
 
@@ -70,6 +71,7 @@ export const WorkspaceSettingDetail = ({
             <LabelsPanel />
           </SettingRow>
         </SettingWrapper>
+        <TemplateDocSetting />
         <SettingWrapper title={t['com.affine.brand.affineCloud']()}>
           <EnableCloudPanel onCloseSetting={onCloseSetting} />
           <WorkspaceQuotaPanel />

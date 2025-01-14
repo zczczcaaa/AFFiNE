@@ -2,6 +2,7 @@ import {
   Loading,
   Menu,
   MenuItem,
+  type MenuProps,
   MenuSeparator,
   MenuTrigger,
   RadioGroup,
@@ -19,6 +20,7 @@ import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hoo
 import { ServerService } from '@affine/core/modules/cloud';
 import { DesktopApiService } from '@affine/core/modules/desktop-api';
 import {
+  type EditorSettingSchema,
   EditorSettingService,
   type FontFamily,
   fontStyleOptions,
@@ -30,7 +32,6 @@ import {
   SystemFontFamilyService,
 } from '@affine/core/modules/system-font-family';
 import { Trans, useI18n } from '@affine/i18n';
-import type { DocMode } from '@blocksuite/affine/blocks';
 import { DoneIcon, SearchIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService, useServices } from '@toeverything/infra';
 import clsx from 'clsx';
@@ -306,27 +307,39 @@ const CustomFontFamilySettings = () => {
     </SettingRow>
   );
 };
+
+const menuContentOptions: MenuProps['contentOptions'] = {
+  align: 'end',
+  sideOffset: 16,
+  style: { width: 250 },
+};
 const NewDocDefaultModeSettings = () => {
   const t = useI18n();
   const { editorSettingService } = useServices({ EditorSettingService });
   const settings = useLiveData(editorSettingService.editorSetting.settings$);
-  const radioItems = useMemo<RadioItem[]>(
-    () => [
-      {
-        value: 'page',
-        label: t['Page'](),
-        testId: 'page-mode-trigger',
-      },
-      {
-        value: 'edgeless',
-        label: t['Edgeless'](),
-        testId: 'edgeless-mode-trigger',
-      },
-    ],
+  const items = useMemo(
+    () =>
+      [
+        {
+          value: 'page',
+          label: t['Page'](),
+          testId: 'page-mode-trigger',
+        },
+        {
+          value: 'edgeless',
+          label: t['Edgeless'](),
+          testId: 'edgeless-mode-trigger',
+        },
+        {
+          value: 'ask',
+          label: 'Ask every time',
+          testId: 'ask-every-time-trigger',
+        },
+      ] as const,
     [t]
   );
   const updateNewDocDefaultMode = useCallback(
-    (value: DocMode) => {
+    (value: EditorSettingSchema['newDocDefaultMode']) => {
       editorSettingService.editorSetting.set('newDocDefaultMode', value);
     },
     [editorSettingService.editorSetting]
@@ -340,13 +353,24 @@ const NewDocDefaultModeSettings = () => {
         'com.affine.settings.editorSettings.general.default-new-doc.description'
       ]()}
     >
-      <RadioGroup
-        items={radioItems}
-        value={settings.newDocDefaultMode}
-        width={250}
-        className={styles.settingWrapper}
-        onChange={updateNewDocDefaultMode}
-      />
+      <Menu
+        contentOptions={menuContentOptions}
+        items={items.map(item => {
+          return (
+            <MenuItem
+              key={item.value}
+              selected={item.value === settings.newDocDefaultMode}
+              onSelect={() => updateNewDocDefaultMode(item.value)}
+            >
+              {item.label}
+            </MenuItem>
+          );
+        })}
+      >
+        <MenuTrigger className={styles.menuTrigger}>
+          {items.find(item => item.value === settings.newDocDefaultMode)?.label}
+        </MenuTrigger>
+      </Menu>
     </SettingRow>
   );
 };

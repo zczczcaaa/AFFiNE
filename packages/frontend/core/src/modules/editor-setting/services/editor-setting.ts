@@ -20,7 +20,8 @@ export class EditorSettingService extends Service {
     workspace.docCollection.slots.docCreated.on(docId => {
       const preferMode = this.editorSetting.settings$.value.newDocDefaultMode;
       const docsService = workspace.scope.get(DocsService);
-      docsService.list.setPrimaryMode(docId, preferMode);
+      const mode = preferMode === 'ask' ? 'page' : preferMode;
+      docsService.list.setPrimaryMode(docId, mode);
     });
     // never dispose, because this service always live longer than workspace
   }

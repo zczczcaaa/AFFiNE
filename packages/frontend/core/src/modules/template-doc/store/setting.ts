@@ -40,7 +40,8 @@ export class TemplateDocSettingStore extends Store {
   ) {
     const db = this.dbService.userdataDB$.value;
     const prev = db.settings.find({ key: this.key })[0]?.value ?? {};
-    db.settings.update(this.key, {
+    db.settings.create({
+      key: this.key,
       value: { ...prev, [key]: value },
     });
   }
