@@ -1,7 +1,11 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 
 import type { Path } from '@affine-tools/utils/path';
-import { type Package, Workspace } from '@affine-tools/utils/workspace';
+import {
+  type Package,
+  Workspace,
+  yarnList,
+} from '@affine-tools/utils/workspace';
 import { applyEdits, modify } from 'jsonc-parser';
 import { type BuiltInParserName, format } from 'prettier';
 
@@ -17,7 +21,7 @@ export class InitCommand extends Command {
   }
 
   async generateWorkspaceFiles() {
-    this.workspace = new Workspace(this.workspace.yarnList());
+    this.workspace = new Workspace(yarnList());
     const filesToGenerate: [
       Path,
       (prev: string) => string,
@@ -80,7 +84,7 @@ export class InitCommand extends Command {
   };
 
   genWorkspaceInfo = () => {
-    const list = this.workspace.yarnList();
+    const list = yarnList();
 
     const names = list.map(p => p.name);
 

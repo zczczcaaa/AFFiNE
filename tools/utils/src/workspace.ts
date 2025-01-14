@@ -1,11 +1,8 @@
-import { once } from 'lodash-es';
-
 import { Logger } from './logger';
 import { Package, readPackageJson } from './package';
 import { ProjectRoot } from './path';
-import { exec } from './process';
-import type { CommonPackageJsonContent, YarnWorkspaceItem } from './types';
-import { PackageList, type PackageName } from './workspace.gen';
+import type { CommonPackageJsonContent } from './types';
+import { PackageList, type PackageName, yarnList } from './yarn';
 
 class CircularDependenciesError extends Error {
   constructor(public currentName: string) {
@@ -147,25 +144,9 @@ export class Workspace {
     building.delete(pkg.name);
   }
 
-  yarnList = once(() => {
-    const output = exec('', 'yarn workspaces list -v --json', { silent: true });
-
-    let packageList = JSON.parse(
-      `[${output.trim().replace(/\r\n|\n/g, ',')}]`
-    ) as YarnWorkspaceItem[];
-
-    packageList.forEach(p => {
-      p.location = p.location.replaceAll(/\\/g, '/');
-      delete p['mismatchedWorkspaceDependencies'];
-    });
-
-    // ignore root package
-    return packageList.filter(p => p.location !== '.');
-  });
-
   forEach(callback: (pkg: Package) => void) {
     this.packages.forEach(callback);
   }
 }
 
-export { Package, type PackageName };
+export { Package, type PackageName, yarnList };

@@ -1,4 +1,4 @@
-import { PackageList, type PackageName } from './workspace.gen';
+import { PackageList, type PackageName } from './yarn';
 
 export const PackageToDistribution = new Map<
   PackageName,
