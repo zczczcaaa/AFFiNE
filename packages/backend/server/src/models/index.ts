@@ -4,6 +4,8 @@ import { SessionModel } from './session';
 import { UserModel } from './user';
 import { VerificationTokenModel } from './verification-token';
 
+export * from './session';
+export * from './user';
 export * from './verification-token';
 
 const models = [UserModel, SessionModel, VerificationTokenModel] as const;

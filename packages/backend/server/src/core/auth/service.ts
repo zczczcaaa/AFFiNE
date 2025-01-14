@@ -1,11 +1,9 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import type { User, UserSession } from '@prisma/client';
-import { PrismaClient } from '@prisma/client';
 import type { CookieOptions, Request, Response } from 'express';
 import { assign, pick } from 'lodash-es';
 
 import { Config, MailService, SignUpForbidden } from '../../base';
+import { Models, type User, type UserSession } from '../../models';
 import { FeatureManagementService } from '../features/management';
 import { QuotaService } from '../quota/service';
 import { QuotaType } from '../quota/types';
@@ -46,7 +44,7 @@ export class AuthService implements OnApplicationBootstrap {
 
   constructor(
     private readonly config: Config,
-    private readonly db: PrismaClient,
+    private readonly models: Models,
     private readonly mailer: MailService,
     private readonly feature: FeatureManagementService,
     private readonly quota: QuotaService,
@@ -103,18 +101,9 @@ export class AuthService implements OnApplicationBootstrap {
   async signOut(sessionId: string, userId?: string) {
     // sign out all users in the session
     if (!userId) {
-      await this.db.session.deleteMany({
-        where: {
-          id: sessionId,
-        },
-      });
+      await this.models.session.deleteSession(sessionId);
     } else {
-      await this.db.userSession.deleteMany({
-        where: {
-          sessionId,
-          userId,
-        },
-      });
+      await this.models.session.deleteUserSession(userId, sessionId);
     }
   }
 
@@ -138,7 +127,7 @@ export class AuthService implements OnApplicationBootstrap {
     // fallback to the first valid session if user provided userId is invalid
     if (!userSession) {
       // checked
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      // oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
       userSession = sessions.at(-1)!;
     }
 
@@ -152,127 +141,50 @@ export class AuthService implements OnApplicationBootstrap {
   }
 
   async getUserSessions(sessionId: string) {
-    return this.db.userSession.findMany({
-      where: {
-        sessionId,
-        OR: [{ expiresAt: { gt: new Date() } }, { expiresAt: null }],
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-    });
+    return await this.models.session.findUserSessionsBySessionId(sessionId);
   }
 
-  async createUserSession(
-    userId: string,
-    sessionId?: string,
-    ttl = this.config.auth.session.ttl
-  ) {
-    // check whether given session is valid
-    if (sessionId) {
-      const session = await this.db.session.findFirst({
-        where: {
-          id: sessionId,
-        },
-      });
-
-      if (!session) {
-        sessionId = undefined;
-      }
-    }
-
-    if (!sessionId) {
-      const session = await this.createSession();
-      sessionId = session.id;
-    }
-
-    const expiresAt = new Date(Date.now() + ttl * 1000);
-
-    return this.db.userSession.upsert({
-      where: {
-        sessionId_userId: {
-          sessionId,
-          userId,
-        },
-      },
-      update: {
-        expiresAt,
-      },
-      create: {
-        sessionId,
-        userId,
-        expiresAt,
-      },
-    });
+  async createUserSession(userId: string, sessionId?: string, ttl?: number) {
+    return await this.models.session.createOrRefreshUserSession(
+      userId,
+      sessionId,
+      ttl
+    );
   }
 
   async getUserList(sessionId: string) {
-    const sessions = await this.db.userSession.findMany({
-      where: {
-        sessionId,
-        OR: [
-          {
-            expiresAt: null,
-          },
-          {
-            expiresAt: {
-              gt: new Date(),
-            },
-          },
-        ],
-      },
-      include: {
+    const sessions = await this.models.session.findUserSessionsBySessionId(
+      sessionId,
+      {
         user: true,
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-    });
-
+      }
+    );
     return sessions.map(({ user }) => sessionUser(user));
   }
 
   async createSession() {
-    return this.db.session.create({
-      data: {},
-    });
+    return await this.models.session.createSession();
   }
 
   async getSession(sessionId: string) {
-    return this.db.session.findFirst({
-      where: {
-        id: sessionId,
-      },
-    });
+    return await this.models.session.getSession(sessionId);
   }
 
   async refreshUserSessionIfNeeded(
     res: Response,
-    session: UserSession,
-    ttr = this.config.auth.session.ttr
+    userSession: UserSession,
+    ttr?: number
   ): Promise<boolean> {
-    if (
-      session.expiresAt &&
-      session.expiresAt.getTime() - Date.now() > ttr * 1000
-    ) {
+    const newExpiresAt = await this.models.session.refreshUserSessionIfNeeded(
+      userSession,
+      ttr
+    );
+    if (!newExpiresAt) {
       // no need to refresh
       return false;
     }
 
-    const newExpiresAt = new Date(
-      Date.now() + this.config.auth.session.ttl * 1000
-    );
-
-    await this.db.userSession.update({
-      where: {
-        id: session.id,
-      },
-      data: {
-        expiresAt: newExpiresAt,
-      },
-    });
-
-    res.cookie(AuthService.sessionCookieName, session.sessionId, {
+    res.cookie(AuthService.sessionCookieName, userSession.sessionId, {
       expires: newExpiresAt,
       ...this.cookieOptions,
     });
@@ -281,11 +193,7 @@ export class AuthService implements OnApplicationBootstrap {
   }
 
   async revokeUserSessions(userId: string) {
-    return this.db.userSession.deleteMany({
-      where: {
-        userId,
-      },
-    });
+    return await this.models.session.deleteUserSession(userId);
   }
 
   getSessionOptionsFromRequest(req: Request) {
@@ -424,16 +332,5 @@ export class AuthService implements OnApplicationBootstrap {
       : await this.mailer.sendSignInMail(link, {
           to: email,
         });
-  }
-
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async cleanExpiredSessions() {
-    await this.db.userSession.deleteMany({
-      where: {
-        expiresAt: {
-          lte: new Date(),
-        },
-      },
-    });
   }
 }

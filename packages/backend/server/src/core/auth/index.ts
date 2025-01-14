@@ -7,6 +7,7 @@ import { QuotaModule } from '../quota';
 import { UserModule } from '../user';
 import { AuthController } from './controller';
 import { AuthGuard, AuthWebsocketOptionsProvider } from './guard';
+import { AuthCronJob } from './job';
 import { AuthResolver } from './resolver';
 import { AuthService } from './service';
 
@@ -16,6 +17,7 @@ import { AuthService } from './service';
     AuthService,
     AuthResolver,
     AuthGuard,
+    AuthCronJob,
     AuthWebsocketOptionsProvider,
   ],
   exports: [AuthService, AuthGuard, AuthWebsocketOptionsProvider],

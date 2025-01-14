@@ -192,8 +192,10 @@ test('should be able to signout multi accounts session', async t => {
 
   const session = await auth.createSession();
 
-  await auth.createUserSession(u1.id, session.id);
-  await auth.createUserSession(u2.id, session.id);
+  const userSession1 = await auth.createUserSession(u1.id, session.id);
+  const userSession2 = await auth.createUserSession(u2.id, session.id);
+  t.not(userSession1.id, userSession2.id);
+  t.is(userSession1.sessionId, userSession2.sessionId);
 
   await auth.signOut(session.id, u1.id);
 
