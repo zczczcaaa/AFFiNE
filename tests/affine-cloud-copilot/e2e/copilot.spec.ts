@@ -81,10 +81,14 @@ const openChat = async (page: Page) => {
   await page.getByTestId('sidebar-tab-chat').click();
 };
 
-const makeChat = async (page: Page, content: string) => {
-  await openChat(page);
+const typeChat = async (page: Page, content: string) => {
   await page.getByTestId('chat-panel-input').focus();
   await page.keyboard.type(content);
+};
+
+const makeChat = async (page: Page, content: string) => {
+  await openChat(page);
+  await typeChat(page, content);
   await page.keyboard.press('Enter');
 };
 
@@ -192,6 +196,30 @@ test.describe('chat panel', () => {
     await createLocalWorkspace({ name: 'test' }, page);
     await clickNewPageButton(page);
     await makeChat(page, 'hello');
+    const history = await collectChat(page);
+    expect(history[0]).toEqual({ name: 'You', content: 'hello' });
+    expect(history[1].name).toBe('AFFiNE AI');
+    await clearChat(page);
+    expect((await collectChat(page)).length).toBe(0);
+  });
+
+  test('chat send button', async ({ page }) => {
+    await page.reload();
+    await clickSideBarAllPageButton(page);
+    await page.waitForTimeout(200);
+    await createLocalWorkspace({ name: 'test' }, page);
+    await clickNewPageButton(page);
+    const sendButton = await page.getByTestId('chat-panel-send');
+    // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
+    await openChat(page);
+    expect(await sendButton.getAttribute('aria-disabled')).toBe('true');
+    await typeChat(page, 'hello');
+    // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
+    expect(await sendButton.getAttribute('aria-disabled')).toBe('false');
+    await sendButton.click();
+    // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
+    expect(await sendButton.getAttribute('aria-disabled')).toBe('true');
+
     const history = await collectChat(page);
     expect(history[0]).toEqual({ name: 'You', content: 'hello' });
     expect(history[1].name).toBe('AFFiNE AI');
