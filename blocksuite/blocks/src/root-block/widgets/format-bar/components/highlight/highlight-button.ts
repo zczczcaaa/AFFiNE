@@ -16,8 +16,8 @@ import type { AffineFormatBarWidget } from '../../format-bar.js';
 import { backgroundConfig, foregroundConfig } from './consts.js';
 
 enum HighlightType {
-  Foreground,
-  Background,
+  Color = 'color',
+  Background = 'background',
 }
 
 let lastUsedColor: string | null = null;
@@ -35,8 +35,7 @@ const updateHighlight = (
     styles: AffineTextAttributes;
   } = {
     styles: {
-      color: highlightType === HighlightType.Foreground ? color : null,
-      background: highlightType === HighlightType.Background ? color : null,
+      [`${highlightType}`]: color,
     },
   };
   host.std.command
@@ -63,11 +62,7 @@ const HighlightPanel = (
             <editor-menu-action
               data-testid="${color ?? 'unset'}"
               @click="${() => {
-                updateHighlight(
-                  formatBar.host,
-                  color,
-                  HighlightType.Foreground
-                );
+                updateHighlight(formatBar.host, color, HighlightType.Color);
                 formatBar.requestUpdate();
               }}"
             >
@@ -84,6 +79,7 @@ const HighlightPanel = (
         ${backgroundConfig.map(
           ({ name, color }) => html`
             <editor-menu-action
+              data-testid="${color ?? 'transparent'}"
               @click="${() => {
                 updateHighlight(
                   formatBar.host,
