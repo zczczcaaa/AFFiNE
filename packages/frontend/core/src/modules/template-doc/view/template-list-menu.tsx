@@ -1,5 +1,7 @@
 import { Menu, MenuItem, type MenuProps, Scrollable } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
+import { useI18n } from '@affine/i18n';
+import { InformationIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useState } from 'react';
 
@@ -31,6 +33,18 @@ const DocItem = ({ doc, onSelect }: DocItemProps) => {
   );
 };
 
+const Empty = () => {
+  const t = useI18n();
+  return (
+    <MenuItem
+      disabled
+      prefixIcon={<InformationIcon className={styles.emptyIcon} />}
+    >
+      {t['com.affine.template-list.empty']()}
+    </MenuItem>
+  );
+};
+
 interface TemplateListMenuContentProps extends CommonProps {
   prefixItems?: React.ReactNode;
   suffixItems?: React.ReactNode;
@@ -48,9 +62,11 @@ export const TemplateListMenuContent = ({
   return (
     <ul className={styles.list}>
       {prefixItems}
-      {templateDocs.map(doc => (
-        <DocItem key={doc.id} doc={doc} {...props} />
-      ))}
+      {templateDocs.length ? (
+        templateDocs.map(doc => <DocItem key={doc.id} doc={doc} {...props} />)
+      ) : (
+        <Empty />
+      )}
       {suffixItems}
     </ul>
   );

@@ -1,3 +1,4 @@
+import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 export const list = style({
@@ -13,4 +14,7 @@ export const menuContent = style({
 export const scrollableViewport = style({
   paddingRight: 8,
   maxHeight: 360,
+});
+export const emptyIcon = style({
+  color: cssVarV2.icon.primary,
 });
