@@ -1,4 +1,5 @@
 import { DocsService } from '@affine/core/modules/doc';
+import { EditorService } from '@affine/core/modules/editor';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { TemplateDocService } from '@affine/core/modules/template-doc';
 import { TemplateListMenu } from '@affine/core/modules/template-doc/view/template-list-menu';
@@ -14,6 +15,7 @@ import clsx from 'clsx';
 import {
   forwardRef,
   type HTMLAttributes,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -49,6 +51,7 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
   const templateDocService = useService(TemplateDocService);
   const featureFlagService = useService(FeatureFlagService);
   const docsService = useService(DocsService);
+  const editorService = useService(EditorService);
 
   const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
 
@@ -69,11 +72,16 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
     [doc.id, docsService]
   );
 
+  const startWithEdgeless = useCallback(() => {
+    const record = docsService.list.doc$(doc.id).value;
+    record?.setPrimaryMode('edgeless');
+    editorService.editor.setMode('edgeless');
+  }, [doc.id, docsService.list, editorService.editor]);
+
   const showAI = false;
-  const showEdgeless = false;
   const showTemplate = !isTemplate && enableTemplateDoc;
 
-  if (!showAI && !showEdgeless && !showTemplate) {
+  if (!showAI && !showTemplate) {
     return null;
   }
 
@@ -105,12 +113,11 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
           </TemplateListMenu>
         ) : null}
 
-        {showEdgeless ? (
-          <Badge
-            icon={<EdgelessIcon />}
-            text={t['com.affine.page-starter-bar.edgeless']()}
-          />
-        ) : null}
+        <Badge
+          icon={<EdgelessIcon />}
+          text={t['com.affine.page-starter-bar.edgeless']()}
+          onClick={startWithEdgeless}
+        />
       </ul>
     </div>
   );

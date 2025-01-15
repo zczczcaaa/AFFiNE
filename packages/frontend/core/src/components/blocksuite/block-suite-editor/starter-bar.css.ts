@@ -61,6 +61,7 @@ export const badge = style({
 export const badgeIcon = style({
   fontSize: 16,
   lineHeight: 0,
+  color: cssVarV2.icon.primary,
 });
 
 export const badgeText = style({});
