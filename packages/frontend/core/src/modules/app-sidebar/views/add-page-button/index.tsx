@@ -4,10 +4,8 @@ import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hoo
 import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
-import {
-  TemplateDocService,
-  TemplateListMenuContentScrollable,
-} from '@affine/core/modules/template-doc';
+import { TemplateDocService } from '@affine/core/modules/template-doc';
+import { TemplateListMenuContentScrollable } from '@affine/core/modules/template-doc/view/template-list-menu';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { inferOpenMode } from '@affine/core/utils';

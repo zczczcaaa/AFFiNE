@@ -7,7 +7,8 @@ import {
 } from '@toeverything/infra';
 import { Doc as YDoc } from 'yjs';
 
-import { AuthService, type WorkspaceServerService } from '../../cloud';
+import type { WorkspaceServerService } from '../../cloud';
+import { AuthService } from '../../cloud/services/auth';
 import type { WorkspaceService } from '../../workspace';
 import { WorkspaceDB, type WorkspaceDBWithTables } from '../entities/db';
 import {

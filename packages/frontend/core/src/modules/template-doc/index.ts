@@ -10,7 +10,6 @@ import { TemplateDocListStore } from './store/list';
 import { TemplateDocSettingStore } from './store/setting';
 
 export { TemplateDocService };
-export * from './view/template-list-menu';
 
 export const configureTemplateDocModule = (framework: Framework) => {
   framework

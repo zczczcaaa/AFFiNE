@@ -1,9 +1,7 @@
 import { DocsService } from '@affine/core/modules/doc';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
-import {
-  TemplateDocService,
-  TemplateListMenu,
-} from '@affine/core/modules/template-doc';
+import { TemplateDocService } from '@affine/core/modules/template-doc';
+import { TemplateListMenu } from '@affine/core/modules/template-doc/view/template-list-menu';
 import { useI18n } from '@affine/i18n';
 import type { Store } from '@blocksuite/affine/store';
 import {

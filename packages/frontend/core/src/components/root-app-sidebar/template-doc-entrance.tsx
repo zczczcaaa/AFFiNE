@@ -2,7 +2,7 @@ import { Menu, MenuItem, MenuSeparator } from '@affine/component';
 import { MenuItem as SidebarMenuItem } from '@affine/core/modules/app-sidebar/views';
 import { DocsService } from '@affine/core/modules/doc';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
-import { TemplateListMenuContentScrollable } from '@affine/core/modules/template-doc';
+import { TemplateListMenuContentScrollable } from '@affine/core/modules/template-doc/view/template-list-menu';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { inferOpenMode } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
