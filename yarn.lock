@@ -82,6 +82,7 @@ __metadata:
   resolution: "@affine-test/kit@workspace:tests/kit"
   dependencies:
     "@affine-tools/utils": "workspace:*"
+    "@blocksuite/affine": "workspace:*"
     "@node-rs/argon2": "npm:^2.0.2"
     "@playwright/test": "npm:=1.49.1"
     express: "npm:^4.21.2"

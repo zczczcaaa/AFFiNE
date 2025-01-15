@@ -239,6 +239,17 @@ export const AFFINE_FLAGS = {
     configurable: !isMobile,
     defaultState: isCanaryBuild,
   },
+  // TODO(@L-Sun): remove this flag when ready
+  enable_page_block_header: {
+    category: 'blocksuite',
+    bsFlag: 'enable_page_block_header',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-page-block-header.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-page-block-header.description',
+    configurable: isCanaryBuild,
+    defaultState: isCanaryBuild,
+  },
 } satisfies { [key in string]: FlagInfo };
 
 // oxlint-disable-next-line no-redeclare

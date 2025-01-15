@@ -1,3 +1,4 @@
+export { EDGELESS_TOOLBAR_WIDGET } from '../edgeless/components/toolbar/edgeless-toolbar.js';
 export {
   AFFINE_AI_PANEL_WIDGET,
   AffineAIPanelWidget,

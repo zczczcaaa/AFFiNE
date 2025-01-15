@@ -55,6 +55,7 @@ import {
   patchEdgelessClipboard,
   patchForAttachmentEmbedViews,
   patchForClipboardInElectron,
+  patchForEdgelessNoteConfig,
   patchForMobile,
   patchForSharedPage,
   patchGenerateDocUrlExtension,
@@ -159,6 +160,7 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
       patched = patched.concat(patchForAttachmentEmbedViews(reactToLit));
     }
 
+    patched = patched.concat(patchForEdgelessNoteConfig(reactToLit));
     patched = patched.concat(patchNotificationService(confirmModal));
     patched = patched.concat(patchPeekViewService(peekViewService));
     patched = patched.concat(patchOpenDocExtension());

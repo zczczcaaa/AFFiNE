@@ -7,7 +7,10 @@ import {
   StrokeStyle,
 } from '@blocksuite/affine-model';
 import { EDGELESS_BLOCK_CHILD_PADDING } from '@blocksuite/affine-shared/consts';
-import { ThemeProvider } from '@blocksuite/affine-shared/services';
+import {
+  FeatureFlagService,
+  ThemeProvider,
+} from '@blocksuite/affine-shared/services';
 import {
   getClosestBlockComponentByPoint,
   handleNativeRangeAtPoint,
@@ -77,7 +80,7 @@ export class EdgelessNoteMask extends WithDisposable(ShadowlessElement) {
           bottom: `${-extra}px`,
           right: `${-extra}px`,
           zIndex: '1',
-          pointerEvents: this.display ? 'auto' : 'none',
+          pointerEvents: this.editing ? 'none' : 'auto',
           borderRadius: `${
             this.model.edgeless.style.borderRadius * this.zoom
           }px`,
@@ -85,9 +88,6 @@ export class EdgelessNoteMask extends WithDisposable(ShadowlessElement) {
       ></div>
     `;
   }
-
-  @property({ attribute: false })
-  accessor display!: boolean;
 
   @property({ attribute: false })
   accessor editing!: boolean;
@@ -128,9 +128,6 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
     .edgeless-note-collapse-button.flip {
       transform: translateX(-50%) rotate(180deg);
     }
-    .edgeless-note-collapse-button.hide {
-      display: none;
-    }
 
     .edgeless-note-container:has(.affine-embed-synced-doc-container.editing)
       > .note-background {
@@ -156,8 +153,16 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
     );
   });
 
+  private get _enablePageHeader() {
+    return this.std.get(FeatureFlagService).getFlag('enable_page_block_header');
+  }
+
   private get _isShowCollapsedContent() {
-    return this.model.edgeless.collapse && (this._isResizing || this._isHover);
+    return (
+      this.model.edgeless.collapse &&
+      this.gfx.selection.has(this.model.id) &&
+      (this._isResizing || this._isHover)
+    );
   }
 
   get _zoom() {
@@ -240,10 +245,26 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
     }
   }
 
+  private _isFirstNote() {
+    return (
+      this.model.parent?.children.find(child =>
+        matchFlavours(child, ['affine:note'])
+      ) === this.model
+    );
+  }
+
   private _leaved() {
     if (this._isHover) {
       this._isHover = false;
     }
+  }
+
+  private _renderHeader() {
+    const header = this.host.std
+      .getConfig('affine:note')
+      ?.edgelessNoteHeader({ note: this.model, std: this.std });
+
+    return header;
   }
 
   private _setCollapse(event: MouseEvent) {
@@ -466,7 +487,9 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
           style=${styleMap(backgroundStyle)}
           @pointerdown=${stopPropagation}
           @click=${this._handleClickAtBackground}
-        ></div>
+        >
+          ${this._enablePageHeader ? this._renderHeader() : nothing}
+        </div>
 
         <div
           class="edgeless-note-page-content"
@@ -479,12 +502,18 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
           ${this.renderPageContent()}
         </div>
 
-        ${isCollapsable
+        <edgeless-note-mask
+          .model=${this.model}
+          .host=${this.host}
+          .zoom=${this.gfx.viewport.zoom ?? 1}
+          .editing=${this._editing}
+        ></edgeless-note-mask>
+
+        ${isCollapsable && (!this._isFirstNote() || !this._enablePageHeader)
           ? html`<div
               class="${classMap({
                 'edgeless-note-collapse-button': true,
                 flip: isCollapseArrowUp,
-                hide: this._isSelected,
               })}"
               style=${styleMap({
                 bottom: this._editing ? `${-extra}px` : '0',
@@ -497,14 +526,6 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
             </div>`
           : nothing}
         ${this._collapsedContent()}
-
-        <edgeless-note-mask
-          .model=${this.model}
-          .display=${!this._editing}
-          .host=${this.host}
-          .zoom=${this.gfx.viewport.zoom ?? 1}
-          .editing=${this._editing}
-        ></edgeless-note-mask>
       </div>
     `;
   }
@@ -517,9 +538,6 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
 
   @state()
   private accessor _isResizing = false;
-
-  @state()
-  private accessor _isSelected = false;
 
   @state()
   private accessor _noteFullHeight = 0;

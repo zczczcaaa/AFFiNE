@@ -12,6 +12,7 @@ import type { indentBlock } from './commands/indent-block';
 import type { indentBlocks } from './commands/indent-blocks';
 import type { selectBlock } from './commands/select-block';
 import type { selectBlocksBetween } from './commands/select-blocks-between';
+import type { NoteConfig } from './config';
 import { NoteBlockComponent } from './note-block';
 import {
   EdgelessNoteBlockComponent,
@@ -47,6 +48,9 @@ declare global {
     }
     interface BlockServices {
       'affine:note': NoteBlockService;
+    }
+    interface BlockConfigs {
+      'affine:note': NoteConfig;
     }
   }
 }

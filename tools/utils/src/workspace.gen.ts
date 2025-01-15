@@ -661,7 +661,7 @@ export const PackageList = [
   {
     location: 'tests/kit',
     name: '@affine-test/kit',
-    workspaceDependencies: ['tools/utils'],
+    workspaceDependencies: ['tools/utils', 'blocksuite/affine/all'],
   },
   {
     location: 'tools/@types/build-config',

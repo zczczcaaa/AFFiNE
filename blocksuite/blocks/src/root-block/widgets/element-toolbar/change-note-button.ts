@@ -145,6 +145,18 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     return this.edgeless.doc;
   }
 
+  private get _enableAutoHeight() {
+    return !(
+      this.edgeless.doc
+        .get(FeatureFlagService)
+        .getFlag('enable_page_block_header') &&
+      this.notes.length === 1 &&
+      this.notes[0].parent?.children.find(child =>
+        matchFlavours(child, ['affine:note'])
+      ) === this.notes[0]
+    );
+  }
+
   private _getScaleLabel(scale: number) {
     return Math.round(scale * 100) + '%';
   }
@@ -434,15 +446,18 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
 
       onlyOne ? this.quickConnectButton : nothing,
 
-      html`
-        <editor-icon-button
-          aria-label="Size"
-          .tooltip=${collapse ? 'Auto height' : 'Customized height'}
-          @click=${() => this._setCollapse()}
-        >
-          ${collapse ? ExpandIcon : ShrinkIcon}
-        </editor-icon-button>
+      this._enableAutoHeight
+        ? html`<editor-icon-button
+            aria-label="Size"
+            data-testid="edgeless-note-auto-height"
+            .tooltip=${collapse ? 'Auto height' : 'Customized height'}
+            @click=${() => this._setCollapse()}
+          >
+            ${collapse ? ExpandIcon : ShrinkIcon}
+          </editor-icon-button>`
+        : nothing,
 
+      html`
         <editor-menu-button
           ${ref(this._scalePanelRef)}
           .contentPadding=${'8px'}

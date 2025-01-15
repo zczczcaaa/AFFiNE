@@ -54,6 +54,7 @@ import {
   GenerateDocUrlExtension,
   MobileSpecsPatches,
   NativeClipboardExtension,
+  NoteConfigExtension,
   NotificationExtension,
   OpenDocExtension,
   ParseDocUrlExtension,
@@ -83,6 +84,7 @@ import { pick } from 'lodash-es';
 import type { DocProps } from '../../../../../blocksuite/initialization';
 import { AttachmentEmbedPreview } from '../../../../attachment-viewer/pdf-viewer-embedded';
 import { generateUrl } from '../../../../hooks/affine/use-share-url';
+import { EdgelessNoteHeader } from './widgets/edgeless-note-header';
 import { createKeyboardToolbarConfig } from './widgets/keyboard-toolbar';
 
 export type ReferenceReactRenderer = (
@@ -652,5 +654,14 @@ export function patchForClipboardInElectron(framework: FrameworkProvider) {
   const desktopApi = framework.get(DesktopApiService);
   return NativeClipboardExtension({
     copyAsPNG: desktopApi.handler.clipboard.copyAsPNG,
+  });
+}
+
+export function patchForEdgelessNoteConfig(
+  reactToLit: (element: ElementOrFactory) => TemplateResult
+) {
+  return NoteConfigExtension({
+    edgelessNoteHeader: ({ note }) =>
+      reactToLit(<EdgelessNoteHeader note={note} />),
   });
 }

@@ -314,6 +314,7 @@ const PageEvents = {
       pageRef: ['navigate'],
       toolbar: ['copyBlockToLink'],
       aiActions: ['requestSignIn'],
+      pageBlockHeader: ['openDocInfo'],
     },
     inlineDocInfo: {
       $: ['toggle'],
