@@ -1,6 +1,9 @@
 import { AppSidebarService } from '@affine/core/modules/app-sidebar';
 import { DesktopApiService } from '@affine/core/modules/desktop-api';
-import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import {
+  GlobalDialogService,
+  WorkspaceDialogService,
+} from '@affine/core/modules/dialogs';
 import { I18nService } from '@affine/core/modules/i18n';
 import { UrlService } from '@affine/core/modules/url';
 import { WorkspaceService } from '@affine/core/modules/workspace';
@@ -76,6 +79,7 @@ export function useRegisterWorkspaceCommands() {
   const [editor] = useActiveBlocksuiteEditor();
   const cmdkQuickSearchService = useService(CMDKQuickSearchService);
   const editorSettingService = useService(EditorSettingService);
+  const workspaceDialogService = useService(WorkspaceDialogService);
   const globalDialogService = useService(GlobalDialogService);
   const appSidebarService = useService(AppSidebarService);
   const i18n = useService(I18nService).i18n;
@@ -115,7 +119,7 @@ export function useRegisterWorkspaceCommands() {
       t,
       docCollection: currentWorkspace.docCollection,
       navigationHelper,
-      globalDialogService,
+      workspaceDialogService,
     });
 
     return () => {
@@ -127,6 +131,7 @@ export function useRegisterWorkspaceCommands() {
     currentWorkspace.docCollection,
     navigationHelper,
     globalDialogService,
+    workspaceDialogService,
   ]);
 
   // register AffineSettingsCommands
@@ -182,11 +187,11 @@ export function useRegisterWorkspaceCommands() {
     const unsub = registerAffineHelpCommands({
       t,
       urlService,
-      globalDialogService,
+      workspaceDialogService,
     });
 
     return () => {
       unsub();
     };
-  }, [t, globalDialogService, urlService]);
+  }, [t, globalDialogService, urlService, workspaceDialogService]);
 }

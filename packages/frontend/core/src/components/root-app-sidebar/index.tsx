@@ -1,3 +1,4 @@
+// Import is already correct, no changes needed
 import {
   AddPageButton,
   AppDownloadButton,
@@ -10,10 +11,7 @@ import {
   SidebarScrollableContainer,
 } from '@affine/core/modules/app-sidebar/views';
 import { ExternalMenuLinkItem } from '@affine/core/modules/app-sidebar/views/menu-item/external-menu-link-item';
-import {
-  GlobalDialogService,
-  WorkspaceDialogService,
-} from '@affine/core/modules/dialogs';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import {
   ExplorerCollections,
   ExplorerFavorites,
@@ -95,7 +93,6 @@ export const RootAppSidebar = memo((): ReactElement => {
     CMDKQuickSearchService,
   });
   const t = useI18n();
-  const globalDialogService = useService(GlobalDialogService);
   const workspaceDialogService = useService(WorkspaceDialogService);
   const workbench = workbenchService.workbench;
   const onOpenQuickSearchModal = useCallback(() => {
@@ -103,11 +100,11 @@ export const RootAppSidebar = memo((): ReactElement => {
   }, [cMDKQuickSearchService]);
 
   const onOpenSettingModal = useCallback(() => {
-    globalDialogService.open('setting', {
+    workspaceDialogService.open('setting', {
       activeTab: 'appearance',
     });
     track.$.navigationPanel.$.openSettings();
-  }, [globalDialogService]);
+  }, [workspaceDialogService]);
 
   const handleOpenDocs = useCallback(
     (result: {

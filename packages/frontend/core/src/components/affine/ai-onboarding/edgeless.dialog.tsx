@@ -1,6 +1,6 @@
 import { Button, FlexWrapper, notify } from '@affine/component';
 import { SubscriptionService } from '@affine/core/modules/cloud';
-import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { EditorService } from '@affine/core/modules/editor';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
@@ -50,18 +50,18 @@ export const AIOnboardingEdgeless = () => {
   const notifyId = useLiveData(edgelessNotifyId$);
   const generalAIOnboardingOpened = useLiveData(showAIOnboardingGeneral$);
   const aiSubscription = useLiveData(subscriptionService.subscription.ai$);
-  const globalDialogService = useService(GlobalDialogService);
+  const workspaceDialogService = useService(WorkspaceDialogService);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mode = useLiveData(editorService.editor.mode$);
 
   const goToPricingPlans = useCallback(() => {
     track.$.aiOnboarding.dialog.viewPlans();
-    globalDialogService.open('setting', {
+    workspaceDialogService.open('setting', {
       activeTab: 'plans',
       scrollAnchor: 'aiPricingPlan',
     });
-  }, [globalDialogService]);
+  }, [workspaceDialogService]);
 
   useEffect(() => {
     if (generalAIOnboardingOpened) return;

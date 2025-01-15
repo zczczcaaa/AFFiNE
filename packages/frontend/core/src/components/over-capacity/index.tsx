@@ -1,5 +1,5 @@
 import { notify } from '@affine/component';
-import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
@@ -20,13 +20,13 @@ export const OverCapacityNotification = () => {
     permissionService.permission.revalidate();
   }, [permissionService]);
 
-  const globalDialogService = useService(GlobalDialogService);
+  const workspaceDialogService = useService(WorkspaceDialogService);
   const jumpToPricePlan = useCallback(() => {
-    globalDialogService.open('setting', {
+    workspaceDialogService.open('setting', {
       activeTab: 'plans',
       scrollAnchor: 'cloudPricingPlan',
     });
-  }, [globalDialogService]);
+  }, [workspaceDialogService]);
 
   // debounce sync engine status
   useEffect(() => {

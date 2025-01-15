@@ -1,7 +1,7 @@
 import { ConfirmModal } from '@affine/component/ui/modal';
 import { openQuotaModalAtom } from '@affine/core/components/atoms';
 import { UserQuotaService } from '@affine/core/modules/cloud';
-import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
 import { WorkspaceService } from '@affine/core/modules/workspace';
@@ -42,16 +42,16 @@ export const CloudQuotaModal = () => {
     )
   );
 
-  const globalDialogService = useService(GlobalDialogService);
+  const workspaceDialogService = useService(WorkspaceDialogService);
   const handleUpgradeConfirm = useCallback(() => {
-    globalDialogService.open('setting', {
+    workspaceDialogService.open('setting', {
       activeTab: 'plans',
       scrollAnchor: 'cloudPricingPlan',
     });
 
     track.$.paywall.storage.viewPlans();
     setOpen(false);
-  }, [globalDialogService, setOpen]);
+  }, [workspaceDialogService, setOpen]);
 
   const description = useMemo(() => {
     if (userQuota && isOwner) {

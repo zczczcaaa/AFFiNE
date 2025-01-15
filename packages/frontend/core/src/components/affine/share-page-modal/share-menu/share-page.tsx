@@ -7,7 +7,7 @@ import {
 } from '@affine/core/components/hooks/affine/use-share-url';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { ServerService } from '@affine/core/modules/cloud';
-import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { EditorService } from '@affine/core/modules/editor';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { ShareInfoService } from '@affine/core/modules/share-doc';
@@ -81,13 +81,13 @@ export const AFFiNESharePage = (props: ShareMenuProps) => {
 
   const permissionService = useService(WorkspacePermissionService);
   const isOwner = useLiveData(permissionService.permission.isOwner$);
-  const globalDialogService = useService(GlobalDialogService);
+  const workspaceDialogService = useService(WorkspaceDialogService);
 
   const onOpenWorkspaceSettings = useCallback(() => {
-    globalDialogService.open('setting', {
+    workspaceDialogService.open('setting', {
       activeTab: 'workspace:preference',
     });
-  }, [globalDialogService]);
+  }, [workspaceDialogService]);
 
   const onClickAnyoneReadOnlyShare = useAsyncCallback(async () => {
     if (isSharedPage) {

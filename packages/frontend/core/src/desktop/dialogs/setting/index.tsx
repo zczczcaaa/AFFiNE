@@ -7,11 +7,11 @@ import {
   DefaultServerService,
   ServersService,
 } from '@affine/core/modules/cloud';
+import type { DialogComponentProps } from '@affine/core/modules/dialogs';
 import type {
-  DialogComponentProps,
-  GLOBAL_DIALOG_SCHEMA,
-} from '@affine/core/modules/dialogs';
-import type { SettingTab } from '@affine/core/modules/dialogs/constant';
+  SettingTab,
+  WORKSPACE_DIALOG_SCHEMA,
+} from '@affine/core/modules/dialogs/constant';
 import { GlobalContextService } from '@affine/core/modules/global-context';
 import { Trans } from '@affine/i18n';
 import { ContactWithUsIcon } from '@blocksuite/icons/rc';
@@ -207,7 +207,7 @@ const SettingModalInner = ({
 export const SettingDialog = ({
   close,
   activeTab,
-}: DialogComponentProps<GLOBAL_DIALOG_SCHEMA['setting']>) => {
+}: DialogComponentProps<WORKSPACE_DIALOG_SCHEMA['setting']>) => {
   return (
     <Modal
       width={1280}

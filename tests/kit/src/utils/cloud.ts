@@ -282,7 +282,7 @@ export async function loginUserDirectly(
 
 export async function enableCloudWorkspace(page: Page) {
   await clickSideBarSettingButton(page);
-  await page.getByTestId('workspace-list-item-workspace:preference').click();
+  await page.getByTestId('workspace-setting:preference').click();
   await page.getByTestId('publish-enable-affine-cloud-button').click();
   await page.getByTestId('confirm-enable-affine-cloud-button').click();
   // wait for upload and delete local workspace

@@ -10,11 +10,10 @@ import {
   PenIcon,
 } from '@blocksuite/icons/rc';
 import { useLiveData, useServices } from '@toeverything/infra';
-import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
 import { AuthService, ServerService } from '../../../../modules/cloud';
-import type { SettingState } from '../types';
+import type { SettingSidebarItem, SettingState } from '../types';
 import { AboutAffine } from './about';
 import { AppearanceSettings } from './appearance';
 import { BillingSettings } from './billing';
@@ -24,14 +23,7 @@ import { PaymentIcon, UpgradeIcon } from './icons';
 import { AFFiNEPricingPlans } from './plans';
 import { Shortcuts } from './shortcuts';
 
-interface GeneralSettingListItem {
-  key: SettingTab;
-  title: string;
-  icon: ReactNode;
-  testId: string;
-}
-
-export type GeneralSettingList = GeneralSettingListItem[];
+export type GeneralSettingList = SettingSidebarItem[];
 
 export const useGeneralSettingList = (): GeneralSettingList => {
   const t = useI18n();
@@ -54,7 +46,7 @@ export const useGeneralSettingList = (): GeneralSettingList => {
     userFeatureService.userFeature.revalidate();
   }, [userFeatureService]);
 
-  const settings: GeneralSettingListItem[] = [
+  const settings: GeneralSettingList = [
     {
       key: 'appearance',
       title: t['com.affine.settings.appearance'](),

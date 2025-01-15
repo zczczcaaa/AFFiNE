@@ -41,7 +41,7 @@ export async function confirmExperimentalPrompt(page: Page) {
 export async function openWorkspaceSettingPanel(page: Page) {
   await page
     .getByTestId('settings-sidebar')
-    .getByTestId('workspace-list-item-workspace:preference')
+    .getByTestId('workspace-setting:preference')
     .click();
 }
 

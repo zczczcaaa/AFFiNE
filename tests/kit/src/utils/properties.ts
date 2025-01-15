@@ -149,7 +149,7 @@ export const expectPropertyOrdering = async (
 
 export const openWorkspaceProperties = async (page: Page) => {
   await page.getByTestId('slider-bar-workspace-setting-button').click();
-  await page.getByTestId('workspace-list-item-workspace:properties').click();
+  await page.getByTestId('workspace-setting:properties').click();
 };
 
 export const selectVisibilitySelector = async (

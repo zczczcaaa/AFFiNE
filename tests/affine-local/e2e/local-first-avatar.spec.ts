@@ -24,7 +24,7 @@ test('should create a page with a local first avatar and remove it', async ({
     .nth(1)
     .click({ position: { x: 10, y: 10 } });
   await page.getByTestId('settings-modal-trigger').click();
-  await page.getByTestId('workspace-list-item-workspace:preference').click();
+  await page.getByTestId('workspace-setting:preference').click();
   await page
     .getByTestId('upload-avatar')
     .setInputFiles(ProjectRoot.join('tests', 'fixtures', 'blue.png').value);
@@ -61,7 +61,7 @@ test('should create a page with a local first avatar and remove it', async ({
 
   // Click remove button to remove workspace avatar
   await page.getByTestId('settings-modal-trigger').click();
-  await page.getByTestId('workspace-list-item-workspace:preference').click();
+  await page.getByTestId('workspace-setting:preference').click();
   await page.getByTestId('workspace-setting-avatar').hover();
   await page.getByTestId('workspace-setting-remove-avatar-button').click();
   await page.mouse.click(0, 0);

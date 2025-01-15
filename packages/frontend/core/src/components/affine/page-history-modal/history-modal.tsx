@@ -2,7 +2,7 @@ import { Loading, Scrollable } from '@affine/component';
 import { EditorLoading } from '@affine/component/page-detail-skeleton';
 import { Button, IconButton } from '@affine/component/ui/button';
 import { Modal, useConfirmModal } from '@affine/component/ui/modal';
-import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorService } from '@affine/core/modules/editor';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
@@ -187,18 +187,18 @@ const PlanPrompt = () => {
   }, [permissionService]);
 
   const [planPromptClosed, setPlanPromptClosed] = useAtom(planPromptClosedAtom);
-  const globalDialogService = useService(GlobalDialogService);
+  const workspaceDialogService = useService(WorkspaceDialogService);
   const closeFreePlanPrompt = useCallback(() => {
     setPlanPromptClosed(true);
   }, [setPlanPromptClosed]);
 
   const onClickUpgrade = useCallback(() => {
-    globalDialogService.open('setting', {
+    workspaceDialogService.open('setting', {
       activeTab: 'plans',
       scrollAnchor: 'cloudPricingPlan',
     });
     track.$.docHistory.$.viewPlans();
-  }, [globalDialogService]);
+  }, [workspaceDialogService]);
 
   const t = useI18n();
 

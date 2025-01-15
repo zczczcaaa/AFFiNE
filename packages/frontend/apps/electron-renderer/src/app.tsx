@@ -9,7 +9,7 @@ import {
   configureDesktopApiModule,
   DesktopApiService,
 } from '@affine/core/modules/desktop-api';
-import { GlobalDialogService } from '@affine/core/modules/dialogs';
+import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { DocsService } from '@affine/core/modules/doc';
 import {
   configureSpellCheckSettingModule,
@@ -124,7 +124,7 @@ window.addEventListener('unload', () => {
 });
 
 events?.applicationMenu.openAboutPageInSettingModal(() =>
-  frameworkProvider.get(GlobalDialogService).open('setting', {
+  frameworkProvider.get(WorkspaceDialogService).open('setting', {
     activeTab: 'about',
   })
 );
