@@ -161,10 +161,17 @@ export class ThemeService extends Extension {
 export class ThemeObserver {
   private readonly observer: MutationObserver;
 
-  theme$ = signal(ColorScheme.Light);
+  theme$: Signal<ColorScheme>;
 
   constructor() {
     const COLOR_SCHEMES: string[] = Object.values(ColorScheme);
+    // Set initial theme according to the data-theme attribute
+    const initialMode = document.documentElement.dataset.theme;
+    this.theme$ = signal(
+      initialMode && COLOR_SCHEMES.includes(initialMode)
+        ? (initialMode as ColorScheme)
+        : ColorScheme.Light
+    );
     this.observer = new MutationObserver(() => {
       const mode = document.documentElement.dataset.theme;
       if (!mode) return;
