@@ -514,6 +514,8 @@
   "com.affine.filter.save-view": "Save view",
   "com.affine.filter.true": "true",
   "com.affine.filterList.button.add": "Add filter",
+  "com.affine.header.mode-switch.page": "View in Page mode",
+  "com.affine.header.mode-switch.edgeless": "View in Edgeless Canvas",
   "com.affine.header.option.add-tag": "Add tag",
   "com.affine.header.option.duplicate": "Duplicate",
   "com.affine.header.option.open-in-desktop": "Open in desktop app",
