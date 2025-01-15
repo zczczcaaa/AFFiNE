@@ -28,6 +28,8 @@ import type { HTMLAttributes, PropsWithChildren, ReactNode } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import * as styles from './journal.css';
+import { JournalTemplateOnboarding } from './template-onboarding';
+import { JournalTemplateSetting } from './template-setting';
 
 /**
  * @internal
@@ -156,12 +158,14 @@ export const EditorJournalPanel = () => {
           cellSize={34}
         />
       </div>
+      <JournalTemplateOnboarding />
       {journalDate ? (
         <>
           <JournalConflictBlock date={journalDate} />
           <JournalDailyCountBlock date={journalDate} />
         </>
       ) : null}
+      <JournalTemplateSetting />
     </div>
   );
 };

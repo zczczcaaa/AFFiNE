@@ -36,9 +36,12 @@ const interactive = style({
 });
 export const calendar = style({
   padding: '16px',
+  paddingBottom: 0,
+  marginBottom: 10,
   selectors: {
     '&[data-mobile=true]': {
       padding: '8px 16px',
+      marginBottom: 0,
     },
   },
 });
