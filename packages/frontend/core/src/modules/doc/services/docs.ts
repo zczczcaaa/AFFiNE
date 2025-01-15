@@ -102,6 +102,7 @@ export class DocsService extends Service {
     options: {
       primaryMode?: DocMode;
       docProps?: DocProps;
+      isTemplate?: boolean;
     } = {}
   ) {
     const doc = this.store.createBlockSuiteDoc();
@@ -113,6 +114,9 @@ export class DocsService extends Service {
     }
     if (options.primaryMode) {
       docRecord.setPrimaryMode(options.primaryMode);
+    }
+    if (options.isTemplate) {
+      docRecord.setProperty('isTemplate', true);
     }
     this.eventBus.emit(DocCreated, docRecord);
     return docRecord;

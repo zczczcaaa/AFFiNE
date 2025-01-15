@@ -1631,6 +1631,7 @@
   "com.affine.page-starter-bar.edgeless": "Edgeless",
   "Template": "Template",
   "com.affine.template-list.empty": "No template",
+  "com.affine.template-list.create-new": "Create new template",
   "com.affine.settings.workspace.template.title": "My Templates",
   "com.affine.settings.workspace.template.journal": "Template for journal",
   "com.affine.settings.workspace.template.journal-desc": "Select a template for your journal",
