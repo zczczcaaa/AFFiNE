@@ -8,7 +8,7 @@ export { DocsService } from './services/docs';
 
 import type { Framework } from '@toeverything/infra';
 
-import { WorkspaceDBService } from '../db';
+import { WorkspaceDBService } from '../db/services/db';
 import { WorkspaceScope, WorkspaceService } from '../workspace';
 import { Doc } from './entities/doc';
 import { DocPropertyList } from './entities/property-list';

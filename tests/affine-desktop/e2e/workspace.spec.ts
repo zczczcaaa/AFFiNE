@@ -42,7 +42,7 @@ test('export then add', async ({ page, appInfo, workspace }) => {
   const newWorkspaceName = 'new-test-name';
 
   // goto workspace setting
-  await page.getByTestId('workspace-list-item').click();
+  await page.getByTestId('workspace-list-item-workspace:preference').click();
   const input = page.getByTestId('workspace-name-input');
   await expect(input).toBeVisible();
 

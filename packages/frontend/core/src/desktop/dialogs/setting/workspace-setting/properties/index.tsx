@@ -4,13 +4,12 @@ import { DocPropertyManager } from '@affine/core/components/doc-properties/manag
 import { CreatePropertyMenuItems } from '@affine/core/components/doc-properties/menu/create-doc-property';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
 import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
-import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { Trans, useI18n } from '@affine/i18n';
 import track from '@affine/track';
-import { FrameworkScope } from '@toeverything/infra';
+import { FrameworkScope, useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
-import { useWorkspace } from '../../../../../components/hooks/use-workspace';
 import * as styles from './styles.css';
 
 const WorkspaceSettingPropertiesMain = () => {
@@ -47,14 +46,10 @@ const WorkspaceSettingPropertiesMain = () => {
   );
 };
 
-export const WorkspaceSettingProperties = ({
-  workspaceMetadata,
-}: {
-  workspaceMetadata: WorkspaceMetadata;
-}) => {
+export const WorkspaceSettingProperties = () => {
   const t = useI18n();
-  const workspace = useWorkspace(workspaceMetadata);
-  const workspaceInfo = useWorkspaceInfo(workspaceMetadata);
+  const workspace = useService(WorkspaceService).workspace;
+  const workspaceInfo = useWorkspaceInfo(workspace);
   const title = workspaceInfo?.name || 'untitled';
 
   if (workspace === null) {

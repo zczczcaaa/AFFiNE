@@ -148,11 +148,7 @@ export const RootAppSidebar = memo((): ReactElement => {
       <SidebarContainer>
         <div className={workspaceAndUserWrapper}>
           <div className={workspaceWrapper}>
-            <WorkspaceNavigator
-              showEnableCloudButton
-              showSettingsButton
-              showSyncStatus
-            />
+            <WorkspaceNavigator showEnableCloudButton showSyncStatus />
           </div>
           <UserInfo />
         </div>

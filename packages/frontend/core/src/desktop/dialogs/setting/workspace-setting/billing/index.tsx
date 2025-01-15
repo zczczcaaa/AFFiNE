@@ -8,7 +8,6 @@ import {
 import { getUpgradeQuestionnaireLink } from '@affine/core/components/hooks/affine/use-subscription-notify';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { useMutation } from '@affine/core/components/hooks/use-mutation';
-import { useWorkspace } from '@affine/core/components/hooks/use-workspace';
 import {
   AuthService,
   SubscriptionService,
@@ -17,7 +16,7 @@ import {
 } from '@affine/core/modules/cloud';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
 import { UrlService } from '@affine/core/modules/url';
-import type { WorkspaceMetadata } from '@affine/core/modules/workspace';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import {
   createCustomerPortalMutation,
   type InvoicesQuery,
@@ -27,7 +26,7 @@ import {
   UserFriendlyError,
 } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
-import { FrameworkScope, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -37,14 +36,8 @@ import {
 } from '../../general-setting/plans/actions';
 import * as styles from './styles.css';
 
-export const WorkspaceSettingBilling = ({
-  workspaceMetadata,
-}: {
-  workspaceMetadata: WorkspaceMetadata;
-}) => {
-  // useWorkspace hook is a vary heavy operation here, but we need syncing name and avatar changes here,
-  // we don't have a better way to do this now
-  const workspace = useWorkspace(workspaceMetadata);
+export const WorkspaceSettingBilling = () => {
+  const workspace = useService(WorkspaceService).workspace;
 
   const t = useI18n();
 
@@ -68,7 +61,7 @@ export const WorkspaceSettingBilling = ({
   }
 
   return (
-    <FrameworkScope scope={workspace.scope}>
+    <>
       <SettingHeader
         title={t['com.affine.payment.billing-setting.title']()}
         subtitle={t['com.affine.payment.billing-setting.subtitle']()}
@@ -87,7 +80,7 @@ export const WorkspaceSettingBilling = ({
       <SettingWrapper title={t['com.affine.payment.billing-setting.history']()}>
         <BillingHistory />
       </SettingWrapper>
-    </FrameworkScope>
+    </>
   );
 };
 

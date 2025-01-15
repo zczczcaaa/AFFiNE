@@ -58,7 +58,7 @@ test('should have pagination in member list', async ({ page }) => {
   );
 
   await openSettingModal(page);
-  await openWorkspaceSettingPanel(page, 'test');
+  await openWorkspaceSettingPanel(page);
 
   await page.waitForTimeout(1000);
 

@@ -86,9 +86,8 @@ export const AFFiNESharePage = (props: ShareMenuProps) => {
   const onOpenWorkspaceSettings = useCallback(() => {
     globalDialogService.open('setting', {
       activeTab: 'workspace:preference',
-      workspaceMetadata: props.workspaceMetadata,
     });
-  }, [globalDialogService, props.workspaceMetadata]);
+  }, [globalDialogService]);
 
   const onClickAnyoneReadOnlyShare = useAsyncCallback(async () => {
     if (isSharedPage) {

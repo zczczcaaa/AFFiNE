@@ -38,11 +38,11 @@ export async function confirmExperimentalPrompt(page: Page) {
   await page.getByTestId('experimental-confirm-button').click();
 }
 
-export async function openWorkspaceSettingPanel(
-  page: Page,
-  workspaceName: string
-) {
-  await page.getByTestId('settings-sidebar').getByText(workspaceName).click();
+export async function openWorkspaceSettingPanel(page: Page) {
+  await page
+    .getByTestId('settings-sidebar')
+    .getByTestId('workspace-list-item-workspace:preference')
+    .click();
 }
 
 export async function clickUserInfoCard(page: Page) {

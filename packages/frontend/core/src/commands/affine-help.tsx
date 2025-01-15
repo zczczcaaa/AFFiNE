@@ -38,7 +38,6 @@ export function registerAffineHelpCommands({
         track.$.cmdk.help.contactUs();
         globalDialogService.open('setting', {
           activeTab: 'about',
-          workspaceMetadata: null,
         });
       },
     })

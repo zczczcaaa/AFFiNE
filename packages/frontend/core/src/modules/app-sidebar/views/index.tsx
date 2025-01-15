@@ -265,11 +265,7 @@ export function FallbackHeaderWithWorkspaceNavigator() {
   return (
     <div className={styles.fallbackHeader}>
       {currentWorkspace && navigate ? (
-        <WorkspaceNavigator
-          showSettingsButton
-          showSyncStatus
-          showEnableCloudButton
-        />
+        <WorkspaceNavigator showSyncStatus showEnableCloudButton />
       ) : (
         <FallbackHeaderSkeleton />
       )}

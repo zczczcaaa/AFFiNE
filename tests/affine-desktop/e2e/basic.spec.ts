@@ -121,7 +121,7 @@ test('delete workspace', async ({ page }) => {
   // });
   await page.waitForTimeout(1000);
   await clickSideBarSettingButton(page);
-  await page.getByTestId('current-workspace-label').click();
+  await page.getByTestId('workspace-list-item-workspace:preference').click();
   await expect(page.getByTestId('workspace-name-input')).toHaveValue(
     'Delete Me'
   );

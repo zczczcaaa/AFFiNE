@@ -55,7 +55,6 @@ interface UserWithWorkspaceListProps {
     metadata: WorkspaceMetadata;
     defaultDocId?: string;
   }) => void;
-  showSettingsButton?: boolean;
   showEnableCloudButton?: boolean;
 }
 
@@ -63,7 +62,6 @@ const UserWithWorkspaceListInner = ({
   onEventEnd,
   onClickWorkspace,
   onCreatedWorkspace,
-  showSettingsButton,
   showEnableCloudButton,
 }: UserWithWorkspaceListProps) => {
   const globalDialogService = useService(GlobalDialogService);
@@ -121,7 +119,6 @@ const UserWithWorkspaceListInner = ({
         onEventEnd={onEventEnd}
         onClickWorkspace={onClickWorkspace}
         showEnableCloudButton={showEnableCloudButton}
-        showSettingsButton={showSettingsButton}
       />
       <AddWorkspace
         onAddWorkspace={onAddWorkspace}

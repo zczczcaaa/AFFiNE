@@ -50,13 +50,11 @@ const CloudWorkSpaceList = ({
   server,
   workspaces,
   onClickWorkspace,
-  onClickWorkspaceSetting,
   onClickEnableCloud,
 }: {
   server: Server;
   workspaces: WorkspaceMetadata[];
   onClickWorkspace: (workspaceMetadata: WorkspaceMetadata) => void;
-  onClickWorkspaceSetting?: (workspaceMetadata: WorkspaceMetadata) => void;
   onClickEnableCloud?: (meta: WorkspaceMetadata) => void;
 }) => {
   const t = useI18n();
@@ -161,7 +159,6 @@ const CloudWorkSpaceList = ({
       <WorkspaceList
         items={workspaces}
         onClick={onClickWorkspace}
-        onSettingClick={onClickWorkspaceSetting}
         onEnableCloudClick={onClickEnableCloud}
       />
       <MenuItem
@@ -215,16 +212,13 @@ export const AFFiNEWorkspaceList = ({
   onEventEnd,
   onClickWorkspace,
   showEnableCloudButton,
-  showSettingsButton,
 }: {
   onClickWorkspace?: (workspaceMetadata: WorkspaceMetadata) => void;
   onEventEnd?: () => void;
-  showSettingsButton?: boolean;
   showEnableCloudButton?: boolean;
 }) => {
   const workspacesService = useService(WorkspacesService);
   const workspaces = useLiveData(workspacesService.list.workspaces$);
-  const globalDialogService = useService(GlobalDialogService);
 
   const confirmEnableCloud = useEnableCloud();
 
@@ -245,17 +239,6 @@ export const AFFiNEWorkspaceList = ({
         ({ flavour }) => flavour === 'local'
       ) as WorkspaceMetadata[],
     [workspaces]
-  );
-
-  const onClickWorkspaceSetting = useCallback(
-    (workspaceMetadata: WorkspaceMetadata) => {
-      globalDialogService.open('setting', {
-        activeTab: 'workspace:preference',
-        workspaceMetadata,
-      });
-      onEventEnd?.();
-    },
-    [globalDialogService, onEventEnd]
   );
 
   const onClickEnableCloud = useCallback(
@@ -292,9 +275,6 @@ export const AFFiNEWorkspaceList = ({
                 ({ flavour }) => flavour === server.id
               )}
               onClickWorkspace={handleClickWorkspace}
-              onClickWorkspaceSetting={
-                showSettingsButton ? onClickWorkspaceSetting : undefined
-              }
             />
             <Divider size="thinner" />
           </FrameworkScope>
@@ -303,9 +283,6 @@ export const AFFiNEWorkspaceList = ({
       <LocalWorkspaces
         workspaces={localWorkspaces}
         onClickWorkspace={handleClickWorkspace}
-        onClickWorkspaceSetting={
-          showSettingsButton ? onClickWorkspaceSetting : undefined
-        }
         onClickEnableCloud={
           showEnableCloudButton ? onClickEnableCloud : undefined
         }

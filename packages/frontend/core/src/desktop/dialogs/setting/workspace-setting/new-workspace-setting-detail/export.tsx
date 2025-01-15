@@ -5,25 +5,18 @@ import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hoo
 import { useSystemOnline } from '@affine/core/components/hooks/use-system-online';
 import { DesktopApiService } from '@affine/core/modules/desktop-api';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
-import type {
-  Workspace,
-  WorkspaceMetadata,
-} from '@affine/core/modules/workspace';
+import type { Workspace } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useState } from 'react';
 
 interface ExportPanelProps {
-  workspaceMetadata: WorkspaceMetadata;
-  workspace: Workspace | null;
+  workspace: Workspace;
 }
 
-export const DesktopExportPanel = ({
-  workspaceMetadata,
-  workspace,
-}: ExportPanelProps) => {
-  const workspaceId = workspaceMetadata.id;
+export const DesktopExportPanel = ({ workspace }: ExportPanelProps) => {
+  const workspaceId = workspace.id;
   const workspacePermissionService = useService(
     WorkspacePermissionService
   ).permission;

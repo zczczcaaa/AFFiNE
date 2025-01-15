@@ -3,13 +3,13 @@ import {
   SettingRow,
   SettingWrapper,
 } from '@affine/component/setting-components';
-import { useWorkspace } from '@affine/core/components/hooks/use-workspace';
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
 import { WorkspaceServerService } from '@affine/core/modules/cloud';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
 import { useI18n } from '@affine/i18n';
 import { ArrowRightSmallIcon } from '@blocksuite/icons/rc';
-import { FrameworkScope } from '@toeverything/infra';
+import { FrameworkScope, useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
 import { DeleteLeaveWorkspace } from './delete-leave-workspace';
@@ -24,18 +24,15 @@ import type { WorkspaceSettingDetailProps } from './types';
 import { WorkspaceQuotaPanel } from './workspace-quota';
 
 export const WorkspaceSettingDetail = ({
-  workspaceMetadata,
   onCloseSetting,
   onChangeSettingState,
 }: WorkspaceSettingDetailProps) => {
   const t = useI18n();
 
-  // useWorkspace hook is a vary heavy operation here, but we need syncing name and avatar changes here,
-  // we don't have a better way to do this now
-  const workspace = useWorkspace(workspaceMetadata);
+  const workspace = useService(WorkspaceService).workspace;
   const server = workspace?.scope.get(WorkspaceServerService).server;
 
-  const workspaceInfo = useWorkspaceInfo(workspaceMetadata);
+  const workspaceInfo = useWorkspaceInfo(workspace);
 
   const handleResetSyncStatus = useCallback(() => {
     workspace?.engine.doc
@@ -80,10 +77,7 @@ export const WorkspaceSettingDetail = ({
         <SharingPanel />
         {BUILD_CONFIG.isElectron && (
           <SettingWrapper title={t['Storage and Export']()}>
-            <DesktopExportPanel
-              workspace={workspace}
-              workspaceMetadata={workspaceMetadata}
-            />
+            <DesktopExportPanel workspace={workspace} />
           </SettingWrapper>
         )}
         <SettingWrapper>

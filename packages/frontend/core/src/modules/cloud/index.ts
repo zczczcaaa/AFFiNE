@@ -35,7 +35,8 @@ export type { ServerConfig } from './types';
 
 import { type Framework } from '@toeverything/infra';
 
-import { DocScope, DocService } from '../doc';
+import { DocScope } from '../doc/scopes/doc';
+import { DocService } from '../doc/services/doc';
 import { GlobalCache, GlobalState, GlobalStateService } from '../storage';
 import { UrlService } from '../url';
 import { WorkspaceScope, WorkspaceService } from '../workspace';

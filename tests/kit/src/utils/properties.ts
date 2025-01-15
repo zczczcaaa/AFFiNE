@@ -149,9 +149,6 @@ export const expectPropertyOrdering = async (
 
 export const openWorkspaceProperties = async (page: Page) => {
   await page.getByTestId('slider-bar-workspace-setting-button').click();
-  await page
-    .locator('[data-testid="workspace-list-item"] .setting-name')
-    .click();
   await page.getByTestId('workspace-list-item-workspace:properties').click();
 };
 
