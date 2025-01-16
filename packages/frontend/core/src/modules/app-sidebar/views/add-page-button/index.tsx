@@ -161,7 +161,7 @@ function AddPageWithAsk({ className, style }: AddPageButtonProps) {
       <Button
         tooltip={t['New Page']()}
         tooltipOptions={sideBottom}
-        data-testid="sidebar-new-page-button"
+        data-testid="sidebar-new-page-with-ask-button"
         className={clsx([styles.withAskRoot, className])}
         style={style}
       >

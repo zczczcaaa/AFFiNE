@@ -27,7 +27,11 @@ const DocItem = ({ doc, onSelect }: DocItemProps) => {
   }, [doc.id, onSelect]);
 
   return (
-    <MenuItem prefixIcon={<Icon />} onClick={onClick}>
+    <MenuItem
+      prefixIcon={<Icon />}
+      onClick={onClick}
+      data-testid={`template-doc-item-${doc.id}`}
+    >
       {title}
     </MenuItem>
   );

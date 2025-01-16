@@ -332,7 +332,7 @@ const NewDocDefaultModeSettings = () => {
         },
         {
           value: 'ask',
-          label: 'Ask every time',
+          label: t['com.affine.settings.editorSettings.ask-me-every-time'](),
           testId: 'ask-every-time-trigger',
         },
       ] as const,
@@ -361,13 +361,17 @@ const NewDocDefaultModeSettings = () => {
               key={item.value}
               selected={item.value === settings.newDocDefaultMode}
               onSelect={() => updateNewDocDefaultMode(item.value)}
+              data-testid={item.testId}
             >
               {item.label}
             </MenuItem>
           );
         })}
       >
-        <MenuTrigger className={styles.menuTrigger}>
+        <MenuTrigger
+          className={styles.menuTrigger}
+          data-testid="new-doc-default-mode-trigger"
+        >
           {items.find(item => item.value === settings.newDocDefaultMode)?.label}
         </MenuTrigger>
       </Menu>

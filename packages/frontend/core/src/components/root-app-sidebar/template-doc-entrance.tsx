@@ -37,7 +37,11 @@ export const TemplateDocEntrance = () => {
   }
 
   return (
-    <SidebarMenuItem icon={<TemplateOutlineIcon />} onClick={toggleMenu}>
+    <SidebarMenuItem
+      data-testid="sidebar-template-doc-entrance"
+      icon={<TemplateOutlineIcon />}
+      onClick={toggleMenu}
+    >
       <Menu
         rootOptions={{ open: menuOpen, onOpenChange: setMenuOpen }}
         contentOptions={{
@@ -79,6 +83,7 @@ const CreateNewTemplateMenuItem = () => {
 
   return (
     <MenuItem
+      data-testid="template-doc-item-create"
       prefixIcon={<TemplateIcon />}
       onClick={createNewTemplate}
       onAuxClick={createNewTemplate}

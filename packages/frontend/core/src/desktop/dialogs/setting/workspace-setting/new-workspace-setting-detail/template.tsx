@@ -64,6 +64,7 @@ export const TemplateDocSetting = () => {
         desc={t['com.affine.settings.workspace.template.journal-desc']()}
       >
         <TemplateSelector
+          testId="journal-template-selector"
           current={journalTemplateDocId}
           onChange={updateJournalTemplate}
         />
@@ -72,7 +73,11 @@ export const TemplateDocSetting = () => {
         name={t['com.affine.settings.workspace.template.page']()}
         desc={t['com.affine.settings.workspace.template.page-desc']()}
       >
-        <Switch checked={enablePageTemplate} onChange={togglePageTemplate} />
+        <Switch
+          data-testid="page-template-switch"
+          checked={enablePageTemplate}
+          onChange={togglePageTemplate}
+        />
       </SettingRow>
       {enablePageTemplate ? (
         <SettingRow
@@ -80,6 +85,7 @@ export const TemplateDocSetting = () => {
           desc={t['com.affine.settings.workspace.template.journal-desc']()}
         >
           <TemplateSelector
+            testId="page-template-selector"
             current={pageTemplateDocId}
             onChange={updatePageTemplate}
           />
@@ -91,9 +97,14 @@ export const TemplateDocSetting = () => {
 
 interface TemplateSelectorProps {
   current?: string;
+  testId?: string;
   onChange?: (id?: string) => void;
 }
-const TemplateSelector = ({ current, onChange }: TemplateSelectorProps) => {
+const TemplateSelector = ({
+  current,
+  testId,
+  onChange,
+}: TemplateSelectorProps) => {
   const t = useI18n();
   const docsService = useService(DocsService);
   const docDisplayService = useService(DocDisplayMetaService);
@@ -112,13 +123,14 @@ const TemplateSelector = ({ current, onChange }: TemplateSelectorProps) => {
             prefixIcon={<DeleteIcon className={styles.menuItemIcon} />}
             onClick={() => onChange?.()}
             type="danger"
+            data-testid="template-doc-item-remove"
           >
             {t['com.affine.settings.workspace.template.remove']()}
           </MenuItem>
         </>
       }
     >
-      <MenuTrigger className={styles.menuTrigger}>
+      <MenuTrigger className={styles.menuTrigger} data-testid={testId}>
         {/* TODO: in trash design */}
         {title ?? t['com.affine.settings.workspace.template.keep-empty']()}
       </MenuTrigger>

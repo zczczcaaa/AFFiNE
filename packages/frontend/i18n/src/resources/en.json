@@ -1251,6 +1251,7 @@
   "com.affine.settings.editorSettings.preferences.import.title": "Import Settings",
   "com.affine.settings.editorSettings.subtitle": "Configure your own editor",
   "com.affine.settings.editorSettings.title": "Editor settings",
+  "com.affine.settings.editorSettings.ask-me-every-time": "Ask me every time",
   "com.affine.settings.email": "Email",
   "com.affine.settings.email.action": "Change email",
   "com.affine.settings.email.action.change": "Change email",
