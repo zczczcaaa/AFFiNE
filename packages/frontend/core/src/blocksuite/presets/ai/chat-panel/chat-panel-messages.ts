@@ -14,7 +14,7 @@ import { css, html, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { debounce } from 'lodash-es';
+import { debounce, throttle } from 'lodash-es';
 
 import {
   EdgelessEditorActions,
@@ -132,6 +132,9 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   @query('.chat-panel-messages')
   accessor messagesContainer: HTMLDivElement | null = null;
 
+  @query('.message:nth-last-child(2)')
+  accessor lastMessage: HTMLDivElement | null = null;
+
   private _renderAIOnboarding() {
     return this.isLoading ||
       !this.host?.doc.get(FeatureFlagService).getFlag('enable_ai_onboarding')
@@ -189,6 +192,16 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
     100
   );
 
+  private readonly _scrollIntoView = () => {
+    if (!this.lastMessage) return;
+    this.lastMessage.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  private readonly _throttledScrollIntoView = throttle(
+    this._scrollIntoView,
+    500
+  );
+
   protected override render() {
     const { items } = this.chatContextValue;
     const { isLoading } = this;
@@ -243,7 +256,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
               }
             )}
       </div>
-      ${this.showDownIndicator
+      ${this.showDownIndicator && filteredItems.length > 1
         ? html`<div class="down-indicator" @click=${this.scrollToEnd}>
             ${DownArrowIcon}
           </div>`
@@ -285,6 +298,12 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         this.host.doc.id
       )
     );
+  }
+
+  protected override updated() {
+    if (this.chatContextValue.status === 'transmitting') {
+      this._throttledScrollIntoView();
+    }
   }
 
   renderItem(item: ChatItem, isLast: boolean) {

@@ -205,17 +205,11 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     if (
       !this.isLoading &&
       _changedProperties.has('chatContextValue') &&
-      this.chatContextValue.status !== 'idle'
-    ) {
-      if (this.chatContextValue.status === 'transmitting') {
-        this._scrollToEnd();
-      } else if (
-        this.chatContextValue.status === 'loading' ||
+      (this.chatContextValue.status === 'loading' ||
         this.chatContextValue.status === 'error' ||
-        this.chatContextValue.status === 'success'
-      ) {
-        setTimeout(this._scrollToEnd, 500);
-      }
+        this.chatContextValue.status === 'success')
+    ) {
+      setTimeout(this._scrollToEnd, 500);
     }
   }
 
