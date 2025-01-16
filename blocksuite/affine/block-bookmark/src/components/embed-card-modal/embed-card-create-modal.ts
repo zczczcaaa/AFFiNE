@@ -6,7 +6,7 @@ import {
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import { EmbedOptionProvider } from '@blocksuite/affine-shared/services';
-import { isValidUrl } from '@blocksuite/affine-shared/utils';
+import { isValidUrl, stopPropagation } from '@blocksuite/affine-shared/utils';
 import type { EditorHost } from '@blocksuite/block-std';
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
@@ -122,6 +122,9 @@ export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
       })
       .catch(console.error);
     this.disposables.addFromEvent(this, 'keydown', this._onDocumentKeydown);
+    this.disposables.addFromEvent(this, 'cup', stopPropagation);
+    this.disposables.addFromEvent(this, 'copy', stopPropagation);
+    this.disposables.addFromEvent(this, 'paste', stopPropagation);
   }
 
   override render() {

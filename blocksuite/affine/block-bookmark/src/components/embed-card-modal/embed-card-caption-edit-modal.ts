@@ -1,3 +1,4 @@
+import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { type BlockComponent, ShadowlessElement } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
@@ -48,6 +49,9 @@ export class EmbedCardEditCaptionEditModal extends WithDisposable(
       .catch(console.error);
 
     this.disposables.addFromEvent(this, 'keydown', this._onKeydown);
+    this.disposables.addFromEvent(this, 'cup', stopPropagation);
+    this.disposables.addFromEvent(this, 'copy', stopPropagation);
+    this.disposables.addFromEvent(this, 'paste', stopPropagation);
   }
 
   override render() {
