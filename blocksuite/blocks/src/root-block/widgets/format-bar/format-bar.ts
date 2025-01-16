@@ -567,10 +567,12 @@ export class AffineFormatBarWidget extends WidgetComponent {
   }
 
   override updated() {
+    if (this._floatDisposables) {
+      this._floatDisposables.dispose();
+      this._floatDisposables = null;
+    }
+
     if (!this._shouldDisplay()) {
-      if (this._floatDisposables) {
-        this._floatDisposables.dispose();
-      }
       return;
     }
 
