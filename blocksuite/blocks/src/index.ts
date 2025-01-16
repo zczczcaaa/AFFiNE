@@ -137,6 +137,7 @@ export {
   openFileOrFiles,
   printToPdf,
 } from '@blocksuite/affine-shared/utils';
+export type { DragBlockPayload } from '@blocksuite/affine-widget-drag-handle';
 
 export const BlocksUtils = {
   splitElements,

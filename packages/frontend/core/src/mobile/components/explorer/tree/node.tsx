@@ -180,7 +180,11 @@ export const ExplorerTreeNode = ({
       >
         <div className={styles.contentContainer} data-open={!collapsed}>
           {to ? (
-            <LinkComponent to={to} className={styles.linkItemRoot}>
+            <LinkComponent
+              to={to}
+              className={styles.linkItemRoot}
+              draggable={false}
+            >
               {content}
             </LinkComponent>
           ) : (

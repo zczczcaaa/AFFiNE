@@ -72,7 +72,8 @@ export interface BaseExplorerTreeNodeProps {
   childrenOperations?: NodeOperation[];
   childrenPlaceholder?: React.ReactNode;
   linkComponent?: React.ComponentType<
-    React.PropsWithChildren<{ to: To; className?: string }> & RefAttributes<any>
+    React.PropsWithChildren<{ to: To; className?: string }> &
+      RefAttributes<any> & { draggable?: boolean }
   >;
   [key: `data-${string}`]: any;
 }
@@ -433,7 +434,12 @@ export const ExplorerTreeNode = ({
         ref={dropTargetRef}
       >
         {to ? (
-          <LinkComponent to={to} className={styles.linkItemRoot} ref={dragRef}>
+          <LinkComponent
+            to={to}
+            className={styles.linkItemRoot}
+            ref={dragRef}
+            draggable={false}
+          >
             {content}
           </LinkComponent>
         ) : (
