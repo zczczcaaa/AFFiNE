@@ -157,7 +157,7 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
         this._readonlyCollapsed = collapsed;
 
         // reset text selection when selected block is collapsed
-        if (this.model.type.startsWith('h') && collapsed) {
+        if (this.model.type$.value.startsWith('h') && collapsed) {
           const collapsedSiblings = this.collapsedSiblings;
           const textSelection = this.host.selection.find(TextSelection);
 
@@ -177,7 +177,7 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
     // # 456
     //
     // we need to update collapsed state of 123 when 456 converted to text
-    let beforeType = this.model.type;
+    let beforeType = this.model.type$.peek();
     this.disposables.add(
       effect(() => {
         const type = this.model.type$.value;
@@ -211,7 +211,7 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
     const collapsedSiblings = this.collapsedSiblings;
 
     let style = html``;
-    if (this.model.type.startsWith('h') && collapsed) {
+    if (this.model.type$.value.startsWith('h') && collapsed) {
       style = html`
         <style>
           ${collapsedSiblings.map(sibling =>
@@ -245,7 +245,8 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
             [TOGGLE_BUTTON_PARENT_CLASS]: true,
           })}
         >
-          ${this.model.type.startsWith('h') && collapsedSiblings.length > 0
+          ${this.model.type$.value.startsWith('h') &&
+          collapsedSiblings.length > 0
             ? html`
                 <affine-paragraph-heading-icon
                   .model=${this.model}

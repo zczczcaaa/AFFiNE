@@ -1,5 +1,6 @@
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import {
+  AFFINE_FORMAT_BAR_WIDGET,
   EDGELESS_ELEMENT_TOOLBAR_WIDGET,
   EDGELESS_TOOLBAR_WIDGET,
 } from '@blocksuite/blocks';
@@ -50,6 +51,13 @@ export async function getPageMode(page: Page): Promise<'page' | 'edgeless'> {
 
 export function locateEditorContainer(page: Page, editorIndex = 0) {
   return page.locator('[data-affine-editor-container]').nth(editorIndex);
+}
+
+// ================== Page ==================
+export function locateFormatBar(page: Page, editorIndex = 0) {
+  return locateEditorContainer(page, editorIndex).locator(
+    AFFINE_FORMAT_BAR_WIDGET
+  );
 }
 
 // ================== Edgeless ==================

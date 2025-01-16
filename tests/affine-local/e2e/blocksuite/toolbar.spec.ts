@@ -1,4 +1,5 @@
 import { test } from '@affine-test/kit/playwright';
+import { locateFormatBar } from '@affine-test/kit/utils/editor';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
@@ -21,7 +22,7 @@ test.describe('Format bar', () => {
     await page.keyboard.press('Shift+ArrowLeft');
     await page.keyboard.press('Shift+ArrowLeft');
 
-    const formatBar = page.locator('.affine-format-bar-widget');
+    const formatBar = locateFormatBar(page);
     await formatBar.locator('.highlight-icon').hover();
     const fgGreenButton = formatBar.locator(
       '[data-testid="var(--affine-text-highlight-foreground-green)"]'
@@ -49,7 +50,7 @@ test.describe('Format bar', () => {
     await page.keyboard.press('Shift+ArrowLeft');
     await page.keyboard.press('Shift+ArrowLeft');
 
-    const formatBar = page.locator('.affine-format-bar-widget');
+    const formatBar = locateFormatBar(page);
     await formatBar.locator('.highlight-icon').hover();
 
     const fgGreenButton = formatBar.locator(
