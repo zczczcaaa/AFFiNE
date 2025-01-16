@@ -21,7 +21,7 @@
     "@blocksuite/affine-shared": "workspace:*",
     "@blocksuite/block-std": "workspace:*",
     "@blocksuite/global": "workspace:*",
-    "@blocksuite/icons": "2.2.1",
+    "@blocksuite/icons": "2.2.2",
     "@blocksuite/store": "workspace:*",
     "@capacitor/app": "^6.0.2",
     "@capacitor/browser": "^6.0.4",

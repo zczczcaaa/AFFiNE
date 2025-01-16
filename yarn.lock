@@ -223,7 +223,7 @@ __metadata:
     "@affine/core": "workspace:*"
     "@affine/i18n": "workspace:*"
     "@blocksuite/affine": "workspace:*"
-    "@blocksuite/icons": "npm:2.2.1"
+    "@blocksuite/icons": "npm:2.2.2"
     "@capacitor/android": "npm:^6.2.0"
     "@capacitor/cli": "npm:^6.2.0"
     "@capacitor/core": "npm:^6.2.0"
@@ -273,7 +273,7 @@ __metadata:
     "@atlaskit/pragmatic-drag-and-drop": "patch:@atlaskit/pragmatic-drag-and-drop@npm%3A1.4.0#~/.yarn/patches/@atlaskit-pragmatic-drag-and-drop-npm-1.4.0-75c45f52d3.patch"
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "npm:^1.0.3"
     "@blocksuite/affine": "workspace:*"
-    "@blocksuite/icons": "npm:2.2.1"
+    "@blocksuite/icons": "npm:2.2.2"
     "@chromatic-com/storybook": "npm:^3.2.2"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
@@ -363,7 +363,7 @@ __metadata:
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
-    "@blocksuite/icons": "npm:2.2.1"
+    "@blocksuite/icons": "npm:2.2.2"
     "@blocksuite/store": "workspace:*"
     "@capacitor/app": "npm:^6.0.2"
     "@capacitor/browser": "npm:^6.0.4"
@@ -606,7 +606,7 @@ __metadata:
     "@affine/nbstore": "workspace:*"
     "@blocksuite/affine": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
-    "@blocksuite/icons": "npm:2.2.1"
+    "@blocksuite/icons": "npm:2.2.2"
     "@capacitor/app": "npm:^6.0.2"
     "@capacitor/browser": "npm:^6.0.4"
     "@capacitor/cli": "npm:^6.2.0"
@@ -636,7 +636,7 @@ __metadata:
     "@affine/core": "workspace:*"
     "@affine/i18n": "workspace:*"
     "@blocksuite/affine": "workspace:*"
-    "@blocksuite/icons": "npm:2.2.1"
+    "@blocksuite/icons": "npm:2.2.2"
     "@sentry/react": "npm:^8.44.0"
     "@toeverything/infra": "workspace:*"
     "@types/react": "npm:^19.0.1"
@@ -3947,11 +3947,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blocksuite/icons@npm:2.2.1, @blocksuite/icons@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@blocksuite/icons@npm:2.2.1"
+"@blocksuite/icons@npm:2.2.2, @blocksuite/icons@npm:^2.2.1":
+  version: 2.2.2
+  resolution: "@blocksuite/icons@npm:2.2.2"
   peerDependencies:
     "@types/react": ^18.0.25
+    change-case: 4.1.2
     lit: ^3.1.1
     react: ^18.2.0
   peerDependenciesMeta:
@@ -3959,7 +3960,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10/2e7609f0f9e2225f40406fe97e3a64f5ed0523d97e099935c0c974e9e4099e36b727455d580a0b0d7e6331d0f1a1a89793d102b5a97d2b036730fe76551f7d54
+  checksum: 10/845306a279d51f82b9a83dd042abcdd26a6c5d2ab4ef5a3bdd4405d395bfb0836524b91a4cad50007f20cf84d9d695fec5c8356229f703381c95b25cf424f8d8
   languageName: node
   linkType: hard
 

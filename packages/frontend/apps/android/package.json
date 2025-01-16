@@ -12,7 +12,7 @@
     "@affine/core": "workspace:*",
     "@affine/i18n": "workspace:*",
     "@blocksuite/affine": "workspace:*",
-    "@blocksuite/icons": "2.2.1",
+    "@blocksuite/icons": "2.2.2",
     "@capacitor/android": "^6.2.0",
     "@capacitor/core": "^6.2.0",
     "@sentry/react": "^8.44.0",
