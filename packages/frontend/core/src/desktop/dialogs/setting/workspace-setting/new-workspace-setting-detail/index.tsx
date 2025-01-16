@@ -8,9 +8,7 @@ import { WorkspaceServerService } from '@affine/core/modules/cloud';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
 import { useI18n } from '@affine/i18n';
-import { ArrowRightSmallIcon } from '@blocksuite/icons/rc';
 import { FrameworkScope, useService } from '@toeverything/infra';
-import { useCallback } from 'react';
 
 import { DeleteLeaveWorkspace } from './delete-leave-workspace';
 import { EnableCloudPanel } from './enable-cloud';
@@ -33,17 +31,6 @@ export const WorkspaceSettingDetail = ({
   const server = workspace?.scope.get(WorkspaceServerService).server;
 
   const workspaceInfo = useWorkspaceInfo(workspace);
-
-  const handleResetSyncStatus = useCallback(() => {
-    workspace?.engine.doc
-      .resetSyncStatus()
-      .then(() => {
-        window.location.reload();
-      })
-      .catch(err => {
-        console.error(err);
-      });
-  }, [workspace]);
 
   if (!workspace) {
     return null;
@@ -71,8 +58,10 @@ export const WorkspaceSettingDetail = ({
         <TemplateDocSetting />
         <SettingWrapper title={t['com.affine.brand.affineCloud']()}>
           <EnableCloudPanel onCloseSetting={onCloseSetting} />
-          <WorkspaceQuotaPanel />
-          <MembersPanel onChangeSettingState={onChangeSettingState} />
+          {workspace.flavour !== 'local' && <WorkspaceQuotaPanel />}
+          {workspace.flavour !== 'local' && (
+            <MembersPanel onChangeSettingState={onChangeSettingState} />
+          )}
         </SettingWrapper>
         <SharingPanel />
         {BUILD_CONFIG.isElectron && (
@@ -82,19 +71,6 @@ export const WorkspaceSettingDetail = ({
         )}
         <SettingWrapper>
           <DeleteLeaveWorkspace onCloseSetting={onCloseSetting} />
-          <SettingRow
-            name={
-              <span style={{ color: 'var(--affine-text-secondary-color)' }}>
-                {t['com.affine.resetSyncStatus.button']()}
-              </span>
-            }
-            desc={t['com.affine.resetSyncStatus.description']()}
-            style={{ cursor: 'pointer' }}
-            onClick={handleResetSyncStatus}
-            data-testid="reset-sync-status"
-          >
-            <ArrowRightSmallIcon />
-          </SettingRow>
         </SettingWrapper>
       </FrameworkScope>
     </FrameworkScope>

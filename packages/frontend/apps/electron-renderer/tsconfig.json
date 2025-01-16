@@ -12,6 +12,7 @@
     { "path": "../../core" },
     { "path": "../../electron-api" },
     { "path": "../../i18n" },
+    { "path": "../../../common/nbstore" },
     { "path": "../../../common/infra" },
     { "path": "../../../../tools/utils" }
   ]

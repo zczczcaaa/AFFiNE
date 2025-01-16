@@ -13,7 +13,7 @@ type AwarenessChanges = Record<'added' | 'updated' | 'removed', number[]>;
 export class AwarenessFrontend {
   constructor(private readonly sync: AwarenessSync) {}
 
-  connect(awareness: Awareness) {
+  connectAwareness(awareness: Awareness) {
     const uniqueId = nanoid();
     const handleAwarenessUpdate = (
       changes: AwarenessChanges,
@@ -27,7 +27,6 @@ export class AwarenessFrontend {
       );
 
       const update = encodeAwarenessUpdate(awareness, changedClients);
-
       this.sync
         .update(
           {

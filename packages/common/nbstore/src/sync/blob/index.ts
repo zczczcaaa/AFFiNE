@@ -73,9 +73,13 @@ export class BlobSyncImpl implements BlobSync {
   async fullSync(signal?: AbortSignal) {
     throwIfAborted(signal);
 
+    await this.storages.local.connection.waitForConnected(signal);
+
     for (const [remotePeer, remote] of Object.entries(this.storages.remotes)) {
       let localList: string[] = [];
       let remoteList: string[] = [];
+
+      await remote.connection.waitForConnected(signal);
 
       try {
         localList = (await this.storages.local.list(signal)).map(b => b.key);
@@ -150,7 +154,7 @@ export class BlobSyncImpl implements BlobSync {
   }
 
   stop() {
-    this.abort?.abort();
+    this.abort?.abort(MANUALLY_STOP);
     this.abort = null;
   }
 

@@ -13,6 +13,7 @@
     { "path": "../../common/env" },
     { "path": "../graphql" },
     { "path": "../i18n" },
+    { "path": "../../common/nbstore" },
     { "path": "../track" },
     { "path": "../../../blocksuite/affine/all" },
     { "path": "../../../blocksuite/affine/components" },

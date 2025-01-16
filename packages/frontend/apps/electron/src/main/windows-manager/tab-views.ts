@@ -25,7 +25,6 @@ import {
 
 import { isMacOS } from '../../shared/utils';
 import { beforeAppQuit } from '../cleanup';
-import { isDev } from '../config';
 import { mainWindowOrigin, shellViewUrl } from '../constants';
 import { ensureHelperProcess } from '../helper-process';
 import { logger } from '../logger';
@@ -871,9 +870,6 @@ export class WebContentViewsManager {
       });
 
       view.webContents.loadURL(shellViewUrl).catch(err => logger.error(err));
-      if (isDev) {
-        view.webContents.openDevTools();
-      }
     }
 
     view.webContents.on('destroyed', () => {

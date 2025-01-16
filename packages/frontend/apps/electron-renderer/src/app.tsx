@@ -19,25 +19,26 @@ import { configureFindInPageModule } from '@affine/core/modules/find-in-page';
 import { GlobalContextService } from '@affine/core/modules/global-context';
 import { I18nProvider } from '@affine/core/modules/i18n';
 import { LifecycleService } from '@affine/core/modules/lifecycle';
-import { configureElectronStateStorageImpls } from '@affine/core/modules/storage';
+import {
+  configureElectronStateStorageImpls,
+  NbstoreProvider,
+} from '@affine/core/modules/storage';
 import {
   ClientSchemeProvider,
   PopupWindowProvider,
 } from '@affine/core/modules/url';
-import { configureSqliteUserspaceStorageProvider } from '@affine/core/modules/userspace';
 import {
   configureDesktopWorkbenchModule,
   WorkbenchService,
 } from '@affine/core/modules/workbench';
 import { WorkspacesService } from '@affine/core/modules/workspace';
-import {
-  configureBrowserWorkspaceFlavours,
-  configureSqliteWorkspaceEngineStorageProvider,
-} from '@affine/core/modules/workspace-engine';
+import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
 import createEmotionCache from '@affine/core/utils/create-emotion-cache';
 import { apis, events } from '@affine/electron-api';
+import { WorkerClient } from '@affine/nbstore/worker/client';
 import { CacheProvider } from '@emotion/react';
 import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
+import { OpClient } from '@toeverything/infra/op';
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
@@ -71,14 +72,61 @@ const framework = new Framework();
 configureCommonModules(framework);
 configureElectronStateStorageImpls(framework);
 configureBrowserWorkspaceFlavours(framework);
-configureSqliteWorkspaceEngineStorageProvider(framework);
-configureSqliteUserspaceStorageProvider(framework);
 configureDesktopWorkbenchModule(framework);
 configureAppTabsHeaderModule(framework);
 configureFindInPageModule(framework);
 configureDesktopApiModule(framework);
 configureSpellCheckSettingModule(framework);
+framework.impl(NbstoreProvider, {
+  openStore(key, options) {
+    const { port1: portForOpClient, port2: portForWorker } =
+      new MessageChannel();
+    let portFromWorker: MessagePort | null = null;
+    let portId = crypto.randomUUID();
 
+    const handleMessage = (ev: MessageEvent) => {
+      if (
+        ev.data.type === 'electron:worker-connect' &&
+        ev.data.portId === portId
+      ) {
+        portFromWorker = ev.ports[0];
+        // connect portForWorker and portFromWorker
+        portFromWorker.addEventListener('message', ev => {
+          portForWorker.postMessage(ev.data);
+        });
+        portForWorker.addEventListener('message', ev => {
+          // oxlint-disable-next-line no-non-null-assertion
+          portFromWorker!.postMessage(ev.data);
+        });
+        portForWorker.start();
+        portFromWorker.start();
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // oxlint-disable-next-line no-non-null-assertion
+    apis!.worker.connectWorker(key, portId).catch(err => {
+      console.error('failed to connect worker', err);
+    });
+
+    const store = new WorkerClient(new OpClient(portForOpClient), options);
+    portForOpClient.start();
+    return {
+      store,
+      dispose: () => {
+        window.removeEventListener('message', handleMessage);
+        portForOpClient.close();
+        portForWorker.close();
+        portFromWorker?.close();
+        // oxlint-disable-next-line no-non-null-assertion
+        apis!.worker.disconnectWorker(key, portId).catch(err => {
+          console.error('failed to disconnect worker', err);
+        });
+      },
+    };
+  },
+});
 framework.impl(PopupWindowProvider, p => {
   const apis = p.get(DesktopApiService).api;
   return {

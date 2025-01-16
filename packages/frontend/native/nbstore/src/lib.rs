@@ -300,7 +300,7 @@ impl DocStoragePool {
     universal_id: String,
     peer: String,
     doc_id: String,
-  ) -> Result<DocClock> {
+  ) -> Result<Option<DocClock>> {
     Ok(
       self
         .pool
@@ -347,7 +347,7 @@ impl DocStoragePool {
     universal_id: String,
     peer: String,
     doc_id: String,
-  ) -> Result<DocClock> {
+  ) -> Result<Option<DocClock>> {
     Ok(
       self
         .pool
@@ -394,7 +394,7 @@ impl DocStoragePool {
     universal_id: String,
     peer: String,
     doc_id: String,
-  ) -> Result<DocClock> {
+  ) -> Result<Option<DocClock>> {
     Ok(
       self
         .pool

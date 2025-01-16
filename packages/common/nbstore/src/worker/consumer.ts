@@ -1,3 +1,4 @@
+import { MANUALLY_STOP } from '@toeverything/infra';
 import type { OpConsumer } from '@toeverything/infra/op';
 import { Observable } from 'rxjs';
 
@@ -11,6 +12,7 @@ import type { WorkerInitOptions, WorkerOps } from './ops';
 export type { WorkerOps };
 
 export class WorkerConsumer {
+  private inited = false;
   private storages: PeerStorageOptions<SpaceStorage> | null = null;
   private sync: Sync | null = null;
 
@@ -57,14 +59,18 @@ export class WorkerConsumer {
   }
 
   constructor(
-    private readonly consumer: OpConsumer<WorkerOps>,
     private readonly availableStorageImplementations: StorageConstructor[]
-  ) {
-    this.registerHandlers();
-    this.consumer.listen();
+  ) {}
+
+  bindConsumer(consumer: OpConsumer<WorkerOps>) {
+    this.registerHandlers(consumer);
   }
 
   init(init: WorkerInitOptions) {
+    if (this.inited) {
+      return;
+    }
+    this.inited = true;
     this.storages = {
       local: new SpaceStorage(
         Object.fromEntries(
@@ -120,13 +126,13 @@ export class WorkerConsumer {
     }
   }
 
-  private registerHandlers() {
+  private registerHandlers(consumer: OpConsumer<WorkerOps>) {
     const collectJobs = new Map<
       string,
       (awareness: AwarenessRecord | null) => void
     >();
     let collectId = 0;
-    this.consumer.registerAll({
+    consumer.registerAll({
       'worker.init': this.init.bind(this),
       'worker.destroy': this.destroy.bind(this),
       'docStorage.getDoc': (docId: string) => this.docStorage.getDoc(docId),
@@ -158,7 +164,7 @@ export class WorkerConsumer {
             .catch((error: any) => {
               subscriber.error(error);
             });
-          return () => abortController.abort();
+          return () => abortController.abort(MANUALLY_STOP);
         }),
       'blobStorage.getBlob': key => this.blobStorage.get(key),
       'blobStorage.setBlob': blob => this.blobStorage.set(blob),
@@ -212,13 +218,7 @@ export class WorkerConsumer {
         }),
       'awarenessStorage.collect': ({ collectId, awareness }) =>
         collectJobs.get(collectId)?.(awareness),
-      'docSync.state': () =>
-        new Observable(subscriber => {
-          const subscription = this.docSync.state$.subscribe(state => {
-            subscriber.next(state);
-          });
-          return () => subscription.unsubscribe();
-        }),
+      'docSync.state': () => this.docSync.state$,
       'docSync.docState': docId =>
         new Observable(subscriber => {
           const subscription = this.docSync
@@ -247,7 +247,7 @@ export class WorkerConsumer {
             .catch(error => {
               subscriber.error(error);
             });
-          return () => abortController.abort();
+          return () => abortController.abort(MANUALLY_STOP);
         }),
       'blobSync.state': () => this.blobSync.state$,
       'blobSync.setMaxBlobSize': size => this.blobSync.setMaxBlobSize(size),
@@ -262,7 +262,7 @@ export class WorkerConsumer {
         this.awarenessSync.update(awareness, origin),
       'awarenessSync.subscribeUpdate': docId =>
         new Observable(subscriber => {
-          return this.awarenessStorage.subscribeUpdate(
+          return this.awarenessSync.subscribeUpdate(
             docId,
             (update, origin) => {
               subscriber.next({
@@ -278,6 +278,10 @@ export class WorkerConsumer {
                   resolve(awareness);
                   collectJobs.delete(currentCollectId.toString());
                 });
+              });
+              subscriber.next({
+                type: 'awareness-collect',
+                collectId: currentCollectId.toString(),
               });
               return promise;
             }

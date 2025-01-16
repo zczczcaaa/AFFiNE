@@ -49,7 +49,6 @@ export class PDF extends Entity<AttachmentBlockModel> {
 
   constructor() {
     super();
-    this.renderer.listen();
     this.disposables.push(() => this.pages.clear());
   }
 

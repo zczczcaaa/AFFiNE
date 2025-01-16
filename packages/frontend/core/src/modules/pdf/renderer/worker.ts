@@ -1,4 +1,8 @@
-import { OpConsumer, transfer } from '@toeverything/infra/op';
+import {
+  type MessageCommunicapable,
+  OpConsumer,
+  transfer,
+} from '@toeverything/infra/op';
 import type { Document } from '@toeverything/pdf-viewer';
 import {
   createPDFium,
@@ -23,6 +27,11 @@ import type { ClientOps } from './ops';
 import type { PDFMeta, RenderPageOpts } from './types';
 
 class PDFRendererBackend extends OpConsumer<ClientOps> {
+  constructor(port: MessageCommunicapable) {
+    super(port);
+    this.register('open', this.open.bind(this));
+    this.register('render', this.render.bind(this));
+  }
   private readonly viewer$: Observable<Viewer> = from(
     createPDFium().then(pdfium => {
       return new Viewer(new Runtime(pdfium));
@@ -147,13 +156,6 @@ class PDFRendererBackend extends OpConsumer<ClientOps> {
 
     return imageBitmap;
   }
-
-  override listen(): void {
-    this.register('open', this.open.bind(this));
-    this.register('render', this.render.bind(this));
-    super.listen();
-  }
 }
 
-// @ts-expect-error how could we get correct postMessage signature for worker, exclude `window.postMessage`
-new PDFRendererBackend(self).listen();
+new PDFRendererBackend(self as MessageCommunicapable);

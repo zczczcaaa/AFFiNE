@@ -45,41 +45,31 @@ export class DocImpl implements Doc {
   };
 
   private readonly _initSubDoc = () => {
-    let subDoc = this.rootDoc.getMap('spaces').get(this.id);
-    if (!subDoc) {
-      subDoc = new Y.Doc({
-        guid: this.id,
-      });
-      this.rootDoc.getMap('spaces').set(this.id, subDoc);
-      this._loaded = true;
-      this._onLoadSlot.emit();
-    } else {
-      this._loaded = false;
-      this.rootDoc.on('subdocs', this._onSubdocEvent);
+    {
+      // This is a piece of old version compatible code. The old version relies on the subdoc instance on `spaces`.
+      // So if there is no subdoc on spaces, we will create it.
+      // new version no longer needs subdoc on `spaces`.
+      let subDoc = this.rootDoc.getMap('spaces').get(this.id);
+      if (!subDoc) {
+        subDoc = new Y.Doc({
+          guid: this.id,
+        });
+        this.rootDoc.getMap('spaces').set(this.id, subDoc);
+      }
     }
 
-    return subDoc;
+    const spaceDoc = new Y.Doc({
+      guid: this.id,
+    });
+    spaceDoc.clientID = this.rootDoc.clientID;
+    this._loaded = false;
+
+    return spaceDoc;
   };
 
   private _loaded!: boolean;
 
   private readonly _onLoadSlot = new Slot();
-
-  private readonly _onSubdocEvent = ({
-    loaded,
-  }: {
-    loaded: Set<Y.Doc>;
-  }): void => {
-    const result = Array.from(loaded).find(
-      doc => doc.guid === this._ySpaceDoc.guid
-    );
-    if (!result) {
-      return;
-    }
-    this.rootDoc.off('subdocs', this._onSubdocEvent);
-    this._loaded = true;
-    this._onLoadSlot.emit();
-  };
 
   /** Indicate whether the block tree is ready */
   private _ready = false;
@@ -301,7 +291,8 @@ export class DocImpl implements Doc {
       return this;
     }
 
-    this._ySpaceDoc.load();
+    this.spaceDoc.load();
+    this.workspace.onLoadDoc?.(this.spaceDoc);
 
     if ((this.workspace.meta.docs?.length ?? 0) <= 1) {
       this._handleVersion();
@@ -315,6 +306,7 @@ export class DocImpl implements Doc {
 
     initFn?.();
 
+    this._loaded = true;
     this._ready = true;
 
     return this;

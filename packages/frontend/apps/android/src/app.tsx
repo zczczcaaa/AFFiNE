@@ -6,12 +6,8 @@ import { configureCommonModules } from '@affine/core/modules';
 import { I18nProvider } from '@affine/core/modules/i18n';
 import { LifecycleService } from '@affine/core/modules/lifecycle';
 import { configureLocalStorageStateStorageImpls } from '@affine/core/modules/storage';
-import { configureIndexedDBUserspaceStorageProvider } from '@affine/core/modules/userspace';
 import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench';
-import {
-  configureBrowserWorkspaceFlavours,
-  configureIndexedDBWorkspaceEngineStorageProvider,
-} from '@affine/core/modules/workspace-engine';
+import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
 import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
@@ -25,8 +21,6 @@ configureCommonModules(framework);
 configureBrowserWorkbenchModule(framework);
 configureLocalStorageStateStorageImpls(framework);
 configureBrowserWorkspaceFlavours(framework);
-configureIndexedDBWorkspaceEngineStorageProvider(framework);
-configureIndexedDBUserspaceStorageProvider(framework);
 configureMobileModules(framework);
 const frameworkProvider = framework.provider();
 

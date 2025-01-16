@@ -20,13 +20,13 @@ export declare class DocStoragePool {
   releaseBlobs(universalId: string): Promise<void>
   listBlobs(universalId: string): Promise<Array<ListedBlob>>
   getPeerRemoteClocks(universalId: string, peer: string): Promise<Array<DocClock>>
-  getPeerRemoteClock(universalId: string, peer: string, docId: string): Promise<DocClock>
+  getPeerRemoteClock(universalId: string, peer: string, docId: string): Promise<DocClock | null>
   setPeerRemoteClock(universalId: string, peer: string, docId: string, clock: Date): Promise<void>
   getPeerPulledRemoteClocks(universalId: string, peer: string): Promise<Array<DocClock>>
-  getPeerPulledRemoteClock(universalId: string, peer: string, docId: string): Promise<DocClock>
+  getPeerPulledRemoteClock(universalId: string, peer: string, docId: string): Promise<DocClock | null>
   setPeerPulledRemoteClock(universalId: string, peer: string, docId: string, clock: Date): Promise<void>
   getPeerPushedClocks(universalId: string, peer: string): Promise<Array<DocClock>>
-  getPeerPushedClock(universalId: string, peer: string, docId: string): Promise<DocClock>
+  getPeerPushedClock(universalId: string, peer: string, docId: string): Promise<DocClock | null>
   setPeerPushedClock(universalId: string, peer: string, docId: string, clock: Date): Promise<void>
   clearClocks(universalId: string): Promise<void>
 }

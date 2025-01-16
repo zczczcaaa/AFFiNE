@@ -30,6 +30,8 @@ type WorkspaceOptions = {
   id?: string;
   schema: Schema;
   blobSource?: BlobSource;
+  onLoadDoc?: (doc: Y.Doc) => void;
+  onLoadAwareness?: (awareness: Awareness) => void;
 };
 
 export class WorkspaceImpl implements Workspace {
@@ -63,12 +65,25 @@ export class WorkspaceImpl implements Workspace {
     return this._schema;
   }
 
-  constructor({ id, schema, blobSource }: WorkspaceOptions) {
+  readonly onLoadDoc?: (doc: Y.Doc) => void;
+  readonly onLoadAwareness?: (awareness: Awareness) => void;
+
+  constructor({
+    id,
+    schema,
+    blobSource,
+    onLoadDoc,
+    onLoadAwareness,
+  }: WorkspaceOptions) {
     this._schema = schema;
 
     this.id = id || '';
     this.doc = new Y.Doc({ guid: id });
     this.awarenessStore = new AwarenessStore(new Awareness(this.doc));
+    this.onLoadDoc = onLoadDoc;
+    this.onLoadAwareness = onLoadAwareness;
+    this.onLoadDoc?.(this.doc);
+    this.onLoadAwareness?.(this.awarenessStore.awareness);
 
     blobSource = blobSource ?? new MemoryBlobSource();
     const logger = new NoopLogger();

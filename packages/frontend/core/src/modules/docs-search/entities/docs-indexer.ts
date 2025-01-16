@@ -25,7 +25,7 @@ const logger = new DebugLogger('crawler');
 const WORKSPACE_DOCS_INDEXER_VERSION_KEY = 'docs-indexer-version';
 
 interface IndexerJobPayload {
-  storageDocId: string;
+  docId: string;
 }
 
 export class DocsIndexer extends Entity {
@@ -81,26 +81,31 @@ export class DocsIndexer extends Entity {
   }
 
   setupListener() {
-    this.disposables.push(
-      this.workspaceEngine.doc.storage.eventBus.on(event => {
-        if (WorkspaceDBService.isDBDocId(event.docId)) {
-          // skip db doc
-          return;
-        }
-        if (event.clientId === this.workspaceEngine.doc.clientId) {
-          this.jobQueue
-            .enqueue([
-              {
-                batchKey: event.docId,
-                payload: { storageDocId: event.docId },
-              },
-            ])
-            .catch(err => {
-              console.error('Error enqueueing job', err);
-            });
-        }
+    this.workspaceEngine.doc.storage.connection
+      .waitForConnected()
+      .then(() => {
+        this.disposables.push(
+          this.workspaceEngine.doc.storage.subscribeDocUpdate(updated => {
+            if (WorkspaceDBService.isDBDocId(updated.docId)) {
+              // skip db doc
+              return;
+            }
+            this.jobQueue
+              .enqueue([
+                {
+                  batchKey: updated.docId,
+                  payload: { docId: updated.docId },
+                },
+              ])
+              .catch(err => {
+                console.error('Error enqueueing job', err);
+              });
+          })
+        );
       })
-    );
+      .catch(err => {
+        console.error('Error waiting for doc storage connection', err);
+      });
   }
 
   async execJob(jobs: Job<IndexerJobPayload>[], signal: AbortSignal) {
@@ -119,20 +124,19 @@ export class DocsIndexer extends Entity {
     const isUpgrade = dbVersion < DocsIndexer.INDEXER_VERSION;
 
     // jobs should have the same storage docId, so we just pick the first one
-    const storageDocId = jobs[0].payload.storageDocId;
+    const docId = jobs[0].payload.docId;
 
     const worker = await this.ensureWorker(signal);
 
     const startTime = performance.now();
-    logger.debug('Start crawling job for storageDocId:', storageDocId);
+    logger.debug('Start crawling job for docId:', docId);
 
     let workerOutput;
 
-    if (storageDocId === this.workspaceId) {
-      const rootDocBuffer =
-        await this.workspaceEngine.doc.storage.loadDocFromLocal(
-          this.workspaceId
-        );
+    if (docId === this.workspaceId) {
+      const rootDocBuffer = (
+        await this.workspaceEngine.doc.storage.getDoc(this.workspaceId)
+      )?.bin;
       if (!rootDocBuffer) {
         return;
       }
@@ -147,15 +151,13 @@ export class DocsIndexer extends Entity {
         rootDocId: this.workspaceId,
       });
     } else {
-      const rootDocBuffer =
-        await this.workspaceEngine.doc.storage.loadDocFromLocal(
-          this.workspaceId
-        );
+      const rootDocBuffer = (
+        await this.workspaceEngine.doc.storage.getDoc(this.workspaceId)
+      )?.bin;
 
       const docBuffer =
-        (await this.workspaceEngine.doc.storage.loadDocFromLocal(
-          storageDocId
-        )) ?? new Uint8Array(0);
+        (await this.workspaceEngine.doc.storage.getDoc(docId))?.bin ??
+        new Uint8Array(0);
 
       if (!rootDocBuffer) {
         return;
@@ -164,7 +166,7 @@ export class DocsIndexer extends Entity {
       workerOutput = await worker.run({
         type: 'doc',
         docBuffer,
-        storageDocId,
+        docId,
         rootDocBuffer,
         rootDocId: this.workspaceId,
       });
@@ -231,9 +233,9 @@ export class DocsIndexer extends Entity {
 
     if (workerOutput.reindexDoc) {
       await this.jobQueue.enqueue(
-        workerOutput.reindexDoc.map(({ storageDocId }) => ({
-          batchKey: storageDocId,
-          payload: { storageDocId },
+        workerOutput.reindexDoc.map(({ docId }) => ({
+          batchKey: docId,
+          payload: { docId },
         }))
       );
     }
@@ -244,11 +246,7 @@ export class DocsIndexer extends Entity {
 
     const duration = performance.now() - startTime;
     logger.debug(
-      'Finish crawling job for storageDocId:' +
-        storageDocId +
-        ' in ' +
-        duration +
-        'ms '
+      'Finish crawling job for docId:' + docId + ' in ' + duration + 'ms '
     );
   }
 
@@ -259,7 +257,7 @@ export class DocsIndexer extends Entity {
       .enqueue([
         {
           batchKey: this.workspaceId,
-          payload: { storageDocId: this.workspaceId },
+          payload: { docId: this.workspaceId },
         },
       ])
       .catch(err => {

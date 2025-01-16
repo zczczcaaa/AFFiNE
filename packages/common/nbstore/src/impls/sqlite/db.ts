@@ -41,7 +41,7 @@ export type NativeDBApis = {
     id: string,
     peer: string,
     docId: string
-  ): Promise<DocClock>;
+  ): Promise<DocClock | null>;
   setPeerRemoteClock(
     id: string,
     peer: string,
@@ -53,7 +53,7 @@ export type NativeDBApis = {
     id: string,
     peer: string,
     docId: string
-  ): Promise<DocClock>;
+  ): Promise<DocClock | null>;
   setPeerPulledRemoteClock(
     id: string,
     peer: string,
@@ -65,7 +65,7 @@ export type NativeDBApis = {
     id: string,
     peer: string,
     docId: string
-  ): Promise<DocClock>;
+  ): Promise<DocClock | null>;
   setPeerPushedClock(
     id: string,
     peer: string,

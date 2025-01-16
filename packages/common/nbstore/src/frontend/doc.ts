@@ -1,7 +1,14 @@
 import { groupBy } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import type { Subscription } from 'rxjs';
-import { combineLatest, map, Observable, Subject } from 'rxjs';
+import {
+  combineLatest,
+  map,
+  Observable,
+  ReplaySubject,
+  share,
+  Subject,
+} from 'rxjs';
 import {
   applyUpdate,
   type Doc as YDoc,
@@ -173,7 +180,10 @@ export class DocFrontend {
       synced: sync.synced,
       syncRetrying: sync.retrying,
       syncErrorMessage: sync.errorMessage,
-    }))
+    })),
+    share({
+      connector: () => new ReplaySubject(1),
+    })
   ) satisfies Observable<DocFrontendState>;
 
   start() {
@@ -241,19 +251,11 @@ export class DocFrontend {
   }
 
   /**
-   * Add a doc to the frontend, the doc will sync with the doc storage.
-   * @param doc - The doc to add
-   * @param withSubDoc - Whether to add the subdocs of the doc
+   * Connect a doc to the frontend, the doc will sync with the doc storage.
+   * @param doc - The doc to connect
    */
-  addDoc(doc: YDoc, withSubDoc: boolean = false) {
-    this._addDoc(doc);
-    if (withSubDoc) {
-      doc.on('subdocs', ({ loaded }) => {
-        for (const subdoc of loaded) {
-          this._addDoc(subdoc);
-        }
-      });
-    }
+  connectDoc(doc: YDoc) {
+    this._connectDoc(doc);
   }
 
   readonly jobs = {
@@ -275,18 +277,16 @@ export class DocFrontend {
       // mark doc as loaded
       doc.emit('sync', [true, doc]);
 
-      this.status.connectedDocs.add(job.docId);
-      this.statusUpdatedSubject$.next(job.docId);
-
       const docRecord = await this.storage.getDoc(job.docId);
       throwIfAborted(signal);
 
-      if (!docRecord || isEmptyUpdate(docRecord.bin)) {
-        return;
+      if (docRecord && !isEmptyUpdate(docRecord.bin)) {
+        this.applyUpdate(job.docId, docRecord.bin);
+
+        this.status.readyDocs.add(job.docId);
       }
 
-      this.applyUpdate(job.docId, docRecord.bin);
-      this.status.readyDocs.add(job.docId);
+      this.status.connectedDocs.add(job.docId);
       this.statusUpdatedSubject$.next(job.docId);
     },
     save: async (
@@ -339,12 +339,12 @@ export class DocFrontend {
   };
 
   /**
-   * Remove a doc from the frontend, the doc will stop syncing with the doc storage.
+   * Disconnect a doc from the frontend, the doc will stop syncing with the doc storage.
    * It's not recommended to use this method directly, better to use `doc.destroy()`.
    *
-   * @param doc - The doc to remove
+   * @param doc - The doc to disconnect
    */
-  removeDoc(doc: YDoc) {
+  disconnectDoc(doc: YDoc) {
     this.status.docs.delete(doc.guid);
     this.status.connectedDocs.delete(doc.guid);
     this.status.readyDocs.delete(doc.guid);
@@ -370,7 +370,10 @@ export class DocFrontend {
     };
   }
 
-  private _addDoc(doc: YDoc) {
+  private _connectDoc(doc: YDoc) {
+    if (this.status.docs.has(doc.guid)) {
+      throw new Error('doc already connected');
+    }
     this.schedule({
       type: 'load',
       docId: doc.guid,
@@ -382,7 +385,7 @@ export class DocFrontend {
     doc.on('update', this.handleDocUpdate);
 
     doc.on('destroy', () => {
-      this.removeDoc(doc);
+      this.disconnectDoc(doc);
     });
   }
 

@@ -437,14 +437,14 @@ impl DocStoragePool {
     universal_id: String,
     peer: String,
     doc_id: String,
-  ) -> Result<DocClock> {
+  ) -> Result<Option<DocClock>> {
     Ok(
       self
         .inner
         .ensure_storage(universal_id)?
         .get_peer_remote_clock(peer, doc_id)
         .await?
-        .into(),
+        .map(Into::into),
     )
   }
 
@@ -492,14 +492,14 @@ impl DocStoragePool {
     universal_id: String,
     peer: String,
     doc_id: String,
-  ) -> Result<DocClock> {
+  ) -> Result<Option<DocClock>> {
     Ok(
       self
         .inner
         .ensure_storage(universal_id)?
         .get_peer_pulled_remote_clock(peer, doc_id)
         .await?
-        .into(),
+        .map(Into::into),
     )
   }
 
@@ -522,6 +522,22 @@ impl DocStoragePool {
             .naive_utc(),
         )
         .await?,
+    )
+  }
+
+  pub async fn get_peer_pushed_clock(
+    &self,
+    universal_id: String,
+    peer: String,
+    doc_id: String,
+  ) -> Result<Option<DocClock>> {
+    Ok(
+      self
+        .inner
+        .ensure_storage(universal_id)?
+        .get_peer_pushed_clock(peer, doc_id)
+        .await?
+        .map(Into::into),
     )
   }
 

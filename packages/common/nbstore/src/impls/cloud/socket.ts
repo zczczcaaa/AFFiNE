@@ -4,10 +4,8 @@ import {
   type SocketOptions,
 } from 'socket.io-client';
 
-import {
-  AutoReconnectConnection,
-  type ConnectionStatus,
-} from '../../connection';
+import { AutoReconnectConnection } from '../../connection';
+import { throwIfAborted } from '../../utils/throw-if-aborted';
 
 // TODO(@forehalo): use [UserFriendlyError]
 interface EventError {
@@ -82,7 +80,7 @@ interface ClientEvents {
   };
 
   'space:push-doc-update': [
-    { spaceType: string; spaceId: string; docId: string; updates: string },
+    { spaceType: string; spaceId: string; docId: string; update: string },
     { timestamp: number },
   ];
   'space:load-doc-timestamps': [
@@ -153,12 +151,24 @@ export function base64ToUint8Array(base64: string) {
   return new Uint8Array(binaryArray);
 }
 
+const SOCKET_IOMANAGER_CACHE = new Map<string, SocketIOManager>();
+function getSocketIOManager(endpoint: string) {
+  let manager = SOCKET_IOMANAGER_CACHE.get(endpoint);
+  if (!manager) {
+    manager = new SocketIOManager(endpoint, {
+      autoConnect: false,
+      transports: ['websocket'],
+      secure: new URL(endpoint).protocol === 'https:',
+      // we will handle reconnection by ourselves
+      reconnection: false,
+    });
+    SOCKET_IOMANAGER_CACHE.set(endpoint, manager);
+  }
+  return manager;
+}
+
 export class SocketConnection extends AutoReconnectConnection<Socket> {
-  manager = new SocketIOManager(this.endpoint, {
-    autoConnect: false,
-    transports: ['websocket'],
-    secure: new URL(this.endpoint).protocol === 'https:',
-  });
+  manager = getSocketIOManager(this.endpoint);
 
   constructor(
     private readonly endpoint: string,
@@ -171,32 +181,42 @@ export class SocketConnection extends AutoReconnectConnection<Socket> {
     return `socket:${this.endpoint}`;
   }
 
-  override async doConnect() {
-    const conn = this.manager.socket('/', this.socketOptions);
+  override async doConnect(signal?: AbortSignal) {
+    const socket = this.manager.socket('/', this.socketOptions);
+    try {
+      throwIfAborted(signal);
+      await Promise.race([
+        new Promise<void>((resolve, reject) => {
+          socket.once('connect', () => {
+            resolve();
+          });
+          socket.once('connect_error', err => {
+            reject(err);
+          });
+          socket.open();
+        }),
+        new Promise<void>((_resolve, reject) => {
+          signal?.addEventListener('abort', () => {
+            reject(new Error('Aborted'));
+          });
+        }),
+      ]);
+    } catch (err) {
+      socket.close();
+      throw err;
+    }
 
-    await new Promise<void>((resolve, reject) => {
-      conn.once('connect', () => {
-        resolve();
-      });
-      conn.once('connect_error', err => {
-        reject(err);
-      });
-      conn.open();
-    });
+    socket.on('disconnect', this.handleDisconnect);
 
-    return conn;
+    return socket;
   }
 
   override doDisconnect(conn: Socket) {
+    conn.off('disconnect', this.handleDisconnect);
     conn.close();
   }
 
-  /**
-   * Socket connection allow explicitly set status by user
-   *
-   * used when join space failed
-   */
-  override setStatus(status: ConnectionStatus, error?: Error) {
-    super.setStatus(status, error);
-  }
+  handleDisconnect = (reason: SocketIO.DisconnectReason) => {
+    this.error = new Error(reason);
+  };
 }

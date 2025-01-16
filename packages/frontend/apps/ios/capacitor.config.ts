@@ -14,10 +14,10 @@ const config: CapacitorConfig = {
   },
   plugins: {
     CapacitorCookies: {
-      enabled: true,
+      enabled: false,
     },
     CapacitorHttp: {
-      enabled: true,
+      enabled: false,
     },
     Keyboard: {
       resize: KeyboardResize.Native,

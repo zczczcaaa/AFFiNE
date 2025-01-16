@@ -99,6 +99,19 @@ export function createShellHTMLPlugin(
   });
 }
 
+export function createBackgroundWorkerHTMLPlugin(
+  flags: BuildFlags,
+  BUILD_CONFIG: BUILD_CONFIG_TYPE
+) {
+  const htmlPluginOptions = getHTMLPluginOptions(flags, BUILD_CONFIG);
+
+  return new HTMLPlugin({
+    ...htmlPluginOptions,
+    chunks: ['backgroundWorker'],
+    filename: `background-worker.html`,
+  });
+}
+
 export function createHTMLPlugins(
   flags: BuildFlags,
   BUILD_CONFIG: BUILD_CONFIG_TYPE

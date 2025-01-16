@@ -8,6 +8,7 @@ import { getLogFilePath, logger, revealLogFile } from './logger';
 import { sharedStorageHandlers } from './shared-storage';
 import { uiHandlers } from './ui/handlers';
 import { updaterHandlers } from './updater';
+import { workerHandlers } from './worker/handlers';
 
 export const debugHandlers = {
   revealLogFile: async () => {
@@ -27,6 +28,7 @@ export const allHandlers = {
   configStorage: configStorageHandlers,
   findInPage: findInPageHandlers,
   sharedStorage: sharedStorageHandlers,
+  worker: workerHandlers,
 };
 
 export const registerHandlers = () => {

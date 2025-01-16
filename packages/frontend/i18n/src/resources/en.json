@@ -1049,8 +1049,6 @@
   "com.affine.peek-view-controls.open-doc-in-center-peek": "Open in center peek",
   "com.affine.quicksearch.group.creation": "New",
   "com.affine.quicksearch.group.searchfor": "Search for \"{{query}}\"",
-  "com.affine.resetSyncStatus.button": "Reset sync",
-  "com.affine.resetSyncStatus.description": "This operation may fix some synchronization issues.",
   "com.affine.rootAppSidebar.collections": "Collections",
   "com.affine.rootAppSidebar.doc.link-doc-only": "Only doc can be placed on here",
   "com.affine.rootAppSidebar.docs.no-subdoc": "No linked docs",

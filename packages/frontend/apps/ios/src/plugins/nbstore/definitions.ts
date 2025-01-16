@@ -70,12 +70,12 @@ export interface NbStorePlugin {
     timestamps: number[];
   }) => Promise<{ count: number }>;
   deleteDoc: (options: { id: string; docId: string }) => Promise<void>;
-  getDocClocks: (options: { id: string; after?: number | null }) => Promise<
-    {
+  getDocClocks: (options: { id: string; after?: number | null }) => Promise<{
+    clocks: {
       docId: string;
       timestamp: number;
-    }[]
-  >;
+    }[];
+  }>;
   getDocClock: (options: { id: string; docId: string }) => Promise<
     | {
         docId: string;
@@ -95,47 +95,47 @@ export interface NbStorePlugin {
   getPeerRemoteClocks: (options: {
     id: string;
     peer: string;
-  }) => Promise<Array<DocClock>>;
+  }) => Promise<{ clocks: Array<DocClock> }>;
   getPeerRemoteClock: (options: {
     id: string;
     peer: string;
     docId: string;
-  }) => Promise<DocClock>;
+  }) => Promise<DocClock | null>;
   setPeerRemoteClock: (options: {
     id: string;
     peer: string;
     docId: string;
-    clock: number;
+    timestamp: number;
   }) => Promise<void>;
   getPeerPushedClocks: (options: {
     id: string;
     peer: string;
-  }) => Promise<Array<DocClock>>;
+  }) => Promise<{ clocks: Array<DocClock> }>;
   getPeerPushedClock: (options: {
     id: string;
     peer: string;
     docId: string;
-  }) => Promise<DocClock>;
+  }) => Promise<DocClock | null>;
   setPeerPushedClock: (options: {
     id: string;
     peer: string;
     docId: string;
-    clock: number;
+    timestamp: number;
   }) => Promise<void>;
   getPeerPulledRemoteClocks: (options: {
     id: string;
     peer: string;
-  }) => Promise<Array<DocClock>>;
+  }) => Promise<{ clocks: Array<DocClock> }>;
   getPeerPulledRemoteClock: (options: {
     id: string;
     peer: string;
     docId: string;
-  }) => Promise<DocClock>;
+  }) => Promise<DocClock | null>;
   setPeerPulledRemoteClock: (options: {
     id: string;
     peer: string;
     docId: string;
-    clock: number;
+    timestamp: number;
   }) => Promise<void>;
   clearClocks: (options: { id: string }) => Promise<void>;
 }

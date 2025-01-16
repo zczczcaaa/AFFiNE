@@ -1,5 +1,8 @@
 import './setup';
+import '@affine/component/theme';
+import '@affine/core/mobile/styles/mobile.css';
 
+import { bindNativeDBApis } from '@affine/nbstore/sqlite';
 import {
   init,
   reactRouterV6BrowserTracingIntegration,
@@ -15,18 +18,15 @@ import {
 } from 'react-router-dom';
 
 import { App } from './app';
+import { NbStoreNativeDBApis } from './plugins/nbstore';
+
+bindNativeDBApis(NbStoreNativeDBApis);
+
+// TODO(@L-Sun) Uncomment this when the `show` method implement by `@capacitor/keyboard` in ios
+// import './virtual-keyboard';
 
 function main() {
   if (BUILD_CONFIG.debug || window.SENTRY_RELEASE) {
-    // workaround for Capacitor HttpPlugin
-    // capacitor-http-plugin will replace window.XMLHttpRequest with its own implementation
-    // but XMLHttpRequest.prototype is not defined which is used by sentry
-    // see: https://github.com/ionic-team/capacitor/blob/74c3e9447e1e32e73f818d252eb12f453d849e8d/core/native-bridge.ts#L581
-    if ('CapacitorWebXMLHttpRequest' in window) {
-      window.XMLHttpRequest.prototype = (
-        window.CapacitorWebXMLHttpRequest as any
-      ).prototype;
-    }
     // https://docs.sentry.io/platforms/javascript/guides/react/#configure
     init({
       dsn: process.env.SENTRY_DSN,

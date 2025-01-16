@@ -1,5 +1,3 @@
-import type { SocketOptions } from 'socket.io-client';
-
 import { share } from '../../connection';
 import {
   type AwarenessRecord,
@@ -13,7 +11,6 @@ import {
 } from './socket';
 
 interface CloudAwarenessStorageOptions {
-  socketOptions?: SocketOptions;
   serverBaseUrl: string;
   type: SpaceType;
   id: string;
@@ -26,12 +23,7 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
     super();
   }
 
-  connection = share(
-    new SocketConnection(
-      `${this.options.serverBaseUrl}/`,
-      this.options.socketOptions
-    )
-  );
+  connection = share(new SocketConnection(`${this.options.serverBaseUrl}/`));
 
   private get socket() {
     return this.connection.inner;
@@ -52,9 +44,14 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
     onUpdate: (update: AwarenessRecord, origin?: string) => void,
     onCollect: () => Promise<AwarenessRecord | null>
   ): () => void {
-    // TODO: handle disconnect
     // leave awareness
     const leave = () => {
+      if (this.connection.status !== 'connected') return;
+      this.socket.off('space:collect-awareness', handleCollectAwareness);
+      this.socket.off(
+        'space:broadcast-awareness-update',
+        handleBroadcastAwarenessUpdate
+      );
       this.socket.emit('space:leave-awareness', {
         spaceType: this.options.type,
         spaceId: this.options.id,
@@ -64,6 +61,11 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
 
     // join awareness, and collect awareness from others
     const joinAndCollect = async () => {
+      this.socket.on('space:collect-awareness', handleCollectAwareness);
+      this.socket.on(
+        'space:broadcast-awareness-update',
+        handleBroadcastAwarenessUpdate
+      );
       await this.socket.emitWithAck('space:join-awareness', {
         spaceType: this.options.type,
         spaceId: this.options.id,
@@ -77,7 +79,11 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
       });
     };
 
-    joinAndCollect().catch(err => console.error('awareness join failed', err));
+    if (this.connection.status === 'connected') {
+      joinAndCollect().catch(err =>
+        console.error('awareness join failed', err)
+      );
+    }
 
     const unsubscribeConnectionStatusChanged = this.connection.onStatusChanged(
       status => {
@@ -141,18 +147,9 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
       }
     };
 
-    this.socket.on('space:collect-awareness', handleCollectAwareness);
-    this.socket.on(
-      'space:broadcast-awareness-update',
-      handleBroadcastAwarenessUpdate
-    );
     return () => {
       leave();
-      this.socket.off('space:collect-awareness', handleCollectAwareness);
-      this.socket.off(
-        'space:broadcast-awareness-update',
-        handleBroadcastAwarenessUpdate
-      );
+
       unsubscribeConnectionStatusChanged();
     };
   }

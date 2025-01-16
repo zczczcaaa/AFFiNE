@@ -96,10 +96,12 @@ export const NbStoreNativeDBApis: NativeDBApis = {
     id: string,
     after?: Date | undefined | null
   ): Promise<DocClock[]> {
-    const clocks = await NbStore.getDocClocks({
-      id,
-      after: after?.getTime(),
-    });
+    const clocks = (
+      await NbStore.getDocClocks({
+        id,
+        after: after?.getTime(),
+      })
+    ).clocks;
     return clocks.map(c => ({
       docId: c.docId,
       timestamp: new Date(c.timestamp),
@@ -176,30 +178,30 @@ export const NbStoreNativeDBApis: NativeDBApis = {
     id: string,
     peer: string
   ): Promise<DocClock[]> {
-    const clocks = await NbStore.getPeerRemoteClocks({
-      id,
-      peer,
-    });
+    const clocks = (
+      await NbStore.getPeerRemoteClocks({
+        id,
+        peer,
+      })
+    ).clocks;
 
     return clocks.map(c => ({
       docId: c.docId,
       timestamp: new Date(c.timestamp),
     }));
   },
-  getPeerRemoteClock: async function (
-    id: string,
-    peer: string,
-    docId: string
-  ): Promise<DocClock> {
+  getPeerRemoteClock: async function (id: string, peer: string, docId: string) {
     const clock = await NbStore.getPeerRemoteClock({
       id,
       peer,
       docId,
     });
-    return {
-      docId: clock.docId,
-      timestamp: new Date(clock.timestamp),
-    };
+    return clock
+      ? {
+          docId: clock.docId,
+          timestamp: new Date(clock.timestamp),
+        }
+      : null;
   },
   setPeerRemoteClock: async function (
     id: string,
@@ -211,17 +213,19 @@ export const NbStoreNativeDBApis: NativeDBApis = {
       id,
       peer,
       docId,
-      clock: clock.getTime(),
+      timestamp: clock.getTime(),
     });
   },
   getPeerPulledRemoteClocks: async function (
     id: string,
     peer: string
   ): Promise<DocClock[]> {
-    const clocks = await NbStore.getPeerPulledRemoteClocks({
-      id,
-      peer,
-    });
+    const clocks = (
+      await NbStore.getPeerPulledRemoteClocks({
+        id,
+        peer,
+      })
+    ).clocks;
     return clocks.map(c => ({
       docId: c.docId,
       timestamp: new Date(c.timestamp),
@@ -231,16 +235,18 @@ export const NbStoreNativeDBApis: NativeDBApis = {
     id: string,
     peer: string,
     docId: string
-  ): Promise<DocClock> {
+  ) {
     const clock = await NbStore.getPeerPulledRemoteClock({
       id,
       peer,
       docId,
     });
-    return {
-      docId: clock.docId,
-      timestamp: new Date(clock.timestamp),
-    };
+    return clock
+      ? {
+          docId: clock.docId,
+          timestamp: new Date(clock.timestamp),
+        }
+      : null;
   },
   setPeerPulledRemoteClock: async function (
     id: string,
@@ -252,17 +258,19 @@ export const NbStoreNativeDBApis: NativeDBApis = {
       id,
       peer,
       docId,
-      clock: clock.getTime(),
+      timestamp: clock.getTime(),
     });
   },
   getPeerPushedClocks: async function (
     id: string,
     peer: string
   ): Promise<DocClock[]> {
-    const clocks = await NbStore.getPeerPushedClocks({
-      id,
-      peer,
-    });
+    const clocks = (
+      await NbStore.getPeerPushedClocks({
+        id,
+        peer,
+      })
+    ).clocks;
     return clocks.map(c => ({
       docId: c.docId,
       timestamp: new Date(c.timestamp),
@@ -272,16 +280,18 @@ export const NbStoreNativeDBApis: NativeDBApis = {
     id: string,
     peer: string,
     docId: string
-  ): Promise<DocClock> {
+  ): Promise<DocClock | null> {
     const clock = await NbStore.getPeerPushedClock({
       id,
       peer,
       docId,
     });
-    return {
-      docId: clock.docId,
-      timestamp: new Date(clock.timestamp),
-    };
+    return clock
+      ? {
+          docId: clock.docId,
+          timestamp: new Date(clock.timestamp),
+        }
+      : null;
   },
   setPeerPushedClock: async function (
     id: string,
@@ -293,7 +303,7 @@ export const NbStoreNativeDBApis: NativeDBApis = {
       id,
       peer,
       docId,
-      clock: clock.getTime(),
+      timestamp: clock.getTime(),
     });
   },
   clearClocks: async function (id: string): Promise<void> {

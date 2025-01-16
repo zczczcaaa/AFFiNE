@@ -1,4 +1,3 @@
-import { getElectronAPIs } from '@affine/electron-api/web-worker';
 import type {
   AttachmentBlockModel,
   BookmarkBlockModel,
@@ -49,11 +48,6 @@ const LRU_CACHE_SIZE = 5;
 
 // lru cache for ydoc instances, last used at the end of the array
 const lruCache = [] as { doc: YDoc; hash: string }[];
-
-const electronAPIs = BUILD_CONFIG.isElectron ? getElectronAPIs() : null;
-
-// @ts-expect-error test
-globalThis.__electronAPIs = electronAPIs;
 
 async function digest(data: Uint8Array) {
   if (
@@ -478,7 +472,7 @@ function unindentMarkdown(markdown: string) {
 
 async function crawlingDocData({
   docBuffer,
-  storageDocId,
+  docId,
   rootDocBuffer,
   rootDocId,
 }: WorkerInput & { type: 'doc' }): Promise<WorkerOutput> {
@@ -488,18 +482,6 @@ async function crawlingDocData({
   }
 
   const yRootDoc = await getOrCreateCachedYDoc(rootDocBuffer);
-
-  let docId = null;
-  for (const [id, subdoc] of yRootDoc.getMap('spaces')) {
-    if (subdoc instanceof YDoc && storageDocId === subdoc.guid) {
-      docId = id;
-      break;
-    }
-  }
-
-  if (docId === null) {
-    return {};
-  }
 
   let docExists: boolean | null = null;
 

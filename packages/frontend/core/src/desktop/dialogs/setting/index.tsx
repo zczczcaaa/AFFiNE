@@ -63,7 +63,6 @@ const SettingModalInner = ({
   const currentServerId = useLiveData(
     globalContextService.globalContext.serverId.$
   );
-  console.log(currentServerId);
   const serversService = useService(ServersService);
   const defaultServerService = useService(DefaultServerService);
   const currentServer =

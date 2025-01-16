@@ -3,7 +3,6 @@ import { UserFriendlyError } from '@affine/graphql';
 import { fromPromise, Service } from '@toeverything/infra';
 
 import { BackendError, NetworkError } from '../error';
-import type { RawFetchProvider } from '../provider/fetch';
 import type { ServerService } from './server';
 
 const logger = new DebugLogger('affine:fetch');
@@ -11,10 +10,7 @@ const logger = new DebugLogger('affine:fetch');
 export type FetchInit = RequestInit & { timeout?: number };
 
 export class FetchService extends Service {
-  constructor(
-    private readonly fetchProvider: RawFetchProvider,
-    private readonly serverService: ServerService
-  ) {
+  constructor(private readonly serverService: ServerService) {
     super();
   }
   rxFetch = (
@@ -50,7 +46,7 @@ export class FetchService extends Service {
       abortController.abort('timeout');
     }, timeout);
 
-    const res = await this.fetchProvider
+    const res = await globalThis
       .fetch(new URL(input, this.serverService.server.serverMetadata.baseUrl), {
         ...init,
         signal: abortController.signal,

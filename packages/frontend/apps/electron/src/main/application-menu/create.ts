@@ -15,6 +15,7 @@ import {
   switchToPreviousTab,
   undoCloseTab,
 } from '../windows-manager';
+import { WorkerManager } from '../worker/pool';
 import { applicationMenuSubjects } from './subject';
 
 // Unique id for menuitems
@@ -113,6 +114,21 @@ export function createApplicationMenu() {
             showDevTools();
           },
         },
+        {
+          label: 'Open worker devtools',
+          click: () => {
+            Menu.buildFromTemplate(
+              Array.from(WorkerManager.instance.workers.values()).map(item => ({
+                label: `${item.key}`,
+                click: () => {
+                  item.browserWindow.webContents.openDevTools({
+                    mode: 'undocked',
+                  });
+                },
+              }))
+            ).popup();
+          },
+        },
         { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
@@ -199,7 +215,7 @@ export function createApplicationMenu() {
         {
           label: 'Learn More',
           click: async () => {
-            // oxlint-disable-next-line
+            // oxlint-disable-next-line no-var-requires
             const { shell } = require('electron');
             await shell.openExternal('https://affine.pro/');
           },
@@ -220,7 +236,7 @@ export function createApplicationMenu() {
         {
           label: 'Documentation',
           click: async () => {
-            // oxlint-disable-next-line
+            // oxlint-disable-next-line no-var-requires
             const { shell } = require('electron');
             await shell.openExternal(
               'https://docs.affine.pro/docs/hello-bonjour-aloha-你好'

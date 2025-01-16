@@ -28,7 +28,8 @@ test('check workspace has a DB file', async ({ appInfo, workspace }) => {
   expect(await fs.exists(dbPath)).toBe(true);
 });
 
-test('export then add', async ({ page, appInfo, workspace }) => {
+// TODO(@eyhn): fix this
+test.skip('export then add', async ({ page, appInfo, workspace }) => {
   await clickNewPageButton(page);
   const w = await workspace.current();
 

@@ -38,7 +38,7 @@ import { configureShareDocsModule } from './share-doc';
 import { configureShareSettingModule } from './share-setting';
 import {
   configureCommonGlobalStorageImpls,
-  configureGlobalStorageModule,
+  configureStorageModule,
 } from './storage';
 import { configureSystemFontFamilyModule } from './system-font-family';
 import { configureTagModule } from './tag';
@@ -55,7 +55,7 @@ export function configureCommonModules(framework: Framework) {
   configureWorkspaceModule(framework);
   configureDocModule(framework);
   configureWorkspaceDBModule(framework);
-  configureGlobalStorageModule(framework);
+  configureStorageModule(framework);
   configureGlobalContextModule(framework);
   configureLifecycleModule(framework);
   configureFeatureFlagModule(framework);

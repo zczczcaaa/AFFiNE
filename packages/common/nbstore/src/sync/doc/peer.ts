@@ -1,6 +1,6 @@
 import { remove } from 'lodash-es';
 import { nanoid } from 'nanoid';
-import { Observable, Subject } from 'rxjs';
+import { Observable, ReplaySubject, share, Subject } from 'rxjs';
 import { diffUpdate, encodeStateVectorFromUpdate, mergeUpdates } from 'yjs';
 
 import type { DocStorage, SyncStorage } from '../../storage';
@@ -119,54 +119,65 @@ export class DocSyncPeer {
   };
   private readonly statusUpdatedSubject$ = new Subject<string | true>();
 
-  get peerState$() {
-    return new Observable<PeerState>(subscribe => {
-      const next = () => {
-        if (this.status.skipped) {
-          subscribe.next({
-            total: 0,
-            syncing: 0,
-            synced: true,
-            retrying: false,
-            errorMessage: null,
-          });
-        } else if (!this.status.syncing) {
-          // if syncing = false, jobMap is empty
-          subscribe.next({
-            total: this.status.docs.size,
-            syncing: this.status.docs.size,
-            synced: false,
-            retrying: this.status.retrying,
-            errorMessage: this.status.errorMessage,
-          });
-        } else {
-          const syncing = this.status.jobMap.size;
-          subscribe.next({
-            total: this.status.docs.size,
-            syncing: syncing,
-            retrying: this.status.retrying,
-            errorMessage: this.status.errorMessage,
-            synced: syncing === 0,
-          });
-        }
-      };
+  peerState$ = new Observable<PeerState>(subscribe => {
+    const next = () => {
+      if (this.status.skipped) {
+        subscribe.next({
+          total: 0,
+          syncing: 0,
+          synced: true,
+          retrying: false,
+          errorMessage: null,
+        });
+      } else if (!this.status.syncing) {
+        // if syncing = false, jobMap is empty
+        subscribe.next({
+          total: this.status.docs.size,
+          syncing: this.status.docs.size,
+          synced: false,
+          retrying: this.status.retrying,
+          errorMessage: this.status.errorMessage,
+        });
+      } else {
+        const syncing = this.status.jobMap.size;
+        subscribe.next({
+          total: this.status.docs.size,
+          syncing: syncing,
+          retrying: this.status.retrying,
+          errorMessage: this.status.errorMessage,
+          synced: syncing === 0,
+        });
+      }
+    };
+    next();
+    const dispose = this.statusUpdatedSubject$.subscribe(() => {
       next();
-      return this.statusUpdatedSubject$.subscribe(() => {
-        next();
-      });
     });
-  }
+    return () => {
+      dispose.unsubscribe();
+    };
+  }).pipe(
+    share({
+      connector: () => new ReplaySubject(1),
+    })
+  );
 
   docState$(docId: string) {
     return new Observable<PeerDocState>(subscribe => {
       const next = () => {
-        const syncing =
-          !this.status.connectedDocs.has(docId) ||
-          this.status.jobMap.has(docId);
-
+        if (this.status.skipped) {
+          subscribe.next({
+            syncing: false,
+            synced: true,
+            retrying: false,
+            errorMessage: null,
+          });
+        }
         subscribe.next({
-          syncing: syncing,
-          synced: !syncing,
+          syncing:
+            !this.status.connectedDocs.has(docId) ||
+            this.status.jobMap.has(docId),
+          synced: !this.status.jobMap.has(docId),
           retrying: this.status.retrying,
           errorMessage: this.status.errorMessage,
         });
@@ -524,10 +535,6 @@ export class DocSyncPeer {
     const disposes: (() => void)[] = [];
 
     try {
-      console.info('Remote sync started');
-      this.status.syncing = true;
-      this.statusUpdatedSubject$.next(true);
-
       // wait for all storages to connect, timeout after 30s
       await Promise.race([
         Promise.all([
@@ -546,6 +553,10 @@ export class DocSyncPeer {
           });
         }),
       ]);
+
+      console.info('Remote sync started');
+      this.status.syncing = true;
+      this.statusUpdatedSubject$.next(true);
 
       // throw error if failed to connect
       for (const storage of [this.remote, this.local, this.syncMetadata]) {

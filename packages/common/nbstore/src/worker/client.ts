@@ -23,7 +23,6 @@ export class WorkerClient {
     private readonly client: OpClient<WorkerOps>,
     options: WorkerInitOptions
   ) {
-    client.listen();
     this.client.call('worker.init', options).catch(err => {
       console.error('error initializing worker', err);
     });
@@ -156,7 +155,9 @@ class WorkerBlobStorage implements BlobStorage {
 class WorkerDocSync implements DocSync {
   constructor(private readonly client: OpClient<WorkerOps>) {}
 
-  readonly state$ = this.client.ob$('docSync.state');
+  get state$() {
+    return this.client.ob$('docSync.state');
+  }
 
   docState$(docId: string) {
     return this.client.ob$('docSync.docState', docId);
@@ -174,7 +175,9 @@ class WorkerDocSync implements DocSync {
 
 class WorkerBlobSync implements BlobSync {
   constructor(private readonly client: OpClient<WorkerOps>) {}
-  readonly state$ = this.client.ob$('blobSync.state');
+  get state$() {
+    return this.client.ob$('blobSync.state');
+  }
   setMaxBlobSize(size: number): void {
     this.client.call('blobSync.setMaxBlobSize', size).catch(err => {
       console.error('error setting max blob size', err);

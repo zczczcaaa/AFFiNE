@@ -57,7 +57,6 @@ import {
   patchForClipboardInElectron,
   patchForEdgelessNoteConfig,
   patchForMobile,
-  patchForSharedPage,
   patchGenerateDocUrlExtension,
   patchNotificationService,
   patchOpenDocExtension,
@@ -93,7 +92,7 @@ interface BlocksuiteEditorProps {
   defaultOpenProperty?: DefaultOpenProperty;
 }
 
-const usePatchSpecs = (shared: boolean, mode: DocMode) => {
+const usePatchSpecs = (mode: DocMode) => {
   const [reactToLit, portals] = useLitPortalFactory();
   const {
     peekViewService,
@@ -168,9 +167,6 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     patched = patched.concat(patchParseDocUrlExtension(framework));
     patched = patched.concat(patchGenerateDocUrlExtension(framework));
     patched = patched.concat(patchQuickSearchService(framework));
-    if (shared) {
-      patched = patched.concat(patchForSharedPage());
-    }
     if (BUILD_CONFIG.isMobileEdition) {
       patched = patched.concat(patchForMobile());
     }
@@ -190,7 +186,6 @@ const usePatchSpecs = (shared: boolean, mode: DocMode) => {
     peekViewService,
     reactToLit,
     referenceRenderer,
-    shared,
     specs,
     featureFlagService,
   ]);
@@ -261,7 +256,7 @@ export const BlocksuiteDocEditor = forwardRef<
     [externalTitleRef]
   );
 
-  const [specs, portals] = usePatchSpecs(!!shared, 'page');
+  const [specs, portals] = usePatchSpecs('page');
 
   const displayBiDirectionalLink = useLiveData(
     editorSettingService.editorSetting.settings$.selector(
@@ -349,8 +344,8 @@ export const BlocksuiteDocEditor = forwardRef<
 export const BlocksuiteEdgelessEditor = forwardRef<
   EdgelessEditor,
   BlocksuiteEditorProps
->(function BlocksuiteEdgelessEditor({ page, shared }, ref) {
-  const [specs, portals] = usePatchSpecs(!!shared, 'edgeless');
+>(function BlocksuiteEdgelessEditor({ page }, ref) {
+  const [specs, portals] = usePatchSpecs('edgeless');
   const editorRef = useRef<EdgelessEditor | null>(null);
 
   const onDocRef = useCallback(

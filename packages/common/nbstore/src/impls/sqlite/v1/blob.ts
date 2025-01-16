@@ -7,6 +7,7 @@ import { apis } from './db';
  * @deprecated readonly
  */
 export class SqliteV1BlobStorage extends BlobStorageBase {
+  static identifier = 'SqliteV1BlobStorage';
   override connection = new DummyConnection();
 
   constructor(private readonly options: { type: SpaceType; id: string }) {

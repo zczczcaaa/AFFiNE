@@ -3,7 +3,6 @@ import { Entity, LiveData } from '@toeverything/infra';
 import { Observable } from 'rxjs';
 import type { Awareness } from 'y-protocols/awareness.js';
 
-import { WorkspaceDBService } from '../../db';
 import { getAFFiNEWorkspaceSchema } from '../global-schema';
 import { WorkspaceImpl } from '../impls/workspace';
 import type { WorkspaceScope } from '../scopes/workspace';
@@ -28,18 +27,37 @@ export class Workspace extends Entity {
     if (!this._docCollection) {
       this._docCollection = new WorkspaceImpl({
         id: this.openOptions.metadata.id,
-        blobSource: this.engine.blob,
+        blobSource: {
+          get: async key => {
+            const record = await this.engine.blob.get(key);
+            return record
+              ? new Blob([record.data], { type: record.mime })
+              : null;
+          },
+          delete: async () => {
+            return;
+          },
+          list: async () => {
+            return [];
+          },
+          set: async (id, blob) => {
+            await this.engine.blob.set({
+              key: id,
+              data: new Uint8Array(await blob.arrayBuffer()),
+              mime: blob.type,
+            });
+            return id;
+          },
+          name: 'blob',
+          readonly: false,
+        },
         schema: getAFFiNEWorkspaceSchema(),
-      });
-      this._docCollection.slots.docCreated.on(id => {
-        this.engine.doc.markAsReady(id);
+        onLoadDoc: doc => this.engine.doc.connectDoc(doc),
+        onLoadAwareness: awareness =>
+          this.engine.awareness.connectAwareness(awareness),
       });
     }
     return this._docCollection;
-  }
-
-  get db() {
-    return this.framework.get(WorkspaceDBService).db;
   }
 
   get awareness() {

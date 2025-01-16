@@ -23,6 +23,7 @@ export class HttpConnection extends DummyConnection {
         ...init,
         signal: abortController.signal,
         headers: {
+          ...this.requestHeaders,
           ...init?.headers,
           'x-affine-version': BUILD_CONFIG.appVersion,
         },
@@ -35,7 +36,7 @@ export class HttpConnection extends DummyConnection {
       let reason: string | any = '';
       if (res.headers.get('Content-Type')?.includes('application/json')) {
         try {
-          reason = await res.json();
+          reason = JSON.stringify(await res.json());
         } catch {
           // ignore
         }
@@ -63,7 +64,10 @@ export class HttpConnection extends DummyConnection {
     this.fetch
   );
 
-  constructor(private readonly serverBaseUrl: string) {
+  constructor(
+    private readonly serverBaseUrl: string,
+    private readonly requestHeaders?: Record<string, string>
+  ) {
     super();
   }
 }

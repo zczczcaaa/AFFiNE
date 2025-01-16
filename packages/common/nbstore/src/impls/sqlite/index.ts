@@ -7,7 +7,6 @@ export * from './blob';
 export { bindNativeDBApis, type NativeDBApis } from './db';
 export * from './doc';
 export * from './sync';
-export * from './v1';
 
 export const sqliteStorages = [
   SqliteDocStorage,

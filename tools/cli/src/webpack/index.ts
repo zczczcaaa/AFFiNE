@@ -14,7 +14,11 @@ import webpack from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 
 import { productionCacheGroups } from './cache-group.js';
-import { createHTMLPlugins, createShellHTMLPlugin } from './html-plugin.js';
+import {
+  createBackgroundWorkerHTMLPlugin,
+  createHTMLPlugins,
+  createShellHTMLPlugin,
+} from './html-plugin.js';
 import { WebpackS3Plugin } from './s3-plugin.js';
 import type { BuildFlags } from './types';
 
@@ -426,6 +430,7 @@ export function createWebpackConfig(
 
   if (buildConfig.isElectron) {
     config.plugins.push(createShellHTMLPlugin(flags, buildConfig));
+    config.plugins.push(createBackgroundWorkerHTMLPlugin(flags, buildConfig));
   }
 
   return config;

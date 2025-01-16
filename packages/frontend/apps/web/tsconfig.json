@@ -10,6 +10,7 @@
     { "path": "../../component" },
     { "path": "../../core" },
     { "path": "../../i18n" },
+    { "path": "../../../common/nbstore" },
     { "path": "../../../common/infra" }
   ]
 }

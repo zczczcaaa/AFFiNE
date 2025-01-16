@@ -1,5 +1,5 @@
 import type { Observable } from 'rxjs';
-import { combineLatest, map, of } from 'rxjs';
+import { combineLatest, map, of, ReplaySubject, share } from 'rxjs';
 
 import type { DocStorage, SyncStorage } from '../../storage';
 import { DummyDocStorage } from '../../storage/dummy/doc';
@@ -38,18 +38,32 @@ export class DocSyncImpl implements DocSync {
   );
   private abort: AbortController | null = null;
 
-  get state$() {
-    return combineLatest(this.peers.map(peer => peer.peerState$)).pipe(
-      map(allPeers => ({
-        total: allPeers.reduce((acc, peer) => Math.max(acc, peer.total), 0),
-        syncing: allPeers.reduce((acc, peer) => Math.max(acc, peer.syncing), 0),
-        synced: allPeers.every(peer => peer.synced),
-        retrying: allPeers.some(peer => peer.retrying),
-        errorMessage:
-          allPeers.find(peer => peer.errorMessage)?.errorMessage ?? null,
-      }))
-    ) as Observable<DocSyncState>;
-  }
+  state$ = combineLatest(this.peers.map(peer => peer.peerState$)).pipe(
+    map(allPeers =>
+      allPeers.length === 0
+        ? {
+            total: 0,
+            syncing: 0,
+            synced: true,
+            retrying: false,
+            errorMessage: null,
+          }
+        : {
+            total: allPeers.reduce((acc, peer) => Math.max(acc, peer.total), 0),
+            syncing: allPeers.reduce(
+              (acc, peer) => Math.max(acc, peer.syncing),
+              0
+            ),
+            synced: allPeers.every(peer => peer.synced),
+            retrying: allPeers.some(peer => peer.retrying),
+            errorMessage:
+              allPeers.find(peer => peer.errorMessage)?.errorMessage ?? null,
+          }
+    ),
+    share({
+      connector: () => new ReplaySubject(1),
+    })
+  ) as Observable<DocSyncState>;
 
   constructor(
     readonly storages: PeerStorageOptions<DocStorage>,
@@ -105,7 +119,7 @@ export class DocSyncImpl implements DocSync {
   }
 
   stop() {
-    this.abort?.abort();
+    this.abort?.abort(MANUALLY_STOP);
     this.abort = null;
   }
 

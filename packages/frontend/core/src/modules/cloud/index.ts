@@ -11,9 +11,7 @@ export { AccountChanged } from './events/account-changed';
 export { AccountLoggedIn } from './events/account-logged-in';
 export { AccountLoggedOut } from './events/account-logged-out';
 export { ServerInitialized } from './events/server-initialized';
-export { RawFetchProvider } from './provider/fetch';
 export { ValidatorProvider } from './provider/validator';
-export { WebSocketAuthProvider } from './provider/websocket-auth';
 export { AuthService } from './services/auth';
 export { CaptchaService } from './services/captcha';
 export { DefaultServerService } from './services/default-server';
@@ -27,7 +25,6 @@ export { SubscriptionService } from './services/subscription';
 export { UserCopilotQuotaService } from './services/user-copilot-quota';
 export { UserFeatureService } from './services/user-feature';
 export { UserQuotaService } from './services/user-quota';
-export { WebSocketService } from './services/websocket';
 export { WorkspaceInvoicesService } from './services/workspace-invoices';
 export { WorkspaceServerService } from './services/workspace-server';
 export { WorkspaceSubscriptionService } from './services/workspace-subscription';
@@ -51,9 +48,7 @@ import { UserFeature } from './entities/user-feature';
 import { UserQuota } from './entities/user-quota';
 import { WorkspaceInvoices } from './entities/workspace-invoices';
 import { WorkspaceSubscription } from './entities/workspace-subscription';
-import { DefaultRawFetchProvider, RawFetchProvider } from './provider/fetch';
 import { ValidatorProvider } from './provider/validator';
-import { WebSocketAuthProvider } from './provider/websocket-auth';
 import { ServerScope } from './scopes/server';
 import { AuthService } from './services/auth';
 import { CaptchaService } from './services/captcha';
@@ -69,7 +64,6 @@ import { SubscriptionService } from './services/subscription';
 import { UserCopilotQuotaService } from './services/user-copilot-quota';
 import { UserFeatureService } from './services/user-feature';
 import { UserQuotaService } from './services/user-quota';
-import { WebSocketService } from './services/websocket';
 import { WorkspaceInvoicesService } from './services/workspace-invoices';
 import { WorkspaceServerService } from './services/workspace-server';
 import { WorkspaceSubscriptionService } from './services/workspace-subscription';
@@ -85,26 +79,16 @@ import { UserQuotaStore } from './stores/user-quota';
 
 export function configureCloudModule(framework: Framework) {
   framework
-    .impl(RawFetchProvider, DefaultRawFetchProvider)
     .service(ServersService, [ServerListStore, ServerConfigStore])
     .service(DefaultServerService, [ServersService])
     .store(ServerListStore, [GlobalStateService])
-    .store(ServerConfigStore, [RawFetchProvider])
+    .store(ServerConfigStore)
     .entity(Server, [ServerListStore])
     .scope(ServerScope)
     .service(ServerService, [ServerScope])
-    .service(FetchService, [RawFetchProvider, ServerService])
+    .service(FetchService, [ServerService])
     .service(EventSourceService, [ServerService])
     .service(GraphQLService, [FetchService])
-    .service(
-      WebSocketService,
-      f =>
-        new WebSocketService(
-          f.get(ServerService),
-          f.get(AuthService),
-          f.getOptional(WebSocketAuthProvider)
-        )
-    )
     .service(CaptchaService, f => {
       return new CaptchaService(
         f.get(ServerService),

@@ -324,6 +324,7 @@ mod tests {
     let clocks = storage
       .get_peer_pulled_remote_clock("remote".to_string(), "new_id".to_string())
       .await
+      .unwrap()
       .unwrap();
 
     assert_eq!(clocks.doc_id, "new_id");
