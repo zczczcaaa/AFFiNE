@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 //
 // ###############################################################
 // ##                AFFiNE Configuration System                ##
@@ -99,9 +98,14 @@ AFFiNE.server.port = 3010;
 // /* AWS S3 Plugin */
 // /* Enable if you choose to store workspace blobs or user avatars in AWS S3 Storage Service */
 // AFFiNE.use('aws-s3', {
-//  credentials: {
-//    accessKeyId: '',
-//    secretAccessKey: '',
+//   credentials: {
+//     accessKeyId: '',
+//     secretAccessKey: '',
+//   },
+//   /* Whether enable checksum calculation for request */
+//   /* see https://github.com/aws/aws-sdk-js-v3/issues/6810 */
+//   requestChecksumCalculation: 'WHEN_REQUIRED',
+//   responseChecksumValidation: 'WHEN_REQUIRED',
 // })
 // /* Update the provider of storages */
 // AFFiNE.storages.blob.provider = 'cloudflare-r2';
