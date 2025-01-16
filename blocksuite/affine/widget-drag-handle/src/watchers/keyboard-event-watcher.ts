@@ -4,7 +4,7 @@ import type { AffineDragHandleWidget } from '../drag-handle.js';
 
 export class KeyboardEventWatcher {
   private readonly _keyboardHandler: UIEventHandler = ctx => {
-    if (!this.widget.dragging || !this.widget.dragPreview) {
+    if (!this.widget.dragging) {
       return;
     }
 
@@ -12,9 +12,6 @@ export class KeyboardEventWatcher {
     const event = state.event as KeyboardEvent;
     event.preventDefault();
     event.stopPropagation();
-
-    const altKey = event.key === 'Alt' && event.altKey;
-    this.widget.dragPreview.style.opacity = altKey ? '1' : '0.5';
   };
 
   constructor(readonly widget: AffineDragHandleWidget) {}

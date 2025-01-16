@@ -11,7 +11,12 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent, EditorHost } from '@blocksuite/block-std';
 import { Point, Rect } from '@blocksuite/global/utils';
-import type { BaseSelection, BlockModel } from '@blocksuite/store';
+import type {
+  BaseSelection,
+  BlockModel,
+  BlockSnapshot,
+  SliceSnapshot,
+} from '@blocksuite/store';
 
 import {
   DRAG_HANDLE_CONTAINER_HEIGHT,
@@ -70,6 +75,25 @@ export const containBlock = (blockIDs: string[], targetID: string) => {
   return blockIDs.some(blockID => blockID === targetID);
 };
 
+export const extractIdsFromSnapshot = (snapshot: SliceSnapshot) => {
+  const ids: string[] = [];
+  const extractFromBlock = (block: BlockSnapshot) => {
+    ids.push(block.id);
+
+    if (block.children) {
+      for (const child of block.children) {
+        extractFromBlock(child);
+      }
+    }
+  };
+
+  for (const block of snapshot.content) {
+    extractFromBlock(block);
+  }
+
+  return ids;
+};
+
 // TODO: this is a hack, need to find a better way
 export const insideDatabaseTable = (element: Element) => {
   return !!element.closest('.affine-database-block-table');
@@ -116,6 +140,10 @@ export const isOutOfNoteBlock = (
         point.x < rect.left - padding ||
         point.x > rect.right + padding
     : true;
+};
+
+export const getParentNoteBlock = (blockComponent: BlockComponent) => {
+  return blockComponent.closest('affine-note') ?? null;
 };
 
 export const getClosestNoteBlock = (

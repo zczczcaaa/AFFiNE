@@ -16,7 +16,6 @@ import type {
   EditorHost,
   TextSelection,
 } from '@blocksuite/block-std';
-import { BLOCK_ID_ATTR } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
 import type { InlineRootElement } from '@inline/inline-editor.js';
 import { expect, type Locator, type Page } from '@playwright/test';
@@ -56,6 +55,8 @@ import { getStringFromRichText } from './inline-editor.js';
 import { currentEditorIndex } from './multiple-editor.js';
 
 export { assertExists };
+
+const BLOCK_ID_ATTR = 'data-block-id';
 
 export const defaultStore = {
   meta: {

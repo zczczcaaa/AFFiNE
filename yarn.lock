@@ -270,7 +270,7 @@ __metadata:
     "@affine/electron-api": "workspace:*"
     "@affine/graphql": "workspace:*"
     "@affine/i18n": "workspace:*"
-    "@atlaskit/pragmatic-drag-and-drop": "patch:@atlaskit/pragmatic-drag-and-drop@npm%3A1.4.0#~/.yarn/patches/@atlaskit-pragmatic-drag-and-drop-npm-1.4.0-75c45f52d3.patch"
+    "@atlaskit/pragmatic-drag-and-drop": "npm:^1.4.0"
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "npm:^1.0.3"
     "@blocksuite/affine": "workspace:*"
     "@blocksuite/icons": "npm:2.2.2"
@@ -1214,6 +1214,16 @@ __metadata:
   bin:
     relay-compiler: bin/relay-compiler
   checksum: 10/60896560fd282ccc9e705fa18c685d23783f97670fa44be287beaf9d49acfd1a6bbc19daf3e55d9cffdf385ef883be36f7acf5bdcf61c46483e31db9e4e71884
+  languageName: node
+  linkType: hard
+
+"@atlaskit/pragmatic-drag-and-drop-auto-scroll@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@atlaskit/pragmatic-drag-and-drop-auto-scroll@npm:2.1.0"
+  dependencies:
+    "@atlaskit/pragmatic-drag-and-drop": "npm:^1.4.0"
+    "@babel/runtime": "npm:^7.0.0"
+  checksum: 10/a137947d240b01414c8235d9b3a5c949456ef3877488abdbfa92c491631ade10dd7fd6b3dc5ca31077617067c44dd1e90b1f6d1049b71d05d7064db92bc7810b
   languageName: node
   linkType: hard
 
@@ -3833,6 +3843,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/block-std@workspace:blocksuite/framework/block-std"
   dependencies:
+    "@atlaskit/pragmatic-drag-and-drop": "npm:^1.4.0"
+    "@atlaskit/pragmatic-drag-and-drop-auto-scroll": "npm:^2.1.0"
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "npm:^1.0.3"
     "@blocksuite/global": "workspace:*"
     "@blocksuite/inline": "workspace:*"
     "@blocksuite/store": "workspace:*"

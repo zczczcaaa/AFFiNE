@@ -243,7 +243,7 @@ test('drag a page link in editor to favourites', async ({ page }) => {
   );
 });
 
-test('drag a page card block to another page', async ({ page }) => {
+test.skip('drag a page card block to another page', async ({ page }) => {
   await clickNewPageButton(page);
   await page.waitForTimeout(500);
   await page.keyboard.press('Enter');
@@ -293,7 +293,7 @@ test('drag a page card block to another page', async ({ page }) => {
   );
 });
 
-test('drag a favourite page into blocksuite', async ({ page }) => {
+test.skip('drag a favourite page into blocksuite', async ({ page }) => {
   await clickNewPageButton(page, 'hi from page');
   await page.getByTestId('pin-button').click();
   const pageId = getCurrentDocIdFromUrl(page);

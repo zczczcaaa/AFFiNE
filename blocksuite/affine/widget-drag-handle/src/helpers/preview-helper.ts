@@ -61,10 +61,6 @@ export class PreviewHelper {
     dragPreviewEl?: HTMLElement,
     dragPreviewOffset?: Point
   ): DragPreview => {
-    if (this.widget.dragPreview) {
-      this.widget.dragPreview.remove();
-    }
-
     let dragPreview: DragPreview;
     if (dragPreviewEl) {
       dragPreview = new DragPreview(dragPreviewOffset);
@@ -105,13 +101,6 @@ export class PreviewHelper {
     }
     this.widget.rootComponent.append(dragPreview);
     return dragPreview;
-  };
-
-  removeDragPreview = () => {
-    if (this.widget.dragPreview) {
-      this.widget.dragPreview.remove();
-      this.widget.dragPreview = null;
-    }
   };
 
   constructor(readonly widget: AffineDragHandleWidget) {}

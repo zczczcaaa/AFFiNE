@@ -58,6 +58,8 @@ export class FileDropExtension extends LifeCycleWatcher {
 
   point$ = signal<Point | null>(null);
 
+  private _disableIndicator = false;
+
   closestElement$ = signal<BlockComponent | null>(null);
 
   dropTarget$ = computed<DropTarget | null>(() => {
@@ -196,7 +198,9 @@ export class FileDropExtension extends LifeCycleWatcher {
 
     std.event.disposables.add(
       this.dropTarget$.subscribe(target => {
-        FileDropExtension.indicator.rect = target?.rect ?? null;
+        FileDropExtension.indicator.rect = this._disableIndicator
+          ? null
+          : (target?.rect ?? null);
       })
     );
 
@@ -210,6 +214,17 @@ export class FileDropExtension extends LifeCycleWatcher {
         this.dragging$.value = false;
       })
     );
+    std.event.disposables.add(
+      std.dnd.monitor({
+        onDragStart: () => {
+          this._disableIndicator = true;
+        },
+        onDrop: () => {
+          this._disableIndicator = false;
+        },
+      })
+    );
+
     std.event.disposables.add(
       std.event.add('nativeDragOver', context => {
         const event = context.get('dndState').raw;

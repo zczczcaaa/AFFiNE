@@ -1,11 +1,10 @@
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
-import {
-  AFFINE_FORMAT_BAR_WIDGET,
-  EDGELESS_ELEMENT_TOOLBAR_WIDGET,
-  EDGELESS_TOOLBAR_WIDGET,
-} from '@blocksuite/blocks';
 import type { IVec, XYWH } from '@blocksuite/global/utils';
 import { expect, type Locator, type Page } from '@playwright/test';
+
+const AFFINE_FORMAT_BAR_WIDGET = 'affine-format-bar-widget';
+const EDGELESS_ELEMENT_TOOLBAR_WIDGET = 'edgeless-element-toolbar-widget';
+const EDGELESS_TOOLBAR_WIDGET = 'edgeless-toolbar-widget';
 
 export function locateModeSwitchButton(
   page: Page,

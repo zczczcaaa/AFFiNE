@@ -6,7 +6,6 @@ import {
   getSelectedRect,
   isTopLevelBlock,
 } from '@blocksuite/affine-shared/utils';
-import type { DndEventState } from '@blocksuite/block-std';
 import {
   GfxControllerIdentifier,
   type GfxToolsFullOptionValue,
@@ -44,7 +43,6 @@ export class EdgelessWatcher {
   }) => {
     if (this.widget.scale.peek() !== zoom) {
       this.widget.scale.value = zoom;
-      this._updateDragPreviewOnViewportUpdate();
     }
 
     if (
@@ -52,7 +50,6 @@ export class EdgelessWatcher {
       this.widget.center[1] !== center[1]
     ) {
       this.widget.center = [...center];
-      this.widget.updateDropIndicatorOnScroll();
     }
 
     if (this.widget.isTopLevelDragHandleVisible) {
@@ -112,12 +109,6 @@ export class EdgelessWatcher {
     this.widget.dragHoverRect = this.hoverAreaRectTopLevelBlock;
   };
 
-  private readonly _updateDragPreviewOnViewportUpdate = () => {
-    if (this.widget.dragPreview && this.widget.lastDragPointerState) {
-      this.updateDragPreviewPosition(this.widget.lastDragPointerState);
-    }
-  };
-
   checkTopLevelBlockSelection = () => {
     if (!this.widget.isConnected) return;
 
@@ -145,24 +136,6 @@ export class EdgelessWatcher {
     this.widget.anchorBlockId.value = selectedElement.id;
 
     this._showDragHandleOnTopLevelBlocks().catch(console.error);
-  };
-
-  updateDragPreviewPosition = (state: DndEventState) => {
-    if (!this.widget.dragPreview) return;
-
-    const offsetParentRect =
-      this.widget.dragHandleContainerOffsetParent.getBoundingClientRect();
-
-    const dragPreviewOffset = this.widget.dragPreview.offset;
-
-    const posX = state.raw.x - dragPreviewOffset.x - offsetParentRect.left;
-
-    const posY = state.raw.y - dragPreviewOffset.y - offsetParentRect.top;
-
-    this.widget.dragPreview.style.transform = `translate(${posX}px, ${posY}px) scale(${this.widget.scaleInNote.peek()})`;
-
-    const altKey = state.raw.altKey;
-    this.widget.dragPreview.style.opacity = altKey ? '1' : '0.5';
   };
 
   get hoverAreaRectTopLevelBlock() {

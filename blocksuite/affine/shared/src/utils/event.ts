@@ -180,7 +180,7 @@ export function requestConnectedFrame(
  * A wrapper around `requestConnectedFrame` that only calls at most once in one frame
  */
 export function requestThrottledConnectedFrame<
-  T extends (...args: unknown[]) => void,
+  T extends (...args: any[]) => void,
 >(func: T, element?: HTMLElement): T {
   let raqId: number | undefined = undefined;
   let latestArgs: unknown[] = [];

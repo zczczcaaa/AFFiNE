@@ -77,7 +77,7 @@ test('move drag handle in list', async ({ page }) => {
   await assertRichTexts(page, ['123', '456', '789']);
   await dragHandleFromBlockToBlockBottomById(page, '5', '3', false);
   await expect(page.locator('.affine-drag-indicator')).toBeHidden();
-  await assertRichTexts(page, ['789', '123', '456']);
+  await assertRichTexts(page, ['123', '789', '456']);
 });
 
 test('move drag handle in nested block', async ({ page }) => {

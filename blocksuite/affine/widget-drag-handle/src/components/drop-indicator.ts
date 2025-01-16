@@ -24,13 +24,17 @@ export class DropIndicator extends LitElement {
     if (!this.rect) {
       return null;
     }
+
+    const parentRect = this.parentElement!.getBoundingClientRect();
     const { left, top, width, height } = this.rect;
+
     const style = styleMap({
       width: `${width}px`,
       height: `${height}px`,
-      top: `${top}px`,
-      left: `${left}px`,
+      top: `${top - parentRect.y}px`,
+      left: `${left - parentRect.x}px`,
     });
+
     return html`<div class="affine-drop-indicator" style=${style}></div>`;
   }
 
