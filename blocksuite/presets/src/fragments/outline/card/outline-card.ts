@@ -42,7 +42,7 @@ const styles = css`
     user-select: none;
   }
 
-  .card-preview.edgeless:hover {
+  .card-preview:hover {
     background: var(--affine-hover-color);
   }
 
@@ -217,12 +217,7 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
 
   private _dispatchDragEvent(e: MouseEvent) {
     e.preventDefault();
-    if (
-      e.button !== 0 ||
-      this.editorMode === 'page' ||
-      !this.enableNotesSorting
-    )
-      return;
+    if (e.button !== 0 || !this.enableNotesSorting) return;
 
     const { clientX: startX, clientY: startY } = e;
     const disposeDragStart = on(this.ownerDocument, 'mousemove', e => {
@@ -317,7 +312,7 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
         class="card-container ${this.status ?? ''} ${this.theme}"
       >
         <div
-          class="card-preview ${this.editorMode}"
+          class="card-preview"
           @mousedown=${this._dispatchDragEvent}
           @click=${this._dispatchSelectEvent}
           @dblclick=${this._dispatchFitViewEvent}
@@ -368,7 +363,7 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
                 .cardNumber=${this.number}
                 .enableNotesSorting=${this.enableNotesSorting}
                 @click=${() => {
-                  if (this.editorMode === 'edgeless' || this.invisible) return;
+                  if (this.invisible) return;
                   this._dispatchClickBlockEvent(block);
                 }}
               ></affine-outline-block-preview>`;
@@ -394,9 +389,6 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
 
   @property({ attribute: false })
   accessor doc!: Store;
-
-  @property({ attribute: false })
-  accessor editorMode: 'page' | 'edgeless' = 'page';
 
   @property({ attribute: false })
   accessor enableNotesSorting!: boolean;

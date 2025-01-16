@@ -317,7 +317,7 @@ export class OutlinePanelBody extends SignalWatcher(
     notes: OutlineNoteItem[],
     children: NoteBlockModel[]
   ) {
-    if (!this._isEdgelessMode() || !children.length || !this.doc.root) return;
+    if (!children.length || !this.doc.root) return;
 
     const blocks = selected.map(
       id => (notesMap.get(id) as OutlineNoteItem).note
@@ -351,7 +351,6 @@ export class OutlinePanelBody extends SignalWatcher(
             style=${`transform: translateY(${this._indicatorTranslateY}px)`}
           ></div>`
         : nothing}
-      ${this._renderDocTitle()}
       ${this._pageVisibleNotes.length
         ? repeat(
             this._pageVisibleNotes,
@@ -364,7 +363,6 @@ export class OutlinePanelBody extends SignalWatcher(
                 .number=${idx + 1}
                 .index=${note.index}
                 .doc=${this.doc}
-                .editorMode=${this.editor.mode}
                 .activeHeadingId=${this._activeHeadingId$.value}
                 .status=${selectedNotesSet.has(note.note.id)
                   ? this._dragging
@@ -450,8 +448,6 @@ export class OutlinePanelBody extends SignalWatcher(
   }
 
   private _selectNote(e: SelectEvent) {
-    if (!this._isEdgelessMode()) return;
-
     const { selected, id, multiselect } = e.detail;
 
     if (!selected) {
@@ -658,6 +654,7 @@ export class OutlinePanelBody extends SignalWatcher(
 
     return html`
       <div class="outline-panel-body-container">
+        ${this._renderDocTitle()}
         ${shouldRenderEmptyPanel
           ? this._EmptyPanel()
           : this._PanelList(shouldRenderEdgelessOnlyNotes)}
