@@ -113,9 +113,7 @@ export function createWebpackConfig(
     mode: flags.mode,
 
     devtool:
-      flags.mode === 'production'
-        ? 'source-map'
-        : 'eval-cheap-module-source-map',
+      flags.mode === 'production' ? 'source-map' : 'cheap-module-source-map',
 
     resolve: {
       symlinks: true,
