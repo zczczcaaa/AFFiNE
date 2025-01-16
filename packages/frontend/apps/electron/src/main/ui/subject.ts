@@ -7,4 +7,6 @@ export const uiSubjects = {
   onFullScreen$: new Subject<boolean>(),
   onToggleRightSidebar$: new Subject<string>(),
   authenticationRequest$: new Subject<AuthenticationRequest>(),
+  // via menu -> close view (CMD+W)
+  onCloseView$: new Subject<void>(),
 };

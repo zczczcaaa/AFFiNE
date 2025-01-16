@@ -71,6 +71,10 @@ export const uiHandlers = {
   handleCloseApp: async () => {
     app.quit();
   },
+  handleHideApp: async () => {
+    const window = await getMainWindow();
+    window?.hide();
+  },
   handleNetworkChange: async (_, _isOnline: boolean) => {
     isOnline = _isOnline;
   },
@@ -191,6 +195,7 @@ export const uiHandlers = {
   closeTab: async (_, ...args: Parameters<typeof closeTab>) => {
     await closeTab(...args);
   },
+
   activateView: async (_, ...args: Parameters<typeof activateView>) => {
     await activateView(...args);
   },

@@ -42,4 +42,10 @@ export const uiEvents = {
       sub.unsubscribe();
     };
   },
+  onCloseView: (fn: () => void) => {
+    const sub = uiSubjects.onCloseView$.subscribe(fn);
+    return () => {
+      sub.unsubscribe();
+    };
+  },
 } satisfies Record<string, MainEventRegister>;

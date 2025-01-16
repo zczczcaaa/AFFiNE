@@ -2,10 +2,10 @@ import { app, Menu } from 'electron';
 
 import { isMacOS } from '../../shared/utils';
 import { logger, revealLogFile } from '../logger';
+import { uiSubjects } from '../ui/subject';
 import { checkForUpdates } from '../updater';
 import {
   addTab,
-  closeTab,
   initAndShowMainWindow,
   reloadView,
   showDevTools,
@@ -104,6 +104,9 @@ export function createApplicationMenu() {
           },
         },
         {
+          role: 'windowMenu',
+        },
+        {
           label: 'Open devtools',
           accelerator: isMac ? 'Cmd+Option+I' : 'Ctrl+Shift+I',
           click: () => {
@@ -129,11 +132,12 @@ export function createApplicationMenu() {
           },
         },
         {
-          label: 'Close tab',
+          label: 'Close view',
           accelerator: 'CommandOrControl+W',
           click() {
-            logger.info('Close tab with shortcut');
-            closeTab().catch(console.error);
+            logger.info('Close view with shortcut');
+            // tell the active workbench to close the current view
+            uiSubjects.onCloseView$.next();
           },
         },
         {
@@ -195,7 +199,7 @@ export function createApplicationMenu() {
         {
           label: 'Learn More',
           click: async () => {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            // oxlint-disable-next-line
             const { shell } = require('electron');
             await shell.openExternal('https://affine.pro/');
           },
@@ -216,7 +220,7 @@ export function createApplicationMenu() {
         {
           label: 'Documentation',
           click: async () => {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            // oxlint-disable-next-line
             const { shell } = require('electron');
             await shell.openExternal(
               'https://docs.affine.pro/docs/hello-bonjour-aloha-你好'
