@@ -16,8 +16,14 @@ import type {
   toggleTextStyleCommand,
   toggleUnderline,
 } from './format/text-style.js';
-import { AffineLink, AffineReference } from './inline/index.js';
+import {
+  AffineFootnoteNode,
+  AffineLink,
+  AffineReference,
+} from './inline/index.js';
 import { AffineText } from './inline/presets/nodes/affine-text.js';
+import { FootNotePopup } from './inline/presets/nodes/footnote-node/footnote-popup.js';
+import { FootNotePopupChip } from './inline/presets/nodes/footnote-node/footnote-popup-chip.js';
 import { LatexEditorMenu } from './inline/presets/nodes/latex-node/latex-editor-menu.js';
 import { LatexEditorUnit } from './inline/presets/nodes/latex-node/latex-editor-unit.js';
 import { AffineLatexNode } from './inline/presets/nodes/latex-node/latex-node.js';
@@ -37,12 +43,18 @@ export function effects() {
   customElements.define('reference-popup', ReferencePopup);
   customElements.define('reference-alias-popup', ReferenceAliasPopup);
   customElements.define('affine-reference', AffineReference);
+  customElements.define('affine-footnote-node', AffineFootnoteNode);
+  customElements.define('footnote-popup', FootNotePopup);
+  customElements.define('footnote-popup-chip', FootNotePopupChip);
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     'affine-latex-node': AffineLatexNode;
     'affine-reference': AffineReference;
+    'affine-footnote-node': AffineFootnoteNode;
+    'footnote-popup': FootNotePopup;
+    'footnote-popup-chip': FootNotePopupChip;
     'affine-link': AffineLink;
     'affine-text': AffineText;
     'rich-text': RichText;

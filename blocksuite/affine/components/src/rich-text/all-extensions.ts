@@ -6,6 +6,7 @@ import {
   BoldInlineSpecExtension,
   CodeInlineSpecExtension,
   ColorInlineSpecExtension,
+  FootNoteInlineSpecExtension,
   InlineAdapterExtensions,
   InlineSpecExtensions,
   ItalicInlineSpecExtension,
@@ -31,6 +32,7 @@ export const DefaultInlineManagerExtension = InlineManagerExtension({
     LatexInlineSpecExtension.identifier,
     ReferenceInlineSpecExtension.identifier,
     LinkInlineSpecExtension.identifier,
+    FootNoteInlineSpecExtension.identifier,
   ],
 });
 
