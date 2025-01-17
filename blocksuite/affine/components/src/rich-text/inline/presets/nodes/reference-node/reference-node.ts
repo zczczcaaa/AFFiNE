@@ -145,10 +145,9 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
   get _title() {
     const { pageId, params, title } = this.referenceInfo;
     return (
-      title ||
       this.block?.std
         ?.get(DocDisplayMetaProvider)
-        .title(pageId, { params, title, referenced: true }).value
+        .title(pageId, { params, title, referenced: true }).value || title
     );
   }
 

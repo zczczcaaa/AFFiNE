@@ -8,16 +8,43 @@ import { coreUrl, openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
   createLinkedPage,
+  createTodayPage,
   getBlockSuiteEditorTitle,
+  waitForEditorLoad,
   waitForEmptyEditor,
 } from '@affine-test/kit/utils/page-logic';
-import { expect, type Locator } from '@playwright/test';
+import {
+  confirmExperimentalPrompt,
+  openEditorSetting,
+  openExperimentalFeaturesPanel,
+} from '@affine-test/kit/utils/setting';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await openHomePage(page);
   await clickNewPageButton(page);
   await waitForEmptyEditor(page);
 });
+
+async function enableEmojiDocIcon(page: Page) {
+  // Opens settings panel
+  await openEditorSetting(page);
+  await openExperimentalFeaturesPanel(page);
+  await confirmExperimentalPrompt(page);
+
+  const settingModal = page.locator('[data-testid=setting-modal-content]');
+  const item = settingModal.locator('div').getByText('Emoji Doc Icon');
+  await item.waitFor({ state: 'attached' });
+  await expect(item).toBeVisible();
+  const button = item.locator('label');
+  const isChecked = await button.locator('input').isChecked();
+  if (!isChecked) {
+    await button.click();
+  }
+
+  // Closes settings panel
+  await page.keyboard.press('Escape');
+}
 
 async function notClickable(locator: Locator) {
   await expect(locator).toHaveAttribute('disabled', '');
@@ -907,5 +934,66 @@ test.describe('Customize linked doc title and description', () => {
     await expect(
       embedToolbar.getByRole('button', { name: 'Doc title' })
     ).toBeHidden();
+  });
+
+  test('should show emoji doc icon in normal document', async ({ page }) => {
+    await waitForEditorLoad(page);
+    await enableEmojiDocIcon(page);
+
+    await clickNewPageButton(page);
+    const title = getBlockSuiteEditorTitle(page);
+    await title.click();
+
+    await page.keyboard.press('Enter');
+    await createLinkedPage(page, 'Test Page');
+
+    const inlineLink = page.locator('affine-reference');
+    const inlineToolbar = page.locator('reference-popup');
+
+    await inlineLink.hover();
+
+    // Edits title
+    await inlineToolbar.getByRole('button', { name: 'Edit' }).click();
+
+    // Title alias
+    await page.keyboard.type('🦀hello');
+    await page.keyboard.press('Enter');
+
+    const a = inlineLink.locator('a');
+
+    await expect(a).toHaveText('🦀hello');
+    await expect(a.locator('svg')).toBeHidden();
+    await expect(a.locator('.affine-reference-title')).toHaveText('hello');
+  });
+
+  test('should show emoji doc icon in journal document', async ({ page }) => {
+    await waitForEditorLoad(page);
+    await enableEmojiDocIcon(page);
+
+    await clickNewPageButton(page);
+    const title = getBlockSuiteEditorTitle(page);
+    await title.click();
+
+    await page.keyboard.press('Enter');
+    await createTodayPage(page);
+
+    const inlineLink = page.locator('affine-reference');
+    const inlineToolbar = page.locator('reference-popup');
+
+    await inlineLink.hover();
+
+    // Edits title
+    await inlineToolbar.getByRole('button', { name: 'Edit' }).click();
+
+    // Title alias
+    await page.keyboard.type('🦀');
+    await page.keyboard.press('Enter');
+
+    const a = inlineLink.locator('a');
+
+    const year = String(new Date().getFullYear());
+    await expect(a).toContainText('🦀');
+    await expect(a.locator('svg')).toBeHidden();
+    await expect(a.locator('.affine-reference-title')).toContainText(year);
   });
 });

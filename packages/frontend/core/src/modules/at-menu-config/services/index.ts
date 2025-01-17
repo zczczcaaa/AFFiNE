@@ -91,13 +91,9 @@ export class AtMenuConfigService extends Service {
         return null;
       }
 
-      let title = docDisplayMetaService.title$(meta.id, {
+      const title = docDisplayMetaService.title$(meta.id, {
         reference: true,
       }).value;
-
-      if (typeof title === 'object' && 'i18nKey' in title) {
-        title = I18n.t(title);
-      }
 
       if (!fuzzyMatch(title, query)) {
         return null;

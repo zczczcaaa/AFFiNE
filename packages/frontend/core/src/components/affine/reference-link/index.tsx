@@ -60,7 +60,7 @@ function AffinePageReferenceInner({
           mode: referenceWithMode ?? undefined,
           reference: true,
           referenceToNode,
-          hasTitleAlias: Boolean(title),
+          title,
         })
       );
     })

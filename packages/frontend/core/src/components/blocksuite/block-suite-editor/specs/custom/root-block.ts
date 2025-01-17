@@ -186,8 +186,8 @@ export function buildDocDisplayMetaExtension(framework: FrameworkProvider) {
       const icon$ = docDisplayMetaService
         .icon$(docId, {
           type: 'lit',
+          title,
           reference: referenced,
-          hasTitleAlias: Boolean(title),
           referenceToNode: referenceToNode({ pageId: docId, params }),
         })
         .map(iconBuilder);
@@ -204,7 +204,7 @@ export function buildDocDisplayMetaExtension(framework: FrameworkProvider) {
 
     title(
       docId: string,
-      { title = '', referenced }: DocDisplayMetaParams = {}
+      { title, referenced }: DocDisplayMetaParams = {}
     ): Signal<string> {
       const title$ = docDisplayMetaService.title$(docId, {
         title,
@@ -212,7 +212,7 @@ export function buildDocDisplayMetaExtension(framework: FrameworkProvider) {
       });
 
       const { signal: titleSignal, cleanup } =
-        createSignalFromObservable<string>(title$, title);
+        createSignalFromObservable<string>(title$, title ?? '');
 
       this.disposables.push(cleanup);
 

@@ -84,8 +84,7 @@ const DocItem = ({ docRecord }: { docRecord: DocRecord }) => {
   const Icon = useLiveData(
     docDisplayMetaService.icon$(docId, { compareDate: new Date() })
   );
-  const titleMeta = useLiveData(docDisplayMetaService.title$(docId));
-  const title = i18n.t(titleMeta);
+  const title = useLiveData(docDisplayMetaService.title$(docId));
   return (
     <WorkbenchLink aria-label={title} to={`/${docId}`}>
       <MobileMenuItem
