@@ -12,12 +12,14 @@ import { MODELS_SYMBOL } from './provider';
 import { SessionModel } from './session';
 import { UserModel } from './user';
 import { VerificationTokenModel } from './verification-token';
+import { WorkspaceModel } from './workspace';
 
 const MODELS = {
   user: UserModel,
   session: SessionModel,
   verificationToken: VerificationTokenModel,
   feature: FeatureModel,
+  workspace: WorkspaceModel,
 };
 
 type ModelsType = {
@@ -73,3 +75,4 @@ export * from './feature';
 export * from './session';
 export * from './user';
 export * from './verification-token';
+export * from './workspace';
