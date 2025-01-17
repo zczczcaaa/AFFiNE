@@ -1,7 +1,3 @@
-import {
-  DEFAULT_NOTE_HEIGHT,
-  DEFAULT_NOTE_WIDTH,
-} from '@blocksuite/affine-model';
 import { Bound } from '@blocksuite/global/utils';
 import { expect, type Page } from '@playwright/test';
 
@@ -36,6 +32,10 @@ import {
   assertEdgelessElementBound,
   assertSelectedBound,
 } from '../../utils/asserts.js';
+import {
+  DEFAULT_NOTE_HEIGHT,
+  DEFAULT_NOTE_WIDTH,
+} from '../../utils/bs-alternative.js';
 import { test } from '../../utils/playwright.js';
 
 const createFrame = async (

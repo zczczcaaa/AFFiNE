@@ -1,4 +1,3 @@
-import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { assertExists } from '@blocksuite/global/utils';
 import { expect, type Page } from '@playwright/test';
 
@@ -13,6 +12,7 @@ import {
   zoomResetByKeyboard,
 } from '../utils/actions/edgeless.js';
 import { assertSelectedBound } from '../utils/asserts.js';
+import { NoteDisplayMode } from '../utils/bs-alternative.js';
 import { test } from '../utils/playwright.js';
 
 test.describe('auto-connect', () => {

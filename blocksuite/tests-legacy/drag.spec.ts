@@ -1,4 +1,3 @@
-import { BLOCK_CHILDREN_CONTAINER_PADDING_LEFT } from '@blocksuite/affine-shared/consts';
 import { expect } from '@playwright/test';
 
 import {
@@ -22,6 +21,7 @@ import {
   initParagraphsByCount,
 } from './utils/actions/misc.js';
 import { assertRichTexts } from './utils/asserts.js';
+import { BLOCK_CHILDREN_CONTAINER_PADDING_LEFT } from './utils/bs-alternative.js';
 import { test } from './utils/playwright.js';
 
 test('only have one drag handle in screen', async ({ page }) => {

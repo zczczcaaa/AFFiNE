@@ -1,4 +1,3 @@
-import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { expect, type Locator, type Page } from '@playwright/test';
 import {
   addNote,
@@ -19,6 +18,7 @@ import {
 } from 'utils/actions/misc.js';
 import { assertRichTexts } from 'utils/asserts.js';
 
+import { NoteDisplayMode } from '../../utils/bs-alternative.js';
 import { test } from '../../utils/playwright.js';
 import {
   createHeadingsWithGap,

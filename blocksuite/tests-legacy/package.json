@@ -4,7 +4,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_OPTIONS=\"--experimental-loader ../tests-legacy/custom-loader.mjs\" yarn playwright test"
+    "test": "yarn playwright test"
   },
   "dependencies": {
     "@blocksuite/affine-components": "workspace:*",

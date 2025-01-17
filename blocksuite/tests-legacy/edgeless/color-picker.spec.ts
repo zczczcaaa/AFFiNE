@@ -1,4 +1,3 @@
-import { parseStringToRgba } from '@blocksuite/affine-components/color-picker';
 import { expect, type Locator, type Page } from '@playwright/test';
 import { dragBetweenCoords } from 'utils/actions/drag.js';
 import {
@@ -12,6 +11,7 @@ import {
   initEmptyEdgelessState,
 } from 'utils/actions/misc.js';
 
+import { parseStringToRgba } from '../utils/bs-alternative.js';
 import { test } from '../utils/playwright.js';
 
 async function setupWithColorPickerFunction(page: Page) {

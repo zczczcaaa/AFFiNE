@@ -1,4 +1,3 @@
-import { NOTE_MIN_HEIGHT, NOTE_MIN_WIDTH } from '@blocksuite/affine-model';
 import { expect } from '@playwright/test';
 
 import {
@@ -25,6 +24,7 @@ import {
   assertRectEqual,
   assertRichTexts,
 } from '../../utils/asserts.js';
+import { NOTE_MIN_HEIGHT, NOTE_MIN_WIDTH } from '../../utils/bs-alternative.js';
 import { test } from '../../utils/playwright.js';
 
 test('resize note in edgeless mode', async ({ page }) => {

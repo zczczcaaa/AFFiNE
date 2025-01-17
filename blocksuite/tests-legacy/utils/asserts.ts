@@ -6,11 +6,6 @@ import type {
   RichText,
   RootBlockModel,
 } from '@blocks/index.js';
-import {
-  DEFAULT_NOTE_HEIGHT,
-  DEFAULT_NOTE_WIDTH,
-  DefaultTheme,
-} from '@blocksuite/affine-model';
 import type {
   BlockComponent,
   EditorHost,
@@ -21,6 +16,10 @@ import type { InlineRootElement } from '@inline/inline-editor.js';
 import { expect, type Locator, type Page } from '@playwright/test';
 import type { BlockModel } from '@store/index.js';
 
+import {
+  DEFAULT_NOTE_HEIGHT,
+  DEFAULT_NOTE_WIDTH,
+} from '../utils/bs-alternative.js';
 import {
   getCanvasElementsCount,
   getConnectorPath,
@@ -111,7 +110,7 @@ export const defaultStore = {
           'sys:children': ['2'],
           'sys:version': 1,
           'prop:xywh': `[0,0,${DEFAULT_NOTE_WIDTH}, ${DEFAULT_NOTE_HEIGHT}]`,
-          'prop:background': DefaultTheme.noteBackgrounColor,
+          'prop:background': 'rgba(255, 255, 255, 1)',
           'prop:index': 'a0',
           'prop:hidden': false,
           'prop:displayMode': 'both',
