@@ -64,6 +64,7 @@ import {
   patchPeekViewService,
   patchQuickSearchService,
   patchReferenceRenderer,
+  patchSideBarService,
   type ReferenceReactRenderer,
 } from './specs/custom/spec-patchers';
 import { createEdgelessModeSpecs } from './specs/edgeless';
@@ -167,6 +168,7 @@ const usePatchSpecs = (mode: DocMode) => {
     patched = patched.concat(patchParseDocUrlExtension(framework));
     patched = patched.concat(patchGenerateDocUrlExtension(framework));
     patched = patched.concat(patchQuickSearchService(framework));
+    patched = patched.concat(patchSideBarService(framework));
     if (BUILD_CONFIG.isMobileEdition) {
       patched = patched.concat(patchForMobile());
     }

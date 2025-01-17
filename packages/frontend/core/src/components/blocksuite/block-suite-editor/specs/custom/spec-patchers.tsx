@@ -24,6 +24,7 @@ import {
 } from '@affine/core/modules/quicksearch';
 import { ExternalLinksQuickSearchSession } from '@affine/core/modules/quicksearch/impls/external-links';
 import { JournalsQuickSearchSession } from '@affine/core/modules/quicksearch/impls/journals';
+import { WorkbenchService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { DebugLogger } from '@affine/debug';
 import { I18n } from '@affine/i18n';
@@ -61,6 +62,7 @@ import {
   PeekViewExtension,
   QuickSearchExtension,
   ReferenceNodeConfigExtension,
+  SidebarExtension,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
 import {
@@ -663,5 +665,22 @@ export function patchForEdgelessNoteConfig(
   return NoteConfigExtension({
     edgelessNoteHeader: ({ note }) =>
       reactToLit(<EdgelessNoteHeader note={note} />),
+  });
+}
+
+export function patchSideBarService(framework: FrameworkProvider) {
+  const { workbench } = framework.get(WorkbenchService);
+
+  return SidebarExtension({
+    open: (tabId?: string) => {
+      workbench.openSidebar();
+      workbench.activeView$.value.activeSidebarTab(tabId ?? null);
+    },
+    close: () => {
+      workbench.closeSidebar();
+    },
+    getTabIds: () => {
+      return workbench.activeView$.value.sidebarTabs$.value.map(tab => tab.id);
+    },
   });
 }
