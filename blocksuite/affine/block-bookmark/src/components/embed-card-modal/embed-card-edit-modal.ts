@@ -279,6 +279,7 @@ export class EmbedCardEditModal extends SignalWatcher(
   override connectedCallback() {
     super.connectedCallback();
 
+    this.disposables.add(this.host.slots.unmounted.on(this._hide));
     this._updateInfo();
   }
 
