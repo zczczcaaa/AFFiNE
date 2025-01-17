@@ -299,7 +299,7 @@ __metadata:
     "@storybook/react-vite": "npm:^8.4.7"
     "@testing-library/dom": "npm:^10.4.0"
     "@testing-library/react": "npm:^16.1.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/react": "npm:^19.0.1"
     "@types/react-dom": "npm:^19.0.2"
     "@vanilla-extract/css": "npm:^1.16.1"
@@ -386,7 +386,7 @@ __metadata:
     "@testing-library/react": "npm:^16.1.0"
     "@toeverything/infra": "workspace:*"
     "@toeverything/pdf-viewer": "npm:^0.1.1"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/animejs": "npm:^3.1.12"
     "@types/bytes": "npm:^3.1.5"
     "@types/image-blob-reduce": "npm:^4.1.4"
@@ -480,7 +480,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@sentry/react": "npm:^8.44.0"
     "@toeverything/infra": "workspace:*"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/react": "npm:^19.0.1"
     "@types/react-dom": "npm:^19.0.2"
     "@vanilla-extract/css": "npm:^1.16.1"
@@ -1348,8 +1348,8 @@ __metadata:
   linkType: hard
 
 "@aws-sdk/client-s3@npm:^3.709.0":
-  version: 3.729.0
-  resolution: "@aws-sdk/client-s3@npm:3.729.0"
+  version: 3.726.1
+  resolution: "@aws-sdk/client-s3@npm:3.726.1"
   dependencies:
     "@aws-crypto/sha1-browser": "npm:5.2.0"
     "@aws-crypto/sha256-browser": "npm:5.2.0"
@@ -1360,7 +1360,7 @@ __metadata:
     "@aws-sdk/credential-provider-node": "npm:3.726.0"
     "@aws-sdk/middleware-bucket-endpoint": "npm:3.726.0"
     "@aws-sdk/middleware-expect-continue": "npm:3.723.0"
-    "@aws-sdk/middleware-flexible-checksums": "npm:3.729.0"
+    "@aws-sdk/middleware-flexible-checksums": "npm:3.723.0"
     "@aws-sdk/middleware-host-header": "npm:3.723.0"
     "@aws-sdk/middleware-location-constraint": "npm:3.723.0"
     "@aws-sdk/middleware-logger": "npm:3.723.0"
@@ -1409,7 +1409,7 @@ __metadata:
     "@smithy/util-utf8": "npm:^4.0.0"
     "@smithy/util-waiter": "npm:^4.0.0"
     tslib: "npm:^2.6.2"
-  checksum: 10/3b8953856bb16b0737912b2a31869e20cd23ff4c44576a98303e0de7e5567c2c908450f73222250e0f0ab1ff814f9d8c08929486f0cb74001f29047cff05ce86
+  checksum: 10/019c724238aa75ea22e2d728bafc42f89991578a8d69423c12a1841bc14b003007cc79bc5379eaadabde5239b3c308205b5244ff1b562ab8881273bb09f89e04
   languageName: node
   linkType: hard
 
@@ -1720,9 +1720,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-flexible-checksums@npm:3.729.0":
-  version: 3.729.0
-  resolution: "@aws-sdk/middleware-flexible-checksums@npm:3.729.0"
+"@aws-sdk/middleware-flexible-checksums@npm:3.723.0":
+  version: 3.723.0
+  resolution: "@aws-sdk/middleware-flexible-checksums@npm:3.723.0"
   dependencies:
     "@aws-crypto/crc32": "npm:5.2.0"
     "@aws-crypto/crc32c": "npm:5.2.0"
@@ -1737,7 +1737,7 @@ __metadata:
     "@smithy/util-stream": "npm:^4.0.0"
     "@smithy/util-utf8": "npm:^4.0.0"
     tslib: "npm:^2.6.2"
-  checksum: 10/9e91e1ea4eff05664fea52e812c5eb32ee54ee66e36954085574082c1097d2764abdd9071fd2c29f891546008f1a1f56ecd7d07c18a2424ef0f4208d1e782cb4
+  checksum: 10/2dc8b295e0fc9443f1407a8779f77a65299c03066b2928cb290455d17d61a5dbfb3be843b820f9f3d2b4f5b621eb37a84fe135676d56bfd4c6dd4b9ed2e4a66e
   languageName: node
   linkType: hard
 
@@ -3303,7 +3303,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     file-type: "npm:^20.0.0"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
@@ -3328,7 +3328,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
     zod: "npm:^3.23.8"
@@ -3349,7 +3349,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/mdast": "npm:^4.0.4"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
@@ -3374,7 +3374,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/mdast": "npm:^4.0.4"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
@@ -3399,7 +3399,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/mdast": "npm:^4.0.4"
     date-fns: "npm:^4.0.0"
     lit: "npm:^3.2.0"
@@ -3423,7 +3423,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/mdast": "npm:^4.0.4"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
@@ -3447,7 +3447,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
     zod: "npm:^3.23.8"
@@ -3470,7 +3470,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
     vitest: "npm:2.1.8"
@@ -3493,7 +3493,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/mdast": "npm:^4.0.4"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
@@ -3516,7 +3516,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     file-type: "npm:^20.0.0"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
@@ -3539,7 +3539,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/katex": "npm:^0.16.7"
     "@types/mdast": "npm:^4.0.4"
     katex: "npm:^0.16.11"
@@ -3564,7 +3564,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/mdast": "npm:^4.0.4"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
@@ -3590,7 +3590,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
     zod: "npm:^3.23.8"
@@ -3611,7 +3611,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/mdast": "npm:^4.0.4"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
@@ -3633,7 +3633,7 @@ __metadata:
     "@blocksuite/store": "workspace:*"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/lodash.chunk": "npm:^4.2.9"
     fractional-indexing: "npm:^3.2.0"
     lit: "npm:^3.2.0"
@@ -3656,7 +3656,7 @@ __metadata:
     "@blocksuite/store": "workspace:*"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/lodash.chunk": "npm:^4.2.9"
     fractional-indexing: "npm:^3.2.0"
     lit: "npm:^3.2.0"
@@ -3683,7 +3683,7 @@ __metadata:
     "@lit/context": "npm:^1.1.2"
     "@lottiefiles/dotlottie-wc": "npm:^0.4.0"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/hast": "npm:^3.0.4"
     "@types/katex": "npm:^0.16.7"
     "@types/lodash.clonedeep": "npm:^4.5.9"
@@ -3709,7 +3709,7 @@ __metadata:
     "@blocksuite/global": "workspace:*"
     "@blocksuite/inline": "workspace:*"
     "@blocksuite/store": "workspace:*"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     fractional-indexing: "npm:^3.2.0"
     yjs: "npm:^13.6.21"
     zod: "npm:^3.23.8"
@@ -3729,7 +3729,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/hast": "npm:^3.0.4"
     "@types/lodash.clonedeep": "npm:^4.5.9"
     "@types/lodash.mergewith": "npm:^4"
@@ -3778,7 +3778,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
     zod: "npm:^3.23.8"
@@ -3796,7 +3796,7 @@ __metadata:
     "@blocksuite/global": "workspace:*"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
   languageName: unknown
   linkType: soft
@@ -3812,7 +3812,7 @@ __metadata:
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
   languageName: unknown
   linkType: soft
@@ -3826,7 +3826,7 @@ __metadata:
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
   languageName: unknown
   linkType: soft
@@ -3908,7 +3908,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     "@types/katex": "npm:^0.16.7"
     "@types/lodash.isequal": "npm:^4.5.8"
     date-fns: "npm:^4.0.0"
@@ -3946,7 +3946,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     date-fns: "npm:^4.0.0"
     lit: "npm:^3.2.0"
     yjs: "npm:^13.6.21"
@@ -4007,7 +4007,7 @@ __metadata:
     "@blocksuite/global": "workspace:*"
     "@blocksuite/presets": "workspace:*"
     "@playwright/test": "npm:=1.49.1"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
   languageName: unknown
   linkType: soft
 
@@ -4068,7 +4068,7 @@ __metadata:
     "@floating-ui/dom": "npm:^1.6.10"
     "@lottiefiles/dotlottie-wc": "npm:^0.4.0"
     "@preact/signals-core": "npm:^1.8.0"
-    "@toeverything/theme": "npm:^1.1.3"
+    "@toeverything/theme": "npm:^1.1.6"
     lit: "npm:^3.2.0"
     vitest: "npm:^2.1.8"
     yjs: "npm:^13.6.21"
@@ -14066,10 +14066,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@toeverything/theme@npm:^1.1.3":
-  version: 1.1.4
-  resolution: "@toeverything/theme@npm:1.1.4"
-  checksum: 10/d1d401b829896002595c6105cc2fc6f455d4e4e8d1c331ff9f6d559bd417b1ce392599f5bc8c4a98d86ec065eec30ae6d6b1bb331d9e23805e567df206813934
+"@toeverything/theme@npm:^1.1.6":
+  version: 1.1.6
+  resolution: "@toeverything/theme@npm:1.1.6"
+  checksum: 10/9f6cfe6f09ec9aeec1cc85b16f1087170f27664166eb4f2b2c9dec0e191d03f6f0e5c427437e952d9eaaf6bd6ae4193b7632342ebce5fb74c6ca87c06a37c754
   languageName: node
   linkType: hard
 

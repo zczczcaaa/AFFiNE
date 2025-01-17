@@ -91,7 +91,7 @@ export class StyleOne extends MindmapStyleGetter {
     textResizing: TextResizing.AUTO_WIDTH_AND_HEIGHT,
 
     strokeWidth: 4,
-    strokeColor: '#84cfff',
+    strokeColor: '#53b2ef',
 
     fontFamily: FontFamily.Poppins,
     fontSize: 20,
