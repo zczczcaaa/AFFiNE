@@ -9,7 +9,7 @@ import type {
   KanbanGroupSelection,
   KanbanViewSelection,
   KanbanViewSelectionWithType,
-} from '../../types.js';
+} from '../../selection';
 import { KanbanCard } from '../card.js';
 import { KanbanCell } from '../cell.js';
 import type { KanbanGroup } from '../group.js';

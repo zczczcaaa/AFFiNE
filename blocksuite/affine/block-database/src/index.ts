@@ -13,4 +13,5 @@ export * from './detail-panel/note-renderer';
 export * from './properties';
 export * from './properties/rich-text/cell-renderer';
 export * from './properties/utils';
+export * from './selection.js';
 export * from './utils/block-utils';

@@ -4,11 +4,11 @@ import type { ReactiveController } from 'lit';
 import type { Cell } from '../../../../core/view-manager/cell.js';
 import type { Row } from '../../../../core/view-manager/row.js';
 import {
-  TableAreaSelection,
-  TableRowSelection,
+  TableViewAreaSelection,
+  TableViewRowSelection,
   type TableViewSelection,
   type TableViewSelectionWithType,
-} from '../../types.js';
+} from '../../selection';
 import type { DataViewTable } from '../table-view.js';
 
 const BLOCKSUITE_DATABASE_TABLE = 'blocksuite/database/table';
@@ -85,7 +85,7 @@ export class TableClipboardController implements ReactiveController {
     if (!clipboardData) return;
 
     const tableSelection = this.host.selectionController.selection;
-    if (TableRowSelection.is(tableSelection)) {
+    if (TableViewRowSelection.is(tableSelection)) {
       return;
     }
     if (tableSelection) {
@@ -196,8 +196,8 @@ function getSelectedArea(
   table: DataViewTable
 ): SelectedArea | undefined {
   const view = table.props.view;
-  if (TableRowSelection.is(selection)) {
-    const rows = TableRowSelection.rows(selection)
+  if (TableViewRowSelection.is(selection)) {
+    const rows = TableViewRowSelection.rows(selection)
       .map(row => {
         const y =
           table.selectionController
@@ -255,11 +255,11 @@ type SelectedArea = {
 }[];
 
 function getTargetRangeFromSelection(
-  selection: TableAreaSelection,
+  selection: TableViewAreaSelection,
   data: JsonAreaData
 ) {
   const { rowsSelection, columnsSelection, focus } = selection;
-  return TableAreaSelection.isFocus(selection)
+  return TableViewAreaSelection.isFocus(selection)
     ? {
         row: {
           start: focus.rowIndex,
@@ -285,7 +285,7 @@ function getTargetRangeFromSelection(
 function pasteToCells(
   table: DataViewTable,
   rows: JsonAreaData,
-  selection: TableAreaSelection
+  selection: TableViewAreaSelection
 ) {
   const srcRowLength = rows.length;
   const srcColumnLength = rows[0]?.length ?? 0;

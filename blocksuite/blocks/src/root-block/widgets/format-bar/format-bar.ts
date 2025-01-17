@@ -1,3 +1,4 @@
+import { DatabaseSelection } from '@blocksuite/affine-block-database';
 import { HoverController } from '@blocksuite/affine-components/hover';
 import type { RichText } from '@blocksuite/affine-components/rich-text';
 import { isFormatSupported } from '@blocksuite/affine-components/rich-text';
@@ -15,7 +16,6 @@ import {
   TextSelection,
   WidgetComponent,
 } from '@blocksuite/block-std';
-import { DatabaseSelection } from '@blocksuite/data-view';
 import {
   assertExists,
   DisposableGroup,

@@ -23,7 +23,6 @@ import {
 import {
   createRecordDetail,
   createUniComponentFromWebComponent,
-  DatabaseSelection,
   DataView,
   dataViewCommonStyle,
   type DataViewInstance,
@@ -55,6 +54,7 @@ import { DatabaseBlockDataSource } from './data-source.js';
 import type { DatabaseBlockService } from './database-service.js';
 import { BlockRenderer } from './detail-panel/block-renderer.js';
 import { NoteRenderer } from './detail-panel/note-renderer.js';
+import { DatabaseSelection } from './selection.js';
 import { currentViewStorage } from './utils/current-view.js';
 import { getSingleDocIdFromText } from './utils/title-doc.js';
 

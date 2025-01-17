@@ -7,7 +7,7 @@ import { createRef, ref } from 'lit/directives/ref.js';
 import * as Y from 'yjs';
 
 import { t } from '../../../../core/index.js';
-import type { TableAreaSelection } from '../../types.js';
+import type { TableViewAreaSelection } from '../../selection';
 import type { DataViewTable } from '../table-view.js';
 
 export class DragToFillElement extends ShadowlessElement {
@@ -50,7 +50,7 @@ export class DragToFillElement extends ShadowlessElement {
 
 export function fillSelectionWithFocusCellData(
   host: DataViewTable,
-  selection: TableAreaSelection
+  selection: TableViewAreaSelection
 ) {
   const { groupKey, rowsSelection, columnsSelection, focus } = selection;
 
