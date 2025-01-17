@@ -41,4 +41,4 @@ export {
   getRequestResponseFromHost,
   parseCookies,
 } from './utils/request';
-export type * from './utils/types';
+export * from './utils/types';

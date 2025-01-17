@@ -1,9 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Prisma, PrismaClient, type User, Workspace } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { Prisma, type User, Workspace } from '@prisma/client';
 import { pick } from 'lodash-es';
 
 import {
-  Config,
   CryptoHelper,
   EmailAlreadyUsed,
   EventEmitter,
@@ -15,6 +14,7 @@ import {
 import type { Payload } from '../base/event/def';
 import { Permission } from '../core/permission';
 import { Quota_FreePlanV1_1 } from '../core/quota/schema';
+import { BaseModel } from './base';
 
 const publicUserSelect = {
   id: true,
@@ -64,14 +64,13 @@ export type PublicUser = Pick<User, keyof typeof publicUserSelect>;
 export type { User };
 
 @Injectable()
-export class UserModel {
-  private readonly logger = new Logger(UserModel.name);
+export class UserModel extends BaseModel {
   constructor(
-    private readonly db: PrismaClient,
     private readonly crypto: CryptoHelper,
-    private readonly event: EventEmitter,
-    private readonly config: Config
-  ) {}
+    private readonly event: EventEmitter
+  ) {
+    super();
+  }
 
   async get(id: string) {
     return this.db.user.findUnique({

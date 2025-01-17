@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Feature, PrismaClient } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { Feature } from '@prisma/client';
 import { z } from 'zod';
 
 import { PrismaTransaction } from '../base';
+import { BaseModel } from './base';
 import { Features, FeatureType } from './common';
 
 type FeatureNames = keyof typeof Features;
@@ -17,11 +18,7 @@ type FeatureConfigs<T extends FeatureNames> = z.infer<
 //   We have to manually update all the users and workspaces binding to the latest version, which are thousands of handreds.
 //   This is a huge burden for us and we should remove it.
 @Injectable()
-export class FeatureModel {
-  private readonly logger = new Logger(FeatureModel.name);
-
-  constructor(private readonly db: PrismaClient) {}
-
+export class FeatureModel extends BaseModel {
   async get<T extends FeatureNames>(name: T) {
     const feature = await this.getLatest(this.db, name);
 

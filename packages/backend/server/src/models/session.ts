@@ -1,25 +1,18 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   Prisma,
-  PrismaClient,
   type Session,
   type User,
   type UserSession,
 } from '@prisma/client';
 
-import { Config } from '../base';
+import { BaseModel } from './base';
 
 export type { Session, UserSession };
 export type UserSessionWithUser = UserSession & { user: User };
 
 @Injectable()
-export class SessionModel {
-  private readonly logger = new Logger(SessionModel.name);
-  constructor(
-    private readonly db: PrismaClient,
-    private readonly config: Config
-  ) {}
-
+export class SessionModel extends BaseModel {
   async createSession() {
     return await this.db.session.create({
       data: {},

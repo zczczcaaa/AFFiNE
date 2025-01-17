@@ -17,9 +17,7 @@ interface Context {
 const test = ava as TestFn<Context>;
 
 test.before(async t => {
-  const module = await createTestingModule({
-    providers: [UserModel],
-  });
+  const module = await createTestingModule({});
 
   t.context.user = module.get(UserModel);
   t.context.module = module;

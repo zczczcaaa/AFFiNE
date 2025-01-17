@@ -13,9 +13,7 @@ interface Context {
 const test = ava as TestFn<Context>;
 
 test.before(async t => {
-  const module = await createTestingModule({
-    providers: [FeatureModel],
-  });
+  const module = await createTestingModule({});
 
   t.context.feature = module.get(FeatureModel);
   t.context.module = module;

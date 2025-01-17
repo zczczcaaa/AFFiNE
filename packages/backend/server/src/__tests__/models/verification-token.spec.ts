@@ -17,9 +17,7 @@ interface Context {
 const test = ava as TestFn<Context>;
 
 test.before(async t => {
-  const module = await createTestingModule({
-    providers: [VerificationTokenModel],
-  });
+  const module = await createTestingModule({});
 
   t.context.verificationToken = module.get(VerificationTokenModel);
   t.context.db = module.get(PrismaClient);
