@@ -1,9 +1,8 @@
-import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, Optional } from '@nestjs/common';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaClient } from '@prisma/client';
 
 import {
-  AFFiNELogger,
   CallMetric,
   Config,
   type EventPayload,
@@ -15,16 +14,14 @@ import { PgWorkspaceDocStorageAdapter } from './adapters/workspace';
 @Injectable()
 export class DocStorageCronJob implements OnModuleInit {
   private busy = false;
+  private readonly logger = new Logger(DocStorageCronJob.name);
 
   constructor(
     private readonly config: Config,
     private readonly db: PrismaClient,
     private readonly workspace: PgWorkspaceDocStorageAdapter,
-    private readonly logger: AFFiNELogger,
     @Optional() private readonly registry?: SchedulerRegistry
-  ) {
-    this.logger.setContext(DocStorageCronJob.name);
-  }
+  ) {}
 
   onModuleInit() {
     if (this.registry && this.config.doc.manager.enableUpdateAutoMerging) {

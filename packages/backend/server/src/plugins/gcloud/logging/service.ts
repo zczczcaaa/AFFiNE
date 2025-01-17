@@ -1,5 +1,5 @@
 import { LoggingWinston } from '@google-cloud/logging-winston';
-import { LoggerService, Provider, Scope } from '@nestjs/common';
+import { LoggerService, Provider } from '@nestjs/common';
 import { createLogger, transports } from 'winston';
 
 import { AFFiNELogger as LoggerProvide } from '../../../base/logger';
@@ -20,7 +20,4 @@ export const loggerProvider: Provider<LoggerService> = {
     });
     return new AFFiNELogger(instance);
   },
-  // use transient to make sure the logger is created for each di context
-  // to make the `setContext` method works as expected
-  scope: Scope.TRANSIENT,
 };
