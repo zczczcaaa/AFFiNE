@@ -64,7 +64,7 @@ export async function getIdConverter(
         return oldId.replace(`db$${spaceId}$`, `db$`);
       }
       // userdata$userId$spaceId$docId -> userdata$userId$docId
-      if (oldId.match(new RegExp(`^userdata\\$[\\w-]+\\$${spaceId}$`))) {
+      if (oldId.match(new RegExp(`^userdata\\$[\\w-]+\\$${spaceId}\\$`))) {
         return oldId.replace(`$${spaceId}$`, '$');
       }
       return oldIdToNewId[oldId] ?? oldId;
