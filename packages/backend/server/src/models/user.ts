@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, type User, Workspace } from '@prisma/client';
+import { Prisma, type User } from '@prisma/client';
 import { pick } from 'lodash-es';
 
 import {
@@ -12,9 +12,9 @@ import {
   WrongSignInMethod,
 } from '../base';
 import type { Payload } from '../base/event/def';
-import { Permission } from '../core/permission';
 import { Quota_FreePlanV1_1 } from '../core/quota/schema';
 import { BaseModel } from './base';
+import type { Workspace } from './workspace';
 
 const publicUserSelect = {
   id: true,
@@ -219,18 +219,12 @@ export class UserModel extends BaseModel {
   }
 
   async delete(id: string) {
-    const ownedWorkspaces = await this.db.workspaceUserPermission.findMany({
-      where: {
-        userId: id,
-        type: Permission.Owner,
-      },
-    });
-
+    const ownedWorkspaceIds = await this.models.workspace.findOwnedIds(id);
     const user = await this.db.user.delete({ where: { id } });
 
     this.event.emit('user.deleted', {
       ...user,
-      ownedWorkspaces: ownedWorkspaces.map(w => w.workspaceId),
+      ownedWorkspaces: ownedWorkspaceIds,
     });
 
     return user;
