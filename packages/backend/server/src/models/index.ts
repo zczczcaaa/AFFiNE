@@ -8,6 +8,7 @@ import { ModuleRef } from '@nestjs/core';
 
 import { ApplyType } from '../base';
 import { FeatureModel } from './feature';
+import { PageModel } from './page';
 import { MODELS_SYMBOL } from './provider';
 import { SessionModel } from './session';
 import { UserModel } from './user';
@@ -20,6 +21,7 @@ const MODELS = {
   verificationToken: VerificationTokenModel,
   feature: FeatureModel,
   workspace: WorkspaceModel,
+  page: PageModel,
 };
 
 type ModelsType = {
@@ -72,6 +74,7 @@ const ModelsSymbolProvider: ExistingProvider = {
 export class ModelModules {}
 
 export * from './feature';
+export * from './page';
 export * from './session';
 export * from './user';
 export * from './verification-token';
