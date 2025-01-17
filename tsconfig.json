@@ -20,7 +20,7 @@
     "typeRoots": ["./tools/@types", "./node_modules/@types"],
 
     // Emit
-    "lib": ["ESNext"],
+    "lib": ["ES2024"],
     "target": "ES2024",
     "useDefineForClassFields": false,
     "declaration": true,

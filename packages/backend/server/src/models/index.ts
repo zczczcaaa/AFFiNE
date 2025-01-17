@@ -71,7 +71,7 @@ const ModelsSymbolProvider: ExistingProvider = {
   providers: [...Object.values(MODELS), ModelsProvider, ModelsSymbolProvider],
   exports: [ModelsProvider],
 })
-export class ModelModules {}
+export class ModelsModule {}
 
 export * from './feature';
 export * from './page';

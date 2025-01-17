@@ -8,12 +8,11 @@ import { MailService } from '../../base';
 import { AuthModule, CurrentUser } from '../../core/auth';
 import { AuthService } from '../../core/auth/service';
 import { FeatureModule } from '../../core/features';
-import { UserModule, UserService } from '../../core/user';
+import { UserModule } from '../../core/user';
 import { createTestingApp, getSession, sessionCookie } from '../utils';
 
 const test = ava as TestFn<{
   auth: AuthService;
-  user: UserService;
   u1: CurrentUser;
   db: PrismaClient;
   mailer: Sinon.SinonStubbedInstance<MailService>;
@@ -31,7 +30,6 @@ test.before(async t => {
   });
 
   t.context.auth = app.get(AuthService);
-  t.context.user = app.get(UserService);
   t.context.db = app.get(PrismaClient);
   t.context.mailer = app.get(MailService);
   t.context.app = app;

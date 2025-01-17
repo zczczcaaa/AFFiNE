@@ -7,7 +7,6 @@ import { Models, type User, type UserSession } from '../../models';
 import { FeatureManagementService } from '../features/management';
 import { QuotaService } from '../quota/service';
 import { QuotaType } from '../quota/types';
-import { UserService } from '../user/service';
 import type { CurrentUser } from './session';
 
 export function sessionUser(
@@ -47,17 +46,16 @@ export class AuthService implements OnApplicationBootstrap {
     private readonly models: Models,
     private readonly mailer: MailService,
     private readonly feature: FeatureManagementService,
-    private readonly quota: QuotaService,
-    private readonly user: UserService
+    private readonly quota: QuotaService
   ) {}
 
   async onApplicationBootstrap() {
     if (this.config.node.dev) {
       try {
         const [email, name, password] = ['dev@affine.pro', 'Dev User', 'dev'];
-        let devUser = await this.user.findUserByEmail(email);
+        let devUser = await this.models.user.getUserByEmail(email);
         if (!devUser) {
-          devUser = await this.user.createUser_without_verification({
+          devUser = await this.models.user.create({
             email,
             name,
             password,
@@ -86,8 +84,8 @@ export class AuthService implements OnApplicationBootstrap {
       );
     }
 
-    return this.user
-      .createUser_without_verification({
+    return this.models.user
+      .create({
         email,
         password,
       })
@@ -95,7 +93,7 @@ export class AuthService implements OnApplicationBootstrap {
   }
 
   async signIn(email: string, password: string): Promise<CurrentUser> {
-    return this.user.signIn(email, password).then(sessionUser);
+    return this.models.user.signIn(email, password).then(sessionUser);
   }
 
   async signOut(sessionId: string, userId?: string) {
@@ -131,7 +129,7 @@ export class AuthService implements OnApplicationBootstrap {
       userSession = sessions.at(-1)!;
     }
 
-    const user = await this.user.findUserById(userSession.userId);
+    const user = await this.models.user.get(userSession.userId);
 
     if (!user) {
       return null;
@@ -284,25 +282,23 @@ export class AuthService implements OnApplicationBootstrap {
     id: string,
     newPassword: string
   ): Promise<Omit<User, 'password'>> {
-    return this.user.updateUser(id, { password: newPassword });
+    return this.models.user.update(id, { password: newPassword });
   }
 
   async changeEmail(
     id: string,
     newEmail: string
   ): Promise<Omit<User, 'password'>> {
-    return this.user.updateUser(id, {
+    return this.models.user.update(id, {
       email: newEmail,
       emailVerifiedAt: new Date(),
     });
   }
 
   async setEmailVerified(id: string) {
-    return await this.user.updateUser(
-      id,
-      { emailVerifiedAt: new Date() },
-      { emailVerifiedAt: true }
-    );
+    return await this.models.user.update(id, {
+      emailVerifiedAt: new Date(),
+    });
   }
 
   async sendChangePasswordEmail(email: string, callbackUrl: string) {

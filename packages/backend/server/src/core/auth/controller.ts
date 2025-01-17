@@ -27,7 +27,6 @@ import {
   UseNamedGuard,
 } from '../../base';
 import { Models, TokenType } from '../../models';
-import { UserService } from '../user';
 import { validators } from '../utils/validators';
 import { Public } from './guard';
 import { AuthService } from './service';
@@ -56,7 +55,6 @@ export class AuthController {
   constructor(
     private readonly url: URLHelper,
     private readonly auth: AuthService,
-    private readonly user: UserService,
     private readonly models: Models,
     private readonly config: Config,
     private readonly runtime: Runtime
@@ -81,9 +79,7 @@ export class AuthController {
     }
     validators.assertValidEmail(params.email);
 
-    const user = await this.user.findUserWithHashedPasswordByEmail(
-      params.email
-    );
+    const user = await this.models.user.getUserByEmail(params.email);
 
     const magicLinkAvailable = !!this.config.mailer.host;
 
@@ -159,7 +155,7 @@ export class AuthController {
     redirectUrl?: string
   ) {
     // send email magic link
-    const user = await this.user.findUserByEmail(email);
+    const user = await this.models.user.getUserByEmail(email);
     if (!user) {
       const allowSignup = await this.runtime.fetch('auth/allowSignup');
       if (!allowSignup) {
@@ -263,10 +259,7 @@ export class AuthController {
       throw new InvalidEmailToken();
     }
 
-    const user = await this.user.fulfillUser(email, {
-      emailVerifiedAt: new Date(),
-      registered: true,
-    });
+    const user = await this.models.user.fulfill(email);
 
     await this.auth.setCookies(req, res, user.id);
     res.send({ id: user.id });

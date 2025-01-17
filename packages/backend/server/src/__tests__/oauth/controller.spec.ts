@@ -11,7 +11,7 @@ import { URLHelper } from '../../base';
 import { ConfigModule } from '../../base/config';
 import { CurrentUser } from '../../core/auth';
 import { AuthService } from '../../core/auth/service';
-import { UserService } from '../../core/user';
+import { Models } from '../../models';
 import { OAuthProviderName } from '../../plugins/oauth/config';
 import { GoogleOAuthProvider } from '../../plugins/oauth/providers/google';
 import { OAuthService } from '../../plugins/oauth/service';
@@ -20,7 +20,7 @@ import { createTestingApp, getSession, initTestingDB } from '../utils';
 const test = ava as TestFn<{
   auth: AuthService;
   oauth: OAuthService;
-  user: UserService;
+  models: Models;
   u1: CurrentUser;
   db: PrismaClient;
   app: INestApplication;
@@ -47,7 +47,7 @@ test.before(async t => {
 
   t.context.auth = app.get(AuthService);
   t.context.oauth = app.get(OAuthService);
-  t.context.user = app.get(UserService);
+  t.context.models = app.get(Models);
   t.context.db = app.get(PrismaClient);
   t.context.app = app;
 });
@@ -309,9 +309,9 @@ test('should not throw if account registered', async t => {
 });
 
 test('should be able to fullfil user with oauth sign in', async t => {
-  const { app, user, db } = t.context;
+  const { app, models, db } = t.context;
 
-  const u3 = await user.createUser({
+  const u3 = await models.user.create({
     name: 'u3',
     email: 'u3@affine.pro',
     registered: false,

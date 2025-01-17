@@ -13,7 +13,7 @@ import { GlobalExceptionFilter, Runtime } from '../../base';
 import { GqlModule } from '../../base/graphql';
 import { AuthGuard, AuthModule } from '../../core/auth';
 import { UserFeaturesInit1698652531198 } from '../../data/migrations/1698652531198-user-features-init';
-import { ModelModules } from '../../models';
+import { ModelsModule } from '../../models';
 
 export type PermissionEnum = 'Owner' | 'Admin' | 'Write' | 'Read';
 
@@ -80,7 +80,7 @@ export async function createTestingModule(
       ? [AppModule]
       : dedupeModules([
           ...FunctionalityModules,
-          ModelModules,
+          ModelsModule,
           AuthModule,
           GqlModule,
           ...imports,

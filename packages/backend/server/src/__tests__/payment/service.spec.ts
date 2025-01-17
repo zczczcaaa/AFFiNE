@@ -234,11 +234,7 @@ test.before(async t => {
 
 test.beforeEach(async t => {
   const { db, app, stripe } = t.context;
-  Sinon.reset();
   await initTestingDB(db);
-  t.context.runtime.fetch
-    .withArgs('plugins.payment/showLifetimePrice')
-    .resolves(true);
   t.context.u1 = await app.get(AuthService).signUp('u1@affine.pro', '1');
 
   await db.workspace.create({
@@ -254,7 +250,13 @@ test.beforeEach(async t => {
     },
   });
 
+  Sinon.reset();
+
   // default stubs
+  t.context.runtime.fetch
+    .withArgs('plugins.payment/showLifetimePrice')
+    .resolves(true);
+
   // @ts-expect-error stub
   stripe.prices.list.callsFake((params: Stripe.PriceListParams) => {
     if (params.lookup_keys) {

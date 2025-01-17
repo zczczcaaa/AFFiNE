@@ -7,7 +7,8 @@ import {
   type CurrentUser,
 } from '../../core/auth';
 import { sessionUser } from '../../core/auth/service';
-import { UserService, type UserType } from '../../core/user';
+import { UserType } from '../../core/user';
+import { Models } from '../../models';
 import { gql } from './common';
 
 export type UserAuthedType = UserType & { token: ClientTokenType };
@@ -52,7 +53,7 @@ export async function signUp(
   password: string,
   autoVerifyEmail = true
 ): Promise<UserAuthedType> {
-  const user = await app.get(UserService).createUser({
+  const user = await app.get(Models).user.create({
     name,
     email,
     password,

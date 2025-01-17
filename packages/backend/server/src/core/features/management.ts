@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 import { type EventPayload, OnEvent, Runtime } from '../../base';
-import { UserService } from '../user/service';
+import { Models } from '../../models';
 import { FeatureService } from './service';
 import { FeatureType } from './types';
 
@@ -18,7 +18,7 @@ export class FeatureManagementService {
 
   constructor(
     private readonly feature: FeatureService,
-    private readonly user: UserService,
+    private readonly models: Models,
     private readonly runtime: Runtime
   ) {}
 
@@ -100,7 +100,7 @@ export class FeatureManagementService {
     );
 
     if (earlyAccessControlEnabled && !this.isStaff(email)) {
-      const user = await this.user.findUserByEmail(email);
+      const user = await this.models.user.getUserByEmail(email);
       if (!user) {
         return false;
       }

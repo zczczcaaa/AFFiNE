@@ -6,12 +6,13 @@ import { CurrentUser } from '../../core/auth';
 import { AuthService } from '../../core/auth/service';
 import { FeatureModule } from '../../core/features';
 import { QuotaModule } from '../../core/quota';
-import { UserModule, UserService } from '../../core/user';
+import { UserModule } from '../../core/user';
+import { Models } from '../../models';
 import { createTestingModule, initTestingDB } from '../utils';
 
 const test = ava as TestFn<{
   auth: AuthService;
-  user: UserService;
+  models: Models;
   u1: CurrentUser;
   db: PrismaClient;
   m: TestingModule;
@@ -24,7 +25,7 @@ test.before(async t => {
   });
 
   t.context.auth = m.get(AuthService);
-  t.context.user = m.get(UserService);
+  t.context.models = m.get(Models);
   t.context.db = m.get(PrismaClient);
   t.context.m = m;
 });
@@ -55,9 +56,9 @@ test('should throw if user not found', async t => {
 });
 
 test('should throw if password not set', async t => {
-  const { user, auth } = t.context;
+  const { models, auth } = t.context;
 
-  await user.createUser({
+  await models.user.create({
     email: 'u2@affine.pro',
     name: 'u2',
   });

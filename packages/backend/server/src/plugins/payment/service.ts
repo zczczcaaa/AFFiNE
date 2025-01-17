@@ -25,7 +25,7 @@ import {
 } from '../../base';
 import { CurrentUser } from '../../core/auth';
 import { FeatureManagementService } from '../../core/features';
-import { UserService } from '../../core/user';
+import { Models } from '../../models';
 import {
   CheckoutParams,
   Invoice,
@@ -75,7 +75,7 @@ export class SubscriptionService implements OnApplicationBootstrap {
     private readonly stripe: Stripe,
     private readonly db: PrismaClient,
     private readonly feature: FeatureManagementService,
-    private readonly user: UserService,
+    private readonly models: Models,
     private readonly userManager: UserSubscriptionManager,
     private readonly workspaceManager: WorkspaceSubscriptionManager,
     private readonly mutex: Mutex
@@ -435,7 +435,7 @@ export class SubscriptionService implements OnApplicationBootstrap {
       return null;
     }
 
-    const user = await this.user.findUserByEmail(customer.email);
+    const user = await this.models.user.getPublicUserByEmail(customer.email);
 
     if (!user) {
       return null;
@@ -485,7 +485,9 @@ export class SubscriptionService implements OnApplicationBootstrap {
       return null;
     }
 
-    const user = await this.user.findUserByEmail(invoice.customer_email);
+    const user = await this.models.user.getPublicUserByEmail(
+      invoice.customer_email
+    );
 
     // TODO(@forehalo): the email may actually not appear to be AFFiNE user
     // There is coming feature that allow anonymous user with only email provided to buy selfhost licenses

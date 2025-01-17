@@ -30,11 +30,12 @@ import {
   UserFriendlyError,
   UserNotFound,
 } from '../../../base';
+import { Models } from '../../../models';
 import { CurrentUser, Public } from '../../auth';
 import { type Editor, PgWorkspaceDocStorageAdapter } from '../../doc';
 import { Permission, PermissionService } from '../../permission';
 import { QuotaManagementService, QuotaQueryType } from '../../quota';
-import { UserService, UserType } from '../../user';
+import { UserType } from '../../user';
 import {
   InvitationType,
   InviteUserType,
@@ -82,7 +83,7 @@ export class WorkspaceResolver {
     private readonly prisma: PrismaClient,
     private readonly permissions: PermissionService,
     private readonly quota: QuotaManagementService,
-    private readonly users: UserService,
+    private readonly models: Models,
     private readonly event: EventEmitter,
     private readonly mutex: RequestMutex,
     private readonly workspaceService: WorkspaceService,
@@ -407,7 +408,7 @@ export class WorkspaceResolver {
       // member limit check
       await this.quota.checkWorkspaceSeat(workspaceId);
 
-      let target = await this.users.findUserByEmail(email);
+      let target = await this.models.user.getUserByEmail(email);
       if (target) {
         const originRecord =
           await this.prisma.workspaceUserPermission.findFirst({
@@ -419,7 +420,7 @@ export class WorkspaceResolver {
         // only invite if the user is not already in the workspace
         if (originRecord) return originRecord.id;
       } else {
-        target = await this.users.createUser({
+        target = await this.models.user.create({
           email,
           registered: false,
         });
@@ -480,7 +481,7 @@ export class WorkspaceResolver {
 
     const inviteeId = inviteeUserId || user?.id;
     if (!inviteeId) throw new UserNotFound();
-    const invitee = await this.users.findUserById(inviteeId);
+    const invitee = await this.models.user.getPublicUser(inviteeId);
 
     return { workspace, user: owner, invitee };
   }

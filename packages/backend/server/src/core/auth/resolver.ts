@@ -23,7 +23,6 @@ import {
 } from '../../base';
 import { Models, TokenType } from '../../models';
 import { Admin } from '../common';
-import { UserService } from '../user';
 import { UserType } from '../user/types';
 import { validators } from '../utils/validators';
 import { Public } from './guard';
@@ -48,7 +47,6 @@ export class AuthResolver {
   constructor(
     private readonly url: URLHelper,
     private readonly auth: AuthService,
-    private readonly user: UserService,
     private readonly models: Models
   ) {}
 
@@ -234,7 +232,7 @@ export class AuthResolver {
       throw new InvalidEmailToken();
     }
 
-    const hasRegistered = await this.user.findUserByEmail(email);
+    const hasRegistered = await this.models.user.getUserByEmail(email);
 
     if (hasRegistered) {
       if (hasRegistered.id !== user.id) {
