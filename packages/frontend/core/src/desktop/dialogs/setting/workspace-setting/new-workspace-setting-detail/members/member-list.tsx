@@ -4,7 +4,6 @@ import { type AuthAccountInfo, AuthService } from '@affine/core/modules/cloud';
 import {
   type Member,
   WorkspaceMembersService,
-  WorkspacePermissionService,
 } from '@affine/core/modules/permissions';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import {
@@ -143,7 +142,6 @@ const MemberItem = ({
   const membersService = useService(WorkspaceMembersService);
   const workspace = useService(WorkspaceService).workspace;
   const workspaceName = useLiveData(workspace.name$);
-  const permission = useService(WorkspacePermissionService).permission;
   const isEquals = workspaceName === inputValue;
 
   const show = useMemo(
@@ -163,7 +161,7 @@ const MemberItem = ({
   }, []);
 
   const confirmAssign = useCallback(() => {
-    permission
+    membersService
       .adjustMemberPermission(member.id, Permission.Owner)
       .then(result => {
         if (result) {
@@ -183,7 +181,7 @@ const MemberItem = ({
           message: error.message,
         });
       });
-  }, [permission, member, t, membersService]);
+  }, [member, t, membersService]);
 
   const memberStatus = useMemo(() => getMemberStatus(member), [member]);
 

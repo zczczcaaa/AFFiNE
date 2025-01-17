@@ -39,7 +39,7 @@ export const MemberOptions = ({
           variant: 'error',
         },
         onConfirm: () =>
-          permission
+          membersService
             .revokeMember(member.id)
             .then(result => {
               if (result) {
@@ -58,7 +58,7 @@ export const MemberOptions = ({
             }),
       });
     },
-    [member, membersService, openConfirmModal, permission, t]
+    [member, membersService, openConfirmModal, t]
   );
 
   const handleAssignOwner = useCallback(() => {
@@ -75,7 +75,7 @@ export const MemberOptions = ({
   }, [openRemoveConfirmModal, member, t]);
 
   const handleApprove = useCallback(() => {
-    permission
+    membersService
       .approveMember(member.id)
       .then(result => {
         if (result) {
@@ -96,7 +96,7 @@ export const MemberOptions = ({
           message: error.message,
         });
       });
-  }, [member, membersService, permission, t]);
+  }, [member, membersService, t]);
 
   const handleDecline = useCallback(() => {
     openRemoveConfirmModal({
@@ -117,7 +117,7 @@ export const MemberOptions = ({
   }, [member, openRemoveConfirmModal, t]);
 
   const handleChangeToAdmin = useCallback(() => {
-    permission
+    membersService
       .adjustMemberPermission(member.id, Permission.Admin)
       .then(result => {
         if (result) {
@@ -138,9 +138,9 @@ export const MemberOptions = ({
           message: error.message,
         });
       });
-  }, [member, membersService, permission, t]);
+  }, [member, membersService, t]);
   const handleChangeToCollaborator = useCallback(() => {
-    permission
+    membersService
       .adjustMemberPermission(member.id, Permission.Write)
       .then(result => {
         if (result) {
@@ -161,7 +161,7 @@ export const MemberOptions = ({
           message: error.message,
         });
       });
-  }, [member, membersService, permission, t]);
+  }, [member, membersService, t]);
 
   const operationButtonInfo = useMemo(() => {
     return [

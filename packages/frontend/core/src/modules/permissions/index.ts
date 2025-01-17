@@ -27,7 +27,7 @@ export function configurePermissionsModule(framework: Framework) {
     ])
     .store(WorkspacePermissionStore, [WorkspaceServerService])
     .entity(WorkspacePermission, [WorkspaceService, WorkspacePermissionStore])
-    .service(WorkspaceMembersService)
+    .service(WorkspaceMembersService, [WorkspaceMembersStore, WorkspaceService])
     .store(WorkspaceMembersStore, [WorkspaceServerService])
     .entity(WorkspaceMembers, [WorkspaceMembersStore, WorkspaceService]);
 }

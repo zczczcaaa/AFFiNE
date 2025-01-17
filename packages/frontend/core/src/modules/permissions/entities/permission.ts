@@ -1,8 +1,4 @@
 import { DebugLogger } from '@affine/debug';
-import type {
-  Permission,
-  WorkspaceInviteLinkExpireTime,
-} from '@affine/graphql';
 import {
   backoffRetry,
   catchErrorInto,
@@ -74,65 +70,6 @@ export class WorkspacePermission extends Entity {
       );
     })
   );
-
-  async inviteMember(email: string, sendInviteMail?: boolean) {
-    return await this.store.inviteMember(
-      this.workspaceService.workspace.id,
-      email,
-      sendInviteMail
-    );
-  }
-
-  async inviteMembers(emails: string[], sendInviteMail?: boolean) {
-    return await this.store.inviteBatch(
-      this.workspaceService.workspace.id,
-      emails,
-      sendInviteMail
-    );
-  }
-
-  async generateInviteLink(expireTime: WorkspaceInviteLinkExpireTime) {
-    return await this.store.generateInviteLink(
-      this.workspaceService.workspace.id,
-      expireTime
-    );
-  }
-
-  async revokeInviteLink() {
-    return await this.store.revokeInviteLink(
-      this.workspaceService.workspace.id
-    );
-  }
-
-  async revokeMember(userId: string) {
-    return await this.store.revokeMemberPermission(
-      this.workspaceService.workspace.id,
-      userId
-    );
-  }
-
-  async acceptInvite(inviteId: string, sendAcceptMail?: boolean) {
-    return await this.store.acceptInvite(
-      this.workspaceService.workspace.id,
-      inviteId,
-      sendAcceptMail
-    );
-  }
-
-  async approveMember(userId: string) {
-    return await this.store.approveMember(
-      this.workspaceService.workspace.id,
-      userId
-    );
-  }
-
-  async adjustMemberPermission(userId: string, permission: Permission) {
-    return await this.store.adjustMemberPermission(
-      this.workspaceService.workspace.id,
-      userId,
-      permission
-    );
-  }
 
   override dispose(): void {
     this.revalidate.unsubscribe();

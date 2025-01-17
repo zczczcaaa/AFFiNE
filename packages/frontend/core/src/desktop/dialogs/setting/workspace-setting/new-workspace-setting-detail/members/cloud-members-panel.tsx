@@ -95,19 +95,18 @@ export const CloudWorkspaceMembersPanel = ({
 
   const onGenerateInviteLink = useCallback(
     async (expireTime: WorkspaceInviteLinkExpireTime) => {
-      const { link } =
-        await permissionService.permission.generateInviteLink(expireTime);
+      const { link } = await membersService.generateInviteLink(expireTime);
       workspaceShareSettingService.sharePreview.revalidate();
       return link;
     },
-    [permissionService.permission, workspaceShareSettingService.sharePreview]
+    [membersService, workspaceShareSettingService.sharePreview]
   );
 
   const onRevokeInviteLink = useCallback(async () => {
-    const success = await permissionService.permission.revokeInviteLink();
+    const success = await membersService.revokeInviteLink();
     workspaceShareSettingService.sharePreview.revalidate();
     return success;
-  }, [permissionService.permission, workspaceShareSettingService.sharePreview]);
+  }, [membersService, workspaceShareSettingService.sharePreview]);
 
   const onInviteBatchConfirm = useAsyncCallback(
     async ({
@@ -125,10 +124,7 @@ export const CloudWorkspaceMembersPanel = ({
         setIsMutating(false);
         return;
       }
-      const results = await permissionService.permission.inviteMembers(
-        uniqueEmails,
-        true
-      );
+      const results = await membersService.inviteMembers(uniqueEmails, true);
       const unSuccessInvites = results.reduce<string[]>((acc, result) => {
         if (!result.sentSuccess) {
           acc.push(result.email);
@@ -151,14 +147,7 @@ export const CloudWorkspaceMembersPanel = ({
       }
       setIsMutating(false);
     },
-    [
-      isTeam,
-      membersService.members,
-      permissionService.permission,
-      t,
-      workspaceQuota,
-      workspaceQuotaService.quota,
-    ]
+    [isTeam, membersService, t, workspaceQuota, workspaceQuotaService.quota]
   );
 
   const onImportCSV = useAsyncCallback(
