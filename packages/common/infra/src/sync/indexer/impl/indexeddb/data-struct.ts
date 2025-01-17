@@ -124,7 +124,7 @@ export class DataStruct {
       }
     }
 
-    const nid = await trx.objectStore('records').add({
+    const nid = await trx.objectStore('records').put({
       id: document.id,
       data: dataMap,
     });
