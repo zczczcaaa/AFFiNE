@@ -1043,8 +1043,6 @@
   "com.affine.peek-view-controls.open-attachment-in-split-view": "افتح في عرض مقسم",
   "com.affine.quicksearch.group.creation": "جديد",
   "com.affine.quicksearch.group.searchfor": "البحث عن \"{{query}}\"",
-  "com.affine.resetSyncStatus.button": "إعادة تعيين المزامنة",
-  "com.affine.resetSyncStatus.description": "قد تحل هذه العملية بعض مشكلات المزامنة.",
   "com.affine.rootAppSidebar.collections": "مجموعات",
   "com.affine.rootAppSidebar.doc.link-doc-only": "يمكن وضع المستند فقط هنا",
   "com.affine.rootAppSidebar.docs.no-subdoc": "لا توجد مستندات مرتبطة",

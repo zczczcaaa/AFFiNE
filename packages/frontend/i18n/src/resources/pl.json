@@ -1043,8 +1043,6 @@
   "com.affine.peek-view-controls.open-attachment-in-split-view": "Otwórz w widoku podzielonym",
   "com.affine.quicksearch.group.creation": "Nowy",
   "com.affine.quicksearch.group.searchfor": "Szukaj „{{query}}”",
-  "com.affine.resetSyncStatus.button": "Zresetuj synchronizację",
-  "com.affine.resetSyncStatus.description": "Ta operacja może naprawić niektóre problemy synchronizacyjne.",
   "com.affine.rootAppSidebar.collections": "Kolekcje",
   "com.affine.rootAppSidebar.doc.link-doc-only": "Tylko dokument można umieścić tutaj",
   "com.affine.rootAppSidebar.docs.no-subdoc": "Brak powiązanych dokumentów",

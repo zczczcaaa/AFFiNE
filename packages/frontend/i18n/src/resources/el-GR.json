@@ -1043,8 +1043,6 @@
   "com.affine.peek-view-controls.open-attachment-in-split-view": "Άνοιγμα σε διαχωρισμένη προβολή",
   "com.affine.quicksearch.group.creation": "Νέο",
   "com.affine.quicksearch.group.searchfor": "Αναζήτηση για το \"{{query}}\"",
-  "com.affine.resetSyncStatus.button": "Επαναφορά συγχρονισμού",
-  "com.affine.resetSyncStatus.description": "Αυτή η λειτουργία μπορεί να επιδιορθώσει κάποια προβλήματα συγχρονισμού.",
   "com.affine.rootAppSidebar.collections": "Συλλογές",
   "com.affine.rootAppSidebar.doc.link-doc-only": "Μόνο το έγγραφο μπορεί να τοποθετηθεί εδώ",
   "com.affine.rootAppSidebar.docs.no-subdoc": "Χωρίς συνδεδεμένα έγγραφα",

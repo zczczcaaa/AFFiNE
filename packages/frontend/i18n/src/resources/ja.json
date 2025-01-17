@@ -1043,8 +1043,6 @@
   "com.affine.peek-view-controls.open-attachment-in-split-view": "分割ビューで開く",
   "com.affine.quicksearch.group.creation": "新しい",
   "com.affine.quicksearch.group.searchfor": "「{{query}}」の検索",
-  "com.affine.resetSyncStatus.button": "同期をリセット",
-  "com.affine.resetSyncStatus.description": "この操作でいくつかの同期の問題が解決するかもしれません。",
   "com.affine.rootAppSidebar.collections": "コレクション",
   "com.affine.rootAppSidebar.doc.link-doc-only": "ここには文書のみを置くことができます",
   "com.affine.rootAppSidebar.docs.no-subdoc": "リンクされている文書はありません",

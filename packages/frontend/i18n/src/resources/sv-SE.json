@@ -1043,8 +1043,6 @@
   "com.affine.peek-view-controls.open-attachment-in-split-view": "Öppna i delad vy",
   "com.affine.quicksearch.group.creation": "Ny",
   "com.affine.quicksearch.group.searchfor": "Sök efter \"{{query}}\"",
-  "com.affine.resetSyncStatus.button": "Återställ synkronisering",
-  "com.affine.resetSyncStatus.description": "Denna åtgärd kan lösa vissa synkroniseringsproblem.",
   "com.affine.rootAppSidebar.collections": "Samlingar",
   "com.affine.rootAppSidebar.doc.link-doc-only": "Endast dokument kan placeras här",
   "com.affine.rootAppSidebar.docs.no-subdoc": "Inga länkade dokument",

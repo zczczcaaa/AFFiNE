@@ -1043,8 +1043,6 @@
   "com.affine.peek-view-controls.open-attachment-in-split-view": "In geteilter Ansicht öffnen",
   "com.affine.quicksearch.group.creation": "Neu",
   "com.affine.quicksearch.group.searchfor": "Suche nach \"{{query}}\"",
-  "com.affine.resetSyncStatus.button": "Synchronisierung zurücksetzen",
-  "com.affine.resetSyncStatus.description": "Dieser Vorgang kann einige Synchronisierungsprobleme beheben.",
   "com.affine.rootAppSidebar.collections": "Sammlungen",
   "com.affine.rootAppSidebar.doc.link-doc-only": "Nur Seiten können hier abgelegt werden",
   "com.affine.rootAppSidebar.docs.no-subdoc": "Keine verknüpften Seiten",

@@ -1043,8 +1043,6 @@
   "com.affine.peek-view-controls.open-attachment-in-split-view": "在分割视图中打开",
   "com.affine.quicksearch.group.creation": "新建",
   "com.affine.quicksearch.group.searchfor": "搜索 \"{{query}}\"",
-  "com.affine.resetSyncStatus.button": "重置同步",
-  "com.affine.resetSyncStatus.description": "此操作可能会修复一些同步问题。",
   "com.affine.rootAppSidebar.collections": "精选",
   "com.affine.rootAppSidebar.doc.link-doc-only": "此处只能放置文档",
   "com.affine.rootAppSidebar.docs.no-subdoc": "没有链接文档",

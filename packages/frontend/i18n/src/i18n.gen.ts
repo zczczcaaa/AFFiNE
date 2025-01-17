@@ -2060,6 +2060,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.filterList.button.add"](): string;
     /**
+      * `View in Page mode`
+      */
+    ["com.affine.header.mode-switch.page"](): string;
+    /**
+      * `View in Edgeless Canvas`
+      */
+    ["com.affine.header.mode-switch.edgeless"](): string;
+    /**
       * `Add tag`
       */
     ["com.affine.header.option.add-tag"](): string;
@@ -2886,6 +2894,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.page-properties.property.pageWidth"](): string;
     /**
+      * `Template`
+      */
+    ["com.affine.page-properties.property.template"](): string;
+    /**
       * `Add relevant identifiers or categories to the doc. Useful for organizing content, improving searchability, and grouping related docs together.`
       */
     ["com.affine.page-properties.property.tags.tooltips"](): string;
@@ -2957,6 +2969,10 @@ export function useAFFiNEI18N(): {
       * `Control the width of this page to fit content display needs.`
       */
     ["com.affine.page-properties.property.pageWidth.tooltips"](): string;
+    /**
+      * `Mark this doc as a template, which can be used to create new docs.`
+      */
+    ["com.affine.page-properties.property.template.tooltips"](): string;
     /**
       * `Properties`
       */
@@ -4214,14 +4230,6 @@ export function useAFFiNEI18N(): {
         readonly query: string;
     }): string;
     /**
-      * `Reset sync`
-      */
-    ["com.affine.resetSyncStatus.button"](): string;
-    /**
-      * `This operation may fix some synchronization issues.`
-      */
-    ["com.affine.resetSyncStatus.description"](): string;
-    /**
       * `Collections`
       */
     ["com.affine.rootAppSidebar.collections"](): string;
@@ -5004,6 +5012,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.editorSettings.title"](): string;
     /**
+      * `Ask me every time`
+      */
+    ["com.affine.settings.editorSettings.ask-me-every-time"](): string;
+    /**
       * `Email`
       */
     ["com.affine.settings.email"](): string;
@@ -5331,6 +5343,14 @@ export function useAFFiNEI18N(): {
       * `Once enabled, you can preview PDF in embed view.`
       */
     ["com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description"](): string;
+    /**
+      * `Page Block Header`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-page-block-header.name"](): string;
+    /**
+      * `Once enabled, the header of page block will be displayed.`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-page-block-header.description"](): string;
     /**
       * `Only an owner can edit the workspace avatar and name. Changes will be shown for everyone.`
       */
@@ -6374,6 +6394,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.editor.bi-directional-link-panel.hide"](): string;
     /**
+      * `Fold page block`
+      */
+    ["com.affine.editor.edgeless-note-header.fold-page-block"](): string;
+    /**
+      * `View in page`
+      */
+    ["com.affine.editor.edgeless-note-header.view-in-page"](): string;
+    /**
       * `Empower Your Team with Seamless Collaboration`
       */
     ["com.affine.upgrade-to-team-page.title"](): string;
@@ -6509,6 +6537,74 @@ export function useAFFiNEI18N(): {
       * `Delete Server`
       */
     ["com.affine.server.delete"](): string;
+    /**
+      * `Start`
+      */
+    ["com.affine.page-starter-bar.start"](): string;
+    /**
+      * `Template`
+      */
+    ["com.affine.page-starter-bar.template"](): string;
+    /**
+      * `With AI`
+      */
+    ["com.affine.page-starter-bar.ai"](): string;
+    /**
+      * `Edgeless`
+      */
+    ["com.affine.page-starter-bar.edgeless"](): string;
+    /**
+      * `Template`
+      */
+    Template(): string;
+    /**
+      * `No template`
+      */
+    ["com.affine.template-list.empty"](): string;
+    /**
+      * `Create new template`
+      */
+    ["com.affine.template-list.create-new"](): string;
+    /**
+      * `Set a Template for the Journal`
+      */
+    ["com.affine.template-journal-onboarding.title"](): string;
+    /**
+      * `Select`
+      */
+    ["com.affine.template-journal-onboarding.select"](): string;
+    /**
+      * `My Templates`
+      */
+    ["com.affine.settings.workspace.template.title"](): string;
+    /**
+      * `Template for journal`
+      */
+    ["com.affine.settings.workspace.template.journal"](): string;
+    /**
+      * `Select a template for your journal`
+      */
+    ["com.affine.settings.workspace.template.journal-desc"](): string;
+    /**
+      * `Keep empty`
+      */
+    ["com.affine.settings.workspace.template.keep-empty"](): string;
+    /**
+      * `New doc with template`
+      */
+    ["com.affine.settings.workspace.template.page"](): string;
+    /**
+      * `New docs will use the specified template, ignoring default settings.`
+      */
+    ["com.affine.settings.workspace.template.page-desc"](): string;
+    /**
+      * `Template for new doc`
+      */
+    ["com.affine.settings.workspace.template.page-select"](): string;
+    /**
+      * `Remove template`
+      */
+    ["com.affine.settings.workspace.template.remove"](): string;
 } { const { t } = useTranslation(); return useMemo(() => createProxy((key) => t.bind(null, key)), [t]); }
 function createComponent(i18nKey: string) {
     return (props) => createElement(Trans, { i18nKey, shouldUnescape: true, ...props });

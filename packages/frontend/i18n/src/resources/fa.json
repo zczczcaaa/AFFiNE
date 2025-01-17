@@ -1043,8 +1043,6 @@
   "com.affine.peek-view-controls.open-attachment-in-split-view": "در نمای تقسیم شده باز کنید",
   "com.affine.quicksearch.group.creation": "جدید",
   "com.affine.quicksearch.group.searchfor": "جستجو برای \"{{query}}\"",
-  "com.affine.resetSyncStatus.button": "تنظیم مجدد همگام‌سازی",
-  "com.affine.resetSyncStatus.description": "این عملیات ممکن است برخی از مشکلات همگام‌سازی را حل کند.",
   "com.affine.rootAppSidebar.collections": "مجموعه‌ها",
   "com.affine.rootAppSidebar.doc.link-doc-only": "فقط سند می‌تواند در اینجا قرار گیرد",
   "com.affine.rootAppSidebar.docs.no-subdoc": "هیچ سند مرتبطی وجود ندارد",
