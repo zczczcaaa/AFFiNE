@@ -10,27 +10,15 @@ import { TemplateIcon, TemplateOutlineIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
-import { useAsyncCallback } from '../hooks/affine-async-hooks';
-
 export const TemplateDocEntrance = () => {
   const t = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
-  const docsService = useService(DocsService);
   const featureFlagService = useService(FeatureFlagService);
-  const workbench = useService(WorkbenchService).workbench;
   const enabled = useLiveData(featureFlagService.flags.enable_template_doc.$);
 
   const toggleMenu = useCallback(() => {
     setMenuOpen(prev => !prev);
   }, []);
-
-  const createDocFromTemplate = useAsyncCallback(
-    async (templateId: string) => {
-      const docId = await docsService.duplicateFromTemplate(templateId);
-      workbench.openDoc(docId);
-    },
-    [docsService, workbench]
-  );
 
   if (!enabled) {
     return null;
@@ -49,10 +37,11 @@ export const TemplateDocEntrance = () => {
           align: 'end',
           alignOffset: -4,
           sideOffset: 16,
+          style: { width: 280 },
         }}
         items={
           <TemplateListMenuContentScrollable
-            onSelect={createDocFromTemplate}
+            asLink
             suffixItems={
               <>
                 <MenuSeparator />

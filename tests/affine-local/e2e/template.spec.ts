@@ -216,7 +216,7 @@ test('set default template for journal', async ({ page }) => {
   await expect(page.getByText('This is a journal template doc')).toBeVisible();
 });
 
-test('create doc from template via sidebar entrance', async ({ page }) => {
+test('open template doc from sidebar template entrance', async ({ page }) => {
   await openHomePage(page);
   await createDocAndMarkAsTemplate(page, 'Test Template', async () => {
     await page.keyboard.type('# Template');
@@ -235,7 +235,7 @@ test('create doc from template via sidebar entrance', async ({ page }) => {
   await expect(page.getByText('This is a template doc')).toBeVisible();
 });
 
-test('create template from sidebar template entrance', async ({ page }) => {
+test('create template doc from sidebar template entrance', async ({ page }) => {
   await openHomePage(page);
   await page.getByTestId('sidebar-template-doc-entrance').click();
   await page.getByTestId('template-doc-item-create').click();

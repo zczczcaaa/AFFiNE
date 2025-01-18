@@ -7,17 +7,19 @@ import { useState } from 'react';
 
 import { type DocRecord } from '../../doc';
 import { DocDisplayMetaService } from '../../doc-display-meta';
+import { WorkbenchLink } from '../../workbench';
 import { TemplateDocService } from '../services/template-doc';
 import * as styles from './styles.css';
 interface CommonProps {
   onSelect?: (docId: string) => void;
+  asLink?: boolean;
 }
 
 interface DocItemProps extends CommonProps {
   doc: DocRecord;
 }
 
-const DocItem = ({ doc, onSelect }: DocItemProps) => {
+const DocItem = ({ doc, onSelect, asLink }: DocItemProps) => {
   const docDisplayService = useService(DocDisplayMetaService);
   const Icon = useLiveData(docDisplayService.icon$(doc.id));
   const title = useLiveData(docDisplayService.title$(doc.id));
@@ -26,7 +28,7 @@ const DocItem = ({ doc, onSelect }: DocItemProps) => {
     onSelect?.(doc.id);
   }, [doc.id, onSelect]);
 
-  return (
+  const menuItem = (
     <MenuItem
       prefixIcon={<Icon />}
       onClick={onClick}
@@ -35,6 +37,11 @@ const DocItem = ({ doc, onSelect }: DocItemProps) => {
       {title}
     </MenuItem>
   );
+
+  if (asLink) {
+    return <WorkbenchLink to={`/${doc.id}`}>{menuItem}</WorkbenchLink>;
+  }
+  return menuItem;
 };
 
 const Empty = () => {
@@ -95,6 +102,7 @@ interface TemplateListMenuProps
 export const TemplateListMenu = ({
   children,
   onSelect,
+  asLink,
   prefixItems,
   suffixItems,
   contentOptions,
@@ -105,6 +113,7 @@ export const TemplateListMenu = ({
       items={
         <TemplateListMenuContentScrollable
           onSelect={onSelect}
+          asLink={asLink}
           prefixItems={prefixItems}
           suffixItems={suffixItems}
         />

@@ -26,7 +26,6 @@ import { track } from '@affine/track';
 import type { Store } from '@blocksuite/affine/store';
 import {
   AllDocsIcon,
-  GithubIcon,
   ImportIcon,
   JournalIcon,
   SettingsIcon,
@@ -191,11 +190,6 @@ export const RootAppSidebar = memo((): ReactElement => {
             href="https://affine.pro/blog?tag=Release+Note"
             icon={<JournalIcon />}
             label={t['com.affine.app-sidebar.learn-more']()}
-          />
-          <ExternalMenuLinkItem
-            href="https://github.com/toeverything/affine"
-            icon={<GithubIcon />}
-            label={t['com.affine.app-sidebar.star-us']()}
           />
         </div>
       </SidebarScrollableContainer>
