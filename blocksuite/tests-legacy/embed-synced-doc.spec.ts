@@ -237,16 +237,9 @@ test.describe('Embed synced doc', () => {
           noteId
         );
         const model = doc2.getBlockById(databaseId) as DatabaseBlockModel;
-        await new Promise(resolve => setTimeout(resolve, 100));
-        const databaseBlock = document.querySelector('affine-database');
-        const databaseService = databaseBlock?.service;
-        if (databaseService) {
-          databaseService.databaseViewInitEmpty(
-            model,
-            databaseService.viewPresets.tableViewMeta.type
-          );
-          databaseService.applyColumnUpdate(model);
-        }
+        const datasource =
+          new window.$blocksuite.blocks.DatabaseBlockDataSource(model);
+        datasource.viewManager.viewAdd('table');
       });
 
       // go back to previous doc

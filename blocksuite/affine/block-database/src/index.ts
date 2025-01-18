@@ -6,7 +6,6 @@ export * from './adapters';
 export type { DatabaseOptionsConfig } from './config';
 export * from './data-source';
 export * from './database-block';
-export * from './database-service';
 export * from './database-spec';
 export * from './detail-panel/block-renderer';
 export * from './detail-panel/note-renderer';

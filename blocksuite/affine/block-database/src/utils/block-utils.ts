@@ -77,7 +77,7 @@ export function deleteColumn(
   model: DatabaseBlockModel,
   columnId: Column['id']
 ) {
-  const index = findPropertyIndex(model, columnId);
+  const index = model.columns.findIndex(v => v.id === columnId);
   if (index < 0) return;
 
   model.doc.transact(() => {
@@ -114,10 +114,6 @@ export function duplicateView(model: DatabaseBlockModel, id: string): string {
     }
   });
   return newId;
-}
-
-export function findPropertyIndex(model: DatabaseBlockModel, id: Column['id']) {
-  return model.columns.findIndex(v => v.id === id);
 }
 
 export function getCell(
@@ -228,7 +224,8 @@ export function updateCells(
 export function updateProperty(
   model: DatabaseBlockModel,
   id: string,
-  updater: ColumnUpdater
+  updater: ColumnUpdater,
+  defaultValue?: Record<string, unknown>
 ) {
   const index = model.columns.findIndex(v => v.id === id);
   if (index == null) {
@@ -240,7 +237,7 @@ export function updateProperty(
       return;
     }
     const result = updater(column);
-    model.columns[index] = { ...column, ...result };
+    model.columns[index] = { ...defaultValue, ...column, ...result };
   });
   return id;
 }

@@ -3,7 +3,6 @@ import { CenterPeek } from './components/layout';
 import { DatabaseTitle } from './components/title';
 import type { DatabaseOptionsConfig } from './config';
 import { DatabaseBlockComponent } from './database-block';
-import type { DatabaseBlockService } from './database-service';
 import { BlockRenderer } from './detail-panel/block-renderer';
 import { NoteRenderer } from './detail-panel/note-renderer';
 import { LinkCell, LinkCellEditing } from './properties/link/cell-renderer';
@@ -59,10 +58,6 @@ declare global {
        * @returns the id of the inserted LaTeX block
        */
       insertDatabaseBlock: typeof insertDatabaseBlockCommand;
-    }
-
-    interface BlockServices {
-      'affine:database': DatabaseBlockService;
     }
   }
 }

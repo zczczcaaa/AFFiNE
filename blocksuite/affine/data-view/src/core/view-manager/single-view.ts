@@ -80,13 +80,15 @@ export interface SingleView {
 
   rowNextGet(rowId: string): string | undefined;
 
-  readonly propertyMetas: PropertyMetaConfig[];
+  readonly propertyMetas$: ReadonlySignal<PropertyMetaConfig[]>;
 
   propertyAdd(toAfterOfProperty: InsertToPosition, type?: string): string;
 
   propertyDelete(propertyId: string): void;
+  propertyCanDelete(propertyId: string): boolean;
 
   propertyDuplicate(propertyId: string): void;
+  propertyCanDuplicate(propertyId: string): boolean;
 
   propertyGet(propertyId: string): Property;
 
@@ -103,10 +105,12 @@ export interface SingleView {
   propertyTypeGet(propertyId: string): string | undefined;
 
   propertyTypeSet(propertyId: string, type: string): void;
+  propertyTypeCanSet(propertyId: string): boolean;
 
   propertyHideGet(propertyId: string): boolean;
 
   propertyHideSet(propertyId: string, hide: boolean): void;
+  propertyCanHide(propertyId: string): boolean;
 
   propertyDataGet(propertyId: string): Record<string, unknown>;
 
@@ -215,8 +219,8 @@ export abstract class SingleViewBase<
     return this.dataSource.viewMetaGet(this.type);
   }
 
-  get propertyMetas(): PropertyMetaConfig[] {
-    return this.dataSource.propertyMetas;
+  get propertyMetas$() {
+    return this.dataSource.propertyMetas$;
   }
 
   abstract get type(): string;
@@ -225,6 +229,18 @@ export abstract class SingleViewBase<
     public manager: ViewManager,
     public id: string
   ) {}
+  propertyCanDelete(propertyId: string): boolean {
+    return this.dataSource.propertyCanDelete(propertyId);
+  }
+  propertyCanDuplicate(propertyId: string): boolean {
+    return this.dataSource.propertyCanDuplicate(propertyId);
+  }
+  propertyTypeCanSet(propertyId: string): boolean {
+    return this.dataSource.propertyTypeCanSet(propertyId);
+  }
+  propertyCanHide(propertyId: string): boolean {
+    return this.propertyTypeGet(propertyId) !== 'title';
+  }
 
   private searchRowsMapping(rows: string[], searchString: string): string[] {
     return rows.filter(id => {
@@ -370,6 +386,9 @@ export abstract class SingleViewBase<
 
   propertyDuplicate(propertyId: string): void {
     const id = this.dataSource.propertyDuplicate(propertyId);
+    if (!id) {
+      return;
+    }
     this.propertyMove(id, {
       before: false,
       id: propertyId,

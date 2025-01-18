@@ -526,17 +526,10 @@ export async function initEmptyDatabaseState(page: Page, rootId?: string) {
       noteId
     );
     const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const databaseBlock = document.querySelector('affine-database');
-    const databaseService = databaseBlock?.service;
-    if (databaseService) {
-      databaseService.databaseViewInitEmpty(
-        model,
-        databaseService.viewPresets.tableViewMeta.type
-      );
-      databaseService.applyColumnUpdate(model);
-    }
-
+    const datasource = new window.$blocksuite.blocks.DatabaseBlockDataSource(
+      model
+    );
+    datasource.viewManager.viewAdd('table');
     doc.captureSync();
     return { rootId, noteId, databaseId };
   }, rootId);
@@ -570,43 +563,34 @@ export async function initKanbanViewState(
         noteId
       );
       const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
-      await new Promise(resolve => setTimeout(resolve, 100));
-      const databaseBlock = document.querySelector('affine-database');
-      const databaseService = databaseBlock?.service;
-      if (databaseService) {
-        const rowIds = config.rows.map(rowText => {
-          const rowId = doc.addBlock(
-            'affine:paragraph',
-            { type: 'text', text: new window.$blocksuite.store.Text(rowText) },
-            databaseId
-          );
-          return rowId;
-        });
-        config.columns.forEach(column => {
-          const columnId = databaseService.addColumn(model, 'end', {
-            data: {},
-            name: column.type,
-            type: column.type,
-          });
-          rowIds.forEach((rowId, index) => {
-            const value = column.value?.[index];
-            if (value !== undefined) {
-              databaseService.updateCell(model, rowId, {
-                columnId,
-                value:
-                  column.type === 'rich-text'
-                    ? new window.$blocksuite.store.Text(value as string)
-                    : value,
-              });
-            }
-          });
-        });
-        databaseService.databaseViewInitEmpty(
-          model,
-          databaseService.viewPresets.kanbanViewMeta.type
+      const datasource = new window.$blocksuite.blocks.DatabaseBlockDataSource(
+        model
+      );
+      const rowIds = config.rows.map(rowText => {
+        const rowId = doc.addBlock(
+          'affine:paragraph',
+          { type: 'text', text: new window.$blocksuite.store.Text(rowText) },
+          databaseId
         );
-        databaseService.applyColumnUpdate(model);
-      }
+        return rowId;
+      });
+      config.columns.forEach(column => {
+        const columnId = datasource.propertyAdd('end', column.type);
+        datasource.propertyNameSet(columnId, column.type);
+        rowIds.forEach((rowId, index) => {
+          const value = column.value?.[index];
+          if (value !== undefined) {
+            datasource.cellValueChange(
+              rowId,
+              columnId,
+              column.type === 'rich-text'
+                ? new window.$blocksuite.store.Text(value as string)
+                : value
+            );
+          }
+        });
+      });
+      datasource.viewManager.viewAdd('kanban');
       doc.captureSync();
       return { rootId, noteId, databaseId };
     },
@@ -636,18 +620,11 @@ export async function initEmptyDatabaseWithParagraphState(
       noteId
     );
     const model = doc.getBlockById(databaseId) as DatabaseBlockModel;
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const databaseBlock = document.querySelector('affine-database');
-    const databaseService = databaseBlock?.service;
-    if (databaseService) {
-      databaseService.databaseViewInitEmpty(
-        model,
-        databaseService.viewPresets.tableViewMeta.type
-      );
-      databaseService.applyColumnUpdate(model);
-    }
+    const datasource = new window.$blocksuite.blocks.DatabaseBlockDataSource(
+      model
+    );
+    datasource.viewManager.viewAdd('table');
     doc.addBlock('affine:paragraph', {}, noteId);
-
     doc.captureSync();
     return { rootId, noteId, databaseId };
   }, rootId);

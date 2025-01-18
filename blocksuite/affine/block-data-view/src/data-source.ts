@@ -211,7 +211,7 @@ export class BlockQueryDataSource extends DataSourceBase {
     }
   }
 
-  propertyDuplicate(_columnId: string): string {
+  propertyDuplicate(_columnId: string): string | undefined {
     throw new Error('Method not implemented.');
   }
 

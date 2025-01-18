@@ -3,7 +3,6 @@ import type {
   RichText,
 } from '@blocksuite/affine-components/rich-text';
 import { DefaultInlineManagerExtension } from '@blocksuite/affine-components/rich-text';
-import type { RootBlockModel } from '@blocksuite/affine-model';
 import {
   ParseDocUrlProvider,
   TelemetryProvider,
@@ -23,8 +22,7 @@ import { assertExists } from '@blocksuite/global/utils';
 import type { DeltaInsert } from '@blocksuite/inline';
 import type { BlockSnapshot } from '@blocksuite/store';
 import { Text } from '@blocksuite/store';
-import { computed, signal } from '@preact/signals-core';
-import { css, nothing } from 'lit';
+import { css } from 'lit';
 import { query } from 'lit/decorators.js';
 import { keyed } from 'lit/directives/keyed.js';
 import { html } from 'lit/static-html.js';
@@ -143,12 +141,6 @@ abstract class BaseRichTextCell extends BaseCellRenderer<Text> {
       ?.std.get(DefaultInlineManagerExtension.identifier);
   }
 
-  get service() {
-    return this.view
-      .contextGet(HostContextKey)
-      ?.std.getService('affine:database');
-  }
-
   get topContenteditableElement() {
     const databaseBlock =
       this.closest<DatabaseBlockComponent>('affine-database');
@@ -172,19 +164,6 @@ abstract class BaseRichTextCell extends BaseCellRenderer<Text> {
 
   @query('.affine-database-rich-text')
   accessor _richTextElement!: HTMLElement;
-
-  docId$ = signal<string>();
-
-  isLinkedDoc$ = computed(() => false);
-
-  linkedDocTitle$ = computed(() => {
-    if (!this.docId$.value) {
-      return this.value;
-    }
-    const doc = this.host?.std.workspace.getDoc(this.docId$.value);
-    const root = doc?.root as RootBlockModel;
-    return root.title;
-  });
 }
 
 export class RichTextCell extends BaseRichTextCell {
@@ -232,7 +211,6 @@ export class RichTextCell extends BaseRichTextCell {
   }
 
   override render() {
-    if (!this.service) return nothing;
     if (!this.value || !(this.value instanceof Text)) {
       return html`<div class="affine-database-rich-text"></div>`;
     }
@@ -492,7 +470,6 @@ export class RichTextCellEditing extends BaseRichTextCell {
 
   override connectedCallback() {
     super.connectedCallback();
-
     if (!this.value || typeof this.value === 'string') {
       this._initYText(this.value);
     }
@@ -540,7 +517,6 @@ export class RichTextCellEditing extends BaseRichTextCell {
   }
 
   override render() {
-    if (!this.service) return nothing;
     return html`<rich-text
       .yText=${this.value}
       .inlineEventSource=${this.topContenteditableElement}

@@ -21,6 +21,7 @@ export const richTextPropertyModelConfig =
       };
     },
     cellToJson: ({ value, dataSource }) => {
+      if (!value) return null;
       const host = dataSource.contextGet(HostContextKey);
       if (host) {
         const collection = host.std.workspace;
