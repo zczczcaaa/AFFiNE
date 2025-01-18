@@ -8,7 +8,6 @@ import {
 } from '@blocksuite/affine/global/utils';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { ImageIcon, PublishIcon } from '@blocksuite/icons/lit';
-import type { Signal } from '@preact/signals-core';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -22,6 +21,7 @@ import {
 import { AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { readBlobAsURL } from '../utils/image';
+import type { AINetworkSearchConfig } from './chat-config';
 import type { ChatContextValue, ChatMessage } from './chat-context';
 
 const MaximumImageCount = 32;
@@ -29,12 +29,6 @@ const MaximumImageCount = 32;
 function getFirstTwoLines(text: string) {
   const lines = text.split('\n');
   return lines.slice(0, 2);
-}
-
-export interface AINetworkSearchConfig {
-  visible: Signal<boolean | undefined>;
-  enabled: Signal<boolean | undefined>;
-  setEnabled: (state: boolean) => void;
 }
 
 export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
@@ -510,7 +504,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
   };
 
   send = async (text: string) => {
-    const { status, markdown } = this.chatContextValue;
+    const { status, markdown, docs } = this.chatContextValue;
     if (status === 'loading' || status === 'transmitting') return;
 
     const { images } = this.chatContextValue;
@@ -531,7 +525,8 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       images?.map(image => readBlobAsURL(image))
     );
 
-    const content = (markdown ? `${markdown}\n` : '') + text;
+    const refDocs = docs.map(doc => doc.markdown).join('\n');
+    const content = (markdown ? `${markdown}\n` : '') + `${refDocs}\n` + text;
 
     this.updateContext({
       items: [

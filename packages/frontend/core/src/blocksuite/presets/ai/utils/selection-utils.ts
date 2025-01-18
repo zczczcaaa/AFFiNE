@@ -105,7 +105,7 @@ export function getSelectedModels(editorHost: EditorHost) {
   return selectedModels;
 }
 
-function traverse(model: DraftModel, drafts: DraftModel[]) {
+export function traverse(model: DraftModel, drafts: DraftModel[]) {
   const isDatabase = model.flavour === 'affine:database';
   const children = isDatabase
     ? model.children

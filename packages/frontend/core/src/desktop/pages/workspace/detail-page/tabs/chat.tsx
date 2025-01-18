@@ -1,10 +1,13 @@
 import { ChatPanel } from '@affine/core/blocksuite/presets/ai';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
+import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
+import { WorkspaceService } from '@affine/core/modules/workspace';
 import {
   DocModeProvider,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
+import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
 import { useFramework } from '@toeverything/infra';
 import { forwardRef, useEffect, useRef } from 'react';
 
@@ -49,12 +52,26 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
       chatPanelRef.current.doc = editor.doc;
       containerRef.current?.append(chatPanelRef.current);
       const searchService = framework.get(AINetworkSearchService);
-      const networkSearchConfig = {
+      const docDisplayMetaService = framework.get(DocDisplayMetaService);
+      const workspaceService = framework.get(WorkspaceService);
+      chatPanelRef.current.networkSearchConfig = {
         visible: searchService.visible,
         enabled: searchService.enabled,
         setEnabled: searchService.setEnabled,
       };
-      chatPanelRef.current.networkSearchConfig = networkSearchConfig;
+      chatPanelRef.current.docDisplayConfig = {
+        getIcon: (docId: string) => {
+          return docDisplayMetaService.icon$(docId, { type: 'lit' }).value;
+        },
+        getTitle: (docId: string) => {
+          const title$ = docDisplayMetaService.title$(docId);
+          return createSignalFromObservable(title$, '');
+        },
+        getDoc: (docId: string) => {
+          const doc = workspaceService.workspace.docCollection.getDoc(docId);
+          return doc;
+        },
+      };
     } else {
       chatPanelRef.current.host = editor.host;
       chatPanelRef.current.doc = editor.doc;

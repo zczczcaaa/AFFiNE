@@ -17,8 +17,13 @@ import {
   getSelectedImagesAsBlobs,
   getSelectedTextContent,
 } from '../utils/selection-utils';
-import type { ChatAction, ChatContextValue, ChatItem } from './chat-context';
-import type { AINetworkSearchConfig } from './chat-panel-input';
+import type { AINetworkSearchConfig, DocDisplayConfig } from './chat-config';
+import type {
+  ChatAction,
+  ChatContextValue,
+  ChatItem,
+  DocChip,
+} from './chat-context';
 import type { ChatPanelMessages } from './chat-panel-messages';
 
 export class ChatPanel extends WithDisposable(ShadowlessElement) {
@@ -125,6 +130,13 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
         AIProvider.LAST_ROOT_SESSION_ID = history.sessionId;
       }
 
+      const { chips } = this.chatContextValue;
+      const defaultChip: DocChip = {
+        docId: this.doc.id,
+        state: 'candidate',
+      };
+      const nextChips =
+        items.length === 0 && chips.length === 0 ? [defaultChip] : chips;
       this.chatContextValue = {
         ...this.chatContextValue,
         items: items.sort((a, b) => {
@@ -132,6 +144,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           );
         }),
+        chips: nextChips,
       };
 
       this.isLoading = false;
@@ -148,6 +161,9 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   @property({ attribute: false })
   accessor networkSearchConfig!: AINetworkSearchConfig;
 
+  @property({ attribute: false })
+  accessor docDisplayConfig!: DocDisplayConfig;
+
   @state()
   accessor isLoading = false;
 
@@ -157,6 +173,8 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     images: [],
     abortController: null,
     items: [],
+    chips: [],
+    docs: [],
     status: 'idle',
     error: null,
     markdown: '',
@@ -198,6 +216,9 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     if (_changedProperties.has('doc')) {
       requestAnimationFrame(() => {
         this.chatContextValue.chatSessionId = null;
+        // TODO get from CopilotContext
+        this.chatContextValue.chips = [];
+        this.chatContextValue.docs = [];
         this._resetItems();
       });
     }
@@ -281,6 +302,12 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
         .host=${this.host}
         .isLoading=${this.isLoading}
       ></chat-panel-messages>
+      <chat-panel-chips
+        .host=${this.host}
+        .chatContextValue=${this.chatContextValue}
+        .updateContext=${this.updateContext}
+        .docDisplayConfig=${this.docDisplayConfig}
+      ></chat-panel-chips>
       <chat-panel-input
         .chatContextValue=${this.chatContextValue}
         .networkSearchConfig=${this.networkSearchConfig}

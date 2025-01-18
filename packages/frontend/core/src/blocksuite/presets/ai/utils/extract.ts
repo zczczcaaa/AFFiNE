@@ -1,20 +1,27 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
+  BlocksUtils,
   DocModeProvider,
+  embedSyncedDocMiddleware,
   type ImageBlockModel,
   isInsideEdgelessEditor,
+  MarkdownAdapter,
   type NoteBlockModel,
   NoteDisplayMode,
+  titleMiddleware,
 } from '@blocksuite/affine/blocks';
-import type { BlockModel } from '@blocksuite/affine/store';
+import type { BlockModel, Store } from '@blocksuite/affine/store';
+import { Slice, toDraftModel, Transformer } from '@blocksuite/affine/store';
+import type { ServiceProvider } from '@blocksuite/global/di';
 
-import type { ChatContextValue } from '../chat-panel/chat-context';
+import type { ChatContextValue, DocContext } from '../chat-panel/chat-context';
 import {
   allToCanvas,
   getSelectedImagesAsBlobs,
   getSelectedTextContent,
   getTextContentFromBlockModels,
   selectedToCanvas,
+  traverse,
 } from './selection-utils';
 
 export async function extractSelectedContent(
@@ -95,7 +102,7 @@ export async function extractAllContent(
   }
 }
 
-async function extractEdgelessAll(
+export async function extractEdgelessAll(
   host: EditorHost
 ): Promise<Partial<ChatContextValue> | null> {
   if (!isInsideEdgelessEditor(host)) return null;
@@ -113,21 +120,10 @@ async function extractEdgelessAll(
   };
 }
 
-async function extractPageAll(
+export async function extractPageAll(
   host: EditorHost
 ): Promise<Partial<ChatContextValue> | null> {
-  const notes = host.doc
-    .getBlocksByFlavour('affine:note')
-    .filter(
-      note =>
-        (note.model as NoteBlockModel).displayMode !==
-        NoteDisplayMode.EdgelessOnly
-    )
-    .map(note => note.model as NoteBlockModel);
-  const blockModels = notes.reduce((acc, note) => {
-    acc.push(...note.children);
-    return acc;
-  }, [] as BlockModel[]);
+  const blockModels = getNoteBlockModels(host.doc);
   const text = await getTextContentFromBlockModels(
     host,
     blockModels,
@@ -155,4 +151,65 @@ async function extractPageAll(
     markdown,
     images,
   };
+}
+
+export async function extractMarkdownFromDoc(
+  doc: Store,
+  provider: ServiceProvider
+): Promise<DocContext> {
+  const transformer = await getTransformer(doc);
+  const adapter = new MarkdownAdapter(transformer, provider);
+  const blockModels = getNoteBlockModels(doc);
+  const textModels = blockModels.filter(
+    model =>
+      !BlocksUtils.matchFlavours(model, ['affine:image', 'affine:database'])
+  );
+  const drafts = textModels.map(toDraftModel);
+  drafts.forEach(draft => traverse(draft, drafts));
+  const slice = Slice.fromModels(doc, drafts);
+
+  const snapshot = transformer.sliceToSnapshot(slice);
+  if (!snapshot) {
+    throw new Error('Failed to extract markdown, snapshot is undefined');
+  }
+  const content = await adapter.fromSliceSnapshot({
+    snapshot,
+    assets: transformer.assetsManager,
+  });
+  return {
+    docId: doc.id,
+    markdown: content.file,
+  };
+}
+
+function getNoteBlockModels(doc: Store) {
+  const notes = doc
+    .getBlocksByFlavour('affine:note')
+    .filter(
+      note =>
+        (note.model as NoteBlockModel).displayMode !==
+        NoteDisplayMode.EdgelessOnly
+    )
+    .map(note => note.model as NoteBlockModel);
+  const blockModels = notes.reduce((acc, note) => {
+    acc.push(...note.children);
+    return acc;
+  }, [] as BlockModel[]);
+  return blockModels;
+}
+
+async function getTransformer(doc: Store) {
+  return new Transformer({
+    schema: doc.workspace.schema,
+    blobCRUD: doc.workspace.blobSync,
+    docCRUD: {
+      create: (id: string) => doc.workspace.createDoc({ id }),
+      get: (id: string) => doc.workspace.getDoc(id),
+      delete: (id: string) => doc.workspace.removeDoc(id),
+    },
+    middlewares: [
+      titleMiddleware(doc.workspace.meta.docMetas),
+      embedSyncedDocMiddleware('content'),
+    ],
+  });
 }
