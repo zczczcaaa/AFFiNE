@@ -498,7 +498,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/electron@workspace:packages/frontend/apps/electron"
   dependencies:
-    "@affine-test/kit": "workspace:*"
     "@affine-tools/utils": "workspace:*"
     "@affine/native": "workspace:*"
     "@affine/nbstore": "workspace:*"
@@ -556,11 +555,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/env@workspace:packages/common/env"
   dependencies:
-    "@blocksuite/affine": "workspace:*"
     vitest: "npm:2.1.8"
     zod: "npm:^3.24.1"
   peerDependencies:
     "@affine/templates": "workspace:*"
+    "@blocksuite/affine": "workspace:*"
   languageName: unknown
   linkType: soft
 

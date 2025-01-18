@@ -468,7 +468,7 @@ export const PackageList = [
   {
     location: 'packages/common/env',
     name: '@affine/env',
-    workspaceDependencies: ['blocksuite/affine/all'],
+    workspaceDependencies: [],
   },
   {
     location: 'packages/common/infra',
@@ -512,7 +512,6 @@ export const PackageList = [
     location: 'packages/frontend/apps/electron',
     name: '@affine/electron',
     workspaceDependencies: [
-      'tests/kit',
       'tools/utils',
       'packages/frontend/native',
       'packages/common/nbstore',

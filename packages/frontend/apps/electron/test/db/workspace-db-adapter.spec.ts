@@ -1,6 +1,5 @@
 import path from 'node:path';
 
-import { removeWithRetry } from '@affine-test/kit/utils/utils';
 import fs from 'fs-extra';
 import { v4 } from 'uuid';
 import { afterAll, afterEach, beforeAll, expect, test, vi } from 'vitest';
@@ -17,7 +16,11 @@ beforeAll(() => {
 });
 
 afterEach(async () => {
-  await removeWithRetry(tmpDir);
+  try {
+    await fs.remove(tmpDir);
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 afterAll(() => {

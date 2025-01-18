@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { setTimeout } from 'node:timers/promises';
 
-import { removeWithRetry } from '@affine-test/kit/utils/utils';
+import fs from 'fs-extra';
 import { v4 } from 'uuid';
 import { afterAll, afterEach, beforeEach, expect, test, vi } from 'vitest';
 
@@ -44,7 +44,11 @@ beforeEach(() => {
 
 afterEach(async () => {
   existProcess();
-  await removeWithRetry(tmpDir);
+  try {
+    await fs.remove(tmpDir);
+  } catch (e) {
+    console.error(e);
+  }
   vi.useRealTimers();
 });
 
