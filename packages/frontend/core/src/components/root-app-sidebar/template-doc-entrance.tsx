@@ -6,6 +6,7 @@ import { TemplateListMenuContentScrollable } from '@affine/core/modules/template
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { inferOpenMode } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
+import track from '@affine/track';
 import { TemplateIcon, TemplateOutlineIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
@@ -20,6 +21,11 @@ export const TemplateDocEntrance = () => {
     setMenuOpen(prev => !prev);
   }, []);
 
+  const onMenuOpenChange = useCallback((open: boolean) => {
+    if (open) track.$.sidebar.template.openTemplateListMenu();
+    setMenuOpen(open);
+  }, []);
+
   if (!enabled) {
     return null;
   }
@@ -31,7 +37,7 @@ export const TemplateDocEntrance = () => {
       onClick={toggleMenu}
     >
       <Menu
-        rootOptions={{ open: menuOpen, onOpenChange: setMenuOpen }}
+        rootOptions={{ open: menuOpen, onOpenChange: onMenuOpenChange }}
         contentOptions={{
           side: 'right',
           align: 'end',

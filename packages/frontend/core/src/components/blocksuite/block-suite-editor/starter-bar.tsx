@@ -4,6 +4,7 @@ import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { TemplateDocService } from '@affine/core/modules/template-doc';
 import { TemplateListMenu } from '@affine/core/modules/template-doc/view/template-list-menu';
 import { useI18n } from '@affine/i18n';
+import track from '@affine/track';
 import type { Store } from '@blocksuite/affine/store';
 import {
   AiIcon,
@@ -68,6 +69,7 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
   const handleSelectTemplate = useAsyncCallback(
     async (templateId: string) => {
       await docsService.duplicateFromTemplate(templateId, doc.id);
+      track.doc.editor.starterBar.quickStart({ with: 'template' });
     },
     [doc.id, docsService]
   );
@@ -77,6 +79,11 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
     record?.setPrimaryMode('edgeless');
     editorService.editor.setMode('edgeless');
   }, [doc.id, docsService.list, editorService.editor]);
+
+  const onTemplateMenuOpenChange = useCallback((open: boolean) => {
+    if (open) track.doc.editor.starterBar.openTemplateListMenu();
+    setTemplateMenuOpen(open);
+  }, []);
 
   const showAI = false;
   const showTemplate = !isTemplate && enableTemplateDoc;
@@ -101,7 +108,7 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
             onSelect={handleSelectTemplate}
             rootOptions={{
               open: templateMenuOpen,
-              onOpenChange: setTemplateMenuOpen,
+              onOpenChange: onTemplateMenuOpenChange,
             }}
           >
             <Badge

@@ -38,6 +38,7 @@ type WorkspaceEvents =
   | 'openWorkspaceList';
 type DocEvents =
   | 'createDoc'
+  | 'quickStart'
   | 'renameDoc'
   | 'linkDoc'
   | 'deleteDoc'
@@ -126,6 +127,10 @@ type AttachmentEvents =
   | 'openPDFRendererFail';
 // END SECTION
 
+// SECTION: template
+type TemplateEvents = 'openTemplateListMenu';
+// END SECTION
+
 type UserEvents =
   | GeneralEvents
   | AppEvents
@@ -141,7 +146,8 @@ type UserEvents =
   | AccountEvents
   | PaymentEvents
   | DNDEvents
-  | AttachmentEvents;
+  | AttachmentEvents
+  | TemplateEvents;
 interface PageDivision {
   [page: string]: {
     [segment: string]: {
@@ -304,6 +310,10 @@ const PageEvents = {
         'openPDFRendererFail',
       ],
     },
+    sidebar: {
+      newDoc: ['quickStart'],
+      template: ['openTemplateListMenu', 'quickStart'],
+    },
   },
   doc: {
     editor: {
@@ -315,6 +325,7 @@ const PageEvents = {
       toolbar: ['copyBlockToLink'],
       aiActions: ['requestSignIn'],
       pageBlockHeader: ['openDocInfo'],
+      starterBar: ['quickStart', 'openTemplateListMenu'],
     },
     inlineDocInfo: {
       $: ['toggle'],
@@ -450,6 +461,7 @@ export type EventArgs = {
   toggleFavorite: OrganizeItemArgs & { on: boolean };
   toggle: { type: 'collapse' | 'expand' };
   createDoc: { mode?: 'edgeless' | 'page' };
+  quickStart: { with: 'page' | 'edgeless' | 'template' | 'ai' };
   switchPageMode: { mode: 'edgeless' | 'page' };
   createShareLink: { mode: 'edgeless' | 'page' };
   copyShareLink: {

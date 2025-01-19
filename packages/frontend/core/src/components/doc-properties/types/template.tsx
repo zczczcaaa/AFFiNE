@@ -4,8 +4,11 @@ import { useLiveData, useService } from '@toeverything/infra';
 import { type ChangeEvent, useCallback } from 'react';
 
 import * as styles from './template.css';
+import type { PropertyValueProps } from './types';
 
-export const TemplateValue = () => {
+export const TemplateValue = ({
+  onChange: propOnChange,
+}: PropertyValueProps) => {
   const docService = useService(DocService);
 
   const isTemplate = useLiveData(
@@ -16,8 +19,9 @@ export const TemplateValue = () => {
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.checked;
       docService.doc.record.setProperty('isTemplate', value);
+      propOnChange?.(value, true);
     },
-    [docService.doc.record]
+    [docService.doc.record, propOnChange]
   );
 
   const toggle = useCallback(() => {

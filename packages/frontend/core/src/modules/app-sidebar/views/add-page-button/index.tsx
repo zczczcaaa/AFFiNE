@@ -102,6 +102,7 @@ function AddPageWithAsk({ className, style }: AddPageButtonProps) {
     (e?: MouseEvent) => {
       createDoc(e, 'page');
       track.$.navigationPanel.$.createDoc();
+      track.$.sidebar.newDoc.quickStart({ with: 'page' });
     },
     [createDoc]
   );
@@ -109,6 +110,7 @@ function AddPageWithAsk({ className, style }: AddPageButtonProps) {
     (e?: MouseEvent) => {
       createDoc(e, 'edgeless');
       track.$.navigationPanel.$.createDoc();
+      track.$.sidebar.newDoc.quickStart({ with: 'edgeless' });
     },
     [createDoc]
   );
@@ -117,6 +119,7 @@ function AddPageWithAsk({ className, style }: AddPageButtonProps) {
     async (templateId: string) => {
       const docId = await docsService.duplicateFromTemplate(templateId);
       workbench.openDoc(docId);
+      track.$.sidebar.newDoc.quickStart({ with: 'template' });
     },
     [docsService, workbench]
   );
