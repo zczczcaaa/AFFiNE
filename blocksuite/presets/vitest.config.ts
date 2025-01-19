@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig(_configEnv =>
@@ -14,6 +15,7 @@ export default defineConfig(_configEnv =>
         target: 'es2022',
       },
     },
+    plugins: [vanillaExtractPlugin()],
     test: {
       include: ['src/__tests__/**/*.spec.ts'],
       browser: {

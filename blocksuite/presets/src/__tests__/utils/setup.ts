@@ -77,6 +77,7 @@ async function createEditor(collection: TestWorkspace, mode: DocMode = 'page') {
 
   app.style.width = '100%';
   app.style.height = '1280px';
+  app.style.overflowY = 'auto';
 
   document.body.append(app);
   await editor.updateComplete;

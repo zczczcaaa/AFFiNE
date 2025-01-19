@@ -4,6 +4,7 @@ import { cpus } from 'node:os';
 import path, { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import type { GetManualChunk } from 'rollup';
 import type { Plugin } from 'vite';
 import { defineConfig, loadEnv } from 'vite';
@@ -187,6 +188,7 @@ export default defineConfig(({ mode }) => {
           forceBuildInstrument: true,
         }),
       wasm(),
+      vanillaExtractPlugin(),
       clearSiteDataPlugin(),
     ],
     esbuild: {

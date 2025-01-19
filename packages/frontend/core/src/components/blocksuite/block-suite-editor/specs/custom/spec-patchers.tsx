@@ -225,6 +225,7 @@ export function patchNotificationService({
         {
           title: toReactNode(notification.title),
           message: toReactNode(notification.message),
+          footer: toReactNode(notification.footer),
           action: notification.action?.onClick
             ? {
                 label: toReactNode(notification.action?.label),

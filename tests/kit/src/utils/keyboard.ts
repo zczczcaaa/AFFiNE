@@ -70,6 +70,12 @@ export async function selectAllByKeyboard(page: Page) {
   await keyUpCtrlOrMeta(page);
 }
 
+export async function undoByKeyboard(page: Page) {
+  await keyDownCtrlOrMeta(page);
+  await page.keyboard.press('z', { delay: 50 });
+  await keyUpCtrlOrMeta(page);
+}
+
 export async function writeTextToClipboard(page: Page, text: string) {
   // paste the url
   await page.evaluate(

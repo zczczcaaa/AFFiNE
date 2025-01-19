@@ -1,15 +1,18 @@
 import { test } from '@affine-test/kit/playwright';
 import {
   clickEdgelessModeButton,
+  clickView,
   createEdgelessNoteBlock,
   getEdgelessSelectedIds,
   getPageMode,
   locateEditorContainer,
   locateElementToolbar,
+  locateModeSwitchButton,
 } from '@affine-test/kit/utils/editor';
 import {
   pasteByKeyboard,
   selectAllByKeyboard,
+  undoByKeyboard,
 } from '@affine-test/kit/utils/keyboard';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
@@ -143,14 +146,90 @@ test.describe('edgeless page header toolbar', () => {
 });
 
 test.describe('edgeless note element toolbar', () => {
-  test('the toolbar of page block should not contains auto-height', async ({
+  test('the toolbar of page block should not contains auto-height button and display in page button', async ({
     page,
   }) => {
     await selectAllByKeyboard(page);
     const toolbar = locateElementToolbar(page);
     const autoHeight = toolbar.getByTestId('edgeless-note-auto-height');
+    const displayInPage = toolbar.getByTestId('display-in-page');
 
     await expect(toolbar).toBeVisible();
     await expect(autoHeight).toHaveCount(0);
+    await expect(displayInPage).toHaveCount(0);
+  });
+
+  test('the toolbar of note block should contains auto-height button and display in page button', async ({
+    page,
+  }) => {
+    await createEdgelessNoteBlock(page, [100, 100]);
+    await page.waitForSelector('.affine-paragraph-placeholder.visible');
+    await clickView(page, [0, 0]);
+    await clickView(page, [100, 100]);
+
+    const toolbar = locateElementToolbar(page);
+    const autoHeight = toolbar.getByTestId('edgeless-note-auto-height');
+    const displayInPage = toolbar.getByTestId('display-in-page');
+
+    await expect(toolbar).toBeVisible();
+    await expect(autoHeight).toBeVisible();
+    await expect(displayInPage).toBeVisible();
+  });
+
+  test('display in page button', async ({ page }) => {
+    const editorContainer = locateEditorContainer(page);
+    const notes = editorContainer.locator('affine-note');
+
+    await createEdgelessNoteBlock(page, [100, 100]);
+    await page.waitForSelector('.affine-paragraph-placeholder.visible');
+    await page.keyboard.type('Note 2');
+    await clickView(page, [0, 0]);
+    await clickView(page, [100, 100]);
+
+    const toolbar = locateElementToolbar(page);
+    const displayInPage = toolbar.getByTestId('display-in-page');
+
+    await displayInPage.click();
+    await locateModeSwitchButton(page, 'page').click();
+    expect(notes).toHaveCount(2);
+
+    await locateModeSwitchButton(page, 'edgeless').click();
+    await clickView(page, [100, 100]);
+    await displayInPage.click();
+    await locateModeSwitchButton(page, 'page').click();
+    await waitForEditorLoad(page);
+    expect(notes).toHaveCount(1);
+
+    const undoButton = page.getByTestId('undo-display-in-page');
+    const viewTocButton = page.getByTestId('view-in-toc');
+
+    await locateModeSwitchButton(page, 'edgeless').click();
+    await waitForEditorLoad(page);
+    await clickView(page, [100, 100]);
+    await displayInPage.click();
+    expect(undoButton).toBeVisible();
+    expect(viewTocButton).toBeVisible();
+
+    await undoButton.click();
+    await expect(undoButton).toBeHidden();
+    await locateModeSwitchButton(page, 'page').click();
+    await waitForEditorLoad(page);
+    expect(notes).toHaveCount(1);
+
+    await locateModeSwitchButton(page, 'edgeless').click();
+    await waitForEditorLoad(page);
+    await clickView(page, [100, 100]);
+    await displayInPage.click();
+    await undoByKeyboard(page);
+    await page.waitForTimeout(500);
+    expect(
+      undoButton,
+      'the toast should be hidden immediately when undo by keyboard'
+    ).toBeHidden();
+
+    await displayInPage.click();
+    await viewTocButton.click();
+    await page.waitForSelector('affine-outline-panel');
+    expect(page.locator('affine-outline-panel')).toBeVisible();
   });
 });

@@ -29,6 +29,7 @@ export interface NotificationService {
   notify(options: {
     title: string | TemplateResult;
     message?: string | TemplateResult;
+    footer?: string | TemplateResult;
     accent?: 'info' | 'success' | 'warning' | 'error';
     duration?: number; // unit ms, give 0 to disable auto dismiss
     abort?: AbortSignal;
