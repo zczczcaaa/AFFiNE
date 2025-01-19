@@ -4,7 +4,6 @@ import { router } from '@affine/core/desktop/router';
 import { configureCommonModules } from '@affine/core/modules';
 import { I18nProvider } from '@affine/core/modules/i18n';
 import { LifecycleService } from '@affine/core/modules/lifecycle';
-import { OpenInAppGuard } from '@affine/core/modules/open-in-app';
 import {
   configureLocalStorageStateStorageImpls,
   NbstoreProvider,
@@ -100,13 +99,11 @@ export function App() {
         <CacheProvider value={cache}>
           <I18nProvider>
             <AffineContext store={getCurrentStore()}>
-              <OpenInAppGuard>
-                <RouterProvider
-                  fallbackElement={<AppContainer fallback />}
-                  router={router}
-                  future={future}
-                />
-              </OpenInAppGuard>
+              <RouterProvider
+                fallbackElement={<AppContainer fallback />}
+                router={router}
+                future={future}
+              />
             </AffineContext>
           </I18nProvider>
         </CacheProvider>

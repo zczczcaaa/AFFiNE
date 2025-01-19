@@ -8,6 +8,7 @@ import {
 import { GlobalDialogService } from '@affine/core/modules/dialogs';
 import { DndService } from '@affine/core/modules/dnd/services';
 import { GlobalContextService } from '@affine/core/modules/global-context';
+import { OpenInAppGuard } from '@affine/core/modules/open-in-app';
 import {
   type Workspace,
   type WorkspaceMetadata,
@@ -330,7 +331,9 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
     return (
       <FrameworkScope scope={workspace.scope}>
         <DNDContextProvider>
-          <AppContainer fallback />
+          <OpenInAppGuard>
+            <AppContainer fallback />
+          </OpenInAppGuard>
         </DNDContextProvider>
       </FrameworkScope>
     );
@@ -339,11 +342,13 @@ const WorkspacePage = ({ meta }: { meta: WorkspaceMetadata }) => {
   return (
     <FrameworkScope scope={workspace.scope}>
       <DNDContextProvider>
-        <AffineErrorBoundary height="100vh">
-          <WorkspaceLayout>
-            <WorkbenchRoot />
-          </WorkspaceLayout>
-        </AffineErrorBoundary>
+        <OpenInAppGuard>
+          <AffineErrorBoundary height="100vh">
+            <WorkspaceLayout>
+              <WorkbenchRoot />
+            </WorkspaceLayout>
+          </AffineErrorBoundary>
+        </OpenInAppGuard>
       </DNDContextProvider>
     </FrameworkScope>
   );

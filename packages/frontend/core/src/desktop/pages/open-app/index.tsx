@@ -27,11 +27,12 @@ const OpenUrl = () => {
     return null;
   }
 
-  params.delete('url');
-
   const urlObj = new URL(urlToOpen || '');
 
   params.forEach((v, k) => {
+    if (k === 'url') {
+      return;
+    }
     urlObj.searchParams.set(k, v);
   });
 
