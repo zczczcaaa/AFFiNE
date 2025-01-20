@@ -161,6 +161,9 @@ export class AffineLatexNode extends SignalWatcher(
     this.disposables.addFromEvent(this, 'click', e => {
       e.preventDefault();
       e.stopPropagation();
+      if (this.readonly) {
+        return;
+      }
       this.toggleEditor();
     });
 
@@ -210,6 +213,10 @@ export class AffineLatexNode extends SignalWatcher(
       },
       { once: true }
     );
+  }
+
+  get readonly() {
+    return this.std.store.readonly;
   }
 
   @property({ attribute: false })
