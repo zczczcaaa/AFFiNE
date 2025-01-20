@@ -75,6 +75,9 @@ export class WorkerConsumer {
       local: new SpaceStorage(
         Object.fromEntries(
           Object.entries(init.local).map(([type, opt]) => {
+            if (opt === undefined) {
+              return [type, undefined];
+            }
             const Storage = this.availableStorageImplementations.find(
               impl => impl.identifier === opt.name
             );
@@ -92,6 +95,9 @@ export class WorkerConsumer {
             new SpaceStorage(
               Object.fromEntries(
                 Object.entries(opts).map(([type, opt]) => {
+                  if (opt === undefined) {
+                    return [type, undefined];
+                  }
                   const Storage = this.availableStorageImplementations.find(
                     impl => impl.identifier === opt.name
                   );

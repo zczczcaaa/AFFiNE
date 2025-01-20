@@ -91,7 +91,7 @@ export interface NbStorePlugin {
     permanently: boolean;
   }) => Promise<void>;
   releaseBlobs: (options: { id: string }) => Promise<void>;
-  listBlobs: (options: { id: string }) => Promise<Array<ListedBlob>>;
+  listBlobs: (options: { id: string }) => Promise<{ blobs: Array<ListedBlob> }>;
   getPeerRemoteClocks: (options: {
     id: string;
     peer: string;

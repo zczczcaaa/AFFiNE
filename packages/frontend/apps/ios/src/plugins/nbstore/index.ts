@@ -167,7 +167,7 @@ export const NbStoreNativeDBApis: NativeDBApis = {
     const listed = await NbStore.listBlobs({
       id,
     });
-    return listed.map(b => ({
+    return listed.blobs.map(b => ({
       key: b.key,
       mime: b.mime,
       size: b.size,
