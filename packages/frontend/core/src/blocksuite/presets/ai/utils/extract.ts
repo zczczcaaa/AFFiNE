@@ -10,9 +10,9 @@ import {
   NoteDisplayMode,
   titleMiddleware,
 } from '@blocksuite/affine/blocks';
+import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import type { BlockModel, Store } from '@blocksuite/affine/store';
 import { Slice, toDraftModel, Transformer } from '@blocksuite/affine/store';
-import type { ServiceProvider } from '@blocksuite/global/di';
 
 import type { ChatContextValue, DocContext } from '../chat-panel/chat-context';
 import {

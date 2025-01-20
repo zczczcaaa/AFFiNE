@@ -1,4 +1,4 @@
-import type { Store } from '@blocksuite/store';
+import type { Store } from '@blocksuite/affine/store';
 import type { Signal } from '@preact/signals-core';
 
 export interface AINetworkSearchConfig {

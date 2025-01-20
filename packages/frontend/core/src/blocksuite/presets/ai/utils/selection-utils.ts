@@ -1,4 +1,5 @@
 import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
+import type { GfxModel } from '@blocksuite/affine/block-std/gfx';
 import {
   BlocksUtils,
   type CopilotTool,
@@ -14,7 +15,6 @@ import {
   Slice,
   toDraftModel,
 } from '@blocksuite/affine/store';
-import type { GfxModel } from '@blocksuite/block-std/gfx';
 
 import { getContentFromSlice } from '../../_common';
 import { getEdgelessCopilotWidget, getService } from './edgeless';

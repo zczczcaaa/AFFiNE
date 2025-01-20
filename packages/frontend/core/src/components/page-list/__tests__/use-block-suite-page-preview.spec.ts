@@ -5,9 +5,8 @@ import 'fake-indexeddb/auto';
 
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { assertExists } from '@blocksuite/affine/global/utils';
-import { type Store, Text } from '@blocksuite/affine/store';
-import { Schema } from '@blocksuite/store';
-import { TestWorkspace } from '@blocksuite/store/test';
+import { Schema, type Store, Text } from '@blocksuite/affine/store';
+import { TestWorkspace } from '@blocksuite/affine/store/test';
 import { renderHook } from '@testing-library/react';
 import { useAtomValue } from 'jotai';
 import { beforeEach, describe, expect, test, vi } from 'vitest';

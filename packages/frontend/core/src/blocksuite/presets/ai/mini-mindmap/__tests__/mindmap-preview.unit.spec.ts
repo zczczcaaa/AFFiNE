@@ -4,8 +4,8 @@ import {
   MarkdownInlineToDeltaAdapterExtensions,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
-import { Schema } from '@blocksuite/store';
-import { TestWorkspace } from '@blocksuite/store/test';
+import { Schema } from '@blocksuite/affine/store';
+import { TestWorkspace } from '@blocksuite/affine/store/test';
 import { describe, expect, test } from 'vitest';
 
 import { markdownToMindmap } from '../mindmap-preview.js';

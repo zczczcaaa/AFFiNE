@@ -1,6 +1,7 @@
 import { fuzzyMatch } from '@affine/core/utils/fuzzy-match';
 import { I18n, i18nTime } from '@affine/i18n';
 import track from '@affine/track';
+import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AffineInlineEditor,
   type DocMode,
@@ -12,7 +13,6 @@ import {
 import type { DocMeta } from '@blocksuite/affine/store';
 import { Text } from '@blocksuite/affine/store';
 import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
-import type { EditorHost } from '@blocksuite/block-std';
 import {
   DateTimeIcon,
   NewXxxEdgelessIcon,

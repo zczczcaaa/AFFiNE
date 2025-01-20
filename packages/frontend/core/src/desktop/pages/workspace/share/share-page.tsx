@@ -25,8 +25,8 @@ import {
   DocModes,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
+import { DisposableGroup } from '@blocksuite/affine/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
-import { DisposableGroup } from '@blocksuite/global/utils';
 import { Logo1Icon } from '@blocksuite/icons/rc';
 import { FrameworkScope, useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';

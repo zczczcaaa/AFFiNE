@@ -33,6 +33,7 @@
     "./global/di": "./src/global/di.ts",
     "./global/types": "./src/global/types.ts",
     "./store": "./src/store/index.ts",
+    "./store/test": "./src/store/test.ts",
     "./inline": "./src/inline/index.ts",
     "./inline/consts": "./src/inline/consts.ts",
     "./inline/types": "./src/inline/types.ts",

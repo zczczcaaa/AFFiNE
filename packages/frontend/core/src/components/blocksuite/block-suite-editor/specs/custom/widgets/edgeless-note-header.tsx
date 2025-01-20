@@ -7,9 +7,9 @@ import { useInsidePeekView } from '@affine/core/modules/peek-view/view/modal-con
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
+import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import { matchFlavours, type NoteBlockModel } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
-import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import {
   ExpandFullIcon,
   InformationIcon,

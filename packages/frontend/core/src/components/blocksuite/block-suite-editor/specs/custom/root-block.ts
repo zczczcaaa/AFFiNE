@@ -32,6 +32,7 @@ import {
   TelemetryProvider,
   ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
+import type { Container } from '@blocksuite/affine/global/di';
 import type { ExtensionType } from '@blocksuite/affine/store';
 import {
   createSignalFromObservable,
@@ -39,7 +40,6 @@ import {
   type Signal,
   SpecProvider,
 } from '@blocksuite/affine-shared/utils';
-import type { Container } from '@blocksuite/global/di';
 import { LinkedPageIcon, PageIcon } from '@blocksuite/icons/lit';
 import { type FrameworkProvider } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
