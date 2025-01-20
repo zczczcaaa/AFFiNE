@@ -163,7 +163,9 @@ export const EditorJournalPanel = () => {
           <JournalConflictBlock date={journalDate} />
           <JournalDailyCountBlock date={journalDate} />
         </>
-      ) : null}
+      ) : (
+        <div className={styles.spacer} />
+      )}
       <JournalTemplateSetting />
     </div>
   );

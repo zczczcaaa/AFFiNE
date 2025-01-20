@@ -254,3 +254,7 @@ export const journalDateCellDot = style({
   left: '50%',
   transform: 'translateX(-50%)',
 });
+export const spacer = style({
+  height: 0,
+  flexGrow: 1,
+});
