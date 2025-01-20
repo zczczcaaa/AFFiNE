@@ -473,7 +473,7 @@ export class DatabaseBlockDataSource extends DataSourceBase {
     return duplicateView(this._model, id);
   }
 
-  viewDataGet(viewId: string): DataViewDataType {
+  viewDataGet(viewId: string): DataViewDataType | undefined {
     return this.viewDataList$.value.find(data => data.id === viewId)!;
   }
 
@@ -499,8 +499,11 @@ export class DatabaseBlockDataSource extends DataSourceBase {
     return view;
   }
 
-  viewMetaGetById(viewId: string): ViewMeta {
+  viewMetaGetById(viewId: string): ViewMeta | undefined {
     const view = this.viewDataGet(viewId);
+    if (!view) {
+      return;
+    }
     return this.viewMetaGet(view.mode);
   }
 }

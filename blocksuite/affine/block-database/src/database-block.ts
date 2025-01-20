@@ -333,7 +333,12 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<DatabaseBloc
       this._dataSource = new DatabaseBlockDataSource(this.model);
       this._dataSource.contextSet(HostContextKey, this.host);
       const id = currentViewStorage.getCurrentView(this.model.id);
-      if (id) {
+      if (id && this.dataSource.viewManager.viewGet(id)) {
+        console.log(
+          'set current view',
+          id,
+          this._dataSource.viewManager.viewGet(id)
+        );
         this.dataSource.viewManager.setCurrentView(id);
       }
     }

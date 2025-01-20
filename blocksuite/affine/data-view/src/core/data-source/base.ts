@@ -84,7 +84,7 @@ export interface DataSource {
   viewMetaGet(type: string): ViewMeta;
   viewMetaGet$(type: string): ReadonlySignal<ViewMeta | undefined>;
 
-  viewMetaGetById(viewId: string): ViewMeta;
+  viewMetaGetById(viewId: string): ViewMeta | undefined;
   viewMetaGetById$(viewId: string): ReadonlySignal<ViewMeta | undefined>;
 }
 
@@ -217,7 +217,7 @@ export abstract class DataSourceBase implements DataSource {
 
   abstract viewDataDuplicate(id: string): string;
 
-  abstract viewDataGet(viewId: string): DataViewDataType;
+  abstract viewDataGet(viewId: string): DataViewDataType | undefined;
 
   viewDataGet$(viewId: string): ReadonlySignal<DataViewDataType | undefined> {
     return computed(() => this.viewDataGet(viewId));
@@ -236,7 +236,7 @@ export abstract class DataSourceBase implements DataSource {
     return computed(() => this.viewMetaGet(type));
   }
 
-  abstract viewMetaGetById(viewId: string): ViewMeta;
+  abstract viewMetaGetById(viewId: string): ViewMeta | undefined;
 
   viewMetaGetById$(viewId: string): ReadonlySignal<ViewMeta | undefined> {
     return computed(() => this.viewMetaGetById(viewId));
