@@ -701,7 +701,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/native@workspace:packages/frontend/native"
   dependencies:
-    "@napi-rs/cli": "npm:3.0.0-alpha.67"
+    "@napi-rs/cli": "npm:3.0.0-alpha.68"
     "@types/node": "npm:^22.0.0"
     ava: "npm:^6.2.0"
     ts-node: "npm:^10.9.2"
@@ -749,7 +749,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/server-native@workspace:packages/backend/native"
   dependencies:
-    "@napi-rs/cli": "npm:3.0.0-alpha.67"
+    "@napi-rs/cli": "npm:3.0.0-alpha.68"
     lib0: "npm:^0.2.99"
     tiktoken: "npm:^1.0.17"
     tinybench: "npm:^3.0.7"
@@ -7784,12 +7784,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@napi-rs/cli@npm:3.0.0-alpha.67":
-  version: 3.0.0-alpha.67
-  resolution: "@napi-rs/cli@npm:3.0.0-alpha.67"
+"@napi-rs/cli@npm:3.0.0-alpha.68":
+  version: 3.0.0-alpha.68
+  resolution: "@napi-rs/cli@npm:3.0.0-alpha.68"
   dependencies:
     "@inquirer/prompts": "npm:^7.0.0"
-    "@napi-rs/cross-toolchain": "npm:^0.0.18"
+    "@napi-rs/cross-toolchain": "npm:^0.0.19"
     "@napi-rs/wasm-tools": "npm:^0.0.2"
     "@octokit/rest": "npm:^21.0.2"
     clipanion: "npm:^3.2.1"
@@ -7813,24 +7813,24 @@ __metadata:
   bin:
     napi: ./dist/cli.js
     napi-raw: ./cli.mjs
-  checksum: 10/3a7244edd823fc12942e95bb490679c66d75aeb304d0501a6565f1ac1fc52c9518f15e1bdacb3d3017493384eefd2241850e5c0209e339b91ddfd57926f7767d
+  checksum: 10/2dc2afc4888bb4d4a6e9057e78c286607bc552ba45b463829409af7c837f4c5f55096e4b9697706847ad5ca5d4ae900337d2602ab560d0b19855fa566826dd15
   languageName: node
   linkType: hard
 
-"@napi-rs/cross-toolchain@npm:^0.0.18":
-  version: 0.0.18
-  resolution: "@napi-rs/cross-toolchain@npm:0.0.18"
+"@napi-rs/cross-toolchain@npm:^0.0.19":
+  version: 0.0.19
+  resolution: "@napi-rs/cross-toolchain@npm:0.0.19"
   dependencies:
     "@napi-rs/lzma": "npm:^1.4.1"
     "@napi-rs/tar": "npm:^0.1.4"
     debug: "npm:^4.4.0"
   peerDependencies:
-    "@napi-rs/cross-toolchain-arm64-target-aarch64": ^0.0.18
-    "@napi-rs/cross-toolchain-arm64-target-armv7": ^0.0.18
-    "@napi-rs/cross-toolchain-arm64-target-x86_64": ^0.0.18
-    "@napi-rs/cross-toolchain-x64-target-aarch64": ^0.0.18
-    "@napi-rs/cross-toolchain-x64-target-armv7": ^0.0.18
-    "@napi-rs/cross-toolchain-x64-target-x86_64": ^0.0.18
+    "@napi-rs/cross-toolchain-arm64-target-aarch64": ^0.0.19
+    "@napi-rs/cross-toolchain-arm64-target-armv7": ^0.0.19
+    "@napi-rs/cross-toolchain-arm64-target-x86_64": ^0.0.19
+    "@napi-rs/cross-toolchain-x64-target-aarch64": ^0.0.19
+    "@napi-rs/cross-toolchain-x64-target-armv7": ^0.0.19
+    "@napi-rs/cross-toolchain-x64-target-x86_64": ^0.0.19
   peerDependenciesMeta:
     "@napi-rs/cross-toolchain-arm64-target-aarch64":
       optional: true
@@ -7844,7 +7844,7 @@ __metadata:
       optional: true
     "@napi-rs/cross-toolchain-x64-target-x86_64":
       optional: true
-  checksum: 10/8227b924006de519d5d985d5685a694cbe5b91ae54068235e57e09c23628a225213d306d1f8a26089abc21084e812af74bc7082d8371027e421abf2cf7e1393d
+  checksum: 10/80c58c1768272b5c5ecafd0a37d5bbe1c360de120fc5cb0f354ea668998bdb116436ffd1ba5f33086b1e27fdb36fdd6553b661e618d00438cfedd6a36a12339c
   languageName: node
   linkType: hard
 
@@ -34329,9 +34329,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:6.0.7":
-  version: 6.0.7
-  resolution: "vite@npm:6.0.7"
+"vite@npm:6.0.9":
+  version: 6.0.9
+  resolution: "vite@npm:6.0.9"
   dependencies:
     esbuild: "npm:^0.24.2"
     fsevents: "npm:~2.3.3"
@@ -34377,7 +34377,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10/bf76b3647983cb3d76c0db90d1f72cd4f6e80864a112145405ac0046cedfb14814cc4d9c1acbd9c53da8749c3a2fa80570971f7c44c0524b71974981065e9388
+  checksum: 10/6f4f27c602f997537df26cc9665763b402f5978a7381146f6c0b146888ee257484a7f140df79e495b922082ca608bd1f563b0be9e272d22c689aad2b1e1da440
   languageName: node
   linkType: hard
 
