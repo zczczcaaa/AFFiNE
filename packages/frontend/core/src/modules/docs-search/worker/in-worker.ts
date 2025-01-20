@@ -1,4 +1,5 @@
 import type {
+  AffineTextAttributes,
   AttachmentBlockModel,
   BookmarkBlockModel,
   EmbedBlockModel,
@@ -18,7 +19,6 @@ import {
   type TransformerMiddleware,
   type YBlock,
 } from '@blocksuite/affine/store';
-import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import type { DeltaInsert } from '@blocksuite/inline';
 import { Document } from '@toeverything/infra';
 import { toHexString } from 'lib0/buffer.js';

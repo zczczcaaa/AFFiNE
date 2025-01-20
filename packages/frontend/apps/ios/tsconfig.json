@@ -12,7 +12,6 @@
     { "path": "../../i18n" },
     { "path": "../../../common/nbstore" },
     { "path": "../../../../blocksuite/affine/all" },
-    { "path": "../../../../blocksuite/affine/components" },
     { "path": "../../../common/infra" },
     { "path": "../../native" }
   ]

@@ -1,9 +1,12 @@
 import { DebugLogger } from '@affine/debug';
 import { Unreachable } from '@affine/env/constant';
-import { type DocMode, replaceIdMiddleware } from '@blocksuite/affine/blocks';
+import {
+  type AffineTextAttributes,
+  type DocMode,
+  replaceIdMiddleware,
+} from '@blocksuite/affine/blocks';
 import type { DeltaInsert } from '@blocksuite/affine/inline';
 import { Slice, Text, Transformer } from '@blocksuite/affine/store';
-import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { LiveData, ObjectPool, Service } from '@toeverything/infra';
 import { omitBy } from 'lodash-es';
 import { combineLatest, map } from 'rxjs';

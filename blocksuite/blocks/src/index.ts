@@ -58,7 +58,11 @@ export {
   PaymentRequiredError,
   UnauthorizedError,
 } from '@blocksuite/affine-components/ai-item';
-export { type MenuOptions } from '@blocksuite/affine-components/context-menu';
+export {
+  menu,
+  type MenuOptions,
+  onMenuOpen,
+} from '@blocksuite/affine-components/context-menu';
 export {
   HoverController,
   whenHover,
@@ -97,6 +101,7 @@ export {
   AttachmentAdapter,
   AttachmentAdapterFactoryExtension,
   AttachmentAdapterFactoryIdentifier,
+  FetchUtils,
   HtmlAdapter,
   HtmlAdapterFactoryExtension,
   HtmlAdapterFactoryIdentifier,
@@ -124,11 +129,15 @@ export {
   FontFamilyVariables,
   SizeVariables,
   StyleVariables,
+  unsafeCSSVarV2,
 } from '@blocksuite/affine-shared/theme';
+export { type AffineTextAttributes } from '@blocksuite/affine-shared/types';
 export {
   createButtonPopper,
   createDefaultDoc,
+  createSignalFromObservable,
   findNoteBlockModel,
+  getLastNoteBlock,
   isInsideEdgelessEditor,
   isInsidePageEditor,
   matchFlavours,
@@ -136,6 +145,9 @@ export {
   once,
   openFileOrFiles,
   printToPdf,
+  referenceToNode,
+  type Signal,
+  SpecProvider,
 } from '@blocksuite/affine-shared/utils';
 export type { DragBlockPayload } from '@blocksuite/affine-widget-drag-handle';
 

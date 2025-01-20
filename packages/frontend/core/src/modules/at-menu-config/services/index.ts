@@ -4,6 +4,7 @@ import track from '@affine/track';
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AffineInlineEditor,
+  createSignalFromObservable,
   type DocMode,
   type LinkedMenuGroup,
   type LinkedMenuItem,
@@ -12,7 +13,6 @@ import {
 } from '@blocksuite/affine/blocks';
 import type { DocMeta } from '@blocksuite/affine/store';
 import { Text } from '@blocksuite/affine/store';
-import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
 import {
   DateTimeIcon,
   NewXxxEdgelessIcon,

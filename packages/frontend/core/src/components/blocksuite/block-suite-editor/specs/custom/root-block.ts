@@ -18,6 +18,7 @@ import type {
   DocDisplayMetaExtension,
   DocDisplayMetaParams,
   RootBlockConfig,
+  Signal,
   SpecBuilder,
   TelemetryEventMap,
   ThemeExtension,
@@ -25,21 +26,18 @@ import type {
 import {
   CodeBlockSpec,
   ColorScheme,
+  createSignalFromObservable,
   DocDisplayMetaProvider,
   EditorSettingExtension,
   ImageBlockSpec,
   ParagraphBlockSpec,
+  referenceToNode,
+  SpecProvider,
   TelemetryProvider,
   ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
 import type { Container } from '@blocksuite/affine/global/di';
 import type { ExtensionType } from '@blocksuite/affine/store';
-import {
-  createSignalFromObservable,
-  referenceToNode,
-  type Signal,
-  SpecProvider,
-} from '@blocksuite/affine-shared/utils';
 import { LinkedPageIcon, PageIcon } from '@blocksuite/icons/lit';
 import { type FrameworkProvider } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';

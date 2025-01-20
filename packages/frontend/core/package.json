@@ -18,8 +18,6 @@
     "@affine/templates": "workspace:*",
     "@affine/track": "workspace:*",
     "@blocksuite/affine": "workspace:*",
-    "@blocksuite/affine-components": "workspace:*",
-    "@blocksuite/affine-shared": "workspace:*",
     "@blocksuite/icons": "2.2.2",
     "@capacitor/app": "^6.0.2",
     "@capacitor/browser": "^6.0.4",

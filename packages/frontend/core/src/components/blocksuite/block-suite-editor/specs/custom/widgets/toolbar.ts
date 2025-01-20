@@ -12,8 +12,7 @@ import type {
   GfxBlockElementModel,
   GfxPrimitiveElementModel,
 } from '@blocksuite/affine/block-std/gfx';
-import { type MenuContext } from '@blocksuite/affine/blocks';
-import type { MenuItemGroup } from '@blocksuite/affine-components/toolbar';
+import type { MenuContext, MenuItemGroup } from '@blocksuite/affine/blocks';
 import { LinkIcon } from '@blocksuite/icons/lit';
 import type { FrameworkProvider } from '@toeverything/infra';
 

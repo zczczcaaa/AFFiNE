@@ -1,7 +1,7 @@
 import {
   createSignalFromObservable,
   type Signal,
-} from '@blocksuite/affine-shared/utils';
+} from '@blocksuite/affine/blocks';
 import { LiveData, Service } from '@toeverything/infra';
 
 import type { FeatureFlagService } from '../../feature-flag';

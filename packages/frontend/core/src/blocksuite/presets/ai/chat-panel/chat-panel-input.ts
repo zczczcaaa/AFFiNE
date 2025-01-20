@@ -1,12 +1,15 @@
 import { stopPropagation } from '@affine/core/utils';
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import { type AIError, openFileOrFiles } from '@blocksuite/affine/blocks';
+import {
+  type AIError,
+  openFileOrFiles,
+  unsafeCSSVarV2,
+} from '@blocksuite/affine/blocks';
 import {
   assertExists,
   SignalWatcher,
   WithDisposable,
 } from '@blocksuite/affine/global/utils';
-import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { ImageIcon, PublishIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';

@@ -3,11 +3,11 @@ import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import {
+  createSignalFromObservable,
   DocModeProvider,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
-import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
 import { useFramework } from '@toeverything/infra';
 import { forwardRef, useEffect, useRef } from 'react';
 

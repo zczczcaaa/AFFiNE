@@ -15,13 +15,13 @@ import type {
 } from '@blocksuite/affine/blocks';
 import {
   ColorScheme,
+  createSignalFromObservable,
   SpecProvider,
   ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
 import type { Container } from '@blocksuite/affine/global/di';
 import { Bound } from '@blocksuite/affine/global/utils';
 import type { Block, Store } from '@blocksuite/affine/store';
-import { createSignalFromObservable } from '@blocksuite/affine-shared/utils';
 import type { Signal } from '@preact/signals-core';
 import type { FrameworkProvider } from '@toeverything/infra';
 import { useFramework } from '@toeverything/infra';

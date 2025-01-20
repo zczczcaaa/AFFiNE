@@ -1,8 +1,4 @@
-import {
-  type DocMode,
-  type NoteBlockModel,
-  NoteDisplayMode,
-} from '@blocksuite/affine/blocks';
+import { type DocMode, getLastNoteBlock } from '@blocksuite/affine/blocks';
 import { Slot } from '@blocksuite/affine/global/utils';
 import type {
   AffineEditorContainer,
@@ -10,7 +6,7 @@ import type {
   EdgelessEditor,
   PageEditor,
 } from '@blocksuite/affine/presets';
-import { type BlockModel, type Store } from '@blocksuite/affine/store';
+import { type Store } from '@blocksuite/affine/store';
 import clsx from 'clsx';
 import type React from 'react';
 import {
@@ -189,32 +185,3 @@ export const BlocksuiteEditorContainer = forwardRef<
     </div>
   );
 });
-
-// copy from '@blocksuite/affine-shared/utils'
-export function getLastNoteBlock(doc: Store) {
-  let note: NoteBlockModel | null = null;
-  if (!doc.root) return null;
-  const { children } = doc.root;
-  for (let i = children.length - 1; i >= 0; i--) {
-    const child = children[i];
-    if (
-      matchFlavours(child, ['affine:note']) &&
-      child.displayMode !== NoteDisplayMode.EdgelessOnly
-    ) {
-      note = child as NoteBlockModel;
-      break;
-    }
-  }
-  return note;
-}
-export function matchFlavours<Key extends (keyof BlockSuite.BlockModels)[]>(
-  model: BlockModel | null,
-  expected: Key
-): model is BlockSuite.BlockModels[Key[number]] {
-  return (
-    !!model &&
-    expected.some(
-      key => (model.flavour as keyof BlockSuite.BlockModels) === key
-    )
-  );
-}

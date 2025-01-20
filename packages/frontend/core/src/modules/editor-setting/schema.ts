@@ -1,4 +1,4 @@
-import { GeneralSettingSchema } from '@blocksuite/affine-shared/services';
+import { GeneralSettingSchema } from '@blocksuite/affine/blocks';
 import { z } from 'zod';
 
 export const BSEditorSettingSchema = GeneralSettingSchema;
