@@ -13,7 +13,6 @@ import {
   type DatabaseFlags,
   DataSourceBase,
   type DataViewDataType,
-  getTagColor,
   type PropertyMetaConfig,
   type TypeInstance,
   type ViewManager,
@@ -23,7 +22,7 @@ import {
 import { propertyPresets } from '@blocksuite/data-view/property-presets';
 import { IS_MOBILE } from '@blocksuite/global/env';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
-import { type BlockModel, nanoid, Text } from '@blocksuite/store';
+import { type BlockModel } from '@blocksuite/store';
 import { computed, type ReadonlySignal } from '@preact/signals-core';
 
 import { getIcon } from './block-icons.js';
@@ -512,49 +511,9 @@ export const databaseViewInitTemplate = (
   datasource: DatabaseBlockDataSource,
   viewType: string
 ) => {
-  const ids = [nanoid(), nanoid(), nanoid()] as const;
-  const titleId = datasource.properties$.value[0];
-  const statusId = datasource.propertyAdd(
-    'end',
-    propertyPresets.selectPropertyConfig.type
-  );
-  datasource.propertyNameSet(statusId, 'Status');
-  datasource.propertyDataSet(statusId, {
-    options: [
-      {
-        id: ids[0],
-        color: getTagColor(),
-        value: 'TODO',
-      },
-      {
-        id: ids[1],
-        color: getTagColor(),
-        value: 'In Progress',
-      },
-      {
-        id: ids[2],
-        color: getTagColor(),
-        value: 'Done',
-      },
-    ],
+  Array.from({ length: 3 }).forEach(() => {
+    datasource.rowAdd('end');
   });
-  for (let i = 0; i < 4; i++) {
-    const rowId = datasource.rowAdd('end');
-    if (titleId) {
-      const text = datasource.cellValueGet(rowId, titleId);
-      if (text instanceof Text) {
-        text.replace(0, text.length, `Task ${i + 1}`);
-      }
-    }
-    datasource.cellValueChange(rowId, statusId, ids[i]);
-    // const rowId = model.doc.addBlock(
-    //   'affine:paragraph',
-    //   {
-    //     text: new Text(`Task ${i + 1}`),
-    //   },
-    //   model.id
-    // );
-  }
   datasource.viewManager.viewAdd(viewType);
 };
 export const convertToDatabase = (host: EditorHost, viewType: string) => {

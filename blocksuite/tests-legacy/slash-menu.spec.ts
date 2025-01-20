@@ -751,10 +751,10 @@ test('should insert database', async ({ page }) => {
 
   const database = page.locator('affine-database');
   await expect(database).toBeVisible();
-  const tagColumn = page.locator('.affine-database-column').nth(1);
-  expect(await tagColumn.innerText()).toBe('Status');
+  const titleColumn = page.locator('.affine-database-column').nth(0);
+  expect(await titleColumn.innerText()).toBe('Title');
   const defaultRows = page.locator('.affine-database-block-row');
-  expect(await defaultRows.count()).toBe(4);
+  expect(await defaultRows.count()).toBe(3);
 });
 
 test.describe('slash menu with customize menu', () => {

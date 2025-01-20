@@ -28,6 +28,8 @@ import {
 } from '@affine-test/kit/utils/properties';
 import { expect } from '@playwright/test';
 
+import { addColumn } from './blocksuite/database/utils';
+
 test.beforeEach(async ({ page }) => {
   await openHomePage(page);
   await clickNewPageButton(page);
@@ -298,6 +300,7 @@ test('can show database backlink info', async ({ page }) => {
 
   const databaseTitle = 'some database title';
   await addDatabase(page, databaseTitle);
+  await addColumn(page, 'select', 2);
 
   await expect(page.locator('affine-database-title')).toContainText(
     databaseTitle
