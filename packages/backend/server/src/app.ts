@@ -12,6 +12,7 @@ import {
 import { SocketIoAdapter } from './base/websocket';
 import { AuthGuard } from './core/auth';
 import { ENABLED_FEATURES } from './core/config/server-feature';
+import { responseRequestIdHeader } from './middleware/request-id';
 import { serverTimingAndCache } from './middleware/timing';
 
 export async function createApp() {
@@ -31,6 +32,7 @@ export async function createApp() {
   }
 
   app.use(serverTimingAndCache);
+  app.use(responseRequestIdHeader);
 
   app.use(
     graphqlUploadExpress({

@@ -838,6 +838,7 @@ __metadata:
     nanoid: "npm:^5.0.9"
     nest-commander: "npm:^3.15.0"
     nest-winston: "npm:^1.9.7"
+    nestjs-cls: "npm:^4.5.0"
     nestjs-throttler-storage-redis: "npm:^0.5.1"
     nodemailer: "npm:^6.9.16"
     nodemon: "npm:^3.1.7"
@@ -27236,6 +27237,18 @@ __metadata:
     "@nestjs/common": ^5.0.0 || ^6.6.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
     winston: ^3.0.0
   checksum: 10/066a94a1db1055c925e7890a364685c2bbcacdaee5693038504ded4123018542ed4292555377b72692ac47b84a3527491abdb17b57b0e762f9eb43336c248e22
+  languageName: node
+  linkType: hard
+
+"nestjs-cls@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "nestjs-cls@npm:4.5.0"
+  peerDependencies:
+    "@nestjs/common": "> 7.0.0 < 11"
+    "@nestjs/core": "> 7.0.0 < 11"
+    reflect-metadata: "*"
+    rxjs: ">= 7"
+  checksum: 10/cbd807244aaf0e89480e5fa7d08415e27953d4f6264246318cd3aa5ec4817564988d5cbed4f700c79090f0ded6f72752887bc842543f7f0af49c515df41e937e
   languageName: node
   linkType: hard
 

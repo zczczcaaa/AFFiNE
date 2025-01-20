@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import {
   DynamicModule,
   ForwardReference,
@@ -6,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { get } from 'lodash-es';
+import { ClsModule } from 'nestjs-cls';
 
 import { AppController } from './app.controller';
 import { getOptionalModuleMetadata } from './base';
@@ -42,6 +45,17 @@ import { REGISTERED_PLUGINS } from './plugins';
 import { ENABLED_PLUGINS } from './plugins/registry';
 
 export const FunctionalityModules = [
+  ClsModule.forRoot({
+    global: true,
+    middleware: {
+      mount: true,
+      generateId: true,
+      idGenerator() {
+        // make every request has a unique id to tracing
+        return randomUUID();
+      },
+    },
+  }),
   ConfigModule.forRoot(),
   RuntimeModule,
   EventModule,
