@@ -2,7 +2,10 @@ import { Scrollable } from '@affine/component';
 import { PageDetailSkeleton } from '@affine/component/page-detail-skeleton';
 import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
-import { BlockSuiteEditor } from '@affine/core/components/blocksuite/block-suite-editor';
+import {
+  BlockSuiteEditor,
+  CustomEditorWrapper,
+} from '@affine/core/components/blocksuite/block-suite-editor';
 import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
 import { PageNotFound } from '@affine/core/desktop/pages/404';
 import { EditorService } from '@affine/core/modules/editor';
@@ -153,13 +156,15 @@ function DocPeekPreviewEditor({
         <Scrollable.Viewport
           className={clsx('affine-page-viewport', styles.affineDocViewport)}
         >
-          <BlockSuiteEditor
-            className={styles.editor}
-            mode={mode}
-            page={doc.blockSuiteDoc}
-            onEditorReady={handleOnEditorReady}
-            defaultOpenProperty={defaultOpenProperty}
-          />
+          <CustomEditorWrapper>
+            <BlockSuiteEditor
+              className={styles.editor}
+              mode={mode}
+              page={doc.blockSuiteDoc}
+              onEditorReady={handleOnEditorReady}
+              defaultOpenProperty={defaultOpenProperty}
+            />
+          </CustomEditorWrapper>
         </Scrollable.Viewport>
         <Scrollable.Scrollbar />
       </Scrollable.Root>
