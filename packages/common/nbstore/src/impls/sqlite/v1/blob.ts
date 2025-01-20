@@ -41,12 +41,6 @@ export class SqliteV1BlobStorage extends BlobStorageBase {
     };
   }
 
-  override async delete(key: string, permanently: boolean) {
-    if (permanently) {
-      await this.db.deleteBlob(this.options.type, this.options.id, key);
-    }
-  }
-
   override async list() {
     const keys = await this.db.getBlobKeys(this.options.type, this.options.id);
 
@@ -56,6 +50,9 @@ export class SqliteV1BlobStorage extends BlobStorageBase {
       size: 0,
       createdAt: new Date(),
     }));
+  }
+  override async delete() {
+    // no more deletes
   }
 
   override async set() {

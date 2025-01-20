@@ -56,16 +56,33 @@ export class SqliteV1DocStorage extends DocStorageBase<{
     };
   }
 
+  override async getDocTimestamps() {
+    const timestamps = await this.db.getDocTimestamps(
+      this.options.type,
+      this.options.id
+    );
+
+    if (!timestamps) {
+      return {};
+    }
+
+    const idConverter = await this.getIdConverter();
+
+    return timestamps.reduce(
+      (ret, { docId, timestamp }) => {
+        ret[idConverter.oldIdToNewId(docId ?? this.options.id)] = timestamp;
+        return ret;
+      },
+      {} as Record<string, Date>
+    );
+  }
+
   override async deleteDoc() {
     return;
   }
 
   protected override async getDocSnapshot() {
     return null;
-  }
-
-  override async getDocTimestamps() {
-    return {};
   }
 
   override async getDocTimestamp() {

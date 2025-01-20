@@ -364,6 +364,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
+module.exports.DocStorage = nativeBinding.DocStorage
 module.exports.DocStoragePool = nativeBinding.DocStoragePool
 module.exports.SqliteConnection = nativeBinding.SqliteConnection
 module.exports.mintChallengeResponse = nativeBinding.mintChallengeResponse

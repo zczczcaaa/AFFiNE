@@ -7,6 +7,7 @@ import { DesktopApiService } from '@affine/core/modules/desktop-api';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import type { Workspace } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
+import { universalId } from '@affine/nbstore';
 import track from '@affine/track';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useState } from 'react';
@@ -16,7 +17,6 @@ interface ExportPanelProps {
 }
 
 export const DesktopExportPanel = ({ workspace }: ExportPanelProps) => {
-  const workspaceId = workspace.id;
   const workspacePermissionService = useService(
     WorkspacePermissionService
   ).permission;
@@ -43,7 +43,14 @@ export const DesktopExportPanel = ({ workspace }: ExportPanelProps) => {
         await workspace.engine.blob.fullSync();
       }
 
-      const result = await desktopApi.handler?.dialog.saveDBFileAs(workspaceId);
+      const result = await desktopApi.handler?.dialog.saveDBFileAs(
+        universalId({
+          peer: workspace.flavour,
+          type: 'workspace',
+          id: workspace.id,
+        }),
+        workspace.name$.getValue() ?? 'db'
+      );
       if (result?.error) {
         throw new Error(result.error);
       } else if (!result?.canceled) {
@@ -54,7 +61,7 @@ export const DesktopExportPanel = ({ workspace }: ExportPanelProps) => {
     } finally {
       setSaving(false);
     }
-  }, [desktopApi, isOnline, saving, t, workspace, workspaceId]);
+  }, [desktopApi, isOnline, saving, t, workspace]);
 
   if (isTeam && !isOwner && !isAdmin) {
     return null;

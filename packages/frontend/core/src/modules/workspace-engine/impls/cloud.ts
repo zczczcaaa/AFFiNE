@@ -120,6 +120,7 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
         id: id,
       },
     });
+    // TODO(@forehalo): when deleting cloud workspace, should we delete the workspace folder in local?
     this.revalidate();
     await this.waitForLoaded();
   }

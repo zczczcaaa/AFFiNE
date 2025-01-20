@@ -9,6 +9,7 @@ use chrono::NaiveDateTime;
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use pool::SqliteDocStoragePool;
+use storage::SqliteDocStorage;
 
 #[cfg(feature = "use-as-lib")]
 type Result<T> = anyhow::Result<T>;
@@ -100,18 +101,24 @@ impl DocStoragePool {
   }
 
   #[napi]
-  pub async fn disconnect(&self, universal_id: String) -> Result<()> {
-    self.pool.disconnect(universal_id).await?;
-    Ok(())
-  }
-
-  #[napi]
   pub async fn set_space_id(&self, universal_id: String, space_id: String) -> Result<()> {
     self
       .pool
       .ensure_storage(universal_id)?
       .set_space_id(space_id)
       .await?;
+    Ok(())
+  }
+
+  #[napi]
+  pub async fn disconnect(&self, universal_id: String) -> Result<()> {
+    self.pool.disconnect(universal_id).await?;
+    Ok(())
+  }
+
+  #[napi]
+  pub async fn checkpoint(&self, universal_id: String) -> Result<()> {
+    self.pool.ensure_storage(universal_id)?.checkpoint().await?;
     Ok(())
   }
 
@@ -427,6 +434,35 @@ impl DocStoragePool {
       .ensure_storage(universal_id)?
       .clear_clocks()
       .await?;
+    Ok(())
+  }
+}
+
+#[napi]
+pub struct DocStorage {
+  storage: SqliteDocStorage,
+}
+
+#[napi]
+impl DocStorage {
+  #[napi(constructor, async_runtime)]
+  pub fn new(path: String) -> Self {
+    Self {
+      storage: SqliteDocStorage::new(path),
+    }
+  }
+
+  #[napi]
+  pub async fn validate(&self) -> Result<bool> {
+    Ok(self.storage.validate().await?)
+  }
+
+  #[napi]
+  pub async fn set_space_id(&self, space_id: String) -> Result<()> {
+    self.storage.connect().await?;
+    self.storage.set_space_id(space_id).await?;
+    println!("clocks {:?}", self.storage.get_doc_clocks(None).await?);
+    self.storage.close().await;
     Ok(())
   }
 }

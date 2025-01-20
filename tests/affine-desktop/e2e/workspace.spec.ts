@@ -21,6 +21,7 @@ test('check workspace has a DB file', async ({ appInfo, workspace }) => {
   const dbPath = path.join(
     appInfo.sessionData,
     'workspaces',
+    'local',
     w.meta.id,
     'storage.db'
   );
@@ -28,8 +29,7 @@ test('check workspace has a DB file', async ({ appInfo, workspace }) => {
   expect(await fs.exists(dbPath)).toBe(true);
 });
 
-// TODO(@eyhn): fix this
-test.skip('export then add', async ({ page, appInfo, workspace }) => {
+test('export then add', async ({ page, appInfo, workspace }) => {
   await clickNewPageButton(page);
   const w = await workspace.current();
 

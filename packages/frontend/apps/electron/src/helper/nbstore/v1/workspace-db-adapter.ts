@@ -67,6 +67,10 @@ export class WorkspaceSQLiteDB {
     }
   };
 
+  async getDocTimestamps() {
+    return this.adapter.getDocTimestamps();
+  }
+
   async addBlob(key: string, value: Uint8Array) {
     this.update$.next();
     const res = await this.adapter.addBlob(key, value);

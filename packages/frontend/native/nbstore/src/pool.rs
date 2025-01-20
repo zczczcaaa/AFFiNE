@@ -46,9 +46,13 @@ impl SqliteDocStoragePool {
   }
 
   pub async fn disconnect(&self, universal_id: String) -> Result<()> {
-    let storage = self.ensure_storage(universal_id.to_owned())?;
-    storage.close().await;
-    self.inner.remove(&universal_id);
+    let entry = self.inner.entry(universal_id);
+
+    if let Entry::Occupied(entry) = entry {
+      let storage = entry.remove();
+      storage.close().await;
+    }
+
     Ok(())
   }
 }

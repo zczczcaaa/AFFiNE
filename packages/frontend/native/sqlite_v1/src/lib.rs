@@ -26,6 +26,12 @@ pub struct UpdateRow {
 }
 
 #[napi(object)]
+pub struct DocTimestampRow {
+  pub doc_id: Option<String>,
+  pub timestamp: NaiveDateTime,
+}
+
+#[napi(object)]
 pub struct InsertRow {
   pub doc_id: Option<String>,
   pub data: Uint8Array,
@@ -143,6 +149,20 @@ impl SqliteConnection {
       .await
       .map_err(anyhow::Error::from)?,
     };
+    Ok(updates)
+  }
+
+  #[napi]
+  pub async fn get_doc_timestamps(&self) -> napi::Result<Vec<DocTimestampRow>> {
+    // get the greatest timestamp of each doc_id
+    let updates = sqlx::query_as!(
+      DocTimestampRow,
+      "SELECT doc_id, MAX(timestamp) as timestamp FROM updates GROUP BY doc_id"
+    )
+    .fetch_all(&self.pool)
+    .await
+    .map_err(anyhow::Error::from)?;
+
     Ok(updates)
   }
 

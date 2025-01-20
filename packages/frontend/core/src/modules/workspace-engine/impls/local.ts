@@ -1,5 +1,9 @@
 import { DebugLogger } from '@affine/debug';
-import type { BlobStorage, DocStorage } from '@affine/nbstore';
+import {
+  type BlobStorage,
+  type DocStorage,
+  universalId,
+} from '@affine/nbstore';
 import {
   IndexedDBBlobStorage,
   IndexedDBDocStorage,
@@ -101,11 +105,13 @@ class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
   async deleteWorkspace(id: string): Promise<void> {
     setLocalWorkspaceIds(ids => ids.filter(x => x !== id));
 
+    // TODO(@forehalo): deleting logic for indexeddb workspaces
     if (BUILD_CONFIG.isElectron) {
       const electronApi = this.framework.get(DesktopApiService);
-      await electronApi.handler.workspace.delete(id);
+      await electronApi.handler.workspace.moveToTrash(
+        universalId({ peer: 'local', type: 'workspace', id })
+      );
     }
-
     // notify all browser tabs, so they can update their workspace list
     this.notifyChannel.postMessage(id);
   }
