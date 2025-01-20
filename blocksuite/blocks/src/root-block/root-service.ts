@@ -50,15 +50,4 @@ export abstract class RootService extends BlockService {
     const viewportElement = rootComponent.viewportElement;
     return viewportElement;
   }
-
-  override mounted() {
-    super.mounted();
-
-    this.disposables.add(
-      this.std.event.add('pointerDown', ctx => {
-        const state = ctx.get('pointerState');
-        state.raw.stopPropagation();
-      })
-    );
-  }
 }

@@ -201,40 +201,6 @@ export class AffinePageDraggingAreaWidget extends WidgetComponent<
     super.connectedCallback();
 
     this.handleEvent(
-      'pointerDown',
-      ctx => {
-        const container = this.block.rootElementContainer;
-        if (!container) return;
-
-        const currentFocus = document.activeElement;
-        if (!container.contains(currentFocus)) {
-          return;
-        }
-
-        const containerRect = container.getBoundingClientRect();
-        const containerStyles = window.getComputedStyle(container);
-        const paddingLeft = parseFloat(containerStyles.paddingLeft);
-        const paddingRight = parseFloat(containerStyles.paddingRight);
-        const state = ctx.get('pointerState');
-        const raw = state.raw;
-
-        if (
-          raw.clientX > containerRect.left + paddingLeft &&
-          raw.clientX < containerRect.right - paddingRight &&
-          raw.clientY > containerRect.top &&
-          raw.clientY < containerRect.bottom
-        ) {
-          return;
-        }
-
-        state.raw.preventDefault();
-      },
-      {
-        global: true,
-      }
-    );
-
-    this.handleEvent(
       'dragStart',
       ctx => {
         const state = ctx.get('pointerState');
