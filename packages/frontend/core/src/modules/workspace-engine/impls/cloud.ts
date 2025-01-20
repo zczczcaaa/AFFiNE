@@ -348,6 +348,8 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
     await storage.connection.waitForConnected();
     const localBlob = await storage.get(blob);
 
+    storage.connection.disconnect();
+
     if (localBlob) {
       return new Blob([localBlob.data], { type: localBlob.mime });
     }

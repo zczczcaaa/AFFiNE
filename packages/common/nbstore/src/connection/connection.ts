@@ -24,7 +24,9 @@ export interface Connection<T = any> {
 export abstract class AutoReconnectConnection<T = any>
   implements Connection<T>
 {
-  private readonly event = new EventEmitter2();
+  private readonly event = new EventEmitter2({
+    maxListeners: 100,
+  });
   private _inner: T | undefined = undefined;
   private _status: ConnectionStatus = 'idle';
   private _error: Error | undefined = undefined;
@@ -168,14 +170,16 @@ export abstract class AutoReconnectConnection<T = any>
         return;
       }
 
-      this.onStatusChanged(status => {
+      const off = this.onStatusChanged(status => {
         if (status === 'connected') {
           resolve();
+          off();
         }
       });
 
       signal?.addEventListener('abort', reason => {
         reject(reason);
+        off();
       });
     });
   }
