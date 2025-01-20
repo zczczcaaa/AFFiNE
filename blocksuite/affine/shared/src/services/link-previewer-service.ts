@@ -1,7 +1,9 @@
 import type { LinkPreviewData } from '@blocksuite/affine-model';
-import { DEFAULT_LINK_PREVIEW_ENDPOINT } from '@blocksuite/affine-shared/consts';
-import { isAbortError } from '@blocksuite/affine-shared/utils';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
+import { StoreExtension } from '@blocksuite/store';
+
+import { DEFAULT_LINK_PREVIEW_ENDPOINT } from '../consts';
+import { isAbortError } from '../utils/is-abort-error';
 
 export type LinkPreviewResponseData = {
   url: string;
@@ -16,7 +18,9 @@ export type LinkPreviewResponseData = {
   favicons?: string[];
 };
 
-export class LinkPreviewer {
+export class LinkPreviewerService extends StoreExtension {
+  static override key = 'link-previewer';
+
   private _endpoint = DEFAULT_LINK_PREVIEW_ENDPOINT;
 
   query = async (
@@ -77,23 +81,19 @@ export class LinkPreviewer {
 
       const data: LinkPreviewResponseData = await response.json();
       return {
-        title: data.title ? this._getStringFromHTML(data.title) : null,
-        description: data.description
-          ? this._getStringFromHTML(data.description)
-          : null,
+        title: data.title ?? null,
+        description: data.description ?? null,
         icon: data.favicons?.[0],
         image: data.images?.[0],
       };
     }
   };
 
+  get endpoint() {
+    return this._endpoint;
+  }
+
   setEndpoint = (endpoint: string) => {
     this._endpoint = endpoint;
   };
-
-  private _getStringFromHTML(html: string) {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent;
-  }
 }

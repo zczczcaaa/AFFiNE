@@ -22,12 +22,9 @@ import { ViewService } from '@affine/core/modules/workbench/services/view';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { i18nTime } from '@affine/i18n';
 import {
-  BookmarkBlockService,
   customImageProxyMiddleware,
-  EmbedGithubBlockService,
-  EmbedLoomBlockService,
-  EmbedYoutubeBlockService,
   ImageBlockService,
+  LinkPreviewerService,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
@@ -159,14 +156,9 @@ const DetailPageImpl = () => {
       ImageBlockService.setImageProxyURL(BUILD_CONFIG.imageProxyUrl);
 
       // provide link preview endpoint to blocksuite
-      BookmarkBlockService.setLinkPreviewEndpoint(BUILD_CONFIG.linkPreviewUrl);
-      EmbedGithubBlockService.setLinkPreviewEndpoint(
-        BUILD_CONFIG.linkPreviewUrl
-      );
-      EmbedYoutubeBlockService.setLinkPreviewEndpoint(
-        BUILD_CONFIG.linkPreviewUrl
-      );
-      EmbedLoomBlockService.setLinkPreviewEndpoint(BUILD_CONFIG.linkPreviewUrl);
+      editorHost?.doc
+        .get(LinkPreviewerService)
+        .setEndpoint(BUILD_CONFIG.linkPreviewUrl);
 
       // provide page mode and updated date to blocksuite
       const refNodeService = editorHost?.std.getOptional(RefNodeSlotsProvider);

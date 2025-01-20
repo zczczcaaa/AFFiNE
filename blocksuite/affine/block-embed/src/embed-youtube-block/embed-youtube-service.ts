@@ -3,20 +3,17 @@ import {
   type EmbedYoutubeModel,
   EmbedYoutubeStyles,
 } from '@blocksuite/affine-model';
-import { EmbedOptionProvider } from '@blocksuite/affine-shared/services';
+import {
+  EmbedOptionProvider,
+  LinkPreviewerService,
+} from '@blocksuite/affine-shared/services';
 import { BlockService } from '@blocksuite/block-std';
 
-import { LinkPreviewer } from '../common/link-previewer.js';
 import { youtubeUrlRegex } from './embed-youtube-model.js';
 import { queryEmbedYoutubeData } from './utils.js';
 
 export class EmbedYoutubeBlockService extends BlockService {
   static override readonly flavour = EmbedYoutubeBlockSchema.model.flavour;
-
-  private static readonly linkPreviewer = new LinkPreviewer();
-
-  static setLinkPreviewEndpoint =
-    EmbedYoutubeBlockService.linkPreviewer.setEndpoint;
 
   queryUrlData = (
     embedYoutubeModel: EmbedYoutubeModel,
@@ -24,7 +21,7 @@ export class EmbedYoutubeBlockService extends BlockService {
   ) => {
     return queryEmbedYoutubeData(
       embedYoutubeModel,
-      EmbedYoutubeBlockService.linkPreviewer,
+      this.doc.get(LinkPreviewerService),
       signal
     );
   };

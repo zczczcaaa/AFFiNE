@@ -40,6 +40,7 @@ import {
   EditPropsStore,
   FeatureFlagService,
   FontLoaderService,
+  LinkPreviewerService,
 } from '@blocksuite/affine-shared/services';
 import {
   BlockSelectionExtension,
@@ -99,4 +100,5 @@ export const StoreExtensions: ExtensionType[] = [
   HighlightSelectionExtension,
   ImageSelectionExtension,
   DatabaseSelectionExtension,
+  LinkPreviewerService,
 ];

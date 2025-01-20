@@ -23,10 +23,6 @@ export { createEmbedBlockMarkdownAdapterMatcher } from './common/adapters/markdo
 export { createEmbedBlockPlainTextAdapterMatcher } from './common/adapters/plain-text';
 export { EmbedBlockComponent } from './common/embed-block-element';
 export { insertEmbedCard } from './common/insert-embed-card.js';
-export {
-  LinkPreviewer,
-  type LinkPreviewResponseData,
-} from './common/link-previewer.js';
 export * from './common/render-linked-doc';
 export { toEdgelessEmbedBlock } from './common/to-edgeless-embed-block';
 export * from './common/utils';

@@ -7,6 +7,7 @@ export * from './embed-option-service';
 export * from './feature-flag-service';
 export * from './font-loader';
 export * from './generate-url-service';
+export * from './link-previewer-service';
 export * from './native-clipboard-service';
 export * from './notification-service';
 export * from './open-doc-config';
