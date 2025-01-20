@@ -20,7 +20,6 @@ import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import type { AFFINE_DRAG_HANDLE_WIDGET } from './consts.js';
-import { PreviewHelper } from './helpers/preview-helper.js';
 import { RectHelper } from './helpers/rect-helper.js';
 import { SelectionHelper } from './helpers/selection-helper.js';
 import { styles } from './styles.js';
@@ -142,8 +141,6 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
   noteScale = signal(1);
 
   pointerEventWatcher = new PointerEventWatcher(this);
-
-  previewHelper = new PreviewHelper(this);
 
   scale = signal(1);
 

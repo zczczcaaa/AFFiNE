@@ -9,6 +9,7 @@ import { NodePropsSchema } from '../utils/index.js';
 export const GeneralSettingSchema = z
   .object({
     edgelessScrollZoom: z.boolean().default(false),
+    edgelessDisableScheduleUpdate: z.boolean().default(false),
   })
   .merge(NodePropsSchema);
 

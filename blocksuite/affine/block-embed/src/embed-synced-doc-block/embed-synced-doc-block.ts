@@ -14,6 +14,9 @@ import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import {
   DocDisplayMetaProvider,
   DocModeProvider,
+  EditorSettingExtension,
+  EditorSettingProvider,
+  GeneralSettingSchema,
   ThemeExtensionIdentifier,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
@@ -30,7 +33,7 @@ import {
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { assertExists, Bound, getCommonBound } from '@blocksuite/global/utils';
 import { type GetBlocksOptions, type Query, Text } from '@blocksuite/store';
-import { computed } from '@preact/signals-core';
+import { computed, signal } from '@preact/signals-core';
 import { html, nothing, type PropertyValues } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
@@ -114,6 +117,9 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
     const nextDepth = this.depth + 1;
     const previewSpecBuilder = SpecProvider.getInstance().getSpec(name);
     const currentDisposables = this.disposables;
+    const editorSetting =
+      this.std.getOptional(EditorSettingProvider) ??
+      signal(GeneralSettingSchema.parse({}));
 
     class EmbedSyncedDocWatcher extends BlockServiceWatcher {
       static override readonly flavour = 'affine:embed-synced-doc';
@@ -139,7 +145,10 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       }
     }
 
-    previewSpecBuilder.extend([EmbedSyncedDocWatcher]);
+    previewSpecBuilder.extend([
+      EmbedSyncedDocWatcher,
+      EditorSettingExtension(editorSetting),
+    ]);
 
     return previewSpecBuilder.value;
   };

@@ -1,25 +1,17 @@
-import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import {
-  type BlockComponent,
-  BlockStdScope,
-  type DndEventState,
-} from '@blocksuite/block-std';
-import { Point } from '@blocksuite/global/utils';
+  DocModeExtension,
+  DocModeProvider,
+  EditorSettingExtension,
+  EditorSettingProvider,
+} from '@blocksuite/affine-shared/services';
+import { SpecProvider } from '@blocksuite/affine-shared/utils';
+import { BlockStdScope } from '@blocksuite/block-std';
 import { type BlockViewType, type Query } from '@blocksuite/store';
+import { signal } from '@preact/signals-core';
 
-import { DragPreview } from '../components/drag-preview.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 
 export class PreviewHelper {
-  private readonly _calculatePreviewOffset = (
-    blocks: BlockComponent[],
-    state: DndEventState
-  ) => {
-    const { top, left } = blocks[0].getBoundingClientRect();
-    const previewOffset = new Point(state.raw.x - left, state.raw.y - top);
-    return previewOffset;
-  };
-
   private readonly _calculateQuery = (selectedIds: string[]): Query => {
     const ids: Array<{ id: string; viewType: BlockViewType }> = selectedIds.map(
       id => ({
@@ -55,52 +47,34 @@ export class PreviewHelper {
     };
   };
 
-  createDragPreview = (
-    blocks: BlockComponent[],
-    state: DndEventState,
-    dragPreviewEl?: HTMLElement,
-    dragPreviewOffset?: Point
-  ): DragPreview => {
-    let dragPreview: DragPreview;
-    if (dragPreviewEl) {
-      dragPreview = new DragPreview(dragPreviewOffset);
-      dragPreview.append(dragPreviewEl);
-    } else {
-      let width = 0;
-      blocks.forEach(element => {
-        width = Math.max(width, element.getBoundingClientRect().width);
-      });
+  renderDragPreview = (blockIds: string[], container: HTMLElement): void => {
+    const widget = this.widget;
+    const std = widget.std;
+    const docModeService = std.get(DocModeProvider);
+    const editorSetting = std.get(EditorSettingProvider).peek();
+    const query = this._calculateQuery(blockIds as string[]);
+    const store = widget.doc.doc.getStore({ query });
+    const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
+    const settingSignal = signal({ ...editorSetting });
+    previewSpec.extend([
+      DocModeExtension(docModeService),
+      EditorSettingExtension(settingSignal),
+    ]);
 
-      const selectedIds = blocks.map(block => block.model.id);
+    settingSignal.value = {
+      ...settingSignal.value,
+      edgelessDisableScheduleUpdate: true,
+    };
 
-      const query = this._calculateQuery(selectedIds);
+    const previewStd = new BlockStdScope({
+      store,
+      extensions: previewSpec.value,
+    });
+    const previewTemplate = previewStd.render();
+    const noteBlock = this.widget.host.querySelector('affine-note');
 
-      const store = this.widget.doc.doc.getStore({ query });
-
-      const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
-      const previewStd = new BlockStdScope({
-        store,
-        extensions: previewSpec.value,
-      });
-      const previewTemplate = previewStd.render();
-
-      const offset = this._calculatePreviewOffset(blocks, state);
-      const posX = state.raw.x - offset.x;
-      const posY = state.raw.y - offset.y;
-      const altKey = state.raw.altKey;
-
-      dragPreview = new DragPreview(offset);
-      dragPreview.template = previewTemplate;
-      dragPreview.onRemove = () => {
-        this.widget.doc.doc.clearQuery(query);
-      };
-      dragPreview.style.width = `${width / this.widget.scaleInNote.peek()}px`;
-      dragPreview.style.transform = `translate(${posX}px, ${posY}px) scale(${this.widget.scaleInNote.peek()})`;
-
-      dragPreview.style.opacity = altKey ? '1' : '0.5';
-    }
-    this.widget.rootComponent.append(dragPreview);
-    return dragPreview;
+    container.style.width = `${noteBlock?.offsetWidth ?? noteBlock?.clientWidth ?? 500}px`;
+    container.append(previewTemplate);
   };
 
   constructor(readonly widget: AffineDragHandleWidget) {}

@@ -20,12 +20,11 @@ import {
   getRectByBlockComponent,
   getScrollContainer,
   matchFlavours,
-  SpecProvider,
 } from '@blocksuite/affine-shared/utils';
 import {
   type BlockComponent,
   BlockSelection,
-  BlockStdScope,
+  type BlockStdScope,
   type DragFromBlockSuite,
   type DragPayload,
   type DropPayload,
@@ -37,6 +36,7 @@ import { Slice, type SliceSnapshot } from '@blocksuite/store';
 
 import { DropIndicator } from '../components/drop-indicator.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
+import { PreviewHelper } from '../helpers/preview-helper.js';
 import { newIdCrossDoc } from '../middleware/new-id-cross-doc.js';
 import { reorderList } from '../middleware/reorder-list';
 import { surfaceRefToEmbed } from '../middleware/surface-ref-to-embed.js';
@@ -63,6 +63,8 @@ declare module '@blocksuite/block-std' {
 }
 export class DragEventWatcher {
   dropIndicator: null | DropIndicator = null;
+
+  previewHelper = new PreviewHelper(this.widget);
 
   get host() {
     return this.widget.host;
@@ -668,21 +670,10 @@ export class DragEventWatcher {
             return;
           }
 
-          const query = widget.previewHelper['_calculateQuery'](
-            source.data?.bsEntity?.modelIds as string[]
+          this.previewHelper.renderDragPreview(
+            source.data?.bsEntity?.modelIds,
+            container
           );
-          const store = widget.doc.doc.getStore({ query });
-          const previewSpec =
-            SpecProvider.getInstance().getSpec('page:preview');
-          const previewStd = new BlockStdScope({
-            store,
-            extensions: previewSpec.value,
-          });
-          const previewTemplate = previewStd.render();
-          const noteBlock = this.widget.host.querySelector('affine-note');
-
-          container.style.width = `${noteBlock?.offsetWidth ?? noteBlock?.clientWidth ?? 500}px`;
-          container.append(previewTemplate);
         },
         setDragData: () => {
           const { snapshot } = this._getSnapshotFromHoveredBlocks();
@@ -833,20 +824,10 @@ export class DragEventWatcher {
                 return;
               }
 
-              const query = widget.previewHelper['_calculateQuery'](
-                source.data?.bsEntity?.modelIds as string[]
+              this.previewHelper.renderDragPreview(
+                source.data?.bsEntity?.modelIds,
+                container
               );
-              const store = widget.doc.doc.getStore({ query });
-              const previewSpec =
-                SpecProvider.getInstance().getSpec('page:preview');
-              const previewStd = new BlockStdScope({
-                store,
-                extensions: previewSpec.value,
-              });
-              const previewTemplate = previewStd.render();
-
-              container.style.width = `${std.host.clientWidth || std.host.offsetWidth || 500}px`;
-              container.append(previewTemplate);
             },
             setDragData: () => {
               const { snapshot } = this._getDraggedBlock(view);
