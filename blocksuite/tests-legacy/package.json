@@ -14,7 +14,7 @@
     "@blocksuite/global": "workspace:*",
     "@blocksuite/presets": "workspace:*",
     "@playwright/test": "=1.49.1",
-    "@toeverything/theme": "^1.1.6"
+    "@toeverything/theme": "^1.1.7"
   },
   "bsImport": {
     "@atlaskit/pragmatic-drag-and-drop/element/adapter": "@atlaskit/pragmatic-drag-and-drop/dist/cjs/entry-point/element/adapter.js",
