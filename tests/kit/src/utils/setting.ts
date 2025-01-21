@@ -50,3 +50,10 @@ export async function clickUserInfoCard(page: Page) {
     delay: 50,
   });
 }
+
+export async function closeSettingModal(page: Page) {
+  await page
+    .getByTestId('setting-modal')
+    .getByTestId('modal-close-button')
+    .click();
+}

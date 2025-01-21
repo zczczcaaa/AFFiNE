@@ -134,8 +134,8 @@ test('should not switch shapes in editing', async ({ page }) => {
 
   await type(page, 'hello');
   await page.keyboard.press('Shift+s');
-  await page.keyboard.press('Escape');
-  await waitNextFrame(page);
+  await pressEscape(page);
+  await waitNextFrame(page, 200);
   await setEdgelessTool(page, 'shape');
   await assertEdgelessShapeType(page, 'rect');
 
@@ -143,8 +143,9 @@ test('should not switch shapes in editing', async ({ page }) => {
   await page.mouse.dblclick(250, 200);
   await waitNextFrame(page);
   await page.keyboard.press('Shift+S');
-  await page.keyboard.press('Escape');
+  await pressEscape(page);
   await waitNextFrame(page);
+  await waitNextFrame(page, 200);
   await setEdgelessTool(page, 'shape');
   await assertEdgelessShapeType(page, 'rect');
 });

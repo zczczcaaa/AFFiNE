@@ -182,6 +182,12 @@ export class OutlineViewer extends SignalWatcher(WithDisposable(LitElement)) {
         }
       )
     );
+
+    this.disposables.add(
+      this.editor.doc.workspace.meta.docMetaUpdated.on(() => {
+        this.requestUpdate();
+      })
+    );
   }
 
   override disconnectedCallback() {

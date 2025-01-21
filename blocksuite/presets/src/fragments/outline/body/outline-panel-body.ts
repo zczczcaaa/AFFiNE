@@ -190,10 +190,14 @@ export class OutlinePanelBody extends SignalWatcher(
     )
       return;
 
-    this.edgeless?.service.selection.set({
-      elements: selectedVisibleNotes,
-      editing: false,
-    });
+    if (this.edgeless) {
+      this.edgeless.service.selection.set({
+        elements: selectedVisibleNotes,
+        editing: false,
+      });
+    } else {
+      this._selectedNotes$.value = selectedVisibleNotes;
+    }
 
     this._dragging = true;
 
@@ -452,10 +456,14 @@ export class OutlinePanelBody extends SignalWatcher(
       selectedNotes = [id];
     }
 
-    this.edgeless?.service.selection.set({
-      elements: selectedNotes,
-      editing: false,
-    });
+    if (this.edgeless) {
+      this.edgeless?.service.selection.set({
+        elements: selectedNotes,
+        editing: false,
+      });
+    } else {
+      this._selectedNotes$.value = selectedNotes;
+    }
   }
 
   private _setDocDisposables() {
@@ -549,25 +557,15 @@ export class OutlinePanelBody extends SignalWatcher(
     this.disposables.add(
       effect(() => {
         const { std, doc, mode } = this.editor;
+        if (mode !== 'edgeless') return;
 
-        const currSelectedNotes =
-          mode === 'edgeless'
-            ? std.selection
-                .filter(SurfaceSelection)
-                .filter(({ blockId }) => {
-                  const model = doc.getBlock(blockId)?.model;
-                  return !!model && matchFlavours(model, ['affine:note']);
-                })
-                .map(({ blockId }) => blockId)
-            : (std.command.exec('getSelectedModels').selectedModels ?? [])
-                .map(model => {
-                  let parent = model.parent;
-                  while (parent && !matchFlavours(parent, ['affine:note'])) {
-                    parent = parent.parent;
-                  }
-                  return parent ? [parent.id] : [];
-                })
-                .flat();
+        const currSelectedNotes = std.selection
+          .filter(SurfaceSelection)
+          .filter(({ blockId }) => {
+            const model = doc.getBlock(blockId)?.model;
+            return !!model && matchFlavours(model, ['affine:note']);
+          })
+          .map(({ blockId }) => blockId);
 
         const preSelected = this._selectedNotes$.peek();
         if (

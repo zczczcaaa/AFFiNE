@@ -25,9 +25,11 @@ export const withCtrlOrMeta = async (page: Page, fn: () => Promise<void>) => {
   await keyUpCtrlOrMeta(page);
 };
 
-export async function pressEnter(page: Page) {
+export async function pressEnter(page: Page, count = 1) {
   // avoid flaky test by simulate real user input
-  await page.keyboard.press('Enter', { delay: 50 });
+  for (let i = 0; i < count; i++) {
+    await page.keyboard.press('Enter', { delay: 50 });
+  }
 }
 
 export async function pressTab(page: Page) {
@@ -44,6 +46,12 @@ export async function pressShiftEnter(page: Page) {
   await page.keyboard.down('Shift');
   await page.keyboard.press('Enter', { delay: 50 });
   await page.keyboard.up('Shift');
+}
+
+export async function pressBackspace(page: Page, count = 1) {
+  for (let i = 0; i < count; i++) {
+    await page.keyboard.press('Backspace', { delay: 50 });
+  }
 }
 
 export async function copyByKeyboard(page: Page) {
