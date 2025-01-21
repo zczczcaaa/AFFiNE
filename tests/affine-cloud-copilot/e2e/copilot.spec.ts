@@ -431,6 +431,15 @@ test.describe('chat panel', () => {
     expect(history[1].name).toBe('AFFiNE AI');
     expect(await page.locator('chat-panel affine-link').count()).toBe(0);
   });
+
+  test('can trigger inline ai input and action panel by clicking Start with AI button', async ({
+    page,
+  }) => {
+    await clickNewPageButton(page);
+    await page.getByTestId('start-with-ai-badge').click();
+    await expect(page.locator('affine-ai-panel-widget')).toBeVisible();
+    await expect(page.locator('ask-ai-panel')).toBeVisible();
+  });
 });
 
 test.describe('chat with block', () => {

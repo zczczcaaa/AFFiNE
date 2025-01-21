@@ -1,11 +1,14 @@
 import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
-import type {
-  AffineAIPanelWidget,
-  AffineAIPanelWidgetConfig,
-  AIError,
+import {
+  type AffineAIPanelWidget,
+  type AffineAIPanelWidgetConfig,
+  type AIError,
+  type AIItemGroupConfig,
+  createLitPortal,
 } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
-import type { TemplateResult } from 'lit';
+import { flip, offset } from '@floating-ui/dom';
+import { html, type TemplateResult } from 'lit';
 
 import {
   buildCopyConfig,
@@ -207,7 +210,10 @@ export function actionToHandler<T extends keyof BlockSuitePresets.AIActions>(
   };
 }
 
-export function handleInlineAskAIAction(host: EditorHost) {
+export function handleInlineAskAIAction(
+  host: EditorHost,
+  actionGroups?: AIItemGroupConfig[]
+) {
   const panel = getAIPanelWidget(host);
   const selection = host.selection.find(TextSelection);
   const lastBlockPath = selection
@@ -216,6 +222,7 @@ export function handleInlineAskAIAction(host: EditorHost) {
   if (!lastBlockPath) return;
   const block = host.view.getBlock(lastBlockPath);
   if (!block) return;
+
   const generateAnswer: AffineAIPanelWidgetConfig['generateAnswer'] = ({
     finish,
     input,
@@ -244,7 +251,54 @@ export function handleInlineAskAIAction(host: EditorHost) {
       })
       .catch(console.error);
   };
-  assertExists(panel.config);
+  if (!panel.config) return;
+
   panel.config.generateAnswer = generateAnswer;
+
+  if (!actionGroups) {
+    panel.toggle(block);
+    return;
+  }
+
+  let actionPanel: HTMLDivElement | null = null;
+  let abortController: AbortController | null = null;
+  const clear = () => {
+    abortController?.abort();
+    actionPanel = null;
+    abortController = null;
+  };
+
+  panel.config.inputCallback = text => {
+    if (!actionPanel) return;
+    actionPanel.style.visibility = text ? 'hidden' : 'visible';
+  };
+  panel.config.hideCallback = () => {
+    clear();
+  };
+
   panel.toggle(block);
+
+  setTimeout(() => {
+    abortController = new AbortController();
+    actionPanel = createLitPortal({
+      template: html`
+        <ask-ai-panel
+          .host=${host}
+          .actionGroups=${actionGroups}
+          .onItemClick=${() => {
+            panel.restoreSelection();
+            clear();
+          }}
+        ></ask-ai-panel>
+      `,
+      computePosition: {
+        referenceElement: panel,
+        placement: 'top-start',
+        middleware: [flip(), offset({ mainAxis: 3 })],
+        autoUpdate: true,
+      },
+      abortController: abortController,
+      closeOnClickAway: true,
+    });
+  }, 0);
 }

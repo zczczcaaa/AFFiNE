@@ -117,14 +117,16 @@ export class PageRootBlockComponent extends BlockComponent<
   /**
    * Focus the first paragraph in the default note block.
    * If there is no paragraph, create one.
+   * @return  { id: string, created: boolean }  id of the focused paragraph and whether it is created or not
    */
-  focusFirstParagraph = () => {
+  focusFirstParagraph = (): { id: string; created: boolean } => {
     const defaultNote = this._getDefaultNoteBlock();
     const firstText = defaultNote?.children.find(block =>
       matchFlavours(block, ['affine:paragraph', 'affine:list', 'affine:code'])
     );
     if (firstText) {
       focusTextModel(this.std, firstText.id);
+      return { id: firstText.id, created: false };
     } else {
       const newFirstParagraphId = this.doc.addBlock(
         'affine:paragraph',
@@ -133,6 +135,7 @@ export class PageRootBlockComponent extends BlockComponent<
         0
       );
       focusTextModel(this.std, newFirstParagraphId);
+      return { id: newFirstParagraphId, created: true };
     }
   };
 
