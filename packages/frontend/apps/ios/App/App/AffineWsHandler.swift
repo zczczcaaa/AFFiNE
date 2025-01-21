@@ -168,7 +168,7 @@ class AffineWsHandler: NSObject, WKURLSchemeHandler {
   
   func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     urlSchemeTask.stopped?.withLock({
-      $0 = false
+      $0 = true
     })
     urlSchemeTask.wsTask?.cancel(with: .abnormalClosure, reason: "Closed".data(using: .utf8))
   }
@@ -180,7 +180,7 @@ private extension WKURLSchemeTask {
       return objc_getAssociatedObject(self, &stoppedKey) as? Mutex<Bool> ?? nil
     }
     set {
-      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_RETAIN)
     }
   }
   var wsTask: URLSessionWebSocketTask? {
@@ -188,7 +188,7 @@ private extension WKURLSchemeTask {
       return objc_getAssociatedObject(self, &wsTaskKey) as? URLSessionWebSocketTask
     }
     set {
-      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &wsTaskKey, newValue, .OBJC_ASSOCIATION_RETAIN)
     }
   }
 }

@@ -53,8 +53,8 @@ class AffineHttpHandler: NSObject, WKURLSchemeHandler {
       request.setValue(value, forHTTPHeaderField: key)
     }
     
-    URLSession.shared.dataTask(with: request) {
-      rawData, rawResponse, error in
+    let task = URLSession.shared.dataTask(with: request) {
+      (rawData, rawResponse, error) in
       urlSchemeTask.stopped?.withLock({
         if $0 {
           return
@@ -91,12 +91,16 @@ class AffineHttpHandler: NSObject, WKURLSchemeHandler {
         }
       })
     }
+    task.resume()
+    
+    urlSchemeTask.dataTask = task
   }
   
   func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     urlSchemeTask.stopped?.withLock({
       $0 = true
     })
+    urlSchemeTask.dataTask?.cancel()
   }
 }
 
@@ -106,9 +110,18 @@ private extension WKURLSchemeTask {
       return objc_getAssociatedObject(self, &stoppedKey) as? Mutex<Bool> ?? nil
     }
     set {
-      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_ASSIGN)
+      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_RETAIN)
+    }
+  }
+  var dataTask: URLSessionDataTask? {
+    get {
+      return objc_getAssociatedObject(self, &dataTaskKey) as? URLSessionDataTask
+    }
+    set {
+      objc_setAssociatedObject(self, &dataTaskKey, newValue, .OBJC_ASSOCIATION_RETAIN)
     }
   }
 }
 
 private var stoppedKey = malloc(1)
+private var dataTaskKey = malloc(1)

@@ -14,25 +14,25 @@ import '@affine/core/bootstrap/browser';
  */
 const rawFetch = globalThis.fetch;
 globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-  const url = new URL(
+  let url = new URL(
     typeof input === 'string'
       ? input
       : input instanceof URL
         ? input.toString()
         : input.url,
     globalThis.location.origin
-  );
+  ).href;
 
-  if (url.protocol === 'capacitor:') {
+  if (url.startsWith('capacitor:')) {
     return rawFetch(input, init);
   }
 
-  if (url.protocol === 'http:') {
-    url.protocol = 'affine-http:';
+  if (url.startsWith('http:')) {
+    url = 'affine-http:' + url.slice(5);
   }
 
-  if (url.protocol === 'https:') {
-    url.protocol = 'affine-https:';
+  if (url.startsWith('https:')) {
+    url = 'affine-https:' + url.slice(6);
   }
 
   return rawFetch(url, input instanceof Request ? input : init);
