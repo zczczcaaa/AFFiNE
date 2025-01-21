@@ -222,7 +222,7 @@ export class SyncController {
         if (signalKey in this.model) {
           this._mutex(() => {
             // @ts-expect-error allow magic props
-            this.model[signalKey].value = this.model[name];
+            this.model[signalKey].value = y2Native(value);
           });
         }
       },

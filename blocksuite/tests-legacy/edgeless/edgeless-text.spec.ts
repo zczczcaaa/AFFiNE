@@ -494,6 +494,9 @@ test.describe('edgeless text block', () => {
     await page.locator('affine-latex-node').click();
     await waitNextFrame(page);
     await type(page, 'ccc');
+    const menu = page.locator('latex-editor-menu');
+    const confirm = menu.locator('.latex-editor-confirm');
+    await confirm.click();
     await assertRichTextInlineDeltas(
       page,
       [
@@ -507,6 +510,7 @@ test.describe('edgeless text block', () => {
       1
     );
 
+    await page.locator('affine-latex-node').click();
     await page.locator('.latex-editor-hint').click();
     await type(page, 'sss');
     await assertRichTextInlineDeltas(
@@ -524,6 +528,7 @@ test.describe('edgeless text block', () => {
     await page.locator('latex-editor-unit').click();
     await selectAllByKeyboard(page);
     await type(page, 'sss');
+    await confirm.click();
     await assertRichTextInlineDeltas(
       page,
       [

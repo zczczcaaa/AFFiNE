@@ -27,12 +27,25 @@ const pageSchema = defineBlockSchema({
     version: 1,
   },
 });
+
+const tableSchema = defineBlockSchema({
+  flavour: 'table',
+  props: () => ({
+    cols: {} as Record<string, { color: string }>,
+    rows: [] as Array<{ color: string }>,
+  }),
+  metadata: {
+    role: 'content',
+    version: 1,
+  },
+});
 type RootModel = SchemaToModel<typeof pageSchema>;
+type TableModel = SchemaToModel<typeof tableSchema>;
 
 function createTestOptions() {
   const idGenerator = createAutoIncrementIdGenerator();
   const schema = new Schema();
-  schema.register([pageSchema]);
+  schema.register([pageSchema, tableSchema]);
   return { id: 'test-collection', idGenerator, schema };
 }
 
@@ -248,4 +261,103 @@ test('on change', () => {
   expect(model.boxed$.value.getValue()!.toJSON()).toEqual({
     foo: 0,
   });
+});
+
+test('deep sync', () => {
+  const doc = createTestDoc();
+  const yDoc = new Y.Doc();
+  const yBlock = yDoc.getMap('yBlock') as YBlock;
+  yBlock.set('sys:id', '0');
+  yBlock.set('sys:flavour', 'table');
+  yBlock.set('sys:children', new Y.Array());
+
+  const onPropsUpdated = vi.fn();
+  const block = new Block(doc.schema, yBlock, doc, {
+    onChange: onPropsUpdated,
+  });
+  const model = block.model as TableModel;
+  expect(model.cols).toEqual({});
+  expect(model.rows).toEqual([]);
+
+  model.cols = {
+    '1': { color: 'red' },
+  };
+  const onColsUpdated = vi.fn();
+  const onRowsUpdated = vi.fn();
+  effect(() => {
+    onColsUpdated(model.cols$.value);
+  });
+  effect(() => {
+    onRowsUpdated(model.rows$.value);
+  });
+  const getColsMap = () => yBlock.get('prop:cols') as Y.Map<unknown>;
+  const getRowsArr = () => yBlock.get('prop:rows') as Y.Array<unknown>;
+  expect(getColsMap().toJSON()).toEqual({
+    '1': { color: 'red' },
+  });
+  expect(model.cols$.value).toEqual({
+    '1': { color: 'red' },
+  });
+
+  onPropsUpdated.mockClear();
+  onColsUpdated.mockClear();
+
+  model.cols['2'] = { color: 'blue' };
+  expect(getColsMap().toJSON()).toEqual({
+    '1': { color: 'red' },
+    '2': { color: 'blue' },
+  });
+  expect(onColsUpdated).toHaveBeenCalledWith({
+    '1': { color: 'red' },
+    '2': { color: 'blue' },
+  });
+  expect(onPropsUpdated).toHaveBeenCalledTimes(1);
+  expect(onColsUpdated).toHaveBeenCalledTimes(1);
+
+  onPropsUpdated.mockClear();
+  onColsUpdated.mockClear();
+
+  const map = new Y.Map();
+  map.set('color', 'green');
+  getColsMap().set('3', map);
+  expect(onPropsUpdated).toHaveBeenCalledWith(
+    expect.anything(),
+    'cols',
+    expect.anything()
+  );
+  expect(onColsUpdated).toHaveBeenCalledWith({
+    '1': { color: 'red' },
+    '2': { color: 'blue' },
+    '3': { color: 'green' },
+  });
+  expect(onPropsUpdated).toHaveBeenCalledTimes(1);
+  expect(onColsUpdated).toHaveBeenCalledTimes(1);
+
+  onPropsUpdated.mockClear();
+  onRowsUpdated.mockClear();
+
+  model.rows.push({ color: 'yellow' });
+  expect(onPropsUpdated).toHaveBeenCalledWith(
+    expect.anything(),
+    'rows',
+    expect.anything()
+  );
+  expect(onRowsUpdated).toHaveBeenCalledWith([{ color: 'yellow' }]);
+  expect(onPropsUpdated).toHaveBeenCalledTimes(1);
+  expect(onRowsUpdated).toHaveBeenCalledTimes(1);
+
+  onPropsUpdated.mockClear();
+  onRowsUpdated.mockClear();
+
+  const row1 = getRowsArr().get(0) as Y.Map<string>;
+  row1.set('color', 'green');
+  expect(onRowsUpdated).toHaveBeenCalledWith([{ color: 'green' }]);
+  expect(onPropsUpdated).toHaveBeenCalledWith(
+    expect.anything(),
+    'rows',
+    expect.anything()
+  );
+  expect(model.rows$.value).toEqual([{ color: 'green' }]);
+  expect(onPropsUpdated).toHaveBeenCalledTimes(1);
+  expect(onRowsUpdated).toHaveBeenCalledTimes(1);
 });
