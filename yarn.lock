@@ -608,7 +608,7 @@ __metadata:
     "@capacitor/browser": "npm:^7.0.0"
     "@capacitor/cli": "npm:^6.2.0"
     "@capacitor/core": "npm:^6.2.0"
-    "@capacitor/haptics": "npm:^6.0.2"
+    "@capacitor/haptics": "npm:^7.0.0"
     "@capacitor/ios": "npm:^6.2.0"
     "@capacitor/keyboard": "npm:^6.0.3"
     "@sentry/react": "npm:^8.44.0"
@@ -4151,12 +4151,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/haptics@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "@capacitor/haptics@npm:6.0.2"
+"@capacitor/haptics@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@capacitor/haptics@npm:7.0.0"
   peerDependencies:
-    "@capacitor/core": ^6.0.0
-  checksum: 10/986003d8327d914762f5c0a4f4b6e494654fa0c27344c2a1764f06d08895bce035d8105c0f2a571b8b8bd3bd2f72b08bdc2ad4e1167aa186632a7a16bb6118a2
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10/b6e050f577cec198f36746b29fbe10c0487ed25ef6967d2695af9ac8f49d50fa77c1c4f905e5c04aaa752ead613a07fa1a5b1eb3143babca8d39b847c8c240c6
   languageName: node
   linkType: hard
 
