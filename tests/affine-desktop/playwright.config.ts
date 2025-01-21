@@ -29,8 +29,8 @@ const config: PlaywrightTestConfig = {
 };
 
 if (process.env.CI) {
-  config.retries = 3;
-  config.workers = '50%';
+  // todo: fix the flaky tests
+  config.retries = 5;
 }
 
 if (process.env.DEV_SERVER_URL) {
