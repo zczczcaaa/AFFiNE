@@ -10,6 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { PrismaClient } from '@prisma/client';
+import { Response } from 'express';
 import { get } from 'lodash-es';
 import { ClsModule } from 'nestjs-cls';
 
@@ -56,6 +57,9 @@ export const FunctionalityModules = [
       idGenerator() {
         // make every request has a unique id to tracing
         return randomUUID();
+      },
+      setup(cls, _req, res: Response) {
+        res.setHeader('X-Request-Id', cls.getId());
       },
     },
     plugins: [

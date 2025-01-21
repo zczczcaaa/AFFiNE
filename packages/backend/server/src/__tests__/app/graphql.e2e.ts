@@ -62,6 +62,8 @@ test('should init app', async t => {
 
   t.is(config.type, 'Affine');
   t.true(Array.isArray(config.features));
+  // make sure the request id is set
+  t.truthy(response.headers['x-request-id']);
 });
 
 test('should return 404 for unknown path', async t => {
@@ -76,4 +78,6 @@ test('should be able to call apis', async t => {
     .expect(200);
 
   t.is(res.body.flavor, 'graphql');
+  // make sure the request id is set
+  t.truthy(res.headers['x-request-id']);
 });
