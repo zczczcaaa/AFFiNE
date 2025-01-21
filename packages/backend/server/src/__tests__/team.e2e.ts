@@ -31,6 +31,7 @@ import {
   leaveWorkspace,
   PermissionEnum,
   revokeInviteLink,
+  revokeMember,
   revokeUser,
   signUp,
   sleep,
@@ -721,6 +722,34 @@ test('should be able to emit events', async t => {
         { email: owner.email, workspaceId: tws.id },
       ],
       'should emit owner transferred event'
+    );
+
+    await revokeMember(app, read.token.token, tws.id, owner.id);
+    const [memberRemoved, memberUpdated] = event.emit
+      .getCalls()
+      .map(call => call.args)
+      .toReversed();
+    t.deepEqual(
+      memberRemoved,
+      [
+        'workspace.members.removed',
+        {
+          userId: owner.id,
+          workspaceId: tws.id,
+        },
+      ],
+      'should emit owner transferred event'
+    );
+    t.deepEqual(
+      memberUpdated,
+      [
+        'workspace.members.updated',
+        {
+          count: 3,
+          workspaceId: tws.id,
+        },
+      ],
+      'should emit role changed event'
     );
   }
 });

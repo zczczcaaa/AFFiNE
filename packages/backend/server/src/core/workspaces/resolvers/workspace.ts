@@ -433,7 +433,7 @@ export class WorkspaceResolver {
       );
       if (sendInviteMail) {
         try {
-          await this.workspaceService.sendInviteMail(inviteId);
+          await this.workspaceService.sendInviteEmail(inviteId);
         } catch (e) {
           const ret = await this.permissions.revokeWorkspace(
             workspaceId,

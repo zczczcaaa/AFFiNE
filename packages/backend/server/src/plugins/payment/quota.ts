@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import type { EventPayload } from '../../base';
+import { type EventPayload } from '../../base';
 import { PermissionService } from '../../core/permission';
-import { QuotaManagementService, QuotaType } from '../../core/quota';
+import {
+  QuotaManagementService,
+  QuotaService,
+  QuotaType,
+} from '../../core/quota';
+import { WorkspaceService } from '../../core/workspaces/resolvers';
 
 @Injectable()
 export class TeamQuotaOverride {
   constructor(
+    private readonly quota: QuotaService,
     private readonly manager: QuotaManagementService,
-    private readonly permission: PermissionService
+    private readonly permission: PermissionService,
+    private readonly workspace: WorkspaceService
   ) {}
 
   @OnEvent('workspace.subscription.activated')
@@ -20,7 +27,11 @@ export class TeamQuotaOverride {
     quantity,
   }: EventPayload<'workspace.subscription.activated'>) {
     switch (plan) {
-      case 'team':
+      case 'team': {
+        const hasTeamWorkspace = await this.quota.hasWorkspaceQuota(
+          workspaceId,
+          QuotaType.TeamPlanV1
+        );
         await this.manager.addTeamWorkspace(
           workspaceId,
           `${recurring} team subscription activated`
@@ -31,7 +42,13 @@ export class TeamQuotaOverride {
           { memberLimit: quantity }
         );
         await this.permission.refreshSeatStatus(workspaceId, quantity);
+        if (!hasTeamWorkspace) {
+          // this event will triggered when subscription is activated or changed
+          // we only send emails when the team workspace is activated
+          await this.workspace.sendTeamWorkspaceUpgradedEmail(workspaceId);
+        }
         break;
+      }
       default:
         break;
     }

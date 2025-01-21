@@ -78,6 +78,11 @@ declare module '../../base/event/def' {
         plan: SubscriptionPlan;
         recurring: SubscriptionRecurring;
       }>;
+      notify: Payload<{
+        workspaceId: Workspace['id'];
+        expirationDate: Date;
+        deletionDate: Date | undefined;
+      }>;
     };
   }
 }
