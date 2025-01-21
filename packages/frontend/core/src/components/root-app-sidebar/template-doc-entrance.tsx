@@ -7,7 +7,7 @@ import { WorkbenchService } from '@affine/core/modules/workbench';
 import { inferOpenMode } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
-import { TemplateIcon, TemplateOutlineIcon } from '@blocksuite/icons/rc';
+import { TemplateIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
@@ -33,7 +33,7 @@ export const TemplateDocEntrance = () => {
   return (
     <SidebarMenuItem
       data-testid="sidebar-template-doc-entrance"
-      icon={<TemplateOutlineIcon />}
+      icon={<TemplateIcon />}
       onClick={toggleMenu}
     >
       <Menu
