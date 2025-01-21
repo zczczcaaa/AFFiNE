@@ -42,8 +42,9 @@ const OptimizeOptionOptions: (
         compress: {
           unused: true,
         },
-        mangle: true,
-        keep_classnames: true,
+        mangle: {
+          keep_classnames: true,
+        },
       },
     }),
   ],
