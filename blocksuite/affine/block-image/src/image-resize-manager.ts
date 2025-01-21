@@ -23,9 +23,9 @@ export class ImageResizeManager {
     assertExists(this._imageContainer);
 
     const dragModel = getModelByElement(this._activeComponent);
-    dragModel?.page.captureSync();
+    dragModel?.doc.captureSync();
     const { width, height } = this._imageContainer.getBoundingClientRect();
-    dragModel?.page.updateBlock(dragModel, {
+    dragModel?.doc.updateBlock(dragModel, {
       width: width / this._zoom,
       height: height / this._zoom,
     });

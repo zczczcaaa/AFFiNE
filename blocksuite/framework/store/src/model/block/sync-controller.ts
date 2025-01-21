@@ -130,6 +130,7 @@ export class SyncController {
     }
 
     const model = schema.model.toModel?.() ?? new BlockModel<object>();
+    model.schema = schema;
     const signalWithProps = Object.entries(props).reduce(
       (acc, [key, value]) => {
         const data = signal(value);
@@ -153,10 +154,7 @@ export class SyncController {
     Object.assign(model, signalWithProps);
 
     model.id = this.id;
-    model.version = this.version;
     model.keys = Object.keys(props);
-    model.flavour = schema.model.flavour;
-    model.role = schema.model.role;
     model.yBlock = this.yBlock;
     model.stash = this.stash;
     model.pop = this.pop;

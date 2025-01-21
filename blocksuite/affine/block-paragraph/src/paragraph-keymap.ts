@@ -134,7 +134,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
 
           const rightText = model.text.split(range.index);
           const newId = store.addBlock(
-            model.flavour,
+            model.flavour as BlockSuite.Flavour,
             { type: model.type, text: rightText },
             parent,
             index + collapsedSiblings.length + 1

@@ -60,7 +60,7 @@ export const splitParagraphCommand: Command<
   store.captureSync();
   const right = model.text.split(splitIndex, splitLength);
   const id = store.addBlock(
-    model.flavour,
+    model.flavour as BlockSuite.Flavour,
     {
       text: right,
       type: model.type,

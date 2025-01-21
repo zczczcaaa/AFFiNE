@@ -20,6 +20,10 @@ export class Schema {
     }
   };
 
+  get(flavour: string) {
+    return this.flavourSchemaMap.get(flavour);
+  }
+
   validate = (
     flavour: string,
     parentFlavour?: string,
