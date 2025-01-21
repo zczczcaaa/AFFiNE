@@ -22,7 +22,7 @@
     "@capacitor/core": "^6.2.0",
     "@capacitor/haptics": "^7.0.0",
     "@capacitor/ios": "^6.2.0",
-    "@capacitor/keyboard": "^6.0.3",
+    "@capacitor/keyboard": "^7.0.0",
     "@sentry/react": "^8.44.0",
     "@toeverything/infra": "workspace:^",
     "async-call-rpc": "^6.4.2",

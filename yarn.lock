@@ -610,7 +610,7 @@ __metadata:
     "@capacitor/core": "npm:^6.2.0"
     "@capacitor/haptics": "npm:^7.0.0"
     "@capacitor/ios": "npm:^6.2.0"
-    "@capacitor/keyboard": "npm:^6.0.3"
+    "@capacitor/keyboard": "npm:^7.0.0"
     "@sentry/react": "npm:^8.44.0"
     "@toeverything/infra": "workspace:^"
     "@types/react": "npm:^19.0.1"
@@ -4169,12 +4169,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/keyboard@npm:^6.0.3":
-  version: 6.0.3
-  resolution: "@capacitor/keyboard@npm:6.0.3"
+"@capacitor/keyboard@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@capacitor/keyboard@npm:7.0.0"
   peerDependencies:
-    "@capacitor/core": ^6.0.0
-  checksum: 10/3d29eced7dfa26077113a078e9d4c3b6312e280ec15147cb9cae8c8fb42bb04f9325677f196cd8dfbeffbb34e5887f9f757e06f01973494818bddad955f78aa2
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10/14df1267c7ff4fc050c0ce5c587030426d466dde09954f50965fb441a4dd27ad40281152604329ef6bc7b54195b34a9bfe368b4c23035355ca54e64503c371c8
   languageName: node
   linkType: hard
 
