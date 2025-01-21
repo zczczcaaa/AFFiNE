@@ -12,7 +12,7 @@ import {
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
-import { PlusIcon } from '@blocksuite/icons/rc';
+import { AddOrganizeIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useServices } from '@toeverything/infra';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -116,7 +116,7 @@ export const ExplorerOrganize = () => {
             'com.affine.rootAppSidebar.explorer.organize-section-add-tooltip'
           ]()}
         >
-          <PlusIcon />
+          <AddOrganizeIcon />
         </IconButton>
       }
     >
