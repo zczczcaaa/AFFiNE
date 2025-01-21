@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { Transactional } from '@nestjs-cls/transactional';
 import { Feature } from '@prisma/client';
 import { z } from 'zod';
 
-import { PrismaTransaction } from '../base';
 import { BaseModel } from './base';
 import { Features, FeatureType } from './common';
 
@@ -20,7 +20,7 @@ type FeatureConfigs<T extends FeatureNames> = z.infer<
 @Injectable()
 export class FeatureModel extends BaseModel {
   async get<T extends FeatureNames>(name: T) {
-    const feature = await this.getLatest(this.db, name);
+    const feature = await this.getLatest(name);
 
     // All features are hardcoded in the codebase
     // It would be a fatal error if the feature is not found in DB.
@@ -43,6 +43,7 @@ export class FeatureModel extends BaseModel {
     };
   }
 
+  @Transactional()
   async upsert<T extends FeatureNames>(name: T, configs: FeatureConfigs<T>) {
     const shape = this.getConfigShape(name);
     const parseResult = shape.safeParse(configs);
@@ -58,37 +59,33 @@ export class FeatureModel extends BaseModel {
     // TODO(@forehalo):
     //   could be a simple upsert operation, but we got useless `version` column in the database
     //   will be fixed when `version` column gets deprecated
-    const feature = await this.db.$transaction(async tx => {
-      const latest = await this.getLatest(tx, name);
+    const latest = await this.getLatest(name);
 
-      if (!latest) {
-        return await tx.feature.create({
-          data: {
-            type: FeatureType.Feature,
-            feature: name,
-            configs: parsedConfigs,
-          },
-        });
-      } else {
-        return await tx.feature.update({
-          where: { id: latest.id },
-          data: {
-            configs: parsedConfigs,
-          },
-        });
-      }
-    });
+    let feature: Feature;
+    if (!latest) {
+      feature = await this.tx.feature.create({
+        data: {
+          type: FeatureType.Feature,
+          feature: name,
+          configs: parsedConfigs,
+        },
+      });
+    } else {
+      feature = await this.tx.feature.update({
+        where: { id: latest.id },
+        data: {
+          configs: parsedConfigs,
+        },
+      });
+    }
 
     this.logger.verbose(`Feature ${name} upserted`);
 
     return feature as Feature & { configs: FeatureConfigs<T> };
   }
 
-  private async getLatest<T extends FeatureNames>(
-    client: PrismaTransaction,
-    name: T
-  ) {
-    return client.feature.findFirst({
+  private async getLatest<T extends FeatureNames>(name: T) {
+    return this.tx.feature.findFirst({
       where: { feature: name },
       orderBy: { version: 'desc' },
     });

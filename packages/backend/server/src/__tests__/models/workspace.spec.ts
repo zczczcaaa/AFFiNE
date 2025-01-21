@@ -326,7 +326,7 @@ test('should grant member with read permission and Pending status by default', a
   t.true(
     updatedSpy.calledOnceWith({
       workspaceId: workspace.id,
-      count: 2,
+      count: 1,
     })
   );
 });

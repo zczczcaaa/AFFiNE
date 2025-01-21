@@ -772,6 +772,8 @@ __metadata:
     "@google-cloud/opentelemetry-cloud-monitoring-exporter": "npm:^0.20.0"
     "@google-cloud/opentelemetry-cloud-trace-exporter": "npm:^2.4.1"
     "@google-cloud/opentelemetry-resource-util": "npm:^2.4.0"
+    "@nestjs-cls/transactional": "npm:^2.4.4"
+    "@nestjs-cls/transactional-adapter-prisma": "npm:^1.2.7"
     "@nestjs/apollo": "npm:^12.2.2"
     "@nestjs/common": "npm:^10.4.15"
     "@nestjs/core": "npm:^10.4.15"
@@ -8744,6 +8746,31 @@ __metadata:
   version: 1.0.1
   resolution: "@napi-rs/xattr-linux-x64-musl@npm:1.0.1"
   conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@nestjs-cls/transactional-adapter-prisma@npm:^1.2.7":
+  version: 1.2.7
+  resolution: "@nestjs-cls/transactional-adapter-prisma@npm:1.2.7"
+  peerDependencies:
+    "@nestjs-cls/transactional": ^2.4.4
+    "@prisma/client": "> 4 < 7"
+    nestjs-cls: ^4.5.0
+    prisma: "> 4 < 7"
+  checksum: 10/43472579bd872252c0de919106a931ed563d4359d5d775c989016cab948fcff42fcf62f1260d4459047ebb3d41e3677dddf566376dbaec3e93282be1fa33d2c1
+  languageName: node
+  linkType: hard
+
+"@nestjs-cls/transactional@npm:^2.4.4":
+  version: 2.4.4
+  resolution: "@nestjs-cls/transactional@npm:2.4.4"
+  peerDependencies:
+    "@nestjs/common": "> 7.0.0 < 11"
+    "@nestjs/core": "> 7.0.0 < 11"
+    nestjs-cls: ^4.5.0
+    reflect-metadata: "*"
+    rxjs: ">= 7"
+  checksum: 10/1ec34e5b0ed8d9f1b781ebab56d616d775f038c5df21138836c61a524b6fec73ff0994d165edf5a54539ca87d5013b64fd4187b1a95bb75ba26252541c7164d0
   languageName: node
   linkType: hard
 

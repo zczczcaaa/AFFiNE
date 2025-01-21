@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Transactional } from '@nestjs-cls/transactional';
 import {
   type Workspace,
   WorkspaceMemberStatus,
@@ -37,7 +38,7 @@ export class WorkspaceModel extends BaseModel {
    * Create a new workspace for the user, default to private.
    */
   async create(userId: string) {
-    const workspace = await this.db.workspace.create({
+    const workspace = await this.tx.workspace.create({
       data: {
         public: false,
         permissions: {
@@ -58,7 +59,7 @@ export class WorkspaceModel extends BaseModel {
    * Update the workspace with the given data.
    */
   async update(workspaceId: string, data: UpdateWorkspaceInput) {
-    await this.db.workspace.update({
+    await this.tx.workspace.update({
       where: {
         id: workspaceId,
       },
@@ -78,7 +79,7 @@ export class WorkspaceModel extends BaseModel {
   }
 
   async delete(workspaceId: string) {
-    await this.db.workspace.deleteMany({
+    await this.tx.workspace.deleteMany({
       where: {
         id: workspaceId,
       },
@@ -125,13 +126,14 @@ export class WorkspaceModel extends BaseModel {
   /**
    * Grant the workspace member with the given permission and status.
    */
+  @Transactional()
   async grantMember(
     workspaceId: string,
     userId: string,
     permission: Permission = Permission.Read,
     status: WorkspaceMemberStatus = WorkspaceMemberStatus.Pending
   ): Promise<WorkspaceUserPermission> {
-    const data = await this.db.workspaceUserPermission.findUnique({
+    const data = await this.tx.workspaceUserPermission.findUnique({
       where: {
         workspaceId_userId: {
           workspaceId,
@@ -143,7 +145,7 @@ export class WorkspaceModel extends BaseModel {
     if (!data) {
       // Create a new permission
       // TODO(fengmk2): should we check the permission here? Like owner can't be pending?
-      const created = await this.db.workspaceUserPermission.create({
+      const created = await this.tx.workspaceUserPermission.create({
         data: {
           workspaceId,
           userId,
@@ -151,41 +153,42 @@ export class WorkspaceModel extends BaseModel {
           status,
         },
       });
+      this.logger.log(
+        `Granted workspace ${workspaceId} member ${userId} with permission ${permission}`
+      );
       await this.notifyMembersUpdated(workspaceId);
       return created;
     }
 
     // If the user is already accepted and the new permission is owner, we need to revoke old owner
     if (data.status === WorkspaceMemberStatus.Accepted || data.accepted) {
-      return await this.db.$transaction(async tx => {
-        const updated = await tx.workspaceUserPermission.update({
-          where: {
-            workspaceId_userId: { workspaceId, userId },
-          },
-          data: { type: permission },
-        });
-        // If the new permission is owner, we need to revoke old owner
-        if (permission === Permission.Owner) {
-          await tx.workspaceUserPermission.updateMany({
-            where: {
-              workspaceId,
-              type: Permission.Owner,
-              userId: { not: userId },
-            },
-            data: { type: Permission.Admin },
-          });
-          this.logger.log(
-            `Change owner of workspace ${workspaceId} to ${userId}`
-          );
-        }
-        return updated;
+      const updated = await this.tx.workspaceUserPermission.update({
+        where: {
+          workspaceId_userId: { workspaceId, userId },
+        },
+        data: { type: permission },
       });
+      // If the new permission is owner, we need to revoke old owner
+      if (permission === Permission.Owner) {
+        await this.tx.workspaceUserPermission.updateMany({
+          where: {
+            workspaceId,
+            type: Permission.Owner,
+            userId: { not: userId },
+          },
+          data: { type: Permission.Admin },
+        });
+        this.logger.log(
+          `Change owner of workspace ${workspaceId} to ${userId}`
+        );
+      }
+      return updated;
     }
 
     // If the user is not accepted, we can update the status directly
     const allowedStatus = this.getAllowedStatusSource(data.status);
     if (allowedStatus.includes(status)) {
-      const updated = await this.db.workspaceUserPermission.update({
+      const updated = await this.tx.workspaceUserPermission.update({
         where: { workspaceId_userId: { workspaceId, userId } },
         data: {
           status,
@@ -204,7 +207,7 @@ export class WorkspaceModel extends BaseModel {
    * Get the workspace member invitation.
    */
   async getMemberInvitation(invitationId: string) {
-    return await this.db.workspaceUserPermission.findUnique({
+    return await this.tx.workspaceUserPermission.findUnique({
       where: {
         id: invitationId,
       },
@@ -220,7 +223,7 @@ export class WorkspaceModel extends BaseModel {
     workspaceId: string,
     status: WorkspaceMemberStatus = WorkspaceMemberStatus.Accepted
   ) {
-    const { count } = await this.db.workspaceUserPermission.updateMany({
+    const { count } = await this.tx.workspaceUserPermission.updateMany({
       where: {
         id: invitationId,
         workspaceId: workspaceId,
@@ -348,7 +351,7 @@ export class WorkspaceModel extends BaseModel {
       return false;
     }
 
-    await this.db.workspaceUserPermission.deleteMany({
+    await this.tx.workspaceUserPermission.deleteMany({
       where: {
         workspaceId,
         userId,
@@ -407,6 +410,7 @@ export class WorkspaceModel extends BaseModel {
   /**
    * Refresh the workspace member seat status.
    */
+  @Transactional()
   async refreshMemberSeatStatus(workspaceId: string, memberLimit: number) {
     const usedCount = await this.getMemberUsedCount(workspaceId);
     const availableCount = memberLimit - usedCount;
@@ -414,43 +418,41 @@ export class WorkspaceModel extends BaseModel {
       return;
     }
 
-    return await this.db.$transaction(async tx => {
-      const members = await tx.workspaceUserPermission.findMany({
-        select: { id: true, status: true },
-        where: {
-          workspaceId,
-          status: {
-            in: [
-              WorkspaceMemberStatus.NeedMoreSeat,
-              WorkspaceMemberStatus.NeedMoreSeatAndReview,
-            ],
-          },
+    const members = await this.tx.workspaceUserPermission.findMany({
+      select: { id: true, status: true },
+      where: {
+        workspaceId,
+        status: {
+          in: [
+            WorkspaceMemberStatus.NeedMoreSeat,
+            WorkspaceMemberStatus.NeedMoreSeatAndReview,
+          ],
         },
-        // find the oldest members first
-        orderBy: { createdAt: 'asc' },
-      });
-
-      const needChange = members.slice(0, availableCount);
-      const groups = groupBy(needChange, m => m.status);
-
-      const toPendings = groups.NeedMoreSeat;
-      if (toPendings) {
-        // NeedMoreSeat => Pending
-        await tx.workspaceUserPermission.updateMany({
-          where: { id: { in: toPendings.map(m => m.id) } },
-          data: { status: WorkspaceMemberStatus.Pending },
-        });
-      }
-
-      const toUnderReviews = groups.NeedMoreSeatAndReview;
-      if (toUnderReviews) {
-        // NeedMoreSeatAndReview => UnderReview
-        await tx.workspaceUserPermission.updateMany({
-          where: { id: { in: toUnderReviews.map(m => m.id) } },
-          data: { status: WorkspaceMemberStatus.UnderReview },
-        });
-      }
+      },
+      // find the oldest members first
+      orderBy: { createdAt: 'asc' },
     });
+
+    const needChange = members.slice(0, availableCount);
+    const groups = groupBy(needChange, m => m.status);
+
+    const toPendings = groups.NeedMoreSeat;
+    if (toPendings) {
+      // NeedMoreSeat => Pending
+      await this.tx.workspaceUserPermission.updateMany({
+        where: { id: { in: toPendings.map(m => m.id) } },
+        data: { status: WorkspaceMemberStatus.Pending },
+      });
+    }
+
+    const toUnderReviews = groups.NeedMoreSeatAndReview;
+    if (toUnderReviews) {
+      // NeedMoreSeatAndReview => UnderReview
+      await this.tx.workspaceUserPermission.updateMany({
+        where: { id: { in: toUnderReviews.map(m => m.id) } },
+        data: { status: WorkspaceMemberStatus.UnderReview },
+      });
+    }
   }
 
   /**

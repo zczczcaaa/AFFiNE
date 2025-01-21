@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Transactional } from '@nestjs-cls/transactional';
 import {
   type WorkspacePage as Page,
   type WorkspacePageUserPermission as PageUserPermission,
@@ -87,6 +88,7 @@ export class PageModel extends BaseModel {
   /**
    * Grant the page member with the given permission.
    */
+  @Transactional()
   async grantMember(
     workspaceId: string,
     pageId: string,
@@ -105,50 +107,48 @@ export class PageModel extends BaseModel {
 
     // If the user is already accepted and the new permission is owner, we need to revoke old owner
     if (!data || data.type !== permission) {
-      return await this.db.$transaction(async tx => {
-        if (data) {
-          // Update the permission
-          data = await tx.workspacePageUserPermission.update({
-            where: {
-              workspaceId_pageId_userId: {
-                workspaceId,
-                pageId,
-                userId,
-              },
-            },
-            data: { type: permission },
-          });
-        } else {
-          // Create a new permission
-          data = await tx.workspacePageUserPermission.create({
-            data: {
+      if (data) {
+        // Update the permission
+        data = await this.tx.workspacePageUserPermission.update({
+          where: {
+            workspaceId_pageId_userId: {
               workspaceId,
               pageId,
               userId,
-              type: permission,
-              // page permission does not require invitee to accept, the accepted field will be deprecated later.
-              accepted: true,
             },
-          });
-        }
+          },
+          data: { type: permission },
+        });
+      } else {
+        // Create a new permission
+        data = await this.tx.workspacePageUserPermission.create({
+          data: {
+            workspaceId,
+            pageId,
+            userId,
+            type: permission,
+            // page permission does not require invitee to accept, the accepted field will be deprecated later.
+            accepted: true,
+          },
+        });
+      }
 
-        // If the new permission is owner, we need to revoke old owner
-        if (permission === Permission.Owner) {
-          await tx.workspacePageUserPermission.updateMany({
-            where: {
-              workspaceId,
-              pageId,
-              type: Permission.Owner,
-              userId: { not: userId },
-            },
-            data: { type: Permission.Admin },
-          });
-          this.logger.log(
-            `Change owner of workspace ${workspaceId} page ${pageId} to user ${userId}`
-          );
-        }
-        return data;
-      });
+      // If the new permission is owner, we need to revoke old owner
+      if (permission === Permission.Owner) {
+        await this.tx.workspacePageUserPermission.updateMany({
+          where: {
+            workspaceId,
+            pageId,
+            type: Permission.Owner,
+            userId: { not: userId },
+          },
+          data: { type: Permission.Admin },
+        });
+        this.logger.log(
+          `Change owner of workspace ${workspaceId} page ${pageId} to user ${userId}`
+        );
+      }
+      return data;
     }
 
     // nothing to do

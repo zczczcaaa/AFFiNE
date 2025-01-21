@@ -7,6 +7,9 @@ import {
   Module,
 } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { PrismaClient } from '@prisma/client';
 import { get } from 'lodash-es';
 import { ClsModule } from 'nestjs-cls';
 
@@ -55,6 +58,14 @@ export const FunctionalityModules = [
         return randomUUID();
       },
     },
+    plugins: [
+      // https://papooch.github.io/nestjs-cls/plugins/available-plugins/transactional/prisma-adapter
+      new ClsPluginTransactional({
+        adapter: new TransactionalAdapterPrisma({
+          prismaInjectionToken: PrismaClient,
+        }),
+      }),
+    ],
   }),
   ConfigModule.forRoot(),
   RuntimeModule,
