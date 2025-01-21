@@ -304,7 +304,7 @@ __metadata:
     "@types/react-dom": "npm:^19.0.2"
     "@vanilla-extract/css": "npm:^1.16.1"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
-    check-password-strength: "npm:^2.0.10"
+    check-password-strength: "npm:^3.0.0"
     clsx: "npm:^2.1.1"
     dayjs: "npm:^1.11.13"
     jotai: "npm:^2.10.3"
@@ -17858,10 +17858,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"check-password-strength@npm:^2.0.10":
-  version: 2.0.10
-  resolution: "check-password-strength@npm:2.0.10"
-  checksum: 10/f94fe5f6471d5b17947ee0619c028574135e9e1c8449c4dd23916346df57a9420dc05e61abd37675f8491f42e43dd55025ddb16642d5c51ff4936eb5d23795f5
+"check-password-strength@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "check-password-strength@npm:3.0.0"
+  dependencies:
+    escape-string-regexp: "npm:^5.0.0"
+  checksum: 10/47a4f286b4042a3e355948abecf2536e6943ee549c01accd693f2faa57036ec0ca05279753605116b728f2fc4e39d388df628f93a533f134e4e81f9d71e6774c
   languageName: node
   linkType: hard
 

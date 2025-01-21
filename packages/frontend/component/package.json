@@ -44,7 +44,7 @@
     "@radix-ui/react-visually-hidden": "^1.1.1",
     "@toeverything/theme": "^1.1.7",
     "@vanilla-extract/dynamic": "^2.1.2",
-    "check-password-strength": "^2.0.10",
+    "check-password-strength": "^3.0.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "jotai": "^2.10.3",
