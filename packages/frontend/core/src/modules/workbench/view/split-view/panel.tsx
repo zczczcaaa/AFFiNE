@@ -222,6 +222,8 @@ export const SplitViewPanel = memo(function SplitViewPanel({
   return (
     <SplitViewPanelContainer
       style={style}
+      data-is-resizing={!!resizingView}
+      data-is-reordering={!!draggingView}
       data-is-dragging={dragging}
       data-is-active={isActive && views.length > 1}
       data-is-first={isFirst}
