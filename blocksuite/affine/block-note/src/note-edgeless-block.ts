@@ -245,10 +245,12 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
     }
   }
 
-  private _isFirstNote() {
+  private _isFirstVisibleNote() {
     return (
-      this.model.parent?.children.find(child =>
-        matchFlavours(child, ['affine:note'])
+      this.model.parent?.children.find(
+        child =>
+          matchFlavours(child, ['affine:note']) &&
+          child.displayMode !== NoteDisplayMode.EdgelessOnly
       ) === this.model
     );
   }
@@ -509,7 +511,8 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
           .editing=${this._editing}
         ></edgeless-note-mask>
 
-        ${isCollapsable && (!this._isFirstNote() || !this._enablePageHeader)
+        ${isCollapsable &&
+        (!this._isFirstVisibleNote() || !this._enablePageHeader)
           ? html`<div
               class="${classMap({
                 'edgeless-note-collapse-button': true,

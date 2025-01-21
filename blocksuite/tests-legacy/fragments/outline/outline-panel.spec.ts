@@ -44,20 +44,14 @@ test.describe('toc-panel', () => {
     return panel.locator(`affine-outline-panel-body .title`);
   }
 
-  async function toggleNoteSorting(page: Page) {
-    const enableSortingButton = page.locator(
-      '.outline-panel-header-container .note-sorting-button'
-    );
-    await enableSortingButton.click();
-  }
-
   async function dragNoteCard(page: Page, fromCard: Locator, toCard: Locator) {
     const fromRect = await fromCard.boundingBox();
     const toRect = await toCard.boundingBox();
 
     await page.mouse.move(fromRect!.x + 10, fromRect!.y + 10);
+    await page.mouse.click(fromRect!.x + 10, fromRect!.y + 10);
     await page.mouse.down();
-    await page.mouse.move(toRect!.x + 5, toRect!.y + 5, { steps: 10 });
+    await page.mouse.move(toRect!.x + 5, toRect!.y + 5, { steps: 20 });
     await page.mouse.up();
   }
 
@@ -267,7 +261,6 @@ test.describe('toc-panel', () => {
     await page.mouse.click(100, 100);
 
     await toggleTocPanel(page);
-    await toggleNoteSorting(page);
     const docVisibleCard = page.locator(
       '.card-container[data-invisible="false"]'
     );
@@ -311,7 +304,6 @@ test.describe('toc-panel', () => {
     );
 
     await toggleTocPanel(page);
-    await toggleNoteSorting(page);
     const docVisibleCard = page.locator(
       '.card-container[data-invisible="false"]'
     );
@@ -345,7 +337,6 @@ test.describe('toc-panel', () => {
     );
 
     await toggleTocPanel(page);
-    await toggleNoteSorting(page);
     const docVisibleCard = page.locator(
       '.card-container[data-invisible="false"]'
     );

@@ -229,7 +229,11 @@ test.describe('edgeless note element toolbar', () => {
 
     await displayInPage.click();
     await viewTocButton.click();
-    await page.waitForSelector('affine-outline-panel');
-    expect(page.locator('affine-outline-panel')).toBeVisible();
+    const toc = page.locator('affine-outline-panel');
+    await toc.waitFor({ state: 'visible' });
+    const highlightNoteCards = toc.locator(
+      'affine-outline-note-card > .selected'
+    );
+    expect(highlightNoteCards).toHaveCount(1);
   });
 });

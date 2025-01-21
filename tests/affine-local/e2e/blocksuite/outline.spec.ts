@@ -2,15 +2,25 @@ import { test } from '@affine-test/kit/playwright';
 import {
   clickEdgelessModeButton,
   clickPageModeButton,
+  clickView,
+  createEdgelessNoteBlock,
+  locateElementToolbar,
+  locateModeSwitchButton,
 } from '@affine-test/kit/utils/editor';
+import {
+  pressEnter,
+  selectAllByKeyboard,
+} from '@affine-test/kit/utils/keyboard';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
   createLinkedPage,
   getBlockSuiteEditorTitle,
+  type,
   waitForEditorLoad,
   waitForEmptyEditor,
 } from '@affine-test/kit/utils/page-logic';
+import { openRightSideBar } from '@affine-test/kit/utils/sidebar';
 import { expect, type Locator, type Page } from '@playwright/test';
 
 function getIndicators(container: Page | Locator) {
@@ -155,4 +165,67 @@ test('outline viewer should be useable in doc peek preview', async ({
     await expect(viewer).toBeHidden();
     await expect(page.locator('affine-outline-panel')).toBeVisible();
   }
+});
+
+test('visibility sorting should be enabled in edgeless mode and disabled in page mode by default, and can be changed', async ({
+  page,
+}) => {
+  await openHomePage(page);
+  await clickNewPageButton(page);
+  await waitForEditorLoad(page);
+  await pressEnter(page);
+  await type(page, '# Heading 1');
+  await openRightSideBar(page, 'outline');
+
+  const toc = page.locator('affine-outline-panel');
+  const sortingButton = toc.locator('.note-sorting-button');
+  await expect(sortingButton).not.toHaveClass(/active/);
+  expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
+
+  await clickEdgelessModeButton(page);
+  await expect(sortingButton).toHaveClass(/active/);
+  expect(toc.locator('[data-sortable="true"]')).toHaveCount(1);
+
+  await sortingButton.click();
+  await expect(sortingButton).not.toHaveClass(/active/);
+  expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
+});
+
+test('note cards of TOC should be highlight when selections contains the corresponding notes', async ({
+  page,
+}) => {
+  await openHomePage(page);
+  await clickNewPageButton(page);
+  await locateModeSwitchButton(page, 'edgeless').click();
+  await waitForEditorLoad(page);
+  await openRightSideBar(page, 'outline');
+
+  const toc = page.locator('affine-outline-panel');
+  const highlightNoteCards = toc.locator(
+    'affine-outline-note-card > .selected'
+  );
+
+  await expect(highlightNoteCards).toHaveCount(0);
+
+  await clickView(page, [0, 0]);
+  await selectAllByKeyboard(page);
+  await expect(highlightNoteCards).toHaveCount(1);
+
+  await createEdgelessNoteBlock(page, [100, 100]);
+  await expect(highlightNoteCards).toHaveCount(1);
+
+  await clickView(page, [200, 200]);
+  await selectAllByKeyboard(page);
+  await expect(highlightNoteCards).toHaveCount(2);
+
+  await clickView(page, [100, 100]);
+  const toolbar = locateElementToolbar(page);
+  await toolbar.getByTestId('display-in-page').click();
+  await clickPageModeButton(page);
+  await page.keyboard.press('ArrowDown');
+  await expect(highlightNoteCards).toHaveCount(1);
+  await selectAllByKeyboard(page);
+  await selectAllByKeyboard(page);
+  await selectAllByKeyboard(page);
+  await expect(highlightNoteCards).toHaveCount(2);
 });

@@ -8,7 +8,11 @@ import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
-import { matchFlavours, type NoteBlockModel } from '@blocksuite/affine/blocks';
+import {
+  matchFlavours,
+  type NoteBlockModel,
+  NoteDisplayMode,
+} from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
 import {
   ExpandFullIcon,
@@ -160,12 +164,14 @@ export const EdgelessNoteHeader = ({ note }: { note: NoteBlockModel }) => {
 
   if (!flags.enable_page_block_header) return null;
 
-  const isFirstNote =
-    note.parent?.children.find(child =>
-      matchFlavours(child, ['affine:note'])
+  const isFirstVisibleNote =
+    note.parent?.children.find(
+      child =>
+        matchFlavours(child, ['affine:note']) &&
+        child.displayMode === NoteDisplayMode.DocAndEdgeless
     ) === note;
 
-  if (!isFirstNote) return null;
+  if (!isFirstVisibleNote) return null;
 
   return (
     <div className={styles.header} data-testid="edgeless-page-block-header">

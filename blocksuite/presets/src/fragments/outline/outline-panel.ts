@@ -1,6 +1,7 @@
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
+import { effect } from '@preact/signals-core';
 import { baseTheme } from '@toeverything/theme';
-import { css, html, LitElement, unsafeCSS } from 'lit';
+import { css, html, LitElement, type PropertyValues, unsafeCSS } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
 import type { AffineEditorContainer } from '../../editors/editor-container.js';
@@ -112,7 +113,25 @@ export class OutlinePanel extends SignalWatcher(WithDisposable(LitElement)) {
 
   override connectedCallback() {
     super.connectedCallback();
-    this._loadSettingsFromLocalStorage();
+    this.disposables.add(
+      effect(() => {
+        if (this.editor.mode === 'edgeless') {
+          this._enableNotesSorting = true;
+        } else {
+          this._loadSettingsFromLocalStorage();
+        }
+      })
+    );
+  }
+
+  override willUpdate(_changedProperties: PropertyValues): void {
+    if (_changedProperties.has('editor')) {
+      if (this.editor.mode === 'edgeless') {
+        this._enableNotesSorting = true;
+      } else {
+        this._loadSettingsFromLocalStorage();
+      }
+    }
   }
 
   override render() {
