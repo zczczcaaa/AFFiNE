@@ -2,6 +2,7 @@ import { STATUS_CODES } from 'node:http';
 
 import { HttpStatus, Logger } from '@nestjs/common';
 import { capitalize } from 'lodash-es';
+import { ClsServiceManager } from 'nestjs-cls';
 
 export type UserFriendlyErrorBaseType =
   | 'bad_request'
@@ -72,6 +73,11 @@ export class UserFriendlyError extends Error {
    */
   data: any;
 
+  /**
+   * Request id for tracing
+   */
+  requestId?: string;
+
   constructor(
     type: UserFriendlyErrorBaseType,
     name: keyof typeof USER_FRIENDLY_ERRORS,
@@ -93,6 +99,7 @@ export class UserFriendlyError extends Error {
     this.type = type;
     this.name = name;
     this.data = args;
+    this.requestId = ClsServiceManager.getClsService()?.getId();
   }
 
   toJSON() {
@@ -103,6 +110,8 @@ export class UserFriendlyError extends Error {
       name: this.name.toUpperCase(),
       message: this.message,
       data: this.data,
+      // only include requestId for server error
+      requestId: this.status >= 500 ? this.requestId : undefined,
     };
   }
 
@@ -114,6 +123,7 @@ export class UserFriendlyError extends Error {
       `Name: ${json.name}`,
       `Message: ${json.message}`,
       `Data: ${JSON.stringify(json.data)}`,
+      `RequestId: ${json.requestId}`,
     ].join('\n');
   }
 
