@@ -10,9 +10,9 @@ export declare class DocStoragePool {
   constructor()
   /** Initialize the database and run migrations. */
   connect(universalId: string, path: string): Promise<void>
-  setSpaceId(universalId: string, spaceId: string): Promise<void>
   disconnect(universalId: string): Promise<void>
   checkpoint(universalId: string): Promise<void>
+  setSpaceId(universalId: string, spaceId: string): Promise<void>
   pushUpdate(universalId: string, docId: string, update: Uint8Array): Promise<Date>
   getDocSnapshot(universalId: string, docId: string): Promise<DocRecord | null>
   setDocSnapshot(universalId: string, snapshot: DocRecord): Promise<boolean>

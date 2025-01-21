@@ -17,7 +17,6 @@ anyhow           = "1"
 base64-simd      = "0.8"
 chrono           = "0.4"
 criterion2       = { version = "2", default-features = false }
-dashmap          = "6"
 dotenvy          = "0.15"
 file-format      = { version = "0.26", features = ["reader"] }
 mimalloc         = "0.1"

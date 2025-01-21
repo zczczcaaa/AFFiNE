@@ -20,17 +20,9 @@
     "extensions": {
       "mts": "module"
     },
-    "nodeArguments": [
-      "--loader",
-      "ts-node/esm.mjs",
-      "--es-module-specifier-resolution=node"
-    ],
     "files": [
       "__tests__/*.spec.mts"
-    ],
-    "environmentVariables": {
-      "TS_NODE_PROJECT": "./tsconfig.json"
-    }
+    ]
   },
   "devDependencies": {
     "@napi-rs/cli": "3.0.0-alpha.68",

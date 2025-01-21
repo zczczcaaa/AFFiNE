@@ -211,7 +211,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .set_space_id(space_id)
         .await?,
     )
@@ -226,7 +227,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .push_update(
           doc_id,
           base64_simd::STANDARD
@@ -247,7 +249,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_doc_snapshot(doc_id)
         .await?
         .map(Into::into),
@@ -258,7 +261,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .set_doc_snapshot(snapshot.try_into()?)
         .await?,
     )
@@ -272,7 +276,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_doc_updates(doc_id)
         .await?
         .into_iter()
@@ -290,7 +295,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .mark_updates_merged(
           doc_id,
           updates
@@ -310,7 +316,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .delete_doc(doc_id)
         .await?,
     )
@@ -324,7 +331,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_doc_clocks(
           after
             .map(|t| {
@@ -349,7 +357,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_doc_clock(doc_id)
         .await?
         .map(Into::into),
@@ -360,7 +369,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_blob(key)
         .await?
         .map(Into::into),
@@ -371,7 +381,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .set_blob(blob.try_into()?)
         .await?,
     )
@@ -386,27 +397,23 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .delete_blob(key, permanently)
         .await?,
     )
   }
 
   pub async fn release_blobs(&self, universal_id: String) -> Result<()> {
-    Ok(
-      self
-        .inner
-        .ensure_storage(universal_id)?
-        .release_blobs()
-        .await?,
-    )
+    Ok(self.inner.get(universal_id).await?.release_blobs().await?)
   }
 
   pub async fn list_blobs(&self, universal_id: String) -> Result<Vec<ListedBlob>> {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .list_blobs()
         .await?
         .into_iter()
@@ -423,7 +430,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_peer_remote_clocks(peer)
         .await?
         .into_iter()
@@ -441,7 +449,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_peer_remote_clock(peer, doc_id)
         .await?
         .map(Into::into),
@@ -458,7 +467,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .set_peer_remote_clock(
           peer,
           doc_id,
@@ -478,7 +488,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_peer_pulled_remote_clocks(peer)
         .await?
         .into_iter()
@@ -496,7 +507,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_peer_pulled_remote_clock(peer, doc_id)
         .await?
         .map(Into::into),
@@ -513,7 +525,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .set_peer_pulled_remote_clock(
           peer,
           doc_id,
@@ -534,7 +547,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_peer_pushed_clock(peer, doc_id)
         .await?
         .map(Into::into),
@@ -549,7 +563,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .get_peer_pushed_clocks(peer)
         .await?
         .into_iter()
@@ -568,7 +583,8 @@ impl DocStoragePool {
     Ok(
       self
         .inner
-        .ensure_storage(universal_id)?
+        .get(universal_id)
+        .await?
         .set_peer_pushed_clock(
           peer,
           doc_id,
@@ -581,12 +597,6 @@ impl DocStoragePool {
   }
 
   pub async fn clear_clocks(&self, universal_id: String) -> Result<()> {
-    Ok(
-      self
-        .inner
-        .ensure_storage(universal_id)?
-        .clear_clocks()
-        .await?,
-    )
+    Ok(self.inner.get(universal_id).await?.clear_clocks().await?)
   }
 }

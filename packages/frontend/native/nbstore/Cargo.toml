@@ -13,7 +13,6 @@ use-as-lib = ["napi-derive/noop", "napi/noop"]
 affine_schema = { path = "../schema" }
 anyhow        = { workspace = true }
 chrono        = { workspace = true }
-dashmap       = { workspace = true }
 napi          = { workspace = true }
 napi-derive   = { workspace = true }
 thiserror     = { workspace = true }
