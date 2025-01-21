@@ -45,7 +45,6 @@ async function insertAttachment(page: Page, filepath: string) {
   await page.evaluate(() => {
     // Force fallback to input[type=file] in tests
     // See https://github.com/microsoft/playwright/issues/8850
-    // @ts-expect-error allow
     window.showOpenFilePicker = undefined;
   });
 
