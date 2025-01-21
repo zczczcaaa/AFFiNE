@@ -361,7 +361,7 @@ __metadata:
     "@affine/track": "workspace:*"
     "@blocksuite/affine": "workspace:*"
     "@blocksuite/icons": "npm:2.2.2"
-    "@capacitor/app": "npm:^6.0.2"
+    "@capacitor/app": "npm:^7.0.0"
     "@capacitor/browser": "npm:^6.0.4"
     "@dotlottie/player-component": "npm:^2.7.12"
     "@emotion/cache": "npm:^11.14.0"
@@ -604,7 +604,7 @@ __metadata:
     "@affine/nbstore": "workspace:*"
     "@blocksuite/affine": "workspace:*"
     "@blocksuite/icons": "npm:2.2.2"
-    "@capacitor/app": "npm:^6.0.2"
+    "@capacitor/app": "npm:^7.0.0"
     "@capacitor/browser": "npm:^6.0.4"
     "@capacitor/cli": "npm:^6.2.0"
     "@capacitor/core": "npm:^6.2.0"
@@ -4096,12 +4096,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capacitor/app@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "@capacitor/app@npm:6.0.2"
+"@capacitor/app@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@capacitor/app@npm:7.0.0"
   peerDependencies:
-    "@capacitor/core": ^6.0.0
-  checksum: 10/8376124224d96cfe88656894e90a2b0b0edd2d16d68a3ee945882c607ac8c649beead7ccc82cd7a3c77d45c1c18ca460fb436cb10e3597f9359d4e93646ab35c
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10/59339f9aef87e7cf8479ea19ac724475e9936485f94c807c03f1e0b1a7970255e4f988607ec7c6bbb69e1830aa31b656e21543e8dd63167ca866b09e369ff02f
   languageName: node
   linkType: hard
 

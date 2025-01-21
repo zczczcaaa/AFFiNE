@@ -19,7 +19,7 @@
     "@affine/track": "workspace:*",
     "@blocksuite/affine": "workspace:*",
     "@blocksuite/icons": "2.2.2",
-    "@capacitor/app": "^6.0.2",
+    "@capacitor/app": "^7.0.0",
     "@capacitor/browser": "^6.0.4",
     "@dotlottie/player-component": "^2.7.12",
     "@emotion/cache": "^11.14.0",

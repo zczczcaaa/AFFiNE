@@ -17,7 +17,7 @@
     "@affine/nbstore": "workspace:*",
     "@blocksuite/affine": "workspace:*",
     "@blocksuite/icons": "2.2.2",
-    "@capacitor/app": "^6.0.2",
+    "@capacitor/app": "^7.0.0",
     "@capacitor/browser": "^6.0.4",
     "@capacitor/core": "^6.2.0",
     "@capacitor/haptics": "^6.0.2",
