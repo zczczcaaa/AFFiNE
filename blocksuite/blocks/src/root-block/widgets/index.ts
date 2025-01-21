@@ -30,6 +30,7 @@ export { AffineImageToolbarWidget } from './image-toolbar/index.js';
 export { AffineInnerModalWidget } from './inner-modal/inner-modal.js';
 export * from './keyboard-toolbar/index.js';
 export {
+  type LinkedMenuAction,
   type LinkedMenuGroup,
   type LinkedMenuItem,
   type LinkedWidgetConfig,

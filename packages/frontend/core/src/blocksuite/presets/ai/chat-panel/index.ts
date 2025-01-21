@@ -17,7 +17,11 @@ import {
   getSelectedImagesAsBlobs,
   getSelectedTextContent,
 } from '../utils/selection-utils';
-import type { AINetworkSearchConfig, DocDisplayConfig } from './chat-config';
+import type {
+  AINetworkSearchConfig,
+  DocDisplayConfig,
+  DocSearchMenuConfig,
+} from './chat-config';
 import type {
   ChatAction,
   ChatContextValue,
@@ -162,6 +166,9 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   accessor networkSearchConfig!: AINetworkSearchConfig;
 
   @property({ attribute: false })
+  accessor docSearchMenuConfig!: DocSearchMenuConfig;
+
+  @property({ attribute: false })
   accessor docDisplayConfig!: DocDisplayConfig;
 
   @state()
@@ -174,7 +181,6 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     abortController: null,
     items: [],
     chips: [],
-    docs: [],
     status: 'idle',
     error: null,
     markdown: '',
@@ -218,7 +224,6 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
         this.chatContextValue.chatSessionId = null;
         // TODO get from CopilotContext
         this.chatContextValue.chips = [];
-        this.chatContextValue.docs = [];
         this._resetItems();
       });
     }
@@ -307,6 +312,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
         .chatContextValue=${this.chatContextValue}
         .updateContext=${this.updateContext}
         .docDisplayConfig=${this.docDisplayConfig}
+        .docSearchMenuConfig=${this.docSearchMenuConfig}
       ></chat-panel-chips>
       <chat-panel-input
         .chatContextValue=${this.chatContextValue}

@@ -18,6 +18,7 @@ import { AILoading } from './ai/chat-panel/ai-loading';
 import { ChatPanelChips } from './ai/chat-panel/chat-panel-chips';
 import { ChatPanelInput } from './ai/chat-panel/chat-panel-input';
 import { ChatPanelMessages } from './ai/chat-panel/chat-panel-messages';
+import { ChatPanelAddPopover } from './ai/chat-panel/components/add-popover';
 import { ChatPanelChip } from './ai/chat-panel/components/chip';
 import { ChatPanelDocChip } from './ai/chat-panel/components/doc-chip';
 import { ChatPanelFileChip } from './ai/chat-panel/components/file-chip';
@@ -62,6 +63,7 @@ export function registerBlocksuitePresetsCustomComponents() {
   customElements.define('chat-panel-messages', ChatPanelMessages);
   customElements.define('chat-panel', ChatPanel);
   customElements.define('chat-panel-chips', ChatPanelChips);
+  customElements.define('chat-panel-add-popover', ChatPanelAddPopover);
   customElements.define('chat-panel-doc-chip', ChatPanelDocChip);
   customElements.define('chat-panel-file-chip', ChatPanelFileChip);
   customElements.define('chat-panel-chip', ChatPanelChip);

@@ -6,7 +6,7 @@ import type { ChatChip, ChipState, DocChip, FileChip } from '../chat-context';
 
 export function getChipTooltip(
   state: ChipState,
-  title: string,
+  name: string,
   tooltip?: string
 ) {
   if (tooltip) {
@@ -24,7 +24,7 @@ export function getChipTooltip(
   if (state === 'failed') {
     return 'Failed to embed';
   }
-  return title;
+  return name;
 }
 
 export function getChipIcon(

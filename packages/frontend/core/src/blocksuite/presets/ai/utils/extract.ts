@@ -14,7 +14,7 @@ import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import type { BlockModel, Store } from '@blocksuite/affine/store';
 import { Slice, toDraftModel, Transformer } from '@blocksuite/affine/store';
 
-import type { ChatContextValue, DocContext } from '../chat-panel/chat-context';
+import type { ChatContextValue } from '../chat-panel/chat-context';
 import {
   allToCanvas,
   getSelectedImagesAsBlobs,
@@ -156,7 +156,7 @@ export async function extractPageAll(
 export async function extractMarkdownFromDoc(
   doc: Store,
   provider: ServiceProvider
-): Promise<DocContext> {
+): Promise<{ docId: string; markdown: string }> {
   const transformer = await getTransformer(doc);
   const adapter = new MarkdownAdapter(transformer, provider);
   const blockModels = getNoteBlockModels(doc);

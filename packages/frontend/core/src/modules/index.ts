@@ -16,6 +16,7 @@ import { configureDocModule } from './doc';
 import { configureDocDisplayMetaModule } from './doc-display-meta';
 import { configureDocInfoModule } from './doc-info';
 import { configureDocLinksModule } from './doc-link';
+import { configDocSearchMenuModule } from './doc-search-menu';
 import { configureDocsSearchModule } from './docs-search';
 import { configureEditorModule } from './editor';
 import { configureEditorSettingModule } from './editor-setting';
@@ -91,6 +92,7 @@ export function configureCommonModules(framework: Framework) {
   configureDocInfoModule(framework);
   configureOpenInApp(framework);
   configAtMenuConfigModule(framework);
+  configDocSearchMenuModule(framework);
   configureDndModule(framework);
   configureCommonGlobalStorageImpls(framework);
   configureAINetworkSearchModule(framework);

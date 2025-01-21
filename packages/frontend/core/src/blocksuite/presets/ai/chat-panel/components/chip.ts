@@ -12,13 +12,15 @@ export class ChatPanelChip extends SignalWatcher(
   static override styles = css`
     .chip-card {
       display: flex;
+      height: 24px;
       align-items: center;
       justify-content: center;
-      padding: 4px;
       margin: 4px;
+      padding: 0 4px;
       border-radius: 4px;
-      border: 0.5px solid var(--affine-border-color);
+      border: 1px solid var(--affine-border-color);
       background: var(--affine-background-primary-color);
+      box-sizing: border-box;
     }
     .chip-card[data-state='candidate'] {
       border-width: 0.5px;
@@ -46,6 +48,8 @@ export class ChatPanelChip extends SignalWatcher(
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+    .chip-card[data-state='candidate'] .chip-card-title {
       cursor: pointer;
     }
     .chip-card-close {

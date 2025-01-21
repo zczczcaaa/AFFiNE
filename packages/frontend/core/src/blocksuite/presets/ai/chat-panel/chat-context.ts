@@ -1,4 +1,5 @@
 import type { AIError } from '@blocksuite/affine/blocks';
+import type { Signal } from '@preact/signals-core';
 
 export type ChatMessage = {
   id: string;
@@ -44,8 +45,6 @@ export type ChatContextValue = {
   images: File[];
   // chips of workspace doc or user uploaded file
   chips: ChatChip[];
-  // content of selected workspace doc
-  docs: DocContext[];
   abortController: AbortController | null;
   chatSessionId: string | null;
 };
@@ -77,6 +76,7 @@ export interface BaseChip {
 
 export interface DocChip extends BaseChip {
   docId: string;
+  content?: Signal<string>;
 }
 
 export interface FileChip extends BaseChip {

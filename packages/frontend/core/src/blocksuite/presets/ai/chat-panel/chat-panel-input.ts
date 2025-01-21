@@ -26,6 +26,7 @@ import { reportResponse } from '../utils/action-reporter';
 import { readBlobAsURL } from '../utils/image';
 import type { AINetworkSearchConfig } from './chat-config';
 import type { ChatContextValue, ChatMessage } from './chat-context';
+import { isDocChip } from './components/utils';
 
 const MaximumImageCount = 32;
 
@@ -507,7 +508,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
   };
 
   send = async (text: string) => {
-    const { status, markdown, docs } = this.chatContextValue;
+    const { status, markdown, chips } = this.chatContextValue;
     if (status === 'loading' || status === 'transmitting') return;
 
     const { images } = this.chatContextValue;
@@ -515,6 +516,11 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       return;
     }
     const { doc } = this.host;
+
+    const docsContent = chips
+      .filter(isDocChip)
+      .map(chip => chip.content?.value || '')
+      .join('\n');
 
     this.updateContext({
       images: [],
@@ -528,8 +534,8 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       images?.map(image => readBlobAsURL(image))
     );
 
-    const refDocs = docs.map(doc => doc.markdown).join('\n');
-    const content = (markdown ? `${markdown}\n` : '') + `${refDocs}\n` + text;
+    const content =
+      (markdown ? `${markdown}\n` : '') + `${docsContent}\n` + text;
 
     this.updateContext({
       items: [

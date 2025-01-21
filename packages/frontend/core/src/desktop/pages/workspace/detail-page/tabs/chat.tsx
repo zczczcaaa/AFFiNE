@@ -1,6 +1,7 @@
 import { ChatPanel } from '@affine/core/blocksuite/presets/ai';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
+import { DocSearchMenuService } from '@affine/core/modules/doc-search-menu/services';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import {
   createSignalFromObservable,
@@ -54,6 +55,7 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
       const searchService = framework.get(AINetworkSearchService);
       const docDisplayMetaService = framework.get(DocDisplayMetaService);
       const workspaceService = framework.get(WorkspaceService);
+      const docSearchMenuService = framework.get(DocSearchMenuService);
       chatPanelRef.current.networkSearchConfig = {
         visible: searchService.visible,
         enabled: searchService.enabled,
@@ -70,6 +72,15 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
         getDoc: (docId: string) => {
           const doc = workspaceService.workspace.docCollection.getDoc(docId);
           return doc;
+        },
+      };
+      chatPanelRef.current.docSearchMenuConfig = {
+        getDocMenuGroup: (query, action, abortSignal) => {
+          return docSearchMenuService.getDocMenuGroup(
+            query,
+            action,
+            abortSignal
+          );
         },
       };
     } else {

@@ -69,8 +69,10 @@ export type LinkedMenuItem = {
   icon: TemplateResult<1>;
   suffix?: string | TemplateResult<1>;
   // disabled?: boolean;
-  action: () => Promise<void> | void;
+  action: LinkedMenuAction;
 };
+
+export type LinkedMenuAction = () => Promise<void> | void;
 
 export type LinkedMenuGroup = {
   name: string;
