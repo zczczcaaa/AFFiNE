@@ -1,13 +1,17 @@
 import { notify } from '@affine/component';
 import {
   AuthContent,
+  AuthInput,
   BackButton,
-  CountDownRender,
   ModalHeader,
 } from '@affine/component/auth-components';
 import { Button } from '@affine/component/ui/button';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
-import { AuthService, CaptchaService } from '@affine/core/modules/cloud';
+import {
+  AuthService,
+  BackendError,
+  CaptchaService,
+} from '@affine/core/modules/cloud';
 import type { AuthSessionStatus } from '@affine/core/modules/cloud/entities/session';
 import { Unreachable } from '@affine/env/constant';
 import { Trans, useI18n } from '@affine/i18n';
@@ -54,6 +58,9 @@ export const SignInWithEmailStep = ({
   }, []);
 
   const [isSending, setIsSending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpError, setOtpError] = useState<string | undefined>();
 
   const t = useI18n();
   const authService = useService(AuthService);
@@ -120,6 +127,35 @@ export const SignInWithEmailStep = ({
     changeState(prev => ({ ...prev, step: 'signIn' }));
   }, [changeState]);
 
+  const onOtpChanged = useCallback((value: string) => {
+    setOtp(value);
+    setOtpError(undefined);
+  }, []);
+
+  const onContinue = useAsyncCallback(async () => {
+    if (isVerifying) return;
+
+    if (otp.length !== 6 || !/[0-9]{6}/.test(otp)) {
+      setOtpError(t['com.affine.auth.sign.auth.code.invalid']());
+      return;
+    }
+
+    setIsVerifying(true);
+
+    try {
+      await authService.signInMagicLink(email, otp);
+    } catch (e) {
+      if (e instanceof BackendError) {
+        notify.error({
+          title: e.originError.message,
+        });
+        setOtpError(t['com.affine.auth.sign.auth.code.invalid']());
+      }
+    } finally {
+      setIsVerifying(false);
+    }
+  }, [authService, email, isVerifying, otp, t]);
+
   return !verifyToken && needCaptcha ? (
     <>
       <ModalHeader title={t['com.affine.auth.sign.in']()} />
@@ -136,34 +172,50 @@ export const SignInWithEmailStep = ({
       />
       <AuthContent style={{ height: 100 }}>
         <Trans
-          i18nKey="com.affine.auth.sign.sent.email.message.sent-tips"
+          i18nKey="com.affine.auth.sign.auth.code.hint"
           values={{ email }}
           components={{ a: <a href={`mailto:${email}`} /> }}
         />
-        {t['com.affine.auth.sign.sent.email.message.sent-tips.sign-in']()}
       </AuthContent>
 
-      <div className={style.resendWrapper}>
-        {resendCountDown <= 0 ? (
-          <Button
-            disabled={isSending}
-            variant="plain"
-            size="large"
-            onClick={sendEmail}
-          >
-            {t['com.affine.auth.sign.auth.code.resend.hint']()}
-          </Button>
-        ) : (
-          <div className={style.sentRow}>
-            <div className={style.sentMessage}>
-              {t['com.affine.auth.sent']()}
-            </div>
-            <CountDownRender
-              className={style.resendCountdown}
-              timeLeft={resendCountDown}
+      <AuthInput
+        placeholder={t['com.affine.auth.sign.auth.code']()}
+        onChange={onOtpChanged}
+        error={!!otpError}
+        errorHint={otpError}
+        onEnter={onContinue}
+        type="text"
+        required={true}
+        maxLength={6}
+      />
+
+      <Button
+        style={{ width: '100%' }}
+        data-testid="continue-code-button"
+        size="extraLarge"
+        block={true}
+        onClick={onContinue}
+        disabled={!!otpError || isVerifying}
+        loading={isVerifying}
+      >
+        {t['com.affine.auth.sign.auth.code.continue']()}
+      </Button>
+
+      <div className={style.resendButtonWrapper}>
+        <Button
+          disabled={resendCountDown > 0}
+          variant="plain"
+          onClick={sendEmail}
+        >
+          {resendCountDown <= 0 ? (
+            t['com.affine.auth.sign.auth.code.resend']()
+          ) : (
+            <Trans
+              i18nKey="com.affine.auth.sign.auth.code.resend.hint"
+              values={{ second: resendCountDown }}
             />
-          </div>
-        )}
+          )}
+        </Button>
       </div>
 
       <div className={style.authMessage} style={{ marginTop: 20 }}>

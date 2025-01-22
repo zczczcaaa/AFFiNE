@@ -136,8 +136,12 @@ export class UserFriendlyError extends Error {
       return;
     }
 
-    new Logger(context).error(
-      'Internal server error',
+    const logger = new Logger(context);
+    const fn = this.status >= 500 ? logger.error : logger.log;
+
+    fn.call(
+      logger,
+      this.name,
       this.cause ? ((this.cause as any).stack ?? this.cause) : this.stack
     );
   }

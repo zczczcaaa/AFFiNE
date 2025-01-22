@@ -140,7 +140,7 @@ test('should be able to handle unknown internal error in graphql query', async t
   t.is(err.message, 'An internal error occurred.');
   t.is(err.extensions.status, HttpStatus.INTERNAL_SERVER_ERROR);
   t.is(err.extensions.name, 'INTERNAL_SERVER_ERROR');
-  t.true(t.context.logger.error.calledOnceWith('Internal server error'));
+  t.true(t.context.logger.error.calledOnceWith('internal_server_error'));
 });
 
 test('should be able to respond request', async t => {
@@ -166,7 +166,7 @@ test('should be able to handle unknown internal error in http request', async t 
     .expect(HttpStatus.INTERNAL_SERVER_ERROR);
   t.is(res.body.message, 'An internal error occurred.');
   t.is(res.body.name, 'INTERNAL_SERVER_ERROR');
-  t.true(t.context.logger.error.calledOnceWith('Internal server error'));
+  t.true(t.context.logger.error.calledOnceWith('internal_server_error'));
 });
 
 // Hard to test through websocket, will call event handler directly
@@ -196,5 +196,5 @@ test('should be able to handle unknown internal error in websocket event', async
   };
   t.is(error.message, 'An internal error occurred.');
   t.is(error.name, 'INTERNAL_SERVER_ERROR');
-  t.true(t.context.logger.error.calledOnceWith('Internal server error'));
+  t.true(t.context.logger.error.calledOnceWith('internal_server_error'));
 });

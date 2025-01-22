@@ -46,6 +46,21 @@ export function Text(props: PropsWithChildren) {
   return <span style={BasicTextStyle}>{props.children}</span>;
 }
 
+export function SecondaryText(props: PropsWithChildren) {
+  return (
+    <span
+      style={{
+        ...BasicTextStyle,
+        color: '#7A7A7A',
+        fontSize: '14px',
+        lineHeight: '22px',
+      }}
+    >
+      {props.children}
+    </span>
+  );
+}
+
 export function Bold(props: PropsWithChildren) {
   return <span style={{ fontWeight: 600 }}>{props.children}</span>;
 }
@@ -67,6 +82,23 @@ export const Avatar = (props: {
         verticalAlign: 'middle',
       }}
     />
+  );
+};
+
+export const OnelineCodeBlock = (props: PropsWithChildren) => {
+  return (
+    <pre
+      style={{
+        ...BasicTextStyle,
+        whiteSpace: 'nowrap',
+        border: '1px solid rgba(0,0,0,.1)',
+        padding: '8px 10px',
+        borderRadius: '4px',
+        backgroundColor: '#F5F5F5',
+      }}
+    >
+      {props.children}
+    </pre>
   );
 };
 

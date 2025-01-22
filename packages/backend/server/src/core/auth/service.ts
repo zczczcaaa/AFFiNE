@@ -322,9 +322,14 @@ export class AuthService implements OnApplicationBootstrap {
     });
   }
 
-  async sendSignInEmail(email: string, link: string, signUp: boolean) {
+  async sendSignInEmail(
+    email: string,
+    link: string,
+    otp: string,
+    signUp: boolean
+  ) {
     return signUp
-      ? await this.mailer.sendSignUpMail(email, { url: link })
-      : await this.mailer.sendSignInMail(email, { url: link });
+      ? await this.mailer.sendSignUpMail(email, { url: link, otp })
+      : await this.mailer.sendSignInMail(email, { url: link, otp });
   }
 }

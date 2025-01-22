@@ -5,6 +5,7 @@ import {
   createSign,
   createVerify,
   randomBytes,
+  randomInt,
   timingSafeEqual,
 } from 'node:crypto';
 
@@ -107,6 +108,20 @@ export class CryptoHelper {
 
   randomBytes(length = NONCE_LENGTH) {
     return randomBytes(length);
+  }
+
+  randomInt(min: number, max: number) {
+    return randomInt(min, max);
+  }
+
+  otp(length = 6) {
+    let otp = '';
+
+    for (let i = 0; i < length; i++) {
+      otp += this.randomInt(0, 9).toString();
+    }
+
+    return otp;
   }
 
   sha256(data: string) {

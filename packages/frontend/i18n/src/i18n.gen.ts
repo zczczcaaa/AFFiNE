@@ -1061,9 +1061,15 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.auth.send.verify.email.hint"](): string;
     /**
-      * `Sent`
+      * `Resend code`
       */
-    ["com.affine.auth.sent"](): string;
+    ["com.affine.auth.sign.auth.code.resend"](): string;
+    /**
+      * `Resend in {{second}}s`
+      */
+    ["com.affine.auth.sign.auth.code.resend.hint"](options: {
+        readonly second: string;
+    }): string;
     /**
       * `The verification link failed to be sent, please try again later.`
       */
@@ -1162,10 +1168,6 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.auth.sign.auth.code.message"](): string;
     /**
-      * `Resend link`
-      */
-    ["com.affine.auth.sign.auth.code.resend.hint"](): string;
-    /**
       * `Sign in with magic link`
       */
     ["com.affine.auth.sign.auth.code.send-email.sign-in"](): string;
@@ -1217,14 +1219,6 @@ export function useAFFiNEI18N(): {
       * ` You can click the link to create an account automatically.`
       */
     ["com.affine.auth.sign.sent.email.message.end"](): string;
-    /**
-      * `You can click the link to sign in automatically.`
-      */
-    ["com.affine.auth.sign.sent.email.message.sent-tips.sign-in"](): string;
-    /**
-      * `You can click the link to create an account automatically.`
-      */
-    ["com.affine.auth.sign.sent.email.message.sent-tips.sign-up"](): string;
     /**
       * `Sign up`
       */
@@ -6660,7 +6654,7 @@ export const TypedTrans: {
         ["3"]: JSX.Element;
     }>>;
     /**
-      * `An email with a magic link has been sent to <a>{{email}}</a>.`
+      * `To continue signing in, please enter the code that was sent to <a>{{email}}</a>.`
       */
     ["com.affine.auth.sign.sent.email.message.sent-tips"]: ComponentType<TypedTransProps<{
         readonly email: string;
