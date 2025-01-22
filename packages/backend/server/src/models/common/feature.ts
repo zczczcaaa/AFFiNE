@@ -55,3 +55,24 @@ export const Features = {
   restricted_plan_v1: quota(UserPlanQuotaConfig),
   team_plan_v1: quota(WorkspaceQuotaConfig),
 };
+
+export type UserFeatureName = keyof Pick<
+  typeof Features,
+  | 'early_access'
+  | 'ai_early_access'
+  | 'unlimited_copilot'
+  | 'administrator'
+  | 'free_plan_v1'
+  | 'pro_plan_v1'
+  | 'lifetime_pro_plan_v1'
+  | 'restricted_plan_v1'
+>;
+export type WorkspaceFeatureName = keyof Pick<
+  typeof Features,
+  'unlimited_workspace' | 'team_plan_v1'
+>;
+
+export type FeatureName = UserFeatureName | WorkspaceFeatureName;
+export type FeatureConfigs<T extends FeatureName> = z.infer<
+  (typeof Features)[T]['shape']['configs']
+>;

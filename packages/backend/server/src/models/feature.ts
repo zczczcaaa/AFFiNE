@@ -4,12 +4,12 @@ import { Feature } from '@prisma/client';
 import { z } from 'zod';
 
 import { BaseModel } from './base';
-import { Features, FeatureType } from './common';
-
-type FeatureNames = keyof typeof Features;
-type FeatureConfigs<T extends FeatureNames> = z.infer<
-  (typeof Features)[T]['shape']['configs']
->;
+import {
+  type FeatureConfigs,
+  type FeatureName,
+  Features,
+  FeatureType,
+} from './common';
 
 // TODO(@forehalo):
 //   `version` column in `features` table will deprecated because it's makes the whole system complicated without any benefits.
@@ -19,47 +19,23 @@ type FeatureConfigs<T extends FeatureNames> = z.infer<
 //   This is a huge burden for us and we should remove it.
 @Injectable()
 export class FeatureModel extends BaseModel {
-  async get<T extends FeatureNames>(name: T) {
-    const feature = await this.getLatest(name);
-
-    // All features are hardcoded in the codebase
-    // It would be a fatal error if the feature is not found in DB.
-    if (!feature) {
-      throw new Error(`Feature ${name} not found`);
-    }
-
-    const shape = this.getConfigShape(name);
-    const parseResult = shape.safeParse(feature.configs);
-
-    if (!parseResult.success) {
-      throw new Error(`Invalid feature config for ${name}`, {
-        cause: parseResult.error,
-      });
-    }
+  async get<T extends FeatureName>(name: T) {
+    const feature = await this.get_unchecked(name);
 
     return {
       ...feature,
-      configs: parseResult.data as FeatureConfigs<T>,
+      configs: this.check(name, feature.configs),
     };
   }
 
   @Transactional()
-  async upsert<T extends FeatureNames>(name: T, configs: FeatureConfigs<T>) {
-    const shape = this.getConfigShape(name);
-    const parseResult = shape.safeParse(configs);
-
-    if (!parseResult.success) {
-      throw new Error(`Invalid feature config for ${name}`, {
-        cause: parseResult.error,
-      });
-    }
-
-    const parsedConfigs = parseResult.data;
+  async upsert<T extends FeatureName>(name: T, configs: FeatureConfigs<T>) {
+    const parsedConfigs = this.check(name, configs);
 
     // TODO(@forehalo):
     //   could be a simple upsert operation, but we got useless `version` column in the database
     //   will be fixed when `version` column gets deprecated
-    const latest = await this.getLatest(name);
+    const latest = await this.try_get_unchecked(name);
 
     let feature: Feature;
     if (!latest) {
@@ -84,14 +60,54 @@ export class FeatureModel extends BaseModel {
     return feature as Feature & { configs: FeatureConfigs<T> };
   }
 
-  private async getLatest<T extends FeatureNames>(name: T) {
-    return this.tx.feature.findFirst({
+  /**
+   * Get the latest feature from database.
+   *
+   * @internal
+   */
+  async try_get_unchecked<T extends FeatureName>(name: T) {
+    const feature = await this.tx.feature.findFirst({
       where: { feature: name },
       orderBy: { version: 'desc' },
     });
+
+    return feature as Omit<Feature, 'configs'> & {
+      configs: Record<string, any>;
+    };
   }
 
-  private getConfigShape(name: FeatureNames): z.ZodObject<any> {
+  /**
+   * Get the latest feature from database.
+   *
+   * @throws {Error} If the feature is not found in DB.
+   * @internal
+   */
+  async get_unchecked<T extends FeatureName>(name: T) {
+    const feature = await this.try_get_unchecked(name);
+
+    // All features are hardcoded in the codebase
+    // It would be a fatal error if the feature is not found in DB.
+    if (!feature) {
+      throw new Error(`Feature ${name} not found`);
+    }
+
+    return feature;
+  }
+
+  check<T extends FeatureName>(name: T, config: any) {
+    const shape = this.getConfigShape(name);
+    const parseResult = shape.safeParse(config);
+
+    if (!parseResult.success) {
+      throw new Error(`Invalid feature config for ${name}`, {
+        cause: parseResult.error,
+      });
+    }
+
+    return parseResult.data as FeatureConfigs<T>;
+  }
+
+  getConfigShape(name: FeatureName): z.ZodObject<any> {
     return Features[name]?.shape.configs ?? z.object({});
   }
 }

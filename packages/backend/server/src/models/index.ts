@@ -12,8 +12,10 @@ import { PageModel } from './page';
 import { MODELS_SYMBOL } from './provider';
 import { SessionModel } from './session';
 import { UserModel } from './user';
+import { UserFeatureModel } from './user-feature';
 import { VerificationTokenModel } from './verification-token';
 import { WorkspaceModel } from './workspace';
+import { WorkspaceFeatureModel } from './workspace-feature';
 
 const MODELS = {
   user: UserModel,
@@ -22,6 +24,8 @@ const MODELS = {
   feature: FeatureModel,
   workspace: WorkspaceModel,
   page: PageModel,
+  userFeature: UserFeatureModel,
+  workspaceFeature: WorkspaceFeatureModel,
 };
 
 type ModelsType = {
@@ -77,5 +81,7 @@ export * from './feature';
 export * from './page';
 export * from './session';
 export * from './user';
+export * from './user-feature';
 export * from './verification-token';
 export * from './workspace';
+export * from './workspace-feature';
