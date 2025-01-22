@@ -10,6 +10,7 @@ import { DetailPageWrapper } from '@affine/core/desktop/pages/workspace/detail-p
 import { PageHeader } from '@affine/core/mobile/components';
 import { useGlobalEvent } from '@affine/core/mobile/hooks/use-global-events';
 import { AIButtonService } from '@affine/core/modules/ai-button';
+import { ServerService } from '@affine/core/modules/cloud';
 import { DocService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorService } from '@affine/core/modules/editor';
@@ -142,21 +143,29 @@ const DetailPageImpl = () => {
   const title = useLiveData(doc.title$);
   usePageDocumentTitle(title);
 
+  const server = useService(ServerService).server;
+
   const onLoad = useCallback(
     (editorContainer: AffineEditorContainer) => {
       // blocksuite editor host
       const editorHost = editorContainer.host;
 
       // provide image proxy endpoint to blocksuite
-      editorHost?.std.clipboard.use(
-        customImageProxyMiddleware(BUILD_CONFIG.imageProxyUrl)
-      );
-      ImageBlockService.setImageProxyURL(BUILD_CONFIG.imageProxyUrl);
+      const imageProxyUrl = new URL(
+        BUILD_CONFIG.imageProxyUrl,
+        server.baseUrl
+      ).toString();
+
+      const linkPreviewUrl = new URL(
+        BUILD_CONFIG.linkPreviewUrl,
+        server.baseUrl
+      ).toString();
+
+      editorHost?.std.clipboard.use(customImageProxyMiddleware(imageProxyUrl));
+      ImageBlockService.setImageProxyURL(imageProxyUrl);
 
       // provide link preview endpoint to blocksuite
-      editorHost?.doc
-        .get(LinkPreviewerService)
-        .setEndpoint(BUILD_CONFIG.linkPreviewUrl);
+      editorHost?.doc.get(LinkPreviewerService).setEndpoint(linkPreviewUrl);
 
       // provide page mode and updated date to blocksuite
       const refNodeService = editorHost?.std.getOptional(RefNodeSlotsProvider);
@@ -190,7 +199,7 @@ const DetailPageImpl = () => {
         disposable.dispose();
       };
     },
-    [docCollection.id, editor, jumpToPageBlock, openPage]
+    [docCollection.id, editor, jumpToPageBlock, openPage, server]
   );
 
   return (
