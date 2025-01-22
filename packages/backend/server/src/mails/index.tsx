@@ -7,6 +7,7 @@ import {
   TeamDeleteInOneMonth,
   TeamExpired,
   TeamExpireSoon,
+  TeamLicense,
   TeamWorkspaceDeleted,
   TeamWorkspaceUpgraded,
 } from './teams';
@@ -174,4 +175,9 @@ export const renderTeamWorkspaceExpireSoonMail = make(
 export const renderTeamWorkspaceExpiredMail = make(
   TeamExpired,
   props => `Your ${props.workspace.name} team workspace has expired`
+);
+
+export const renderTeamLicenseMail = make(
+  TeamLicense,
+  'Your AFFiNE Self-Hosted Team Workspace license is ready'
 );

@@ -23,6 +23,7 @@ export {
   type TeamExpireSoonProps,
 } from './expire-soon';
 export { default as TeamExpired, type TeamExpiredProps } from './expired';
+export { default as TeamLicense, type TeamLicenseProps } from './license';
 export {
   default as TeamWorkspaceUpgraded,
   type TeamWorkspaceUpgradedProps,

@@ -22,6 +22,7 @@ import {
   renderTeamBecomeCollaboratorMail,
   renderTeamDeleteIn1MonthMail,
   renderTeamDeleteIn24HoursMail,
+  renderTeamLicenseMail,
   renderTeamWorkspaceDeletedMail,
   renderTeamWorkspaceExpiredMail,
   renderTeamWorkspaceExpireSoonMail,
@@ -188,4 +189,5 @@ export class MailService {
     renderTeamWorkspaceExpireSoonMail
   );
   sendTeamExpiredMail = this.makeWorkspace(renderTeamWorkspaceExpiredMail);
+  sendTeamLicenseMail = this.make(renderTeamLicenseMail);
 }

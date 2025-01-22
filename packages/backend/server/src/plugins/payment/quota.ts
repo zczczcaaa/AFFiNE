@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { type EventPayload } from '../../base';
+import type { EventPayload } from '../../base';
+import { FeatureManagementService } from '../../core/features';
 import { PermissionService } from '../../core/permission';
 import {
   QuotaManagementService,
@@ -9,18 +10,21 @@ import {
   QuotaType,
 } from '../../core/quota';
 import { WorkspaceService } from '../../core/workspaces/resolvers';
+import { SubscriptionPlan } from './types';
 
 @Injectable()
-export class TeamQuotaOverride {
+export class QuotaOverride {
   constructor(
     private readonly quota: QuotaService,
     private readonly manager: QuotaManagementService,
     private readonly permission: PermissionService,
-    private readonly workspace: WorkspaceService
+    private readonly workspace: WorkspaceService,
+    private readonly feature: FeatureManagementService,
+    private readonly quotaService: QuotaService
   ) {}
 
   @OnEvent('workspace.subscription.activated')
-  async onSubscriptionUpdated({
+  async onWorkspaceSubscriptionUpdated({
     workspaceId,
     plan,
     recurring,
@@ -36,7 +40,7 @@ export class TeamQuotaOverride {
           workspaceId,
           `${recurring} team subscription activated`
         );
-        await this.manager.updateWorkspaceConfig(
+        await this.quota.updateWorkspaceConfig(
           workspaceId,
           QuotaType.TeamPlanV1,
           { memberLimit: quantity }
@@ -55,14 +59,65 @@ export class TeamQuotaOverride {
   }
 
   @OnEvent('workspace.subscription.canceled')
-  async onSubscriptionCanceled({
+  async onWorkspaceSubscriptionCanceled({
     workspaceId,
     plan,
   }: EventPayload<'workspace.subscription.canceled'>) {
     switch (plan) {
-      case 'team':
+      case SubscriptionPlan.Team:
         await this.manager.removeTeamWorkspace(workspaceId);
         break;
+      default:
+        break;
+    }
+  }
+
+  @OnEvent('user.subscription.activated')
+  async onUserSubscriptionUpdated({
+    userId,
+    plan,
+    recurring,
+  }: EventPayload<'user.subscription.activated'>) {
+    switch (plan) {
+      case SubscriptionPlan.AI:
+        await this.feature.addCopilot(userId, 'subscription activated');
+        break;
+      case SubscriptionPlan.Pro:
+        await this.quotaService.switchUserQuota(
+          userId,
+          recurring === 'lifetime'
+            ? QuotaType.LifetimeProPlanV1
+            : QuotaType.ProPlanV1,
+          'subscription activated'
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  @OnEvent('user.subscription.canceled')
+  async onUserSubscriptionCanceled({
+    userId,
+    plan,
+  }: EventPayload<'user.subscription.canceled'>) {
+    switch (plan) {
+      case SubscriptionPlan.AI:
+        await this.feature.removeCopilot(userId);
+        break;
+      case SubscriptionPlan.Pro: {
+        // edge case: when user switch from recurring Pro plan to `Lifetime` plan,
+        // a subscription canceled event will be triggered because `Lifetime` plan is not subscription based
+        const quota = await this.quotaService.getUserQuota(userId);
+        if (quota.feature.name !== QuotaType.LifetimeProPlanV1) {
+          await this.quotaService.switchUserQuota(
+            userId,
+            QuotaType.FreePlanV1,
+            'subscription canceled'
+          );
+        }
+        break;
+      }
       default:
         break;
     }
