@@ -415,7 +415,7 @@ test.describe('chat panel', () => {
     });
     expect(history[1].name).toBe('AFFiNE AI');
     expect(
-      await page.locator('chat-panel affine-link').count()
+      await page.locator('chat-panel affine-footnote-node').count()
     ).toBeGreaterThan(0);
 
     await clearChat(page);
@@ -429,7 +429,9 @@ test.describe('chat panel', () => {
       content: 'What is the weather in Shanghai today?',
     });
     expect(history[1].name).toBe('AFFiNE AI');
-    expect(await page.locator('chat-panel affine-link').count()).toBe(0);
+    expect(await page.locator('chat-panel affine-footnote-node').count()).toBe(
+      0
+    );
   });
 
   test('can trigger inline ai input and action panel by clicking Start with AI button', async ({

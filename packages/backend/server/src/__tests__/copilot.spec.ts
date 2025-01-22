@@ -1096,10 +1096,14 @@ test('CitationParser should replace citation placeholders with URLs', t => {
   const citations = ['https://example1.com', 'https://example2.com'];
 
   const parser = new CitationParser();
-  const result = parser.parse(content, citations);
+  const result = parser.parse(content, citations) + parser.end();
 
-  const expected =
-    'This is [a] test sentence with [citations [[1](https://example1.com)]] and [[2](https://example2.com)] and [3].';
+  const expected = [
+    'This is [a] test sentence with [citations [^1]] and [^2] and [3].',
+    `[^1]: {"type":"url","url":"${encodeURIComponent(citations[0])}"}`,
+    `[^2]: {"type":"url","url":"${encodeURIComponent(citations[1])}"}`,
+  ].join('\n\n');
+
   t.is(result, expected);
 });
 
@@ -1130,10 +1134,18 @@ test('CitationParser should replace chunks of citation placeholders with URLs', 
   let result = contents.reduce((acc, current) => {
     return acc + parser.parse(current, citations);
   }, '');
-  result += parser.flush();
+  result += parser.end();
 
-  const expected =
-    '[[]]This is [a] test sentence with citations [[1](https://example1.com)] and [[2](https://example2.com)] and [[3](https://example3.com)] and [[4](https://example4.com)] and [[5](https://example5.com)] and [[6](https://example6.com)] and [7';
+  const expected = [
+    '[[]]This is [a] test sentence with citations [^1] and [^2] and [^3] and [^4] and [^5] and [^6] and [7',
+    `[^1]: {"type":"url","url":"${encodeURIComponent(citations[0])}"}`,
+    `[^2]: {"type":"url","url":"${encodeURIComponent(citations[1])}"}`,
+    `[^3]: {"type":"url","url":"${encodeURIComponent(citations[2])}"}`,
+    `[^4]: {"type":"url","url":"${encodeURIComponent(citations[3])}"}`,
+    `[^5]: {"type":"url","url":"${encodeURIComponent(citations[4])}"}`,
+    `[^6]: {"type":"url","url":"${encodeURIComponent(citations[5])}"}`,
+    `[^7]: {"type":"url","url":"${encodeURIComponent(citations[6])}"}`,
+  ].join('\n\n');
   t.is(result, expected);
 });
 
@@ -1147,9 +1159,14 @@ test('CitationParser should not replace citation already with URLs', t => {
   ];
 
   const parser = new CitationParser();
-  const result = parser.parse(content, citations);
+  const result = parser.parse(content, citations) + parser.end();
 
-  const expected = content;
+  const expected = [
+    content,
+    `[^1]: {"type":"url","url":"${encodeURIComponent(citations[0])}"}`,
+    `[^2]: {"type":"url","url":"${encodeURIComponent(citations[1])}"}`,
+    `[^3]: {"type":"url","url":"${encodeURIComponent(citations[2])}"}`,
+  ].join('\n\n');
   t.is(result, expected);
 });
 
@@ -1169,8 +1186,13 @@ test('CitationParser should not replace chunks of citation already with URLs', t
   let result = contents.reduce((acc, current) => {
     return acc + parser.parse(current, citations);
   }, '');
-  result += parser.flush();
+  result += parser.end();
 
-  const expected = contents.join('');
+  const expected = [
+    contents.join(''),
+    `[^1]: {"type":"url","url":"${encodeURIComponent(citations[0])}"}`,
+    `[^2]: {"type":"url","url":"${encodeURIComponent(citations[1])}"}`,
+    `[^3]: {"type":"url","url":"${encodeURIComponent(citations[2])}"}`,
+  ].join('\n\n');
   t.is(result, expected);
 });

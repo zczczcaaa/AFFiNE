@@ -9,6 +9,7 @@ import type { Store } from '@blocksuite/affine/store';
 import { css, html, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
+import { throttle } from 'lodash-es';
 
 import { AIHelpIcon, SmallHintIcon } from '../_common/icons';
 import { AIProvider } from '../provider';
@@ -191,6 +192,8 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     this._chatMessages.value?.scrollToEnd();
   };
 
+  private readonly _throttledScrollToEnd = throttle(this._scrollToEnd, 1000);
+
   private readonly _cleanupHistories = async () => {
     const notification = this.host.std.getOptional(NotificationProvider);
     if (!notification) return;
@@ -229,13 +232,19 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     }
 
     if (
-      !this.isLoading &&
       _changedProperties.has('chatContextValue') &&
       (this.chatContextValue.status === 'loading' ||
         this.chatContextValue.status === 'error' ||
         this.chatContextValue.status === 'success')
     ) {
       setTimeout(this._scrollToEnd, 500);
+    }
+
+    if (
+      _changedProperties.has('chatContextValue') &&
+      this.chatContextValue.status === 'transmitting'
+    ) {
+      this._throttledScrollToEnd();
     }
   }
 

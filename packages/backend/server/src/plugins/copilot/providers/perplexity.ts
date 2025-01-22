@@ -63,7 +63,10 @@ export class CitationParser {
 
   private numberToken: string[] = [];
 
+  private citations: string[] = [];
+
   public parse(content: string, citations: string[]) {
+    this.citations = citations;
     let result = '';
     const contentArray = content.split('');
     for (const [index, char] of contentArray.entries()) {
@@ -85,7 +88,7 @@ export class CitationParser {
             cIndex <= citations.length &&
             contentArray[index + 1] !== this.PARENTHESES_OPEN
           ) {
-            const content = `[[${cIndex}](${citations[cIndex - 1]})]`;
+            const content = `[^${cIndex}]`;
             result += content;
             this.resetToken();
           } else {
@@ -116,13 +119,26 @@ export class CitationParser {
     return result;
   }
 
-  public flush() {
-    const content = this.getFullContent();
+  public end() {
+    return this.flush() + this.getFootnotes();
+  }
+
+  private flush() {
+    const content = this.getTokenContent();
     this.resetToken();
     return content;
   }
 
-  private getFullContent() {
+  private getFootnotes() {
+    const footnotes = this.citations.map((citation, index) => {
+      return `[^${index + 1}]: {"type":"url","url":"${encodeURIComponent(
+        citation
+      )}"}`;
+    });
+    return '\n\n' + footnotes.join('\n\n');
+  }
+
+  private getTokenContent() {
     return this.startToken.concat(this.numberToken, this.endToken).join('');
   }
 
@@ -208,7 +224,7 @@ export class PerplexityProvider implements CopilotTextToTextProvider {
         const { content } = data.choices[0].message;
         const { citations } = data;
         let result = parser.parse(content, citations);
-        result += parser.flush();
+        result += parser.end();
         return result;
       }
     } catch (e: any) {
@@ -277,7 +293,7 @@ export class PerplexityProvider implements CopilotTextToTextProvider {
                 }
               },
               flush(controller) {
-                controller.enqueue(parser.flush());
+                controller.enqueue(parser.end());
                 controller.enqueue(null);
               },
             })
