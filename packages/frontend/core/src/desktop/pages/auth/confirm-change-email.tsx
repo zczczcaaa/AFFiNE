@@ -40,6 +40,9 @@ export const ConfirmChangeEmail: FC<{
             }
           }
           throw err;
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     })().catch(err => {
       // TODO(@eyhn): Add error handling
