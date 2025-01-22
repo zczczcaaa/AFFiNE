@@ -81,7 +81,7 @@
     "nanoid": "^5.0.9",
     "nest-commander": "^3.15.0",
     "nest-winston": "^1.9.7",
-    "nestjs-cls": "^4.5.0",
+    "nestjs-cls": "^5.0.0",
     "nestjs-throttler-storage-redis": "^0.5.1",
     "nodemailer": "^6.9.16",
     "on-headers": "^1.0.2",
