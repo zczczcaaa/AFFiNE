@@ -20,6 +20,7 @@ export {
   BlockMarkdownAdapterExtension,
   type BlockMarkdownAdapterMatcher,
   BlockMarkdownAdapterMatcherIdentifier,
+  FOOTNOTE_DEFINITION_PREFIX,
   InlineDeltaToMarkdownAdapterExtension,
   type InlineDeltaToMarkdownAdapterMatcher,
   InlineDeltaToMarkdownAdapterMatcherIdentifier,

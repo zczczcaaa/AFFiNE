@@ -3569,6 +3569,7 @@ __metadata:
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
     "@toeverything/theme": "npm:^1.1.7"
+    "@types/mdast": "npm:^4.0.4"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
     zod: "npm:^3.23.8"
@@ -3716,10 +3717,12 @@ __metadata:
     lodash.clonedeep: "npm:^4.5.0"
     lodash.mergewith: "npm:^4.6.2"
     mdast-util-gfm-autolink-literal: "npm:^2.0.1"
+    mdast-util-gfm-footnote: "npm:^2.0.0"
     mdast-util-gfm-strikethrough: "npm:^2.0.0"
     mdast-util-gfm-table: "npm:^2.0.0"
     mdast-util-gfm-task-list-item: "npm:^2.0.0"
     micromark-extension-gfm-autolink-literal: "npm:^2.1.0"
+    micromark-extension-gfm-footnote: "npm:^2.1.0"
     micromark-extension-gfm-strikethrough: "npm:^2.1.0"
     micromark-extension-gfm-table: "npm:^2.1.0"
     micromark-extension-gfm-task-list-item: "npm:^2.1.0"
@@ -26903,7 +26906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromark-extension-gfm-footnote@npm:^2.0.0":
+"micromark-extension-gfm-footnote@npm:^2.0.0, micromark-extension-gfm-footnote@npm:^2.1.0":
   version: 2.1.0
   resolution: "micromark-extension-gfm-footnote@npm:2.1.0"
   dependencies:
