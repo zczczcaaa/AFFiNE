@@ -216,6 +216,7 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
       ...this.referenceInfo$.peek(),
       openMode,
       event,
+      host: this.host,
     });
   };
 

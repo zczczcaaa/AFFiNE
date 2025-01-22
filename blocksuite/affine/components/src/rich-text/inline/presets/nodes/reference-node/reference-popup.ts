@@ -71,6 +71,7 @@ export class ReferencePopup extends WithDisposable(LitElement) {
     this.std.getOptional(RefNodeSlotsProvider)?.docLinkClicked.emit({
       ...this.referenceInfo,
       ...event,
+      host: this.std.host,
     });
   };
 

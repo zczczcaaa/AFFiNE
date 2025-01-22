@@ -56,11 +56,14 @@ export class AffineLink extends ShadowlessElement {
     if (!referenceInfo) return;
 
     const refNodeSlotsProvider = this.std?.getOptional(RefNodeSlotsProvider);
-    if (!refNodeSlotsProvider) return;
+    if (!refNodeSlotsProvider || !this.std) return;
 
     e?.preventDefault();
 
-    refNodeSlotsProvider.docLinkClicked.emit(referenceInfo);
+    refNodeSlotsProvider.docLinkClicked.emit({
+      ...referenceInfo,
+      host: this.std.host,
+    });
   };
 
   private readonly _whenHover = new HoverController(

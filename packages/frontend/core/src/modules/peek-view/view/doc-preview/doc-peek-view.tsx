@@ -106,6 +106,9 @@ function DocPeekPreviewEditor({
       disposableGroup.add(
         // todo(@pengx17): seems not working
         refNodeSlots.docLinkClicked.on(options => {
+          if (options.host !== editorContainer.host) {
+            return;
+          }
           peekView
             .open({
               docRef: { docId: options.pageId },

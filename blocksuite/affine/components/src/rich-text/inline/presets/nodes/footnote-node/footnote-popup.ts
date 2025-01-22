@@ -84,14 +84,15 @@ export class FootNotePopup extends WithDisposable(LitElement) {
     const referenceType = this.footnote.reference.type;
     const { docId, url } = this.footnote.reference;
     switch (referenceType) {
-      case 'doc':
+      case 'doc': {
         if (!docId) {
           break;
         }
         this.std
           .getOptional(RefNodeSlotsProvider)
-          ?.docLinkClicked.emit({ pageId: docId });
+          ?.docLinkClicked.emit({ pageId: docId, host: this.std.host });
         break;
+      }
       case 'url':
         if (!url) {
           break;

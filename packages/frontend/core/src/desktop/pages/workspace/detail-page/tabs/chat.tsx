@@ -91,8 +91,10 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
     const docModeService = editor.host.std.get(DocModeProvider);
     const refNodeService = editor.host.std.getOptional(RefNodeSlotsProvider);
     const disposable = [
-      refNodeService?.docLinkClicked.on(() => {
-        (chatPanelRef.current as ChatPanel).doc = editor.doc;
+      refNodeService?.docLinkClicked.on(({ host }) => {
+        if (host === editor.host) {
+          (chatPanelRef.current as ChatPanel).doc = editor.doc;
+        }
       }),
       docModeService?.onPrimaryModeChange(() => {
         if (!editor.host) return;

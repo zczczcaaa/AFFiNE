@@ -433,6 +433,7 @@ const CREATE_AS_DOC = {
 
     host.std.getOptional(RefNodeSlotsProvider)?.docLinkClicked.emit({
       pageId: newDoc.id,
+      host,
     });
     let complete = false;
     (function addContent() {

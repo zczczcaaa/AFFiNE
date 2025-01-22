@@ -165,7 +165,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
     return;
   }, [globalContext, isActiveView, isInTrash]);
 
-  useRegisterBlocksuiteEditorCommands(editor);
+  useRegisterBlocksuiteEditorCommands(editor, isActiveView);
   const title = useLiveData(doc.title$);
   usePageDocumentTitle(title);
 
@@ -182,7 +182,10 @@ const DetailPageImpl = memo(function DetailPageImpl() {
           disposable.add(
             // the event should not be emitted by AffineReference
             refNodeSlots.docLinkClicked.on(
-              ({ pageId, params, openMode, event }) => {
+              ({ pageId, params, openMode, event, host }) => {
+                if (host !== editorHost) {
+                  return;
+                }
                 openMode ??=
                   event && isNewTabTrigger(event)
                     ? 'open-in-new-tab'

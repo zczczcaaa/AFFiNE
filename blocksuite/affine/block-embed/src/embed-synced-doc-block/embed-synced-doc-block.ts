@@ -323,7 +323,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
 
     this.std
       .getOptional(RefNodeSlotsProvider)
-      ?.docLinkClicked.emit({ ...event, pageId });
+      ?.docLinkClicked.emit({ ...event, pageId, host: this.host });
   };
 
   refreshData = () => {
@@ -387,8 +387,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
     let editorHost: EditorHost | null = this.host;
     while (editorHost && !this._cycle) {
       this._cycle = !!editorHost && editorHost.doc.id === this.model.pageId;
-      editorHost =
-        editorHost.parentElement?.closest<EditorHost>('editor-host') ?? null;
+      editorHost = editorHost.parentElement?.closest('editor-host') ?? null;
     }
   }
 

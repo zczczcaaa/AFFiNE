@@ -119,9 +119,10 @@ export class LinkCell extends BaseCellRenderer<string> {
       return;
     }
 
-    std
-      .getOptional(RefNodeSlotsProvider)
-      ?.docLinkClicked.emit({ pageId: this.docId });
+    std.getOptional(RefNodeSlotsProvider)?.docLinkClicked.emit({
+      pageId: this.docId,
+      host: std.host,
+    });
   };
 
   get std() {
