@@ -1061,6 +1061,18 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.auth.send.verify.email.hint"](): string;
     /**
+      * `Verification code`
+      */
+    ["com.affine.auth.sign.auth.code"](): string;
+    /**
+      * `Invalid verification code`
+      */
+    ["com.affine.auth.sign.auth.code.invalid"](): string;
+    /**
+      * `Continue with code`
+      */
+    ["com.affine.auth.sign.auth.code.continue"](): string;
+    /**
       * `Resend code`
       */
     ["com.affine.auth.sign.auth.code.resend"](): string;
@@ -1215,10 +1227,6 @@ export function useAFFiNEI18N(): {
       * `Privacy policy`
       */
     ["com.affine.auth.sign.policy"](): string;
-    /**
-      * ` You can click the link to create an account automatically.`
-      */
-    ["com.affine.auth.sign.sent.email.message.end"](): string;
     /**
       * `Sign up`
       */
@@ -6635,6 +6643,14 @@ export const TypedTrans: {
         ["1"]: JSX.Element;
     }>>;
     /**
+      * `To continue signing in, please enter the code that was sent to <a>{{email}}</a>.`
+      */
+    ["com.affine.auth.sign.auth.code.hint"]: ComponentType<TypedTransProps<{
+        readonly email: string;
+    }, {
+        a: JSX.Element;
+    }>>;
+    /**
       * `Or <1>sign in with password</1> instead.`
       */
     ["com.affine.auth.sign.auth.code.message.password"]: ComponentType<TypedTransProps<Readonly<{}>, {
@@ -6652,14 +6668,6 @@ export const TypedTrans: {
     ["com.affine.auth.sign.message"]: ComponentType<TypedTransProps<Readonly<{}>, {
         ["1"]: JSX.Element;
         ["3"]: JSX.Element;
-    }>>;
-    /**
-      * `To continue signing in, please enter the code that was sent to <a>{{email}}</a>.`
-      */
-    ["com.affine.auth.sign.sent.email.message.sent-tips"]: ComponentType<TypedTransProps<{
-        readonly email: string;
-    }, {
-        a: JSX.Element;
     }>>;
     /**
       * `This demo is limited. <1>Download the AFFiNE Client</1> for the latest features and Performance.`
