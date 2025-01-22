@@ -3,7 +3,7 @@ import { ServerService } from '@affine/core/modules/cloud';
 import { UrlService } from '@affine/core/modules/url';
 import { OAuthProviderType } from '@affine/graphql';
 import track from '@affine/track';
-import { GithubIcon, GoogleDuotoneIcon } from '@blocksuite/icons/rc';
+import { GithubIcon, GoogleIcon, LockIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { type ReactElement, type SVGAttributes, useCallback } from 'react';
 
@@ -14,7 +14,7 @@ const OAuthProviderMap: Record<
   }
 > = {
   [OAuthProviderType.Google]: {
-    icon: <GoogleDuotoneIcon />,
+    icon: <GoogleIcon />,
   },
 
   [OAuthProviderType.GitHub]: {
@@ -22,8 +22,7 @@ const OAuthProviderMap: Record<
   },
 
   [OAuthProviderType.OIDC]: {
-    // TODO(@catsjuice): Add OIDC icon
-    icon: <GoogleDuotoneIcon />,
+    icon: <LockIcon />,
   },
 };
 
