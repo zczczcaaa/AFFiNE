@@ -4232,6 +4232,14 @@ export function useAFFiNEI18N(): {
         readonly query: string;
     }): string;
     /**
+      * `Reset sync`
+      */
+    ["com.affine.resetSyncStatus.button"](): string;
+    /**
+      * `This operation may fix some synchronization issues.`
+      */
+    ["com.affine.resetSyncStatus.description"](): string;
+    /**
       * `Collections`
       */
     ["com.affine.rootAppSidebar.collections"](): string;
@@ -5362,7 +5370,7 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.preferences"](): string;
     /**
-      * `Team's Billing`
+      * `Team's Team's Billing`
       */
     ["com.affine.settings.workspace.billing"](): string;
     /**
@@ -5505,6 +5513,49 @@ export function useAFFiNEI18N(): {
       * `Allow workspace members to use AFFiNE AI features. This setting doesn't affect billing. Workspace members use AFFiNE AI through their personal accounts.`
       */
     ["com.affine.settings.workspace.affine-ai.description"](): string;
+    /**
+      * `Backup`
+      */
+    ["com.affine.settings.workspace.backup"](): string;
+    /**
+      * `Management in local workspace backup files`
+      */
+    ["com.affine.settings.workspace.backup.subtitle"](): string;
+    /**
+      * `No backup files found`
+      */
+    ["com.affine.settings.workspace.backup.empty"](): string;
+    /**
+      * `Delete backup workspace`
+      */
+    ["com.affine.settings.workspace.backup.delete"](): string;
+    /**
+      * `Are you sure you want to delete this workspace. This action cannot be undone. Make sure you no longer need them before proceeding.`
+      */
+    ["com.affine.settings.workspace.backup.delete.warning"](): string;
+    /**
+      * `Workspace backup deleted successfully`
+      */
+    ["com.affine.settings.workspace.backup.delete.success"](): string;
+    /**
+      * `Workspace enabled successfully`
+      */
+    ["com.affine.settings.workspace.backup.import.success"](): string;
+    /**
+      * `Enable local workspace`
+      */
+    ["com.affine.settings.workspace.backup.import"](): string;
+    /**
+      * `Open`
+      */
+    ["com.affine.settings.workspace.backup.import.success.action"](): string;
+    /**
+      * `Deleted {{date}} at {{time}}`
+      */
+    ["com.affine.settings.workspace.backup.delete-at"](options: Readonly<{
+        date: string;
+        time: string;
+    }>): string;
     /**
       * `Sharing doc requires AFFiNE Cloud.`
       */

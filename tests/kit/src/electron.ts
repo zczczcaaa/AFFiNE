@@ -160,7 +160,6 @@ export const test = base.extend<{
       });
 
       await use(electronApp);
-      console.log('Cleaning up...');
       const pages = electronApp.windows();
       for (const page of pages) {
         await page.close();

@@ -101,3 +101,64 @@ test('export then add', async ({ page, appInfo, workspace }) => {
   const title = page.locator('[data-block-is-title] >> text="test1"');
   await expect(title).toBeVisible();
 });
+
+test('delete workspace and then restore it from backup', async ({ page }) => {
+  //#region 1. create a new workspace
+  await clickSideBarCurrentWorkspaceBanner(page);
+  const newWorkspaceName = 'new-test-name';
+
+  await page.getByTestId('new-workspace').click();
+  await page.getByTestId('create-workspace-input').fill(newWorkspaceName);
+  await page.getByTestId('create-workspace-create-button').click();
+  //#endregion
+
+  //#region 2. create a page in the new workspace (will verify later if it is successfully recovered)
+  await clickNewPageButton(page);
+
+  await getBlockSuiteEditorTitle(page).fill('test1');
+  //#endregion
+
+  //#region 3. delete the workspace
+  await page.getByTestId('slider-bar-workspace-setting-button').click();
+  await expect(page.getByTestId('setting-modal')).toBeVisible();
+
+  await page.getByTestId('workspace-setting:preference').click();
+  await page.getByTestId('delete-workspace-button').click();
+  await page.getByTestId('delete-workspace-input').fill(newWorkspaceName);
+
+  await page.getByTestId('delete-workspace-confirm-button').click();
+
+  // we are back to the original workspace
+  await expect(page.getByTestId('workspace-name')).toContainText(
+    'Demo Workspace'
+  );
+  //#endregion
+
+  //#region 4. restore the workspace from backup
+  await page.getByTestId('slider-bar-workspace-setting-button').click();
+  await expect(page.getByTestId('setting-modal')).toBeVisible();
+
+  await page.getByTestId('backup-panel-trigger').click();
+  await expect(page.getByTestId('backup-workspace-item')).toHaveCount(1);
+  await page.getByTestId('backup-workspace-item').click();
+  await page.getByRole('menuitem', { name: 'Enable local workspace' }).click();
+  const toast = page.locator(
+    '[data-sonner-toast]:has-text("Workspace enabled successfully")'
+  );
+  await expect(toast).toBeVisible();
+  await toast.getByRole('button', { name: 'Open' }).click();
+  //#endregion
+
+  await page.waitForTimeout(1000);
+
+  // verify the workspace name & page title
+  await expect(page.getByTestId('workspace-name')).toContainText(
+    newWorkspaceName
+  );
+  // find button which has the title "test1"
+  const test1PageButton = await page.waitForSelector(`text="test1"`);
+  await test1PageButton.click();
+
+  const title = page.locator('[data-block-is-title] >> text="test1"');
+  await expect(title).toBeVisible();
+});

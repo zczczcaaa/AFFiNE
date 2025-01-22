@@ -29,7 +29,6 @@ const config: PlaywrightTestConfig = {
 };
 
 if (process.env.CI) {
-  // todo: fix the flaky tests
   config.retries = 5;
 }
 

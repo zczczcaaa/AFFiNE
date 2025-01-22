@@ -176,10 +176,21 @@ export async function selectDBFileLocation(): Promise<SelectDBFileLocationResult
  * update the local workspace id list and then connect to it.
  *
  */
-export async function loadDBFile(): Promise<LoadDBFileResult> {
+export async function loadDBFile(
+  dbFilePath?: string
+): Promise<LoadDBFileResult> {
   try {
-    const ret =
+    const provided =
       getFakedResult() ??
+      (dbFilePath
+        ? {
+            filePath: dbFilePath,
+            filePaths: [dbFilePath],
+            canceled: false,
+          }
+        : undefined);
+    const ret =
+      provided ??
       (await mainRPC.showOpenDialog({
         properties: ['openFile'],
         title: 'Load Workspace',
@@ -248,6 +259,12 @@ async function cpV1DBFile(
   if (validationResult !== ValidationResult.Valid) {
     return { error: 'DB_FILE_INVALID' }; // invalid db file
   }
+
+  // checkout to make sure wal is flushed
+  const connection = new SqliteConnection(originalPath);
+  await connection.connect();
+  await connection.checkpoint();
+  await connection.close();
 
   const internalFilePath = await getWorkspaceDBPath('workspace', workspaceId);
 

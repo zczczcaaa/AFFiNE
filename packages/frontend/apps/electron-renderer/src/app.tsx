@@ -4,6 +4,7 @@ import { AppContainer } from '@affine/core/desktop/components/app-container';
 import { router } from '@affine/core/desktop/router';
 import { configureCommonModules } from '@affine/core/modules';
 import { configureAppTabsHeaderModule } from '@affine/core/modules/app-tabs-header';
+import { configureDesktopBackupModule } from '@affine/core/modules/backup';
 import { ValidatorProvider } from '@affine/core/modules/cloud';
 import {
   configureDesktopApiModule,
@@ -77,6 +78,7 @@ configureAppTabsHeaderModule(framework);
 configureFindInPageModule(framework);
 configureDesktopApiModule(framework);
 configureSpellCheckSettingModule(framework);
+configureDesktopBackupModule(framework);
 framework.impl(NbstoreProvider, {
   openStore(key, options) {
     const { port1: portForOpClient, port2: portForWorker } =

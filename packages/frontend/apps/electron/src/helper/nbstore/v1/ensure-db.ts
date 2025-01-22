@@ -64,6 +64,7 @@ export async function ensureSQLiteDisconnected(
   const db = await ensureSQLiteDB(spaceType, id);
 
   if (db) {
+    await db.checkpoint();
     await db.destroy();
   }
 }
