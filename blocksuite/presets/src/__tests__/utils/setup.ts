@@ -1,3 +1,6 @@
+import '@toeverything/theme/style.css';
+import '@toeverything/theme/fonts.css';
+
 import { effects as blocksEffects } from '@blocksuite/blocks/effects';
 import type { Store, Transformer } from '@blocksuite/store';
 
