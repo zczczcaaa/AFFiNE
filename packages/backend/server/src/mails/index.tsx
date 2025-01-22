@@ -1,4 +1,4 @@
-import { render as rawRender } from '@react-email/render';
+import { render as rawRender } from '@react-email/components';
 
 import {
   TeamBecomeAdmin,

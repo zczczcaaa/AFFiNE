@@ -805,8 +805,7 @@ __metadata:
     "@opentelemetry/semantic-conventions": "npm:^1.28.0"
     "@prisma/client": "npm:^5.22.0"
     "@prisma/instrumentation": "npm:^5.22.0"
-    "@react-email/components": "npm:0.0.31"
-    "@react-email/render": "npm:1.0.3"
+    "@react-email/components": "npm:0.0.32"
     "@socket.io/redis-adapter": "npm:^8.3.0"
     "@types/cookie-parser": "npm:^1.4.8"
     "@types/express": "npm:^4.17.21"
@@ -12248,9 +12247,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-email/components@npm:0.0.31":
-  version: 0.0.31
-  resolution: "@react-email/components@npm:0.0.31"
+"@react-email/components@npm:0.0.32":
+  version: 0.0.32
+  resolution: "@react-email/components@npm:0.0.32"
   dependencies:
     "@react-email/body": "npm:0.0.11"
     "@react-email/button": "npm:0.0.19"
@@ -12267,14 +12266,14 @@ __metadata:
     "@react-email/link": "npm:0.0.12"
     "@react-email/markdown": "npm:0.0.14"
     "@react-email/preview": "npm:0.0.12"
-    "@react-email/render": "npm:1.0.3"
+    "@react-email/render": "npm:1.0.4"
     "@react-email/row": "npm:0.0.12"
     "@react-email/section": "npm:0.0.16"
     "@react-email/tailwind": "npm:1.0.4"
     "@react-email/text": "npm:0.0.11"
   peerDependencies:
     react: ^18.0 || ^19.0 || ^19.0.0-rc
-  checksum: 10/2850943e9e326ea3e9d6a2e55665c5ab6a00f962ff5f01541cca61abcf45770a4cc6a59de503a60eb4cff257805406470ad8a3969b2b5994754bfe1872830d14
+  checksum: 10/0a57d122a71581e36f352479165487299d45585656faea5bc66db27637a152ff0bc1edd97da3d78a131d799a3cba188ad7ec85b54987c53c7b24747fdca48bfe
   languageName: node
   linkType: hard
 
@@ -12370,17 +12369,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-email/render@npm:1.0.3":
-  version: 1.0.3
-  resolution: "@react-email/render@npm:1.0.3"
+"@react-email/render@npm:1.0.4":
+  version: 1.0.4
+  resolution: "@react-email/render@npm:1.0.4"
   dependencies:
     html-to-text: "npm:9.0.5"
-    prettier: "npm:3.3.3"
+    prettier: "npm:3.4.2"
     react-promise-suspense: "npm:0.3.4"
   peerDependencies:
     react: ^18.0 || ^19.0 || ^19.0.0-rc
     react-dom: ^18.0 || ^19.0 || ^19.0.0-rc
-  checksum: 10/01f26433ea50548e61aa5a3f3ad41e3aabc514147bce4157417c5e9c280566b150328e4cce65c0fb8d382cc9bd421a8ab4b1883732d4ef7b3c84212268753dcd
+  checksum: 10/468da62f5fefb75eef813406be1b7f5c73bb60c135c8afb1d0adf511d5b31f807d19821396c2df75a1884998a7ea71b10d99439a2c9b4872adfa273ae70b3af7
   languageName: node
   linkType: hard
 
@@ -30041,16 +30040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.3.3":
-  version: 3.3.3
-  resolution: "prettier@npm:3.3.3"
-  bin:
-    prettier: bin/prettier.cjs
-  checksum: 10/5beac1f30b5b40162532b8e2f7c3a4eb650910a2695e9c8512a62ffdc09dae93190c29db9107fa7f26d1b6c71aad3628ecb9b5de1ecb0911191099be109434d7
-  languageName: node
-  linkType: hard
-
-"prettier@npm:^3.2.5, prettier@npm:^3.4.2":
+"prettier@npm:3.4.2, prettier@npm:^3.2.5, prettier@npm:^3.4.2":
   version: 3.4.2
   resolution: "prettier@npm:3.4.2"
   bin:
