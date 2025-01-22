@@ -232,7 +232,7 @@ test.describe('edgeless note element toolbar', () => {
     const toc = page.locator('affine-outline-panel');
     await toc.waitFor({ state: 'visible' });
     const highlightNoteCards = toc.locator(
-      'affine-outline-note-card > .selected'
+      'affine-outline-note-card > [data-status="selected"]'
     );
     expect(highlightNoteCards).toHaveCount(1);
   });

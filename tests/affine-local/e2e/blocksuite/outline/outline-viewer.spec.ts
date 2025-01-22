@@ -129,7 +129,7 @@ test('should highlight indicator when click item in outline panel', async ({
   await indicators.first().hover({ force: true });
 
   const headingsInPanel = Array.from({ length: 6 }, (_, i) =>
-    viewer.locator(`.h${i + 1} > span`)
+    viewer.getByTestId(`outline-block-preview-h${i + 1}`)
   );
   await headingsInPanel[2].click();
   await expect(headings[2]).toBeVisible();
@@ -172,7 +172,9 @@ test('should hide edgeless-only note headings', async ({ page }) => {
 
   const viewer = page.locator('affine-outline-viewer');
   await expect(viewer).toBeVisible();
-  const h1InPanel = viewer.locator('.h1 > span');
+  const h1InPanel = viewer
+    .getByTestId('outline-block-preview-h1')
+    .locator('span');
   await h1InPanel.waitFor({ state: 'visible' });
   expect(h1InPanel).toContainText(['Heading 1']);
 });

@@ -1,6 +1,8 @@
 import type { ParagraphBlockModel } from '@blocksuite/blocks';
+import { createContext } from '@lit/context';
 import type { TemplateResult } from 'lit';
 
+import type { AffineEditorContainer } from '../../editors/editor-container.js';
 import {
   BlockPreviewIcon,
   SmallAttachmentIcon,
@@ -84,3 +86,6 @@ export type OutlineSettingsDataType = {
   showIcons: boolean;
   enableSorting: boolean;
 };
+
+export const editorContext =
+  createContext<AffineEditorContainer>('editorContext');

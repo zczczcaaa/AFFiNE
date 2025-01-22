@@ -40,7 +40,7 @@ export function getNotesFromDoc(
       number: index + 1,
     };
 
-    if (modes.includes(blockModel.displayMode)) {
+    if (modes.includes(blockModel.displayMode$.value)) {
       notes.push(OutlineNoteItem);
     }
   });

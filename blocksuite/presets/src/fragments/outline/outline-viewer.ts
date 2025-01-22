@@ -1,14 +1,20 @@
-import { PropTypes, requiredProperties } from '@blocksuite/block-std';
+import {
+  PropTypes,
+  requiredProperties,
+  ShadowlessElement,
+} from '@blocksuite/block-std';
 import { NoteDisplayMode, scrollbarStyle } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
+import { provide } from '@lit/context';
 import { signal } from '@preact/signals-core';
-import { css, html, LitElement, nothing } from 'lit';
+import { css, html, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { AffineEditorContainer } from '../../editors/editor-container.js';
 import { TocIcon } from '../_common/icons.js';
+import { editorContext } from './config.js';
 import { getHeadingBlocksFromDoc } from './utils/query.js';
 import {
   observeActiveHeadingDuringScroll,
@@ -20,9 +26,11 @@ export const AFFINE_OUTLINE_VIEWER = 'affine-outline-viewer';
 @requiredProperties({
   editor: PropTypes.object,
 })
-export class OutlineViewer extends SignalWatcher(WithDisposable(LitElement)) {
+export class OutlineViewer extends SignalWatcher(
+  WithDisposable(ShadowlessElement)
+) {
   static override styles = css`
-    :host {
+    affine-outline-viewer {
       display: flex;
     }
     .outline-viewer-root {
@@ -117,9 +125,7 @@ export class OutlineViewer extends SignalWatcher(WithDisposable(LitElement)) {
     }
 
     .outline-viewer-item {
-      display: flex;
-      align-items: center;
-      align-self: stretch;
+      width: 100%;
     }
 
     .outline-viewer-root:hover {
@@ -281,6 +287,7 @@ export class OutlineViewer extends SignalWatcher(WithDisposable(LitElement)) {
   @state()
   private accessor _showViewer: boolean = false;
 
+  @provide({ context: editorContext })
   @property({ attribute: false })
   accessor editor!: AffineEditorContainer;
 

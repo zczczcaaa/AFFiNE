@@ -173,10 +173,7 @@ export class MobileOutlineMenu extends SignalWatcher(
       ...headingBlocks,
     ];
 
-    return html`
-          ${repeat(items, block => block.id, this.renderItem)}
-        </div>
-    `;
+    return repeat(items, block => block.id, this.renderItem);
   }
 
   @property({ attribute: false })

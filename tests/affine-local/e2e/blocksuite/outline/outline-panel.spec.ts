@@ -40,7 +40,7 @@ async function openTocPanel(page: Page) {
 }
 
 function getTocHeading(panel: Locator, level: number) {
-  return panel.locator(`.h${level} span`);
+  return panel.getByTestId(`outline-block-preview-h${level}`).locator('span');
 }
 
 async function dragNoteCard(page: Page, fromCard: Locator, toCard: Locator) {
@@ -67,7 +67,7 @@ test('should display title and headings when there are non-empty headings in edi
 
   const toc = await openTocPanel(page);
 
-  await expect(toc.locator('.title')).toBeVisible();
+  await expect(toc.getByTestId('outline-block-preview-title')).toBeVisible();
   for (let i = 1; i <= 6; i++) {
     await expect(getTocHeading(toc, i)).toBeVisible();
     await expect(getTocHeading(toc, i)).toContainText(`Heading ${i}`);
@@ -76,7 +76,7 @@ test('should display title and headings when there are non-empty headings in edi
 
 test('should display placeholder when no headings', async ({ page }) => {
   const toc = await openTocPanel(page);
-  const noHeadingPlaceholder = toc.locator('.note-placeholder');
+  const noHeadingPlaceholder = toc.getByTestId('empty-panel-placeholder');
 
   await createTitle(page);
   await pressEnter(page);
@@ -98,7 +98,7 @@ test('should not display headings when there are only empty headings', async ({
 
   const toc = await openTocPanel(page);
 
-  await expect(toc.locator('.title')).toBeHidden();
+  await expect(toc.getByTestId('outline-block-preview-title')).toBeHidden();
   for (let i = 1; i <= 6; i++) {
     await expect(getTocHeading(toc, i)).toBeHidden();
   }
@@ -115,10 +115,12 @@ test('should update panel when modify or clear title or headings', async ({
   await title.scrollIntoViewIfNeeded();
   await title.click();
   await type(page, 'xxx');
-  await expect(toc.locator('.title')).toContainText(['Titlexxx']);
+  await expect(toc.getByTestId('outline-block-preview-title')).toContainText([
+    'Titlexxx',
+  ]);
   await selectAllByKeyboard(page);
   await pressBackspace(page);
-  await expect(toc.locator('.title')).toBeHidden();
+  await expect(toc.getByTestId('outline-block-preview-title')).toBeHidden();
 
   for (let i = 1; i <= 6; i++) {
     await headings[i - 1].click();
@@ -210,7 +212,7 @@ test('should scroll to title when click title in outline panel', async ({
 
   const toc = await openTocPanel(page);
 
-  const titleInPanel = toc.locator('.title');
+  const titleInPanel = toc.getByTestId('outline-block-preview-title');
 
   await expect(title).not.toBeInViewport();
   await titleInPanel.click();
@@ -225,7 +227,7 @@ test('visibility sorting should be enabled in edgeless mode and disabled in page
 
   const toc = await openTocPanel(page);
 
-  const sortingButton = toc.locator('.note-sorting-button');
+  const sortingButton = toc.getByTestId('toggle-notes-sorting-button');
   await expect(sortingButton).not.toHaveClass(/active/);
   expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
 
@@ -250,10 +252,10 @@ test('should reorder notes when drag and drop note in outline panel', async ({
   const toc = await openTocPanel(page);
 
   const docVisibleCards = toc.locator(
-    '.card-container[data-invisible="false"]'
+    'affine-outline-note-card [data-invisible="false"]'
   );
   const docInvisibleCards = toc.locator(
-    '.card-container[data-invisible="true"]'
+    'affine-outline-note-card [data-invisible="true"]'
   );
 
   await expect(docVisibleCards).toHaveCount(1);
@@ -262,7 +264,7 @@ test('should reorder notes when drag and drop note in outline panel', async ({
   while ((await docInvisibleCards.count()) > 0) {
     const card = docInvisibleCards.first();
     await card.hover();
-    await card.locator('.display-mode-button').click();
+    await card.getByTestId('display-mode-button').click();
     await card.locator('note-display-mode-panel').locator('.item.both').click();
   }
 
@@ -310,10 +312,10 @@ test.describe('advanced visibility control', () => {
     const toc = await openTocPanel(page);
 
     const docVisibleCard = toc.locator(
-      '.card-container[data-invisible="false"]'
+      'affine-outline-note-card [data-invisible="false"]'
     );
     const docInvisibleCard = toc.locator(
-      '.card-container[data-invisible="true"]'
+      'affine-outline-note-card [data-invisible="true"]'
     );
 
     await expect(docVisibleCard).toHaveCount(1);
@@ -341,17 +343,17 @@ test.describe('advanced visibility control', () => {
     const toc = await openTocPanel(page);
 
     const docVisibleCard = toc.locator(
-      '.card-container[data-invisible="false"]'
+      'affine-outline-note-card [data-invisible="false"]'
     );
     const docInvisibleCard = toc.locator(
-      '.card-container[data-invisible="true"]'
+      'affine-outline-note-card [data-invisible="true"]'
     );
 
     await expect(docVisibleCard).toHaveCount(1);
     await expect(docInvisibleCard).toHaveCount(1);
 
     await docInvisibleCard.hover();
-    await docInvisibleCard.locator('.display-mode-button').click();
+    await docInvisibleCard.getByTestId('display-mode-button').click();
     await docInvisibleCard
       .locator('note-display-mode-panel .item.both')
       .click();

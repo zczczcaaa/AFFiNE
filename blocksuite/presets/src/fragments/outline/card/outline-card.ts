@@ -1,5 +1,5 @@
+import { ShadowlessElement } from '@blocksuite/block-std';
 import {
-  type ColorScheme,
   createButtonPopper,
   type NoteBlockModel,
   NoteDisplayMode,
@@ -7,189 +7,19 @@ import {
   once,
 } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import type { BlockModel, Store } from '@blocksuite/store';
-import { baseTheme } from '@toeverything/theme';
-import { css, html, LitElement, unsafeCSS } from 'lit';
+import type { BlockModel } from '@blocksuite/store';
+import { html } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
 
-import { HiddenIcon, SmallArrowDownIcon } from '../../_common/icons.js';
-import type { SelectEvent } from '../utils/custom-events.js';
-
-const styles = css`
-  :host {
-    display: block;
-    position: relative;
-  }
-
-  .card-container {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-  }
-
-  .card-preview {
-    position: relative;
-
-    width: 100%;
-
-    border-radius: 4px;
-
-    cursor: default;
-    user-select: none;
-  }
-
-  .card-preview:hover {
-    background: var(--affine-hover-color);
-  }
-
-  .card-header-container {
-    padding: 0 8px;
-    width: 100%;
-    min-height: 28px;
-    display: none;
-    align-items: center;
-    gap: 8px;
-    box-sizing: border-box;
-  }
-
-  .card-header-container.enable-sorting {
-    display: flex;
-  }
-
-  .card-header-container .card-number {
-    text-align: center;
-    font-size: var(--affine-font-sm);
-    font-family: ${unsafeCSS(baseTheme.fontSansFamily)};
-    color: var(--affine-brand-color, #1e96eb);
-    font-weight: 500;
-    line-height: 14px;
-    line-height: 20px;
-  }
-
-  .card-header-container .card-header-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .card-header-container .card-divider {
-    height: 1px;
-    flex: 1;
-    border-top: 1px dashed var(--affine-border-color);
-    transform: translateY(50%);
-  }
-
-  .display-mode-button-group {
-    display: none;
-    position: absolute;
-    right: 8px;
-    top: -6px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 20px;
-  }
-
-  .card-preview:hover .display-mode-button-group {
-    display: flex;
-  }
-
-  .display-mode-button-label {
-    color: var(--affine-text-primary-color);
-  }
-
-  .display-mode-button {
-    display: flex;
-    border-radius: 4px;
-    background-color: var(--affine-hover-color);
-    align-items: center;
-  }
-
-  .current-mode-label {
-    display: flex;
-    padding: 2px 0px 2px 4px;
-    align-items: center;
-  }
-
-  note-display-mode-panel {
-    position: absolute;
-    display: none;
-    background: var(--affine-background-overlay-panel-color);
-    border-radius: 8px;
-    box-shadow: var(--affine-shadow-2);
-    box-sizing: border-box;
-    padding: 8px;
-    font-size: var(--affine-font-sm);
-    color: var(--affine-text-primary-color);
-    line-height: 22px;
-    font-weight: 400;
-    font-family: ${unsafeCSS(baseTheme.fontSansFamily)};
-  }
-
-  note-display-mode-panel[data-show] {
-    display: flex;
-  }
-
-  .card-content {
-    font-family: ${unsafeCSS(baseTheme.fontSansFamily)};
-    user-select: none;
-    color: var(--affine-text-primary-color);
-  }
-
-  .card-preview .card-content:hover {
-    cursor: pointer;
-  }
-
-  .card-container[data-invisible='false']
-    .card-preview
-    .card-header-container:hover {
-    cursor: grab;
-  }
-
-  .card-container.placeholder {
-    pointer-events: none;
-    opacity: 0.5;
-  }
-
-  .card-container.selected .card-preview {
-    background: var(--affine-hover-color);
-  }
-
-  .card-container.placeholder .card-preview {
-    background: var(--affine-hover-color);
-    opacity: 0.9;
-  }
-
-  .card-container[data-sortable='true'] {
-    padding: 2px 0;
-  }
-
-  .card-container[data-invisible='true'] .card-header-container .card-number,
-  .card-container[data-invisible='true']
-    .card-header-container
-    .card-header-icon,
-  .card-container[data-invisible='true'] .card-preview .card-content {
-    color: var(--affine-text-disable-color);
-    pointer-events: none;
-  }
-
-  .card-preview outline-block-preview:hover {
-    color: var(--affine-brand-color);
-  }
-`;
+import { HiddenIcon, SmallArrowDownIcon } from '../../_common/icons';
+import type { SelectEvent } from '../utils/custom-events';
+import * as styles from './outline-card.css';
 
 export const AFFINE_OUTLINE_NOTE_CARD = 'affine-outline-note-card';
 
-export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
-  static override styles = styles;
-
+export class OutlineNoteCard extends SignalWatcher(
+  WithDisposable(ShadowlessElement)
+) {
   private _displayModePopper: ReturnType<typeof createButtonPopper> | null =
     null;
 
@@ -283,6 +113,10 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
     }
   }
 
+  get invisible() {
+    return this.note.displayMode === NoteDisplayMode.EdgelessOnly;
+  }
+
   override updated() {
     this._displayModePopper = createButtonPopper(
       this._displayModeButtonGroup,
@@ -302,50 +136,49 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
   override render() {
     const { children, displayMode } = this.note;
     const currentMode = this._getCurrentModeLabel(displayMode);
-    const cardHeaderClasses = classMap({
-      'card-header-container': true,
-      'enable-sorting': this.enableNotesSorting,
-    });
 
     return html`
       <div
-        data-invisible="${this.invisible ? 'true' : 'false'}"
-        data-sortable="${this.enableNotesSorting ? 'true' : 'false'}"
-        class="card-container ${this.status ?? ''} ${this.theme}"
+        data-invisible=${this.invisible}
+        data-sortable=${this.enableNotesSorting}
+        data-status=${this.status}
+        class=${styles.outlineCard}
       >
         <div
-          class="card-preview"
+          class=${styles.cardPreview}
           @mousedown=${this._dispatchDragEvent}
           @click=${this._dispatchSelectEvent}
           @dblclick=${this._dispatchFitViewEvent}
         >
-        ${html`<div class=${cardHeaderClasses}>
+        ${html`<div class=${styles.cardHeader}>
           ${
             this.invisible
-              ? html`<span class="card-header-icon">${HiddenIcon}</span>`
-              : html`<span class="card-number">${this.number}</span>`
+              ? html`<span class=${styles.headerIcon}>${HiddenIcon}</span>`
+              : html`<span class=${styles.headerNumber}>${this.number}</span>`
           }
-          <span class="card-divider"></span>
-          <div class="display-mode-button-group">
-            <span class="display-mode-button-label">Show in</span>
+          <span class=${styles.divider}></span>
+          <div class=${styles.displayModeButtonGroup}>
+            <span>Show in</span>
             <edgeless-tool-icon-button
               .tooltip=${this._showPopper ? '' : 'Display Mode'}
               .tipPosition=${'left-start'}
               .iconContainerPadding=${0}
+              data-testid="display-mode-button"
               @click=${(e: MouseEvent) => {
                 e.stopPropagation();
                 this._displayModePopper?.toggle();
               }}
               @dblclick=${(e: MouseEvent) => e.stopPropagation()}
             >
-              <div class="display-mode-button">
-                <span class="current-mode-label">${currentMode}</span>
+              <div class=${styles.displayModeButton}>
+                <span class=${styles.currentModeLabel}>${currentMode}</span>
                 ${SmallArrowDownIcon}
               </div>
             </edgeless-tool-icon-button>
           </div>
           </div>
           <note-display-mode-panel
+            class=${styles.modeChangePanel}
             .displayMode=${displayMode}
             .panelWidth=${220}
             .onSelect=${(newMode: NoteDisplayMode) => {
@@ -355,7 +188,7 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
           >
           </note-display-mode-panel>
         </div>`}
-          <div class="card-content">
+          <div class=${styles.cardContent}>
             ${children.map(block => {
               return html`<affine-outline-block-preview
                 .block=${block}
@@ -377,7 +210,7 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
     `;
   }
 
-  @query('.display-mode-button-group')
+  @query(`.${styles.displayModeButtonGroup}`)
   private accessor _displayModeButtonGroup!: HTMLDivElement;
 
   @query('note-display-mode-panel')
@@ -390,16 +223,10 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
   accessor activeHeadingId: string | null = null;
 
   @property({ attribute: false })
-  accessor doc!: Store;
-
-  @property({ attribute: false })
   accessor enableNotesSorting!: boolean;
 
   @property({ attribute: false })
   accessor index!: number;
-
-  @property({ attribute: false })
-  accessor invisible = false;
 
   @property({ attribute: false })
   accessor note!: NoteBlockModel;
@@ -411,10 +238,7 @@ export class OutlineNoteCard extends SignalWatcher(WithDisposable(LitElement)) {
   accessor showPreviewIcon!: boolean;
 
   @property({ attribute: false })
-  accessor status: 'selected' | 'placeholder' | undefined = undefined;
-
-  @property({ attribute: false })
-  accessor theme!: ColorScheme;
+  accessor status: 'selected' | 'placeholder' | 'normal' = 'normal';
 }
 
 declare global {
