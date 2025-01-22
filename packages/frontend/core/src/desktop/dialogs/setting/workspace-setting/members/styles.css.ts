@@ -29,6 +29,12 @@ export const membersPanel = style({
   justifyContent: 'space-between',
 });
 
+export const localMembersPanel = style({
+  gap: '24px',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
 export const goUpgradeWrapper = style({
   display: 'inline-flex',
   alignItems: 'center',

@@ -61,9 +61,9 @@ test('export then add', async ({ page, appInfo, workspace }) => {
     });
   }, tmpPath);
 
+  await page.getByTestId('workspace-setting:storage').click();
   await page.getByTestId('export-affine-backup').click();
   await page.waitForSelector('text="Export success"');
-  await page.waitForTimeout(1000);
   expect(await fs.exists(tmpPath)).toBe(true);
 
   await page.getByTestId('modal-close-button').click();
@@ -84,18 +84,19 @@ test('export then add', async ({ page, appInfo, workspace }) => {
 
   // should show "Added Successfully" dialog
   // await page.waitForSelector('text="Added Successfully"');
-  // await page.getByTestId('create-workspace-continue-button').click();
 
-  // sleep for a while to wait for the workspace to be added :D
-  await page.waitForTimeout(2000);
-  const newWorkspace = await workspace.current();
-  expect(newWorkspace.meta.id).not.toBe(originalId);
+  await expect
+    .poll(async () => {
+      const newWorkspace = await workspace.current();
+      return newWorkspace.meta.id !== originalId;
+    })
+    .toBe(true);
+
   // check its name is correct
   await expect(page.getByTestId('workspace-name')).toHaveText(newWorkspaceName);
 
   // find button which has the title "test1"
-  const test1PageButton = await page.waitForSelector(`text="test1"`);
-  await test1PageButton.click();
+  await page.getByText('test1').click();
 
   const title = page.locator('[data-block-is-title] >> text="test1"');
   await expect(title).toBeVisible();

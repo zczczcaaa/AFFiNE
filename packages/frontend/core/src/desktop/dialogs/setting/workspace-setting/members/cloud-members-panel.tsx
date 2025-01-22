@@ -24,7 +24,7 @@ import { ExportIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { SettingState } from '../../../types';
+import type { SettingState } from '../../types';
 import { MemberList } from './member-list';
 import * as styles from './styles.css';
 

@@ -2,14 +2,22 @@ import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-in
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import { PaymentIcon, PropertyIcon, SettingsIcon } from '@blocksuite/icons/rc';
+import {
+  CollaborationIcon,
+  PaymentIcon,
+  PropertyIcon,
+  SaveIcon,
+  SettingsIcon,
+} from '@blocksuite/icons/rc';
 import { useService } from '@toeverything/infra';
 import { useMemo } from 'react';
 
 import type { SettingSidebarItem, SettingState } from '../types';
 import { WorkspaceSettingBilling } from './billing';
-import { WorkspaceSettingDetail } from './new-workspace-setting-detail';
+import { MembersPanel } from './members';
+import { WorkspaceSettingDetail } from './preference';
 import { WorkspaceSettingProperties } from './properties';
+import { WorkspaceSettingStorage } from './storage';
 
 export const WorkspaceSetting = ({
   activeTab,
@@ -22,16 +30,20 @@ export const WorkspaceSetting = ({
 }) => {
   switch (activeTab) {
     case 'workspace:preference':
+      return <WorkspaceSettingDetail onCloseSetting={onCloseSetting} />;
+    case 'workspace:properties':
+      return <WorkspaceSettingProperties />;
+    case 'workspace:members':
       return (
-        <WorkspaceSettingDetail
+        <MembersPanel
           onCloseSetting={onCloseSetting}
           onChangeSettingState={onChangeSettingState}
         />
       );
-    case 'workspace:properties':
-      return <WorkspaceSettingProperties />;
     case 'workspace:billing':
       return <WorkspaceSettingBilling />;
+    case 'workspace:storage':
+      return <WorkspaceSettingStorage />;
     default:
       return null;
   }
@@ -58,17 +70,27 @@ export const useWorkspaceSettingList = (): SettingSidebarItem[] => {
         icon: <PropertyIcon />,
         testId: 'workspace-setting:properties',
       },
-      ...(showBilling
-        ? [
-            {
-              key: 'workspace:billing' as SettingTab,
-              title: t['com.affine.settings.workspace.billing'](),
-              icon: <PaymentIcon />,
-              testId: 'workspace-setting:billing',
-            },
-          ]
-        : []),
-    ];
+      {
+        key: 'workspace:members',
+        title: t['Members'](),
+        icon: <CollaborationIcon />,
+        testId: 'workspace-setting:members',
+      },
+      {
+        key: 'workspace:storage',
+        title: t['Storage'](),
+        icon: <SaveIcon />,
+        testId: 'workspace-setting:storage',
+      },
+      showBilling && {
+        key: 'workspace:billing' as SettingTab,
+        title: t['com.affine.settings.workspace.billing'](),
+        icon: <PaymentIcon />,
+        testId: 'workspace-setting:billing',
+      },
+
+      // todo(@pengx17): add selfhost's team license
+    ].filter((item): item is SettingSidebarItem => !!item);
   }, [showBilling, t]);
 
   return items;

@@ -1,5 +1,5 @@
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
-import type { ReactNode } from 'react';
+import type { ReactElement } from 'react';
 
 export interface SettingState {
   activeTab: SettingTab;
@@ -9,6 +9,6 @@ export interface SettingState {
 export interface SettingSidebarItem {
   key: SettingTab;
   title: string;
-  icon: ReactNode;
+  icon: ReactElement;
   testId: string;
 }
