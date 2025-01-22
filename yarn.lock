@@ -811,7 +811,6 @@ __metadata:
     "@types/cookie-parser": "npm:^1.4.8"
     "@types/express": "npm:^4.17.21"
     "@types/graphql-upload": "npm:^17.0.0"
-    "@types/keyv": "npm:^4.2.0"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/mixpanel": "npm:^2.14.9"
     "@types/mustache": "npm:^4.2.5"
@@ -845,7 +844,6 @@ __metadata:
     nest-commander: "npm:^3.15.0"
     nest-winston: "npm:^1.9.7"
     nestjs-cls: "npm:^5.0.0"
-    nestjs-throttler-storage-redis: "npm:^0.5.1"
     nodemailer: "npm:^6.9.16"
     nodemon: "npm:^3.1.7"
     on-headers: "npm:^1.0.2"
@@ -15135,15 +15133,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/keyv@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "@types/keyv@npm:4.2.0"
-  dependencies:
-    keyv: "npm:*"
-  checksum: 10/8713da9382b9346d664866a6cab2f91b0fd479f61379af891303a618e9a2abad6f347adc38a0850540e3f2dad278427de24e7555339264fddb04d1d17d3b50e0
-  languageName: node
-  linkType: hard
-
 "@types/koa-compose@npm:*":
   version: 3.2.8
   resolution: "@types/koa-compose@npm:3.2.8"
@@ -25576,21 +25565,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keyv@npm:*, keyv@npm:^5.2.2":
-  version: 5.2.3
-  resolution: "keyv@npm:5.2.3"
-  dependencies:
-    "@keyv/serialize": "npm:^1.0.2"
-  checksum: 10/47b4e9deb33e6a80e5ea79f3022ed3a14bc9fe553b7527ffff0a70b10c7a6c1a5d7e49b9bcfdbd8e8b9fb4632d68baa19d09e82628bcf853103e750e56d49a9e
-  languageName: node
-  linkType: hard
-
 "keyv@npm:^4.0.0, keyv@npm:^4.5.4":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
   dependencies:
     json-buffer: "npm:3.0.1"
   checksum: 10/167eb6ef64cc84b6fa0780ee50c9de456b422a1e18802209234f7c2cf7eae648c7741f32e50d7e24ccb22b24c13154070b01563d642755b156c357431a191e75
+  languageName: node
+  linkType: hard
+
+"keyv@npm:^5.2.2":
+  version: 5.2.3
+  resolution: "keyv@npm:5.2.3"
+  dependencies:
+    "@keyv/serialize": "npm:^1.0.2"
+  checksum: 10/47b4e9deb33e6a80e5ea79f3022ed3a14bc9fe553b7527ffff0a70b10c7a6c1a5d7e49b9bcfdbd8e8b9fb4632d68baa19d09e82628bcf853103e750e56d49a9e
   languageName: node
   linkType: hard
 
@@ -27932,19 +27921,6 @@ __metadata:
     reflect-metadata: "*"
     rxjs: ">= 7"
   checksum: 10/0da5b20c00ea2b1bb3fde17a9eb67f7d2cd7195911c9a6d3162175301f0cf752a29ee5f53fd1f3d5332cfae8eea0a45d96d25ce53a481baad74931f109d2eb6c
-  languageName: node
-  linkType: hard
-
-"nestjs-throttler-storage-redis@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "nestjs-throttler-storage-redis@npm:0.5.1"
-  peerDependencies:
-    "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
-    "@nestjs/core": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
-    "@nestjs/throttler": ">=6.0.0"
-    ioredis: ">=5.0.0"
-    reflect-metadata: ^0.2.1
-  checksum: 10/02a2705931830794e511ec6974b5f5aa6e3b3814426423d39f9fda4697e6a7498e92f4f0fd587efff3b315169900206d08ae4535fed1d1ec8a337410ceb44580
   languageName: node
   linkType: hard
 
