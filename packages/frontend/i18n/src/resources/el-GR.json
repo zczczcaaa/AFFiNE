@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "Μόλις ενεργοποιηθεί, μπορείτε να κάνετε προεπισκόπηση του PDF σε ενσωματωμένη προβολή.",
   "com.affine.settings.workspace.not-owner": "Μόνο ο ιδιοκτήτης μπορεί να επεξεργαστεί το avatar και το όνομα του χώρου εργασίας. Οι αλλαγές θα εμφανίζονται σε όλους.",
   "com.affine.settings.workspace.preferences": "Προτίμηση",
-  "com.affine.settings.workspace.billing": "Χρέωση",
   "com.affine.settings.workspace.billing.team-workspace": "Ομάδα Χώρου Εργασίας",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "Ο χώρος εργασίας σας βρίσκεται σε περίοδο δωρεάν δοκιμής.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "Ο χώρος εργασίας σας χρεώνεται ετησίως.",

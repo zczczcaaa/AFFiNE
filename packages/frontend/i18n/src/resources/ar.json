@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "بمجرد التمكين، يمكنك معاينة PDF في عرض التضمين.",
   "com.affine.settings.workspace.not-owner": "فقط المالك يمكنه تعديل صورة الرمزية واسم مساحة العمل. ستظهر التغييرات للجميع.",
   "com.affine.settings.workspace.preferences": "تفضيلات",
-  "com.affine.settings.workspace.billing": "الفوترة",
   "com.affine.settings.workspace.billing.team-workspace": "مساحة العمل الفريقية",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "مساحة عملك في فترة تجريبية مجانية.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "يتم فوترة مساحة عملك سنويًا.",

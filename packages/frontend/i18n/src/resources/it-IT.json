@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "Una volta abilitata, puoi visualizzare l'anteprima dei PDF in modalità incorporata.",
   "com.affine.settings.workspace.not-owner": "Solo un proprietario può modificare l'avatar e il nome dello spazio di lavoro. Le modifiche saranno visibili a tutti.",
   "com.affine.settings.workspace.preferences": "Preferenza",
-  "com.affine.settings.workspace.billing": "Fatturazione",
   "com.affine.settings.workspace.billing.team-workspace": "Spazio di Lavoro di Squadra",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "Il tuo spazio di lavoro è in un periodo di prova gratuita.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "Il tuo spazio di lavoro è fatturato annualmente.",

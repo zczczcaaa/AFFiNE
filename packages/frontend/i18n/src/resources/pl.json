@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "Po włączeniu możesz wyświetlić podgląd PDF w widoku osadzonym.",
   "com.affine.settings.workspace.not-owner": "Tylko właściciel może edytować awatar i nazwę przestrzeni roboczej. Zmiany będą widoczne dla wszystkich.",
   "com.affine.settings.workspace.preferences": "Preferencje",
-  "com.affine.settings.workspace.billing": "Rozliczenia",
   "com.affine.settings.workspace.billing.team-workspace": "Przestrzeń Robocza Zespołu",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "Twoja przestrzeń robocza jest w okresie bezpłatnego testowania.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "Twoja przestrzeń robocza jest rozliczana rocznie.",

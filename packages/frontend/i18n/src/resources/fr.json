@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "Une fois activé, vous pouvez prévisualiser le PDF en vue intégrée.",
   "com.affine.settings.workspace.not-owner": "L'icône et le nom peuvent seulement être modifiés par le propriétaire de l'Espace de groupe. Les modifications seront visibles par tous",
   "com.affine.settings.workspace.preferences": "Préférences",
-  "com.affine.settings.workspace.billing": "Facturation",
   "com.affine.settings.workspace.billing.team-workspace": "Espace de travail d'équipe",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "Votre espace de travail est en période d'essai gratuit.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "Votre espace de travail est facturé annuellement.",

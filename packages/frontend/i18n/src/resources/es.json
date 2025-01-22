@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "Una vez habilitado, puede previsualizar PDF en vista incrustada.",
   "com.affine.settings.workspace.not-owner": "Solo un propietario puede editar el avatar y el nombre del espacio de trabajo. Los cambios se mostrarán para todos.",
   "com.affine.settings.workspace.preferences": "Preferencia",
-  "com.affine.settings.workspace.billing": "Facturación",
   "com.affine.settings.workspace.billing.team-workspace": "Espacio de trabajo de equipo",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "Tu espacio de trabajo está en un período de prueba gratuita.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "Tu espacio de trabajo se factura anualmente.",

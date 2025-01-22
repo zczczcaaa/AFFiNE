@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "Sobald diese Option aktiviert ist, kannst du in der eingebetteten Ansicht eine PDF-Vorschau anzeigen.",
   "com.affine.settings.workspace.not-owner": "Nur ein Besitzer kann den Workspace-Avatar und den Namen bearbeiten. Änderungen werden für alle angezeigt.",
   "com.affine.settings.workspace.preferences": "Einstellung",
-  "com.affine.settings.workspace.billing": "Abrechnung",
   "com.affine.settings.workspace.billing.team-workspace": "Team-Workspace",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "Dein Workspace befindet sich in einer kostenlosen Testphase.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "Dein Workspace wird jährlich abgerechnet.",

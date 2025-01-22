@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "После включения вы сможете просматривать PDF во встроенном виде.",
   "com.affine.settings.workspace.not-owner": "Только владелец может редактировать аватар и название рабочего пространства. Изменения будут отображаться для всех.",
   "com.affine.settings.workspace.preferences": "Настройки",
-  "com.affine.settings.workspace.billing": "Выставление счёта",
   "com.affine.settings.workspace.billing.team-workspace": "Командное рабочее пространство",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "Ваше рабочее пространство находится в бесплатном пробном периоде.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "Ваше рабочее пространство оплачивается ежегодно.",

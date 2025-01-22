@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "有効にすると、埋め込みビューでPDFをプレビューできます。",
   "com.affine.settings.workspace.not-owner": "オーナーのみがワークスペースのアバターと名前を編集できます。変更は全員に表示されます。",
   "com.affine.settings.workspace.preferences": "優先順位",
-  "com.affine.settings.workspace.billing": "請求",
   "com.affine.settings.workspace.billing.team-workspace": "チームワークスペース",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "ワークスペースは無料トライアル期間中です。",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "ワークスペースは年単位で請求されます。",

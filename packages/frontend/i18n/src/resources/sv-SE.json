@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "När den är aktiverad kan du förhandsgranska PDF i inbäddad vy.",
   "com.affine.settings.workspace.not-owner": "Endast en ägare kan redigera arbetsytans avatar och namn. Ändringar kommer att visas för alla.",
   "com.affine.settings.workspace.preferences": "Inställning",
-  "com.affine.settings.workspace.billing": "Fakturering",
   "com.affine.settings.workspace.billing.team-workspace": "Teamarbetsyta",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "Din arbetsyta är i en gratis provperiod.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "Din arbetsyta faktureras årligen.",

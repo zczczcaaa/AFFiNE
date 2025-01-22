@@ -5360,7 +5360,7 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.preferences"](): string;
     /**
-      * `Billing`
+      * `Team's Billing`
       */
     ["com.affine.settings.workspace.billing"](): string;
     /**
@@ -5471,6 +5471,10 @@ export function useAFFiNEI18N(): {
       * `Unused`
       */
     ["com.affine.settings.workspace.properties.unused"](): string;
+    /**
+      * `You can view current workspace's storage and files here.`
+      */
+    ["com.affine.settings.workspace.storage.subtitle"](): string;
     /**
       * `Enable AFFiNE Cloud to publish this workspace`
       */

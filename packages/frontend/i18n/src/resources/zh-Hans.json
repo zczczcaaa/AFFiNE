@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "一旦启用，您可以在嵌入视图中预览 PDF。",
   "com.affine.settings.workspace.not-owner": "只有所有者才能编辑工作区头像和名称。更改将向所有人显示。",
   "com.affine.settings.workspace.preferences": "偏好设置",
-  "com.affine.settings.workspace.billing": "计费",
   "com.affine.settings.workspace.billing.team-workspace": "团队空间",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "您的工作区正处于免费试用期。",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "您的工作空间将按年计费。",

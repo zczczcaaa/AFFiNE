@@ -1326,7 +1326,6 @@
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "پس از فعال‌سازی، می‌توانید PDF را در نمای جاسازی شده پیش‌نمایش کنید.",
   "com.affine.settings.workspace.not-owner": "فقط یک مالک می‌تواند آواتار و نام فضای کاری را ویرایش کند. تغییرات برای همه نمایش داده خواهد شد.",
   "com.affine.settings.workspace.preferences": "ترجیحات",
-  "com.affine.settings.workspace.billing": "صورتحساب",
   "com.affine.settings.workspace.billing.team-workspace": "فضای کاری تیم",
   "com.affine.settings.workspace.billing.team-workspace.description.free-trail": "فضای کاری شما در دوره آزمایشی رایگان است.",
   "com.affine.settings.workspace.billing.team-workspace.description.billed.annually": "فضای کاری شما به صورت سالانه صورتحساب می‌شود.",
