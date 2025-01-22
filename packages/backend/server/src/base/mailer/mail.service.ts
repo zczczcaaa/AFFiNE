@@ -1,26 +1,81 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
+import {
+  EmailRenderer,
+  renderChangeEmailMail,
+  renderChangeEmailNotificationMail,
+  renderChangePasswordMail,
+  renderLinkInvitationApproveMail,
+  renderLinkInvitationDeclineMail,
+  renderLinkInvitationReviewRequestMail,
+  renderMemberAcceptedMail,
+  renderMemberInvitationMail,
+  renderMemberLeaveMail,
+  renderMemberRemovedMail,
+  renderOwnershipReceivedMail,
+  renderOwnershipTransferredMail,
+  renderSetPasswordMail,
+  renderSignInMail,
+  renderSignUpMail,
+  renderTeamBecomeAdminMail,
+  renderTeamBecomeCollaboratorMail,
+  renderTeamDeleteIn1MonthMail,
+  renderTeamDeleteIn24HoursMail,
+  renderTeamWorkspaceDeletedMail,
+  renderTeamWorkspaceExpiredMail,
+  renderTeamWorkspaceExpireSoonMail,
+  renderTeamWorkspaceUpgradedMail,
+  renderVerifyChangeEmailMail,
+  renderVerifyEmailMail,
+} from '../../mails';
+import { WorkspaceProps } from '../../mails/components';
 import { Config } from '../config';
 import { MailerServiceIsNotConfigured } from '../error';
-import { URLHelper } from '../helpers';
 import { metrics } from '../metrics';
 import type { MailerService, Options } from './mailer';
 import { MAILER_SERVICE } from './mailer';
-import {
-  emailTemplate,
-  getRoleChangedTemplate,
-  type RoleChangedMailParams,
-} from './template';
+
+type Props<T extends EmailRenderer<any>> =
+  T extends EmailRenderer<infer P> ? P : never;
+type Sender<T extends EmailRenderer<any>> = (
+  to: string,
+  props: Props<T>
+) => Promise<SMTPTransport.SentMessageInfo>;
+
+function make<T extends EmailRenderer<any>>(
+  sender: {
+    send: (options: Options) => Promise<SMTPTransport.SentMessageInfo>;
+  },
+  renderer: T,
+  factory?: (props: Props<T>) => {
+    props: Props<T>;
+    options: Partial<Options>;
+  }
+): Sender<T> {
+  return async (to, props) => {
+    const { props: overrideProps, options } = factory
+      ? factory(props)
+      : { props, options: {} };
+
+    const { html, subject } = await renderer(overrideProps);
+    return sender.send({
+      to,
+      subject,
+      html,
+      ...options,
+    });
+  };
+}
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly config: Config,
-    private readonly url: URLHelper,
     @Optional() @Inject(MAILER_SERVICE) private readonly mailer?: MailerService
   ) {}
 
-  async sendMail(options: Options) {
+  readonly send = async (options: Options) => {
     if (!this.mailer) {
       throw new MailerServiceIsNotConfigured();
     }
@@ -39,410 +94,98 @@ export class MailService {
       metrics.mail.counter('error').add(1);
       throw e;
     }
+  };
+
+  private make<T extends EmailRenderer<any>>(
+    renderer: T,
+    factory?: (props: Props<T>) => {
+      props: Props<T>;
+      options: Partial<Options>;
+    }
+  ) {
+    return make(this, renderer, factory);
+  }
+
+  private readonly convertWorkspaceProps = <
+    T extends { workspace: WorkspaceProps },
+  >(
+    props: T
+  ) => {
+    return {
+      props: {
+        ...props,
+        workspace: {
+          ...props.workspace,
+          avatar: 'cid:workspaceAvatar',
+        },
+      },
+      options: {
+        attachments: [
+          {
+            cid: 'workspaceAvatar',
+            filename: 'workspaceAvatar',
+            content: props.workspace.avatar,
+            encoding: 'base64',
+          },
+        ],
+      },
+    };
+  };
+
+  private makeWorkspace<T extends EmailRenderer<any>>(renderer: T) {
+    return this.make(renderer, this.convertWorkspaceProps);
   }
 
   hasConfigured() {
     return !!this.mailer;
   }
 
-  async sendInviteEmail(
-    to: string,
-    inviteId: string,
-    invitationInfo: {
-      workspace: {
-        id: string;
-        name: string;
-        avatar: string;
-      };
-      user: {
-        avatar: string;
-        name: string;
-      };
-    }
-  ) {
-    const buttonUrl = this.url.link(`/invite/${inviteId}`);
-    const workspaceAvatar = invitationInfo.workspace.avatar;
+  // User mails
+  sendSignUpMail = this.make(renderSignUpMail);
+  sendSignInMail = this.make(renderSignInMail);
+  sendChangePasswordMail = this.make(renderChangePasswordMail);
+  sendSetPasswordMail = this.make(renderSetPasswordMail);
+  sendChangeEmailMail = this.make(renderChangeEmailMail);
+  sendVerifyChangeEmail = this.make(renderVerifyChangeEmailMail);
+  sendVerifyEmail = this.make(renderVerifyEmailMail);
+  sendNotificationChangeEmail = make(this, renderChangeEmailNotificationMail);
 
-    const content = `<p style="margin:0">${
-      invitationInfo.user.avatar
-        ? `<img
-    src="${invitationInfo.user.avatar}"
-    alt=""
-    width="24px"
-    height="24px"
-    style="width:24px; height:24px; border-radius: 12px;object-fit: cover;vertical-align: middle"
-  />`
-        : ''
-    }
-  <span style="font-weight:500;margin-right: 4px;">${
-    invitationInfo.user.name
-  }</span>
-  <span>invited you to join</span>
-  <img
-    src="cid:workspaceAvatar"
-    alt=""
-    width="24px"
-    height="24px"
-    style="width:24px; height:24px; margin-left:4px;border-radius: 12px;object-fit: cover;vertical-align: middle"
-  />
-  <span style="font-weight:500;margin-right: 4px;">${
-    invitationInfo.workspace.name
-  }</span></p><p style="margin-top:8px;margin-bottom:0;">Click button to join this workspace</p>`;
-
-    const html = emailTemplate({
-      title: 'You are invited!',
-      content,
-      buttonContent: 'Accept & Join',
-      buttonUrl,
-    });
-
-    return this.sendMail({
-      to,
-      subject: `${invitationInfo.user.name} invited you to join ${invitationInfo.workspace.name}`,
-      html,
-      attachments: [
-        {
-          cid: 'workspaceAvatar',
-          filename: 'image.png',
-          content: workspaceAvatar,
-          encoding: 'base64',
-        },
-      ],
-    });
-  }
-
-  async sendSignUpMail(url: string, options: Options) {
-    const html = emailTemplate({
-      title: 'Create AFFiNE Account',
-      content:
-        'Click the button below to complete your account creation and sign in. This magic link will expire in 30 minutes.',
-      buttonContent: ' Create account and sign in',
-      buttonUrl: url,
-    });
-
-    return this.sendMail({
-      html,
-      subject: 'Your AFFiNE account is waiting for you!',
-      ...options,
-    });
-  }
-
-  async sendSignInMail(url: string, options: Options) {
-    const html = emailTemplate({
-      title: 'Sign in to AFFiNE',
-      content:
-        'Click the button below to securely sign in. The magic link will expire in 30 minutes.',
-      buttonContent: 'Sign in to AFFiNE',
-      buttonUrl: url,
-    });
-    return this.sendMail({
-      html,
-      subject: 'Sign in to AFFiNE',
-      ...options,
-    });
-  }
-
-  async sendChangePasswordEmail(to: string, url: string) {
-    const html = emailTemplate({
-      title: 'Modify your AFFiNE password',
-      content:
-        'Click the button below to reset your password. The magic link will expire in 30 minutes.',
-      buttonContent: 'Set new password',
-      buttonUrl: url,
-    });
-    return this.sendMail({
-      to,
-      subject: `Modify your AFFiNE password`,
-      html,
-    });
-  }
-
-  async sendSetPasswordEmail(to: string, url: string) {
-    const html = emailTemplate({
-      title: 'Set your AFFiNE password',
-      content:
-        'Click the button below to set your password. The magic link will expire in 30 minutes.',
-      buttonContent: 'Set your password',
-      buttonUrl: url,
-    });
-    return this.sendMail({
-      to,
-      subject: `Set your AFFiNE password`,
-      html,
-    });
-  }
-
-  async sendChangeEmail(to: string, url: string) {
-    const html = emailTemplate({
-      title: 'Verify your current email for AFFiNE',
-      content:
-        'You recently requested to change the email address associated with your AFFiNE account. To complete this process, please click on the verification link below. This magic link will expire in 30 minutes.',
-      buttonContent: 'Verify and set up a new email address',
-      buttonUrl: url,
-    });
-    return this.sendMail({
-      to,
-      subject: `Verify your current email for AFFiNE`,
-      html,
-    });
-  }
-
-  async sendVerifyChangeEmail(to: string, url: string) {
-    const html = emailTemplate({
-      title: 'Verify your new email address',
-      content:
-        'You recently requested to change the email address associated with your AFFiNE account. To complete this process, please click on the verification link below. This magic link will expire in 30 minutes.',
-      buttonContent: 'Verify your new email address',
-      buttonUrl: url,
-    });
-    return this.sendMail({
-      to,
-      subject: `Verify your new email for AFFiNE`,
-      html,
-    });
-  }
-
-  async sendVerifyEmail(to: string, url: string) {
-    const html = emailTemplate({
-      title: 'Verify your email address',
-      content:
-        'You recently requested to verify the email address associated with your AFFiNE account. To complete this process, please click on the verification link below. This magic link will expire in 30 minutes.',
-      buttonContent: 'Verify your email address',
-      buttonUrl: url,
-    });
-    return this.sendMail({
-      to,
-      subject: `Verify your email for AFFiNE`,
-      html,
-    });
-  }
-
-  async sendNotificationChangeEmail(to: string) {
-    const html = emailTemplate({
-      title: 'Email change successful',
-      content: `As per your request, we have changed your email. Please make sure you're using ${to} when you log in the next time. `,
-    });
-    return this.sendMail({
-      to,
-      subject: `Your email has been changed`,
-      html,
-    });
-  }
-
-  async sendAcceptedEmail(
-    to: string,
-    {
-      inviteeName,
-      workspaceName,
-    }: {
-      inviteeName: string;
-      workspaceName: string;
-    }
-  ) {
-    const title = `${inviteeName} accepted your invitation`;
-
-    const html = emailTemplate({
-      title,
-      content: `${inviteeName} has joined ${workspaceName}`,
-    });
-    return this.sendMail({
-      to,
-      subject: title,
-      html,
-    });
-  }
-
-  async sendLeaveWorkspaceEmail(
-    to: string,
-    {
-      inviteeName,
-      workspaceName,
-    }: {
-      inviteeName: string;
-      workspaceName: string;
-    }
-  ) {
-    const title = `${inviteeName} left ${workspaceName}`;
-
-    const html = emailTemplate({
-      title,
-      content: `${inviteeName} has left your workspace`,
-    });
-    return this.sendMail({
-      to,
-      subject: title,
-      html,
-    });
-  }
+  // =================== Workspace Mails ===================
+  sendMemberInviteMail = this.makeWorkspace(renderMemberInvitationMail);
+  sendMemberAcceptedEmail = this.makeWorkspace(renderMemberAcceptedMail);
+  sendMemberLeaveEmail = this.makeWorkspace(renderMemberLeaveMail);
+  sendLinkInvitationReviewRequestMail = this.makeWorkspace(
+    renderLinkInvitationReviewRequestMail
+  );
+  sendLinkInvitationApproveMail = this.makeWorkspace(
+    renderLinkInvitationApproveMail
+  );
+  sendLinkInvitationDeclineMail = this.makeWorkspace(
+    renderLinkInvitationDeclineMail
+  );
+  sendMemberRemovedMail = this.makeWorkspace(renderMemberRemovedMail);
+  sendOwnershipTransferredMail = this.makeWorkspace(
+    renderOwnershipTransferredMail
+  );
+  sendOwnershipReceivedMail = this.makeWorkspace(renderOwnershipReceivedMail);
 
   // =================== Team Workspace Mails ===================
-  async sendTeamWorkspaceUpgradedEmail(
-    to: string,
-    ws: { id: string; name: string; isOwner: boolean }
-  ) {
-    const { id: workspaceId, name: workspaceName, isOwner } = ws;
-
-    const baseContent = {
-      subject: `${workspaceName} has been upgraded to team workspace! 🎉`,
-      title: 'Welcome to the team workspace!',
-      content: `Great news! ${workspaceName} has been upgraded to team workspace by the workspace owner. You now have access to the following enhanced features:`,
-    };
-    if (isOwner) {
-      baseContent.subject =
-        'Your workspace has been upgraded to team workspace! 🎉';
-      baseContent.title = 'Welcome to the team workspace!';
-      baseContent.content = `${workspaceName} has been upgraded to team workspace with the following benefits:`;
-    }
-
-    const html = emailTemplate({
-      title: baseContent.title,
-      content: `${baseContent.content}
-✓ 100 GB initial storage + 20 GB per seat
-✓ 500 MB of maximum file size
-✓ Unlimited team members (10+ seats)
-✓ Multiple admin roles
-✓ Priority customer support`,
-      buttonContent: 'Open Workspace',
-      buttonUrl: this.url.link(`/workspace/${workspaceId}`),
-    });
-    return this.sendMail({ to, subject: baseContent.subject, html });
-  }
-
-  async sendReviewRequestEmail(
-    to: string,
-    invitee: string,
-    ws: { id: string; name: string }
-  ) {
-    const { id: workspaceId, name: workspaceName } = ws;
-    const title = `New request to join ${workspaceName}`;
-
-    const html = emailTemplate({
-      title: 'Request to join your workspace',
-      content: `${invitee} has requested to join ${workspaceName}. As a workspace owner/admin, you can approve or decline this request.`,
-      buttonContent: 'Review request',
-      buttonUrl: this.url.link(`/workspace/${workspaceId}`),
-    });
-    return this.sendMail({ to, subject: title, html });
-  }
-
-  async sendReviewApproveEmail(to: string, ws: { id: string; name: string }) {
-    const { id: workspaceId, name: workspaceName } = ws;
-    const title = `Your request to join ${workspaceName} has been approved`;
-
-    const html = emailTemplate({
-      title: 'Welcome to the workspace!',
-      content: `Your request to join ${workspaceName} has been accepted. You can now access the team workspace and collaborate with other members.`,
-      buttonContent: 'Open Workspace',
-      buttonUrl: this.url.link(`/workspace/${workspaceId}`),
-    });
-    return this.sendMail({ to, subject: title, html });
-  }
-
-  async sendReviewDeclinedEmail(to: string, ws: { name: string }) {
-    const { name: workspaceName } = ws;
-    const title = `Your request to join ${workspaceName} was declined`;
-
-    const html = emailTemplate({
-      title: 'Request declined',
-      content: `Your request to join ${workspaceName} has been declined by the workspace admin.`,
-    });
-    return this.sendMail({ to, subject: title, html });
-  }
-
-  async sendRoleChangedEmail(to: string, ws: RoleChangedMailParams) {
-    const { subject, title, content } = getRoleChangedTemplate(ws);
-    const html = emailTemplate({ title, content });
-    console.log({ subject, title, content, to });
-    return this.sendMail({ to, subject, html });
-  }
-
-  async sendOwnershipTransferredEmail(to: string, ws: { name: string }) {
-    const { name: workspaceName } = ws;
-    const title = `Your ownership of ${workspaceName} has been transferred`;
-
-    const html = emailTemplate({
-      title: 'Ownership transferred',
-      content: `You have transferred ownership of ${workspaceName}. You are now a admin in this workspace.`,
-    });
-    return this.sendMail({ to, subject: title, html });
-  }
-
-  async sendMemberRemovedEmail(to: string, ws: { name: string }) {
-    const { name: workspaceName } = ws;
-    const title = `You have been removed from ${workspaceName}`;
-
-    const html = emailTemplate({
-      title: 'Workspace access removed',
-      content: `You have been removed from {workspace name}. You no longer have access to this workspace.`,
-    });
-    return this.sendMail({ to, subject: title, html });
-  }
-
-  async sendWorkspaceExpireRemindEmail(
-    to: string,
-    ws: {
-      id: string;
-      name: string;
-      expirationDate: Date;
-      deletionDate?: Date;
-    }
-  ) {
-    const {
-      id: workspaceId,
-      name: workspaceName,
-      expirationDate,
-      deletionDate,
-    } = ws;
-    const baseContent: {
-      subject: string;
-      title: string;
-      content: string;
-      button?: { buttonContent: string; buttonUrl: string };
-    } = {
-      subject: `[Action Required] Your ${workspaceName} team workspace is expiring soon`,
-      title: 'Team workspace expiring soon',
-      content: `Your ${workspaceName} team workspace will expire on ${expirationDate}. After expiration, you won't be able to sync or collaborate with team members. Please renew your subscription to continue using all team features.`,
-      button: {
-        buttonContent: 'Go to Billing',
-        // TODO(@darkskygit): use real billing path
-        buttonUrl: this.url.link(`/workspace/${workspaceId}`),
-      },
-    };
-
-    if (deletionDate) {
-      if (deletionDate.getTime() > Date.now()) {
-        // in 24 hours
-        if (deletionDate.getTime() - Date.now() < 24 * 60 * 60 * 1000) {
-          baseContent.subject = `[Action Required] Final warning: Your ${workspaceName} data will be deleted in 24 hours`;
-          baseContent.title = 'Urgent: Last chance to prevent data loss';
-          baseContent.content = `Your ${workspaceName} team workspace data will be permanently deleted in 24 hours on ${deletionDate}. To prevent data loss, please take immediate action:
-<li>Renew your subscription to restore team features</li>
-<li>Export your workspace data from Workspace Settings > Export Workspace</li>`;
-        } else {
-          baseContent.subject = `[Action Required] Important: Your ${workspaceName} data will be deleted soon`;
-          baseContent.title = 'Take action to prevent data loss';
-          baseContent.content = `Your ${workspaceName} team workspace expired on ${expirationDate}. All workspace data will be permanently deleted on ${deletionDate} (180 days after expiration). To prevent data loss, please either:
-<li>Renew your subscription to restore team features</li>
-<li>Export your workspace data from Workspace Settings > Export Workspace</li>`;
-        }
-      } else {
-        baseContent.subject = `Data deletion completed for ${workspaceName}`;
-        baseContent.title = 'Workspace data deleted';
-        baseContent.content = `All data in ${workspaceName} has been permanently deleted as the workspace remained expired for 180 days. This action cannot be undone.
-Thank you for your support of AFFiNE. We hope to see you again in the future.`;
-        baseContent.button = undefined;
-      }
-    } else if (expirationDate.getTime() < Date.now()) {
-      baseContent.subject = `Your ${workspaceName} team workspace has expired`;
-      baseContent.title = 'Team workspace expired';
-      baseContent.content = `Your ${workspaceName} team workspace expired on ${expirationDate}. Your workspace can't sync or collaborate with team members. Please renew your subscription to restore all team features.`;
-    }
-
-    const html = emailTemplate({
-      title: baseContent.title,
-      content: baseContent.content,
-      ...baseContent.button,
-    });
-    return this.sendMail({ to, subject: baseContent.subject, html });
-  }
+  sendTeamWorkspaceUpgradedEmail = this.makeWorkspace(
+    renderTeamWorkspaceUpgradedMail
+  );
+  sendTeamBecomeAdminMail = this.makeWorkspace(renderTeamBecomeAdminMail);
+  sendTeamBecomeCollaboratorMail = this.makeWorkspace(
+    renderTeamBecomeCollaboratorMail
+  );
+  sendTeamDeleteIn24HoursMail = this.makeWorkspace(
+    renderTeamDeleteIn24HoursMail
+  );
+  sendTeamDeleteIn1MonthMail = this.makeWorkspace(renderTeamDeleteIn1MonthMail);
+  sendTeamWorkspaceDeletedMail = this.makeWorkspace(
+    renderTeamWorkspaceDeletedMail
+  );
+  sendTeamExpireSoonMail = this.makeWorkspace(
+    renderTeamWorkspaceExpireSoonMail
+  );
+  sendTeamExpiredMail = this.makeWorkspace(renderTeamWorkspaceExpiredMail);
 }

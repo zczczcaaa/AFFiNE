@@ -7,6 +7,7 @@ import {
   type EventPayload,
   MailService,
   OnEvent,
+  URLHelper,
   UserNotFound,
 } from '../../../base';
 import { Models } from '../../../models';
@@ -23,13 +24,6 @@ export type InviteInfo = {
   inviteeUserId?: string;
 };
 
-const PermissionToRole = {
-  [Permission.Read]: 'readonly' as const,
-  [Permission.Write]: 'member' as const,
-  [Permission.Admin]: 'admin' as const,
-  [Permission.Owner]: 'owner' as const,
-};
-
 @Injectable()
 export class WorkspaceService {
   private readonly logger = new Logger(WorkspaceService.name);
@@ -41,7 +35,8 @@ export class WorkspaceService {
     private readonly mailer: MailService,
     private readonly permission: PermissionService,
     private readonly prisma: PrismaClient,
-    private readonly models: Models
+    private readonly models: Models,
+    private readonly url: URLHelper
   ) {}
 
   async getInviteInfo(inviteId: string): Promise<InviteInfo> {
@@ -87,7 +82,7 @@ export class WorkspaceService {
     return {
       avatar,
       id: workspaceId,
-      name: workspaceContent?.name ?? '',
+      name: workspaceContent?.name ?? 'Untitled Workspace',
     };
   }
 
@@ -130,26 +125,47 @@ export class WorkspaceService {
       return false;
     }
 
-    await this.mailer.sendAcceptedEmail(inviter.email, {
-      inviteeName: invitee.name,
-      workspaceName: workspace.name,
+    await this.mailer.sendMemberAcceptedEmail(inviter.email, {
+      user: invitee,
+      workspace,
     });
     return true;
   }
 
+  async sendInviteEmail(inviteId: string) {
+    const target = await this.getInviteeEmailTarget(inviteId);
+
+    if (!target) {
+      return;
+    }
+
+    const owner = await this.permission.getWorkspaceOwner(target.workspace.id);
+
+    await this.mailer.sendMemberInviteMail(target.email, {
+      workspace: target.workspace,
+      user: owner,
+      url: this.url.link(`/invite/${inviteId}`),
+    });
+  }
+
+  // ================ Team ================
+
   async sendTeamWorkspaceUpgradedEmail(workspaceId: string) {
     const workspace = await this.getWorkspaceInfo(workspaceId);
     const owner = await this.permission.getWorkspaceOwner(workspaceId);
-    const admin = await this.permission.getWorkspaceAdmin(workspaceId);
+    const admins = await this.permission.getWorkspaceAdmin(workspaceId);
 
     await this.mailer.sendTeamWorkspaceUpgradedEmail(owner.email, {
-      ...workspace,
+      workspace,
       isOwner: true,
+      url: this.url.link(`/workspace/${workspaceId}`),
     });
-    for (const user of admin) {
+
+    for (const user of admins) {
       await this.mailer.sendTeamWorkspaceUpgradedEmail(user.email, {
-        ...workspace,
+        workspace,
         isOwner: false,
+        url: this.url.link(`/workspace/${workspaceId}`),
       });
     }
   }
@@ -174,48 +190,34 @@ export class WorkspaceService {
     const admin = await this.permission.getWorkspaceAdmin(workspaceId);
 
     for (const user of [owner, ...admin]) {
-      await this.mailer.sendReviewRequestEmail(
-        user.email,
-        invitee.email,
-        workspace
-      );
+      await this.mailer.sendLinkInvitationReviewRequestMail(user.email, {
+        workspace,
+        user: invitee,
+        url: this.url.link(`/workspace/${workspace.id}`),
+      });
     }
-  }
-
-  async sendInviteEmail(inviteId: string) {
-    const target = await this.getInviteeEmailTarget(inviteId);
-
-    if (!target) {
-      return;
-    }
-
-    const owner = await this.permission.getWorkspaceOwner(target.workspace.id);
-
-    await this.mailer.sendInviteEmail(target.email, inviteId, {
-      workspace: target.workspace,
-      user: {
-        avatar: owner.avatarUrl || '',
-        name: owner.name || '',
-      },
-    });
   }
 
   async sendReviewApproveEmail(inviteId: string) {
     const target = await this.getInviteeEmailTarget(inviteId);
+    if (!target) return;
 
-    if (!target) {
-      return;
-    }
-
-    await this.mailer.sendReviewApproveEmail(target.email, target.workspace);
+    await this.mailer.sendLinkInvitationApproveMail(target.email, {
+      workspace: target.workspace,
+      url: this.url.link(`/workspace/${target.workspace.id}`),
+    });
   }
 
   async sendReviewDeclinedEmail(
     email: string | undefined,
-    workspaceName: string
+    workspaceId: string
   ) {
     if (!email) return;
-    await this.mailer.sendReviewDeclinedEmail(email, { name: workspaceName });
+
+    const workspace = await this.getWorkspaceInfo(workspaceId);
+    await this.mailer.sendLinkInvitationDeclineMail(email, {
+      workspace,
+    });
   }
 
   async sendRoleChangedEmail(
@@ -224,24 +226,42 @@ export class WorkspaceService {
   ) {
     const user = await this.models.user.getPublicUser(userId);
     if (!user) throw new UserNotFound();
+
     const workspace = await this.getWorkspaceInfo(ws.id);
-    await this.mailer.sendRoleChangedEmail(user?.email, {
-      name: workspace.name,
-      role: PermissionToRole[ws.role],
-    });
+
+    if (ws.role === Permission.Admin) {
+      await this.mailer.sendTeamBecomeAdminMail(user.email, {
+        workspace,
+        url: this.url.link(`/workspace/${workspace.id}`),
+      });
+    } else {
+      await this.mailer.sendTeamBecomeCollaboratorMail(user.email, {
+        workspace,
+        url: this.url.link(`/workspace/${workspace.id}`),
+      });
+    }
   }
 
-  async sendOwnerTransferredEmail(email: string, ws: { id: string }) {
+  async sendOwnershipTransferredEmail(email: string, ws: { id: string }) {
     const workspace = await this.getWorkspaceInfo(ws.id);
-    await this.mailer.sendOwnershipTransferredEmail(email, {
-      name: workspace.name,
-    });
+    await this.mailer.sendOwnershipTransferredMail(email, { workspace });
   }
 
-  async sendMemberRemoved(email: string, ws: { id: string }) {
+  async sendOwnershipReceivedEmail(email: string, ws: { id: string }) {
     const workspace = await this.getWorkspaceInfo(ws.id);
-    await this.mailer.sendMemberRemovedEmail(email, {
-      name: workspace.name,
+    await this.mailer.sendOwnershipReceivedMail(email, { workspace });
+  }
+
+  @OnEvent('workspace.members.leave')
+  async onMemberLeave({
+    user,
+    workspaceId,
+  }: EventPayload<'workspace.members.leave'>) {
+    const workspace = await this.getWorkspaceInfo(workspaceId);
+    const owner = await this.permission.getWorkspaceOwner(workspaceId);
+    await this.mailer.sendMemberLeaveEmail(owner.email, {
+      workspace,
+      user,
     });
   }
 
@@ -252,22 +272,8 @@ export class WorkspaceService {
   }: EventPayload<'workspace.members.requestDeclined'>) {
     const user = await this.models.user.get(userId);
     if (!user) return;
-    await this.sendMemberRemoved(user.email, { id: workspaceId });
-  }
 
-  @OnEvent('workspace.subscription.notify')
-  async onSubscriptionNotify({
-    workspaceId,
-    expirationDate,
-    deletionDate,
-  }: EventPayload<'workspace.subscription.notify'>) {
-    const owner = await this.permission.getWorkspaceOwner(workspaceId);
-    if (!owner) return;
     const workspace = await this.getWorkspaceInfo(workspaceId);
-    await this.mailer.sendWorkspaceExpireRemindEmail(owner.email, {
-      ...workspace,
-      expirationDate,
-      deletionDate,
-    });
+    await this.mailer.sendMemberRemovedMail(user.email, { workspace });
   }
 }

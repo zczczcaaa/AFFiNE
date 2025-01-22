@@ -703,23 +703,15 @@ test('should be able to emit events', async t => {
     );
 
     await grantMember(app, owner.token.token, tws.id, read.id, 'Owner');
-    const [ownerTransferred, roleChanged] = event.emit
+    const [ownershipTransferred] = event.emit
       .getCalls()
       .map(call => call.args)
       .toReversed();
     t.deepEqual(
-      roleChanged,
+      ownershipTransferred,
       [
-        'workspace.members.roleChanged',
-        { userId: read.id, workspaceId: tws.id, permission: Permission.Owner },
-      ],
-      'should emit role changed event'
-    );
-    t.deepEqual(
-      ownerTransferred,
-      [
-        'workspace.members.ownerTransferred',
-        { email: owner.email, workspaceId: tws.id },
+        'workspace.members.ownershipTransferred',
+        { from: owner.id, to: read.id, workspaceId: tws.id },
       ],
       'should emit owner transferred event'
     );

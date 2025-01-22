@@ -302,31 +302,29 @@ export class AuthService implements OnApplicationBootstrap {
   }
 
   async sendChangePasswordEmail(email: string, callbackUrl: string) {
-    return this.mailer.sendChangePasswordEmail(email, callbackUrl);
+    return this.mailer.sendChangePasswordMail(email, { url: callbackUrl });
   }
   async sendSetPasswordEmail(email: string, callbackUrl: string) {
-    return this.mailer.sendSetPasswordEmail(email, callbackUrl);
+    return this.mailer.sendSetPasswordMail(email, { url: callbackUrl });
   }
   async sendChangeEmail(email: string, callbackUrl: string) {
-    return this.mailer.sendChangeEmail(email, callbackUrl);
+    return this.mailer.sendChangeEmailMail(email, { url: callbackUrl });
   }
   async sendVerifyChangeEmail(email: string, callbackUrl: string) {
-    return this.mailer.sendVerifyChangeEmail(email, callbackUrl);
+    return this.mailer.sendVerifyChangeEmail(email, { url: callbackUrl });
   }
   async sendVerifyEmail(email: string, callbackUrl: string) {
-    return this.mailer.sendVerifyEmail(email, callbackUrl);
+    return this.mailer.sendVerifyEmail(email, { url: callbackUrl });
   }
   async sendNotificationChangeEmail(email: string) {
-    return this.mailer.sendNotificationChangeEmail(email);
+    return this.mailer.sendNotificationChangeEmail(email, {
+      to: email,
+    });
   }
 
   async sendSignInEmail(email: string, link: string, signUp: boolean) {
     return signUp
-      ? await this.mailer.sendSignUpMail(link, {
-          to: email,
-        })
-      : await this.mailer.sendSignInMail(link, {
-          to: email,
-        });
+      ? await this.mailer.sendSignUpMail(email, { url: link })
+      : await this.mailer.sendSignInMail(email, { url: link });
   }
 }

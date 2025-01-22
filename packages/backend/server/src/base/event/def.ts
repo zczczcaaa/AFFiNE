@@ -15,8 +15,17 @@ export interface WorkspaceEvents {
       workspaceId: Workspace['id'];
       permission: number;
     }>;
-    ownerTransferred: Payload<{ email: string; workspaceId: Workspace['id'] }>;
+    ownershipTransferred: Payload<{
+      from: User['id'];
+      to: User['id'];
+      workspaceId: Workspace['id'];
+    }>;
+    ownershipReceived: Payload<{ workspaceId: Workspace['id'] }>;
     updated: Payload<{ workspaceId: Workspace['id']; count: number }>;
+    leave: Payload<{
+      user: Pick<User, 'id' | 'email'>;
+      workspaceId: Workspace['id'];
+    }>;
     removed: Payload<{ workspaceId: Workspace['id']; userId: User['id'] }>;
   };
   deleted: Payload<Workspace['id']>;

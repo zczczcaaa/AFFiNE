@@ -11,6 +11,7 @@ const test = ava as TestFn<{
   app: INestApplication;
   mail: MailService;
 }>;
+import * as renderers from '../mails';
 
 test.beforeEach(async t => {
   const { module, app } = await createTestingApp({
@@ -42,7 +43,7 @@ test('should send invite email', async t => {
 
     const workspace = await createWorkspace(app, u1.token.token);
 
-    const stub = Sinon.stub(mail, 'sendMail');
+    const stub = Sinon.stub(mail, 'send');
 
     await inviteUser(app, u1.token.token, workspace.id, u2.email, true);
 
@@ -53,9 +54,17 @@ test('should send invite email', async t => {
     t.is(args.to, u2.email);
     t.true(
       args.subject!.startsWith(
-        `${u1.name} invited you to join` /* we don't know the name of mocked workspace */
+        `${u1.email} invited you to join` /* we don't know the name of mocked workspace */
       )
     );
   }
   t.pass();
+});
+
+test('should render emails', async t => {
+  for (const render of Object.values(renderers)) {
+    // @ts-expect-error use [PreviewProps]
+    const content = await render();
+    t.snapshot(content.html, content.subject);
+  }
 });

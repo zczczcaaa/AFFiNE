@@ -20,7 +20,6 @@ import {
   DocNotFound,
   EventEmitter,
   InternalServerError,
-  MailService,
   MemberQuotaExceeded,
   RequestMutex,
   SpaceAccessDenied,
@@ -79,7 +78,6 @@ export class WorkspaceResolver {
 
   constructor(
     private readonly cache: Cache,
-    private readonly mailer: MailService,
     private readonly prisma: PrismaClient,
     private readonly permissions: PermissionService,
     private readonly quota: QuotaManagementService,
@@ -611,17 +609,18 @@ export class WorkspaceResolver {
     _workspaceName?: string
   ) {
     await this.permissions.checkWorkspace(workspaceId, user.id);
-    const { name: workspaceName } =
-      await this.workspaceService.getWorkspaceInfo(workspaceId);
-    const owner = await this.permissions.getWorkspaceOwner(workspaceId);
+    const success = this.permissions.revokeWorkspace(workspaceId, user.id);
 
     if (sendLeaveMail) {
-      await this.mailer.sendLeaveWorkspaceEmail(owner.email, {
-        workspaceName,
-        inviteeName: user.name,
+      this.event.emit('workspace.members.leave', {
+        workspaceId,
+        user: {
+          id: user.id,
+          email: user.email,
+        },
       });
     }
 
-    return this.permissions.revokeWorkspace(workspaceId, user.id);
+    return success;
   }
 }
