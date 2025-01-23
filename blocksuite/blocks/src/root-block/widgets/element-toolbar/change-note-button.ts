@@ -253,13 +253,21 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
       closeNotify();
     };
 
+    const title =
+      newMode !== NoteDisplayMode.EdgelessOnly
+        ? 'Note displayed in Page Mode'
+        : 'Note removed from Page Mode';
+    const message =
+      newMode !== NoteDisplayMode.EdgelessOnly
+        ? 'Content added to your page.'
+        : 'Content removed from your page.';
+
     const notification = this.edgeless.std.getOptional(NotificationProvider);
     notification?.notify({
-      title: 'Note displayed in Page Mode',
-      message:
-        'Content added to your page. Find it in the TOC for quick navigation.',
+      title: title,
+      message: `${message}. Find it in the TOC for quick navigation.`,
       accent: 'success',
-      duration: 1000 * 1000,
+      duration: 5 * 1000,
       footer: html`<div class=${styles.viewInPageNotifyFooter}>
         <button
           class=${styles.viewInPageNotifyFooterButton}
