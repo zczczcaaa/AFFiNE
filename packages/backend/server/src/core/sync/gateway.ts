@@ -1,4 +1,4 @@
-import { applyDecorators, Logger } from '@nestjs/common';
+import { applyDecorators, Logger, UseInterceptors } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -7,6 +7,7 @@ import {
   SubscribeMessage as RawSubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
+import { ClsInterceptor } from 'nestjs-cls';
 import { Socket } from 'socket.io';
 
 import {
@@ -131,6 +132,7 @@ interface UpdateAwarenessMessage {
 }
 
 @WebSocketGateway()
+@UseInterceptors(ClsInterceptor)
 export class SpaceSyncGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -147,11 +149,13 @@ export class SpaceSyncGateway
 
   handleConnection() {
     this.connectionCount++;
+    this.logger.log(`New connection, total: ${this.connectionCount}`);
     metrics.socketio.gauge('realtime_connections').record(this.connectionCount);
   }
 
   handleDisconnect() {
     this.connectionCount--;
+    this.logger.log(`Connection disconnected, total: ${this.connectionCount}`);
     metrics.socketio.gauge('realtime_connections').record(this.connectionCount);
   }
 

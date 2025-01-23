@@ -52,15 +52,26 @@ import { ENABLED_PLUGINS } from './plugins/registry';
 export const FunctionalityModules = [
   ClsModule.forRoot({
     global: true,
+    // for http / graphql request
     middleware: {
       mount: true,
       generateId: true,
       idGenerator() {
         // make every request has a unique id to tracing
-        return randomUUID();
+        return `req-${randomUUID()}`;
       },
       setup(cls, _req, res: Response) {
         res.setHeader('X-Request-Id', cls.getId());
+      },
+    },
+    // for websocket connection
+    // https://papooch.github.io/nestjs-cls/considerations/compatibility#websockets
+    interceptor: {
+      mount: true,
+      generateId: true,
+      idGenerator() {
+        // make every request has a unique id to tracing
+        return `ws-${randomUUID()}`;
       },
     },
     plugins: [
