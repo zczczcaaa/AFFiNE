@@ -7,7 +7,7 @@ import { DualLinkIcon, LinkIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { getAttachmentFileIcons } from '../../../../../icons';
+import { getAttachmentFileIcon } from '../../../../../icons';
 import { RefNodeSlotsProvider } from '../../../../extension/ref-node-slots';
 
 export class FootNotePopup extends WithDisposable(LitElement) {
@@ -34,7 +34,7 @@ export class FootNotePopup extends WithDisposable(LitElement) {
       if (!fileType) {
         return undefined;
       }
-      return getAttachmentFileIcons(fileType);
+      return getAttachmentFileIcon(fileType);
     }
     return undefined;
   };

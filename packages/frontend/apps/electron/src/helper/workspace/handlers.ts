@@ -8,7 +8,6 @@ import {
 import fs from 'fs-extra';
 import { applyUpdate, Doc as YDoc } from 'yjs';
 
-import { isWindows } from '../../shared/utils';
 import { logger } from '../logger';
 import { getDocStoragePool } from '../nbstore';
 import { ensureSQLiteDisconnected } from '../nbstore/v1/ensure-db';
@@ -69,16 +68,10 @@ export async function trashWorkspace(universalId: string) {
     await fs.ensureDir(movedPath);
     // todo(@pengx17): it seems the db file is still being used at the point
     // on windows so that it cannot be moved. we will fallback to copy the dir instead.
-    if (isWindows()) {
-      await fs.copy(path.dirname(dbPath), movedPath, {
-        overwrite: true,
-      });
-      await fs.rmdir(path.dirname(dbPath), { recursive: true });
-    } else {
-      return await fs.move(path.dirname(dbPath), movedPath, {
-        overwrite: true,
-      });
-    }
+    await fs.copy(path.dirname(dbPath), movedPath, {
+      overwrite: true,
+    });
+    await fs.rmdir(path.dirname(dbPath), { recursive: true });
   } catch (error) {
     logger.error('trashWorkspace', error);
   }

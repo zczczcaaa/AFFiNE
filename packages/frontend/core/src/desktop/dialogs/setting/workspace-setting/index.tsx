@@ -43,7 +43,7 @@ export const WorkspaceSetting = ({
     case 'workspace:billing':
       return <WorkspaceSettingBilling />;
     case 'workspace:storage':
-      return <WorkspaceSettingStorage />;
+      return <WorkspaceSettingStorage onCloseSetting={onCloseSetting} />;
     default:
       return null;
   }

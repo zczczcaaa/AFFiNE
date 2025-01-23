@@ -1,4 +1,8 @@
-import type { BlobStorage, DocStorage } from '@affine/nbstore';
+import type {
+  BlobStorage,
+  DocStorage,
+  ListedBlobRecord,
+} from '@affine/nbstore';
 import type { WorkerInitOptions } from '@affine/nbstore/worker/client';
 import type { Workspace as BSWorkspace } from '@blocksuite/affine/store';
 import { createIdentifier, type LiveData } from '@toeverything/infra';
@@ -40,6 +44,14 @@ export interface WorkspaceFlavourProvider {
   ): Promise<WorkspaceProfileInfo | undefined>;
 
   getWorkspaceBlob(id: string, blob: string): Promise<Blob | null>;
+
+  listBlobs(workspaceId: string): Promise<ListedBlobRecord[]>;
+
+  deleteBlob(
+    workspaceId: string,
+    blob: string,
+    permanent: boolean
+  ): Promise<void>;
 
   getEngineWorkerInitOptions(workspaceId: string): WorkerInitOptions;
 

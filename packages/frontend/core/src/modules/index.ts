@@ -7,6 +7,7 @@ import {
 } from './ai-button';
 import { configureAppSidebarModule } from './app-sidebar';
 import { configAtMenuConfigModule } from './at-menu-config';
+import { configureBlobManagementModule } from './blob-management';
 import { configureCloudModule } from './cloud';
 import { configureCollectionModule } from './collection';
 import { configureWorkspaceDBModule } from './db';
@@ -98,4 +99,5 @@ export function configureCommonModules(framework: Framework) {
   configureAINetworkSearchModule(framework);
   configureAIButtonModule(framework);
   configureTemplateDocModule(framework);
+  configureBlobManagementModule(framework);
 }

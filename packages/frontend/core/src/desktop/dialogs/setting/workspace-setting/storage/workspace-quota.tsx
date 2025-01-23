@@ -46,7 +46,7 @@ export const StorageProgress = () => {
     if (loadError) {
       return <ErrorMessage>Load error</ErrorMessage>;
     }
-    return <Skeleton height={42} />;
+    return <Skeleton height={26} />;
   }
 
   if (!isTeam) {

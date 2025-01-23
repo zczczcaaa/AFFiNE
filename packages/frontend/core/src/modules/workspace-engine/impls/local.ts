@@ -2,6 +2,7 @@ import { DebugLogger } from '@affine/debug';
 import {
   type BlobStorage,
   type DocStorage,
+  type ListedBlobRecord,
   universalId,
 } from '@affine/nbstore';
 import {
@@ -274,6 +275,33 @@ class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
     await storage.connection.waitForConnected();
     const blob = await storage.get(blobKey);
     return blob ? new Blob([blob.data], { type: blob.mime }) : null;
+  }
+
+  async listBlobs(id: string): Promise<ListedBlobRecord[]> {
+    const storage = new this.BlobStorageType({
+      id: id,
+      flavour: this.flavour,
+      type: 'workspace',
+    });
+    storage.connection.connect();
+    await storage.connection.waitForConnected();
+
+    return storage.list();
+  }
+
+  async deleteBlob(
+    id: string,
+    blob: string,
+    permanent: boolean
+  ): Promise<void> {
+    const storage = new this.BlobStorageType({
+      id: id,
+      flavour: this.flavour,
+      type: 'workspace',
+    });
+    storage.connection.connect();
+    await storage.connection.waitForConnected();
+    await storage.delete(blob, permanent);
   }
 
   getEngineWorkerInitOptions(workspaceId: string): WorkerInitOptions {

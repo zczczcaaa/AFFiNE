@@ -74,9 +74,11 @@ export const sidebarSelectSubItem = style({
 export const sidebarSelectItemIcon = style({
   width: '16px',
   height: '16px',
+  fontSize: '16px',
   marginRight: '10px',
   flexShrink: 0,
   color: cssVarV2('icon/primary'),
+  display: 'inline-flex',
 });
 
 export const sidebarSelectItemName = style({

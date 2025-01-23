@@ -95,6 +95,8 @@ test('export then add', async ({ page, appInfo, workspace }) => {
   // check its name is correct
   await expect(page.getByTestId('workspace-name')).toHaveText(newWorkspaceName);
 
+  await page.waitForTimeout(1000);
+
   // find button which has the title "test1"
   await page.getByText('test1').click();
 
