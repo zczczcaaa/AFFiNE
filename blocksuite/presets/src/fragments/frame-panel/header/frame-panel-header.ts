@@ -8,10 +8,9 @@ import {
   type NavigatorMode,
 } from '@blocksuite/blocks';
 import { DisposableGroup, WithDisposable } from '@blocksuite/global/utils';
+import { PresentationIcon, SettingsIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-
-import { SettingsIcon, SmallFrameNavigatorIcon } from '../../_common/icons.js';
 
 const styles = css`
   :host {
@@ -201,7 +200,7 @@ export class FramePanelHeader extends WithDisposable(LitElement) {
           .activeMode=${'background'}
           @click=${() => this._framesSettingMenuPopper?.toggle()}
         >
-          ${SettingsIcon}
+          ${SettingsIcon({ width: '20px', height: '20px' })}
         </edgeless-tool-icon-button>
       </div>
       <div class="frames-setting-container">
@@ -210,7 +209,8 @@ export class FramePanelHeader extends WithDisposable(LitElement) {
         ></affine-frames-setting-menu>
       </div>
       <div class="presentation-button" @click=${this._enterPresentationMode}>
-        ${SmallFrameNavigatorIcon}<span class="presentation-button-label"
+        ${PresentationIcon({ width: '16px', height: '16px' })}<span
+          class="presentation-button-label"
           >Presentation</span
         >
       </div>

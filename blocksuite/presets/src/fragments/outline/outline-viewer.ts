@@ -5,6 +5,7 @@ import {
 } from '@blocksuite/block-std';
 import { NoteDisplayMode, scrollbarStyle } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
+import { TocIcon } from '@blocksuite/icons/lit';
 import { provide } from '@lit/context';
 import { signal } from '@preact/signals-core';
 import { css, html, nothing } from 'lit';
@@ -13,7 +14,6 @@ import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { AffineEditorContainer } from '../../editors/editor-container.js';
-import { TocIcon } from '../_common/icons.js';
 import { editorContext } from './config.js';
 import { getHeadingBlocksFromDoc } from './utils/query.js';
 import {
@@ -227,7 +227,7 @@ export class OutlineViewer extends SignalWatcher(
             @click=${this._toggleOutlinePanel}
             data-testid="toggle-outline-panel-button"
           >
-            ${TocIcon}
+            ${TocIcon({ width: '1em', height: '1em' })}
           </edgeless-tool-icon-button>`
         : nothing;
 

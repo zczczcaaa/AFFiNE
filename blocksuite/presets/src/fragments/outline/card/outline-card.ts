@@ -7,11 +7,11 @@ import {
   once,
 } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
+import { ArrowDownSmallIcon, InvisibleIcon } from '@blocksuite/icons/lit';
 import type { BlockModel } from '@blocksuite/store';
 import { html } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
-import { HiddenIcon, SmallArrowDownIcon } from '../../_common/icons';
 import type { SelectEvent } from '../utils/custom-events';
 import * as styles from './outline-card.css';
 
@@ -153,7 +153,9 @@ export class OutlineNoteCard extends SignalWatcher(
         ${html`<div class=${styles.cardHeader}>
           ${
             this.invisible
-              ? html`<span class=${styles.headerIcon}>${HiddenIcon}</span>`
+              ? html`<span class=${styles.headerIcon}
+                  >${InvisibleIcon({ width: '20px', height: '20px' })}</span
+                >`
               : html`<span class=${styles.headerNumber}>${this.number}</span>`
           }
           <span class=${styles.divider}></span>
@@ -172,7 +174,7 @@ export class OutlineNoteCard extends SignalWatcher(
             >
               <div class=${styles.displayModeButton}>
                 <span class=${styles.currentModeLabel}>${currentMode}</span>
-                ${SmallArrowDownIcon}
+                ${ArrowDownSmallIcon({ width: '16px', height: '16px' })}
               </div>
             </edgeless-tool-icon-button>
           </div>

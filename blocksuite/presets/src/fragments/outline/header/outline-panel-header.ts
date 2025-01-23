@@ -1,10 +1,10 @@
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { createButtonPopper } from '@blocksuite/blocks';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { SettingsIcon, SortIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
-import { SettingsIcon, SortingIcon } from '../../_common/icons.js';
 import * as styles from './outline-panel-header.css';
 
 export const AFFINE_OUTLINE_PANEL_HEADER = 'affine-outline-panel-header';
@@ -43,7 +43,7 @@ export class OutlinePanelHeader extends WithDisposable(ShadowlessElement) {
             .activeMode=${'background'}
             @click=${() => this._notePreviewSettingMenuPopper?.toggle()}
           >
-            ${SettingsIcon}
+            ${SettingsIcon({ width: '20px', height: '20px' })}
           </edgeless-tool-icon-button>
         </div>
         <edgeless-tool-icon-button
@@ -56,7 +56,7 @@ export class OutlinePanelHeader extends WithDisposable(ShadowlessElement) {
           .activeMode=${'color'}
           @click=${() => this.toggleNotesSorting()}
         >
-          ${SortingIcon}
+          ${SortIcon({ width: '20px', height: '20px' })}
         </edgeless-tool-icon-button>
       </div>
       <div class=${styles.notePreviewSettingContainer}>

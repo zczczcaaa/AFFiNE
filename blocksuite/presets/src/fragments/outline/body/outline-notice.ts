@@ -1,9 +1,9 @@
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { CloseIcon, SortIcon } from '@blocksuite/icons/lit';
 import { html, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { SmallCloseIcon, SortingIcon } from '../../_common/icons.js';
 import * as styles from './outline-notice.css';
 
 export const AFFINE_OUTLINE_NOTICE = 'affine-outline-notice';
@@ -26,7 +26,7 @@ export class OutlineNotice extends WithDisposable(ShadowlessElement) {
           <span
             class=${styles.outlineNoticeCloseButton}
             @click=${() => this.setNoticeVisibility(false)}
-            >${SmallCloseIcon}</span
+            >${CloseIcon({ width: '16px', height: '16px' })}</span
           >
         </div>
         <div class=${styles.outlineNoticeBody}>
@@ -35,7 +35,9 @@ export class OutlineNotice extends WithDisposable(ShadowlessElement) {
           </div>
           <div class="${styles.button}" @click=${this._handleNoticeButtonClick}>
             <span class=${styles.buttonSpan}>Click here or</span>
-            <span class=${styles.buttonSpan}>${SortingIcon}</span>
+            <span class=${styles.buttonSpan}
+              >${SortIcon({ width: '20px', height: '20px' })}</span
+            >
             <span class=${styles.buttonSpan}>to organize content.</span>
           </div>
         </div>
