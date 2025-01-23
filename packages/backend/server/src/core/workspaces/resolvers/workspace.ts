@@ -10,7 +10,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
+import { Prisma, PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
 import type { FileUpload } from '../../../base';
@@ -21,6 +21,7 @@ import {
   EventEmitter,
   InternalServerError,
   MemberQuotaExceeded,
+  QueryTooLong,
   RequestMutex,
   SpaceAccessDenied,
   SpaceNotFound,
@@ -148,25 +149,42 @@ export class WorkspaceResolver {
   async members(
     @Parent() workspace: WorkspaceType,
     @Args('skip', { type: () => Int, nullable: true }) skip?: number,
-    @Args('take', { type: () => Int, nullable: true }) take?: number
+    @Args('take', { type: () => Int, nullable: true }) take?: number,
+    @Args('query', { type: () => String, nullable: true }) query?: string
   ) {
-    const data = await this.prisma.workspaceUserPermission.findMany({
+    const args: Prisma.WorkspaceUserPermissionFindManyArgs = {
       where: { workspaceId: workspace.id },
       skip,
       take: take || 8,
       orderBy: [{ createdAt: 'asc' }, { type: 'desc' }],
-      include: { user: true },
+    };
+
+    if (query) {
+      if (query.length > 255) {
+        throw new QueryTooLong({ max: 255 });
+      }
+
+      // @ts-expect-error not null
+      args.where.user = {
+        // TODO(@forehalo): case-insensitive search later
+        OR: [{ name: { contains: query } }, { email: { contains: query } }],
+      };
+    }
+
+    const data = await this.prisma.workspaceUserPermission.findMany({
+      ...args,
+      include: {
+        user: true,
+      },
     });
 
-    return data
-      .filter(({ user }) => !!user)
-      .map(({ id, accepted, status, type, user }) => ({
-        ...user,
-        permission: type,
-        inviteId: id,
-        accepted,
-        status,
-      }));
+    return data.map(({ id, accepted, status, type, user }) => ({
+      ...user,
+      permission: type,
+      inviteId: id,
+      accepted,
+      status,
+    }));
   }
 
   @ResolveField(() => WorkspacePageMeta, {

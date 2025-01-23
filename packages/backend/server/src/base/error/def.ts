@@ -250,6 +250,13 @@ export const USER_FRIENDLY_ERRORS = {
     message: 'Resource not found.',
   },
 
+  // Input errors
+  query_too_long: {
+    type: 'invalid_input',
+    args: { max: 'number' },
+    message: ({ max }) => `Query is too long, max length is ${max}.`,
+  },
+
   // User Errors
   user_not_found: {
     type: 'resource_not_found',
