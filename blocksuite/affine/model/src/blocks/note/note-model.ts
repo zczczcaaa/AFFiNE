@@ -5,6 +5,7 @@ import type {
 import { GfxCompatible } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
 import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import { z } from 'zod';
 
 import {
   DEFAULT_NOTE_BORDER_SIZE,
@@ -14,9 +15,38 @@ import {
   DEFAULT_NOTE_SHADOW,
   DEFAULT_NOTE_WIDTH,
   NoteDisplayMode,
+  NoteDisplayModeSchema,
+  NoteShadowsSchema,
   type StrokeStyle,
-} from '../../consts/index.js';
-import { type Color, DefaultTheme } from '../../themes/index.js';
+  StrokeStyleSchema,
+} from '../../consts/note';
+import { type Color, ColorSchema, DefaultTheme } from '../../themes';
+
+export const NoteZodSchema = z
+  .object({
+    background: ColorSchema,
+    displayMode: NoteDisplayModeSchema,
+    edgeless: z.object({
+      style: z.object({
+        borderRadius: z.number(),
+        borderSize: z.number(),
+        borderStyle: StrokeStyleSchema,
+        shadowType: NoteShadowsSchema,
+      }),
+    }),
+  })
+  .default({
+    background: DefaultTheme.noteBackgrounColor,
+    displayMode: NoteDisplayMode.EdgelessOnly,
+    edgeless: {
+      style: {
+        borderRadius: DEFAULT_NOTE_CORNER,
+        borderSize: DEFAULT_NOTE_BORDER_SIZE,
+        borderStyle: DEFAULT_NOTE_BORDER_STYLE,
+        shadowType: DEFAULT_NOTE_SHADOW,
+      },
+    },
+  });
 
 export const NoteBlockSchema = defineBlockSchema({
   flavour: 'affine:note',

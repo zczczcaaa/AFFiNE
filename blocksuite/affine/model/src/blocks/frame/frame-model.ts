@@ -16,8 +16,9 @@ import {
 } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
 import { BlockModel, defineBlockSchema, type Text } from '@blocksuite/store';
+import { z } from 'zod';
 
-import type { Color } from '../../themes/index.js';
+import { type Color, ColorSchema } from '../../themes/index.js';
 
 export type FrameBlockProps = {
   title: Text;
@@ -25,6 +26,12 @@ export type FrameBlockProps = {
   childElementIds?: Record<string, boolean>;
   presentationIndex?: string;
 } & GfxCompatibleProps;
+
+export const FrameZodSchema = z
+  .object({
+    background: ColorSchema.optional(),
+  })
+  .default({});
 
 export const FrameBlockSchema = defineBlockSchema({
   flavour: 'affine:frame',
