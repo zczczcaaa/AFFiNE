@@ -11,6 +11,7 @@
     "@affine/component": "workspace:*",
     "@affine/core": "workspace:*",
     "@affine/i18n": "workspace:*",
+    "@affine/nbstore": "workspace:*",
     "@blocksuite/affine": "workspace:*",
     "@blocksuite/icons": "2.2.2",
     "@capacitor/android": "^7.0.0",

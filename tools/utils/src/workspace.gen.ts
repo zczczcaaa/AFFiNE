@@ -504,6 +504,7 @@ export const PackageList = [
       'packages/frontend/component',
       'packages/frontend/core',
       'packages/frontend/i18n',
+      'packages/common/nbstore',
       'blocksuite/affine/all',
       'packages/common/infra',
     ],
