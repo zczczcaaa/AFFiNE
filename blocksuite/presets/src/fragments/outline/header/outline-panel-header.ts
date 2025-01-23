@@ -1,45 +1,54 @@
 import { ShadowlessElement } from '@blocksuite/block-std';
 import { createButtonPopper } from '@blocksuite/blocks';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { SettingsIcon, SortIcon } from '@blocksuite/icons/lit';
+import { consume } from '@lit/context';
+import { signal } from '@preact/signals-core';
 import { html } from 'lit';
-import { property, query, state } from 'lit/decorators.js';
+import { query } from 'lit/decorators.js';
 
+import { type TocContext, tocContext } from '../config';
 import * as styles from './outline-panel-header.css';
 
 export const AFFINE_OUTLINE_PANEL_HEADER = 'affine-outline-panel-header';
 
-export class OutlinePanelHeader extends WithDisposable(ShadowlessElement) {
+export class OutlinePanelHeader extends SignalWatcher(
+  WithDisposable(ShadowlessElement)
+) {
   private _notePreviewSettingMenuPopper: ReturnType<
     typeof createButtonPopper
   > | null = null;
 
-  override firstUpdated() {
-    const _disposables = this._disposables;
+  private readonly _settingPopperShow$ = signal(false);
 
+  override firstUpdated() {
     this._notePreviewSettingMenuPopper = createButtonPopper(
       this._noteSettingButton,
       this._notePreviewSettingMenu,
       ({ display }) => {
-        this._settingPopperShow = display === 'show';
+        this._settingPopperShow$.value = display === 'show';
       },
       {
         mainAxis: 14,
         crossAxis: -30,
       }
     );
-    _disposables.add(this._notePreviewSettingMenuPopper);
+    this.disposables.add(this._notePreviewSettingMenuPopper);
   }
 
   override render() {
+    const sortingEnabled = this._context.enableSorting$.value;
+    const showSettingPopper = this._settingPopperShow$.value;
+
     return html`<div class=${styles.container}>
         <div class=${styles.noteSettingContainer}>
           <span class=${styles.label}>Table of Contents</span>
           <edgeless-tool-icon-button
-            class="${this._settingPopperShow ? 'active' : ''}"
-            .tooltip=${this._settingPopperShow ? '' : 'Preview Settings'}
+            data-testid="toggle-toc-setting-button"
+            class="${showSettingPopper ? 'active' : ''}"
+            .tooltip=${showSettingPopper ? '' : 'Preview Settings'}
             .tipPosition=${'bottom'}
-            .active=${this._settingPopperShow}
+            .active=${showSettingPopper}
             .activeMode=${'background'}
             @click=${() => this._notePreviewSettingMenuPopper?.toggle()}
           >
@@ -48,22 +57,21 @@ export class OutlinePanelHeader extends WithDisposable(ShadowlessElement) {
         </div>
         <edgeless-tool-icon-button
           data-testid="toggle-notes-sorting-button"
-          class="${this.enableNotesSorting ? 'active' : ''}"
+          class="${sortingEnabled ? 'active' : ''}"
           .tooltip=${'Visibility and sort'}
           .tipPosition=${'left'}
           .iconContainerPadding=${0}
-          .active=${this.enableNotesSorting}
+          .active=${sortingEnabled}
           .activeMode=${'color'}
-          @click=${() => this.toggleNotesSorting()}
+          @click=${() => {
+            this._context.enableSorting$.value = !sortingEnabled;
+          }}
         >
           ${SortIcon({ width: '20px', height: '20px' })}
         </edgeless-tool-icon-button>
       </div>
       <div class=${styles.notePreviewSettingContainer}>
-        <affine-outline-note-preview-setting-menu
-          .showPreviewIcon=${this.showPreviewIcon}
-          .toggleShowPreviewIcon=${this.toggleShowPreviewIcon}
-        ></affine-outline-note-preview-setting-menu>
+        <affine-outline-note-preview-setting-menu></affine-outline-note-preview-setting-menu>
       </div>`;
   }
 
@@ -73,20 +81,8 @@ export class OutlinePanelHeader extends WithDisposable(ShadowlessElement) {
   @query(`.${styles.noteSettingContainer}`)
   private accessor _noteSettingButton!: HTMLDivElement;
 
-  @state()
-  private accessor _settingPopperShow = false;
-
-  @property({ attribute: false })
-  accessor enableNotesSorting!: boolean;
-
-  @property({ attribute: false })
-  accessor showPreviewIcon!: boolean;
-
-  @property({ attribute: false })
-  accessor toggleNotesSorting!: () => void;
-
-  @property({ attribute: false })
-  accessor toggleShowPreviewIcon!: (on: boolean) => void;
+  @consume({ context: tocContext })
+  private accessor _context!: TocContext;
 }
 
 declare global {

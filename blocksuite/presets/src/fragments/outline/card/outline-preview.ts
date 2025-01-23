@@ -19,8 +19,12 @@ import { html, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
-import type { AffineEditorContainer } from '../../../editors/editor-container.js';
-import { editorContext, placeholderMap, previewIconMap } from '../config.js';
+import {
+  placeholderMap,
+  previewIconMap,
+  type TocContext,
+  tocContext,
+} from '../config.js';
 import { isHeadingBlock, isRootBlock } from '../utils/query.js';
 import * as styles from './outline-preview.css';
 
@@ -35,6 +39,10 @@ export const AFFINE_OUTLINE_BLOCK_PREVIEW = 'affine-outline-block-preview';
 export class OutlineBlockPreview extends SignalWatcher(
   WithDisposable(ShadowlessElement)
 ) {
+  private get _docDisplayMetaService() {
+    return this._context.editor$.value.std.get(DocDisplayMetaProvider);
+  }
+
   private _TextBlockPreview(block: ParagraphBlockModel | ListBlockModel) {
     const deltas: DeltaInsert<AffineTextAttributes>[] =
       block.text.yText.toDelta();
@@ -49,16 +57,13 @@ export class OutlineBlockPreview extends SignalWatcher(
           doc => doc.id === refAttribute.pageId
         );
         const unavailable = !refMeta;
-        const docDisplayMetaService = this.editor.std.get(
-          DocDisplayMetaProvider
-        );
 
         const icon = unavailable
           ? LinkedPageIcon({ width: '1.1em', height: '1.1em' })
-          : docDisplayMetaService.icon(refMeta.id).value;
+          : this._docDisplayMetaService.icon(refMeta.id).value;
         const title = unavailable
           ? 'Deleted doc'
-          : docDisplayMetaService.title(refMeta.id).value;
+          : this._docDisplayMetaService.title(refMeta.id).value;
 
         return html`<span
           class=${classMap({
@@ -94,7 +99,7 @@ export class OutlineBlockPreview extends SignalWatcher(
         class="${styles.text} ${styles.textGeneral} ${headingClass}"
         >${previewText}</span
       >
-      ${this.showPreviewIcon
+      ${this._context.showIcons$.value
         ? html`<span class=${iconClass}>${previewIconMap[block.type]}</span>`
         : nothing}`;
   }
@@ -110,11 +115,13 @@ export class OutlineBlockPreview extends SignalWatcher(
     const iconClass = this.disabledIcon ? styles.iconDisabled : styles.icon;
 
     if (
-      !this.enableNotesSorting &&
+      !this._context.enableSorting$.value &&
       !isHeadingBlock(block) &&
       !isRootBlock(block)
     )
       return nothing;
+
+    const showPreviewIcon = this._context.showIcons$.value;
 
     switch (block.flavour as keyof BlockSuite.BlockModels) {
       case 'affine:page':
@@ -139,7 +146,7 @@ export class OutlineBlockPreview extends SignalWatcher(
           <span class="${styles.text} ${styles.textGeneral}"
             >${block.title || block.url || placeholderMap['bookmark']}</span
           >
-          ${this.showPreviewIcon
+          ${showPreviewIcon
             ? html`<span class=${iconClass}
                 >${previewIconMap['bookmark']}</span
               >`
@@ -151,7 +158,7 @@ export class OutlineBlockPreview extends SignalWatcher(
           <span class="${styles.text} ${styles.textGeneral}"
             >${block.language ?? placeholderMap['code']}</span
           >
-          ${this.showPreviewIcon
+          ${showPreviewIcon
             ? html`<span class=${iconClass}>${previewIconMap['code']}</span>`
             : nothing}
         `;
@@ -163,7 +170,7 @@ export class OutlineBlockPreview extends SignalWatcher(
               ? block.title.toString()
               : placeholderMap['database']}</span
           >
-          ${this.showPreviewIcon
+          ${showPreviewIcon
             ? html`<span class=${iconClass}>${previewIconMap['table']}</span>`
             : nothing}
         `;
@@ -175,7 +182,7 @@ export class OutlineBlockPreview extends SignalWatcher(
               ? block.caption
               : placeholderMap['image']}</span
           >
-          ${this.showPreviewIcon
+          ${showPreviewIcon
             ? html`<span class=${iconClass}>${previewIconMap['image']}</span>`
             : nothing}
         `;
@@ -187,7 +194,7 @@ export class OutlineBlockPreview extends SignalWatcher(
               ? block.name
               : placeholderMap['attachment']}</span
           >
-          ${this.showPreviewIcon
+          ${showPreviewIcon
             ? html`<span class=${iconClass}
                 >${previewIconMap['attachment']}</span
               >`
@@ -198,10 +205,6 @@ export class OutlineBlockPreview extends SignalWatcher(
     }
   }
 
-  @consume({ context: editorContext })
-  @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
-
   @property({ attribute: false })
   accessor block!: ValuesOf<BlockSuite.BlockModels>;
 
@@ -211,11 +214,8 @@ export class OutlineBlockPreview extends SignalWatcher(
   @property({ attribute: false })
   accessor disabledIcon = false;
 
-  @property({ attribute: false })
-  accessor enableNotesSorting!: boolean;
-
-  @property({ attribute: false })
-  accessor showPreviewIcon!: boolean;
+  @consume({ context: tocContext })
+  private accessor _context!: TocContext;
 }
 
 declare global {

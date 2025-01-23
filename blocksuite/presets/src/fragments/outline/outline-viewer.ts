@@ -8,13 +8,13 @@ import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { TocIcon } from '@blocksuite/icons/lit';
 import { provide } from '@lit/context';
 import { signal } from '@preact/signals-core';
-import { css, html, nothing } from 'lit';
+import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { AffineEditorContainer } from '../../editors/editor-container.js';
-import { editorContext } from './config.js';
+import { type TocContext, tocContext } from './config.js';
 import { getHeadingBlocksFromDoc } from './utils/query.js';
 import {
   observeActiveHeadingDuringScroll,
@@ -176,6 +176,15 @@ export class OutlineViewer extends SignalWatcher(
     }
   }
 
+  private _setContext() {
+    this._context = {
+      editor$: signal(this.editor),
+      showIcons$: signal<boolean>(false),
+      enableSorting$: signal<boolean>(false),
+      fitPadding$: signal<number[]>([]),
+    };
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -194,6 +203,14 @@ export class OutlineViewer extends SignalWatcher(
         this.requestUpdate();
       })
     );
+
+    this._setContext();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>): void {
+    if (changedProperties.has('editor')) {
+      this._context.editor$.value = this.editor;
+    }
   }
 
   override disconnectedCallback() {
@@ -281,13 +298,15 @@ export class OutlineViewer extends SignalWatcher(
     `;
   }
 
+  @provide({ context: tocContext })
+  private accessor _context!: TocContext;
+
   @query('.outline-viewer-item.active')
   private accessor _activeItem: HTMLElement | null = null;
 
   @state()
   private accessor _showViewer: boolean = false;
 
-  @provide({ context: editorContext })
   @property({ attribute: false })
   accessor editor!: AffineEditorContainer;
 

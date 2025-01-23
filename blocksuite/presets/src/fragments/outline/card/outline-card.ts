@@ -9,9 +9,13 @@ import {
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { ArrowDownSmallIcon, InvisibleIcon } from '@blocksuite/icons/lit';
 import type { BlockModel } from '@blocksuite/store';
+import { consume } from '@lit/context';
+import { signal } from '@preact/signals-core';
 import { html } from 'lit';
-import { property, query, state } from 'lit/decorators.js';
+import { property, query } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 
+import { type TocContext, tocContext } from '../config';
 import type { SelectEvent } from '../utils/custom-events';
 import * as styles from './outline-card.css';
 
@@ -22,6 +26,8 @@ export class OutlineNoteCard extends SignalWatcher(
 ) {
   private _displayModePopper: ReturnType<typeof createButtonPopper> | null =
     null;
+
+  private readonly _showPopper$ = signal(false);
 
   private _dispatchClickBlockEvent(block: BlockModel) {
     const event = new CustomEvent('clickblock', {
@@ -49,7 +55,7 @@ export class OutlineNoteCard extends SignalWatcher(
 
   private _dispatchDragEvent(e: MouseEvent) {
     e.preventDefault();
-    if (e.button !== 0 || !this.enableNotesSorting) return;
+    if (e.button !== 0 || !this._context.enableSorting$.peek()) return;
 
     const { clientX: startX, clientY: startY } = e;
     const disposeDragStart = on(this.ownerDocument, 'mousemove', e => {
@@ -122,7 +128,7 @@ export class OutlineNoteCard extends SignalWatcher(
       this._displayModeButtonGroup,
       this._displayModePanel,
       ({ display }) => {
-        this._showPopper = display === 'show';
+        this._showPopper$.value = display === 'show';
       },
       {
         mainAxis: 0,
@@ -136,11 +142,15 @@ export class OutlineNoteCard extends SignalWatcher(
   override render() {
     const { children, displayMode } = this.note;
     const currentMode = this._getCurrentModeLabel(displayMode);
+    const invisible =
+      this.note.displayMode$.value === NoteDisplayMode.EdgelessOnly;
+
+    const enableSorting = this._context.enableSorting$.value;
 
     return html`
       <div
-        data-invisible=${this.invisible}
-        data-sortable=${this.enableNotesSorting}
+        data-visibility=${this.note.displayMode}
+        data-sortable=${enableSorting}
         data-status=${this.status}
         class=${styles.outlineCard}
       >
@@ -152,7 +162,7 @@ export class OutlineNoteCard extends SignalWatcher(
         >
         ${html`<div class=${styles.cardHeader}>
           ${
-            this.invisible
+            invisible
               ? html`<span class=${styles.headerIcon}
                   >${InvisibleIcon({ width: '20px', height: '20px' })}</span
                 >`
@@ -162,7 +172,7 @@ export class OutlineNoteCard extends SignalWatcher(
           <div class=${styles.displayModeButtonGroup}>
             <span>Show in</span>
             <edgeless-tool-icon-button
-              .tooltip=${this._showPopper ? '' : 'Display Mode'}
+              .tooltip=${this._showPopper$.value ? '' : 'Display Mode'}
               .tipPosition=${'left-start'}
               .iconContainerPadding=${0}
               data-testid="display-mode-button"
@@ -193,14 +203,12 @@ export class OutlineNoteCard extends SignalWatcher(
           <div class=${styles.cardContent}>
             ${children.map(block => {
               return html`<affine-outline-block-preview
+                class=${classMap({ active: this.activeHeadingId === block.id })}
                 .block=${block}
-                .className=${this.activeHeadingId === block.id ? 'active' : ''}
-                .showPreviewIcon=${this.showPreviewIcon}
-                .disabledIcon=${this.invisible}
+                .disabledIcon=${invisible}
                 .cardNumber=${this.number}
-                .enableNotesSorting=${this.enableNotesSorting}
                 @click=${() => {
-                  if (this.invisible) return;
+                  if (invisible) return;
                   this._dispatchClickBlockEvent(block);
                 }}
               ></affine-outline-block-preview>`;
@@ -218,14 +226,8 @@ export class OutlineNoteCard extends SignalWatcher(
   @query('note-display-mode-panel')
   private accessor _displayModePanel!: HTMLDivElement;
 
-  @state()
-  private accessor _showPopper = false;
-
   @property({ attribute: false })
   accessor activeHeadingId: string | null = null;
-
-  @property({ attribute: false })
-  accessor enableNotesSorting!: boolean;
 
   @property({ attribute: false })
   accessor index!: number;
@@ -237,10 +239,10 @@ export class OutlineNoteCard extends SignalWatcher(
   accessor number!: number;
 
   @property({ attribute: false })
-  accessor showPreviewIcon!: boolean;
-
-  @property({ attribute: false })
   accessor status: 'selected' | 'placeholder' | 'normal' = 'normal';
+
+  @consume({ context: tocContext })
+  private accessor _context!: TocContext;
 }
 
 declare global {

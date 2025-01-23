@@ -1,17 +1,20 @@
 import { ShadowlessElement } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
+import { consume } from '@lit/context';
 import { html } from 'lit';
-import { property } from 'lit/decorators.js';
 
+import { type TocContext, tocContext } from '../config';
 import * as styles from './outline-setting-menu.css';
 
 export const AFFINE_OUTLINE_NOTE_PREVIEW_SETTING_MENU =
   'affine-outline-note-preview-setting-menu';
 
-export class OutlineNotePreviewSettingMenu extends WithDisposable(
-  ShadowlessElement
+export class OutlineNotePreviewSettingMenu extends SignalWatcher(
+  WithDisposable(ShadowlessElement)
 ) {
   override render() {
+    const showPreviewIcon = this._context.showIcons$.value;
+
     return html`<div
       class=${styles.notePreviewSettingMenuContainer}
       @click=${(e: MouseEvent) => e.stopPropagation()}
@@ -23,19 +26,18 @@ export class OutlineNotePreviewSettingMenu extends WithDisposable(
         <div class=${styles.actionLabel}>Show type icon</div>
         <div class=${styles.toggleButton}>
           <toggle-switch
-            .on=${this.showPreviewIcon}
-            .onChange=${this.toggleShowPreviewIcon}
+            .on=${showPreviewIcon}
+            .onChange=${() => {
+              this._context.showIcons$.value = !showPreviewIcon;
+            }}
           ></toggle-switch>
         </div>
       </div>
     </div>`;
   }
 
-  @property({ attribute: false })
-  accessor showPreviewIcon!: boolean;
-
-  @property({ attribute: false })
-  accessor toggleShowPreviewIcon!: (on: boolean) => void;
+  @consume({ context: tocContext })
+  private accessor _context!: TocContext;
 }
 
 declare global {

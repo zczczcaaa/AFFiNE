@@ -48,19 +48,23 @@ export const cardHeader = style({
   alignItems: 'center',
   gap: '8px',
   boxSizing: 'border-box',
+
+  ':hover': {
+    cursor: 'grab',
+  },
   selectors: {
     [`${outlineCard}[data-sortable="true"] &`]: {
       display: 'flex',
     },
-    [`${outlineCard}[data-invisible="false"] &:hover`]: {
-      cursor: 'grab',
+    [`${outlineCard}[data-visibility="edgeless"] &:hover`]: {
+      cursor: 'default',
     },
   },
 });
 
 const invisibleCard = style({
   selectors: {
-    [`${outlineCard}[data-invisible="true"] &`]: {
+    [`${outlineCard}[data-visibility="edgeless"] &`]: {
       color: cssVarV2('text/disable'),
       pointerEvents: 'none',
     },

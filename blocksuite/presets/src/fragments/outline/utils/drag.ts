@@ -1,4 +1,4 @@
-import { on, once } from '@blocksuite/blocks';
+import { NoteDisplayMode, on, once } from '@blocksuite/blocks';
 import type { Store } from '@blocksuite/store';
 
 import type { OutlinePanelBody } from '../body/outline-panel-body.js';
@@ -52,13 +52,14 @@ export function startDragging(options: {
     }
 
     idx = 0;
-    for (const note of children) {
-      if (note.invisible || !note.note) break;
+    for (const card of children) {
+      if (!card.note || card.note.displayMode === NoteDisplayMode.EdgelessOnly)
+        break;
 
       const topBoundary =
-        listContainerRect.top + note.offsetTop - outlineListContainer.scrollTop;
-      const midBoundary = topBoundary + note.offsetHeight / 2;
-      const bottomBoundary = topBoundary + note.offsetHeight;
+        listContainerRect.top + card.offsetTop - outlineListContainer.scrollTop;
+      const midBoundary = topBoundary + card.offsetHeight / 2;
+      const bottomBoundary = topBoundary + card.offsetHeight;
 
       if (e.clientY >= topBoundary && e.clientY <= bottomBoundary) {
         idx = e.clientY > midBoundary ? idx + 1 : idx;

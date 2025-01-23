@@ -1,21 +1,49 @@
+import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { ShadowlessElement } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { CloseIcon, SortIcon } from '@blocksuite/icons/lit';
+import { consume } from '@lit/context';
+import { effect, signal } from '@preact/signals-core';
 import { html, nothing } from 'lit';
-import { property } from 'lit/decorators.js';
 
+import { type TocContext, tocContext } from '../config';
+import { getNotesFromDoc } from '../utils/query';
 import * as styles from './outline-notice.css';
 
 export const AFFINE_OUTLINE_NOTICE = 'affine-outline-notice';
 
-export class OutlineNotice extends WithDisposable(ShadowlessElement) {
-  private _handleNoticeButtonClick() {
-    this.toggleNotesSorting();
-    this.setNoticeVisibility(false);
+export class OutlineNotice extends SignalWatcher(
+  WithDisposable(ShadowlessElement)
+) {
+  private readonly _visible$ = signal(false);
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.disposables.add(
+      effect(() => {
+        const enableSorting = this._context.enableSorting$.value;
+
+        if (enableSorting) {
+          if (this._visible$.peek()) {
+            this._visible$.value = false;
+          }
+          return;
+        }
+
+        const shouldShowNotice =
+          getNotesFromDoc(this._context.editor$.value.doc, [
+            NoteDisplayMode.DocOnly,
+          ]).length > 0;
+
+        if (shouldShowNotice && !this._visible$.peek()) {
+          this._visible$.value = true;
+        }
+      })
+    );
   }
 
   override render() {
-    if (!this.noticeVisible) {
+    if (!this._visible$.value) {
       return nothing;
     }
 
@@ -25,7 +53,9 @@ export class OutlineNotice extends WithDisposable(ShadowlessElement) {
           <span class=${styles.outlineNoticeLabel}>SOME CONTENTS HIDDEN</span>
           <span
             class=${styles.outlineNoticeCloseButton}
-            @click=${() => this.setNoticeVisibility(false)}
+            @click=${() => {
+              this._visible$.value = false;
+            }}
             >${CloseIcon({ width: '16px', height: '16px' })}</span
           >
         </div>
@@ -33,7 +63,13 @@ export class OutlineNotice extends WithDisposable(ShadowlessElement) {
           <div class="${styles.notice}">
             Some contents are not visible on edgeless.
           </div>
-          <div class="${styles.button}" @click=${this._handleNoticeButtonClick}>
+          <div
+            class="${styles.button}"
+            @click=${() => {
+              this._context.enableSorting$.value = true;
+              this._visible$.value = false;
+            }}
+          >
             <span class=${styles.buttonSpan}>Click here or</span>
             <span class=${styles.buttonSpan}
               >${SortIcon({ width: '20px', height: '20px' })}</span
@@ -45,14 +81,8 @@ export class OutlineNotice extends WithDisposable(ShadowlessElement) {
     `;
   }
 
-  @property({ attribute: false })
-  accessor noticeVisible!: boolean;
-
-  @property({ attribute: false })
-  accessor setNoticeVisibility!: (visibility: boolean) => void;
-
-  @property({ attribute: false })
-  accessor toggleNotesSorting!: () => void;
+  @consume({ context: tocContext })
+  private accessor _context!: TocContext;
 }
 
 declare global {

@@ -5,22 +5,16 @@ import {
   matchFlavours,
   NoteDisplayMode,
 } from '@blocksuite/blocks';
-import {
-  Bound,
-  DisposableGroup,
-  SignalWatcher,
-  WithDisposable,
-} from '@blocksuite/global/utils';
+import { Bound, SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { consume } from '@lit/context';
 import { effect, signal } from '@preact/signals-core';
-import { html, nothing, type PropertyValues } from 'lit';
-import { property, query } from 'lit/decorators.js';
+import { html, nothing } from 'lit';
+import { query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { when } from 'lit/directives/when.js';
 
-import type { AffineEditorContainer } from '../../../editors/editor-container';
-import { editorContext } from '../config';
+import { type TocContext, tocContext } from '../config';
 import type {
   ClickBlockEvent,
   DisplayModeChangeEvent,
@@ -60,6 +54,8 @@ export class OutlinePanelBody extends SignalWatcher(
 ) {
   private readonly _activeHeadingId$ = signal<string | null>(null);
 
+  private readonly _insertIndex$ = signal<number | undefined>(undefined);
+
   private readonly _dragging$ = signal(false);
 
   private readonly _pageVisibleNoteItems$ = signal<OutlineNoteItem[]>([]);
@@ -67,8 +63,6 @@ export class OutlinePanelBody extends SignalWatcher(
   private readonly _edgelessOnlyNoteItems$ = signal<OutlineNoteItem[]>([]);
 
   private _clearHighlightMask = () => {};
-
-  private _docDisposables: DisposableGroup | null = null;
 
   private _indicatorTranslateY = 0;
 
@@ -81,6 +75,10 @@ export class OutlinePanelBody extends SignalWatcher(
     );
   }
 
+  private get editor() {
+    return this._context.editor$.value;
+  }
+
   private get doc() {
     return this.editor.doc;
   }
@@ -90,16 +88,12 @@ export class OutlinePanelBody extends SignalWatcher(
   }
 
   get viewportPadding(): [number, number, number, number] {
-    return this.fitPadding
+    const fitPadding = this._context.fitPadding$.value;
+    return fitPadding.length === 4
       ? ([0, 0, 0, 0].map((val, idx) =>
-          Number.isFinite(this.fitPadding[idx]) ? this.fitPadding[idx] : val
+          Number.isFinite(fitPadding[idx]) ? fitPadding[idx] : val
         ) as [number, number, number, number])
       : [0, 0, 0, 0];
-  }
-
-  private _clearDocDisposables() {
-    this._docDisposables?.dispose();
-    this._docDisposables = null;
   }
 
   private _deSelectNoteInEdgelessMode(note: NoteBlockModel) {
@@ -119,15 +113,16 @@ export class OutlinePanelBody extends SignalWatcher(
    */
   private readonly _doubleClickHandler = (e: MouseEvent) => {
     e.stopPropagation();
+    const enableSorting = this._context.enableSorting$.peek();
     // check if click at outline-card, if so, do nothing
     if (
       (e.target as HTMLElement).closest('outline-note-card') ||
-      !this.enableNotesSorting
+      !enableSorting
     ) {
       return;
     }
 
-    this.toggleNotesSorting();
+    this._context.enableSorting$.value = !enableSorting;
   };
 
   private _drag() {
@@ -178,7 +173,7 @@ export class OutlinePanelBody extends SignalWatcher(
       outlineListContainer: this._pageVisibleList,
       onDragEnd: insertIdx => {
         this._dragging$.value = false;
-        this.insertIndex = undefined;
+        this._insertIndex$.value = undefined;
 
         if (insertIdx === undefined) return;
 
@@ -191,7 +186,7 @@ export class OutlinePanelBody extends SignalWatcher(
         );
       },
       onDragMove: (idx, indicatorTranslateY) => {
-        this.insertIndex = idx;
+        this._insertIndex$.value = idx;
         this._indicatorTranslateY = indicatorTranslateY ?? 0;
       },
     });
@@ -303,20 +298,15 @@ export class OutlinePanelBody extends SignalWatcher(
 
     if (!hasNotEmptyHeadings) return nothing;
 
+    const rootId = this.doc.root.id;
+    const active = rootId === this._activeHeadingId$.value;
+
     return html`<affine-outline-block-preview
-      class=${classMap({
-        active: this.doc.root.id === this._activeHeadingId$.value,
-      })}
+      class=${classMap({ active: active })}
       .block=${this.doc.root}
-      .className=${this.doc.root?.id === this._activeHeadingId$.value
-        ? 'active'
-        : ''}
       .cardNumber=${1}
-      .enableNotesSorting=${false}
-      .showPreviewIcon=${this.showPreviewIcon}
       @click=${() => {
-        if (!this.doc.root) return;
-        this._scrollToBlock(this.doc.root.id).catch(console.error);
+        this._scrollToBlock(rootId).catch(console.error);
       }}
     ></affine-outline-block-preview>`;
   }
@@ -332,8 +322,6 @@ export class OutlinePanelBody extends SignalWatcher(
           .number=${idx + 1}
           .index=${item.index}
           .activeHeadingId=${this._activeHeadingId$.value}
-          .showPreviewIcon=${this.showPreviewIcon}
-          .enableNotesSorting=${this.enableNotesSorting}
           .status=${this._selectedNotes$.value.includes(item.note.id)
             ? this._dragging$.value
               ? 'placeholder'
@@ -353,7 +341,7 @@ export class OutlinePanelBody extends SignalWatcher(
   private _renderPageVisibleCardList() {
     return html`<div class=${`page-visible-card-list ${styles.cardList}`}>
       ${when(
-        this.insertIndex !== undefined,
+        this._insertIndex$.value !== undefined,
         () =>
           html`<div
             class=${styles.insertIndicator}
@@ -411,85 +399,54 @@ export class OutlinePanelBody extends SignalWatcher(
     }
   }
 
-  private _setDocDisposables() {
-    this._clearDocDisposables();
-    this._docDisposables = new DisposableGroup();
-    this._docDisposables.add(
-      effect(() => {
-        this._updateNoticeVisibility();
-      })
-    );
-
-    this._docDisposables.add(
-      effect(() => {
-        this._updateNotes();
-      })
-    );
-  }
-
-  private _updateNotes() {
-    if (this._dragging$.value) return;
-
-    const isRenderableNote = (item: OutlineNoteItem) => {
-      let hasHeadings = false;
-
-      for (const block of item.note.children) {
-        if (isHeadingBlock(block)) {
-          hasHeadings = true;
-          break;
-        }
-      }
-
-      return hasHeadings || this.enableNotesSorting;
-    };
-
-    this._pageVisibleNoteItems$.value = getNotesFromDoc(this.doc, [
-      NoteDisplayMode.DocAndEdgeless,
-      NoteDisplayMode.DocOnly,
-    ]).filter(isRenderableNote);
-
-    this._edgelessOnlyNoteItems$.value = getNotesFromDoc(this.doc, [
-      NoteDisplayMode.EdgelessOnly,
-    ]).filter(isRenderableNote);
-  }
-
-  private _updateNoticeVisibility() {
-    if (this.enableNotesSorting) {
-      if (this.noticeVisible) {
-        this.setNoticeVisibility(false);
-      }
-      return;
-    }
-
-    const shouldShowNotice =
-      getNotesFromDoc(this.doc, [NoteDisplayMode.DocOnly]).length > 0;
-
-    if (shouldShowNotice && !this.noticeVisible) {
-      this.setNoticeVisibility(true);
-    }
-  }
-
   private _watchSelectedNotes() {
+    return effect(() => {
+      const { std, doc, mode } = this.editor;
+      if (mode !== 'edgeless') return;
+
+      const currSelectedNotes = std.selection
+        .filter(SurfaceSelection)
+        .filter(({ blockId }) => {
+          const model = doc.getBlock(blockId)?.model;
+          return !!model && matchFlavours(model, ['affine:note']);
+        })
+        .map(({ blockId }) => blockId);
+
+      const preSelected = this._selectedNotes$.peek();
+      if (
+        preSelected.length !== currSelectedNotes.length ||
+        preSelected.some(id => !currSelectedNotes.includes(id))
+      ) {
+        this._selectedNotes$.value = currSelectedNotes;
+      }
+    });
+  }
+
+  private _watchNotes() {
     this.disposables.add(
       effect(() => {
-        const { std, doc, mode } = this.editor;
-        if (mode !== 'edgeless') return;
+        if (this._dragging$.value) return;
 
-        const currSelectedNotes = std.selection
-          .filter(SurfaceSelection)
-          .filter(({ blockId }) => {
-            const model = doc.getBlock(blockId)?.model;
-            return !!model && matchFlavours(model, ['affine:note']);
-          })
-          .map(({ blockId }) => blockId);
+        const isRenderableNote = (item: OutlineNoteItem) => {
+          let hasHeadings = false;
 
-        const preSelected = this._selectedNotes$.peek();
-        if (
-          preSelected.length !== currSelectedNotes.length ||
-          preSelected.some(id => !currSelectedNotes.includes(id))
-        ) {
-          this._selectedNotes$.value = currSelectedNotes;
-        }
+          for (const block of item.note.children) {
+            if (isHeadingBlock(block)) {
+              hasHeadings = true;
+              break;
+            }
+          }
+          return hasHeadings || this._context.enableSorting$.value;
+        };
+
+        this._pageVisibleNoteItems$.value = getNotesFromDoc(this.doc, [
+          NoteDisplayMode.DocAndEdgeless,
+          NoteDisplayMode.DocOnly,
+        ]).filter(isRenderableNote);
+
+        this._edgelessOnlyNoteItems$.value = getNotesFromDoc(this.doc, [
+          NoteDisplayMode.EdgelessOnly,
+        ]).filter(isRenderableNote);
       })
     );
   }
@@ -507,12 +464,12 @@ export class OutlinePanelBody extends SignalWatcher(
         }
       )
     );
+    this._watchNotes();
     this._watchSelectedNotes();
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._clearDocDisposables();
     this._clearHighlightMask();
   }
 
@@ -534,46 +491,11 @@ export class OutlinePanelBody extends SignalWatcher(
     `;
   }
 
-  override willUpdate(_changedProperties: PropertyValues) {
-    if (_changedProperties.has('editor')) {
-      this._setDocDisposables();
-    }
-
-    if (_changedProperties.has('enableNotesSorting')) {
-      this._updateNoticeVisibility();
-    }
-  }
-
   @query('.page-visible-card-list')
   private accessor _pageVisibleList!: HTMLElement;
 
-  @consume({ context: editorContext })
-  @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
-
-  @property({ attribute: false })
-  accessor enableNotesSorting: boolean = false;
-
-  @property({ attribute: false })
-  accessor fitPadding!: number[];
-
-  @property({ attribute: false })
-  accessor insertIndex: number | undefined = undefined;
-
-  @property({ attribute: false })
-  accessor noticeVisible!: boolean;
-
-  @property({ attribute: false })
-  accessor renderEdgelessOnlyNotes: boolean = true;
-
-  @property({ attribute: false })
-  accessor setNoticeVisibility!: (visibility: boolean) => void;
-
-  @property({ attribute: false })
-  accessor showPreviewIcon!: boolean;
-
-  @property({ attribute: false })
-  accessor toggleNotesSorting!: () => void;
+  @consume({ context: tocContext })
+  private accessor _context!: TocContext;
 }
 
 declare global {

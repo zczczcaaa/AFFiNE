@@ -4,6 +4,7 @@ import {
   clickPageModeButton,
   clickView,
   createEdgelessNoteBlock,
+  focusDocTitle,
   locateElementToolbar,
 } from '@affine-test/kit/utils/editor';
 import {
@@ -33,8 +34,10 @@ import {
 } from './utils';
 
 async function openTocPanel(page: Page) {
-  await openRightSideBar(page, 'outline');
   const toc = page.locator('affine-outline-panel');
+  if (await toc.isVisible()) return toc;
+
+  await openRightSideBar(page, 'outline');
   await toc.waitFor({ state: 'visible' });
   return toc;
 }
@@ -43,14 +46,15 @@ function getTocHeading(panel: Locator, level: number) {
   return panel.getByTestId(`outline-block-preview-h${level}`).locator('span');
 }
 
-async function dragNoteCard(page: Page, fromCard: Locator, toCard: Locator) {
-  const fromRect = await fromCard.boundingBox();
-  const toRect = await toCard.boundingBox();
+// locate cards in outline panel
+// ! Please note that when any card mode changed, the locator will be mutated
+function locateCards(toc: Locator, mode?: 'both' | 'page' | 'edgeless') {
+  const cards = toc.locator('affine-outline-note-card');
+  return mode ? cards.locator(`[data-visibility="${mode}"]`) : cards;
+}
 
-  await page.mouse.move(fromRect!.x + 10, fromRect!.y + 10);
-  await page.mouse.down();
-  await page.mouse.move(toRect!.x + 5, toRect!.y + 5, { steps: 20 });
-  await page.mouse.up();
+function locateSortingButton(panel: Locator) {
+  return panel.getByTestId('toggle-notes-sorting-button');
 }
 
 test.beforeEach(async ({ page }) => {
@@ -130,6 +134,18 @@ test('should update panel when modify or clear title or headings', async ({
     await pressBackspace(page);
     await expect(getTocHeading(toc, i)).toBeHidden();
   }
+});
+
+test('should update panel when switch doc', async ({ page }) => {
+  const toc = await openTocPanel(page);
+  await focusDocTitle(page);
+  await page.keyboard.press('ArrowDown');
+  await type(page, '# Heading 1');
+
+  await clickNewPageButton(page);
+  await expect(getTocHeading(toc, 1)).toBeHidden();
+  await page.goBack();
+  await expect(getTocHeading(toc, 1)).toBeVisible();
 });
 
 test('should add padding to sub-headings', async ({ page }) => {
@@ -226,8 +242,7 @@ test('visibility sorting should be enabled in edgeless mode and disabled in page
   await type(page, '# Heading 1');
 
   const toc = await openTocPanel(page);
-
-  const sortingButton = toc.getByTestId('toggle-notes-sorting-button');
+  const sortingButton = locateSortingButton(toc);
   await expect(sortingButton).not.toHaveClass(/active/);
   expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
 
@@ -240,55 +255,99 @@ test('visibility sorting should be enabled in edgeless mode and disabled in page
   expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
 });
 
-test('should reorder notes when drag and drop note in outline panel', async ({
-  page,
-}) => {
-  await clickEdgelessModeButton(page);
-  await createEdgelessNoteBlock(page, [100, 100]);
-  await type(page, 'hello');
-  await createEdgelessNoteBlock(page, [200, 200]);
-  await type(page, 'world');
-
-  const toc = await openTocPanel(page);
-
-  const docVisibleCards = toc.locator(
-    'affine-outline-note-card [data-invisible="false"]'
-  );
-  const docInvisibleCards = toc.locator(
-    'affine-outline-note-card [data-invisible="true"]'
-  );
-
-  await expect(docVisibleCards).toHaveCount(1);
-  await expect(docInvisibleCards).toHaveCount(2);
-
-  while ((await docInvisibleCards.count()) > 0) {
-    const card = docInvisibleCards.first();
+test.describe('drag and drop note in outline panel', () => {
+  async function changeNoteDisplayMode(
+    card: Locator,
+    mode: 'both' | 'doc' | 'edgeless'
+  ) {
     await card.hover();
     await card.getByTestId('display-mode-button').click();
-    await card.locator('note-display-mode-panel').locator('.item.both').click();
+    await card.locator(`note-display-mode-panel .item.${mode}`).click();
   }
 
-  await expect(docVisibleCards).toHaveCount(3);
-  const noteCard3 = docVisibleCards.nth(2);
-  const noteCard1 = docVisibleCards.nth(0);
+  async function dragNoteCard(
+    page: Page,
+    fromCard: Locator,
+    toCard: Locator,
+    position: 'before' | 'after' = 'before'
+  ) {
+    const fromRect = await fromCard.boundingBox();
+    const toRect = await toCard.boundingBox();
 
-  await dragNoteCard(page, noteCard3, noteCard1);
+    await page.mouse.move(fromRect!.x + 10, fromRect!.y + 10);
+    await page.mouse.down();
+    if (position === 'before') {
+      await page.mouse.move(toRect!.x + 5, toRect!.y + 5, { steps: 20 });
+    } else {
+      await page.mouse.move(toRect!.x + 5, toRect!.y + toRect!.height - 5, {
+        steps: 20,
+      });
+    }
+    await page.mouse.up();
+  }
 
-  await clickPageModeButton(page);
-  const paragraphs = page
-    .locator('affine-paragraph')
-    .locator('[data-v-text="true"]');
-  await expect(paragraphs).toHaveCount(3);
-  await expect(paragraphs.nth(0)).toContainText('world');
-  await expect(paragraphs.nth(1)).toContainText('');
-  await expect(paragraphs.nth(2)).toContainText('hello');
+  // create 2 both cards, 2 page cards and 2 edgeless cards
+  test.beforeEach(async ({ page }) => {
+    const toc = await openTocPanel(page);
+    const edgelessCards = locateCards(toc, 'edgeless');
 
-  // FIXME(@L-Sun): drag and drop is not working in page mode
-  await dragNoteCard(page, noteCard3, noteCard1);
+    // 2 both cards
+    {
+      await focusDocTitle(page);
+      await page.keyboard.press('ArrowDown');
+      await type(page, '0');
 
-  await expect(paragraphs.nth(0)).toContainText('hello');
-  await expect(paragraphs.nth(1)).toContainText('world');
-  await expect(paragraphs.nth(2)).toContainText('');
+      await clickEdgelessModeButton(page);
+
+      await createEdgelessNoteBlock(page, [100, 100]);
+      await type(page, '1');
+      await changeNoteDisplayMode(edgelessCards.first(), 'both');
+    }
+    // 2 page cards
+    {
+      await createEdgelessNoteBlock(page, [150, 150]);
+      await type(page, '2');
+      await changeNoteDisplayMode(edgelessCards.first(), 'doc');
+      await createEdgelessNoteBlock(page, [200, 200]);
+      await type(page, '3');
+      await changeNoteDisplayMode(edgelessCards.first(), 'doc');
+    }
+    // 2 edgeless cards
+    {
+      await createEdgelessNoteBlock(page, [250, 250]);
+      await type(page, '4');
+      await createEdgelessNoteBlock(page, [300, 300]);
+      await type(page, '5');
+    }
+  });
+
+  test('should reorder notes when drag and drop a note in outline panel', async ({
+    page,
+  }) => {
+    const toc = await openTocPanel(page);
+    const cards = locateCards(toc);
+
+    await dragNoteCard(page, cards.nth(3), cards.nth(1));
+
+    await clickPageModeButton(page);
+    const paragraphs = page
+      .locator('affine-paragraph')
+      .locator('[data-v-text="true"]');
+    await expect(paragraphs).toHaveCount(4);
+    await expect(paragraphs.nth(0)).toContainText('0');
+    await expect(paragraphs.nth(1)).toContainText('3');
+    await expect(paragraphs.nth(2)).toContainText('1');
+    await expect(paragraphs.nth(3)).toContainText('2');
+
+    // Note card should be able to drag and drop in page mode
+    await locateSortingButton(toc).click();
+    await dragNoteCard(page, cards.nth(3), cards.nth(1));
+
+    await expect(paragraphs.nth(0)).toContainText('0');
+    await expect(paragraphs.nth(1)).toContainText('2');
+    await expect(paragraphs.nth(2)).toContainText('3');
+    await expect(paragraphs.nth(3)).toContainText('1');
+  });
 });
 
 test.describe('advanced visibility control', () => {
@@ -311,15 +370,11 @@ test.describe('advanced visibility control', () => {
 
     const toc = await openTocPanel(page);
 
-    const docVisibleCard = toc.locator(
-      'affine-outline-note-card [data-invisible="false"]'
-    );
-    const docInvisibleCard = toc.locator(
-      'affine-outline-note-card [data-invisible="true"]'
-    );
+    const bothCard = locateCards(toc, 'both');
+    const edgelessCard = locateCards(toc, 'edgeless');
 
-    await expect(docVisibleCard).toHaveCount(1);
-    await expect(docInvisibleCard).toHaveCount(1);
+    await expect(bothCard).toHaveCount(1);
+    await expect(edgelessCard).toHaveCount(1);
 
     await clickView(page, [100, 100]);
     const noteButtons = locateElementToolbar(page).locator(
@@ -329,8 +384,8 @@ test.describe('advanced visibility control', () => {
     await noteButtons.getByRole('button', { name: 'Mode' }).click();
     await noteButtons.locator('note-display-mode-panel .item.both').click();
 
-    await expect(docVisibleCard).toHaveCount(2);
-    await expect(docInvisibleCard).toHaveCount(0);
+    await expect(bothCard).toHaveCount(2);
+    await expect(edgelessCard).toHaveCount(0);
   });
 
   test('should update notes after slicing note', async ({ page }) => {
@@ -342,23 +397,17 @@ test.describe('advanced visibility control', () => {
 
     const toc = await openTocPanel(page);
 
-    const docVisibleCard = toc.locator(
-      'affine-outline-note-card [data-invisible="false"]'
-    );
-    const docInvisibleCard = toc.locator(
-      'affine-outline-note-card [data-invisible="true"]'
-    );
+    const bothCard = locateCards(toc, 'both');
+    const edgelessCard = locateCards(toc, 'edgeless');
 
-    await expect(docVisibleCard).toHaveCount(1);
-    await expect(docInvisibleCard).toHaveCount(1);
+    await expect(bothCard).toHaveCount(1);
+    await expect(edgelessCard).toHaveCount(1);
 
-    await docInvisibleCard.hover();
-    await docInvisibleCard.getByTestId('display-mode-button').click();
-    await docInvisibleCard
-      .locator('note-display-mode-panel .item.both')
-      .click();
+    await edgelessCard.hover();
+    await edgelessCard.getByTestId('display-mode-button').click();
+    await edgelessCard.locator('note-display-mode-panel .item.both').click();
 
-    await expect(docVisibleCard).toHaveCount(2);
+    await expect(bothCard).toHaveCount(2);
 
     await clickView(page, [200, 100]);
     const changeNoteButtons = locateElementToolbar(page).locator(
@@ -368,6 +417,6 @@ test.describe('advanced visibility control', () => {
     await expect(page.locator('.note-slicer-button')).toBeVisible();
     await page.locator('.note-slicer-button').click();
 
-    await expect(docVisibleCard).toHaveCount(3);
+    await expect(bothCard).toHaveCount(3);
   });
 });

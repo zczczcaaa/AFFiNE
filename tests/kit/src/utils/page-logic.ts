@@ -199,6 +199,7 @@ export const dragTo = async (
 };
 
 // sometimes editor loses focus, this function is to focus the editor
+// FIXME: this function is not usable since the placeholder is not unstable
 export const focusInlineEditor = async (page: Page) => {
   await page
     .locator(

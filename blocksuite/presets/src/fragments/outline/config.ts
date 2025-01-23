@@ -1,4 +1,4 @@
-import type { ParagraphBlockModel } from '@blocksuite/blocks';
+import type { ParagraphBlockModel, Signal } from '@blocksuite/blocks';
 import {
   AttachmentIcon,
   BlockIcon,
@@ -84,10 +84,11 @@ export const headingKeys = new Set(
 
 export const outlineSettingsKey = 'outlinePanelSettings';
 
-export type OutlineSettingsDataType = {
-  showIcons: boolean;
-  enableSorting: boolean;
+export type TocContext = {
+  editor$: Signal<AffineEditorContainer>;
+  enableSorting$: Signal<boolean>;
+  showIcons$: Signal<boolean>;
+  fitPadding$: Signal<number[]>;
 };
 
-export const editorContext =
-  createContext<AffineEditorContainer>('editorContext');
+export const tocContext = createContext<TocContext>('tocContext');

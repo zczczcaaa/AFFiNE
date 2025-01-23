@@ -52,6 +52,14 @@ export function locateEditorContainer(page: Page, editorIndex = 0) {
   return page.locator('[data-affine-editor-container]').nth(editorIndex);
 }
 
+export function locateDocTitle(page: Page, editorIndex = 0) {
+  return locateEditorContainer(page, editorIndex).locator('doc-title');
+}
+
+export async function focusDocTitle(page: Page, editorIndex = 0) {
+  await locateDocTitle(page, editorIndex).locator('.inline-editor').focus();
+}
+
 // ================== Page ==================
 export function locateFormatBar(page: Page, editorIndex = 0) {
   return locateEditorContainer(page, editorIndex).locator(
