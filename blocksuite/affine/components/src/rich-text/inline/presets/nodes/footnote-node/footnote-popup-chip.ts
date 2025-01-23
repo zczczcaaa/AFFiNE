@@ -26,9 +26,11 @@ export class FootNotePopupChip extends LitElement {
       color: ${unsafeCSSVarV2('icon/primary')};
       border-radius: 4px;
 
-      svg {
+      svg,
+      object {
         width: 16px;
         height: 16px;
+        fill: ${unsafeCSSVarV2('icon/primary')};
       }
     }
 
@@ -59,7 +61,7 @@ export class FootNotePopupChip extends LitElement {
               ${this.prefixIcon}
             </div>`
           : nothing}
-        <div class="popup-chip-label">${this.label}</div>
+        <div class="popup-chip-label" title=${this.tooltip}>${this.label}</div>
         ${this.suffixIcon
           ? html`<div class="suffix-icon" @click=${this.onSuffixClick}>
               ${this.suffixIcon}
@@ -77,6 +79,9 @@ export class FootNotePopupChip extends LitElement {
 
   @property({ attribute: false })
   accessor suffixIcon: TemplateResult | undefined = undefined;
+
+  @property({ attribute: false })
+  accessor tooltip: string = '';
 
   @property({ attribute: false })
   accessor onClick: (() => void) | undefined = undefined;

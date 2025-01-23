@@ -15,6 +15,7 @@ import {
   ZERO_WIDTH_NON_JOINER,
   ZERO_WIDTH_SPACE,
 } from '@blocksuite/inline';
+import { shift } from '@floating-ui/dom';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -129,6 +130,7 @@ export class AffineFootnoteNode extends WithDisposable(ShadowlessElement) {
           referenceElement: this,
           placement: 'top',
           autoUpdate: true,
+          middleware: [shift()],
         },
       };
     },

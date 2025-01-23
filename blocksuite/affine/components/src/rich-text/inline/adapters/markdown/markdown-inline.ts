@@ -173,7 +173,7 @@ export const markdownFootnoteReferenceToDeltaMatcher =
         };
         return [{ insert: ' ', attributes: { footnote } }];
       } catch (error) {
-        console.error('Error parsing footnote reference', error);
+        console.warn('Error parsing footnote reference', error);
         return [];
       }
     },
