@@ -6,6 +6,7 @@ import {
   Get,
   Header,
   HttpStatus,
+  Logger,
   Post,
   Query,
   Req,
@@ -56,6 +57,8 @@ const OTP_CACHE_KEY = (otp: string) => `magic-link-otp:${otp}`;
 @Throttle('strict')
 @Controller('/api/auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly url: URLHelper,
     private readonly auth: AuthService,
@@ -217,6 +220,10 @@ export class AuthController {
           }
         : {}),
     });
+    if (this.config.node.dev) {
+      // make it easier to test in dev mode
+      this.logger.debug(`Magic link: ${magicLink}`);
+    }
 
     const result = await this.auth.sendSignInEmail(
       email,
