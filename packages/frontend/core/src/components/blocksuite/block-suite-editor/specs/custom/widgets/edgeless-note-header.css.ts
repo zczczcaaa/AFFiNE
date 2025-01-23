@@ -13,6 +13,9 @@ export const header = style({
 });
 
 export const title = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4,
   flex: 1,
   color: cssVarV2('text/primary'),
   fontFamily: 'Inter',

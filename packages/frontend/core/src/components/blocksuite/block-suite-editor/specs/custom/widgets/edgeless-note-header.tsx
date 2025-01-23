@@ -1,6 +1,7 @@
 import { IconButton } from '@affine/component';
 import { useSharingUrl } from '@affine/core/components/hooks/affine/use-share-url';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
+import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorService } from '@affine/core/modules/editor';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { useInsidePeekView } from '@affine/core/modules/peek-view/view/modal-container';
@@ -32,6 +33,10 @@ const EdgelessNoteToggleButton = ({ note }: { note: NoteBlockModel }) => {
   const editor = useService(EditorService).editor;
   const editorContainer = useLiveData(editor.editorContainer$);
   const gfx = editorContainer?.std.get(GfxControllerIdentifier);
+  const docDisplayMetaService = useService(DocDisplayMetaService);
+
+  const Icon = useLiveData(docDisplayMetaService.icon$(note.doc.id));
+  const title = useLiveData(docDisplayMetaService.title$(note.doc.id));
 
   useEffect(() => {
     setCollapsed(note.edgeless.collapse);
@@ -80,7 +85,11 @@ const EdgelessNoteToggleButton = ({ note }: { note: NoteBlockModel }) => {
         {collapsed ? <ToggleRightIcon /> : <ToggleDownIcon />}
       </IconButton>
       <div className={styles.title} data-testid="edgeless-note-title">
-        {collapsed && (note.doc.meta?.title ?? 'Untitled')}
+        {collapsed && (
+          <>
+            <Icon /> {title}
+          </>
+        )}
       </div>
     </>
   );
