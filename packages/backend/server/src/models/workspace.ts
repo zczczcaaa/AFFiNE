@@ -38,7 +38,7 @@ export class WorkspaceModel extends BaseModel {
    * Create a new workspace for the user, default to private.
    */
   async create(userId: string) {
-    const workspace = await this.tx.workspace.create({
+    const workspace = await this.db.workspace.create({
       data: {
         public: false,
         permissions: {
@@ -59,7 +59,7 @@ export class WorkspaceModel extends BaseModel {
    * Update the workspace with the given data.
    */
   async update(workspaceId: string, data: UpdateWorkspaceInput) {
-    await this.tx.workspace.update({
+    await this.db.workspace.update({
       where: {
         id: workspaceId,
       },
@@ -79,7 +79,7 @@ export class WorkspaceModel extends BaseModel {
   }
 
   async delete(workspaceId: string) {
-    await this.tx.workspace.deleteMany({
+    await this.db.workspace.deleteMany({
       where: {
         id: workspaceId,
       },
@@ -133,7 +133,7 @@ export class WorkspaceModel extends BaseModel {
     permission: Permission = Permission.Read,
     status: WorkspaceMemberStatus = WorkspaceMemberStatus.Pending
   ): Promise<WorkspaceUserPermission> {
-    const data = await this.tx.workspaceUserPermission.findUnique({
+    const data = await this.db.workspaceUserPermission.findUnique({
       where: {
         workspaceId_userId: {
           workspaceId,
@@ -145,7 +145,7 @@ export class WorkspaceModel extends BaseModel {
     if (!data) {
       // Create a new permission
       // TODO(fengmk2): should we check the permission here? Like owner can't be pending?
-      const created = await this.tx.workspaceUserPermission.create({
+      const created = await this.db.workspaceUserPermission.create({
         data: {
           workspaceId,
           userId,
@@ -162,7 +162,7 @@ export class WorkspaceModel extends BaseModel {
 
     // If the user is already accepted and the new permission is owner, we need to revoke old owner
     if (data.status === WorkspaceMemberStatus.Accepted || data.accepted) {
-      const updated = await this.tx.workspaceUserPermission.update({
+      const updated = await this.db.workspaceUserPermission.update({
         where: {
           workspaceId_userId: { workspaceId, userId },
         },
@@ -170,7 +170,7 @@ export class WorkspaceModel extends BaseModel {
       });
       // If the new permission is owner, we need to revoke old owner
       if (permission === Permission.Owner) {
-        await this.tx.workspaceUserPermission.updateMany({
+        await this.db.workspaceUserPermission.updateMany({
           where: {
             workspaceId,
             type: Permission.Owner,
@@ -188,7 +188,7 @@ export class WorkspaceModel extends BaseModel {
     // If the user is not accepted, we can update the status directly
     const allowedStatus = this.getAllowedStatusSource(data.status);
     if (allowedStatus.includes(status)) {
-      const updated = await this.tx.workspaceUserPermission.update({
+      const updated = await this.db.workspaceUserPermission.update({
         where: { workspaceId_userId: { workspaceId, userId } },
         data: {
           status,
@@ -207,7 +207,7 @@ export class WorkspaceModel extends BaseModel {
    * Get the workspace member invitation.
    */
   async getMemberInvitation(invitationId: string) {
-    return await this.tx.workspaceUserPermission.findUnique({
+    return await this.db.workspaceUserPermission.findUnique({
       where: {
         id: invitationId,
       },
@@ -223,7 +223,7 @@ export class WorkspaceModel extends BaseModel {
     workspaceId: string,
     status: WorkspaceMemberStatus = WorkspaceMemberStatus.Accepted
   ) {
-    const { count } = await this.tx.workspaceUserPermission.updateMany({
+    const { count } = await this.db.workspaceUserPermission.updateMany({
       where: {
         id: invitationId,
         workspaceId: workspaceId,
@@ -351,7 +351,7 @@ export class WorkspaceModel extends BaseModel {
       return false;
     }
 
-    await this.tx.workspaceUserPermission.deleteMany({
+    await this.db.workspaceUserPermission.deleteMany({
       where: {
         workspaceId,
         userId,
@@ -418,7 +418,7 @@ export class WorkspaceModel extends BaseModel {
       return;
     }
 
-    const members = await this.tx.workspaceUserPermission.findMany({
+    const members = await this.db.workspaceUserPermission.findMany({
       select: { id: true, status: true },
       where: {
         workspaceId,
@@ -439,7 +439,7 @@ export class WorkspaceModel extends BaseModel {
     const toPendings = groups.NeedMoreSeat;
     if (toPendings) {
       // NeedMoreSeat => Pending
-      await this.tx.workspaceUserPermission.updateMany({
+      await this.db.workspaceUserPermission.updateMany({
         where: { id: { in: toPendings.map(m => m.id) } },
         data: { status: WorkspaceMemberStatus.Pending },
       });
@@ -448,7 +448,7 @@ export class WorkspaceModel extends BaseModel {
     const toUnderReviews = groups.NeedMoreSeatAndReview;
     if (toUnderReviews) {
       // NeedMoreSeatAndReview => UnderReview
-      await this.tx.workspaceUserPermission.updateMany({
+      await this.db.workspaceUserPermission.updateMany({
         where: { id: { in: toUnderReviews.map(m => m.id) } },
         data: { status: WorkspaceMemberStatus.UnderReview },
       });

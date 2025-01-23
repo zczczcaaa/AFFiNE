@@ -39,7 +39,7 @@ export class FeatureModel extends BaseModel {
 
     let feature: Feature;
     if (!latest) {
-      feature = await this.tx.feature.create({
+      feature = await this.db.feature.create({
         data: {
           type: FeatureType.Feature,
           feature: name,
@@ -47,7 +47,7 @@ export class FeatureModel extends BaseModel {
         },
       });
     } else {
-      feature = await this.tx.feature.update({
+      feature = await this.db.feature.update({
         where: { id: latest.id },
         data: {
           configs: parsedConfigs,
@@ -66,7 +66,7 @@ export class FeatureModel extends BaseModel {
    * @internal
    */
   async try_get_unchecked<T extends FeatureName>(name: T) {
-    const feature = await this.tx.feature.findFirst({
+    const feature = await this.db.feature.findFirst({
       where: { feature: name },
       orderBy: { version: 'desc' },
     });

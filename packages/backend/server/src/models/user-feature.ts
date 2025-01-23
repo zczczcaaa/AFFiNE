@@ -68,7 +68,7 @@ export class UserFeatureModel extends BaseModel {
   async add(userId: string, featureName: UserFeatureName, reason: string) {
     const feature = await this.models.feature.get_unchecked(featureName);
 
-    const existing = await this.tx.userFeature.findFirst({
+    const existing = await this.db.userFeature.findFirst({
       where: {
         userId,
         featureId: feature.id,
@@ -80,7 +80,7 @@ export class UserFeatureModel extends BaseModel {
       return existing;
     }
 
-    const userFeature = await this.tx.userFeature.create({
+    const userFeature = await this.db.userFeature.create({
       data: {
         userId,
         featureId: feature.id,
@@ -97,7 +97,7 @@ export class UserFeatureModel extends BaseModel {
   async remove(userId: string, featureName: UserFeatureName) {
     const feature = await this.models.feature.get_unchecked(featureName);
 
-    await this.tx.userFeature.deleteMany({
+    await this.db.userFeature.deleteMany({
       where: {
         userId,
         featureId: feature.id,

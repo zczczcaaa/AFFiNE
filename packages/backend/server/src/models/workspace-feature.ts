@@ -9,7 +9,7 @@ export class WorkspaceFeatureModel extends BaseModel {
   async get<T extends WorkspaceFeatureName>(workspaceId: string, name: T) {
     const feature = await this.models.feature.get_unchecked(name);
 
-    const workspaceFeature = await this.tx.workspaceFeature.findFirst({
+    const workspaceFeature = await this.db.workspaceFeature.findFirst({
       where: {
         workspaceId,
         featureId: feature.id,
@@ -69,7 +69,7 @@ export class WorkspaceFeatureModel extends BaseModel {
   ) {
     const feature = await this.models.feature.get_unchecked(featureName);
 
-    const existing = await this.tx.workspaceFeature.findFirst({
+    const existing = await this.db.workspaceFeature.findFirst({
       where: {
         workspaceId,
         featureId: feature.id,
@@ -99,7 +99,7 @@ export class WorkspaceFeatureModel extends BaseModel {
 
     let workspaceFeature;
     if (existing) {
-      workspaceFeature = await this.tx.workspaceFeature.update({
+      workspaceFeature = await this.db.workspaceFeature.update({
         where: {
           id: existing.id,
         },
@@ -109,7 +109,7 @@ export class WorkspaceFeatureModel extends BaseModel {
         },
       });
     } else {
-      workspaceFeature = await this.tx.workspaceFeature.create({
+      workspaceFeature = await this.db.workspaceFeature.create({
         data: {
           workspaceId,
           featureId: feature.id,
@@ -130,7 +130,7 @@ export class WorkspaceFeatureModel extends BaseModel {
   async remove(workspaceId: string, featureName: WorkspaceFeatureName) {
     const feature = await this.models.feature.get_unchecked(featureName);
 
-    await this.tx.workspaceFeature.deleteMany({
+    await this.db.workspaceFeature.deleteMany({
       where: {
         workspaceId,
         featureId: feature.id,

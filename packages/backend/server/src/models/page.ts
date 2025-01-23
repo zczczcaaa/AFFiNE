@@ -109,7 +109,7 @@ export class PageModel extends BaseModel {
     if (!data || data.type !== permission) {
       if (data) {
         // Update the permission
-        data = await this.tx.workspacePageUserPermission.update({
+        data = await this.db.workspacePageUserPermission.update({
           where: {
             workspaceId_pageId_userId: {
               workspaceId,
@@ -121,7 +121,7 @@ export class PageModel extends BaseModel {
         });
       } else {
         // Create a new permission
-        data = await this.tx.workspacePageUserPermission.create({
+        data = await this.db.workspacePageUserPermission.create({
           data: {
             workspaceId,
             pageId,
@@ -135,7 +135,7 @@ export class PageModel extends BaseModel {
 
       // If the new permission is owner, we need to revoke old owner
       if (permission === Permission.Owner) {
-        await this.tx.workspacePageUserPermission.updateMany({
+        await this.db.workspacePageUserPermission.updateMany({
           where: {
             workspaceId,
             pageId,
