@@ -3,7 +3,6 @@ import {
   AddPageButton,
   AppDownloadButton,
   AppSidebar,
-  CategoryDivider,
   MenuItem,
   MenuLinkItem,
   QuickSearchInput,
@@ -13,6 +12,7 @@ import {
 import { ExternalMenuLinkItem } from '@affine/core/modules/app-sidebar/views/menu-item/external-menu-link-item';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import {
+  CollapsibleSection,
   ExplorerCollections,
   ExplorerFavorites,
   ExplorerMigrationFavorites,
@@ -175,8 +175,11 @@ export const RootAppSidebar = memo((): ReactElement => {
         <ExplorerMigrationFavorites />
         <ExplorerCollections />
         <ExplorerTags />
-        <CategoryDivider label={t['com.affine.rootAppSidebar.others']()} />
-        <div style={{ padding: '0 8px' }}>
+        <CollapsibleSection
+          name="others"
+          title={t['com.affine.rootAppSidebar.others']()}
+          contentStyle={{ padding: '6px 8px 0 8px' }}
+        >
           <TrashButton />
           <MenuItem
             data-testid="slider-bar-import-button"
@@ -191,7 +194,7 @@ export const RootAppSidebar = memo((): ReactElement => {
             icon={<JournalIcon />}
             label={t['com.affine.app-sidebar.learn-more']()}
           />
-        </div>
+        </CollapsibleSection>
       </SidebarScrollableContainer>
       <SidebarContainer>
         {BUILD_CONFIG.isElectron ? <UpdaterButton /> : <AppDownloadButton />}

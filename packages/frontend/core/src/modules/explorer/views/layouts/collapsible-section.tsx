@@ -3,6 +3,7 @@ import * as Collapsible from '@radix-ui/react-collapsible';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import {
+  type CSSProperties,
   type PropsWithChildren,
   type ReactNode,
   type RefObject,
@@ -26,6 +27,7 @@ interface CollapsibleSectionProps extends PropsWithChildren {
   headerClassName?: string;
 
   contentClassName?: string;
+  contentStyle?: CSSProperties;
 }
 
 export const CollapsibleSection = ({
@@ -42,6 +44,7 @@ export const CollapsibleSection = ({
   headerClassName,
 
   contentClassName,
+  contentStyle,
 }: CollapsibleSectionProps) => {
   const section = useService(ExplorerService).sections[name];
 
@@ -74,6 +77,7 @@ export const CollapsibleSection = ({
       <Collapsible.Content
         data-testid="collapsible-section-content"
         className={clsx(content, contentClassName)}
+        style={contentStyle}
       >
         {children}
       </Collapsible.Content>
