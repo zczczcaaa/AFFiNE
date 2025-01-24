@@ -3,8 +3,6 @@ import {
   createButtonPopper,
   type NoteBlockModel,
   NoteDisplayMode,
-  on,
-  once,
 } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { ArrowDownSmallIcon, InvisibleIcon } from '@blocksuite/icons/lit';
@@ -17,6 +15,7 @@ import { classMap } from 'lit/directives/class-map.js';
 
 import { type TocContext, tocContext } from '../config';
 import type { SelectEvent } from '../utils/custom-events';
+import type { NoteCardEntity, NoteDropPayload } from '../utils/drag';
 import * as styles from './outline-card.css';
 
 export const AFFINE_OUTLINE_NOTE_CARD = 'affine-outline-note-card';
@@ -39,45 +38,15 @@ export class OutlineNoteCard extends SignalWatcher(
     this.dispatchEvent(event);
   }
 
-  private _dispatchDisplayModeChangeEvent(
-    note: NoteBlockModel,
-    newMode: NoteDisplayMode
-  ) {
+  private _dispatchDisplayModeChangeEvent(newMode: NoteDisplayMode) {
     const event = new CustomEvent('displaymodechange', {
       detail: {
-        note,
+        note: this.note,
         newMode,
       },
     });
 
     this.dispatchEvent(event);
-  }
-
-  private _dispatchDragEvent(e: MouseEvent) {
-    e.preventDefault();
-    if (e.button !== 0 || !this._context.enableSorting$.peek()) return;
-
-    const { clientX: startX, clientY: startY } = e;
-    const disposeDragStart = on(this.ownerDocument, 'mousemove', e => {
-      if (
-        Math.abs(startX - e.clientX) < 5 &&
-        Math.abs(startY - e.clientY) < 5
-      ) {
-        return;
-      }
-      if (this.status !== 'selected') {
-        this._dispatchSelectEvent(e);
-      }
-
-      const event = new CustomEvent('drag');
-
-      this.dispatchEvent(event);
-      disposeDragStart();
-    });
-
-    once(this.ownerDocument, 'mouseup', () => {
-      disposeDragStart();
-    });
   }
 
   private _dispatchFitViewEvent(e: MouseEvent) {
@@ -98,7 +67,6 @@ export class OutlineNoteCard extends SignalWatcher(
       detail: {
         id: this.note.id,
         selected: this.status !== 'selected',
-        number: this.number,
         multiselect: e.shiftKey,
       },
     }) as SelectEvent;
@@ -119,11 +87,48 @@ export class OutlineNoteCard extends SignalWatcher(
     }
   }
 
-  get invisible() {
-    return this.note.displayMode === NoteDisplayMode.EdgelessOnly;
+  private _watchDragEvents() {
+    const std = this._context.editor$.value.std;
+    this.disposables.add(
+      std.dnd.draggable<NoteCardEntity>({
+        element: this,
+        canDrag: () => this.note.displayMode !== NoteDisplayMode.EdgelessOnly,
+        onDragStart: () => {
+          if (this.status !== 'selected') {
+            this.dispatchEvent(
+              new CustomEvent('select', {
+                detail: {
+                  id: this.note.id,
+                  selected: true,
+                  multiselect: false,
+                },
+              })
+            );
+          }
+        },
+        setDragData: () => ({
+          type: 'toc-card',
+          noteId: this.note.id,
+        }),
+      })
+    );
+
+    this.disposables.add(
+      std.dnd.dropTarget<NoteCardEntity, NoteDropPayload>({
+        element: this,
+        setDropData: () => ({
+          noteId: this.note.id,
+        }),
+      })
+    );
   }
 
-  override updated() {
+  override connectedCallback() {
+    super.connectedCallback();
+    this._watchDragEvents();
+  }
+
+  override firstUpdated() {
     this._displayModePopper = createButtonPopper(
       this._displayModeButtonGroup,
       this._displayModePanel,
@@ -156,7 +161,6 @@ export class OutlineNoteCard extends SignalWatcher(
       >
         <div
           class=${styles.cardPreview}
-          @mousedown=${this._dispatchDragEvent}
           @click=${this._dispatchSelectEvent}
           @dblclick=${this._dispatchFitViewEvent}
         >
@@ -166,7 +170,9 @@ export class OutlineNoteCard extends SignalWatcher(
               ? html`<span class=${styles.headerIcon}
                   >${InvisibleIcon({ width: '20px', height: '20px' })}</span
                 >`
-              : html`<span class=${styles.headerNumber}>${this.number}</span>`
+              : html`<span class=${styles.headerNumber}
+                  >${this.index + 1}</span
+                >`
           }
           <span class=${styles.divider}></span>
           <div class=${styles.displayModeButtonGroup}>
@@ -194,7 +200,7 @@ export class OutlineNoteCard extends SignalWatcher(
             .displayMode=${displayMode}
             .panelWidth=${220}
             .onSelect=${(newMode: NoteDisplayMode) => {
-              this._dispatchDisplayModeChangeEvent(this.note, newMode);
+              this._dispatchDisplayModeChangeEvent(newMode);
               this._displayModePopper?.hide();
             }}
           >
@@ -206,7 +212,6 @@ export class OutlineNoteCard extends SignalWatcher(
                 class=${classMap({ active: this.activeHeadingId === block.id })}
                 .block=${block}
                 .disabledIcon=${invisible}
-                .cardNumber=${this.number}
                 @click=${() => {
                   if (invisible) return;
                   this._dispatchClickBlockEvent(block);
@@ -230,16 +235,13 @@ export class OutlineNoteCard extends SignalWatcher(
   accessor activeHeadingId: string | null = null;
 
   @property({ attribute: false })
-  accessor index!: number;
-
-  @property({ attribute: false })
   accessor note!: NoteBlockModel;
 
-  @property({ attribute: false })
-  accessor number!: number;
+  @property({ attribute: true, type: Number })
+  accessor index: number = 0;
 
   @property({ attribute: false })
-  accessor status: 'selected' | 'placeholder' | 'normal' = 'normal';
+  accessor status: 'selected' | 'dragging' | 'normal' = 'normal';
 
   @consume({ context: tocContext })
   private accessor _context!: TocContext;

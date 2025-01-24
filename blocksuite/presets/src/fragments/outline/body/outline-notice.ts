@@ -48,10 +48,11 @@ export class OutlineNotice extends SignalWatcher(
     }
 
     return html`
-      <div class=${styles.outlineNotice}>
+      <div data-testid=${AFFINE_OUTLINE_NOTICE} class=${styles.outlineNotice}>
         <div class=${styles.outlineNoticeHeader}>
           <span class=${styles.outlineNoticeLabel}>SOME CONTENTS HIDDEN</span>
           <span
+            data-testid="outline-notice-close-button"
             class=${styles.outlineNoticeCloseButton}
             @click=${() => {
               this._visible$.value = false;
@@ -64,6 +65,7 @@ export class OutlineNotice extends SignalWatcher(
             Some contents are not visible on edgeless.
           </div>
           <div
+            data-testid="outline-notice-sort-button"
             class="${styles.button}"
             @click=${() => {
               this._context.enableSorting$.value = true;

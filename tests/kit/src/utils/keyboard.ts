@@ -54,6 +54,12 @@ export async function pressBackspace(page: Page, count = 1) {
   }
 }
 
+export async function pressEscape(page: Page, count = 1) {
+  for (let i = 0; i < count; i++) {
+    await page.keyboard.press('Escape', { delay: 50 });
+  }
+}
+
 export async function copyByKeyboard(page: Page) {
   await keyDownCtrlOrMeta(page);
   await page.keyboard.press('c', { delay: 50 });

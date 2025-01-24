@@ -302,7 +302,7 @@ export async function assertVisibleBlockCount(
   // not only count, but also check if all the blocks are visible
   const locator = page.locator(`affine-${flavour}`);
   let visibleCount = 0;
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < (await locator.count()); i++) {
     if (await locator.nth(i).isVisible()) {
       visibleCount++;
     }

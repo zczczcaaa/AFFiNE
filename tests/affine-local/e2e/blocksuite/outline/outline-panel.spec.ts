@@ -5,11 +5,13 @@ import {
   clickView,
   createEdgelessNoteBlock,
   focusDocTitle,
+  getEdgelessSelectedIds,
   locateElementToolbar,
 } from '@affine-test/kit/utils/editor';
 import {
   pressBackspace,
   pressEnter,
+  pressEscape,
   selectAllByKeyboard,
 } from '@affine-test/kit/utils/keyboard';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
@@ -50,11 +52,22 @@ function getTocHeading(panel: Locator, level: number) {
 // ! Please note that when any card mode changed, the locator will be mutated
 function locateCards(toc: Locator, mode?: 'both' | 'page' | 'edgeless') {
   const cards = toc.locator('affine-outline-note-card');
-  return mode ? cards.locator(`[data-visibility="${mode}"]`) : cards;
+  return mode
+    ? cards.locator(`>div[data-visibility="${mode}"]`)
+    : cards.locator('>div');
 }
 
 function locateSortingButton(panel: Locator) {
   return panel.getByTestId('toggle-notes-sorting-button');
+}
+
+async function changeNoteDisplayMode(
+  card: Locator,
+  mode: 'both' | 'doc' | 'edgeless'
+) {
+  await card.hover();
+  await card.getByTestId('display-mode-button').click();
+  await card.locator(`note-display-mode-panel .item.${mode}`).click();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -63,228 +76,318 @@ test.beforeEach(async ({ page }) => {
   await waitForEditorLoad(page);
 });
 
-test('should display title and headings when there are non-empty headings in editor', async ({
-  page,
-}) => {
-  await createTitle(page);
-  await createHeadings(page);
+test.describe('TOC display', () => {
+  test('should display title and headings when there are non-empty headings in editor', async ({
+    page,
+  }) => {
+    await createTitle(page);
+    await createHeadings(page);
 
-  const toc = await openTocPanel(page);
+    const toc = await openTocPanel(page);
 
-  await expect(toc.getByTestId('outline-block-preview-title')).toBeVisible();
-  for (let i = 1; i <= 6; i++) {
-    await expect(getTocHeading(toc, i)).toBeVisible();
-    await expect(getTocHeading(toc, i)).toContainText(`Heading ${i}`);
-  }
-});
+    await expect(toc.getByTestId('outline-block-preview-title')).toBeVisible();
+    for (let i = 1; i <= 6; i++) {
+      await expect(getTocHeading(toc, i)).toBeVisible();
+      await expect(getTocHeading(toc, i)).toContainText(`Heading ${i}`);
+    }
+  });
 
-test('should display placeholder when no headings', async ({ page }) => {
-  const toc = await openTocPanel(page);
-  const noHeadingPlaceholder = toc.getByTestId('empty-panel-placeholder');
+  test('should display placeholder when no headings', async ({ page }) => {
+    const toc = await openTocPanel(page);
+    const noHeadingPlaceholder = toc.getByTestId('empty-panel-placeholder');
 
-  await createTitle(page);
-  await pressEnter(page);
-  await type(page, 'hello world');
-
-  await expect(noHeadingPlaceholder).toBeVisible();
-});
-
-test('should not display headings when there are only empty headings', async ({
-  page,
-}) => {
-  await createTitle(page);
-
-  // create empty headings
-  for (let i = 1; i <= 6; i++) {
-    await type(page, `${'#'.repeat(i)} `);
+    await createTitle(page);
     await pressEnter(page);
-  }
+    await type(page, 'hello world');
 
-  const toc = await openTocPanel(page);
+    await expect(noHeadingPlaceholder).toBeVisible();
+  });
 
-  await expect(toc.getByTestId('outline-block-preview-title')).toBeHidden();
-  for (let i = 1; i <= 6; i++) {
-    await expect(getTocHeading(toc, i)).toBeHidden();
-  }
-});
+  test('should not display headings when there are only empty headings', async ({
+    page,
+  }) => {
+    await createTitle(page);
 
-test('should update panel when modify or clear title or headings', async ({
-  page,
-}) => {
-  const title = await createTitle(page);
-  const headings = await createHeadings(page);
+    // create empty headings
+    for (let i = 1; i <= 6; i++) {
+      await type(page, `${'#'.repeat(i)} `);
+      await pressEnter(page);
+    }
 
-  const toc = await openTocPanel(page);
+    const toc = await openTocPanel(page);
 
-  await title.scrollIntoViewIfNeeded();
-  await title.click();
-  await type(page, 'xxx');
-  await expect(toc.getByTestId('outline-block-preview-title')).toContainText([
-    'Titlexxx',
-  ]);
-  await selectAllByKeyboard(page);
-  await pressBackspace(page);
-  await expect(toc.getByTestId('outline-block-preview-title')).toBeHidden();
+    await expect(toc.getByTestId('outline-block-preview-title')).toBeHidden();
+    for (let i = 1; i <= 6; i++) {
+      await expect(getTocHeading(toc, i)).toBeHidden();
+    }
+  });
 
-  for (let i = 1; i <= 6; i++) {
-    await headings[i - 1].click();
+  test('should update panel when modify or clear title or headings', async ({
+    page,
+  }) => {
+    const title = await createTitle(page);
+    const headings = await createHeadings(page);
+
+    const toc = await openTocPanel(page);
+
+    await title.scrollIntoViewIfNeeded();
+    await title.click();
     await type(page, 'xxx');
-    await expect(getTocHeading(toc, i)).toContainText(`Heading ${i}xxx`);
+    await expect(toc.getByTestId('outline-block-preview-title')).toContainText([
+      'Titlexxx',
+    ]);
     await selectAllByKeyboard(page);
     await pressBackspace(page);
-    await expect(getTocHeading(toc, i)).toBeHidden();
-  }
-});
+    await expect(toc.getByTestId('outline-block-preview-title')).toBeHidden();
 
-test('should update panel when switch doc', async ({ page }) => {
-  const toc = await openTocPanel(page);
-  await focusDocTitle(page);
-  await page.keyboard.press('ArrowDown');
-  await type(page, '# Heading 1');
+    for (let i = 1; i <= 6; i++) {
+      await headings[i - 1].click();
+      await type(page, 'xxx');
+      await expect(getTocHeading(toc, i)).toContainText(`Heading ${i}xxx`);
+      await selectAllByKeyboard(page);
+      await pressBackspace(page);
+      await expect(getTocHeading(toc, i)).toBeHidden();
+    }
+  });
 
-  await clickNewPageButton(page);
-  await expect(getTocHeading(toc, 1)).toBeHidden();
-  await page.goBack();
-  await expect(getTocHeading(toc, 1)).toBeVisible();
-});
+  test('should update panel when switch doc', async ({ page }) => {
+    const toc = await openTocPanel(page);
+    await focusDocTitle(page);
+    await page.keyboard.press('ArrowDown');
+    await type(page, '# Heading 1');
 
-test('should add padding to sub-headings', async ({ page }) => {
-  await createHeadings(page);
+    await clickNewPageButton(page);
+    await expect(getTocHeading(toc, 1)).toBeHidden();
+    await page.goBack();
+    await expect(getTocHeading(toc, 1)).toBeVisible();
+  });
 
-  const toc = await openTocPanel(page);
+  test('should add padding to sub-headings', async ({ page }) => {
+    await createHeadings(page);
 
-  let prev = getTocHeading(toc, 1);
-  for (let i = 2; i <= 6; i++) {
-    const curr = getTocHeading(toc, i);
+    const toc = await openTocPanel(page);
 
-    const prevRect = await prev.boundingBox();
-    const currRect = await curr.boundingBox();
+    let prev = getTocHeading(toc, 1);
+    for (let i = 2; i <= 6; i++) {
+      const curr = getTocHeading(toc, i);
 
-    expect(prevRect).not.toBeNull();
-    expect(currRect).not.toBeNull();
+      const prevRect = await prev.boundingBox();
+      const currRect = await curr.boundingBox();
 
-    expect(prevRect!.x).toBeLessThan(currRect!.x);
-    prev = curr;
-  }
-});
+      expect(prevRect).not.toBeNull();
+      expect(currRect).not.toBeNull();
 
-test('should highlight heading when scroll to area before viewport center', async ({
-  page,
-}) => {
-  const title = await createTitle(page);
-  for (let i = 0; i < 3; i++) {
+      expect(prevRect!.x).toBeLessThan(currRect!.x);
+      prev = curr;
+    }
+  });
+
+  test('visibility sorting should be enabled in edgeless mode and disabled in page mode by default, and can be changed', async ({
+    page,
+  }) => {
     await pressEnter(page);
-  }
-  const headings = await createHeadings(page, 10);
-  await title.scrollIntoViewIfNeeded();
+    await type(page, '# Heading 1');
 
-  const toc = await openTocPanel(page);
+    const toc = await openTocPanel(page);
+    const sortingButton = locateSortingButton(toc);
+    await expect(sortingButton).not.toHaveClass(/active/);
+    expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
 
-  const viewportCenter = await getVerticalCenterFromLocator(
-    page.locator('body')
-  );
+    await clickEdgelessModeButton(page);
+    await expect(sortingButton).toHaveClass(/active/);
+    expect(toc.locator('[data-sortable="true"]')).toHaveCount(1);
 
-  const activeHeadingContainer = toc.locator(
-    'affine-outline-panel-body .active'
-  );
+    await sortingButton.click();
+    await expect(sortingButton).not.toHaveClass(/active/);
+    expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
+  });
 
-  await title.click();
-  await expect(activeHeadingContainer).toContainText('Title');
+  test('should notify user when there are some page only notes and sorting is disabled', async ({
+    page,
+  }) => {
+    await clickEdgelessModeButton(page);
+    const toc = await openTocPanel(page);
+    await createEdgelessNoteBlock(page, [100, 100]);
+    const card = locateCards(toc, 'edgeless');
+    await changeNoteDisplayMode(card, 'doc');
 
-  for (let i = 0; i < headings.length; i++) {
-    const lastHeadingCenter = await getVerticalCenterFromLocator(headings[i]);
-    await page.mouse.wheel(0, lastHeadingCenter - viewportCenter + 20);
-    await page.waitForTimeout(10);
+    const notification = toc.getByTestId('affine-outline-notice');
+    await expect(notification).toBeHidden();
 
-    await expect(activeHeadingContainer).toContainText(`Heading ${i + 1}`);
-  }
+    const sortingButton = locateSortingButton(toc);
+    await sortingButton.click();
+    await expect(notification).toBeVisible();
+
+    await notification.getByTestId('outline-notice-sort-button').click();
+    await expect(notification).toBeHidden();
+    await expect(sortingButton).toHaveClass(/active/);
+
+    await sortingButton.click();
+    await expect(notification).toBeVisible();
+    await notification.getByTestId('outline-notice-close-button').click();
+    await expect(notification).toBeHidden();
+  });
 });
 
-test('should scroll to heading and highlight heading when click item in outline panel', async ({
-  page,
-}) => {
-  const headings = await createHeadings(page, 10);
-  const toc = await openTocPanel(page);
+test.describe('TOC and editor scroll', () => {
+  test('should highlight heading when scroll to area before viewport center', async ({
+    page,
+  }) => {
+    const title = await createTitle(page);
+    for (let i = 0; i < 3; i++) {
+      await pressEnter(page);
+    }
+    const headings = await createHeadings(page, 10);
+    await title.scrollIntoViewIfNeeded();
 
-  const activeHeadingContainer = toc.locator(
-    'affine-outline-panel-body .active'
-  );
+    const toc = await openTocPanel(page);
 
-  const headingsInPanel = Array.from({ length: 6 }, (_, i) =>
-    getTocHeading(toc, i + 1)
-  );
+    const viewportCenter = await getVerticalCenterFromLocator(
+      page.locator('body')
+    );
 
-  await headingsInPanel[2].click();
-  await expect(headings[2]).toBeVisible();
-  await expect(activeHeadingContainer).toContainText('Heading 3');
+    const activeHeadingContainer = toc.locator(
+      'affine-outline-panel-body .active'
+    );
+
+    await title.click();
+    await expect(activeHeadingContainer).toContainText('Title');
+
+    for (let i = 0; i < headings.length; i++) {
+      const lastHeadingCenter = await getVerticalCenterFromLocator(headings[i]);
+      await page.mouse.wheel(0, lastHeadingCenter - viewportCenter + 20);
+      await page.waitForTimeout(10);
+
+      await expect(activeHeadingContainer).toContainText(`Heading ${i + 1}`);
+    }
+  });
+
+  test('should scroll to heading and highlight heading when click item in outline panel', async ({
+    page,
+  }) => {
+    const headings = await createHeadings(page, 10);
+    const toc = await openTocPanel(page);
+
+    const activeHeadingContainer = toc.locator(
+      'affine-outline-panel-body .active'
+    );
+
+    const headingsInPanel = Array.from({ length: 6 }, (_, i) =>
+      getTocHeading(toc, i + 1)
+    );
+
+    await headingsInPanel[2].click();
+    await expect(headings[2]).toBeVisible();
+    await expect(activeHeadingContainer).toContainText('Heading 3');
+  });
+
+  test('should scroll to title when click title in outline panel', async ({
+    page,
+  }) => {
+    const title = await createTitle(page);
+    await pressEnter(page);
+    await createHeadings(page, 10);
+
+    const toc = await openTocPanel(page);
+
+    const titleInPanel = toc.getByTestId('outline-block-preview-title');
+
+    await expect(title).not.toBeInViewport();
+    await titleInPanel.click();
+    await expect(title).toBeVisible();
+  });
 });
 
-test('should scroll to title when click title in outline panel', async ({
-  page,
-}) => {
-  const title = await createTitle(page);
-  await pressEnter(page);
-  await createHeadings(page, 10);
+test.describe('TOC and edgeless selection', () => {
+  test('should select note blocks when selecting cards in TOC', async ({
+    page,
+  }) => {
+    const toc = await openTocPanel(page);
+    await clickEdgelessModeButton(page);
 
-  const toc = await openTocPanel(page);
+    const cards = locateCards(toc);
 
-  const titleInPanel = toc.getByTestId('outline-block-preview-title');
+    await createEdgelessNoteBlock(page, [100, 100]);
+    await changeNoteDisplayMode(cards.last(), 'doc');
+    await createEdgelessNoteBlock(page, [200, 200]);
 
-  await expect(title).not.toBeInViewport();
-  await titleInPanel.click();
-  await expect(title).toBeVisible();
-});
+    await cards.nth(0).click();
+    expect(await getEdgelessSelectedIds(page)).toHaveLength(1);
+    await cards.nth(0).click();
+    expect(await getEdgelessSelectedIds(page)).toHaveLength(0);
 
-test('visibility sorting should be enabled in edgeless mode and disabled in page mode by default, and can be changed', async ({
-  page,
-}) => {
-  await pressEnter(page);
-  await type(page, '# Heading 1');
+    await cards.nth(1).click();
+    expect(await getEdgelessSelectedIds(page)).toHaveLength(1);
+    await cards.nth(1).click();
+    expect(await getEdgelessSelectedIds(page)).toHaveLength(0);
 
-  const toc = await openTocPanel(page);
-  const sortingButton = locateSortingButton(toc);
-  await expect(sortingButton).not.toHaveClass(/active/);
-  expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
+    await cards.nth(2).click();
+    expect(await getEdgelessSelectedIds(page)).toHaveLength(1);
+    await cards.nth(2).click();
+    expect(await getEdgelessSelectedIds(page)).toHaveLength(0);
 
-  await clickEdgelessModeButton(page);
-  await expect(sortingButton).toHaveClass(/active/);
-  expect(toc.locator('[data-sortable="true"]')).toHaveCount(1);
+    await cards.nth(0).click({ modifiers: ['Shift'] });
+    await cards.nth(1).click({ modifiers: ['Shift'] });
+    await cards.nth(2).click({ modifiers: ['Shift'] });
 
-  await sortingButton.click();
-  await expect(sortingButton).not.toHaveClass(/active/);
-  expect(toc.locator('[data-sortable="false"]')).toHaveCount(1);
+    expect(await getEdgelessSelectedIds(page)).toHaveLength(3);
+  });
+
+  test('should select note cards when select note blocks in canvas', async ({
+    page,
+  }) => {
+    await clickEdgelessModeButton(page);
+    await selectAllByKeyboard(page);
+    await pressBackspace(page);
+    await createEdgelessNoteBlock(page, [100, 100]);
+    await createEdgelessNoteBlock(page, [200, 200]);
+    await clickView(page, [0, 0]);
+
+    const toc = await openTocPanel(page);
+    const cards = locateCards(toc);
+
+    await clickView(page, [100, 100]);
+    await expect(cards.nth(0)).toHaveAttribute('data-status', 'selected');
+
+    await clickView(page, [200, 200]);
+    await expect(cards.nth(1)).toHaveAttribute('data-status', 'selected');
+
+    await selectAllByKeyboard(page);
+    await expect(cards.nth(0)).toHaveAttribute('data-status', 'selected');
+    await expect(cards.nth(1)).toHaveAttribute('data-status', 'selected');
+
+    await pressEscape(page);
+    await expect(cards.nth(0)).toHaveAttribute('data-status', 'normal');
+    await expect(cards.nth(1)).toHaveAttribute('data-status', 'normal');
+  });
 });
 
 test.describe('drag and drop note in outline panel', () => {
-  async function changeNoteDisplayMode(
-    card: Locator,
-    mode: 'both' | 'doc' | 'edgeless'
-  ) {
-    await card.hover();
-    await card.getByTestId('display-mode-button').click();
-    await card.locator(`note-display-mode-panel .item.${mode}`).click();
-  }
-
-  async function dragNoteCard(
-    page: Page,
-    fromCard: Locator,
-    toCard: Locator,
+  const dragCard = async (
+    from: Locator,
+    to: Locator,
     position: 'before' | 'after' = 'before'
-  ) {
-    const fromRect = await fromCard.boundingBox();
-    const toRect = await toCard.boundingBox();
+  ) => {
+    const fromRect = await from.boundingBox();
+    const fromCenter = {
+      x: fromRect!.width / 2,
+      y: fromRect!.height / 2,
+    };
 
-    await page.mouse.move(fromRect!.x + 10, fromRect!.y + 10);
-    await page.mouse.down();
-    if (position === 'before') {
-      await page.mouse.move(toRect!.x + 5, toRect!.y + 5, { steps: 20 });
-    } else {
-      await page.mouse.move(toRect!.x + 5, toRect!.y + toRect!.height - 5, {
-        steps: 20,
-      });
-    }
-    await page.mouse.up();
-  }
+    const toRect = await to.boundingBox();
+    const toCenter = {
+      x: toRect!.width / 2,
+      y: toRect!.height / 2,
+    };
+
+    await from.dragTo(to, {
+      sourcePosition: fromCenter,
+      targetPosition:
+        position === 'before'
+          ? { x: toCenter.x, y: toCenter.y - 10 }
+          : { x: toCenter.x, y: toCenter.y + 10 },
+    });
+  };
 
   // create 2 both cards, 2 page cards and 2 edgeless cards
   test.beforeEach(async ({ page }) => {
@@ -327,7 +430,7 @@ test.describe('drag and drop note in outline panel', () => {
     const toc = await openTocPanel(page);
     const cards = locateCards(toc);
 
-    await dragNoteCard(page, cards.nth(3), cards.nth(1));
+    await dragCard(cards.nth(3), cards.nth(1));
 
     await clickPageModeButton(page);
     const paragraphs = page
@@ -341,11 +444,34 @@ test.describe('drag and drop note in outline panel', () => {
 
     // Note card should be able to drag and drop in page mode
     await locateSortingButton(toc).click();
-    await dragNoteCard(page, cards.nth(3), cards.nth(1));
+    await dragCard(cards.nth(3), cards.nth(1));
 
     await expect(paragraphs.nth(0)).toContainText('0');
     await expect(paragraphs.nth(1)).toContainText('2');
     await expect(paragraphs.nth(2)).toContainText('3');
+    await expect(paragraphs.nth(3)).toContainText('1');
+  });
+
+  test('multiple selected note cards can be dragged and dropped at same time', async ({
+    page,
+  }) => {
+    const toc = await openTocPanel(page);
+    const cards = locateCards(toc);
+
+    await cards.nth(2).click({ modifiers: ['Shift'] });
+    await cards.nth(3).click({ modifiers: ['Shift'] });
+
+    await dragCard(cards.nth(2), cards.nth(0));
+    await clickPageModeButton(page);
+
+    const paragraphs = page
+      .locator('affine-paragraph')
+      .locator('[data-v-text="true"]');
+
+    await expect(paragraphs).toHaveCount(4);
+    await expect(paragraphs.nth(0)).toContainText('2');
+    await expect(paragraphs.nth(1)).toContainText('3');
+    await expect(paragraphs.nth(2)).toContainText('0');
     await expect(paragraphs.nth(3)).toContainText('1');
   });
 });

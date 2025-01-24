@@ -10,7 +10,7 @@ export const outlineCard = style({
   boxSizing: 'border-box',
 
   selectors: {
-    '&[data-status="placeholder"]': {
+    '&[data-status="dragging"]': {
       pointerEvents: 'none',
       opacity: 0.5,
     },
@@ -33,7 +33,7 @@ export const cardPreview = style({
     [`${outlineCard}[data-status="selected"] &`]: {
       background: cssVarV2('layer/background/hoverOverlay'),
     },
-    [`${outlineCard}[data-status="placeholder"] &`]: {
+    [`${outlineCard}[data-status="dragging"] &`]: {
       background: cssVarV2('layer/background/hoverOverlay'),
       opacity: 0.9,
     },

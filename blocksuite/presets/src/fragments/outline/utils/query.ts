@@ -1,7 +1,8 @@
 import {
   BlocksUtils,
+  matchFlavours,
   type NoteBlockModel,
-  type NoteDisplayMode,
+  NoteDisplayMode,
   type ParagraphBlockModel,
   type RootBlockModel,
 } from '@blocksuite/blocks';
@@ -9,39 +10,24 @@ import type { BlockModel, Store } from '@blocksuite/store';
 
 import { headingKeys } from '../config.js';
 
-type OutlineNoteItem = {
-  note: NoteBlockModel;
-  /**
-   * the index of the note inside its parent's children property
-   */
-  index: number;
-  /**
-   * the number displayed on the outline panel
-   */
-  number: number;
-};
-
 export function getNotesFromDoc(
   doc: Store,
-  modes: NoteDisplayMode[]
-): OutlineNoteItem[] {
+  modes: NoteDisplayMode[] = [
+    NoteDisplayMode.DocAndEdgeless,
+    NoteDisplayMode.DocOnly,
+    NoteDisplayMode.EdgelessOnly,
+  ]
+) {
   const rootModel = doc.root;
   if (!rootModel) return [];
 
-  const notes: OutlineNoteItem[] = [];
+  const notes: NoteBlockModel[] = [];
 
-  rootModel.children.forEach((block, index) => {
-    if (!['affine:note'].includes(block.flavour)) return;
+  rootModel.children.forEach(block => {
+    if (!matchFlavours(block, ['affine:note'])) return;
 
-    const blockModel = block as NoteBlockModel;
-    const OutlineNoteItem = {
-      note: block as NoteBlockModel,
-      index,
-      number: index + 1,
-    };
-
-    if (modes.includes(blockModel.displayMode$.value)) {
-      notes.push(OutlineNoteItem);
+    if (modes.includes(block.displayMode$.value)) {
+      notes.push(block);
     }
   });
 
@@ -75,11 +61,13 @@ export function getHeadingBlocksFromNote(
 
 export function getHeadingBlocksFromDoc(
   doc: Store,
-  modes: NoteDisplayMode[],
+  modes: NoteDisplayMode[] = [
+    NoteDisplayMode.DocAndEdgeless,
+    NoteDisplayMode.DocOnly,
+    NoteDisplayMode.EdgelessOnly,
+  ],
   ignoreEmpty = false
 ) {
   const notes = getNotesFromDoc(doc, modes);
-  return notes
-    .map(({ note }) => getHeadingBlocksFromNote(note, ignoreEmpty))
-    .flat();
+  return notes.map(note => getHeadingBlocksFromNote(note, ignoreEmpty)).flat();
 }

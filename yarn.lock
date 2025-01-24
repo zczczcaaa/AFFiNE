@@ -3551,7 +3551,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blocksuite/affine-block-note@workspace:*, @blocksuite/affine-block-note@workspace:blocksuite/affine/block-note":
+"@blocksuite/affine-block-note@workspace:*, @blocksuite/affine-block-note@workspace:^, @blocksuite/affine-block-note@workspace:blocksuite/affine/block-note":
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-block-note@workspace:blocksuite/affine/block-note"
   dependencies:
@@ -4064,6 +4064,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/presets@workspace:blocksuite/presets"
   dependencies:
+    "@blocksuite/affine-block-note": "workspace:^"
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"

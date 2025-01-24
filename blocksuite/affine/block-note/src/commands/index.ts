@@ -8,6 +8,7 @@ import {
 import type { BlockCommands } from '@blocksuite/block-std';
 
 import { updateBlockType } from './block-type.js';
+import { changeNoteDisplayMode } from './change-note-display-mode.js';
 import { dedentBlock } from './dedent-block.js';
 import { dedentBlockToRoot } from './dedent-block-to-root.js';
 import { dedentBlocks } from './dedent-blocks.js';
@@ -37,4 +38,5 @@ export const commands: BlockCommands = {
   dedentBlocks,
   dedentBlockToRoot,
   dedentBlocksToRoot,
+  changeNoteDisplayMode,
 };

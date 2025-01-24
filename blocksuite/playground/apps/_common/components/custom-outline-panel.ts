@@ -1,10 +1,11 @@
+import { ShadowlessElement } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/presets';
-import { css, html, LitElement, nothing } from 'lit';
+import { css, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 @customElement('custom-outline-panel')
-export class CustomOutlinePanel extends WithDisposable(LitElement) {
+export class CustomOutlinePanel extends WithDisposable(ShadowlessElement) {
   static override styles = css`
     .custom-outline-container {
       position: absolute;

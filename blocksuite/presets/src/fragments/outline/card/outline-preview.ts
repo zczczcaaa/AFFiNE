@@ -14,6 +14,7 @@ import {
 import { noop, SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { LinkedPageIcon } from '@blocksuite/icons/lit';
 import type { DeltaInsert } from '@blocksuite/inline';
+import type { BlockModel } from '@blocksuite/store';
 import { consume } from '@lit/context';
 import { html, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -27,8 +28,6 @@ import {
 } from '../config.js';
 import { isHeadingBlock, isRootBlock } from '../utils/query.js';
 import * as styles from './outline-preview.css';
-
-type ValuesOf<T, K extends keyof T = keyof T> = T[K];
 
 function assertType<T>(value: unknown): asserts value is T {
   noop(value);
@@ -206,10 +205,7 @@ export class OutlineBlockPreview extends SignalWatcher(
   }
 
   @property({ attribute: false })
-  accessor block!: ValuesOf<BlockSuite.BlockModels>;
-
-  @property({ attribute: false })
-  accessor cardNumber!: number;
+  accessor block!: BlockModel;
 
   @property({ attribute: false })
   accessor disabledIcon = false;
