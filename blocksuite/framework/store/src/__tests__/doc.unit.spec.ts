@@ -1,6 +1,7 @@
-import { expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import * as Y from 'yjs';
 
+import type { BlockModel, Store } from '../model/index.js';
 import { Schema } from '../schema/index.js';
 import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
@@ -266,4 +267,41 @@ test('local readonly', () => {
   expect(doc1.readonly).toBeFalsy();
   expect(doc2?.readonly).toBeTruthy();
   expect(doc3?.readonly).toBeFalsy();
+});
+
+describe('move blocks', () => {
+  type Context = { doc: Store; page: BlockModel; notes: BlockModel[] };
+  beforeEach((context: Context) => {
+    const options = createTestOptions();
+    const collection = new TestWorkspace(options);
+    collection.meta.initialize();
+
+    const doc = collection.createDoc({ id: 'home' });
+    doc.load();
+    const pageId = doc.addBlock('affine:page');
+    const page = doc.getBlock(pageId)!.model;
+
+    const noteIds = doc.addBlocks(
+      [1, 2, 3].map(i => ({
+        flavour: 'affine:note',
+        blockProps: { id: `${i}` },
+      })),
+      page
+    );
+    const notes = noteIds.map(id => doc.getBlock(id)!.model);
+
+    context.doc = doc;
+    context.page = page;
+    context.notes = notes;
+  });
+
+  test('move block to itself', ({ doc, page, notes }: Context) => {
+    const noteIds = notes.map(({ id }) => id);
+
+    doc.moveBlocks([notes[0]], page, notes[0], true);
+    expect(page.children.map(({ id }) => id)).toEqual(noteIds);
+
+    doc.moveBlocks([notes[0]], page, notes[0], false);
+    expect(page.children.map(({ id }) => id)).toEqual(noteIds);
+  });
 });

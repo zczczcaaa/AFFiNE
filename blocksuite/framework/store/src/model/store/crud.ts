@@ -264,6 +264,28 @@ export class DocCRUD {
     targetSibling: string | null = null,
     shouldInsertBeforeSibling = true
   ) {
+    if (
+      blocksToMove.length > 1 &&
+      targetSibling &&
+      blocksToMove.includes(targetSibling)
+    ) {
+      console.error(
+        'Cannot move blocks when the target sibling is in the blocks to move'
+      );
+      return;
+    }
+
+    if (blocksToMove.length === 1 && targetSibling === blocksToMove[0]) {
+      return;
+    }
+
+    if (blocksToMove.includes(newParent)) {
+      console.error(
+        'Cannot move blocks when the new parent is in the blocks to move'
+      );
+      return;
+    }
+
     // A map to store parent block and their respective child blocks
     const childBlocksPerParent = new Map<string, string[]>();
 
