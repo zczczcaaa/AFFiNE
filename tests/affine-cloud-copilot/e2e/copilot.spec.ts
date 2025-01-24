@@ -164,8 +164,8 @@ test('can trigger login at chat side panel', async ({ page }) => {
   await waitForEditorLoad(page);
   await clickNewPageButton(page);
   await makeChat(page, 'hello');
-  const loginTips = await page.waitForSelector('ai-error-wrapper');
-  expect(await loginTips.innerText()).toBe('Login');
+  const loginButton = await page.getByTestId('ai-error-action-button');
+  expect(await loginButton.innerText()).toBe('Login');
 });
 
 test('can chat after login at chat side panel', async ({ page }) => {
@@ -173,8 +173,8 @@ test('can chat after login at chat side panel', async ({ page }) => {
   await waitForEditorLoad(page);
   await clickNewPageButton(page);
   await makeChat(page, 'hello');
-  const loginTips = await page.waitForSelector('ai-error-wrapper');
-  (await loginTips.$('div'))!.click();
+  const loginButton = await page.getByTestId('ai-error-action-button');
+  await loginButton.click();
   // login
   const user = await getUser();
   await loginUserDirectly(page, user);
