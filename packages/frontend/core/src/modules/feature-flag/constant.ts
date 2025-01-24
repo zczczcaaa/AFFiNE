@@ -250,6 +250,15 @@ export const AFFINE_FLAGS = {
     configurable: isCanaryBuild,
     defaultState: isCanaryBuild,
   },
+  enable_editor_rtl: {
+    category: 'affine',
+    displayName:
+      'com.affine.settings.workspace.experimental-features.enable-editor-rtl.name',
+    description:
+      'com.affine.settings.workspace.experimental-features.enable-editor-rtl.description',
+    configurable: isCanaryBuild,
+    defaultState: false,
+  },
 } satisfies { [key in string]: FlagInfo };
 
 // oxlint-disable-next-line no-redeclare

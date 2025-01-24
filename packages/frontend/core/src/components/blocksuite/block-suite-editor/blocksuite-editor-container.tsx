@@ -1,3 +1,4 @@
+import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { type DocMode, getLastNoteBlock } from '@blocksuite/affine/blocks';
 import { Slot } from '@blocksuite/affine/global/utils';
 import type {
@@ -7,6 +8,7 @@ import type {
   PageEditor,
 } from '@blocksuite/affine/presets';
 import { type Store } from '@blocksuite/affine/store';
+import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import type React from 'react';
 import {
@@ -49,6 +51,8 @@ export const BlocksuiteEditorContainer = forwardRef<
   const docRef = useRef<PageEditor>(null);
   const docTitleRef = useRef<DocTitle>(null);
   const edgelessRef = useRef<EdgelessEditor>(null);
+  const featureFlags = useService(FeatureFlagService).flags;
+  const enableEditorRTL = useLiveData(featureFlags.enable_editor_rtl.$);
 
   const slots: BlocksuiteEditorContainerRef['slots'] = useMemo(() => {
     return {
@@ -157,6 +161,7 @@ export const BlocksuiteEditorContainer = forwardRef<
   return (
     <div
       data-testid={`editor-${page.id}`}
+      dir={enableEditorRTL ? 'rtl' : 'ltr'}
       className={clsx(
         `editor-wrapper ${mode}-mode`,
         styles.docEditorRoot,
