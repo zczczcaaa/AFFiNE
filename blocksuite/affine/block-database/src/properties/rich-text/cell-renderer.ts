@@ -518,6 +518,8 @@ export class RichTextCellEditing extends BaseRichTextCell {
 
   override render() {
     return html`<rich-text
+      data-disable-ask-ai
+      data-not-block-text
       .yText=${this.value}
       .inlineEventSource=${this.topContenteditableElement}
       .attributesSchema=${this.attributesSchema}

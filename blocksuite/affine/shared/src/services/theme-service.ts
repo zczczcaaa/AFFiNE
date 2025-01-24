@@ -14,7 +14,7 @@ import {
   combinedLightCssVariables,
 } from '@toeverything/theme';
 
-import { isInsideEdgelessEditor } from '../utils/index.js';
+import { isInsideEdgelessEditor } from '../utils/dom';
 
 export const ThemeExtensionIdentifier = createIdentifier<ThemeExtension>(
   'AffineThemeExtension'

@@ -14,6 +14,7 @@ import { effects as blockNoteEffects } from '@blocksuite/affine-block-note/effec
 import { effects as blockParagraphEffects } from '@blocksuite/affine-block-paragraph/effects';
 import { effects as blockSurfaceEffects } from '@blocksuite/affine-block-surface/effects';
 import { effects as blockSurfaceRefEffects } from '@blocksuite/affine-block-surface-ref/effects';
+import { effects as blockTableEffects } from '@blocksuite/affine-block-table/effects';
 import { effects as componentAiItemEffects } from '@blocksuite/affine-components/ai-item';
 import { BlockSelection } from '@blocksuite/affine-components/block-selection';
 import { BlockZeroWidth } from '@blocksuite/affine-components/block-zero-width';
@@ -204,6 +205,7 @@ export function effects() {
   blockDividerEffects();
   blockDataViewEffects();
   blockCodeEffects();
+  blockTableEffects();
 
   componentCaptionEffects();
   componentContextMenuEffects();

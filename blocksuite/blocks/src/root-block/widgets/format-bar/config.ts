@@ -439,6 +439,8 @@ export const BUILT_IN_GROUPS: MenuItemGroup<FormatBarContext>[] = [
 ];
 
 export function toolbarMoreButton(toolbar: AffineFormatBarWidget) {
+  const richText = getRichText();
+  if (richText?.dataset.disableAskAi !== undefined) return null;
   const context = new FormatBarContext(toolbar);
   const actions = renderGroups(toolbar.moreGroups, context);
 
@@ -455,3 +457,15 @@ export function toolbarMoreButton(toolbar: AffineFormatBarWidget) {
     </editor-menu-button>
   `;
 }
+const getRichText = () => {
+  const selection = getSelection();
+  if (!selection) return null;
+  if (selection.rangeCount === 0) return null;
+  const range = selection.getRangeAt(0);
+  const commonAncestorContainer =
+    range.commonAncestorContainer instanceof Element
+      ? range.commonAncestorContainer
+      : range.commonAncestorContainer.parentElement;
+  if (!commonAncestorContainer) return null;
+  return commonAncestorContainer.closest('rich-text');
+};

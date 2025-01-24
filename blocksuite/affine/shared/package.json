@@ -25,6 +25,7 @@
     "@toeverything/theme": "^1.1.7",
     "@types/hast": "^3.0.4",
     "@types/mdast": "^4.0.4",
+    "fractional-indexing": "^3.2.0",
     "lit": "^3.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.mergewith": "^4.6.2",

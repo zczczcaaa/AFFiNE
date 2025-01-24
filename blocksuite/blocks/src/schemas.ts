@@ -23,6 +23,7 @@ import {
   ParagraphBlockSchema,
   RootBlockSchema,
   SurfaceRefBlockSchema,
+  TableBlockSchema,
 } from '@blocksuite/affine-model';
 import type { BlockSchema } from '@blocksuite/store';
 import type { z } from 'zod';
@@ -52,4 +53,5 @@ export const AffineSchemas: z.infer<typeof BlockSchema>[] = [
   EmbedLoomBlockSchema,
   EdgelessTextBlockSchema,
   LatexBlockSchema,
+  TableBlockSchema,
 ];

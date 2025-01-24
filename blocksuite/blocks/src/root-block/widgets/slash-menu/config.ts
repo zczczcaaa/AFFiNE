@@ -247,6 +247,23 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     // ---------------------------------------------------------
     { groupName: 'Content & Media' },
     {
+      name: 'Table',
+      description: 'Create a table block.',
+      icon: DatabaseTableViewIcon20,
+      tooltip: slashMenuToolTips['Table View'],
+      showWhen: ({ model }) => !insideEdgelessText(model),
+      action: ({ rootComponent }) => {
+        rootComponent.std.command
+          .chain()
+          .getSelectedModels()
+          .insertTableBlock({
+            place: 'after',
+            removeEmptyLine: true,
+          })
+          .run();
+      },
+    },
+    {
       name: 'Image',
       description: 'Insert an image.',
       icon: ImageIcon20,

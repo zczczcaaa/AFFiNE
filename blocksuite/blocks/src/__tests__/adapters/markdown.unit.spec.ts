@@ -2,7 +2,11 @@ import {
   InlineDeltaToMarkdownAdapterExtensions,
   MarkdownInlineToDeltaAdapterExtensions,
 } from '@blocksuite/affine-components/rich-text';
-import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
+import {
+  DefaultTheme,
+  NoteDisplayMode,
+  TableModelFlavour,
+} from '@blocksuite/affine-model';
 import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import type {
@@ -3529,91 +3533,76 @@ bbb
       flavour: 'affine:note',
       props: {
         xywh: '[0,0,800,95]',
-        background: DefaultTheme.noteBackgrounColor,
+        background: {
+          dark: '#000000',
+          light: '#ffffff',
+        },
         index: 'a0',
         hidden: false,
-        displayMode: NoteDisplayMode.DocAndEdgeless,
+        displayMode: 'both',
       },
       children: [
         {
           type: 'block',
           id: 'matchesReplaceMap[1]',
-          flavour: 'affine:database',
+          flavour: TableModelFlavour,
           props: {
-            views: [
-              {
-                id: 'matchesReplaceMap[2]',
-                name: 'Table View',
-                mode: 'table',
-                columns: [],
-                filter: {
-                  type: 'group',
-                  op: 'and',
-                  conditions: [],
-                },
-                header: {
-                  titleColumn: 'matchesReplaceMap[9]',
-                  iconColumn: 'type',
-                },
+            columns: {
+              'matchesReplaceMap[3]': {
+                columnId: 'matchesReplaceMap[3]',
+                order: 'matchesReplaceMap[4]',
               },
-            ],
-            title: {
-              '$blocksuite:internal:text$': true,
-              delta: [],
+              'matchesReplaceMap[6]': {
+                columnId: 'matchesReplaceMap[6]',
+                order: 'matchesReplaceMap[7]',
+              },
+              'matchesReplaceMap[9]': {
+                columnId: 'matchesReplaceMap[9]',
+                order: 'matchesReplaceMap[10]',
+              },
+            },
+            rows: {
+              'matchesReplaceMap[12]': {
+                rowId: 'matchesReplaceMap[12]',
+                order: 'matchesReplaceMap[13]',
+              },
+              'matchesReplaceMap[15]': {
+                rowId: 'matchesReplaceMap[15]',
+                order: 'matchesReplaceMap[16]',
+              },
             },
             cells: {
-              'matchesReplaceMap[12]': {
-                'matchesReplaceMap[10]': {
-                  columnId: 'matchesReplaceMap[10]',
-                  value: {
-                    '$blocksuite:internal:text$': true,
-                    delta: [
-                      {
-                        insert: 'eee',
-                      },
-                    ],
-                  },
-                },
-                'matchesReplaceMap[11]': {
-                  columnId: 'matchesReplaceMap[11]',
-                  value: {
-                    '$blocksuite:internal:text$': true,
-                    delta: [
-                      {
-                        insert: 'fff',
-                      },
-                    ],
-                  },
+              'matchesReplaceMap[17]': {
+                text: {
+                  '$blocksuite:internal:text$': true,
+                  delta: [
+                    {
+                      insert: 'aaa',
+                    },
+                  ],
                 },
               },
-            },
-            columns: [
-              {
-                type: 'title',
-                name: 'aaa',
-                data: {},
-                id: 'matchesReplaceMap[9]',
+              'matchesReplaceMap[18]': {
+                text: {
+                  '$blocksuite:internal:text$': true,
+                  delta: [
+                    {
+                      insert: 'bbb',
+                    },
+                  ],
+                },
               },
-              {
-                type: 'rich-text',
-                name: 'bbb',
-                data: {},
-                id: 'matchesReplaceMap[10]',
+              'matchesReplaceMap[19]': {
+                text: {
+                  '$blocksuite:internal:text$': true,
+                  delta: [
+                    {
+                      insert: 'ccc',
+                    },
+                  ],
+                },
               },
-              {
-                type: 'rich-text',
-                name: 'ccc',
-                data: {},
-                id: 'matchesReplaceMap[11]',
-              },
-            ],
-          },
-          children: [
-            {
-              type: 'block',
-              id: 'matchesReplaceMap[12]',
-              flavour: 'affine:paragraph',
-              props: {
+              'matchesReplaceMap[20]': {
                 text: {
                   '$blocksuite:internal:text$': true,
                   delta: [
@@ -3622,11 +3611,30 @@ bbb
                     },
                   ],
                 },
-                type: 'text',
               },
-              children: [],
+              'matchesReplaceMap[21]': {
+                text: {
+                  '$blocksuite:internal:text$': true,
+                  delta: [
+                    {
+                      insert: 'eee',
+                    },
+                  ],
+                },
+              },
+              'matchesReplaceMap[22]': {
+                text: {
+                  '$blocksuite:internal:text$': true,
+                  delta: [
+                    {
+                      insert: 'fff',
+                    },
+                  ],
+                },
+              },
             },
-          ],
+          },
+          children: [],
         },
       ],
     };

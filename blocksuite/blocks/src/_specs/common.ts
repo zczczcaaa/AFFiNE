@@ -27,6 +27,10 @@ import {
   PageSurfaceRefBlockSpec,
 } from '@blocksuite/affine-block-surface-ref';
 import {
+  TableBlockSpec,
+  TableSelectionExtension,
+} from '@blocksuite/affine-block-table';
+import {
   RefNodeSlotsExtension,
   RichTextExtensions,
 } from '@blocksuite/affine-components/rich-text';
@@ -60,6 +64,7 @@ export const CommonBlockSpecs: ExtensionType[] = [
   LatexBlockSpec,
   ListBlockSpec,
   DatabaseBlockSpec,
+  TableBlockSpec,
   DataViewBlockSpec,
   DividerBlockSpec,
   BookmarkBlockSpec,
@@ -100,5 +105,6 @@ export const StoreExtensions: ExtensionType[] = [
   HighlightSelectionExtension,
   ImageSelectionExtension,
   DatabaseSelectionExtension,
+  TableSelectionExtension,
   LinkPreviewerService,
 ];

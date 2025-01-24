@@ -1,7 +1,8 @@
-import { DatabaseSelection } from '@blocksuite/affine-block-database';
 import { HoverController } from '@blocksuite/affine-components/hover';
-import type { RichText } from '@blocksuite/affine-components/rich-text';
-import { isFormatSupported } from '@blocksuite/affine-components/rich-text';
+import {
+  isFormatSupported,
+  type RichText,
+} from '@blocksuite/affine-components/rich-text';
 import {
   cloneGroups,
   getMoreMenuConfig,
@@ -205,34 +206,20 @@ export class AffineFormatBarWidget extends WidgetComponent {
     );
     this.disposables.addFromEvent(document, 'selectionchange', () => {
       if (!this.host.event.active) return;
-
-      const databaseSelection = this.host.selection.find(DatabaseSelection);
-      if (!databaseSelection) {
-        return;
-      }
-
       const reset = () => {
         this.reset();
         this.requestUpdate();
       };
-      const viewSelection = databaseSelection.viewSelection;
-      // check table selection
-      if (
-        viewSelection.type === 'table' &&
-        (viewSelection.selectionType !== 'area' || !viewSelection.isEditing)
-      )
-        return reset();
-      // check kanban selection
-      if (
-        (viewSelection.type === 'kanban' &&
-          viewSelection.selectionType !== 'cell') ||
-        !viewSelection.isEditing
-      )
-        return reset();
-
       const range = this.nativeRange;
-
-      if (!range || range.collapsed) return reset();
+      if (!range) return;
+      const container =
+        range.commonAncestorContainer instanceof Element
+          ? range.commonAncestorContainer
+          : range.commonAncestorContainer.parentElement;
+      if (!container) return;
+      const notBlockText = container.closest('rich-text')?.dataset.notBlockText;
+      if (notBlockText == null) return;
+      if (range.collapsed) return reset();
       this._displayType = 'native';
       this.requestUpdate();
     });
@@ -551,12 +538,16 @@ export class AffineFormatBarWidget extends WidgetComponent {
     }
 
     const items = ConfigRenderer(this);
-
+    const moreButton = toolbarMoreButton(this);
     return html`
       <editor-toolbar class="${AFFINE_FORMAT_BAR_WIDGET}">
         ${items}
-        <editor-toolbar-separator></editor-toolbar-separator>
-        ${toolbarMoreButton(this)}
+        ${moreButton
+          ? html`
+              <editor-toolbar-separator></editor-toolbar-separator>
+              ${moreButton}
+            `
+          : nothing}
       </editor-toolbar>
     `;
   }

@@ -1,4 +1,6 @@
 // corresponding to `formatText` command
+import { TableModelFlavour } from '@blocksuite/affine-model';
+
 export const FORMAT_TEXT_SUPPORT_FLAVOURS = [
   'affine:paragraph',
   'affine:list',
@@ -11,4 +13,7 @@ export const FORMAT_BLOCK_SUPPORT_FLAVOURS = [
   'affine:code',
 ];
 // corresponding to `formatNative` command
-export const FORMAT_NATIVE_SUPPORT_FLAVOURS = ['affine:database'];
+export const FORMAT_NATIVE_SUPPORT_FLAVOURS = [
+  'affine:database',
+  TableModelFlavour,
+];

@@ -388,6 +388,8 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
 
   override renderBlockText() {
     return html` <rich-text
+      data-disable-ask-ai
+      data-not-block-text
       .yText="${this.value}"
       .inlineEventSource="${this.topContenteditableElement}"
       .attributesSchema="${this.attributesSchema}"
@@ -407,6 +409,8 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
 
   override renderLinkedDoc(): TemplateResult {
     return html` <rich-text
+      data-disable-ask-ai
+      data-not-block-text
       .yText="${this.linkedDocTitle$.value}"
       .inlineEventSource="${this.topContenteditableElement}"
       .readonly="${this.readonly}"

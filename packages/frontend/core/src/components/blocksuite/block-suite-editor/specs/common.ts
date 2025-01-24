@@ -22,6 +22,7 @@ import {
   ParagraphBlockSpec,
   RefNodeSlotsExtension,
   RichTextExtensions,
+  TableBlockSpec,
 } from '@blocksuite/affine/blocks';
 import type { ExtensionType } from '@blocksuite/affine/store';
 
@@ -32,6 +33,7 @@ const CommonBlockSpecs: ExtensionType[] = [
   LatexBlockSpec,
   ListBlockSpec,
   DatabaseBlockSpec,
+  TableBlockSpec,
   DataViewBlockSpec,
   DividerBlockSpec,
   EmbedExtensions,

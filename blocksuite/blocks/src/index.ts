@@ -48,6 +48,7 @@ export * from '@blocksuite/affine-block-note';
 export * from '@blocksuite/affine-block-paragraph';
 export * from '@blocksuite/affine-block-surface';
 export * from '@blocksuite/affine-block-surface-ref';
+export * from '@blocksuite/affine-block-table';
 export {
   type AIError,
   type AIItemConfig,

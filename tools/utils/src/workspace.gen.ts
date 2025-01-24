@@ -237,6 +237,19 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/block-table',
+    name: '@blocksuite/affine-block-table',
+    workspaceDependencies: [
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/affine/data-view',
+      'blocksuite/framework/global',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/components',
     name: '@blocksuite/affine-components',
     workspaceDependencies: [
@@ -350,6 +363,7 @@ export const PackageList = [
       'blocksuite/affine/block-paragraph',
       'blocksuite/affine/block-surface',
       'blocksuite/affine/block-surface-ref',
+      'blocksuite/affine/block-table',
       'blocksuite/affine/components',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
@@ -726,6 +740,7 @@ export type PackageName =
   | '@blocksuite/affine-block-paragraph'
   | '@blocksuite/affine-block-surface'
   | '@blocksuite/affine-block-surface-ref'
+  | '@blocksuite/affine-block-table'
   | '@blocksuite/affine-components'
   | '@blocksuite/data-view'
   | '@blocksuite/affine-model'

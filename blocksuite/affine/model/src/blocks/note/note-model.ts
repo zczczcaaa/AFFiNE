@@ -47,6 +47,7 @@ export const NoteZodSchema = z
       },
     },
   });
+import { TableModelFlavour } from '../table';
 
 export const NoteBlockSchema = defineBlockSchema({
   flavour: 'affine:note',
@@ -83,6 +84,7 @@ export const NoteBlockSchema = defineBlockSchema({
       'affine:surface-ref',
       'affine:embed-*',
       'affine:latex',
+      TableModelFlavour,
     ],
   },
   toModel: () => {

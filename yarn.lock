@@ -3647,6 +3647,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blocksuite/affine-block-table@workspace:*, @blocksuite/affine-block-table@workspace:blocksuite/affine/block-table":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-block-table@workspace:blocksuite/affine/block-table"
+  dependencies:
+    "@atlaskit/pragmatic-drag-and-drop": "npm:^1.4.0"
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/data-view": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/icons": "npm:^2.2.1"
+    "@blocksuite/store": "workspace:*"
+    "@floating-ui/dom": "npm:^1.6.10"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@vanilla-extract/css": "npm:^1.14.0"
+    lit: "npm:^3.2.0"
+    yjs: "npm:^13.6.21"
+    zod: "npm:^3.24.1"
+  languageName: unknown
+  linkType: soft
+
 "@blocksuite/affine-components@workspace:*, @blocksuite/affine-components@workspace:blocksuite/affine/components":
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-components@workspace:blocksuite/affine/components"
@@ -3713,6 +3735,7 @@ __metadata:
     "@types/lodash.clonedeep": "npm:^4.5.9"
     "@types/lodash.mergewith": "npm:^4"
     "@types/mdast": "npm:^4.0.4"
+    fractional-indexing: "npm:^3.2.0"
     lit: "npm:^3.2.0"
     lodash.clonedeep: "npm:^4.5.0"
     lodash.mergewith: "npm:^4.6.2"
@@ -3873,6 +3896,7 @@ __metadata:
     "@blocksuite/affine-block-paragraph": "workspace:*"
     "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-block-surface-ref": "workspace:*"
+    "@blocksuite/affine-block-table": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
@@ -15931,7 +15955,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/css@npm:^1.16.1, @vanilla-extract/css@npm:^1.17.0":
+"@vanilla-extract/css@npm:^1.14.0, @vanilla-extract/css@npm:^1.16.1, @vanilla-extract/css@npm:^1.17.0":
   version: 1.17.0
   resolution: "@vanilla-extract/css@npm:1.17.0"
   dependencies:
