@@ -39,13 +39,29 @@ const tableSchema = defineBlockSchema({
     version: 1,
   },
 });
+
+const flatTableSchema = defineBlockSchema({
+  flavour: 'flat-table',
+  props: internal => ({
+    title: internal.Text(),
+    cols: { internal: { color: 'white' } } as Record<string, { color: string }>,
+    rows: {} as Record<string, { color: string }>,
+    labels: [] as Array<string>,
+  }),
+  metadata: {
+    role: 'content',
+    version: 1,
+    isFlatData: true,
+  },
+});
 type RootModel = SchemaToModel<typeof pageSchema>;
 type TableModel = SchemaToModel<typeof tableSchema>;
+type FlatTableModel = SchemaToModel<typeof flatTableSchema>;
 
 function createTestOptions() {
   const idGenerator = createAutoIncrementIdGenerator();
   const schema = new Schema();
-  schema.register([pageSchema, tableSchema]);
+  schema.register([pageSchema, tableSchema, flatTableSchema]);
   return { id: 'test-collection', idGenerator, schema };
 }
 
@@ -181,24 +197,29 @@ describe('block model should has signal props', () => {
     yBlock.set('sys:flavour', 'page');
     yBlock.set('sys:children', new Y.Array());
 
-    const block = new Block(doc.schema, yBlock, doc);
+    const onChange = vi.fn();
+    const block = new Block(doc.schema, yBlock, doc, { onChange });
     const model = block.model as RootModel;
 
     expect(model.count).toBe(0);
     model.stash('count');
 
+    onChange.mockClear();
     model.count = 1;
     expect(model.count$.value).toBe(1);
     expect(yBlock.get('prop:count')).toBe(0);
+    expect(onChange).toHaveBeenCalledTimes(1);
 
     model.count$.value = 2;
     expect(model.count).toBe(2);
     expect(yBlock.get('prop:count')).toBe(0);
+    expect(onChange).toHaveBeenCalledTimes(2);
 
     model.pop('count');
     expect(yBlock.get('prop:count')).toBe(2);
     expect(model.count).toBe(2);
     expect(model.count$.value).toBe(2);
+    expect(onChange).toHaveBeenCalledTimes(3);
 
     model.stash('count');
     yBlock.set('prop:count', 3);
@@ -360,4 +381,148 @@ test('deep sync', () => {
   expect(model.rows$.value).toEqual([{ color: 'green' }]);
   expect(onPropsUpdated).toHaveBeenCalledTimes(1);
   expect(onRowsUpdated).toHaveBeenCalledTimes(1);
+});
+
+describe('flat', () => {
+  test('flat crud', async () => {
+    const doc = createTestDoc();
+    const yDoc = new Y.Doc();
+    const yBlock = yDoc.getMap('yBlock') as YBlock;
+    yBlock.set('sys:id', '0');
+    yBlock.set('sys:flavour', 'flat-table');
+    yBlock.set('sys:children', new Y.Array());
+
+    const onChange = vi.fn();
+    const onColUpdated = vi.fn();
+
+    const block = new Block(doc.schema, yBlock, doc, { onChange });
+    const model = block.model as FlatTableModel;
+    model.props.title = internalPrimitives.Text();
+
+    model.props.cols$.subscribe(onColUpdated);
+    onChange.mockClear();
+    onColUpdated.mockClear();
+
+    model.props.cols = {
+      ...model.props.cols,
+      a: { color: 'red' },
+    };
+    expect(onColUpdated).toHaveBeenCalledTimes(1);
+    expect(yBlock.get('prop:cols.a.color')).toBe('red');
+    expect(yBlock.get('prop:cols.internal.color')).toBe('white');
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    onChange.mockClear();
+    onColUpdated.mockClear();
+    model.props.cols.b = { color: 'blue' };
+    expect(yBlock.get('prop:cols.b.color')).toBe('blue');
+    expect(model.props.cols$.peek()).toEqual({
+      a: { color: 'red' },
+      b: { color: 'blue' },
+      internal: { color: 'white' },
+    });
+    expect(onColUpdated).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.anything(),
+      'cols',
+      expect.anything()
+    );
+
+    model.props.cols.a.color = 'black';
+    expect(yBlock.get('prop:cols.a.color')).toBe('black');
+    expect(model.props.cols$.value.a.color).toBe('black');
+
+    onChange.mockClear();
+    onColUpdated.mockClear();
+    model.props.cols$.value = {
+      a: { color: 'red' },
+    };
+    expect(yBlock.get('prop:cols.a.color')).toBe('red');
+    expect(yBlock.get('prop:cols.internal.color')).toBe(undefined);
+    expect(yBlock.get('prop:cols.b.color')).toBe(undefined);
+    expect(model.props.cols).toEqual({
+      a: { color: 'red' },
+    });
+    expect(onColUpdated).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.anything(),
+      'cols',
+      expect.anything()
+    );
+
+    onChange.mockClear();
+    model.props.title.insert('test', 0);
+    expect((yBlock.get('prop:title') as Y.Text).toJSON()).toBe('test');
+    expect(model.props.title$.value.toDelta()).toEqual([{ insert: 'test' }]);
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.anything(),
+      'title',
+      expect.anything()
+    );
+
+    onChange.mockClear();
+    model.props.labels.push('test');
+    const getLabels = () => yBlock.get('prop:labels') as Y.Array<unknown>;
+    expect(getLabels().toJSON()).toEqual(['test']);
+    expect(model.props.labels$.value).toEqual(['test']);
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.anything(),
+      'labels',
+      expect.anything()
+    );
+
+    onChange.mockClear();
+    model.props.labels$.value = ['test2'];
+    expect(getLabels().toJSON()).toEqual(['test2']);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.anything(),
+      'labels',
+      expect.anything()
+    );
+  });
+
+  test('stash and pop', () => {
+    const doc = createTestDoc();
+    const yDoc = new Y.Doc();
+    const yBlock = yDoc.getMap('yBlock') as YBlock;
+    yBlock.set('sys:id', '0');
+    yBlock.set('sys:flavour', 'flat-table');
+    yBlock.set('sys:children', new Y.Array());
+    const onColUpdated = vi.fn();
+
+    const onChange = vi.fn();
+    const block = new Block(doc.schema, yBlock, doc, { onChange });
+    const model = block.model as FlatTableModel;
+
+    model.props.cols$.subscribe(onColUpdated);
+
+    onChange.mockClear();
+    onColUpdated.mockClear();
+
+    model.props.cols = {
+      a: { color: 'red' },
+    };
+    expect(yBlock.get('prop:cols.a.color')).toBe('red');
+    expect(model.props.cols$.value.a.color).toBe('red');
+    expect(onColUpdated).toHaveBeenCalledTimes(1);
+
+    onChange.mockClear();
+    onColUpdated.mockClear();
+
+    model.stash('cols');
+    model.props.cols.a.color = 'blue';
+    expect(yBlock.get('prop:cols.a.color')).toBe('red');
+    expect(model.props.cols$.value.a.color).toBe('blue');
+    expect(onColUpdated).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    model.pop('cols');
+    expect(yBlock.get('prop:cols.a.color')).toBe('blue');
+    expect(onColUpdated).toHaveBeenCalledTimes(2);
+    expect(onChange).toHaveBeenCalledTimes(2);
+  });
 });

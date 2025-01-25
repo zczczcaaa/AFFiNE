@@ -87,6 +87,15 @@ export class BlockModel<
 
   yBlock!: YBlock;
 
+  _props!: SignaledProps<Props>;
+
+  get props() {
+    if (!this._props) {
+      throw new Error('props is only supported in flat data model');
+    }
+    return this._props;
+  }
+
   get flavour(): string {
     return this.schema.model.flavour;
   }
