@@ -5,11 +5,10 @@ import { pick } from 'lodash-es';
 import {
   CryptoHelper,
   EmailAlreadyUsed,
-  EventEmitter,
+  EventBus,
   WrongSignInCredentials,
   WrongSignInMethod,
 } from '../base';
-import type { Payload } from '../base/event/def';
 import { Quota_FreePlanV1_1 } from '../core/quota/schema';
 import { BaseModel } from './base';
 import type { Workspace } from './workspace';
@@ -40,21 +39,15 @@ const defaultUserCreatingData = {
   },
 };
 
-declare module '../base/event/def' {
-  interface UserEvents {
-    created: Payload<User>;
-    updated: Payload<User>;
-    deleted: Payload<
-      User & {
-        // TODO(@forehalo): unlink foreign key constraint on [WorkspaceUserPermission] to delegate
-        // dealing of owned workspaces of deleted users to workspace model
-        ownedWorkspaces: Workspace['id'][];
-      }
-    >;
-  }
-
-  interface EventDefinitions {
-    user: UserEvents;
+declare global {
+  interface Events {
+    'user.created': User;
+    'user.updated': User;
+    'user.deleted': User & {
+      // TODO(@forehalo): unlink foreign key constraint on [WorkspaceUserPermission] to delegate
+      // dealing of owned workspaces of deleted users to workspace model
+      ownedWorkspaces: Workspace['id'][];
+    };
   }
 }
 
@@ -65,7 +58,7 @@ export type { User };
 export class UserModel extends BaseModel {
   constructor(
     private readonly crypto: CryptoHelper,
-    private readonly event: EventEmitter
+    private readonly event: EventBus
   ) {
     super();
   }

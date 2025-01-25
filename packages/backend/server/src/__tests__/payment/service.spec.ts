@@ -7,7 +7,7 @@ import Sinon from 'sinon';
 import Stripe from 'stripe';
 
 import { AppModule } from '../../app.module';
-import { EventEmitter, Runtime } from '../../base';
+import { EventBus, Runtime } from '../../base';
 import { ConfigModule } from '../../base/config';
 import { CurrentUser } from '../../core/auth';
 import { AuthService } from '../../core/auth/service';
@@ -158,7 +158,7 @@ const test = ava as TestFn<{
   db: PrismaClient;
   app: INestApplication;
   service: SubscriptionService;
-  event: Sinon.SinonStubbedInstance<EventEmitter>;
+  event: Sinon.SinonStubbedInstance<EventBus>;
   feature: Sinon.SinonStubbedInstance<FeatureManagementService>;
   runtime: Sinon.SinonStubbedInstance<Runtime>;
   stripe: {
@@ -203,14 +203,12 @@ test.before(async t => {
       m.overrideProvider(FeatureManagementService).useValue(
         Sinon.createStubInstance(FeatureManagementService)
       );
-      m.overrideProvider(EventEmitter).useValue(
-        Sinon.createStubInstance(EventEmitter)
-      );
+      m.overrideProvider(EventBus).useValue(Sinon.createStubInstance(EventBus));
       m.overrideProvider(Runtime).useValue(Sinon.createStubInstance(Runtime));
     },
   });
 
-  t.context.event = app.get(EventEmitter);
+  t.context.event = app.get(EventBus);
   t.context.service = app.get(SubscriptionService);
   t.context.feature = app.get(FeatureManagementService);
   t.context.runtime = app.get(Runtime);

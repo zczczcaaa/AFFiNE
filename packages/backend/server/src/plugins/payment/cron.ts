@@ -3,7 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaClient } from '@prisma/client';
 
-import { EventEmitter, type EventPayload } from '../../base';
+import { EventBus } from '../../base';
 import {
   SubscriptionPlan,
   SubscriptionRecurring,
@@ -14,7 +14,7 @@ import {
 export class SubscriptionCronJobs {
   constructor(
     private readonly db: PrismaClient,
-    private readonly event: EventEmitter
+    private readonly event: EventBus
   ) {}
 
   private getDateRange(after: number, base: number | Date = Date.now()) {
@@ -77,14 +77,14 @@ export class SubscriptionCronJobs {
         // should not reach here
         continue;
       }
-      this.event.emit('workspace.subscription.notify', {
-        workspaceId: subscription.targetId,
-        expirationDate: end,
-        deletionDate:
-          subscription.status === 'canceled'
-            ? this.getDateRange(180, end).end
-            : undefined,
-      });
+
+      if (!subscription.nextBillAt) {
+        this.event.emit('workspace.subscription.notify', {
+          workspaceId: subscription.targetId,
+          expirationDate: end,
+          deletionDate: this.getDateRange(180, end).end,
+        });
+      }
     }
   }
 
@@ -112,7 +112,7 @@ export class SubscriptionCronJobs {
   async handleUserSubscriptionCanceled({
     userId,
     plan,
-  }: EventPayload<'user.subscription.canceled'>) {
+  }: Events['user.subscription.canceled']) {
     await this.db.subscription.delete({
       where: {
         targetId_plan: {

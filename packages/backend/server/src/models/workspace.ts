@@ -7,9 +7,56 @@ import {
 } from '@prisma/client';
 import { groupBy } from 'lodash-es';
 
-import { EventEmitter } from '../base';
+import { EventBus } from '../base';
 import { BaseModel } from './base';
 import { Permission } from './common';
+
+declare global {
+  interface Events {
+    'workspace.members.reviewRequested': { inviteId: string };
+    'workspace.members.requestDeclined': {
+      userId: string;
+      workspaceId: string;
+    };
+    'workspace.members.requestApproved': { inviteId: string };
+    'workspace.members.roleChanged': {
+      userId: string;
+      workspaceId: string;
+      permission: number;
+    };
+    'workspace.members.ownershipTransferred': {
+      from: string;
+      to: string;
+      workspaceId: string;
+    };
+    'workspace.members.updated': {
+      workspaceId: string;
+      count: number;
+    };
+    'workspace.members.leave': {
+      user: {
+        id: string;
+        email: string;
+      };
+      workspaceId: string;
+    };
+    'workspace.members.removed': {
+      workspaceId: string;
+      userId: string;
+    };
+    'workspace.deleted': {
+      id: string;
+    };
+    'workspace.blob.delete': {
+      workspaceId: string;
+      key: string;
+    };
+    'workspace.blob.sync': {
+      workspaceId: string;
+      key: string;
+    };
+  }
+}
 
 export { WorkspaceMemberStatus };
 export type { Workspace };
@@ -28,7 +75,7 @@ export interface FindWorkspaceMembersOptions {
 
 @Injectable()
 export class WorkspaceModel extends BaseModel {
-  constructor(private readonly event: EventEmitter) {
+  constructor(private readonly event: EventBus) {
     super();
   }
 

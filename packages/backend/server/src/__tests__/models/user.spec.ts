@@ -1,10 +1,9 @@
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
 
-import { EmailAlreadyUsed } from '../../base';
+import { EmailAlreadyUsed, EventBus } from '../../base';
 import { Permission } from '../../models/common';
 import { UserModel } from '../../models/user';
 import { WorkspaceMemberStatus } from '../../models/workspace';
@@ -46,7 +45,7 @@ test('should create a new user', async t => {
 });
 
 test('should trigger user.created event', async t => {
-  const event = t.context.module.get(EventEmitter2);
+  const event = t.context.module.get(EventBus);
   const spy = Sinon.spy();
   event.on('user.created', spy);
 
@@ -117,7 +116,7 @@ test('should not update email to an existing one', async t => {
 });
 
 test('should trigger user.updated event', async t => {
-  const event = t.context.module.get(EventEmitter2);
+  const event = t.context.module.get(EventBus);
   const spy = Sinon.spy();
   event.on('user.updated', spy);
 
@@ -217,7 +216,7 @@ test('should fulfill user', async t => {
 });
 
 test('should trigger user.updated event when fulfilling user', async t => {
-  const event = t.context.module.get(EventEmitter2);
+  const event = t.context.module.get(EventBus);
   const createSpy = Sinon.spy();
   const updateSpy = Sinon.spy();
   event.on('user.created', createSpy);
@@ -250,7 +249,7 @@ test('should delete user', async t => {
 });
 
 test('should trigger user.deleted event', async t => {
-  const event = t.context.module.get(EventEmitter2);
+  const event = t.context.module.get(EventBus);
   const spy = Sinon.spy();
   event.on('user.deleted', spy);
 

@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
 import Stripe from 'stripe';
 
+import { OnEvent } from '../../base';
 import { SubscriptionService } from './service';
-
-const OnStripeEvent = (
-  event: Stripe.Event.Type,
-  opts?: Parameters<typeof OnEvent>[1]
-) => OnEvent(`stripe:${event}`, opts);
 
 /**
  * Stripe webhook events sent in random order, and may be even sent more than once.
@@ -22,11 +17,11 @@ export class StripeWebhook {
     private readonly stripe: Stripe
   ) {}
 
-  @OnStripeEvent('invoice.created')
-  @OnStripeEvent('invoice.updated')
-  @OnStripeEvent('invoice.finalization_failed')
-  @OnStripeEvent('invoice.payment_failed')
-  @OnStripeEvent('invoice.paid')
+  @OnEvent('stripe.invoice.created')
+  @OnEvent('stripe.invoice.updated')
+  @OnEvent('stripe.invoice.finalization_failed')
+  @OnEvent('stripe.invoice.payment_failed')
+  @OnEvent('stripe.invoice.paid')
   async onInvoiceUpdated(
     event:
       | Stripe.InvoiceCreatedEvent
@@ -39,8 +34,8 @@ export class StripeWebhook {
     await this.service.saveStripeInvoice(invoice);
   }
 
-  @OnStripeEvent('customer.subscription.created')
-  @OnStripeEvent('customer.subscription.updated')
+  @OnEvent('stripe.customer.subscription.created')
+  @OnEvent('stripe.customer.subscription.updated')
   async onSubscriptionChanges(
     event:
       | Stripe.CustomerSubscriptionUpdatedEvent
@@ -56,7 +51,7 @@ export class StripeWebhook {
     await this.service.saveStripeSubscription(subscription);
   }
 
-  @OnStripeEvent('customer.subscription.deleted')
+  @OnEvent('stripe.customer.subscription.deleted')
   async onSubscriptionDeleted(event: Stripe.CustomerSubscriptionDeletedEvent) {
     await this.service.deleteStripeSubscription(event.data.object);
   }

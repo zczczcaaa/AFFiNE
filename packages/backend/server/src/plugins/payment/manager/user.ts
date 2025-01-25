@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 import { z } from 'zod';
 
 import {
-  EventEmitter,
+  EventBus,
   InternalServerError,
   InvalidCheckoutParameters,
   Runtime,
@@ -58,7 +58,7 @@ export class UserSubscriptionManager extends SubscriptionManager {
     db: PrismaClient,
     private readonly runtime: Runtime,
     private readonly feature: FeatureManagementService,
-    private readonly event: EventEmitter,
+    private readonly event: EventBus,
     private readonly url: URLHelper
   ) {
     super(stripe, db);

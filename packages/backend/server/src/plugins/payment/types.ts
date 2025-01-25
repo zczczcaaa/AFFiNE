@@ -1,8 +1,6 @@
 import type { User, Workspace } from '@prisma/client';
 import Stripe from 'stripe';
 
-import type { Payload } from '../../base/event/def';
-
 export enum SubscriptionRecurring {
   Monthly = 'monthly',
   Yearly = 'yearly',
@@ -50,41 +48,44 @@ export enum CouponType {
   ProEarlyAccessAIOneYearFree = 'ai_pro_ea_one_year_free',
 }
 
-declare module '../../base/event/def' {
-  interface UserEvents {
-    subscription: {
-      activated: Payload<{
-        userId: User['id'];
-        plan: SubscriptionPlan;
-        recurring: SubscriptionRecurring;
-      }>;
-      canceled: Payload<{
-        userId: User['id'];
-        plan: SubscriptionPlan;
-        recurring: SubscriptionRecurring;
-      }>;
+declare global {
+  interface Events {
+    'user.subscription.activated': {
+      userId: User['id'];
+      plan: SubscriptionPlan;
+      recurring: SubscriptionRecurring;
     };
-  }
+    'user.subscription.canceled': {
+      userId: User['id'];
+      plan: SubscriptionPlan;
+      recurring: SubscriptionRecurring;
+    };
 
-  interface WorkspaceEvents {
-    subscription: {
-      activated: Payload<{
-        workspaceId: Workspace['id'];
-        plan: SubscriptionPlan;
-        recurring: SubscriptionRecurring;
-        quantity: number;
-      }>;
-      canceled: Payload<{
-        workspaceId: Workspace['id'];
-        plan: SubscriptionPlan;
-        recurring: SubscriptionRecurring;
-      }>;
-      notify: Payload<{
-        workspaceId: Workspace['id'];
-        expirationDate: Date;
-        deletionDate: Date | undefined;
-      }>;
+    'workspace.subscription.activated': {
+      workspaceId: Workspace['id'];
+      plan: SubscriptionPlan;
+      recurring: SubscriptionRecurring;
+      quantity: number;
     };
+    'workspace.subscription.canceled': {
+      workspaceId: Workspace['id'];
+      plan: SubscriptionPlan;
+      recurring: SubscriptionRecurring;
+    };
+    'workspace.subscription.notify': {
+      workspaceId: Workspace['id'];
+      expirationDate: Date;
+      deletionDate: Date;
+    };
+
+    'stripe.invoice.created': Stripe.InvoiceCreatedEvent;
+    'stripe.invoice.updated': Stripe.InvoiceUpdatedEvent;
+    'stripe.invoice.finalization_failed': Stripe.InvoiceFinalizationFailedEvent;
+    'stripe.invoice.payment_failed': Stripe.InvoicePaymentFailedEvent;
+    'stripe.invoice.paid': Stripe.InvoicePaidEvent;
+    'stripe.customer.subscription.created': Stripe.CustomerSubscriptionCreatedEvent;
+    'stripe.customer.subscription.updated': Stripe.CustomerSubscriptionUpdatedEvent;
+    'stripe.customer.subscription.deleted': Stripe.CustomerSubscriptionDeletedEvent;
   }
 }
 

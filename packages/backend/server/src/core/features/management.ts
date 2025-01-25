@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { type EventPayload, OnEvent, Runtime } from '../../base';
+import { Runtime } from '../../base';
 import { Models } from '../../models';
 import { FeatureService } from './service';
 import { FeatureType } from './types';
@@ -166,10 +166,5 @@ export class FeatureManagementService {
 
   async listFeatureWorkspaces(feature: FeatureType) {
     return this.feature.listWorkspacesByFeature(feature);
-  }
-
-  @OnEvent('user.admin.created')
-  async onAdminUserCreated({ id }: EventPayload<'user.admin.created'>) {
-    await this.addAdmin(id);
   }
 }

@@ -4,8 +4,7 @@ import { PrismaClient } from '@prisma/client';
 import {
   autoMetadata,
   Config,
-  EventEmitter,
-  type EventPayload,
+  EventBus,
   type GetObjectMetadata,
   ListObjectsMetadata,
   OnEvent,
@@ -21,7 +20,7 @@ export class WorkspaceBlobStorage {
 
   constructor(
     private readonly config: Config,
-    private readonly event: EventEmitter,
+    private readonly event: EventBus,
     private readonly storageFactory: StorageProviderFactory,
     private readonly db: PrismaClient
   ) {
@@ -105,7 +104,7 @@ export class WorkspaceBlobStorage {
     });
 
     deletedBlobs.forEach(blob => {
-      this.event.emit('workspace.blob.deleted', {
+      this.event.emit('workspace.blob.delete', {
         workspaceId: workspaceId,
         key: blob.key,
       });
@@ -152,10 +151,7 @@ export class WorkspaceBlobStorage {
   }
 
   @OnEvent('workspace.blob.sync')
-  async syncBlobMeta({
-    workspaceId,
-    key,
-  }: EventPayload<'workspace.blob.sync'>) {
+  async syncBlobMeta({ workspaceId, key }: Events['workspace.blob.sync']) {
     try {
       const meta = await this.provider.head(`${workspaceId}/${key}`);
 
@@ -176,23 +172,23 @@ export class WorkspaceBlobStorage {
   }
 
   @OnEvent('workspace.deleted')
-  async onWorkspaceDeleted(workspaceId: EventPayload<'workspace.deleted'>) {
-    const blobs = await this.list(workspaceId);
+  async onWorkspaceDeleted({ id }: Events['workspace.deleted']) {
+    const blobs = await this.list(id);
 
     // to reduce cpu time holding
     blobs.forEach(blob => {
-      this.event.emit('workspace.blob.deleted', {
-        workspaceId: workspaceId,
+      this.event.emit('workspace.blob.delete', {
+        workspaceId: id,
         key: blob.key,
       });
     });
   }
 
-  @OnEvent('workspace.blob.deleted')
+  @OnEvent('workspace.blob.delete')
   async onDeleteWorkspaceBlob({
     workspaceId,
     key,
-  }: EventPayload<'workspace.blob.deleted'>) {
+  }: Events['workspace.blob.delete']) {
     await this.delete(workspaceId, key, true);
   }
 }

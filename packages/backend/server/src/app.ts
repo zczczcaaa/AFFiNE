@@ -45,10 +45,8 @@ export async function createApp() {
   app.useGlobalFilters(new GlobalExceptionFilter(app.getHttpAdapter()));
   app.use(cookieParser());
 
-  if (AFFiNE.flavor.sync) {
-    const adapter = new SocketIoAdapter(app);
-    app.useWebSocketAdapter(adapter);
-  }
+  const adapter = new SocketIoAdapter(app);
+  app.useWebSocketAdapter(adapter);
 
   if (AFFiNE.isSelfhosted && AFFiNE.metrics.telemetry.enabled) {
     const mixpanel = await import('mixpanel');

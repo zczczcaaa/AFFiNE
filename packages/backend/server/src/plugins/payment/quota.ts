@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import type { EventPayload } from '../../base';
 import { FeatureManagementService } from '../../core/features';
 import { PermissionService } from '../../core/permission';
 import {
@@ -29,7 +28,7 @@ export class QuotaOverride {
     plan,
     recurring,
     quantity,
-  }: EventPayload<'workspace.subscription.activated'>) {
+  }: Events['workspace.subscription.activated']) {
     switch (plan) {
       case 'team': {
         const hasTeamWorkspace = await this.quota.hasWorkspaceQuota(
@@ -62,7 +61,7 @@ export class QuotaOverride {
   async onWorkspaceSubscriptionCanceled({
     workspaceId,
     plan,
-  }: EventPayload<'workspace.subscription.canceled'>) {
+  }: Events['workspace.subscription.canceled']) {
     switch (plan) {
       case SubscriptionPlan.Team:
         await this.manager.removeTeamWorkspace(workspaceId);
@@ -77,7 +76,7 @@ export class QuotaOverride {
     userId,
     plan,
     recurring,
-  }: EventPayload<'user.subscription.activated'>) {
+  }: Events['user.subscription.activated']) {
     switch (plan) {
       case SubscriptionPlan.AI:
         await this.feature.addCopilot(userId, 'subscription activated');
@@ -100,7 +99,7 @@ export class QuotaOverride {
   async onUserSubscriptionCanceled({
     userId,
     plan,
-  }: EventPayload<'user.subscription.canceled'>) {
+  }: Events['user.subscription.canceled']) {
     switch (plan) {
       case SubscriptionPlan.AI:
         await this.feature.removeCopilot(userId);

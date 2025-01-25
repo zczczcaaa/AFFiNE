@@ -11,8 +11,7 @@ import { nanoid } from 'nanoid';
 
 import {
   Cache,
-  EventEmitter,
-  type EventPayload,
+  EventBus,
   MemberNotFoundInSpace,
   OnEvent,
   RequestMutex,
@@ -43,7 +42,7 @@ export class TeamWorkspaceResolver {
 
   constructor(
     private readonly cache: Cache,
-    private readonly event: EventEmitter,
+    private readonly event: EventBus,
     private readonly url: URLHelper,
     private readonly prisma: PrismaClient,
     private readonly permissions: PermissionService,
@@ -344,7 +343,7 @@ export class TeamWorkspaceResolver {
   @OnEvent('workspace.members.reviewRequested')
   async onReviewRequested({
     inviteId,
-  }: EventPayload<'workspace.members.reviewRequested'>) {
+  }: Events['workspace.members.reviewRequested']) {
     // send review request mail to owner and admin
     await this.workspaceService.sendReviewRequestedEmail(inviteId);
   }
@@ -352,7 +351,7 @@ export class TeamWorkspaceResolver {
   @OnEvent('workspace.members.requestApproved')
   async onApproveRequest({
     inviteId,
-  }: EventPayload<'workspace.members.requestApproved'>) {
+  }: Events['workspace.members.requestApproved']) {
     // send approve mail
     await this.workspaceService.sendReviewApproveEmail(inviteId);
   }
@@ -361,7 +360,7 @@ export class TeamWorkspaceResolver {
   async onDeclineRequest({
     userId,
     workspaceId,
-  }: EventPayload<'workspace.members.requestDeclined'>) {
+  }: Events['workspace.members.requestDeclined']) {
     const user = await this.models.user.getPublicUser(userId);
     // send decline mail
     await this.workspaceService.sendReviewDeclinedEmail(
@@ -375,7 +374,7 @@ export class TeamWorkspaceResolver {
     userId,
     workspaceId,
     permission,
-  }: EventPayload<'workspace.members.roleChanged'>) {
+  }: Events['workspace.members.roleChanged']) {
     // send role changed mail
     await this.workspaceService.sendRoleChangedEmail(userId, {
       id: workspaceId,
@@ -388,7 +387,7 @@ export class TeamWorkspaceResolver {
     workspaceId,
     from,
     to,
-  }: EventPayload<'workspace.members.ownershipTransferred'>) {
+  }: Events['workspace.members.ownershipTransferred']) {
     // send ownership transferred mail
     const fromUser = await this.models.user.getPublicUser(from);
     const toUser = await this.models.user.getPublicUser(to);

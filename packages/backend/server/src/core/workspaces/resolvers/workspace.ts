@@ -18,7 +18,7 @@ import {
   AlreadyInSpace,
   Cache,
   DocNotFound,
-  EventEmitter,
+  EventBus,
   InternalServerError,
   MemberQuotaExceeded,
   QueryTooLong,
@@ -83,7 +83,7 @@ export class WorkspaceResolver {
     private readonly permissions: PermissionService,
     private readonly quota: QuotaManagementService,
     private readonly models: Models,
-    private readonly event: EventEmitter,
+    private readonly event: EventBus,
     private readonly mutex: RequestMutex,
     private readonly workspaceService: WorkspaceService,
     private readonly workspaceStorage: PgWorkspaceDocStorageAdapter
@@ -389,7 +389,7 @@ export class WorkspaceResolver {
     });
     await this.workspaceStorage.deleteSpace(id);
 
-    this.event.emit('workspace.deleted', id);
+    this.event.emit('workspace.deleted', { id });
 
     return true;
   }

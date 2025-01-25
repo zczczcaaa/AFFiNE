@@ -5,7 +5,7 @@ import { groupBy } from 'lodash-es';
 
 import {
   DocAccessDenied,
-  EventEmitter,
+  EventBus,
   SpaceAccessDenied,
   SpaceOwnerNotFound,
 } from '../../base';
@@ -15,7 +15,7 @@ import { Permission, PublicPageMode } from './types';
 export class PermissionService {
   constructor(
     private readonly prisma: PrismaClient,
-    private readonly event: EventEmitter
+    private readonly event: EventBus
   ) {}
 
   private get acceptedCondition() {

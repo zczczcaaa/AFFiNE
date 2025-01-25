@@ -105,18 +105,21 @@ function gql(app: INestApplication, query: string) {
     .expect(200);
 }
 
-test.beforeEach(async ({ context }) => {
+test.before(async ({ context }) => {
   const { app } = await createTestingApp({
     providers: [TestResolver, TestGateway],
     controllers: [TestController],
   });
 
   context.logger = Sinon.stub(new Logger().localInstance);
-
   context.app = app;
 });
 
-test.afterEach.always(async ctx => {
+test.beforeEach(() => {
+  Sinon.reset();
+});
+
+test.after.always(async ctx => {
   await ctx.context.app.close();
 });
 
@@ -131,6 +134,7 @@ test('should be able to handle known user error in graphql query', async t => {
   t.is(err.message, 'You do not have permission to access this resource.');
   t.is(err.extensions.status, HttpStatus.FORBIDDEN);
   t.is(err.extensions.name, 'ACCESS_DENIED');
+  // console.log(t.context.logger.error.getCalls());
   t.true(t.context.logger.error.notCalled);
 });
 

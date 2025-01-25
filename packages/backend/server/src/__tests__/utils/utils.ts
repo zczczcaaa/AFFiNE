@@ -112,7 +112,12 @@ export async function createTestingModule(
 
   if (init) {
     await m.init();
-
+    // we got a lot smoking tests try to break nestjs
+    // can't tolerate the noisy logs
+    // @ts-expect-error private
+    m.applyLogger({
+      logger: ['fatal'],
+    });
     const runtime = m.get(Runtime);
     // by pass password min length validation
     await runtime.set('auth/password.min', 1);
@@ -128,7 +133,7 @@ export async function createTestingApp(moduleDef: TestingModuleMeatdata = {}) {
     cors: true,
     bodyParser: true,
     rawBody: true,
-    logger: ['warn'],
+    logger: ['fatal'],
   });
 
   app.useGlobalFilters(new GlobalExceptionFilter(app.getHttpAdapter()));

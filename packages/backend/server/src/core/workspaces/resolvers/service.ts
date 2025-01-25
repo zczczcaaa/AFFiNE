@@ -4,7 +4,6 @@ import { getStreamAsBuffer } from 'get-stream';
 
 import {
   Cache,
-  type EventPayload,
   MailService,
   OnEvent,
   URLHelper,
@@ -256,7 +255,7 @@ export class WorkspaceService {
   async onMemberLeave({
     user,
     workspaceId,
-  }: EventPayload<'workspace.members.leave'>) {
+  }: Events['workspace.members.leave']) {
     const workspace = await this.getWorkspaceInfo(workspaceId);
     const owner = await this.permission.getWorkspaceOwner(workspaceId);
     await this.mailer.sendMemberLeaveEmail(owner.email, {
@@ -269,7 +268,7 @@ export class WorkspaceService {
   async onMemberRemoved({
     userId,
     workspaceId,
-  }: EventPayload<'workspace.members.requestDeclined'>) {
+  }: Events['workspace.members.requestDeclined']) {
     const user = await this.models.user.get(userId);
     if (!user) return;
 

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { Config, type EventPayload, OnEvent } from '../../base';
+import { Config, OnEvent } from '../../base';
 
 @Injectable()
 export class UserEventsListener {
@@ -9,7 +9,7 @@ export class UserEventsListener {
   constructor(private readonly config: Config) {}
 
   @OnEvent('user.updated')
-  async onUserUpdated(user: EventPayload<'user.updated'>) {
+  async onUserUpdated(user: Events['user.updated']) {
     const { enabled, customerIo } = this.config.metrics;
     if (enabled && customerIo?.token) {
       const payload = {
@@ -33,7 +33,7 @@ export class UserEventsListener {
   }
 
   @OnEvent('user.deleted')
-  async onUserDeleted(user: EventPayload<'user.deleted'>) {
+  async onUserDeleted(user: Events['user.deleted']) {
     const { enabled, customerIo } = this.config.metrics;
     if (enabled && customerIo?.token) {
       try {

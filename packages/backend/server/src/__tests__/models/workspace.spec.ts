@@ -1,10 +1,9 @@
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TestingModule } from '@nestjs/testing';
 import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
 
-import { Config } from '../../base/config';
+import { Config, EventBus } from '../../base';
 import { Permission } from '../../models/common';
 import { UserModel } from '../../models/user';
 import { WorkspaceModel } from '../../models/workspace';
@@ -305,7 +304,7 @@ test('should grant member with read permission and Pending status by default', a
     email: 'test2@affine.pro',
   });
 
-  const event = t.context.module.get(EventEmitter2);
+  const event = t.context.module.get(EventBus);
   const updatedSpy = Sinon.spy();
   event.on('workspace.members.updated', updatedSpy);
   const member1 = await t.context.workspace.grantMember(
@@ -829,7 +828,7 @@ test('should delete workspace member in Pending, Accepted status', async t => {
   );
   t.is(member.status, WorkspaceMemberStatus.Pending);
 
-  const event = t.context.module.get(EventEmitter2);
+  const event = t.context.module.get(EventBus);
   const updatedSpy = Sinon.spy();
   event.on('workspace.members.updated', updatedSpy);
   let success = await t.context.workspace.deleteMember(
@@ -880,7 +879,7 @@ test('should trigger workspace.members.requestDeclined event when delete workspa
   );
   t.is(member.status, WorkspaceMemberStatus.UnderReview);
 
-  const event = t.context.module.get(EventEmitter2);
+  const event = t.context.module.get(EventBus);
   const updatedSpy = Sinon.spy();
   const requestDeclinedSpy = Sinon.spy();
   event.on('workspace.members.updated', updatedSpy);
@@ -925,7 +924,7 @@ test('should trigger workspace.members.requestDeclined event when delete workspa
   );
   t.is(member.status, WorkspaceMemberStatus.NeedMoreSeatAndReview);
 
-  const event = t.context.module.get(EventEmitter2);
+  const event = t.context.module.get(EventBus);
   const updatedSpy = Sinon.spy();
   const requestDeclinedSpy = Sinon.spy();
   event.on('workspace.members.updated', updatedSpy);

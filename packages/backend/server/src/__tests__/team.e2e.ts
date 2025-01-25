@@ -10,7 +10,7 @@ import ava from 'ava';
 import Sinon from 'sinon';
 
 import { AppModule } from '../app.module';
-import { EventEmitter } from '../base';
+import { EventBus } from '../base';
 import { AuthService } from '../core/auth';
 import { DocContentService } from '../core/doc-renderer';
 import { Permission, PermissionService } from '../core/permission';
@@ -41,7 +41,7 @@ import {
 const test = ava as TestFn<{
   app: INestApplication;
   auth: AuthService;
-  event: Sinon.SinonStubbedInstance<EventEmitter>;
+  event: Sinon.SinonStubbedInstance<EventBus>;
   quota: QuotaService;
   quotaManager: QuotaManagementService;
   permissions: PermissionService;
@@ -52,8 +52,8 @@ test.beforeEach(async t => {
     imports: [AppModule],
     tapModule: module => {
       module
-        .overrideProvider(EventEmitter)
-        .useValue(Sinon.createStubInstance(EventEmitter));
+        .overrideProvider(EventBus)
+        .useValue(Sinon.createStubInstance(EventBus));
       module.overrideProvider(DocContentService).useValue({
         getWorkspaceContent() {
           return {
@@ -67,7 +67,7 @@ test.beforeEach(async t => {
 
   t.context.app = app;
   t.context.auth = app.get(AuthService);
-  t.context.event = app.get(EventEmitter);
+  t.context.event = app.get(EventBus);
   t.context.quota = app.get(QuotaService);
   t.context.quotaManager = app.get(QuotaManagementService);
   t.context.permissions = app.get(PermissionService);

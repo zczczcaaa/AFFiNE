@@ -3,8 +3,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InstalledLicense, PrismaClient } from '@prisma/client';
 
 import {
-  EventEmitter,
-  type EventPayload,
+  Config,
+  EventBus,
   InternalServerError,
   LicenseNotFound,
   OnEvent,
@@ -27,9 +27,10 @@ export class LicenseService {
   private readonly logger = new Logger(LicenseService.name);
 
   constructor(
+    private readonly config: Config,
     private readonly db: PrismaClient,
     private readonly quota: QuotaManagementService,
-    private readonly event: EventEmitter,
+    private readonly event: EventBus,
     private readonly permission: PermissionService
   ) {}
 
@@ -151,7 +152,11 @@ export class LicenseService {
   }
 
   @OnEvent('workspace.members.updated')
-  async updateTeamSeats(payload: EventPayload<'workspace.members.updated'>) {
+  async updateTeamSeats(payload: Events['workspace.members.updated']) {
+    if (!this.config.isSelfhosted) {
+      return;
+    }
+
     const { workspaceId, count } = payload;
 
     const license = await this.db.installedLicense.findUnique({
@@ -308,7 +313,7 @@ export class LicenseService {
     plan,
     recurring,
     quantity,
-  }: EventPayload<'workspace.subscription.activated'>) {
+  }: Events['workspace.subscription.activated']) {
     switch (plan) {
       case SubscriptionPlan.SelfHostedTeam:
         await this.quota.addTeamWorkspace(
@@ -331,7 +336,7 @@ export class LicenseService {
   async onWorkspaceSubscriptionCanceled({
     workspaceId,
     plan,
-  }: EventPayload<'workspace.subscription.canceled'>) {
+  }: Events['workspace.subscription.canceled']) {
     switch (plan) {
       case SubscriptionPlan.SelfHostedTeam:
         await this.quota.removeTeamWorkspace(workspaceId);

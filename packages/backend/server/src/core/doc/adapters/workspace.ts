@@ -6,7 +6,7 @@ import {
   Cache,
   DocHistoryNotFound,
   DocNotFound,
-  EventEmitter,
+  EventBus,
   FailedToSaveUpdates,
   FailedToUpsertSnapshot,
   metrics,
@@ -22,7 +22,18 @@ import {
 } from '../storage';
 
 const UPDATES_QUEUE_CACHE_KEY = 'doc:manager:updates';
-
+declare global {
+  interface Events {
+    'doc.snapshot.deleted': {
+      workspaceId: string;
+      docId: string;
+    };
+    'doc.snapshot.updated': {
+      workspaceId: string;
+      docId: string;
+    };
+  }
+}
 @Injectable()
 export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
   private readonly logger = new Logger(PgWorkspaceDocStorageAdapter.name);
@@ -31,7 +42,7 @@ export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
     private readonly db: PrismaClient,
     private readonly mutex: Mutex,
     private readonly cache: Cache,
-    private readonly event: EventEmitter,
+    private readonly event: EventBus,
     protected override readonly options: DocStorageOptions
   ) {
     super(options);
@@ -470,9 +481,9 @@ export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
       const updatedSnapshot = result.at(0);
 
       if (updatedSnapshot) {
-        this.event.emit('snapshot.updated', {
+        this.event.emit('doc.snapshot.updated', {
           workspaceId: snapshot.spaceId,
-          id: snapshot.docId,
+          docId: snapshot.docId,
         });
       }
 

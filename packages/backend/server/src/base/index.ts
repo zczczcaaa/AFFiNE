@@ -14,7 +14,7 @@ export {
   getAFFiNEConfigModifier,
 } from './config';
 export * from './error';
-export { EventEmitter, type EventPayload, OnEvent } from './event';
+export { EventBus, OnEvent } from './event';
 export type { GraphqlContext } from './graphql';
 export * from './guard';
 export { CryptoHelper, URLHelper } from './helpers';

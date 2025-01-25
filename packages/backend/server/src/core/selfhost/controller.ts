@@ -3,7 +3,6 @@ import type { Request, Response } from 'express';
 
 import {
   ActionForbidden,
-  EventEmitter,
   InternalServerError,
   Mutex,
   PasswordRequired,
@@ -24,7 +23,6 @@ export class CustomSetupController {
   constructor(
     private readonly models: Models,
     private readonly auth: AuthService,
-    private readonly event: EventEmitter,
     private readonly mutex: Mutex,
     private readonly server: ServerService,
     private readonly runtime: Runtime
@@ -62,7 +60,6 @@ export class CustomSetupController {
     if (!lock) {
       throw new InternalServerError();
     }
-
     const user = await this.models.user.create({
       email: input.email,
       password: input.password,
@@ -70,7 +67,12 @@ export class CustomSetupController {
     });
 
     try {
-      await this.event.emitAsync('user.admin.created', user);
+      await this.models.userFeature.add(
+        user.id,
+        'administrator',
+        'selfhost setup'
+      );
+
       await this.auth.setCookies(req, res, user.id);
       res.send({ id: user.id, email: user.email, name: user.name });
     } catch (e) {

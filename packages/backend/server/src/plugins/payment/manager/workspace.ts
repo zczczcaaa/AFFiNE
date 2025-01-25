@@ -5,8 +5,7 @@ import Stripe from 'stripe';
 import { z } from 'zod';
 
 import {
-  EventEmitter,
-  type EventPayload,
+  EventBus,
   OnEvent,
   SubscriptionAlreadyExists,
   SubscriptionPlanNotFound,
@@ -49,7 +48,7 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
     stripe: Stripe,
     db: PrismaClient,
     private readonly url: URLHelper,
-    private readonly event: EventEmitter
+    private readonly event: EventBus
   ) {
     super(stripe, db);
   }
@@ -269,7 +268,7 @@ export class WorkspaceSubscriptionManager extends SubscriptionManager {
   async onMembersUpdated({
     workspaceId,
     count,
-  }: EventPayload<'workspace.members.updated'>) {
+  }: Events['workspace.members.updated']) {
     const subscription = await this.getSubscription({
       plan: SubscriptionPlan.Team,
       workspaceId,

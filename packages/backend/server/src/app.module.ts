@@ -97,6 +97,7 @@ export const FunctionalityModules = [
   HelpersModule,
   ErrorModule,
   LoggerModule,
+  WebSocketModule,
 ];
 
 function filterOptionalModule(
@@ -197,7 +198,6 @@ export function buildAppModule() {
     // basic
     .use(...FunctionalityModules)
     .use(ModelsModule)
-    .useIf(config => config.flavor.sync, WebSocketModule)
 
     // auth
     .use(UserModule, AuthModule, PermissionModule)
