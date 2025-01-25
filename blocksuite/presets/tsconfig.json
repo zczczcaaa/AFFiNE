@@ -7,6 +7,7 @@
   },
   "include": ["./src", "./src/**/*.json"],
   "references": [
+    { "path": "../affine/block-note" },
     { "path": "../affine/block-surface" },
     { "path": "../affine/model" },
     { "path": "../affine/shared" },

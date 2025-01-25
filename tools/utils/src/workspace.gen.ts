@@ -432,6 +432,7 @@ export const PackageList = [
     location: 'blocksuite/presets',
     name: '@blocksuite/presets',
     workspaceDependencies: [
+      'blocksuite/affine/block-note',
       'blocksuite/affine/block-surface',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
