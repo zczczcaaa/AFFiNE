@@ -95,9 +95,15 @@ export const TagsEditor = ({
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const onInputChange = useCallback((value: string) => {
-    setInputValue(value);
-  }, []);
+  const onInputChange = useCallback(
+    (value: string) => {
+      setInputValue(value);
+      if (value.length > 0) {
+        setFocusedInlineIndex(selectedTags.length);
+      }
+    },
+    [selectedTags.length]
+  );
 
   const onToggleTag = useCallback(
     (id: string) => {
@@ -160,7 +166,11 @@ export const TagsEditor = ({
 
   const onInputKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Backspace' && inputValue === '' && selectedTags.length) {
+      if (e.key === 'Backspace') {
+        if (inputValue.length > 0 || selectedTags.length === 0) {
+          return;
+        }
+        e.preventDefault();
         const index =
           safeInlineFocusedIndex < 0 ||
           safeInlineFocusedIndex >= selectedTags.length
@@ -186,6 +196,9 @@ export const TagsEditor = ({
         // reset inline focus
         setFocusedInlineIndex(selectedTags.length + 1);
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        if (inputValue.length > 0 || selectedTags.length === 0) {
+          return;
+        }
         const newItemToFocus =
           e.key === 'ArrowLeft'
             ? safeInlineFocusedIndex - 1
