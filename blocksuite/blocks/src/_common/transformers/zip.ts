@@ -26,7 +26,7 @@ async function exportDocs(collection: Workspace, docs: Store[]) {
     snapshots
       .filter((snapshot): snapshot is DocSnapshot => !!snapshot)
       .map(async snapshot => {
-        const snapshotName = `${snapshot.meta.id}.snapshot.json`;
+        const snapshotName = `${snapshot.meta.title || 'untitled'}.snapshot.json`;
         await zip.file(snapshotName, JSON.stringify(snapshot, null, 2));
       })
   );

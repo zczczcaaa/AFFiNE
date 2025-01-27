@@ -153,6 +153,8 @@ export const EditDocPropertyMenuItems = ({
             onChange={handleNameChange}
             placeholder={t['unnamed']()}
             onKeyDown={onKeyDown}
+            size="large"
+            style={{ borderRadius: 4 }}
           />
         )}
       </div>

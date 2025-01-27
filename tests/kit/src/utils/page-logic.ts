@@ -230,6 +230,13 @@ export const addDatabase = async (page: Page, title?: string) => {
   }
 };
 
+export const addCodeBlock = async (page: Page) => {
+  await page.keyboard.press('/');
+  await expect(page.locator('affine-slash-menu .slash-menu')).toBeVisible();
+  await page.keyboard.type('code');
+  await page.getByTestId('Code Block').click();
+};
+
 export const addDatabaseRow = async (page: Page, databaseTitle: string) => {
   const db = page.locator(`affine-database-table`, {
     has: page.locator(`affine-database-title:has-text("${databaseTitle}")`),
