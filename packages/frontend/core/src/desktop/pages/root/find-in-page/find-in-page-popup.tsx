@@ -19,7 +19,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useTransition } from 'react-transition-state';
+import { useTransitionState } from 'react-transition-state';
 
 import * as styles from './find-in-page-popup.css';
 
@@ -93,13 +93,14 @@ export const FindInPagePopup = () => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [composing, setComposing] = useState(false);
 
-  const [{ status }, toggle] = useTransition({
+  const [{ status }, toggle] = useTransitionState({
     timeout: animationTimeout,
   });
 
   useEffect(() => {
     toggle(visible);
-  }, [visible]);
+    setValue(findInPage.searchText$.value || '');
+  }, [findInPage.searchText$.value, toggle, visible]);
 
   const handleValueChange = useCallback(
     (value: string) => {
@@ -203,12 +204,8 @@ export const FindInPagePopup = () => {
           data-state={status}
           sideOffset={5}
           side="left"
-          onFocusOutside={e => {
+          onInteractOutside={e => {
             // do not close the popup when focus outside (like focus in the editor)
-            e.preventDefault();
-          }}
-          onPointerDownOutside={e => {
-            // do not close the popup when clicking outside (like clicking at the sidebar)
             e.preventDefault();
           }}
         >

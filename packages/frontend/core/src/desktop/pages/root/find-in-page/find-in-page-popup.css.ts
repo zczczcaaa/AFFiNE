@@ -46,7 +46,7 @@ export const contentContainer = style({
   justifyContent: 'space-between',
   border: `0.5px solid ${cssVar('borderColor')}`,
   padding: '8px 12px 8px 8px',
-  zIndex: cssVar('zIndexModal'),
+  zIndex: `calc(${cssVar('zIndexModal')} + 1)`,
   willChange: 'transform, opacity',
   selectors: {
     '&[data-state=entered], &[data-state=entering]': {
