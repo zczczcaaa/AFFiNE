@@ -1,6 +1,7 @@
 import { useDndMonitor } from '@affine/component';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
 import type { AffineDNDData } from '@affine/core/types/dnd';
+import track from '@affine/track';
 import { useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import { useSetAtom } from 'jotai';
@@ -121,7 +122,10 @@ export const SplitView = ({
         const entity = data.source.data.entity;
         const from = data.source.data.from;
 
-        if (dropTarget?.at === 'workbench:resize-handle') {
+        if (
+          dropTarget?.at === 'workbench:resize-handle' &&
+          entity?.type !== 'custom-property'
+        ) {
           const { edge, viewId } = dropTarget;
           const index = views.findIndex(v => v.id === viewId);
           const at = (() => {
@@ -148,6 +152,10 @@ export const SplitView = ({
 
           if (to) {
             workbench.createView(at, to);
+            track.$.splitViewIndicator.$.openInSplitView({
+              type: entity?.type,
+              route: to,
+            });
           }
         }
       },

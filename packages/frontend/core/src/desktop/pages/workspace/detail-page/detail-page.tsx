@@ -16,6 +16,7 @@ import { RecentDocsService } from '@affine/core/modules/quicksearch';
 import { ViewService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { isNewTabTrigger } from '@affine/core/utils';
+import track from '@affine/track';
 import { RefNodeSlotsProvider } from '@blocksuite/affine/blocks';
 import {
   type Disposable,
@@ -190,6 +191,15 @@ const DetailPageImpl = memo(function DetailPageImpl() {
                   event && isNewTabTrigger(event)
                     ? 'open-in-new-tab'
                     : 'open-in-active-view';
+
+                if (openMode === 'open-in-new-view') {
+                  track.doc.editor.toolbar.openInSplitView();
+                } else if (openMode === 'open-in-center-peek') {
+                  track.doc.editor.toolbar.openInPeekView();
+                } else if (openMode === 'open-in-new-tab') {
+                  track.doc.editor.toolbar.openInNewTab();
+                }
+
                 if (openMode !== 'open-in-center-peek') {
                   const at = (() => {
                     if (openMode === 'open-in-active-view') {

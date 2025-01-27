@@ -16,9 +16,11 @@ type AppEvents =
 type NavigationEvents =
   | 'openInNewTab'
   | 'openInSplitView'
+  | 'openInPeekView'
   | 'switchTab'
   | 'switchSplitView'
   | 'tabAction'
+  | 'splitViewAction'
   | 'navigate'
   | 'goBack'
   | 'goForward'
@@ -314,6 +316,9 @@ const PageEvents = {
       newDoc: ['quickStart'],
       template: ['openTemplateListMenu', 'quickStart'],
     },
+    splitViewIndicator: {
+      $: ['splitViewAction', 'openInSplitView', 'openInPeekView'],
+    },
   },
   doc: {
     editor: {
@@ -322,7 +327,12 @@ const PageEvents = {
       quickSearch: ['createDoc'],
       formatToolbar: ['bold'],
       pageRef: ['navigate'],
-      toolbar: ['copyBlockToLink'],
+      toolbar: [
+        'copyBlockToLink',
+        'openInSplitView',
+        'openInNewTab',
+        'openInPeekView',
+      ],
       aiActions: ['requestSignIn'],
       pageBlockHeader: ['openDocInfo'],
       starterBar: ['quickStart', 'openTemplateListMenu'],
@@ -412,6 +422,9 @@ type TabActionType =
   | 'switchTab'
   | 'separateTabs';
 
+type SplitViewActionControlType = 'menu' | 'indicator';
+type SplitViewActionType = 'open' | 'close' | 'move' | 'closeOthers';
+
 type AuthArgs = {
   method: 'password' | 'magic-link' | 'oauth';
   provider?: string;
@@ -452,11 +465,15 @@ export type EventArgs = {
   deleteOrganizeItem: OrganizeItemArgs;
   orderOrganizeItem: OrganizeItemArgs;
   openInNewTab: { type: OrganizeItemType };
-  openInSplitView: { type: OrganizeItemType };
+  openInSplitView: { type: OrganizeItemType; route?: string };
   tabAction: {
     type?: OrganizeItemType;
     control: TabActionControlType;
     action: TabActionType;
+  };
+  splitViewAction: {
+    control: SplitViewActionControlType;
+    action: SplitViewActionType;
   };
   toggleFavorite: OrganizeItemArgs & { on: boolean };
   toggle: { type: 'collapse' | 'expand' };
