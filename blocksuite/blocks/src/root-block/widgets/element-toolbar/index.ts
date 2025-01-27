@@ -1,4 +1,5 @@
 import type { BuiltInEmbedModel } from '@blocksuite/affine-block-bookmark';
+import { isNoteBlock } from '@blocksuite/affine-block-surface';
 import { ConnectorCWithArrowIcon } from '@blocksuite/affine-components/icons';
 import {
   cloneGroups,
@@ -47,7 +48,6 @@ import {
   isEmbeddedBlock,
   isFrameBlock,
   isImageBlock,
-  isNoteBlock,
 } from '../../edgeless/utils/query.js';
 import { renderAddFrameButton } from './add-frame-button.js';
 import { renderAddGroupButton } from './add-group-button.js';

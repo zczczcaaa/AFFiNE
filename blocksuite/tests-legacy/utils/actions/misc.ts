@@ -157,6 +157,7 @@ async function initEmptyEditor({
             const outlineViewer = document.createElement(
               'custom-outline-viewer'
             );
+            const leftSidePanel = document.createElement('left-side-panel');
             // @ts-expect-error set test editor
             docsPanel.editor = editor;
             // @ts-expect-error set test editor
@@ -177,7 +178,6 @@ async function initEmptyEditor({
             debugMenu.outlineViewer = outlineViewer;
             // @ts-expect-error set test outlinePanel
             debugMenu.outlinePanel = outlinePanel;
-            const leftSidePanel = document.createElement('left-side-panel');
             // @ts-expect-error set test leftSidePanel
             debugMenu.leftSidePanel = leftSidePanel;
             document.body.append(debugMenu);

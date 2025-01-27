@@ -19,7 +19,6 @@ import {
   type FrameBlockModel,
   type ImageBlockModel,
   MindmapElementModel,
-  type NoteBlockModel,
   ShapeElementModel,
   TextElementModel,
 } from '@blocksuite/affine-model';
@@ -44,12 +43,6 @@ export function isMindmapNode(
   element: GfxBlockElementModel | BlockSuite.EdgelessModel | null
 ) {
   return element?.group instanceof MindmapElementModel;
-}
-
-export function isNoteBlock(
-  element: BlockModel | BlockSuite.EdgelessModel | null
-): element is NoteBlockModel {
-  return !!element && 'flavour' in element && element.flavour === 'affine:note';
 }
 
 export function isEdgelessTextBlock(

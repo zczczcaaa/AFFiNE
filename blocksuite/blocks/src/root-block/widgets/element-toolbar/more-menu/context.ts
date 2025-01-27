@@ -1,4 +1,7 @@
-import type { SurfaceBlockComponent } from '@blocksuite/affine-block-surface';
+import {
+  isNoteBlock,
+  type SurfaceBlockComponent,
+} from '@blocksuite/affine-block-surface';
 import { MenuContext } from '@blocksuite/affine-components/toolbar';
 import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
 import {
@@ -17,7 +20,6 @@ import {
   isEmbedSyncedDocBlock,
   isFrameBlock,
   isImageBlock,
-  isNoteBlock,
 } from '../../../edgeless/utils/query.js';
 
 export class ElementToolbarMoreMenuContext extends MenuContext {

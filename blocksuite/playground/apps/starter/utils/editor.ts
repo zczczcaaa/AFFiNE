@@ -23,7 +23,6 @@ import { CustomOutlinePanel } from '../../_common/components/custom-outline-pane
 import { CustomOutlineViewer } from '../../_common/components/custom-outline-viewer.js';
 import { DocsPanel } from '../../_common/components/docs-panel.js';
 import { LeftSidePanel } from '../../_common/components/left-side-panel.js';
-import { SidePanel } from '../../_common/components/side-panel.js';
 import { StarterDebugMenu } from '../../_common/components/starter-debug-menu.js';
 import {
   getDocFromUrlParams,
@@ -85,7 +84,6 @@ export async function mountDefaultDocEditor(collection: Workspace) {
         );
       },
     },
-    // mockPeekViewExtension(attachmentViewerPanel),
   ];
 
   const pageSpecs = SpecProvider.getInstance().getSpec('page');
@@ -136,8 +134,6 @@ export async function mountDefaultDocEditor(collection: Workspace) {
   const framePanel = new CustomFramePanel();
   framePanel.editor = editor;
 
-  const sidePanel = new SidePanel();
-
   const leftSidePanel = new LeftSidePanel();
 
   const docsPanel = new DocsPanel();
@@ -152,7 +148,6 @@ export async function mountDefaultDocEditor(collection: Workspace) {
   debugMenu.outlinePanel = outlinePanel;
   debugMenu.outlineViewer = outlineViewer;
   debugMenu.framePanel = framePanel;
-  debugMenu.sidePanel = sidePanel;
   debugMenu.leftSidePanel = leftSidePanel;
   debugMenu.docsPanel = docsPanel;
   debugMenu.commentPanel = commentPanel;
@@ -161,7 +156,6 @@ export async function mountDefaultDocEditor(collection: Workspace) {
   document.body.append(outlinePanel);
   document.body.append(outlineViewer);
   document.body.append(framePanel);
-  document.body.append(sidePanel);
   document.body.append(leftSidePanel);
   document.body.append(debugMenu);
 

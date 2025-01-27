@@ -8,6 +8,7 @@ import {
 } from '@blocksuite/affine-block-embed';
 import {
   CanvasElementType,
+  isNoteBlock,
   normalizeShapeBound,
   OverlayIdentifier,
   TextUtils,
@@ -91,7 +92,6 @@ import {
   isFrameBlock,
   isImageBlock,
   isMindmapNode,
-  isNoteBlock,
 } from '../../utils/query.js';
 import {
   HandleDirection,

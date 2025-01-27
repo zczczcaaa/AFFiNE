@@ -32,6 +32,7 @@ import { effects as componentToggleButtonEffects } from '@blocksuite/affine-comp
 import { ToggleSwitch } from '@blocksuite/affine-components/toggle-switch';
 import { effects as componentToolbarEffects } from '@blocksuite/affine-components/toolbar';
 import { effects as widgetDragHandleEffects } from '@blocksuite/affine-widget-drag-handle/effects';
+import { effects as widgetEdgelessAutoConnectEffects } from '@blocksuite/affine-widget-edgeless-auto-connect/effects';
 import { effects as widgetFrameTitleEffects } from '@blocksuite/affine-widget-frame-title/effects';
 import { effects as widgetRemoteSelectionEffects } from '@blocksuite/affine-widget-remote-selection/effects';
 import { effects as widgetScrollAnchoringEffects } from '@blocksuite/affine-widget-scroll-anchoring/effects';
@@ -152,10 +153,6 @@ import {
   AIPanelGenerating,
   AIPanelInput,
 } from './root-block/widgets/ai-panel/components/index.js';
-import {
-  AFFINE_EDGELESS_AUTO_CONNECT_WIDGET,
-  EdgelessAutoConnectWidget,
-} from './root-block/widgets/edgeless-auto-connect/edgeless-auto-connect.js';
 import { EdgelessCopilotPanel } from './root-block/widgets/edgeless-copilot-panel/index.js';
 import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from './root-block/widgets/edgeless-zoom-toolbar/index.js';
 import { ZoomBarToggleButton } from './root-block/widgets/edgeless-zoom-toolbar/zoom-bar-toggle-button.js';
@@ -223,6 +220,7 @@ export function effects() {
   widgetEdgelessElementToolbarEffects();
   widgetRemoteSelectionEffects();
   widgetDragHandleEffects();
+  widgetEdgelessAutoConnectEffects();
   dataViewEffects();
 
   customElements.define('affine-page-root', PageRootBlockComponent);
@@ -392,10 +390,6 @@ export function effects() {
     AffineEdgelessZoomToolbarWidget
   );
   customElements.define(AFFINE_SURFACE_REF_TOOLBAR, AffineSurfaceRefToolbar);
-  customElements.define(
-    AFFINE_EDGELESS_AUTO_CONNECT_WIDGET,
-    EdgelessAutoConnectWidget
-  );
   customElements.define(AFFINE_FORMAT_BAR_WIDGET, AffineFormatBarWidget);
 }
 

@@ -1,4 +1,8 @@
-import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
+import {
+  EdgelessCRUDIdentifier,
+  EdgelessLegacySlotIdentifier,
+  isNoteBlock,
+} from '@blocksuite/affine-block-surface';
 import {
   AutoConnectLeftIcon,
   AutoConnectRightIcon,
@@ -18,16 +22,15 @@ import {
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
 import { WidgetComponent } from '@blocksuite/block-std';
-import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
+import {
+  type GfxController,
+  GfxControllerIdentifier,
+} from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
-
-import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
-import type { EdgelessRootService } from '../../edgeless/edgeless-root-service.js';
-import { isNoteBlock } from '../../edgeless/utils/query.js';
 
 const PAGE_VISIBLE_INDEX_LABEL_WIDTH = 44;
 const PAGE_VISIBLE_INDEX_LABEL_HEIGHT = 24;
@@ -113,11 +116,7 @@ function isAutoConnectElement(element: unknown): element is AutoConnectElement {
 export const AFFINE_EDGELESS_AUTO_CONNECT_WIDGET =
   'affine-edgeless-auto-connect-widget';
 
-export class EdgelessAutoConnectWidget extends WidgetComponent<
-  RootBlockModel,
-  EdgelessRootBlockComponent,
-  EdgelessRootService
-> {
+export class EdgelessAutoConnectWidget extends WidgetComponent<RootBlockModel> {
   static override styles = css`
     .page-visible-index-label {
       box-sizing: border-box;
@@ -174,6 +173,22 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
     }
   `;
 
+  private get _gfx(): GfxController {
+    return this.std.get(GfxControllerIdentifier);
+  }
+
+  private get _crud() {
+    return this.std.get(EdgelessCRUDIdentifier);
+  }
+
+  private get _viewport() {
+    return this._gfx.viewport;
+  }
+
+  private get _selection() {
+    return this._gfx.selection;
+  }
+
   private readonly _updateLabels = () => {
     const service = this.service;
     if (!service.doc.root) return;
@@ -195,7 +210,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
 
       note.children.forEach(model => {
         if (matchFlavours(model, ['affine:surface-ref'])) {
-          const reference = service.crud.getElementById(model.reference);
+          const reference = this._crud.getElementById(model.reference);
 
           if (!isAutoConnectElement(reference)) return;
 
@@ -224,7 +239,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
       _edgelessOnlyNotesSet,
       note => note.id,
       note => {
-        const { viewport } = this.service;
+        const viewport = this._viewport;
         const { zoom } = viewport;
         const bound = Bound.deserialize(note.xywh);
         const [left, right] = viewport.toViewCoord(bound.x, bound.y);
@@ -275,11 +290,11 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
       .map(block => block.model) as SurfaceRefBlockModel[];
 
     const getVisibility = () => {
-      const { selectedElements } = service.selection;
+      const { selectedElements } = this._selection;
 
       if (
         selectedElements.length === 1 &&
-        !service.selection.editing &&
+        !this._selection.editing &&
         (isNoteBlock(selectedElements[0]) ||
           surfaceRefs.some(ref => ref.reference === selectedElements[0].id))
       ) {
@@ -292,7 +307,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
     };
 
     this._disposables.add(
-      service.selection.slots.updated.on(() => {
+      this._selection.slots.updated.on(() => {
         getVisibility();
       })
     );
@@ -323,16 +338,19 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
         }
       })
     );
-    this._disposables.add(
-      service.surface.elementUpdated.on(payload => {
-        if (
-          payload.props['xywh'] &&
-          surfaceRefs.some(ref => ref.reference === payload.id)
-        ) {
-          this.requestUpdate();
-        }
-      })
-    );
+    const surface = this._gfx.surface;
+    if (surface) {
+      this._disposables.add(
+        surface.elementUpdated.on(payload => {
+          if (
+            payload.props['xywh'] &&
+            surfaceRefs.some(ref => ref.reference === payload.id)
+          ) {
+            this.requestUpdate();
+          }
+        })
+      );
+    }
   }
 
   private _navigateToNext() {
@@ -341,11 +359,11 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
     this._index = this._index + 1;
     const element = elements[this._index];
     const bound = Bound.deserialize(element.xywh);
-    this.service.selection.set({
+    this._selection.set({
       elements: [element.id],
       editing: false,
     });
-    this.service.viewport.setViewportByBound(bound, [80, 80, 80, 80], true);
+    this._viewport.setViewportByBound(bound, [80, 80, 80, 80], true);
   }
 
   private _navigateToPrev() {
@@ -354,15 +372,15 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
     this._index = this._index - 1;
     const element = elements[this._index];
     const bound = Bound.deserialize(element.xywh);
-    this.service.selection.set({
+    this._selection.set({
       elements: [element.id],
       editing: false,
     });
-    this.service.viewport.setViewportByBound(bound, [80, 80, 80, 80], true);
+    this._viewport.setViewportByBound(bound, [80, 80, 80, 80], true);
   }
 
   private _NavigatorComponent(elements: AutoConnectElement[]) {
-    const { viewport } = this.service;
+    const viewport = this._viewport;
     const { zoom } = viewport;
     const className = `navigator ${this._index >= 0 ? 'show' : 'hidden'}`;
     const element = elements[this._index];
@@ -405,7 +423,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<
     elements: AutoConnectElement[],
     counts: number[]
   ) {
-    const { viewport } = this.service;
+    const viewport = this._viewport;
     const { zoom } = viewport;
     let index = 0;
 

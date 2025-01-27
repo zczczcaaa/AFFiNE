@@ -1,6 +1,7 @@
 import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import {
   ConnectorUtils,
+  isNoteBlock,
   OverlayIdentifier,
 } from '@blocksuite/affine-block-surface';
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
@@ -56,7 +57,6 @@ import {
   isCanvasElement,
   isEdgelessTextBlock,
   isFrameBlock,
-  isNoteBlock,
 } from '../utils/query.js';
 import type { EdgelessSnapManager } from '../utils/snap-manager.js';
 import {

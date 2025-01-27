@@ -28,6 +28,7 @@
     { "path": "../affine/model" },
     { "path": "../affine/shared" },
     { "path": "../affine/widget-drag-handle" },
+    { "path": "../affine/widget-edgeless-auto-connect" },
     { "path": "../affine/widget-frame-title" },
     { "path": "../affine/widget-remote-selection" },
     { "path": "../affine/widget-scroll-anchoring" },

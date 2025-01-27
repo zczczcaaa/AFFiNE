@@ -1,5 +1,6 @@
 import { insertLinkByQuickSearchCommand } from '@blocksuite/affine-block-bookmark';
 import { EdgelessTextBlockComponent } from '@blocksuite/affine-block-edgeless-text';
+import { isNoteBlock } from '@blocksuite/affine-block-surface';
 import { toast } from '@blocksuite/affine-components/toast';
 import {
   ConnectorElementModel,
@@ -45,7 +46,7 @@ import {
 } from './utils/consts.js';
 import { deleteElements } from './utils/crud.js';
 import { getNextShapeType } from './utils/hotkey-utils.js';
-import { isCanvasElement, isNoteBlock } from './utils/query.js';
+import { isCanvasElement } from './utils/query.js';
 import {
   mountConnectorLabelEditor,
   mountShapeTextEditor,

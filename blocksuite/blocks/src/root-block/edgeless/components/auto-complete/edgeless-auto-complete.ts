@@ -3,6 +3,7 @@ import {
   type ConnectionOverlay,
   ConnectorPathGenerator,
   EdgelessCRUDIdentifier,
+  isNoteBlock,
   Overlay,
   OverlayIdentifier,
   type RoughCanvas,
@@ -44,7 +45,6 @@ import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
-import { isNoteBlock } from '../../utils/query.js';
 import { mountShapeTextEditor } from '../../utils/text.js';
 import type { SelectedRect } from '../rects/edgeless-selected-rect.js';
 import { EdgelessAutoCompletePanel } from './auto-complete-panel.js';

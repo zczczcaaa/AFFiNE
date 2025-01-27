@@ -35,6 +35,7 @@
     "@blocksuite/affine-model": "workspace:*",
     "@blocksuite/affine-shared": "workspace:*",
     "@blocksuite/affine-widget-drag-handle": "workspace:*",
+    "@blocksuite/affine-widget-edgeless-auto-connect": "workspace:*",
     "@blocksuite/affine-widget-frame-title": "workspace:*",
     "@blocksuite/affine-widget-remote-selection": "workspace:*",
     "@blocksuite/affine-widget-scroll-anchoring": "workspace:*",

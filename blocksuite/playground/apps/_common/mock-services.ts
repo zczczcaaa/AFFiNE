@@ -1,17 +1,10 @@
-import type {
-  PeekOptions,
-  PeekViewService,
-} from '@blocksuite/affine-components/peek';
-import { PeekViewExtension } from '@blocksuite/affine-components/peek';
 import type { EditorSetting } from '@blocksuite/affine-shared/services';
-import { BlockComponent } from '@blocksuite/block-std';
 import {
   ColorScheme,
   type DocMode,
   type DocModeProvider,
   GeneralSettingSchema,
   type GenerateDocUrlService,
-  matchFlavours,
   type NotificationService,
   type ParseDocUrlService,
   type ReferenceParams,
@@ -22,9 +15,6 @@ import { Slot } from '@blocksuite/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import { type Workspace } from '@blocksuite/store';
 import { Signal, signal } from '@preact/signals-core';
-import type { TemplateResult } from 'lit';
-
-import type { AttachmentViewerPanel } from './components/attachment-viewer-panel.js';
 
 function getModeFromStorage() {
   const mapJson = localStorage.getItem('playground:docMode');
@@ -153,37 +143,6 @@ export const themeExtension: ThemeExtension = {
     return mockEdgelessTheme.theme$;
   },
 };
-
-export function mockPeekViewExtension(
-  attachmentViewerPanel: AttachmentViewerPanel
-) {
-  return PeekViewExtension({
-    peek(
-      element: {
-        target: HTMLElement;
-        docId: string;
-        blockIds?: string[];
-        template?: TemplateResult;
-      },
-      options?: PeekOptions
-    ) {
-      const { target } = element;
-
-      if (
-        target instanceof BlockComponent &&
-        matchFlavours(target.model, ['affine:attachment'])
-      ) {
-        attachmentViewerPanel.open(target.model);
-        return Promise.resolve();
-      }
-
-      alert('Peek view not implemented in playground');
-      console.log('peek', element, options);
-
-      return Promise.resolve();
-    },
-  } satisfies PeekViewService);
-}
 
 export function mockGenerateDocUrlService(collection: Workspace) {
   const generateDocUrlService: GenerateDocUrlService = {
