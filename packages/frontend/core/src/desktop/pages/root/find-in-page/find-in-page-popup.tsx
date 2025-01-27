@@ -6,7 +6,7 @@ import {
   CloseIcon,
   SearchIcon,
 } from '@blocksuite/icons/rc';
-import * as Dialog from '@radix-ui/react-dialog';
+import * as Popover from '@radix-ui/react-popover';
 import { useLiveData, useService } from '@toeverything/infra';
 import { assignInlineVars } from '@vanilla-extract/dynamic';
 import clsx from 'clsx';
@@ -21,7 +21,7 @@ import {
 } from 'react';
 import { useTransition } from 'react-transition-state';
 
-import * as styles from './find-in-page-modal.css';
+import * as styles from './find-in-page-popup.css';
 
 const animationTimeout = 120;
 
@@ -36,8 +36,10 @@ const drawText = (
   }
 
   const dpr = window.devicePixelRatio || 1;
-  canvas.width = canvas.getBoundingClientRect().width * dpr;
-  canvas.height = canvas.getBoundingClientRect().height * dpr;
+  // the container will be animated,
+  // so we need to use clientWidth and clientHeight instead of getBoundingClientRect
+  canvas.width = canvas.clientWidth * dpr;
+  canvas.height = canvas.clientHeight * dpr;
 
   const rootStyles = getComputedStyle(document.documentElement);
   const textColor = rootStyles
@@ -46,15 +48,13 @@ const drawText = (
 
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const offsetX = -scrollLeft;
   ctx.fillStyle = textColor;
   ctx.font = '15px Inter';
-
-  const offsetX = -scrollLeft; // Offset based on scrollLeft
-
-  ctx.fillText(text, offsetX, 22);
-
+  ctx.letterSpacing = '0.01em';
   ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText(text, offsetX, 22);
 };
 
 const CanvasText = ({
@@ -80,7 +80,7 @@ const CanvasText = ({
   return <canvas className={className} ref={ref} />;
 };
 
-export const FindInPageModal = () => {
+export const FindInPagePopup = () => {
   const [value, setValue] = useState('');
 
   const findInPage = useService(FindInPageService).findInPage;
@@ -124,22 +124,6 @@ export const FindInPageModal = () => {
   }, []);
 
   useEffect(() => {
-    if (visible) {
-      setValue(findInPage.searchText$.value || '');
-      const onEsc = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          findInPage.onChangeVisible(false);
-        }
-      };
-      window.addEventListener('keydown', onEsc);
-      return () => {
-        window.removeEventListener('keydown', onEsc);
-      };
-    }
-    return () => {};
-  }, [findInPage, findInPage.searchText$.value, visible]);
-
-  useEffect(() => {
     const unsub = findInPage.isSearching$.subscribe(() => {
       inputRef.current?.focus();
       setTimeout(() => {
@@ -169,6 +153,7 @@ export const FindInPageModal = () => {
     },
     [findInPage]
   );
+
   const handleDone = useCallback(() => {
     onChangeVisible(false);
   }, [onChangeVisible]);
@@ -207,79 +192,87 @@ export const FindInPageModal = () => {
     );
 
   return (
-    <Dialog.Root open={status !== 'exited'}>
-      <Dialog.Portal>
-        <Dialog.Overlay className={styles.modalOverlay} />
-        <div className={styles.modalContentWrapper}>
-          <Dialog.Content
-            style={assignInlineVars({
-              [styles.animationTimeout]: `${animationTimeout}ms`,
+    <Popover.Root open={status !== 'exited'} onOpenChange={onChangeVisible}>
+      <Popover.Anchor className={styles.anchor} data-find-in-page-anchor />
+      <Popover.Portal>
+        <Popover.Content
+          style={assignInlineVars({
+            [styles.animationTimeout]: `${animationTimeout}ms`,
+          })}
+          className={styles.contentContainer}
+          data-state={status}
+          sideOffset={5}
+          side="left"
+          onFocusOutside={e => {
+            // do not close the popup when focus outside (like focus in the editor)
+            e.preventDefault();
+          }}
+          onPointerDownOutside={e => {
+            // do not close the popup when clicking outside (like clicking at the sidebar)
+            e.preventDefault();
+          }}
+        >
+          <div
+            className={clsx(styles.inputContainer, {
+              active: active || isSearching,
             })}
-            className={styles.modalContent}
-            data-state={status}
           >
-            <div
-              className={clsx(styles.inputContainer, {
-                active: active || isSearching,
-              })}
-            >
-              <SearchIcon className={styles.searchIcon} />
-              <div className={styles.inputMain}>
-                <RowInput
-                  type="text"
-                  autoFocus
-                  value={value}
-                  ref={inputRef}
-                  style={{
-                    visibility: isSearching ? 'hidden' : 'visible',
-                  }}
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                  className={styles.input}
-                  onKeyDown={handleKeydown}
-                  onChange={handleValueChange}
-                  onScroll={handleScroll}
-                  onCompositionStart={handleCompositionStart}
-                  onCompositionEnd={handleCompositionEnd}
-                />
-                <CanvasText
-                  className={styles.inputHack}
-                  text={value}
-                  scrollLeft={scrollLeft}
-                />
-              </div>
-              <div className={styles.count}>
-                {value.length > 0 && result && result.matches !== 0 ? (
-                  <>
-                    <span>{result?.activeMatchOrdinal || 0}</span>
-                    <span>/</span>
-                    <span>{result?.matches || 0}</span>
-                  </>
-                ) : value.length ? (
-                  <span>No matches</span>
-                ) : null}
-              </div>
-            </div>
-
-            <div>
-              <IconButton
-                size="24"
-                className={clsx(styles.arrowButton, 'backward')}
-                onClick={handleBackWard}
-                icon={<ArrowUpSmallIcon />}
+            <SearchIcon className={styles.searchIcon} />
+            <div className={styles.inputMain}>
+              <RowInput
+                type="text"
+                autoFocus
+                value={value}
+                ref={inputRef}
+                style={{
+                  visibility: isSearching ? 'hidden' : 'visible',
+                }}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                className={styles.input}
+                onKeyDown={handleKeydown}
+                onChange={handleValueChange}
+                onScroll={handleScroll}
+                onCompositionStart={handleCompositionStart}
+                onCompositionEnd={handleCompositionEnd}
               />
-              <IconButton
-                size="24"
-                className={clsx(styles.arrowButton, 'forward')}
-                onClick={handleForward}
-                icon={<ArrowDownSmallIcon />}
+              <CanvasText
+                className={styles.inputHack}
+                text={value}
+                scrollLeft={scrollLeft}
               />
             </div>
+            <div className={styles.count}>
+              {value.length > 0 && result && result.matches !== 0 ? (
+                <>
+                  <span>{result?.activeMatchOrdinal || 0}</span>
+                  <span>/</span>
+                  <span>{result?.matches || 0}</span>
+                </>
+              ) : value.length ? (
+                <span>No matches</span>
+              ) : null}
+            </div>
+          </div>
 
-            <IconButton onClick={handleDone} icon={<CloseIcon />} />
-          </Dialog.Content>
-        </div>
-      </Dialog.Portal>
-    </Dialog.Root>
+          <div className={styles.arrowButtonContainer}>
+            <IconButton
+              size="24"
+              className={styles.arrowButton}
+              onClick={handleBackWard}
+              icon={<ArrowUpSmallIcon />}
+            />
+            <IconButton
+              size="24"
+              className={styles.arrowButton}
+              onClick={handleForward}
+              icon={<ArrowDownSmallIcon />}
+            />
+          </div>
+
+          <IconButton onClick={handleDone} icon={<CloseIcon />} />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 };

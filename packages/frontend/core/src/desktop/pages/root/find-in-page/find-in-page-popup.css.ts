@@ -25,32 +25,20 @@ const contentHide = keyframes({
   },
 });
 
-export const modalOverlay = style({
+export const anchor = style({
   position: 'fixed',
-  inset: 0,
-  backgroundColor: 'transparent',
-  zIndex: cssVar('zIndexModal'),
-});
-
-export const modalContentWrapper = style({
-  position: 'fixed',
-  inset: 0,
-  display: 'flex',
-  alignItems: 'flex-start',
-  justifyContent: 'flex-end',
-  zIndex: cssVar('zIndexModal'),
   right: '28px',
   top: '80px',
+  zIndex: cssVar('zIndexModal'),
 });
 
-export const modalContent = style({
+export const contentContainer = style({
   width: 400,
   height: 48,
   backgroundColor: cssVar('backgroundOverlayPanelColor'),
   borderRadius: '8px',
   boxShadow: cssVar('shadow3'),
   minHeight: 48,
-  // :focus-visible will set outline
   outline: 'none',
   display: 'flex',
   gap: 8,
@@ -116,6 +104,7 @@ export const input = style({
   height: '100%',
   width: '100%',
   color: 'transparent',
+  fontSize: '15px',
 });
 
 export const inputHack = style([
@@ -134,19 +123,22 @@ export const count = style({
   userSelect: 'none',
 });
 
+export const arrowButtonContainer = style({
+  border: '1px solid',
+  borderColor: cssVarV2('layer/insideBorder/border'),
+  flexShrink: 0,
+  borderRadius: '4px',
+  overflow: 'hidden',
+});
+
 export const arrowButton = style({
   width: 32,
   height: 32,
-  flexShrink: 0,
-  border: '1px solid',
-  borderColor: cssVarV2('layer/insideBorder/border'),
+  borderRadius: 0,
   selectors: {
-    '&.backward': {
-      borderRadius: '4px 0 0 4px',
-    },
-    '&.forward': {
-      borderLeft: 'none',
-      borderRadius: '0 4px 4px 0',
+    '&:first-child': {
+      borderRight: '1px solid',
+      borderColor: cssVarV2('layer/insideBorder/border'),
     },
   },
 });
