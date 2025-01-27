@@ -14,6 +14,7 @@ import {
   BlocksUtils,
   DocModeProvider,
   EditPropsStore,
+  getSelectedBlocksCommand,
   NoteDisplayMode,
   NotificationProvider,
   RefNodeSlotsProvider,
@@ -216,13 +217,10 @@ const REPLACE_SELECTION = {
   ) => {
     const currentTextSelection = currentSelections.text;
     const currentBlockSelections = currentSelections.blocks;
-    const [_, data] = host.command
-      .chain()
-      .getSelectedBlocks({
-        currentTextSelection,
-        currentBlockSelections,
-      })
-      .run();
+    const [_, data] = host.command.exec(getSelectedBlocksCommand, {
+      currentTextSelection,
+      currentBlockSelections,
+    });
     if (!data.selectedBlocks) return false;
 
     reportResponse('result:replace');
@@ -264,14 +262,11 @@ const INSERT_BELOW = {
     const currentTextSelection = currentSelections.text;
     const currentBlockSelections = currentSelections.blocks;
     const currentImageSelections = currentSelections.images;
-    const [_, data] = host.command
-      .chain()
-      .getSelectedBlocks({
-        currentTextSelection,
-        currentBlockSelections,
-        currentImageSelections,
-      })
-      .run();
+    const [_, data] = host.command.exec(getSelectedBlocksCommand, {
+      currentTextSelection,
+      currentBlockSelections,
+      currentImageSelections,
+    });
     if (!data.selectedBlocks) return false;
     reportResponse('result:insert');
     await insertBelow(

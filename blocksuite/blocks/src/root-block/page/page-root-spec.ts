@@ -11,7 +11,6 @@ import { AFFINE_DOC_REMOTE_SELECTION_WIDGET } from '@blocksuite/affine-widget-re
 import { AFFINE_SCROLL_ANCHORING_WIDGET } from '@blocksuite/affine-widget-scroll-anchoring';
 import {
   BlockViewExtension,
-  CommandExtension,
   FlavourExtension,
   WidgetViewMapExtension,
 } from '@blocksuite/block-std';
@@ -20,7 +19,6 @@ import { literal, unsafeStatic } from 'lit/static-html.js';
 
 import { ExportManagerExtension } from '../../_common/export-manager/export-manager.js';
 import { RootBlockAdapterExtensions } from '../adapters/extension.js';
-import { commands } from '../commands/index.js';
 import { AFFINE_EMBED_CARD_TOOLBAR_WIDGET } from '../widgets/embed-card-toolbar/embed-card-toolbar.js';
 import { AFFINE_FORMAT_BAR_WIDGET } from '../widgets/format-bar/format-bar.js';
 import { AFFINE_INNER_MODAL_WIDGET } from '../widgets/inner-modal/inner-modal.js';
@@ -75,7 +73,6 @@ const PageCommonExtension: ExtensionType[] = [
 export const PageRootBlockSpec: ExtensionType[] = [
   ...PageCommonExtension,
   BlockViewExtension('affine:page', literal`affine-page-root`),
-  CommandExtension(commands),
   WidgetViewMapExtension('affine:page', pageRootWidgetViewMap),
   ExportManagerExtension,
   DNDAPIExtension,

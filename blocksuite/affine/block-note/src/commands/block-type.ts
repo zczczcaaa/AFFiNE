@@ -4,11 +4,17 @@ import {
   onModelTextUpdated,
 } from '@blocksuite/affine-components/rich-text';
 import {
+  getBlockSelectionsCommand,
+  getSelectedBlocksCommand,
+  getTextSelectionCommand,
+} from '@blocksuite/affine-shared/commands';
+import {
   matchFlavours,
   mergeToCodeModel,
   transformModel,
 } from '@blocksuite/affine-shared/utils';
 import {
+  type BlockComponent,
   BlockSelection,
   type Command,
   TextSelection,
@@ -21,9 +27,12 @@ type UpdateBlockConfig = {
 };
 
 export const updateBlockType: Command<
-  'selectedBlocks',
-  'updatedBlocks',
-  UpdateBlockConfig
+  UpdateBlockConfig & {
+    selectedBlocks?: BlockComponent[];
+  },
+  {
+    updatedBlocks: BlockModel[];
+  }
 > = (ctx, next) => {
   const { std, flavour, props } = ctx;
   const host = std.host;
@@ -35,8 +44,11 @@ export const updateBlockType: Command<
     if (selectedBlocks == null) {
       const [result, ctx] = std.command
         .chain()
-        .tryAll(chain => [chain.getTextSelection(), chain.getBlockSelections()])
-        .getSelectedBlocks({ types: ['text', 'block'] })
+        .tryAll(chain => [
+          chain.pipe(getTextSelectionCommand),
+          chain.pipe(getBlockSelectionsCommand),
+        ])
+        .pipe(getSelectedBlocksCommand, { types: ['text', 'block'] })
         .run();
       if (result) {
         selectedBlocks = ctx.selectedBlocks;
@@ -60,7 +72,10 @@ export const updateBlockType: Command<
     );
   }
 
-  const mergeToCode: Command<never, 'updatedBlocks'> = (_, next) => {
+  const mergeToCode: Command<{}, { updatedBlocks: BlockModel[] }> = (
+    _,
+    next
+  ) => {
     if (flavour !== 'affine:code') return;
     const id = mergeToCodeModel(blockModels);
     if (!id) return;
@@ -72,7 +87,10 @@ export const updateBlockType: Command<
     }).catch(console.error);
     return next({ updatedBlocks: [model] });
   };
-  const appendDivider: Command<never, 'updatedBlocks'> = (_, next) => {
+  const appendDivider: Command<{}, { updatedBlocks: BlockModel[] }> = (
+    _,
+    next
+  ) => {
     if (flavour !== 'affine:divider') {
       return false;
     }
@@ -99,7 +117,7 @@ export const updateBlockType: Command<
     return next({ updatedBlocks: [newModel] });
   };
 
-  const focusText: Command<'updatedBlocks'> = (ctx, next) => {
+  const focusText: Command<{ updatedBlocks: BlockModel[] }> = (ctx, next) => {
     const { updatedBlocks } = ctx;
     if (!updatedBlocks || updatedBlocks.length === 0) {
       return false;
@@ -139,7 +157,7 @@ export const updateBlockType: Command<
     return next();
   };
 
-  const focusBlock: Command<'updatedBlocks'> = (ctx, next) => {
+  const focusBlock: Command<{ updatedBlocks: BlockModel[] }> = (ctx, next) => {
     const { updatedBlocks } = ctx;
     if (!updatedBlocks || updatedBlocks.length === 0) {
       return false;
@@ -165,15 +183,15 @@ export const updateBlockType: Command<
 
   const [result, resultCtx] = std.command
     .chain()
-    .inline((_, next) => {
+    .pipe((_, next) => {
       doc.captureSync();
       return next();
     })
     // update block type
-    .try<'updatedBlocks'>(chain => [
-      chain.inline<'updatedBlocks'>(mergeToCode),
-      chain.inline<'updatedBlocks'>(appendDivider),
-      chain.inline<'updatedBlocks'>((_, next) => {
+    .try<{ updatedBlocks: BlockModel[] }>(chain => [
+      chain.pipe(mergeToCode),
+      chain.pipe(appendDivider),
+      chain.pipe((_, next) => {
         const newModels: BlockModel[] = [];
         blockModels.forEach(model => {
           if (
@@ -204,15 +222,15 @@ export const updateBlockType: Command<
     ])
     // focus
     .try(chain => [
-      chain.inline((_, next) => {
+      chain.pipe((_, next) => {
         if (['affine:code', 'affine:divider'].includes(flavour)) {
           return next();
         }
         return false;
       }),
-      chain.inline(focusText),
-      chain.inline(focusBlock),
-      chain.inline((_, next) => next()),
+      chain.pipe(focusText),
+      chain.pipe(focusBlock),
+      chain.pipe((_, next) => next()),
     ])
     .run();
 

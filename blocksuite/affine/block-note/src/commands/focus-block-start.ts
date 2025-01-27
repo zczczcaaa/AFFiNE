@@ -1,6 +1,12 @@
-import { type Command, TextSelection } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  type Command,
+  TextSelection,
+} from '@blocksuite/block-std';
 
-export const focusBlockStart: Command<'focusBlock'> = (ctx, next) => {
+export const focusBlockStart: Command<{
+  focusBlock?: BlockComponent;
+}> = (ctx, next) => {
   const { focusBlock, std } = ctx;
   if (!focusBlock || !focusBlock.model.text) return;
 

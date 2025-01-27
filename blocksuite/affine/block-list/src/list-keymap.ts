@@ -3,9 +3,20 @@ import {
   textKeymap,
 } from '@blocksuite/affine-components/rich-text';
 import { ListBlockSchema } from '@blocksuite/affine-model';
+import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
 import { KeymapExtension, TextSelection } from '@blocksuite/block-std';
 import { IS_MAC } from '@blocksuite/global/env';
 
+import {
+  canDedentListCommand,
+  dedentListCommand,
+} from './commands/dedent-list.js';
+import {
+  canIndentListCommand,
+  indentListCommand,
+} from './commands/indent-list.js';
+import { listToParagraphCommand } from './commands/list-to-paragraph.js';
+import { splitListCommand } from './commands/split-list.js';
 import { forwardDelete } from './utils/forward-delete.js';
 
 export const ListKeymapExtension = KeymapExtension(
@@ -16,10 +27,13 @@ export const ListKeymapExtension = KeymapExtension(
         if (!text) return false;
 
         ctx.get('keyboardState').raw.preventDefault();
-        std.command.exec('splitList', {
-          blockId: text.from.blockId,
-          inlineIndex: text.from.index,
-        });
+        std.command
+          .chain()
+          .pipe(splitListCommand, {
+            blockId: text.from.blockId,
+            inlineIndex: text.from.index,
+          })
+          .run();
         return true;
       },
       'Mod-Enter': ctx => {
@@ -27,16 +41,22 @@ export const ListKeymapExtension = KeymapExtension(
         if (!text) return false;
 
         ctx.get('keyboardState').raw.preventDefault();
-        std.command.exec('splitList', {
-          blockId: text.from.blockId,
-          inlineIndex: text.from.index,
-        });
+        std.command
+          .chain()
+          .pipe(splitListCommand, {
+            blockId: text.from.blockId,
+            inlineIndex: text.from.index,
+          })
+          .run();
         return true;
       },
       Tab: ctx => {
-        const { selectedModels } = std.command.exec('getSelectedModels', {
-          types: ['text'],
-        });
+        const [_, { selectedModels }] = std.command
+          .chain()
+          .pipe(getSelectedModelsCommand, {
+            types: ['text'],
+          })
+          .run();
         if (selectedModels?.length !== 1) {
           return false;
         }
@@ -46,18 +66,21 @@ export const ListKeymapExtension = KeymapExtension(
         ctx.get('keyboardState').raw.preventDefault();
         std.command
           .chain()
-          .canIndentList({
+          .pipe(canIndentListCommand, {
             blockId: text.from.blockId,
             inlineIndex: text.from.index,
           })
-          .indentList()
+          .pipe(indentListCommand)
           .run();
         return true;
       },
       'Shift-Tab': ctx => {
-        const { selectedModels } = std.command.exec('getSelectedModels', {
-          types: ['text'],
-        });
+        const [_, { selectedModels }] = std.command
+          .chain()
+          .pipe(getSelectedModelsCommand, {
+            types: ['text'],
+          })
+          .run();
         if (selectedModels?.length !== 1) {
           return;
         }
@@ -67,11 +90,11 @@ export const ListKeymapExtension = KeymapExtension(
         ctx.get('keyboardState').raw.preventDefault();
         std.command
           .chain()
-          .canDedentList({
+          .pipe(canDedentListCommand, {
             blockId: text.from.blockId,
             inlineIndex: text.from.index,
           })
-          .dedentList()
+          .pipe(dedentListCommand)
           .run();
         return true;
       },
@@ -83,7 +106,12 @@ export const ListKeymapExtension = KeymapExtension(
         if (!isStart) return false;
 
         ctx.get('keyboardState').raw.preventDefault();
-        std.command.exec('listToParagraph', { id: text.from.blockId });
+        std.command
+          .chain()
+          .pipe(listToParagraphCommand, {
+            id: text.from.blockId,
+          })
+          .run();
         return true;
       },
       'Control-d': ctx => {

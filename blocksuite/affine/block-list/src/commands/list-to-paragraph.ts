@@ -3,11 +3,12 @@ import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import type { Command } from '@blocksuite/block-std';
 
 export const listToParagraphCommand: Command<
-  never,
-  'listConvertedId',
   {
     id: string;
     stopCapturing?: boolean;
+  },
+  {
+    listConvertedId: string;
   }
 > = (ctx, next) => {
   const { id, stopCapturing = true } = ctx;

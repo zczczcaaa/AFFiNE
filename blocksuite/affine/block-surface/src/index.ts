@@ -116,3 +116,5 @@ export const MindmapUtils = {
   hideNodeConnector,
   containsNode,
 };
+
+export * from './commands';

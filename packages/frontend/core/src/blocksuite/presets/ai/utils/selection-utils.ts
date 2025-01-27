@@ -5,6 +5,11 @@ import {
   type CopilotTool,
   EdgelessRootService,
   type FrameBlockModel,
+  getBlockSelectionsCommand,
+  getImageSelectionsCommand,
+  getSelectedBlocksCommand,
+  getSelectedModelsCommand,
+  getTextSelectionCommand,
   ImageBlockModel,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine/blocks';
@@ -95,12 +100,9 @@ export async function selectedToPng(editor: EditorHost) {
 }
 
 export function getSelectedModels(editorHost: EditorHost) {
-  const chain = editorHost.std.command.chain();
-  const [_, ctx] = chain
-    .getSelectedModels({
-      types: ['block', 'text'],
-    })
-    .run();
+  const [_, ctx] = editorHost.std.command.exec(getSelectedModelsCommand, {
+    types: ['block', 'text'],
+  });
   const { selectedModels } = ctx;
   return selectedModels;
 }
@@ -246,11 +248,11 @@ export const getSelections = (
   const [_, data] = host.command
     .chain()
     .tryAll(chain => [
-      chain.getTextSelection(),
-      chain.getBlockSelections(),
-      chain.getImageSelections(),
+      chain.pipe(getTextSelectionCommand),
+      chain.pipe(getBlockSelectionsCommand),
+      chain.pipe(getImageSelectionsCommand),
     ])
-    .getSelectedBlocks({ types: ['text', 'block', 'image'], mode })
+    .pipe(getSelectedBlocksCommand, { types: ['text', 'block', 'image'], mode })
     .run();
 
   return data;
@@ -260,11 +262,11 @@ export const getSelectedImagesAsBlobs = async (host: EditorHost) => {
   const [_, data] = host.command
     .chain()
     .tryAll(chain => [
-      chain.getTextSelection(),
-      chain.getBlockSelections(),
-      chain.getImageSelections(),
+      chain.pipe(getTextSelectionCommand),
+      chain.pipe(getBlockSelectionsCommand),
+      chain.pipe(getImageSelectionsCommand),
     ])
-    .getSelectedBlocks({
+    .pipe(getSelectedBlocksCommand, {
       types: ['block', 'image'],
     })
     .run();

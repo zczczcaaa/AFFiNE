@@ -1,10 +1,15 @@
-import type { InsertedLinkType } from '@blocksuite/affine-block-embed';
+import {
+  type InsertedLinkType,
+  insertEmbedLinkedDocCommand,
+} from '@blocksuite/affine-block-embed';
 import { QuickSearchProvider } from '@blocksuite/affine-shared/services';
 import type { Command } from '@blocksuite/block-std';
 
+import { insertBookmarkCommand } from './insert-bookmark';
+
 export const insertLinkByQuickSearchCommand: Command<
-  never,
-  'insertedLinkType'
+  {},
+  { insertedLinkType: Promise<InsertedLinkType> }
 > = (ctx, next) => {
   const { std } = ctx;
   const quickSearchService = std.getOptional(QuickSearchProvider);
@@ -20,7 +25,7 @@ export const insertLinkByQuickSearchCommand: Command<
 
       // add linked doc
       if ('docId' in result) {
-        std.command.exec('insertEmbedLinkedDoc', {
+        std.command.exec(insertEmbedLinkedDocCommand, {
           docId: result.docId,
           params: result.params,
         });
@@ -31,7 +36,7 @@ export const insertLinkByQuickSearchCommand: Command<
 
       // add normal link;
       if ('externalUrl' in result) {
-        std.command.exec('insertBookmark', { url: result.externalUrl });
+        std.command.exec(insertBookmarkCommand, { url: result.externalUrl });
         return {
           flavour: 'affine:bookmark',
         };

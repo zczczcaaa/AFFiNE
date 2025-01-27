@@ -1,17 +1,34 @@
 import { textConversionConfigs } from '@blocksuite/affine-components/rich-text';
 import { NoteBlockSchema } from '@blocksuite/affine-model';
+import {
+  getBlockSelectionsCommand,
+  getNextBlockCommand,
+  getPrevBlockCommand,
+  getTextSelectionCommand,
+} from '@blocksuite/affine-shared/commands';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
   type BlockComponent,
   BlockSelection,
   BlockService,
   type BlockStdScope,
+  type Chain,
   TextSelection,
   type UIEventHandler,
   type UIEventStateContext,
 } from '@blocksuite/block-std';
 import type { BaseSelection, BlockModel } from '@blocksuite/store';
 
+import {
+  dedentBlocks,
+  dedentBlocksToRoot,
+  focusBlockEnd,
+  focusBlockStart,
+  indentBlocks,
+  selectBlock,
+  selectBlocksBetween,
+  updateBlockType,
+} from './commands';
 import { moveBlockConfigs } from './move-block';
 import { quickActionConfig } from './quick-action';
 
@@ -76,13 +93,13 @@ export class NoteBlockService extends BlockService {
                   ctx.get('defaultState').event.preventDefault();
                   const [result] = this._std.command
                     .chain()
-                    .updateBlockType({
+                    .pipe(updateBlockType, {
                       flavour: item.flavour,
                       props: {
                         type: item.type,
                       },
                     })
-                    .inline((ctx, next) => {
+                    .pipe((ctx, next) => {
                       const newModels = ctx.updatedBlocks;
                       if (!newModels) {
                         return;
@@ -145,7 +162,7 @@ export class NoteBlockService extends BlockService {
 
     const [result] = this._std.command
       .chain()
-      .inline((_, next) => {
+      .pipe((_, next) => {
         this._reset();
         return next();
       })
@@ -154,16 +171,16 @@ export class NoteBlockService extends BlockService {
         // 1. is paragraph, list, code block - follow the default behavior
         // 2. is not - select the next block (use block selection instead of text selection)
         cmd
-          .getTextSelection()
-          .inline<'currentSelectionPath'>((ctx, next) => {
+          .pipe(getTextSelectionCommand)
+          .pipe<{ currentSelectionPath: string }>((ctx, next) => {
             const currentTextSelection = ctx.currentTextSelection;
             if (!currentTextSelection) {
               return;
             }
             return next({ currentSelectionPath: currentTextSelection.blockId });
           })
-          .getNextBlock()
-          .inline((ctx, next) => {
+          .pipe(getNextBlockCommand)
+          .pipe((ctx, next) => {
             const { nextBlock } = ctx;
 
             if (!nextBlock) {
@@ -177,13 +194,9 @@ export class NoteBlockService extends BlockService {
                 'affine:code',
               ])
             ) {
-              this._std.command
-                .chain()
-                .with({
-                  focusBlock: nextBlock,
-                })
-                .selectBlock()
-                .run();
+              this._std.command.exec(selectBlock, {
+                focusBlock: nextBlock,
+              });
             }
 
             return next({});
@@ -193,8 +206,8 @@ export class NoteBlockService extends BlockService {
         // 1. is paragraph, list, code block - focus it
         // 2. is not - select it using block selection
         cmd
-          .getBlockSelections()
-          .inline<'currentSelectionPath'>((ctx, next) => {
+          .pipe(getBlockSelectionsCommand)
+          .pipe<{ currentSelectionPath: string }>((ctx, next) => {
             const currentBlockSelections = ctx.currentBlockSelections;
             const blockSelection = currentBlockSelections?.at(-1);
             if (!blockSelection) {
@@ -202,8 +215,8 @@ export class NoteBlockService extends BlockService {
             }
             return next({ currentSelectionPath: blockSelection.blockId });
           })
-          .getNextBlock()
-          .inline<'focusBlock'>((ctx, next) => {
+          .pipe(getNextBlockCommand)
+          .pipe<{ focusBlock: BlockComponent }>((ctx, next) => {
             const { nextBlock } = ctx;
             if (!nextBlock) {
               return;
@@ -217,18 +230,15 @@ export class NoteBlockService extends BlockService {
                 'affine:code',
               ])
             ) {
-              this._std.command
-                .chain()
-                .focusBlockStart({ focusBlock: nextBlock })
-                .run();
+              this._std.command.exec(focusBlockStart, {
+                focusBlock: nextBlock,
+              });
               return next();
             }
 
-            this._std.command
-              .chain()
-              .with({ focusBlock: nextBlock })
-              .selectBlock()
-              .run();
+            this._std.command.exec(selectBlock, {
+              focusBlock: nextBlock,
+            });
             return next();
           }),
       ])
@@ -242,7 +252,7 @@ export class NoteBlockService extends BlockService {
 
     const [result] = this._std.command
       .chain()
-      .inline((_, next) => {
+      .pipe((_, next) => {
         this._reset();
         return next();
       })
@@ -251,16 +261,16 @@ export class NoteBlockService extends BlockService {
         // 1. is paragraph, list, code block - follow the default behavior
         // 2. is not - select the previous block (use block selection instead of text selection)
         cmd
-          .getTextSelection()
-          .inline<'currentSelectionPath'>((ctx, next) => {
+          .pipe(getTextSelectionCommand)
+          .pipe<{ currentSelectionPath: string }>((ctx, next) => {
             const currentTextSelection = ctx.currentTextSelection;
             if (!currentTextSelection) {
               return;
             }
             return next({ currentSelectionPath: currentTextSelection.blockId });
           })
-          .getPrevBlock()
-          .inline((ctx, next) => {
+          .pipe(getPrevBlockCommand)
+          .pipe((ctx, next) => {
             const { prevBlock } = ctx;
 
             if (!prevBlock) {
@@ -274,23 +284,19 @@ export class NoteBlockService extends BlockService {
                 'affine:code',
               ])
             ) {
-              this._std.command
-                .chain()
-                .with({
-                  focusBlock: prevBlock,
-                })
-                .selectBlock()
-                .run();
+              this._std.command.exec(selectBlock, {
+                focusBlock: prevBlock,
+              });
             }
 
-            return next({});
+            return next();
           }),
         // block selection - select the previous block
         // 1. is paragraph, list, code block - focus it
         // 2. is not - select it using block selection
         cmd
-          .getBlockSelections()
-          .inline<'currentSelectionPath'>((ctx, next) => {
+          .pipe(getBlockSelectionsCommand)
+          .pipe<{ currentSelectionPath: string }>((ctx, next) => {
             const currentBlockSelections = ctx.currentBlockSelections;
             const blockSelection = currentBlockSelections?.at(-1);
             if (!blockSelection) {
@@ -298,8 +304,8 @@ export class NoteBlockService extends BlockService {
             }
             return next({ currentSelectionPath: blockSelection.blockId });
           })
-          .getPrevBlock()
-          .inline<'focusBlock'>((ctx, next) => {
+          .pipe(getPrevBlockCommand)
+          .pipe((ctx, next) => {
             const { prevBlock } = ctx;
             if (!prevBlock) {
               return;
@@ -313,18 +319,15 @@ export class NoteBlockService extends BlockService {
               ])
             ) {
               event.preventDefault();
-              this._std.command
-                .chain()
-                .focusBlockEnd({ focusBlock: prevBlock })
-                .run();
+              this._std.command.exec(focusBlockEnd, {
+                focusBlock: prevBlock,
+              });
               return next();
             }
 
-            this._std.command
-              .chain()
-              .with({ focusBlock: prevBlock })
-              .selectBlock()
-              .run();
+            this._std.command.exec(selectBlock, {
+              focusBlock: prevBlock,
+            });
             return next();
           }),
       ])
@@ -333,34 +336,36 @@ export class NoteBlockService extends BlockService {
     return result;
   };
 
-  private readonly _onBlockShiftDown = (cmd: BlockSuite.CommandChain) => {
+  private readonly _onBlockShiftDown = (cmd: Chain) => {
     return cmd
-      .getBlockSelections()
-      .inline<'currentSelectionPath' | 'anchorBlock'>((ctx, next) => {
-        const blockSelections = ctx.currentBlockSelections;
-        if (!blockSelections) {
-          return;
-        }
+      .pipe(getBlockSelectionsCommand)
+      .pipe<{ currentSelectionPath: string; anchorBlock: BlockComponent }>(
+        (ctx, next) => {
+          const blockSelections = ctx.currentBlockSelections;
+          if (!blockSelections) {
+            return;
+          }
 
-        if (!this._anchorSel) {
-          this._anchorSel = blockSelections.at(-1) ?? null;
-        }
-        if (!this._anchorSel) {
-          return;
-        }
+          if (!this._anchorSel) {
+            this._anchorSel = blockSelections.at(-1) ?? null;
+          }
+          if (!this._anchorSel) {
+            return;
+          }
 
-        const anchorBlock = ctx.std.view.getBlock(this._anchorSel.blockId);
-        if (!anchorBlock) {
-          return;
+          const anchorBlock = ctx.std.view.getBlock(this._anchorSel.blockId);
+          if (!anchorBlock) {
+            return;
+          }
+          return next({
+            anchorBlock,
+            currentSelectionPath:
+              this._focusBlock?.blockId ?? anchorBlock?.blockId,
+          });
         }
-        return next({
-          anchorBlock,
-          currentSelectionPath:
-            this._focusBlock?.blockId ?? anchorBlock?.blockId,
-        });
-      })
-      .getNextBlock({})
-      .inline<'focusBlock'>((ctx, next) => {
+      )
+      .pipe(getNextBlockCommand)
+      .pipe<{ focusBlock: BlockComponent }>((ctx, next) => {
         const nextBlock = ctx.nextBlock;
         if (!nextBlock) {
           return;
@@ -370,35 +375,37 @@ export class NoteBlockService extends BlockService {
           focusBlock: this._focusBlock,
         });
       })
-      .selectBlocksBetween({ tail: true });
+      .pipe(selectBlocksBetween, { tail: true });
   };
 
-  private readonly _onBlockShiftUp = (cmd: BlockSuite.CommandChain) => {
+  private readonly _onBlockShiftUp = (cmd: Chain) => {
     return cmd
-      .getBlockSelections()
-      .inline<'currentSelectionPath' | 'anchorBlock'>((ctx, next) => {
-        const blockSelections = ctx.currentBlockSelections;
-        if (!blockSelections) {
-          return;
+      .pipe(getBlockSelectionsCommand)
+      .pipe<{ currentSelectionPath: string; anchorBlock: BlockComponent }>(
+        (ctx, next) => {
+          const blockSelections = ctx.currentBlockSelections;
+          if (!blockSelections) {
+            return;
+          }
+          if (!this._anchorSel) {
+            this._anchorSel = blockSelections.at(0) ?? null;
+          }
+          if (!this._anchorSel) {
+            return;
+          }
+          const anchorBlock = ctx.std.view.getBlock(this._anchorSel.blockId);
+          if (!anchorBlock) {
+            return;
+          }
+          return next({
+            anchorBlock,
+            currentSelectionPath:
+              this._focusBlock?.blockId ?? anchorBlock?.blockId,
+          });
         }
-        if (!this._anchorSel) {
-          this._anchorSel = blockSelections.at(0) ?? null;
-        }
-        if (!this._anchorSel) {
-          return;
-        }
-        const anchorBlock = ctx.std.view.getBlock(this._anchorSel.blockId);
-        if (!anchorBlock) {
-          return;
-        }
-        return next({
-          anchorBlock,
-          currentSelectionPath:
-            this._focusBlock?.blockId ?? anchorBlock?.blockId,
-        });
-      })
-      .getPrevBlock({})
-      .inline((ctx, next) => {
+      )
+      .pipe(getPrevBlockCommand)
+      .pipe((ctx, next) => {
         const prevBlock = ctx.prevBlock;
         if (!prevBlock) {
           return;
@@ -408,15 +415,15 @@ export class NoteBlockService extends BlockService {
           focusBlock: this._focusBlock,
         });
       })
-      .selectBlocksBetween({ tail: false });
+      .pipe(selectBlocksBetween, { tail: false });
   };
 
   private readonly _onEnter = (ctx: UIEventStateContext) => {
     const event = ctx.get('defaultState').event;
     const [result] = this._std.command
       .chain()
-      .getBlockSelections()
-      .inline((ctx, next) => {
+      .pipe(getBlockSelectionsCommand)
+      .pipe((ctx, next) => {
         const blockSelection = ctx.currentBlockSelections?.at(-1);
         if (!blockSelection) {
           return;
@@ -466,8 +473,8 @@ export class NoteBlockService extends BlockService {
   private readonly _onEsc = () => {
     const [result] = this._std.command
       .chain()
-      .getBlockSelections()
-      .inline((ctx, next) => {
+      .pipe(getBlockSelectionsCommand)
+      .pipe((ctx, next) => {
         const blockSelection = ctx.currentBlockSelections?.at(-1);
         if (!blockSelection) {
           return;
@@ -556,7 +563,7 @@ export class NoteBlockService extends BlockService {
       ...this._bindQuickActionHotKey(),
       ...this._bindTextConversionHotKey(),
       Tab: ctx => {
-        const { success } = this.std.command.exec('indentBlocks');
+        const [success] = this.std.command.exec(indentBlocks);
 
         if (!success) return;
 
@@ -564,7 +571,7 @@ export class NoteBlockService extends BlockService {
         return true;
       },
       'Shift-Tab': ctx => {
-        const { success } = this.std.command.exec('dedentBlocks');
+        const [success] = this.std.command.exec(dedentBlocks);
 
         if (!success) return;
 
@@ -572,7 +579,7 @@ export class NoteBlockService extends BlockService {
         return true;
       },
       'Mod-Backspace': ctx => {
-        const { success } = this.std.command.exec('dedentBlocksToRoot');
+        const [success] = this.std.command.exec(dedentBlocksToRoot);
 
         if (!success) return;
 

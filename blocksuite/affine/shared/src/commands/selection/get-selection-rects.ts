@@ -19,11 +19,14 @@ export interface SelectionRect {
 }
 
 export const getSelectionRectsCommand: Command<
-  'currentTextSelection' | 'currentBlockSelections',
-  'selectionRects',
   {
+    currentTextSelection?: TextSelection;
+    currentBlockSelections?: BlockSelection[];
     textSelection?: TextSelection;
     blockSelections?: BlockSelection[];
+  },
+  {
+    selectionRects: SelectionRect[];
   }
 > = (ctx, next) => {
   let textSelection;
@@ -85,26 +88,6 @@ export const getSelectionRectsCommand: Command<
 
   return;
 };
-
-declare global {
-  namespace BlockSuite {
-    interface CommandContext {
-      selectionRects?: SelectionRect[];
-    }
-
-    interface Commands {
-      /**
-       * Get the selection rects of the current selection or given selections.
-       *
-       * @chain may be `getTextSelection`, `getBlockSelections`, or nothing.
-       * @param textSelection The provided text selection.
-       * @param blockSelections The provided block selections. If `textSelection` is provided, this will be ignored.
-       * @returns The selection rects.
-       */
-      getSelectionRects: typeof getSelectionRectsCommand;
-    }
-  }
-}
 
 function covers(rect1: SelectionRect, rect2: SelectionRect): boolean {
   return (

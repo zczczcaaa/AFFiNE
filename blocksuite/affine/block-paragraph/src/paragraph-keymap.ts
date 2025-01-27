@@ -12,6 +12,16 @@ import {
 import { KeymapExtension, TextSelection } from '@blocksuite/block-std';
 import { IS_MAC } from '@blocksuite/global/env';
 
+import { addParagraphCommand } from './commands/add-paragraph.js';
+import {
+  canDedentParagraphCommand,
+  dedentParagraphCommand,
+} from './commands/dedent-paragraph.js';
+import {
+  canIndentParagraphCommand,
+  indentParagraphCommand,
+} from './commands/indent-paragraph.js';
+import { splitParagraphCommand } from './commands/split-paragraph.js';
 import { forwardDelete } from './utils/forward-delete.js';
 import { mergeWithPrev } from './utils/merge-with-prev.js';
 
@@ -46,7 +56,11 @@ export const ParagraphKeymapExtension = KeymapExtension(
           return true;
         }
 
-        std.command.chain().canDedentParagraph().dedentParagraph().run();
+        std.command
+          .chain()
+          .pipe(canDedentParagraphCommand)
+          .pipe(dedentParagraphCommand)
+          .run();
         return true;
       },
       'Mod-Enter': ctx => {
@@ -73,7 +87,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
           return true;
         }
 
-        std.command.exec('addParagraph');
+        std.command.chain().pipe(addParagraphCommand).run();
         return true;
       },
       Enter: ctx => {
@@ -113,7 +127,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
             raw.preventDefault();
             store.captureSync();
             model.text.delete(range.index - 1, 1);
-            std.command.exec('addParagraph');
+            std.command.chain().pipe(addParagraphCommand).run();
             return true;
           }
           return true;
@@ -146,11 +160,11 @@ export const ParagraphKeymapExtension = KeymapExtension(
         }
 
         if (isEnd) {
-          std.command.exec('addParagraph');
+          std.command.chain().pipe(addParagraphCommand).run();
           return true;
         }
 
-        std.command.exec('splitParagraph');
+        std.command.chain().pipe(splitParagraphCommand).run();
         return true;
       },
       Delete: ctx => {
@@ -189,8 +203,8 @@ export const ParagraphKeymapExtension = KeymapExtension(
       Tab: ctx => {
         const [success] = std.command
           .chain()
-          .canIndentParagraph()
-          .indentParagraph()
+          .pipe(canIndentParagraphCommand)
+          .pipe(indentParagraphCommand)
           .run();
         if (!success) {
           return;
@@ -201,8 +215,8 @@ export const ParagraphKeymapExtension = KeymapExtension(
       'Shift-Tab': ctx => {
         const [success] = std.command
           .chain()
-          .canDedentParagraph()
-          .dedentParagraph()
+          .pipe(canDedentParagraphCommand)
+          .pipe(dedentParagraphCommand)
           .run();
         if (!success) {
           return;

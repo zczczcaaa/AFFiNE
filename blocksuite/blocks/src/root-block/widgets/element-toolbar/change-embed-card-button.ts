@@ -10,7 +10,10 @@ import {
   getDocContentWithMaxLength,
   getEmbedCardIcons,
 } from '@blocksuite/affine-block-embed';
-import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+import {
+  EdgelessCRUDIdentifier,
+  reassociateConnectorsCommand,
+} from '@blocksuite/affine-block-surface';
 import {
   CaptionIcon,
   CopyIcon,
@@ -164,7 +167,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
       this.edgeless.surface.model
     );
 
-    this.std.command.exec('reassociateConnectors', {
+    this.std.command.exec(reassociateConnectorsCommand, {
       oldId: id,
       newId,
     });
@@ -220,7 +223,7 @@ export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
     );
     if (!newId) return;
 
-    this.std.command.exec('reassociateConnectors', {
+    this.std.command.exec(reassociateConnectorsCommand, {
       oldId: id,
       newId,
     });

@@ -1,3 +1,4 @@
+import { changeNoteDisplayMode } from '@blocksuite/affine-block-note';
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type {
   EdgelessColorPickerButton,
@@ -195,7 +196,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
   }
 
   private _setDisplayMode(note: NoteBlockModel, newMode: NoteDisplayMode) {
-    this.edgeless.std.command.exec('changeNoteDisplayMode', {
+    this.edgeless.std.command.exec(changeNoteDisplayMode, {
       noteId: note.id,
       mode: newMode,
       stopCapture: true,

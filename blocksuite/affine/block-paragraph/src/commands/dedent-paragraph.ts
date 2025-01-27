@@ -6,9 +6,10 @@ import {
 import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const canDedentParagraphCommand: Command<
-  never,
-  'indentContext',
-  Partial<Omit<IndentContext, 'flavour' | 'type'>>
+  Partial<Omit<IndentContext, 'flavour' | 'type'>>,
+  {
+    indentContext: IndentContext;
+  }
 > = (ctx, next) => {
   let { blockId, inlineIndex } = ctx;
   const { std } = ctx;
@@ -56,7 +57,9 @@ export const canDedentParagraphCommand: Command<
   });
 };
 
-export const dedentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
+export const dedentParagraphCommand: Command<{
+  indentContext: IndentContext;
+}> = (ctx, next) => {
   const { indentContext: dedentContext, std } = ctx;
   const { store, selection, range, host } = std;
 

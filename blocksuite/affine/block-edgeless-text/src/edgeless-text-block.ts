@@ -1,4 +1,5 @@
 import { TextUtils } from '@blocksuite/affine-block-surface';
+import { formatBlockCommand } from '@blocksuite/affine-components/rich-text';
 import type { EdgelessTextBlockModel } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
@@ -98,21 +99,21 @@ export class EdgelessTextBlockComponent extends GfxBlockComponent<EdgelessTextBl
             );
 
             if (key === 'fontStyle') {
-              command.exec('formatBlock', {
+              command.exec(formatBlockCommand, {
                 blockSelections,
                 styles: {
                   italic: null,
                 },
               });
             } else if (key === 'color') {
-              command.exec('formatBlock', {
+              command.exec(formatBlockCommand, {
                 blockSelections,
                 styles: {
                   color: null,
                 },
               });
             } else if (key === 'fontWeight') {
-              command.exec('formatBlock', {
+              command.exec(formatBlockCommand, {
                 blockSelections,
                 styles: {
                   bold: null,

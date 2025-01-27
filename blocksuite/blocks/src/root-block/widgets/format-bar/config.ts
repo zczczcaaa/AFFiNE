@@ -33,13 +33,33 @@ import {
   TextIcon,
   UnderlineIcon,
 } from '@blocksuite/affine-components/icons';
+import {
+  deleteTextCommand,
+  toggleBold,
+  toggleCode,
+  toggleItalic,
+  toggleLink,
+  toggleStrike,
+  toggleUnderline,
+} from '@blocksuite/affine-components/rich-text';
 import { toast } from '@blocksuite/affine-components/toast';
 import type { MenuItemGroup } from '@blocksuite/affine-components/toolbar';
 import { renderGroups } from '@blocksuite/affine-components/toolbar';
+import {
+  copySelectedModelsCommand,
+  deleteSelectedModelsCommand,
+  draftSelectedModelsCommand,
+  getBlockIndexCommand,
+  getBlockSelectionsCommand,
+  getImageSelectionsCommand,
+  getSelectedBlocksCommand,
+  getSelectedModelsCommand,
+  getTextSelectionCommand,
+} from '@blocksuite/affine-shared/commands';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import type {
+  BlockComponent,
   Chain,
-  CommandKeyToData,
   InitCommandCtx,
 } from '@blocksuite/block-std';
 import { tableViewMeta } from '@blocksuite/data-view/view-presets';
@@ -109,32 +129,32 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
     .addDivider()
     .addTextStyleToggle({
       key: 'bold',
-      action: chain => chain.toggleBold().run(),
+      action: chain => chain.pipe(toggleBold).run(),
       icon: BoldIcon,
     })
     .addTextStyleToggle({
       key: 'italic',
-      action: chain => chain.toggleItalic().run(),
+      action: chain => chain.pipe(toggleItalic).run(),
       icon: ItalicIcon,
     })
     .addTextStyleToggle({
       key: 'underline',
-      action: chain => chain.toggleUnderline().run(),
+      action: chain => chain.pipe(toggleUnderline).run(),
       icon: UnderlineIcon,
     })
     .addTextStyleToggle({
       key: 'strike',
-      action: chain => chain.toggleStrike().run(),
+      action: chain => chain.pipe(toggleStrike).run(),
       icon: StrikethroughIcon,
     })
     .addTextStyleToggle({
       key: 'code',
-      action: chain => chain.toggleCode().run(),
+      action: chain => chain.pipe(toggleCode).run(),
       icon: CodeIcon,
     })
     .addTextStyleToggle({
       key: 'link',
-      action: chain => chain.toggleLink().run(),
+      action: chain => chain.pipe(toggleLink).run(),
       icon: LinkIcon,
     })
     .addDivider()
@@ -151,7 +171,7 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
       showWhen: chain => {
         const middleware = (count = 0) => {
           return (
-            ctx: CommandKeyToData<'selectedBlocks'>,
+            ctx: { selectedBlocks: BlockComponent[] },
             next: () => void
           ) => {
             const { selectedBlocks } = ctx;
@@ -166,24 +186,24 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
           };
         };
         let [result] = chain
-          .getTextSelection()
-          .getSelectedBlocks({
+          .pipe(getTextSelectionCommand)
+          .pipe(getSelectedBlocksCommand, {
             types: ['text'],
           })
-          .inline(middleware(1))
+          .pipe(middleware(1))
           .run();
 
         if (result) return true;
 
         [result] = chain
           .tryAll(chain => [
-            chain.getBlockSelections(),
-            chain.getImageSelections(),
+            chain.pipe(getBlockSelectionsCommand),
+            chain.pipe(getImageSelectionsCommand),
           ])
-          .getSelectedBlocks({
+          .pipe(getSelectedBlocksCommand, {
             types: ['block', 'image'],
           })
-          .inline(middleware(0))
+          .pipe(middleware(0))
           .run();
 
         return result;
@@ -197,11 +217,11 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
       isActive: () => false,
       action: (chain, formatBar) => {
         const [_, ctx] = chain
-          .getSelectedModels({
+          .pipe(getSelectedModelsCommand, {
             types: ['block', 'text'],
             mode: 'flat',
           })
-          .draftSelectedModels()
+          .pipe(draftSelectedModelsCommand)
           .run();
         const { draftedModels, selectedModels, std } = ctx;
         if (!selectedModels?.length || !draftedModels) return;
@@ -238,7 +258,7 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
       },
       showWhen: chain => {
         const [_, ctx] = chain
-          .getSelectedModels({
+          .pipe(getSelectedModelsCommand, {
             types: ['block', 'text'],
             mode: 'highest',
           })
@@ -332,14 +352,14 @@ export const BUILT_IN_GROUPS: MenuItemGroup<FormatBarContext>[] = [
         action: c => {
           c.std.command
             .chain()
-            .getSelectedModels()
+            .pipe(getSelectedModelsCommand)
             .with({
               onCopy: () => {
                 toast(c.host, 'Copied to clipboard');
               },
             })
-            .draftSelectedModels()
-            .copySelectedModels()
+            .pipe(draftSelectedModelsCommand)
+            .pipe(copySelectedModelsCommand)
             .run();
         },
       },
@@ -352,35 +372,27 @@ export const BUILT_IN_GROUPS: MenuItemGroup<FormatBarContext>[] = [
           c.doc.captureSync();
           c.std.command
             .chain()
-            .try(cmd => [
-              cmd
-                .getTextSelection()
-                .inline<'currentSelectionPath'>((ctx, next) => {
-                  const textSelection = ctx.currentTextSelection;
-                  assertExists(textSelection);
-                  const end = textSelection.to ?? textSelection.from;
-                  next({ currentSelectionPath: end.blockId });
-                }),
-              cmd
-                .getBlockSelections()
-                .inline<'currentSelectionPath'>((ctx, next) => {
-                  const currentBlockSelections = ctx.currentBlockSelections;
-                  assertExists(currentBlockSelections);
-                  const blockSelection = currentBlockSelections.at(-1);
-                  if (!blockSelection) {
-                    return;
-                  }
-                  next({ currentSelectionPath: blockSelection.blockId });
-                }),
+            .try<{ currentSelectionPath: string }>(cmd => [
+              cmd.pipe(getTextSelectionCommand).pipe((ctx, next) => {
+                const textSelection = ctx.currentTextSelection;
+                assertExists(textSelection);
+                const end = textSelection.to ?? textSelection.from;
+                next({ currentSelectionPath: end.blockId });
+              }),
+              cmd.pipe(getBlockSelectionsCommand).pipe((ctx, next) => {
+                const currentBlockSelections = ctx.currentBlockSelections;
+                assertExists(currentBlockSelections);
+                const blockSelection = currentBlockSelections.at(-1);
+                if (!blockSelection) {
+                  return;
+                }
+                next({ currentSelectionPath: blockSelection.blockId });
+              }),
             ])
-            .getBlockIndex()
-            .getSelectedModels()
-            .draftSelectedModels()
-            .inline((ctx, next) => {
-              if (!ctx.draftedModels) {
-                return next();
-              }
-
+            .pipe(getBlockIndexCommand)
+            .pipe(getSelectedModelsCommand)
+            .pipe(draftSelectedModelsCommand)
+            .pipe((ctx, next) => {
               ctx.draftedModels
                 .then(models => {
                   const slice = Slice.fromModels(ctx.std.store, models);
@@ -412,8 +424,8 @@ export const BUILT_IN_GROUPS: MenuItemGroup<FormatBarContext>[] = [
           // remove text
           const [result] = c.std.command
             .chain()
-            .getTextSelection()
-            .deleteText()
+            .pipe(getTextSelectionCommand)
+            .pipe(deleteTextCommand)
             .run();
 
           if (result) {
@@ -424,11 +436,11 @@ export const BUILT_IN_GROUPS: MenuItemGroup<FormatBarContext>[] = [
           c.std.command
             .chain()
             .tryAll(chain => [
-              chain.getBlockSelections(),
-              chain.getImageSelections(),
+              chain.pipe(getBlockSelectionsCommand),
+              chain.pipe(getImageSelectionsCommand),
             ])
-            .getSelectedModels()
-            .deleteSelectedModels()
+            .pipe(getSelectedModelsCommand)
+            .pipe(deleteSelectedModelsCommand)
             .run();
 
           c.toolbar.reset();

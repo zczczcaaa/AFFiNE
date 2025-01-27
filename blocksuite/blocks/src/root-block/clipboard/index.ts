@@ -1,3 +1,4 @@
+import { deleteTextCommand } from '@blocksuite/affine-components/rich-text';
 import {
   AttachmentAdapter,
   copyMiddleware,
@@ -7,6 +8,18 @@ import {
   NotionTextAdapter,
   pasteMiddleware,
 } from '@blocksuite/affine-shared/adapters';
+import {
+  clearAndSelectFirstModelCommand,
+  copySelectedModelsCommand,
+  deleteSelectedModelsCommand,
+  draftSelectedModelsCommand,
+  getBlockIndexCommand,
+  getBlockSelectionsCommand,
+  getImageSelectionsCommand,
+  getSelectedModelsCommand,
+  getTextSelectionCommand,
+  retainFirstModelCommand,
+} from '@blocksuite/affine-shared/commands';
 import type { BlockComponent, UIEventHandler } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/utils';
 import type { BlockSnapshot, Store } from '@blocksuite/store';
@@ -23,9 +36,9 @@ export class PageClipboard {
     return this._std.command
       .chain()
       .with({ onCopy })
-      .getSelectedModels()
-      .draftSelectedModels()
-      .copySelectedModels();
+      .pipe(getSelectedModelsCommand)
+      .pipe(draftSelectedModelsCommand)
+      .pipe(copySelectedModelsCommand);
   };
 
   protected _disposables = new DisposableGroup();
@@ -126,9 +139,9 @@ export class PageClipboard {
     this._copySelected(() => {
       this._std.command
         .chain()
-        .try(cmd => [
-          cmd.getTextSelection().deleteText(),
-          cmd.getSelectedModels().deleteSelectedModels(),
+        .try<{}>(cmd => [
+          cmd.pipe(getTextSelectionCommand).pipe(deleteTextCommand),
+          cmd.pipe(getSelectedModelsCommand).pipe(deleteSelectedModelsCommand),
         ])
         .run();
     }).run();
@@ -142,22 +155,22 @@ export class PageClipboard {
     this._std.command
       .chain()
       .try(cmd => [
-        cmd.getTextSelection(),
+        cmd.pipe(getTextSelectionCommand),
         cmd
-          .getSelectedModels()
-          .clearAndSelectFirstModel()
-          .retainFirstModel()
-          .deleteSelectedModels(),
+          .pipe(getSelectedModelsCommand)
+          .pipe(clearAndSelectFirstModelCommand)
+          .pipe(retainFirstModelCommand)
+          .pipe(deleteSelectedModelsCommand),
       ])
-      .try(cmd => [
-        cmd.getTextSelection().inline<'currentSelectionPath'>((ctx, next) => {
+      .try<{ currentSelectionPath: string }>(cmd => [
+        cmd.pipe(getTextSelectionCommand).pipe((ctx, next) => {
           const textSelection = ctx.currentTextSelection;
           if (!textSelection) {
             return;
           }
           next({ currentSelectionPath: textSelection.from.blockId });
         }),
-        cmd.getBlockSelections().inline<'currentSelectionPath'>((ctx, next) => {
+        cmd.pipe(getBlockSelectionsCommand).pipe((ctx, next) => {
           const currentBlockSelections = ctx.currentBlockSelections;
           if (!currentBlockSelections) {
             return;
@@ -168,7 +181,7 @@ export class PageClipboard {
           }
           next({ currentSelectionPath: blockSelection.blockId });
         }),
-        cmd.getImageSelections().inline<'currentSelectionPath'>((ctx, next) => {
+        cmd.pipe(getImageSelectionsCommand).pipe((ctx, next) => {
           const currentImageSelections = ctx.currentImageSelections;
           if (!currentImageSelections) {
             return;
@@ -180,8 +193,8 @@ export class PageClipboard {
           next({ currentSelectionPath: imageSelection.blockId });
         }),
       ])
-      .getBlockIndex()
-      .inline((ctx, next) => {
+      .pipe(getBlockIndexCommand)
+      .pipe((ctx, next) => {
         if (!ctx.parentBlock) {
           return;
         }

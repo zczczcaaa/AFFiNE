@@ -1,3 +1,4 @@
+import { insertLinkByQuickSearchCommand } from '@blocksuite/affine-block-bookmark';
 import { EdgelessTextBlockComponent } from '@blocksuite/affine-block-edgeless-text';
 import { toast } from '@blocksuite/affine-components/toast';
 import {
@@ -182,8 +183,8 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
           ) {
             return;
           }
-          const { insertedLinkType } = std.command.exec(
-            'insertLinkByQuickSearch'
+          const [_, { insertedLinkType }] = std.command.exec(
+            insertLinkByQuickSearchCommand
           );
 
           insertedLinkType

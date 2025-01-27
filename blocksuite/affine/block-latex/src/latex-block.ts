@@ -1,3 +1,4 @@
+import { selectBlock } from '@blocksuite/affine-block-note';
 import { CaptionedBlockComponent } from '@blocksuite/affine-components/caption';
 import { createLitPortal } from '@blocksuite/affine-components/portal';
 import type { LatexBlockModel } from '@blocksuite/affine-model';
@@ -96,7 +97,7 @@ export class LatexBlockComponent extends CaptionedBlockComponent<LatexBlockModel
   }
 
   selectBlock() {
-    this.host.command.exec('selectBlock', {
+    this.host.command.exec(selectBlock, {
       focusBlock: this,
     });
   }

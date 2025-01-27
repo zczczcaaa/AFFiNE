@@ -3,6 +3,8 @@ import {
   BlocksUtils,
   DocModeProvider,
   embedSyncedDocMiddleware,
+  getImageSelectionsCommand,
+  getSelectedBlocksCommand,
   type ImageBlockModel,
   isInsideEdgelessEditor,
   MarkdownAdapter,
@@ -70,8 +72,8 @@ async function extractPageSelected(
   } else if (!hasText && hasImages && images.length === 1) {
     host.command
       .chain()
-      .tryAll(chain => [chain.getImageSelections()])
-      .getSelectedBlocks({
+      .tryAll(chain => [chain.pipe(getImageSelectionsCommand)])
+      .pipe(getSelectedBlocksCommand, {
         types: ['image'],
       })
       .run();

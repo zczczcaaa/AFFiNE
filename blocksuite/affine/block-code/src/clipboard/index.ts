@@ -1,8 +1,14 @@
+import { deleteTextCommand } from '@blocksuite/affine-components/rich-text';
 import {
   HtmlAdapter,
   pasteMiddleware,
   PlainTextAdapter,
 } from '@blocksuite/affine-shared/adapters';
+import {
+  getBlockIndexCommand,
+  getBlockSelectionsCommand,
+  getTextSelectionCommand,
+} from '@blocksuite/affine-shared/commands';
 import {
   type BlockComponent,
   Clipboard,
@@ -40,13 +46,13 @@ export class CodeClipboardController {
     this._std.command
       .chain()
       .try(cmd => [
-        cmd.getTextSelection().inline<'currentSelectionPath'>((ctx, next) => {
+        cmd.pipe(getTextSelectionCommand).pipe((ctx, next) => {
           const textSelection = ctx.currentTextSelection;
           if (!textSelection) return;
           const end = textSelection.to ?? textSelection.from;
           next({ currentSelectionPath: end.blockId });
         }),
-        cmd.getBlockSelections().inline<'currentSelectionPath'>((ctx, next) => {
+        cmd.pipe(getBlockSelectionsCommand).pipe((ctx, next) => {
           const currentBlockSelections = ctx.currentBlockSelections;
           if (!currentBlockSelections) return;
           const blockSelection = currentBlockSelections.at(-1);
@@ -54,9 +60,9 @@ export class CodeClipboardController {
           next({ currentSelectionPath: blockSelection.blockId });
         }),
       ])
-      .getBlockIndex()
-      .try(cmd => [cmd.getTextSelection().deleteText()])
-      .inline((ctx, next) => {
+      .pipe(getBlockIndexCommand)
+      .try(cmd => [cmd.pipe(getTextSelectionCommand).pipe(deleteTextCommand)])
+      .pipe((ctx, next) => {
         if (!ctx.parentBlock) {
           return;
         }

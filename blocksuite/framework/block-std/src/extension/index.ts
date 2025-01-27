@@ -1,5 +1,4 @@
 export * from './block-view.js';
-export * from './command.js';
 export * from './config.js';
 export * from './dnd/index.js';
 export * from './flavour.js';

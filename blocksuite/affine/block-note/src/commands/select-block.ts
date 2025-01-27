@@ -1,6 +1,12 @@
-import { BlockSelection, type Command } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  BlockSelection,
+  type Command,
+} from '@blocksuite/block-std';
 
-export const selectBlock: Command<'focusBlock'> = (ctx, next) => {
+export const selectBlock: Command<{
+  focusBlock?: BlockComponent;
+}> = (ctx, next) => {
   const { focusBlock, std } = ctx;
   if (!focusBlock) {
     return;

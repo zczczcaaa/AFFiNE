@@ -107,12 +107,4 @@ export class TableSelection extends BaseSelection {
   }
 }
 
-declare global {
-  namespace BlockSuite {
-    interface Selection {
-      table: typeof TableSelection;
-    }
-  }
-}
-
 export const TableSelectionExtension = SelectionExtension(TableSelection);

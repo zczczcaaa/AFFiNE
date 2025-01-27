@@ -1,3 +1,4 @@
+import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import type { TextElementModel } from '@blocksuite/affine-model';
 import {
   FeatureFlagService,
@@ -47,7 +48,7 @@ export class TextTool extends BaseTool {
 
     if (textFlag) {
       const [x, y] = this.gfx.viewport.toModelCoord(e.x, e.y);
-      this.gfx.std.command.exec('insertEdgelessText', { x, y });
+      this.gfx.std.command.exec(insertEdgelessTextCommand, { x, y });
       this.gfx.tool.setTool('default');
     } else {
       addText(this.gfx, e);

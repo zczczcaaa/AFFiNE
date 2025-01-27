@@ -1,21 +1,3 @@
-import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
-
-import type { deleteTextCommand } from './format/delete-text.js';
-import type { formatBlockCommand } from './format/format-block.js';
-import type { formatNativeCommand } from './format/format-native.js';
-import type { formatTextCommand } from './format/format-text.js';
-import type { insertInlineLatex } from './format/insert-inline-latex.js';
-import type {
-  getTextStyle,
-  isTextStyleActive,
-  toggleBold,
-  toggleCode,
-  toggleItalic,
-  toggleLink,
-  toggleStrike,
-  toggleTextStyleCommand,
-  toggleUnderline,
-} from './format/text-style.js';
 import {
   AffineFootnoteNode,
   AffineLink,
@@ -63,26 +45,5 @@ declare global {
     'latex-editor-unit': LatexEditorUnit;
     'latex-editor-menu': LatexEditorMenu;
     'link-popup': LinkPopup;
-  }
-  namespace BlockSuite {
-    interface CommandContext {
-      textStyle?: AffineTextAttributes;
-    }
-    interface Commands {
-      deleteText: typeof deleteTextCommand;
-      formatBlock: typeof formatBlockCommand;
-      formatNative: typeof formatNativeCommand;
-      formatText: typeof formatTextCommand;
-      toggleBold: typeof toggleBold;
-      toggleItalic: typeof toggleItalic;
-      toggleUnderline: typeof toggleUnderline;
-      toggleStrike: typeof toggleStrike;
-      toggleCode: typeof toggleCode;
-      toggleLink: typeof toggleLink;
-      toggleTextStyle: typeof toggleTextStyleCommand;
-      getTextStyle: typeof getTextStyle;
-      isTextStyleActive: typeof isTextStyleActive;
-      insertInlineLatex: typeof insertInlineLatex;
-    }
   }
 }

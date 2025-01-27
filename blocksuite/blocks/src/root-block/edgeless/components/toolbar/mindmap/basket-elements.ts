@@ -1,3 +1,4 @@
+import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import { CanvasElementType } from '@blocksuite/affine-block-surface';
 import { type MindmapStyle, TextElementModel } from '@blocksuite/affine-model';
 import {
@@ -111,10 +112,13 @@ export const textRender: DraggableTool['render'] = (
     .getFlag('enable_edgeless_text');
   let id: string;
   if (flag) {
-    const { textId } = edgeless.std.command.exec('insertEdgelessText', {
-      x: bound.x,
-      y: vCenter - h / 2,
-    });
+    const [_, { textId }] = edgeless.std.command.exec(
+      insertEdgelessTextCommand,
+      {
+        x: bound.x,
+        y: vCenter - h / 2,
+      }
+    );
     id = textId!;
   } else {
     id = service.crud.addElement(CanvasElementType.TEXT, {

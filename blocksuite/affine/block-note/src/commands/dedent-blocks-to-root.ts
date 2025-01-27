@@ -1,14 +1,12 @@
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import { type Command, TextSelection } from '@blocksuite/block-std';
 
-export const dedentBlocksToRoot: Command<
-  never,
-  never,
-  {
-    blockIds?: string[];
-    stopCapture?: boolean;
-  }
-> = (ctx, next) => {
+import { dedentBlockToRoot } from './dedent-block-to-root';
+
+export const dedentBlocksToRoot: Command<{
+  blockIds?: string[];
+  stopCapture?: boolean;
+}> = (ctx, next) => {
   let { blockIds } = ctx;
   const { std, stopCapture = true } = ctx;
   const { store } = std;
@@ -33,7 +31,7 @@ export const dedentBlocksToRoot: Command<
     const model = blockIds[i];
     const parent = store.getParent(model);
     if (parent && !matchFlavours(parent, ['affine:note'])) {
-      std.command.exec('dedentBlockToRoot', {
+      std.command.exec(dedentBlockToRoot, {
         blockId: model,
         stopCapture: false,
       });

@@ -9,9 +9,10 @@ import type { RoleType } from '@blocksuite/store';
 import type { ImageSelection } from '../../selection/index.js';
 
 export const getSelectedBlocksCommand: Command<
-  'currentTextSelection' | 'currentBlockSelections' | 'currentImageSelections',
-  'selectedBlocks',
   {
+    currentTextSelection?: TextSelection;
+    currentBlockSelections?: BlockSelection[];
+    currentImageSelections?: ImageSelection[];
     textSelection?: TextSelection;
     blockSelections?: BlockSelection[];
     imageSelections?: ImageSelection[];
@@ -19,6 +20,9 @@ export const getSelectedBlocksCommand: Command<
     types?: Array<'image' | 'text' | 'block'>;
     roles?: RoleType[];
     mode?: 'all' | 'flat' | 'highest';
+  },
+  {
+    selectedBlocks: BlockComponent[];
   }
 > = (ctx, next) => {
   const {
@@ -146,15 +150,3 @@ export const getSelectedBlocksCommand: Command<
     selectedBlocks: result,
   });
 };
-
-declare global {
-  namespace BlockSuite {
-    interface CommandContext {
-      selectedBlocks?: BlockComponent[];
-    }
-
-    interface Commands {
-      getSelectedBlocks: typeof getSelectedBlocksCommand;
-    }
-  }
-}

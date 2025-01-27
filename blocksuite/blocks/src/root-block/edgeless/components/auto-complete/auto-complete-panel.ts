@@ -1,3 +1,4 @@
+import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import {
   CanvasElementType,
   EdgelessCRUDIdentifier,
@@ -254,10 +255,13 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       .get(FeatureFlagService)
       .getFlag('enable_edgeless_text');
     if (textFlag) {
-      const { textId } = this.edgeless.std.command.exec('insertEdgelessText', {
-        x: bound.x,
-        y: bound.y,
-      });
+      const [_, { textId }] = this.edgeless.std.command.exec(
+        insertEdgelessTextCommand,
+        {
+          x: bound.x,
+          y: bound.y,
+        }
+      );
       if (!textId) return;
 
       const textElement = this.crud.getElementById(textId);

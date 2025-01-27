@@ -1,3 +1,4 @@
+import { insertLinkByQuickSearchCommand } from '@blocksuite/affine-block-bookmark';
 import { menu } from '@blocksuite/affine-components/context-menu';
 import { LinkIcon } from '@blocksuite/affine-components/icons';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
@@ -9,8 +10,8 @@ export const buildLinkDenseMenu: DenseMenuBuilder = edgeless =>
     name: 'Link',
     prefix: LinkIcon,
     select: () => {
-      const { insertedLinkType } = edgeless.std.command.exec(
-        'insertLinkByQuickSearch'
+      const [_, { insertedLinkType }] = edgeless.std.command.exec(
+        insertLinkByQuickSearchCommand
       );
 
       insertedLinkType

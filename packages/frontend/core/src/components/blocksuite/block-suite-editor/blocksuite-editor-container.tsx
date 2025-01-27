@@ -1,5 +1,10 @@
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
-import { type DocMode, getLastNoteBlock } from '@blocksuite/affine/blocks';
+import {
+  appendParagraphCommand,
+  type DocMode,
+  focusBlockEnd,
+  getLastNoteBlock,
+} from '@blocksuite/affine/blocks';
 import { Slot } from '@blocksuite/affine/global/utils';
 import type {
   AffineEditorContainer,
@@ -148,14 +153,15 @@ export const BlocksuiteEditorContainer = forwardRef<
         lastBlock.flavour === 'affine:paragraph' &&
         lastBlock.text?.length === 0
       ) {
-        std.command.exec('focusBlockEnd' as never, {
-          focusBlock: std.view.getBlock(lastBlock.id) as never,
+        const focusBlock = std.view.getBlock(lastBlock.id) ?? undefined;
+        std.command.exec(focusBlockEnd, {
+          focusBlock,
         });
         return;
       }
     }
 
-    std.command.exec('appendParagraph' as never, {});
+    std.command.exec(appendParagraphCommand);
   }, [affineEditorContainerProxy, page, shared]);
 
   return (

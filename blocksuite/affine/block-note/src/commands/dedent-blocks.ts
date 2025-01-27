@@ -4,14 +4,12 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import { type Command, TextSelection } from '@blocksuite/block-std';
 
-export const dedentBlocks: Command<
-  never,
-  never,
-  {
-    blockIds?: string[];
-    stopCapture?: boolean;
-  }
-> = (ctx, next) => {
+import { dedentBlock } from './dedent-block';
+
+export const dedentBlocks: Command<{
+  blockIds?: string[];
+  stopCapture?: boolean;
+}> = (ctx, next) => {
   let { blockIds } = ctx;
   const { std, stopCapture = true } = ctx;
   const { store, selection, range, host } = std;
@@ -72,7 +70,7 @@ export const dedentBlocks: Command<
     .slice(firstDedentIndex)
     .filter(id => !collapsedIds.includes(id));
   dedentIds.reverse().forEach(id => {
-    std.command.exec('dedentBlock', { blockId: id, stopCapture: false });
+    std.command.exec(dedentBlock, { blockId: id, stopCapture: false });
   });
 
   const textSelection = selection.find(TextSelection);

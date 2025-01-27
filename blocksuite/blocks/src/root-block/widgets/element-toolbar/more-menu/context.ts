@@ -1,5 +1,6 @@
 import type { SurfaceBlockComponent } from '@blocksuite/affine-block-surface';
 import { MenuContext } from '@blocksuite/affine-components/toolbar';
+import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
 import {
   GfxPrimitiveElementModel,
   type GfxSelectionManager,
@@ -47,10 +48,9 @@ export class ElementToolbarMoreMenuContext extends MenuContext {
   }
 
   get selectedBlockModels() {
-    const [result, { selectedModels }] = this.std.command
-      .chain()
-      .getSelectedModels()
-      .run();
+    const [result, { selectedModels }] = this.std.command.exec(
+      getSelectedModelsCommand
+    );
 
     if (!result) return [];
 

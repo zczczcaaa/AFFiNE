@@ -6,7 +6,10 @@ import {
   type TextSelection,
 } from '@blocksuite/affine/block-std';
 import type { AffineAIPanelWidget } from '@blocksuite/affine/blocks';
-import { isInsideEdgelessEditor } from '@blocksuite/affine/blocks';
+import {
+  deleteTextCommand,
+  isInsideEdgelessEditor,
+} from '@blocksuite/affine/blocks';
 import { type BlockModel, Slice } from '@blocksuite/affine/store';
 
 import {
@@ -107,7 +110,7 @@ export const replace = async (
   );
 
   if (textSelection) {
-    host.std.command.exec('deleteText', { textSelection });
+    host.std.command.exec(deleteTextCommand, { textSelection });
     const { snapshot, transformer } = await markdownToSnapshot(content, host);
     await transformer.snapshotToSlice(
       snapshot,

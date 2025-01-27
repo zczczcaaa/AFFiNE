@@ -1,23 +1,11 @@
-import type { BlockCommands } from '@blocksuite/block-std';
-
-import { addParagraphCommand } from './add-paragraph.js';
-import { appendParagraphCommand } from './append-paragraph.js';
-import {
+export { addParagraphCommand } from './add-paragraph.js';
+export { appendParagraphCommand } from './append-paragraph.js';
+export {
   canDedentParagraphCommand,
   dedentParagraphCommand,
 } from './dedent-paragraph.js';
-import {
+export {
   canIndentParagraphCommand,
   indentParagraphCommand,
 } from './indent-paragraph.js';
-import { splitParagraphCommand } from './split-paragraph.js';
-
-export const commands: BlockCommands = {
-  appendParagraph: appendParagraphCommand,
-  splitParagraph: splitParagraphCommand,
-  addParagraph: addParagraphCommand,
-  canIndentParagraph: canIndentParagraphCommand,
-  canDedentParagraph: canDedentParagraphCommand,
-  indentParagraph: indentParagraphCommand,
-  dedentParagraph: dedentParagraphCommand,
-};
+export { splitParagraphCommand } from './split-paragraph.js';

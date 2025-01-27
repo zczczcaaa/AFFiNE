@@ -21,14 +21,10 @@ import type { Command } from '@blocksuite/block-std';
  *     - ddd
  *     - eee
  */
-export const indentBlock: Command<
-  never,
-  never,
-  {
-    blockId?: string;
-    stopCapture?: boolean;
-  }
-> = (ctx, next) => {
+export const indentBlock: Command<{
+  blockId?: string;
+  stopCapture?: boolean;
+}> = (ctx, next) => {
   let { blockId } = ctx;
   const { std, stopCapture = true } = ctx;
   const { store } = std;

@@ -8,9 +8,10 @@ import { type Command, TextSelection } from '@blocksuite/block-std';
 import { correctNumberedListsOrderToPrev } from './utils.js';
 
 export const canIndentListCommand: Command<
-  never,
-  'indentContext',
-  Partial<Omit<IndentContext, 'type' | 'flavour'>>
+  Partial<Omit<IndentContext, 'type' | 'flavour'>>,
+  {
+    indentContext: IndentContext;
+  }
 > = (ctx, next) => {
   let { blockId, inlineIndex } = ctx;
   const { std } = ctx;
@@ -84,10 +85,9 @@ export const canIndentListCommand: Command<
   });
 };
 
-export const indentListCommand: Command<'indentContext', never> = (
-  ctx,
-  next
-) => {
+export const indentListCommand: Command<{
+  indentContext: IndentContext;
+}> = (ctx, next) => {
   const { indentContext, std } = ctx;
   if (
     !indentContext ||

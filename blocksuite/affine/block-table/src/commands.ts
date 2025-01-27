@@ -1,15 +1,15 @@
-import '@blocksuite/affine-shared/commands';
-
 import { TableModelFlavour } from '@blocksuite/affine-model';
 import { generateFractionalIndexingKeyBetween } from '@blocksuite/affine-shared/utils';
-import type { BlockCommands, Command } from '@blocksuite/block-std';
-import { nanoid, Text } from '@blocksuite/store';
+import type { Command } from '@blocksuite/block-std';
+import { type BlockModel, nanoid, Text } from '@blocksuite/store';
 export const insertTableBlockCommand: Command<
-  'selectedModels',
-  'insertedTableBlockId',
   {
     place?: 'after' | 'before';
     removeEmptyLine?: boolean;
+    selectedModels?: BlockModel[];
+  },
+  {
+    insertedTableBlockId: string;
   }
 > = (ctx, next) => {
   const { selectedModels, place, removeEmptyLine, std } = ctx;
@@ -60,8 +60,4 @@ export const insertTableBlockCommand: Command<
   }
 
   next({ insertedTableBlockId: blockId });
-};
-
-export const tableCommands: BlockCommands = {
-  insertTableBlock: insertTableBlockCommand,
 };

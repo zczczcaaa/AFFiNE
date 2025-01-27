@@ -6,7 +6,14 @@ import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { type EditorHost } from '@blocksuite/affine/block-std';
 import { GfxBlockElementModel } from '@blocksuite/affine/block-std/gfx';
-import type { DocMode, EdgelessRootService } from '@blocksuite/affine/blocks';
+import {
+  type DocMode,
+  type EdgelessRootService,
+  getBlockSelectionsCommand,
+  getImageSelectionsCommand,
+  getSelectedModelsCommand,
+  getTextSelectionCommand,
+} from '@blocksuite/affine/blocks';
 import { useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
@@ -97,11 +104,11 @@ export const getSelectedNodes = (
   const [success, ctx] = std.command
     .chain()
     .tryAll(chain => [
-      chain.getTextSelection(),
-      chain.getBlockSelections(),
-      chain.getImageSelections(),
+      chain.pipe(getTextSelectionCommand),
+      chain.pipe(getBlockSelectionsCommand),
+      chain.pipe(getImageSelectionsCommand),
     ])
-    .getSelectedModels({
+    .pipe(getSelectedModelsCommand, {
       mode: 'highest',
     })
     .run();

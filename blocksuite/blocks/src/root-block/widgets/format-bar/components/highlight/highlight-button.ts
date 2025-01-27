@@ -5,6 +5,15 @@ import {
   TextBackgroundDuotoneIcon,
   TextForegroundDuotoneIcon,
 } from '@blocksuite/affine-components/icons';
+import {
+  formatBlockCommand,
+  formatNativeCommand,
+  formatTextCommand,
+} from '@blocksuite/affine-components/rich-text';
+import {
+  getBlockSelectionsCommand,
+  getTextSelectionCommand,
+} from '@blocksuite/affine-shared/commands';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import type { EditorHost } from '@blocksuite/block-std';
 import { assertExists } from '@blocksuite/global/utils';
@@ -41,9 +50,9 @@ const updateHighlight = (
   host.std.command
     .chain()
     .try(chain => [
-      chain.getTextSelection().formatText(payload),
-      chain.getBlockSelections().formatBlock(payload),
-      chain.formatNative(payload),
+      chain.pipe(getTextSelectionCommand).pipe(formatTextCommand, payload),
+      chain.pipe(getBlockSelectionsCommand).pipe(formatBlockCommand, payload),
+      chain.pipe(formatNativeCommand, payload),
     ])
     .run();
 };

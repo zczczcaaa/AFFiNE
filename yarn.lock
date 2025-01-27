@@ -3483,6 +3483,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-block-image@workspace:blocksuite/affine/block-image"
   dependencies:
+    "@blocksuite/affine-block-note": "workspace:*"
+    "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"

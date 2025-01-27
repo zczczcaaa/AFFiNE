@@ -1,6 +1,8 @@
-import type {
-  TextConversionConfig,
-  TextFormatConfig,
+import { updateBlockType } from '@blocksuite/affine-block-note';
+import {
+  formatBlockCommand,
+  type TextConversionConfig,
+  type TextFormatConfig,
 } from '@blocksuite/affine-components/rich-text';
 import { isInsideBlockByFlavour } from '@blocksuite/affine-shared/utils';
 import { BlockSelection } from '@blocksuite/block-std';
@@ -102,13 +104,10 @@ export function createConversionItem(
     tooltip: slashMenuToolTips[name],
     showWhen: ({ model }) => model.doc.schema.flavourSchemaMap.has(flavour),
     action: ({ rootComponent }) => {
-      rootComponent.std.command
-        .chain()
-        .updateBlockType({
-          flavour,
-          props: { type },
-        })
-        .run();
+      rootComponent.std.command.exec(updateBlockType, {
+        flavour,
+        props: { type },
+      });
     },
   };
 }
@@ -125,17 +124,14 @@ export function createTextFormatItem(
       const { std, host } = rootComponent;
 
       if (model.text?.length !== 0) {
-        std.command
-          .chain()
-          .formatBlock({
-            blockSelections: [
-              std.selection.create(BlockSelection, {
-                blockId: model.id,
-              }),
-            ],
-            styles: { [id]: true },
-          })
-          .run();
+        std.command.exec(formatBlockCommand, {
+          blockSelections: [
+            std.selection.create(BlockSelection, {
+              blockId: model.id,
+            }),
+          ],
+          styles: { [id]: true },
+        });
       } else {
         // like format bar when the line is empty
         action(host);

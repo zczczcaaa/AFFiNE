@@ -1,13 +1,18 @@
 import { addSiblingAttachmentBlocks } from '@blocksuite/affine-block-attachment';
 import { toggleEmbedCardCreateModal } from '@blocksuite/affine-block-bookmark';
 import type { DataViewBlockComponent } from '@blocksuite/affine-block-data-view';
+import { insertDatabaseBlockCommand } from '@blocksuite/affine-block-database';
 import {
   FigmaIcon,
   GithubIcon,
   LoomIcon,
   YoutubeIcon,
 } from '@blocksuite/affine-block-embed';
+import { insertImagesCommand } from '@blocksuite/affine-block-image';
+import { insertLatexBlockCommand } from '@blocksuite/affine-block-latex';
 import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
+import { insertSurfaceRefBlockCommand } from '@blocksuite/affine-block-surface-ref';
+import { insertTableBlockCommand } from '@blocksuite/affine-block-table';
 import {
   ArrowDownBigIcon,
   ArrowUpBigIcon,
@@ -30,6 +35,7 @@ import {
 import {
   getInlineEditorByModel,
   insertContent,
+  insertInlineLatex,
   textConversionConfigs,
   textFormatConfigs,
 } from '@blocksuite/affine-components/rich-text';
@@ -38,6 +44,10 @@ import type {
   FrameBlockModel,
   ParagraphBlockModel,
 } from '@blocksuite/affine-model';
+import {
+  getSelectedModelsCommand,
+  getTextSelectionCommand,
+} from '@blocksuite/affine-shared/commands';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import {
   FeatureFlagService,
@@ -165,8 +175,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       action: ({ rootComponent }) => {
         rootComponent.std.command
           .chain()
-          .getTextSelection()
-          .insertInlineLatex()
+          .pipe(getTextSelectionCommand)
+          .pipe(insertInlineLatex)
           .run();
       },
     },
@@ -255,8 +265,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       action: ({ rootComponent }) => {
         rootComponent.std.command
           .chain()
-          .getSelectedModels()
-          .insertTableBlock({
+          .pipe(getSelectedModelsCommand)
+          .pipe(insertTableBlockCommand, {
             place: 'after',
             removeEmptyLine: true,
           })
@@ -273,8 +283,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       action: async ({ rootComponent }) => {
         const [success, ctx] = rootComponent.std.command
           .chain()
-          .getSelectedModels()
-          .insertImages({ removeEmptyLine: true })
+          .pipe(getSelectedModelsCommand)
+          .pipe(insertImagesCommand, { removeEmptyLine: true })
           .run();
 
         if (success) await ctx.insertedImageIds;
@@ -429,8 +439,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       action: ({ rootComponent }) => {
         rootComponent.std.command
           .chain()
-          .getSelectedModels()
-          .insertLatexBlock({
+          .pipe(getSelectedModelsCommand)
+          .pipe(insertLatexBlockCommand, {
             place: 'after',
             removeEmptyLine: true,
           })
@@ -460,8 +470,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         action: ({ rootComponent }) => {
           rootComponent.std.command
             .chain()
-            .getSelectedModels()
-            .insertSurfaceRefBlock({
+            .pipe(getSelectedModelsCommand)
+            .pipe(insertSurfaceRefBlockCommand, {
               reference: frameModel.id,
               place: 'after',
               removeEmptyLine: true,
@@ -477,8 +487,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         action: () => {
           rootComponent.std.command
             .chain()
-            .getSelectedModels()
-            .insertSurfaceRefBlock({
+            .pipe(getSelectedModelsCommand)
+            .pipe(insertSurfaceRefBlockCommand, {
               reference: group.id,
               place: 'after',
               removeEmptyLine: true,
@@ -568,13 +578,13 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       action: ({ rootComponent }) => {
         rootComponent.std.command
           .chain()
-          .getSelectedModels()
-          .insertDatabaseBlock({
+          .pipe(getSelectedModelsCommand)
+          .pipe(insertDatabaseBlockCommand, {
             viewType: viewPresets.tableViewMeta.type,
             place: 'after',
             removeEmptyLine: true,
           })
-          .inline(({ insertedDatabaseBlockId }) => {
+          .pipe(({ insertedDatabaseBlockId }) => {
             if (insertedDatabaseBlockId) {
               const telemetry =
                 rootComponent.std.getOptional(TelemetryProvider);
@@ -631,13 +641,13 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
       action: ({ rootComponent }) => {
         rootComponent.std.command
           .chain()
-          .getSelectedModels()
-          .insertDatabaseBlock({
+          .pipe(getSelectedModelsCommand)
+          .pipe(insertDatabaseBlockCommand, {
             viewType: viewPresets.kanbanViewMeta.type,
             place: 'after',
             removeEmptyLine: true,
           })
-          .inline(({ insertedDatabaseBlockId }) => {
+          .pipe(({ insertedDatabaseBlockId }) => {
             if (insertedDatabaseBlockId) {
               const telemetry =
                 rootComponent.std.getOptional(TelemetryProvider);

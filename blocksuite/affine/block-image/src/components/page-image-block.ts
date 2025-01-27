@@ -1,5 +1,13 @@
+import { focusBlockEnd, focusBlockStart } from '@blocksuite/affine-block-note';
+import {
+  getNextBlockCommand,
+  getPrevBlockCommand,
+} from '@blocksuite/affine-shared/commands';
 import { ImageSelection } from '@blocksuite/affine-shared/selection';
-import type { UIEventStateContext } from '@blocksuite/block-std';
+import type {
+  BlockComponent,
+  UIEventStateContext,
+} from '@blocksuite/block-std';
 import {
   BlockSelection,
   ShadowlessElement,
@@ -136,15 +144,14 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
 
         std.command
           .chain()
-          .getNextBlock({ path: this.block.blockId })
-          .inline((ctx, next) => {
+          .pipe(getNextBlockCommand, { path: this.block.blockId })
+          .pipe<{ focusBlock: BlockComponent }>((ctx, next) => {
             const { nextBlock } = ctx;
             if (!nextBlock) return;
 
             return next({ focusBlock: nextBlock });
           })
-          // @ts-expect-error FIXME(command): BS-2216
-          .focusBlockStart()
+          .pipe(focusBlockStart)
           .run();
         return true;
       },
@@ -162,15 +169,14 @@ export class ImageBlockPageComponent extends WithDisposable(ShadowlessElement) {
 
         std.command
           .chain()
-          .getPrevBlock({ path: this.block.blockId })
-          .inline((ctx, next) => {
+          .pipe(getPrevBlockCommand, { path: this.block.blockId })
+          .pipe<{ focusBlock: BlockComponent }>((ctx, next) => {
             const { prevBlock } = ctx;
             if (!prevBlock) return;
 
             return next({ focusBlock: prevBlock });
           })
-          // @ts-expect-error FIXME(command): BS-2216
-          .focusBlockEnd()
+          .pipe(focusBlockEnd)
           .run();
         return true;
       },

@@ -53,6 +53,7 @@ import {
   EdgelessRootBlockComponent,
   EmbedLinkedDocBlockComponent,
   GenerateDocUrlExtension,
+  insertLinkByQuickSearchCommand,
   MobileSpecsPatches,
   NativeClipboardExtension,
   NoteConfigExtension,
@@ -460,34 +461,28 @@ export function patchQuickSearchService(framework: FrameworkProvider) {
             (item.name === 'Linked Doc' || item.name === 'Link')
           ) {
             item.action = async ({ rootComponent }) => {
-              // @ts-expect-error fixme
-              const { success, insertedLinkType } =
-                // @ts-expect-error fixme
-                rootComponent.std.command.exec('insertLinkByQuickSearch');
+              const [success, { insertedLinkType }] =
+                rootComponent.std.command.exec(insertLinkByQuickSearchCommand);
 
               if (!success) return;
 
               insertedLinkType
-                ?.then(
-                  (type: {
-                    flavour?: 'affine:embed-linked-doc' | 'affine:bookmark';
-                  }) => {
-                    const flavour = type?.flavour;
-                    if (!flavour) return;
+                ?.then(type => {
+                  const flavour = type?.flavour;
+                  if (!flavour) return;
 
-                    if (flavour === 'affine:bookmark') {
-                      track.doc.editor.slashMenu.bookmark();
-                      return;
-                    }
-
-                    if (flavour === 'affine:embed-linked-doc') {
-                      track.doc.editor.slashMenu.linkDoc({
-                        control: 'linkDoc',
-                      });
-                      return;
-                    }
+                  if (flavour === 'affine:bookmark') {
+                    track.doc.editor.slashMenu.bookmark();
+                    return;
                   }
-                )
+
+                  if (flavour === 'affine:embed-linked-doc') {
+                    track.doc.editor.slashMenu.linkDoc({
+                      control: 'linkDoc',
+                    });
+                    return;
+                  }
+                })
                 .catch(console.error);
             };
           }

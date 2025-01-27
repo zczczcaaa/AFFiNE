@@ -1,7 +1,5 @@
 import { BookmarkBlockComponent } from './bookmark-block';
 import { BookmarkEdgelessBlockComponent } from './bookmark-edgeless-block';
-import type { insertBookmarkCommand } from './commands/insert-bookmark';
-import type { insertLinkByQuickSearchCommand } from './commands/insert-link-by-quick-search';
 import { BookmarkCard } from './components/bookmark-card';
 import {
   EmbedCardCreateModal,
@@ -23,13 +21,4 @@ export function effects() {
     'embed-card-caption-edit-modal',
     EmbedCardEditCaptionEditModal
   );
-}
-
-declare global {
-  namespace BlockSuite {
-    interface Commands {
-      insertBookmark: typeof insertBookmarkCommand;
-      insertLinkByQuickSearch: typeof insertLinkByQuickSearchCommand;
-    }
-  }
 }

@@ -5,6 +5,10 @@ import {
   promptDocTitle,
 } from '@blocksuite/affine-block-embed';
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
+import {
+  draftSelectedModelsCommand,
+  getSelectedModelsCommand,
+} from '@blocksuite/affine-shared/commands';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
   type BlockComponent,
@@ -120,11 +124,11 @@ export class PageKeyboardManager {
     const rootComponent = this.rootComponent;
     const [_, ctx] = this.rootComponent.std.command
       .chain()
-      .getSelectedModels({
+      .pipe(getSelectedModelsCommand, {
         types: ['block'],
         mode: 'highest',
       })
-      .draftSelectedModels()
+      .pipe(draftSelectedModelsCommand)
       .run();
     const selectedModels = ctx.selectedModels?.filter(
       block =>

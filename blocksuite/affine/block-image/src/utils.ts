@@ -1,3 +1,4 @@
+import { autoResizeElementsCommand } from '@blocksuite/affine-block-surface';
 import { toast } from '@blocksuite/affine-components/toast';
 import type {
   AttachmentBlockProps,
@@ -516,7 +517,7 @@ export async function addImages(
     editing: false,
   });
   if (isMultipleFiles) {
-    std.command.exec('autoResizeElements');
+    std.command.exec(autoResizeElementsCommand);
   }
   return blockIds;
 }

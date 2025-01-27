@@ -2,11 +2,11 @@ import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import type { Command } from '@blocksuite/block-std';
 
-export const changeNoteDisplayMode: Command<
-  never,
-  never,
-  { noteId: string; mode: NoteDisplayMode; stopCapture?: boolean }
-> = (ctx, next) => {
+export const changeNoteDisplayMode: Command<{
+  noteId: string;
+  mode: NoteDisplayMode;
+  stopCapture?: boolean;
+}> = (ctx, next) => {
   const { std, noteId, mode, stopCapture } = ctx;
 
   const noteBlockModel = std.store.getBlock(noteId)?.model;

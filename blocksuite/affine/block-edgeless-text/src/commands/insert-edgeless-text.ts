@@ -14,11 +14,12 @@ import {
 } from '../edgeless-text-block.js';
 
 export const insertEdgelessTextCommand: Command<
-  never,
-  'textId',
   {
     x: number;
     y: number;
+  },
+  {
+    textId: string;
   }
 > = (ctx, next) => {
   const { std, x, y } = ctx;

@@ -5,10 +5,11 @@ import { type Command, TextSelection } from '@blocksuite/block-std';
  * Add a paragraph next to the current block.
  */
 export const addParagraphCommand: Command<
-  never,
-  'paragraphConvertedId',
   {
     blockId?: string;
+  },
+  {
+    paragraphConvertedId: string;
   }
 > = (ctx, next) => {
   const { std } = ctx;

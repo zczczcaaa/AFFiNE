@@ -1,3 +1,4 @@
+import { getSelectedBlocksCommand } from '@blocksuite/affine-shared/commands';
 import type { EditorHost, TextSelection } from '@blocksuite/block-std';
 import * as Y from 'yjs';
 
@@ -100,7 +101,7 @@ export class CommentManager {
   } | null {
     const [_, ctx] = this._command
       .chain()
-      .getSelectedBlocks({
+      .pipe(getSelectedBlocksCommand, {
         currentTextSelection: selection,
         types: ['text'],
       })

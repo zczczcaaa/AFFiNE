@@ -16,7 +16,6 @@ import { AFFINE_SCROLL_ANCHORING_WIDGET } from '@blocksuite/affine-widget-scroll
 import {
   BlockServiceWatcher,
   BlockViewExtension,
-  CommandExtension,
   FlavourExtension,
   WidgetViewMapExtension,
 } from '@blocksuite/block-std';
@@ -26,7 +25,6 @@ import { literal, unsafeStatic } from 'lit/static-html.js';
 
 import { ExportManagerExtension } from '../../_common/export-manager/export-manager.js';
 import { RootBlockAdapterExtensions } from '../adapters/extension.js';
-import { commands } from '../commands/index.js';
 import { AFFINE_EDGELESS_AUTO_CONNECT_WIDGET } from '../widgets/edgeless-auto-connect/edgeless-auto-connect.js';
 import { AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET } from '../widgets/edgeless-zoom-toolbar/index.js';
 import { EDGELESS_ELEMENT_TOOLBAR_WIDGET } from '../widgets/element-toolbar/index.js';
@@ -93,7 +91,6 @@ const EdgelessCommonExtension: ExtensionType[] = [
   DocModeService,
   ThemeService,
   EmbedOptionService,
-  CommandExtension(commands),
   ExportManagerExtension,
   ToolController,
   DNDAPIExtension,

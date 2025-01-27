@@ -1,16 +1,19 @@
 import type { LatexProps } from '@blocksuite/affine-model';
-import type { BlockCommands, Command } from '@blocksuite/block-std';
+import type { Command } from '@blocksuite/block-std';
 import { assertInstanceOf } from '@blocksuite/global/utils';
+import type { BlockModel } from '@blocksuite/store';
 
 import { LatexBlockComponent } from './latex-block.js';
 
 export const insertLatexBlockCommand: Command<
-  'selectedModels',
-  'insertedLatexBlockId',
   {
     latex?: string;
     place?: 'after' | 'before';
     removeEmptyLine?: boolean;
+    selectedModels?: BlockModel[];
+  },
+  {
+    insertedLatexBlockId: Promise<string>;
   }
 > = (ctx, next) => {
   const { selectedModels, latex, place, removeEmptyLine, std } = ctx;
@@ -50,8 +53,4 @@ export const insertLatexBlockCommand: Command<
       return result[0];
     }),
   });
-};
-
-export const commands: BlockCommands = {
-  insertLatexBlock: insertLatexBlockCommand,
 };

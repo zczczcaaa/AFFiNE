@@ -1,9 +1,10 @@
 import type { Command } from '@blocksuite/block-std';
-import { Slice } from '@blocksuite/store';
+import { type BlockModel, type DraftModel, Slice } from '@blocksuite/store';
 
-export const duplicateSelectedModelsCommand: Command<
-  'draftedModels' | 'selectedModels'
-> = (ctx, next) => {
+export const duplicateSelectedModelsCommand: Command<{
+  draftedModels?: Promise<DraftModel<BlockModel<object>>[]>;
+  selectedModels?: BlockModel[];
+}> = (ctx, next) => {
   const { std, draftedModels, selectedModels } = ctx;
   if (!draftedModels || !selectedModels) return;
 
@@ -28,11 +29,3 @@ export const duplicateSelectedModelsCommand: Command<
 
   return next();
 };
-
-declare global {
-  namespace BlockSuite {
-    interface Commands {
-      duplicateSelectedModels: typeof duplicateSelectedModelsCommand;
-    }
-  }
-}

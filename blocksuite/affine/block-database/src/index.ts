@@ -1,8 +1,5 @@
-import type * as CommandType from '@blocksuite/affine-shared/commands';
-
-declare type _GLOBAL_ = typeof CommandType;
-
 export * from './adapters';
+export * from './commands';
 export type { DatabaseOptionsConfig } from './config';
 export * from './data-source';
 export * from './database-block';

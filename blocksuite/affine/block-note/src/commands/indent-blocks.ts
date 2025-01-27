@@ -5,14 +5,12 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import { type Command, TextSelection } from '@blocksuite/block-std';
 
-export const indentBlocks: Command<
-  never,
-  never,
-  {
-    blockIds?: string[];
-    stopCapture?: boolean;
-  }
-> = (ctx, next) => {
+import { indentBlock } from './indent-block';
+
+export const indentBlocks: Command<{
+  blockIds?: string[];
+  stopCapture?: boolean;
+}> = (ctx, next) => {
   let { blockIds } = ctx;
   const { std, stopCapture = true } = ctx;
   const { store, selection, range, host } = std;
@@ -95,7 +93,7 @@ export const indentBlocks: Command<
   }
 
   indentIds.forEach(id => {
-    std.command.exec('indentBlock', { blockId: id, stopCapture: false });
+    std.command.exec(indentBlock, { blockId: id, stopCapture: false });
   });
 
   {

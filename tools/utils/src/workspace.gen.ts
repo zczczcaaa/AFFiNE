@@ -145,6 +145,8 @@ export const PackageList = [
     location: 'blocksuite/affine/block-image',
     name: '@blocksuite/affine-block-image',
     workspaceDependencies: [
+      'blocksuite/affine/block-note',
+      'blocksuite/affine/block-surface',
       'blocksuite/affine/components',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',

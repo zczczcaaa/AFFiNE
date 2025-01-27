@@ -1,14 +1,12 @@
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import type { Command } from '@blocksuite/block-std';
 
-export const dedentBlockToRoot: Command<
-  never,
-  never,
-  {
-    blockId?: string;
-    stopCapture?: boolean;
-  }
-> = (ctx, next) => {
+import { dedentBlock } from './dedent-block';
+
+export const dedentBlockToRoot: Command<{
+  blockId?: string;
+  stopCapture?: boolean;
+}> = (ctx, next) => {
   let { blockId } = ctx;
   const { std, stopCapture = true } = ctx;
   const { store } = std;
@@ -27,7 +25,7 @@ export const dedentBlockToRoot: Command<
       if (stopCapture) store.captureSync();
       changed = true;
     }
-    std.command.exec('dedentBlock', { blockId: model.id, stopCapture: true });
+    std.command.exec(dedentBlock, { blockId: model.id, stopCapture: true });
     parent = store.getParent(model);
   }
 

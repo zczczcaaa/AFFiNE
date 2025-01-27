@@ -1,12 +1,18 @@
 import { getImageFilesFromLocal } from '@blocksuite/affine-shared/utils';
 import type { Command } from '@blocksuite/block-std';
+import type { BlockModel } from '@blocksuite/store';
 
 import { addSiblingImageBlock } from '../utils.js';
 
 export const insertImagesCommand: Command<
-  'selectedModels',
-  'insertedImageIds',
-  { removeEmptyLine?: boolean; place?: 'after' | 'before' }
+  {
+    selectedModels?: BlockModel[];
+    removeEmptyLine?: boolean;
+    place?: 'after' | 'before';
+  },
+  {
+    insertedImageIds: Promise<string[]>;
+  }
 > = (ctx, next) => {
   const { selectedModels, place, removeEmptyLine, std } = ctx;
   if (!selectedModels) return;

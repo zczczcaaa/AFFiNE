@@ -6,10 +6,11 @@ import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const splitParagraphCommand: Command<
-  never,
-  'paragraphConvertedId',
   {
     blockId?: string;
+  },
+  {
+    paragraphConvertedId: string;
   }
 > = (ctx, next) => {
   const { std } = ctx;

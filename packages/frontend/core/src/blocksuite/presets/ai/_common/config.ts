@@ -2,6 +2,7 @@ import type { Chain, InitCommandCtx } from '@blocksuite/affine/block-std';
 import {
   type AIItemGroupConfig,
   type AISubItemConfig,
+  getSelectedModelsCommand,
   matchFlavours,
 } from '@blocksuite/affine/blocks';
 
@@ -94,7 +95,7 @@ const blockActionTrackerOptions: BlockSuitePresets.TrackerOptions = {
 
 const textBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
   const [_, ctx] = chain
-    .getSelectedModels({
+    .pipe(getSelectedModelsCommand, {
       types: ['block', 'text'],
     })
     .run();
@@ -108,7 +109,7 @@ const textBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
 
 const codeBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
   const [_, ctx] = chain
-    .getSelectedModels({
+    .pipe(getSelectedModelsCommand, {
       types: ['block', 'text'],
     })
     .run();
@@ -121,7 +122,7 @@ const codeBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
 
 const imageBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
   const [_, ctx] = chain
-    .getSelectedModels({
+    .pipe(getSelectedModelsCommand, {
       types: ['block'],
     })
     .run();
@@ -268,7 +269,7 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
       handler: actionToHandler('createHeadings', AIPenIconWithAnimation),
       showWhen: chain => {
         const [_, ctx] = chain
-          .getSelectedModels({
+          .pipe(getSelectedModelsCommand, {
             types: ['block', 'text'],
           })
           .run();

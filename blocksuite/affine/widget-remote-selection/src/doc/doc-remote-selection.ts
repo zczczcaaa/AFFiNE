@@ -1,3 +1,4 @@
+import { getSelectionRectsCommand } from '@blocksuite/affine-shared/commands';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
   BlockSelection,
@@ -212,10 +213,13 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
 
     if (!textSelection && !blockSelections.length) return [];
 
-    const { selectionRects } = this.std.command.exec('getSelectionRects', {
-      textSelection,
-      blockSelections,
-    });
+    const [_, { selectionRects }] = this.std.command.exec(
+      getSelectionRectsCommand,
+      {
+        textSelection,
+        blockSelections,
+      }
+    );
 
     if (!selectionRects) return [];
 

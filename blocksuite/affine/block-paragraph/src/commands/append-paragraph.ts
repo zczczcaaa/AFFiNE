@@ -6,11 +6,10 @@ import { Text } from '@blocksuite/store';
 /**
  * Append a paragraph block at the end of the whole page.
  */
-export const appendParagraphCommand: Command<
-  never,
-  never,
-  { text?: string }
-> = (ctx, next) => {
+export const appendParagraphCommand: Command<{ text?: string }> = (
+  ctx,
+  next
+) => {
   const { std, text = '' } = ctx;
   const { store } = std;
   if (!store.root) return;

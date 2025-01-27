@@ -1,4 +1,7 @@
-import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
+import {
+  EdgelessCRUDIdentifier,
+  reassociateConnectorsCommand,
+} from '@blocksuite/affine-block-surface';
 import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
@@ -51,7 +54,7 @@ export class EmbedEdgelessLinkedDocBlockComponent extends toEdgelessEmbedBlock(
       surface
     );
 
-    this.std.command.exec('reassociateConnectors', {
+    this.std.command.exec(reassociateConnectorsCommand, {
       oldId: id,
       newId,
     });

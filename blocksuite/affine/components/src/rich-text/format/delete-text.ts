@@ -2,13 +2,10 @@ import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import { type Command, TextSelection } from '@blocksuite/block-std';
 import type { Text } from '@blocksuite/store';
 
-export const deleteTextCommand: Command<
-  'currentTextSelection',
-  never,
-  {
-    textSelection?: TextSelection;
-  }
-> = (ctx, next) => {
+export const deleteTextCommand: Command<{
+  currentTextSelection?: TextSelection;
+  textSelection?: TextSelection;
+}> = (ctx, next) => {
   const textSelection = ctx.textSelection ?? ctx.currentTextSelection;
   if (!textSelection) return;
 

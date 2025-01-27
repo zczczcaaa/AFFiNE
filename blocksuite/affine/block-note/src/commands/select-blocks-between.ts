@@ -1,10 +1,14 @@
-import { BlockSelection, type Command } from '@blocksuite/block-std';
+import {
+  type BlockComponent,
+  BlockSelection,
+  type Command,
+} from '@blocksuite/block-std';
 
-export const selectBlocksBetween: Command<
-  'focusBlock' | 'anchorBlock',
-  never,
-  { tail: boolean }
-> = (ctx, next) => {
+export const selectBlocksBetween: Command<{
+  focusBlock?: BlockComponent;
+  anchorBlock?: BlockComponent;
+  tail: boolean;
+}> = (ctx, next) => {
   const { focusBlock, anchorBlock, tail } = ctx;
   if (!focusBlock || !anchorBlock) {
     return;

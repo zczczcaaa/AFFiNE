@@ -1,7 +1,11 @@
 import { effects } from '@blocksuite/affine-block-note/effects';
 import { ShadowlessElement, SurfaceSelection } from '@blocksuite/block-std';
 import type { NoteBlockModel } from '@blocksuite/blocks';
-import { matchFlavours, NoteDisplayMode } from '@blocksuite/blocks';
+import {
+  changeNoteDisplayMode,
+  matchFlavours,
+  NoteDisplayMode,
+} from '@blocksuite/blocks';
 import {
   Bound,
   noop,
@@ -128,7 +132,7 @@ export class OutlinePanelBody extends SignalWatcher(
   // when display mode change to page only, we should de-select the note if it is selected in edgeless mode
   private _handleDisplayModeChange(e: DisplayModeChangeEvent) {
     const { note, newMode } = e.detail;
-    this.editor.std.command.exec('changeNoteDisplayMode', {
+    this.editor.std.command.exec(changeNoteDisplayMode, {
       noteId: note.id,
       mode: newMode,
       stopCapture: true,

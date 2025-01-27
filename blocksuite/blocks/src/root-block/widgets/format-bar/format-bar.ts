@@ -1,6 +1,8 @@
+import { updateBlockType } from '@blocksuite/affine-block-note';
 import { HoverController } from '@blocksuite/affine-components/hover';
 import {
   isFormatSupported,
+  isTextStyleActive,
   type RichText,
 } from '@blocksuite/affine-components/rich-text';
 import {
@@ -8,6 +10,10 @@ import {
   getMoreMenuConfig,
   type MenuItemGroup,
 } from '@blocksuite/affine-components/toolbar';
+import {
+  getSelectedBlocksCommand,
+  getTextSelectionCommand,
+} from '@blocksuite/affine-shared/commands';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import {
@@ -167,11 +173,11 @@ export class AffineFormatBarWidget extends WidgetComponent {
               if (!rootComponent.std.range) return;
               this.host.std.command
                 .chain()
-                .getTextSelection()
-                .getSelectedBlocks({
+                .pipe(getTextSelectionCommand)
+                .pipe(getSelectedBlocksCommand, {
                   types: ['text'],
                 })
-                .inline(ctx => {
+                .pipe(ctx => {
                   const { selectedBlocks } = ctx;
                   if (!selectedBlocks) return;
                   this._selectedBlocks = selectedBlocks;
@@ -422,7 +428,7 @@ export class AffineFormatBarWidget extends WidgetComponent {
       name: config.name ?? camelCaseToWords(type ?? flavour),
       action: chain => {
         chain
-          .updateBlockType({
+          .pipe(updateBlockType, {
             flavour,
             props: type != null ? { type } : undefined,
           })
@@ -479,7 +485,7 @@ export class AffineFormatBarWidget extends WidgetComponent {
       name: camelCaseToWords(key),
       icon: config.icon,
       isActive: chain => {
-        const [result] = chain.isTextStyleActive({ key }).run();
+        const [result] = chain.pipe(isTextStyleActive, { key }).run();
         return result;
       },
       action: config.action,

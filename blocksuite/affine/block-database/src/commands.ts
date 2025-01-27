@@ -1,5 +1,5 @@
 import type { DatabaseBlockModel } from '@blocksuite/affine-model';
-import type { BlockCommands, Command } from '@blocksuite/block-std';
+import type { Command } from '@blocksuite/block-std';
 import type { BlockModel, Store } from '@blocksuite/store';
 
 import {
@@ -8,12 +8,14 @@ import {
 } from './data-source';
 
 export const insertDatabaseBlockCommand: Command<
-  'selectedModels',
-  'insertedDatabaseBlockId',
   {
+    selectedModels?: BlockModel[];
     viewType: string;
     place?: 'after' | 'before';
     removeEmptyLine?: boolean;
+  },
+  {
+    insertedDatabaseBlockId: string;
   }
 > = (ctx, next) => {
   const { selectedModels, viewType, place, removeEmptyLine, std } = ctx;
@@ -64,8 +66,4 @@ export const initDatabaseBlock = (
     if (!parent) return;
     doc.addBlock('affine:paragraph', {}, parent.id);
   }
-};
-
-export const commands: BlockCommands = {
-  insertDatabaseBlock: insertDatabaseBlockCommand,
 };

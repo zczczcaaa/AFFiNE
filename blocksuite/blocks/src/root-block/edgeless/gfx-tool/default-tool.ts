@@ -1,3 +1,4 @@
+import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import {
   ConnectorUtils,
   OverlayIdentifier,
@@ -792,7 +793,7 @@ export class DefaultTool extends BaseTool {
 
       if (textFlag) {
         const [x, y] = this.gfx.viewport.toModelCoord(e.x, e.y);
-        this.std.command.exec('insertEdgelessText', { x, y });
+        this.std.command.exec(insertEdgelessTextCommand, { x, y });
       } else {
         addText(this._edgeless, e);
       }

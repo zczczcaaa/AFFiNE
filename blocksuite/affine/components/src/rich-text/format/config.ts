@@ -9,6 +9,15 @@ import {
   StrikethroughIcon,
   UnderlineIcon,
 } from '../../icons/index.js';
+import {
+  isTextStyleActive,
+  toggleBold,
+  toggleCode,
+  toggleItalic,
+  toggleLink,
+  toggleStrike,
+  toggleUnderline,
+} from './text-style.js';
 
 export interface TextFormatConfig {
   id: string;
@@ -28,12 +37,12 @@ export const textFormatConfigs: TextFormatConfig[] = [
     activeWhen: host => {
       const [result] = host.std.command
         .chain()
-        .isTextStyleActive({ key: 'bold' })
+        .pipe(isTextStyleActive, { key: 'bold' })
         .run();
       return result;
     },
     action: host => {
-      host.std.command.chain().toggleBold().run();
+      host.std.command.chain().pipe(toggleBold).run();
     },
   },
   {
@@ -44,12 +53,12 @@ export const textFormatConfigs: TextFormatConfig[] = [
     activeWhen: host => {
       const [result] = host.std.command
         .chain()
-        .isTextStyleActive({ key: 'italic' })
+        .pipe(isTextStyleActive, { key: 'italic' })
         .run();
       return result;
     },
     action: host => {
-      host.std.command.chain().toggleItalic().run();
+      host.std.command.chain().pipe(toggleItalic).run();
     },
   },
   {
@@ -60,12 +69,12 @@ export const textFormatConfigs: TextFormatConfig[] = [
     activeWhen: host => {
       const [result] = host.std.command
         .chain()
-        .isTextStyleActive({ key: 'underline' })
+        .pipe(isTextStyleActive, { key: 'underline' })
         .run();
       return result;
     },
     action: host => {
-      host.std.command.chain().toggleUnderline().run();
+      host.std.command.chain().pipe(toggleUnderline).run();
     },
   },
   {
@@ -76,12 +85,12 @@ export const textFormatConfigs: TextFormatConfig[] = [
     activeWhen: host => {
       const [result] = host.std.command
         .chain()
-        .isTextStyleActive({ key: 'strike' })
+        .pipe(isTextStyleActive, { key: 'strike' })
         .run();
       return result;
     },
     action: host => {
-      host.std.command.chain().toggleStrike().run();
+      host.std.command.chain().pipe(toggleStrike).run();
     },
   },
   {
@@ -92,12 +101,12 @@ export const textFormatConfigs: TextFormatConfig[] = [
     activeWhen: host => {
       const [result] = host.std.command
         .chain()
-        .isTextStyleActive({ key: 'code' })
+        .pipe(isTextStyleActive, { key: 'code' })
         .run();
       return result;
     },
     action: host => {
-      host.std.command.chain().toggleCode().run();
+      host.std.command.chain().pipe(toggleCode).run();
     },
   },
   {
@@ -108,12 +117,12 @@ export const textFormatConfigs: TextFormatConfig[] = [
     activeWhen: host => {
       const [result] = host.std.command
         .chain()
-        .isTextStyleActive({ key: 'link' })
+        .pipe(isTextStyleActive, { key: 'link' })
         .run();
       return result;
     },
     action: host => {
-      host.std.command.chain().toggleLink().run();
+      host.std.command.chain().pipe(toggleLink).run();
     },
   },
 ];

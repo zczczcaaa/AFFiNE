@@ -1,15 +1,18 @@
 import { getSurfaceBlock } from '@blocksuite/affine-block-surface';
 import type { SurfaceRefProps } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
-import type { BlockCommands, Command } from '@blocksuite/block-std';
+import type { Command } from '@blocksuite/block-std';
+import type { BlockModel } from '@blocksuite/store';
 
 export const insertSurfaceRefBlockCommand: Command<
-  'selectedModels',
-  'insertedSurfaceRefBlockId',
   {
     reference: string;
     place: 'after' | 'before';
     removeEmptyLine?: boolean;
+    selectedModels?: BlockModel[];
+  },
+  {
+    insertedSurfaceRefBlockId: string;
   }
 > = (ctx, next) => {
   const { selectedModels, reference, place, removeEmptyLine, std } = ctx;
@@ -56,8 +59,4 @@ export const insertSurfaceRefBlockCommand: Command<
   next({
     insertedSurfaceRefBlockId: result[0],
   });
-};
-
-export const commands: BlockCommands = {
-  insertSurfaceRefBlock: insertSurfaceRefBlockCommand,
 };

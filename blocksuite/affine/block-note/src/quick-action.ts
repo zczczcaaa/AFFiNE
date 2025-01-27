@@ -4,6 +4,10 @@ import {
   notifyDocCreated,
   promptDocTitle,
 } from '@blocksuite/affine-block-embed';
+import {
+  draftSelectedModelsCommand,
+  getSelectedModelsCommand,
+} from '@blocksuite/affine-shared/commands';
 import type { BlockStdScope } from '@blocksuite/block-std';
 
 export interface QuickActionConfig {
@@ -18,23 +22,20 @@ export const quickActionConfig: QuickActionConfig[] = [
     id: 'convert-to-linked-doc',
     hotkey: `Mod-Shift-l`,
     showWhen: std => {
-      const [_, ctx] = std.command
-        .chain()
-        .getSelectedModels({
-          types: ['block'],
-        })
-        .run();
+      const [_, ctx] = std.command.exec(getSelectedModelsCommand, {
+        types: ['block'],
+      });
       const { selectedModels } = ctx;
       return !!selectedModels && selectedModels.length > 0;
     },
     action: std => {
       const [_, ctx] = std.command
         .chain()
-        .getSelectedModels({
+        .pipe(getSelectedModelsCommand, {
           types: ['block'],
           mode: 'flat',
         })
-        .draftSelectedModels()
+        .pipe(draftSelectedModelsCommand)
         .run();
       const { selectedModels, draftedModels } = ctx;
       if (!selectedModels) return;

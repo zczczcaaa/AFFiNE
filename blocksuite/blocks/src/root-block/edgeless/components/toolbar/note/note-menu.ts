@@ -1,4 +1,5 @@
 import { addAttachments } from '@blocksuite/affine-block-attachment';
+import { insertLinkByQuickSearchCommand } from '@blocksuite/affine-block-bookmark';
 import { addImages, LoadedImageIcon } from '@blocksuite/affine-block-image';
 import { AttachmentIcon, LinkIcon } from '@blocksuite/affine-components/icons';
 import { MAX_IMAGE_WIDTH } from '@blocksuite/affine-model';
@@ -65,8 +66,8 @@ export class EdgelessNoteMenu extends EdgelessToolbarToolMixin(LitElement) {
   }
 
   private _onHandleLinkButtonClick() {
-    const { insertedLinkType } = this.edgeless.service.std.command.exec(
-      'insertLinkByQuickSearch'
+    const [_, { insertedLinkType }] = this.edgeless.service.std.command.exec(
+      insertLinkByQuickSearchCommand
     );
 
     insertedLinkType

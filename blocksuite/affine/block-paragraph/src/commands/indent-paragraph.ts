@@ -8,9 +8,10 @@ import {
 import { type Command, TextSelection } from '@blocksuite/block-std';
 
 export const canIndentParagraphCommand: Command<
-  never,
-  'indentContext',
-  Partial<Omit<IndentContext, 'flavour' | 'type'>>
+  Partial<Omit<IndentContext, 'flavour' | 'type'>>,
+  {
+    indentContext: IndentContext;
+  }
 > = (cxt, next) => {
   let { blockId, inlineIndex } = cxt;
   const { std } = cxt;
@@ -60,7 +61,9 @@ export const canIndentParagraphCommand: Command<
   });
 };
 
-export const indentParagraphCommand: Command<'indentContext'> = (ctx, next) => {
+export const indentParagraphCommand: Command<{
+  indentContext: IndentContext;
+}> = (ctx, next) => {
   const { indentContext, std } = ctx;
   const { store, selection, host, range } = std;
 
