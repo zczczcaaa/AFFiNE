@@ -54,7 +54,7 @@
     "./caption": "./src/caption/index.ts",
     "./context-menu": "./src/context-menu/index.ts",
     "./date-picker": "./src/date-picker/index.ts",
-    "./drag-indicator": "./src/drag-indicator/index.ts",
+    "./drop-indicator": "./src/drop-indicator/index.ts",
     "./filterable-list": "./src/filterable-list/index.ts",
     "./virtual-keyboard": "./src/virtual-keyboard/index.ts",
     "./toggle-button": "./src/toggle-button/index.ts",

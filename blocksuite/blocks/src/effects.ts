@@ -22,7 +22,7 @@ import { effects as componentCaptionEffects } from '@blocksuite/affine-component
 import { effects as componentColorPickerEffects } from '@blocksuite/affine-components/color-picker';
 import { effects as componentContextMenuEffects } from '@blocksuite/affine-components/context-menu';
 import { effects as componentDatePickerEffects } from '@blocksuite/affine-components/date-picker';
-import { effects as componentDragIndicatorEffects } from '@blocksuite/affine-components/drag-indicator';
+import { effects as componentDropIndicatorEffects } from '@blocksuite/affine-components/drop-indicator';
 import { FilterableListComponent } from '@blocksuite/affine-components/filterable-list';
 import { IconButton } from '@blocksuite/affine-components/icon-button';
 import { effects as componentPortalEffects } from '@blocksuite/affine-components/portal';
@@ -213,7 +213,7 @@ export function effects() {
   componentPortalEffects();
   componentRichTextEffects();
   componentToolbarEffects();
-  componentDragIndicatorEffects();
+  componentDropIndicatorEffects();
   componentToggleButtonEffects();
   componentAiItemEffects();
   componentColorPickerEffects();

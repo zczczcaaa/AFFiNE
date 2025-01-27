@@ -1,4 +1,4 @@
-import { FileDropExtension } from '@blocksuite/affine-components/drag-indicator';
+import { FileDropExtension } from '@blocksuite/affine-components/drop-indicator';
 import {
   DNDAPIExtension,
   DocModeService,

@@ -3,6 +3,7 @@ import {
   addNoteAtPoint,
   getSurfaceBlock,
 } from '@blocksuite/affine-block-surface';
+import { DropIndicator } from '@blocksuite/affine-components/drop-indicator';
 import type { EmbedCardStyle, NoteBlockModel } from '@blocksuite/affine-model';
 import {
   BLOCK_CHILDREN_CONTAINER_PADDING_LEFT,
@@ -23,7 +24,6 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import {
   type BlockComponent,
-  BlockSelection,
   type BlockStdScope,
   type DragFromBlockSuite,
   type DragPayload,
@@ -34,7 +34,6 @@ import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound, last, Point, Rect } from '@blocksuite/global/utils';
 import { Slice, type SliceSnapshot } from '@blocksuite/store';
 
-import { DropIndicator } from '../components/drop-indicator.js';
 import type { AffineDragHandleWidget } from '../drag-handle.js';
 import { PreviewHelper } from '../helpers/preview-helper.js';
 import { newIdCrossDoc } from '../middleware/new-id-cross-doc.js';
@@ -65,6 +64,8 @@ export class DragEventWatcher {
   dropIndicator: null | DropIndicator = null;
 
   previewHelper = new PreviewHelper(this.widget);
+
+  dropTargetCleanUps: Map<string, (() => void)[]> = new Map();
 
   get host() {
     return this.widget.host;
@@ -255,25 +256,6 @@ export class DragEventWatcher {
     } else {
       this.dropIndicator.rect = dropResult?.rect ?? null;
     }
-  };
-
-  private readonly _getDraggedBlock = (draggedBlock: BlockComponent) => {
-    return this._selectAndSetDraggingBlock(draggedBlock);
-  };
-
-  private readonly _selectAndSetDraggingBlock = (
-    hoveredBlock: BlockComponent
-  ) => {
-    this.std.selection.setGroup('note', [
-      this.std.selection.create(BlockSelection, {
-        blockId: hoveredBlock.blockId,
-      }),
-    ]);
-
-    return {
-      models: [hoveredBlock.model],
-      snapshot: this._toSnapshot([hoveredBlock]),
-    };
   };
 
   private readonly _getSnapshotFromHoveredBlocks = () => {
@@ -620,6 +602,161 @@ export class DragEventWatcher {
     return std === this.std;
   }
 
+  private _makeDraggable(target: HTMLElement) {
+    const std = this.std;
+
+    return std.dnd.draggable<DragBlockEntity>({
+      element: target,
+      canDrag: () => {
+        const hoverBlock = this.widget.anchorBlockComponent.peek();
+        return hoverBlock ? true : false;
+      },
+      onDragStart: () => {
+        this.widget.dragging = true;
+      },
+      onDrop: () => {
+        this._cleanup();
+      },
+      setDragPreview: ({ source, container }) => {
+        if (!source.data?.bsEntity?.modelIds.length) {
+          return;
+        }
+
+        this.previewHelper.renderDragPreview(
+          source.data?.bsEntity?.modelIds,
+          container
+        );
+      },
+      setDragData: () => {
+        const { snapshot } = this._getSnapshotFromHoveredBlocks();
+
+        return {
+          type: 'blocks',
+          modelIds: snapshot ? extractIdsFromSnapshot(snapshot) : [],
+          snapshot,
+        };
+      },
+    });
+  }
+
+  private _makeDropTarget(view: BlockComponent) {
+    if (view.model.role !== 'content' && view.model.role !== 'hub') {
+      return;
+    }
+
+    const widget = this.widget;
+    const cleanups: (() => void)[] = [];
+
+    cleanups.push(
+      this.std.dnd.dropTarget<
+        DragBlockEntity,
+        {
+          modelId: string;
+        }
+      >({
+        element: view,
+        getIsSticky: () => true,
+        canDrop: ({ source }) => {
+          if (source.data.bsEntity?.type === 'blocks') {
+            return (
+              source.data.from?.docId !== widget.doc.id ||
+              source.data.bsEntity.modelIds.every(id => id !== view.model.id)
+            );
+          }
+
+          return false;
+        },
+        setDropData: () => {
+          return {
+            modelId: view.model.id,
+          };
+        },
+      })
+    );
+
+    if (matchFlavours(view.model, ['affine:attachment', 'affine:bookmark'])) {
+      cleanups.push(this._makeDraggable(view));
+    }
+
+    if (this.dropTargetCleanUps.has(view.model.id)) {
+      this.dropTargetCleanUps.get(view.model.id)!.forEach(clean => clean());
+    }
+
+    this.dropTargetCleanUps.set(view.model.id, cleanups);
+  }
+
+  private _monitorBlockDrag() {
+    return this.std.dnd.monitor<DragBlockEntity>({
+      canMonitor: ({ source }) => {
+        const entity = source.data?.bsEntity;
+
+        return entity?.type === 'blocks' && !!entity.snapshot;
+      },
+      onDropTargetChange: ({ location }) => {
+        this._clearDropIndicator();
+
+        if (
+          !this._isDropOnCurrentEditor(
+            (location.current.dropTargets[0]?.element as BlockComponent)?.std
+          )
+        ) {
+          return;
+        }
+      },
+      onDrop: ({ location, source }) => {
+        this._clearDropIndicator();
+
+        if (
+          !this._isDropOnCurrentEditor(
+            (location.current.dropTargets[0]?.element as BlockComponent)?.std
+          )
+        ) {
+          return;
+        }
+
+        const target = location.current.dropTargets[0];
+        const point = new Point(
+          location.current.input.clientX,
+          location.current.input.clientY
+        );
+        const dragPayload = source.data;
+        const dropPayload = target.data;
+
+        this._onDrop(
+          target.element as BlockComponent,
+          dragPayload,
+          dropPayload,
+          point
+        );
+      },
+      onDrag: ({ location, source }) => {
+        if (
+          !this._isDropOnCurrentEditor(
+            (location.current.dropTargets[0]?.element as BlockComponent)?.std
+          ) ||
+          !location.current.dropTargets[0]
+        ) {
+          return;
+        }
+
+        const target = location.current.dropTargets[0];
+        const point = new Point(
+          location.current.input.clientX,
+          location.current.input.clientY
+        );
+        const dragPayload = source.data;
+        const dropPayload = target.data;
+
+        this._onDragMove(
+          point,
+          dragPayload,
+          dropPayload,
+          target.element as BlockComponent
+        );
+      },
+    });
+  }
+
   watch() {
     this.widget.handleEvent('pointerDown', ctx => {
       const state = ctx.get('pointerState');
@@ -652,41 +789,6 @@ export class DragEventWatcher {
     const disposables = widget.disposables;
     const scrollable = getScrollContainer(this.host);
 
-    disposables.add(
-      std.dnd.draggable<DragBlockEntity>({
-        element: this.widget,
-        canDrag: () => {
-          const hoverBlock = this.widget.anchorBlockComponent.peek();
-          return hoverBlock ? true : false;
-        },
-        onDragStart: () => {
-          this.widget.dragging = true;
-        },
-        onDrop: () => {
-          this._cleanup();
-        },
-        setDragPreview: ({ source, container }) => {
-          if (!source.data?.bsEntity?.modelIds.length) {
-            return;
-          }
-
-          this.previewHelper.renderDragPreview(
-            source.data?.bsEntity?.modelIds,
-            container
-          );
-        },
-        setDragData: () => {
-          const { snapshot } = this._getSnapshotFromHoveredBlocks();
-
-          return {
-            type: 'blocks',
-            modelIds: snapshot ? extractIdsFromSnapshot(snapshot) : [],
-            snapshot,
-          };
-        },
-      })
-    );
-
     if (scrollable) {
       disposables.add(
         std.dnd.autoScroll<DragBlockEntity>({
@@ -698,174 +800,30 @@ export class DragEventWatcher {
       );
     }
 
+    disposables.add(this._makeDraggable(this.widget));
+
     // used to handle drag move and drop
-    disposables.add(
-      std.dnd.monitor<DragBlockEntity>({
-        canMonitor: ({ source }) => {
-          const entity = source.data?.bsEntity;
-
-          return entity?.type === 'blocks' && !!entity.snapshot;
-        },
-        onDropTargetChange: ({ location }) => {
-          this._clearDropIndicator();
-
-          if (
-            !this._isDropOnCurrentEditor(
-              (location.current.dropTargets[0]?.element as BlockComponent)?.std
-            )
-          ) {
-            return;
-          }
-        },
-        onDrop: ({ location, source }) => {
-          this._clearDropIndicator();
-
-          if (
-            !this._isDropOnCurrentEditor(
-              (location.current.dropTargets[0]?.element as BlockComponent)?.std
-            )
-          ) {
-            return;
-          }
-
-          const target = location.current.dropTargets[0];
-          const point = new Point(
-            location.current.input.clientX,
-            location.current.input.clientY
-          );
-          const dragPayload = source.data;
-          const dropPayload = target.data;
-
-          this._onDrop(
-            target.element as BlockComponent,
-            dragPayload,
-            dropPayload,
-            point
-          );
-        },
-        onDrag: ({ location, source }) => {
-          if (
-            !this._isDropOnCurrentEditor(
-              (location.current.dropTargets[0]?.element as BlockComponent)?.std
-            ) ||
-            !location.current.dropTargets[0]
-          ) {
-            return;
-          }
-
-          const target = location.current.dropTargets[0];
-          const point = new Point(
-            location.current.input.clientX,
-            location.current.input.clientY
-          );
-          const dragPayload = source.data;
-          const dropPayload = target.data;
-
-          this._onDragMove(
-            point,
-            dragPayload,
-            dropPayload,
-            target.element as BlockComponent
-          );
-        },
-      })
-    );
-
-    let dropTargetCleanUps: Map<string, (() => void)[]> = new Map();
-    const makeBlockComponentDropTarget = (view: BlockComponent) => {
-      if (view.model.role !== 'content' && view.model.role !== 'hub') {
-        return;
-      }
-
-      const cleanups: (() => void)[] = [];
-
-      cleanups.push(
-        std.dnd.dropTarget<
-          DragBlockEntity,
-          {
-            modelId: string;
-          }
-        >({
-          element: view,
-          getIsSticky: () => true,
-          canDrop: ({ source }) => {
-            if (source.data.bsEntity?.type === 'blocks') {
-              return (
-                source.data.from?.docId !== widget.doc.id ||
-                source.data.bsEntity.modelIds.every(id => id !== view.model.id)
-              );
-            }
-
-            return false;
-          },
-          setDropData: () => {
-            return {
-              modelId: view.model.id,
-            };
-          },
-        })
-      );
-
-      if (matchFlavours(view.model, ['affine:attachment', 'affine:bookmark'])) {
-        cleanups.push(
-          std.dnd.draggable<DragBlockEntity>({
-            element: view,
-            canDrag: () => {
-              return !isGfxBlockComponent(view);
-            },
-            onDragStart: () => {
-              this.widget.dragging = true;
-            },
-            onDrop: () => {
-              this._cleanup();
-            },
-            setDragPreview: ({ source, container }) => {
-              if (!source.data?.bsEntity?.modelIds.length) {
-                return;
-              }
-
-              this.previewHelper.renderDragPreview(
-                source.data?.bsEntity?.modelIds,
-                container
-              );
-            },
-            setDragData: () => {
-              const { snapshot } = this._getDraggedBlock(view);
-
-              return {
-                type: 'blocks',
-                modelIds: snapshot ? extractIdsFromSnapshot(snapshot) : [],
-                snapshot,
-              };
-            },
-          })
-        );
-      }
-
-      dropTargetCleanUps.set(view.model.id, cleanups);
-    };
+    disposables.add(this._monitorBlockDrag());
 
     disposables.add(
       std.view.viewUpdated.on(payload => {
         if (payload.type === 'add') {
-          makeBlockComponentDropTarget(payload.view);
+          this._makeDropTarget(payload.view);
         } else if (
           payload.type === 'delete' &&
-          dropTargetCleanUps.has(payload.id)
+          this.dropTargetCleanUps.has(payload.id)
         ) {
-          dropTargetCleanUps.get(payload.id)!.forEach(clean => clean());
-          dropTargetCleanUps.delete(payload.id);
+          this.dropTargetCleanUps.get(payload.id)!.forEach(clean => clean());
+          this.dropTargetCleanUps.delete(payload.id);
         }
       })
     );
 
-    std.view.views.forEach(block => {
-      makeBlockComponentDropTarget(block);
-    });
+    std.view.views.forEach(block => this._makeDropTarget(block));
 
     disposables.add(() => {
-      dropTargetCleanUps.forEach(cleanUps => cleanUps.forEach(fn => fn()));
-      dropTargetCleanUps.clear();
+      this.dropTargetCleanUps.forEach(cleanUps => cleanUps.forEach(fn => fn()));
+      this.dropTargetCleanUps.clear();
     });
   }
 }

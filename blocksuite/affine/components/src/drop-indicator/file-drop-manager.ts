@@ -17,7 +17,7 @@ import { Point, throttle } from '@blocksuite/global/utils';
 import type { BlockModel, ExtensionType } from '@blocksuite/store';
 import { computed, signal } from '@preact/signals-core';
 
-import type { DragIndicator } from './drag-indicator';
+import { DropIndicator } from './drop-indicator';
 
 export type DropProps = {
   std: BlockStdScope;
@@ -39,20 +39,7 @@ export type FileDropOptions = {
 export class FileDropExtension extends LifeCycleWatcher {
   static override readonly key = 'FileDropExtension';
 
-  static get indicator() {
-    let indicator = document.querySelector<DragIndicator>(
-      'affine-drag-indicator'
-    );
-
-    if (!indicator) {
-      indicator = document.createElement(
-        'affine-drag-indicator'
-      ) as DragIndicator;
-      document.body.append(indicator);
-    }
-
-    return indicator;
-  }
+  indicator: DropIndicator = new DropIndicator();
 
   dragging$ = signal(false);
 
@@ -166,9 +153,16 @@ export class FileDropExtension extends LifeCycleWatcher {
     return this.std.host;
   }
 
+  override unmounted(): void {
+    super.unmounted();
+    this.indicator.remove();
+  }
+
   override mounted() {
     super.mounted();
     const std = this.std;
+
+    std.host.ownerDocument.body.append(this.indicator);
 
     std.event.disposables.add(
       this.point$.subscribe(
@@ -198,7 +192,7 @@ export class FileDropExtension extends LifeCycleWatcher {
 
     std.event.disposables.add(
       this.dropTarget$.subscribe(target => {
-        FileDropExtension.indicator.rect = this._disableIndicator
+        this.indicator.rect = this._disableIndicator
           ? null
           : (target?.rect ?? null);
       })

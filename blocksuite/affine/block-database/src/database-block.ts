@@ -4,7 +4,7 @@ import {
   popMenu,
   popupTargetFromElement,
 } from '@blocksuite/affine-components/context-menu';
-import { DragIndicator } from '@blocksuite/affine-components/drag-indicator';
+import { DropIndicator } from '@blocksuite/affine-components/drop-indicator';
 import { PeekViewProvider } from '@blocksuite/affine-components/peek';
 import { toast } from '@blocksuite/affine-components/toast';
 import type { DatabaseBlockModel } from '@blocksuite/affine-model';
@@ -241,7 +241,7 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<DatabaseBloc
     }
   );
 
-  indicator = new DragIndicator();
+  indicator = new DropIndicator();
 
   onDrag = (evt: MouseEvent, id: string): (() => void) => {
     const result = getDropResult(evt);

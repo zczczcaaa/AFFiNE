@@ -1,4 +1,4 @@
-import { DragIndicator } from './drag-indicator';
+import { DropIndicator } from './drop-indicator';
 export {
   type DropProps,
   FileDropConfigExtension,
@@ -6,8 +6,8 @@ export {
   type FileDropOptions,
 } from './file-drop-manager';
 
-export { DragIndicator };
+export { DropIndicator };
 
 export function effects() {
-  customElements.define('affine-drag-indicator', DragIndicator);
+  customElements.define('affine-drop-indicator', DropIndicator);
 }

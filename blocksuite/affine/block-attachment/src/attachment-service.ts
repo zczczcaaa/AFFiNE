@@ -1,4 +1,4 @@
-import { FileDropConfigExtension } from '@blocksuite/affine-components/drag-indicator';
+import { FileDropConfigExtension } from '@blocksuite/affine-components/drop-indicator';
 import { AttachmentBlockSchema } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import {

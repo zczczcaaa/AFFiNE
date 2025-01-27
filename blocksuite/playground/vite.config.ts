@@ -96,7 +96,7 @@ const chunkGroups = {
     require.resolve('@blocksuite/affine-components/caption'),
     require.resolve('@blocksuite/affine-components/context-menu'),
     require.resolve('@blocksuite/affine-components/date-picker'),
-    require.resolve('@blocksuite/affine-components/drag-indicator'),
+    require.resolve('@blocksuite/affine-components/drop-indicator'),
   ],
   affine: [
     require.resolve('@blocksuite/affine-shared'),

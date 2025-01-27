@@ -36,6 +36,9 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
 
   private _anchorModelDisposables: DisposableGroup | null = null;
 
+  /**
+   * Used to handle drag behavior
+   */
   private readonly _dragEventWatcher = new DragEventWatcher(this);
 
   private readonly _handleEventWatcher = new HandleEventWatcher(this);
@@ -54,11 +57,6 @@ export class AffineDragHandleWidget extends WidgetComponent<RootBlockModel> {
     this.isTopLevelDragHandleVisible = false;
 
     this.pointerEventWatcher.reset();
-    this._resetCursor();
-  };
-
-  private readonly _resetCursor = () => {
-    document.documentElement.classList.remove('affine-drag-preview-grabbing');
   };
 
   anchorBlockId = signal<string | null>(null);
