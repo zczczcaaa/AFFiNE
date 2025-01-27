@@ -3,7 +3,7 @@ import type {
   EmbedFigmaModel,
   EmbedFigmaStyles,
 } from '@blocksuite/affine-model';
-import { BlockSelection, SurfaceSelection } from '@blocksuite/block-std';
+import { BlockSelection } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -76,26 +76,21 @@ export class EmbedFigmaBlockComponent extends EmbedBlockComponent<
 
     // this is required to prevent iframe from capturing pointer events
     this.disposables.add(
-      this.std.selection.slots.changed.on(() => {
-        this._isSelected =
-          !!this.selected?.is(BlockSelection) ||
-          !!this.selected?.is(SurfaceSelection);
-
-        this._showOverlay =
-          this._isResizing || this._isDragging || !this._isSelected;
+      this.selected$.subscribe(selected => {
+        this._showOverlay = this._isResizing || this._isDragging || !selected;
       })
     );
     // this is required to prevent iframe from capturing pointer events
     this.handleEvent('dragStart', () => {
       this._isDragging = true;
       this._showOverlay =
-        this._isResizing || this._isDragging || !this._isSelected;
+        this._isResizing || this._isDragging || !this.selected$.peek();
     });
 
     this.handleEvent('dragEnd', () => {
       this._isDragging = false;
       this._showOverlay =
-        this._isResizing || this._isDragging || !this._isSelected;
+        this._isResizing || this._isDragging || !this.selected$.peek();
     });
   }
 
@@ -109,7 +104,7 @@ export class EmbedFigmaBlockComponent extends EmbedBlockComponent<
         <div
           class=${classMap({
             'affine-embed-figma-block': true,
-            selected: this._isSelected,
+            selected: this.selected$.value,
           })}
           style=${styleMap({
             transform: `scale(${this._scale})`,
@@ -159,9 +154,6 @@ export class EmbedFigmaBlockComponent extends EmbedBlockComponent<
       `
     );
   }
-
-  @state()
-  protected accessor _isSelected = false;
 
   @state()
   protected accessor _showOverlay = true;

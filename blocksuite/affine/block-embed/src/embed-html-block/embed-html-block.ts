@@ -1,5 +1,5 @@
 import type { EmbedHtmlModel, EmbedHtmlStyles } from '@blocksuite/affine-model';
-import { BlockSelection, SurfaceSelection } from '@blocksuite/block-std';
+import { BlockSelection } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -53,26 +53,21 @@ export class EmbedHtmlBlockComponent extends EmbedBlockComponent<EmbedHtmlModel>
 
     // this is required to prevent iframe from capturing pointer events
     this.disposables.add(
-      this.std.selection.slots.changed.on(() => {
-        this._isSelected =
-          !!this.selected?.is(BlockSelection) ||
-          !!this.selected?.is(SurfaceSelection);
-
-        this._showOverlay =
-          this._isResizing || this._isDragging || !this._isSelected;
+      this.selected$.subscribe(selected => {
+        this._showOverlay = this._isResizing || this._isDragging || !selected;
       })
     );
     // this is required to prevent iframe from capturing pointer events
     this.handleEvent('dragStart', () => {
       this._isDragging = true;
       this._showOverlay =
-        this._isResizing || this._isDragging || !this._isSelected;
+        this._isResizing || this._isDragging || !this.selected$.peek();
     });
 
     this.handleEvent('dragEnd', () => {
       this._isDragging = false;
       this._showOverlay =
-        this._isResizing || this._isDragging || !this._isSelected;
+        this._isResizing || this._isDragging || !this.selected$.peek();
     });
   }
 
@@ -96,7 +91,7 @@ export class EmbedHtmlBlockComponent extends EmbedBlockComponent<EmbedHtmlModel>
         <div
           class=${classMap({
             'affine-embed-html-block': true,
-            selected: this._isSelected,
+            selected: this.selected$.value,
           })}
           style=${styleMap(this.embedHtmlStyle)}
           @click=${this._handleClick}
@@ -135,9 +130,6 @@ export class EmbedHtmlBlockComponent extends EmbedBlockComponent<EmbedHtmlModel>
       `;
     });
   }
-
-  @state()
-  protected accessor _isSelected = false;
 
   @state()
   protected accessor _showOverlay = true;

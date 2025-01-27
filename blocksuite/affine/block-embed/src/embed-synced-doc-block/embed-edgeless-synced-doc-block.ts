@@ -8,7 +8,7 @@ import {
   ThemeExtensionIdentifier,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
-import { BlockSelection, BlockStdScope } from '@blocksuite/block-std';
+import { BlockStdScope } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/utils';
 import { html, nothing } from 'lit';
 import { choose } from 'lit/directives/choose.js';
@@ -55,7 +55,6 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
     }
     const theme = this.isPageMode ? appTheme : edgelessTheme;
 
-    const isSelected = !!this.selected?.is(BlockSelection);
     const scale = this.model.scale ?? 1;
 
     this.dataset.nestedEditor = '';
@@ -94,8 +93,8 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
             'affine-embed-synced-doc-container': true,
             [editorMode]: true,
             [theme]: true,
-            selected: isSelected,
             surface: true,
+            selected: this.selected$.value,
           })}
           @click=${this._handleClick}
           style=${containerStyleMap}

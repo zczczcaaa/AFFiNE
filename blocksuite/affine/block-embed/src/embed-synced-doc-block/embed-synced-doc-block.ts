@@ -180,7 +180,6 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       edgelessTheme = themeExtension.getEdgelessTheme(this.syncedDoc.id).value;
     }
     const theme = isPageMode ? appTheme : edgelessTheme;
-    const isSelected = !!this.selected?.is(BlockSelection);
 
     this.dataset.nestedEditor = '';
 
@@ -218,8 +217,8 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
             'affine-embed-synced-doc-container': true,
             [editorMode]: true,
             [theme]: true,
-            selected: isSelected,
             surface: false,
+            selected: this.selected$.value,
           })}
           @click=${this._handleClick}
           style=${containerStyleMap}
@@ -239,7 +238,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
           <div
             class=${classMap({
               'affine-embed-synced-doc-header-wrapper': true,
-              selected: isSelected,
+              selected: this.selected$.value,
             })}
           >
             <div class="affine-embed-synced-doc-header">

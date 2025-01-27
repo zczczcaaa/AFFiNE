@@ -1,10 +1,12 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { Bound } from '@blocksuite/global/utils';
+import { computed } from '@preact/signals-core';
 import { nothing } from 'lit';
 
 import type { BlockService } from '../../extension/index.js';
 import { GfxControllerIdentifier } from '../../gfx/identifiers.js';
 import type { GfxBlockElementModel } from '../../gfx/index.js';
+import { SurfaceSelection } from '../../selection/index.js';
 import { BlockComponent } from './block-component.js';
 
 export function isGfxBlockComponent(
@@ -136,6 +138,14 @@ export function toGfxBlockComponent<
   // @ts-expect-error ignore
   return class extends CustomBlock {
     [GfxElementSymbol] = true;
+
+    override selected$ = computed(() => {
+      const selection = this.std.selection.value.find(
+        selection => selection.blockId === this.model?.id
+      );
+      if (!selection) return false;
+      return selection.is(SurfaceSelection);
+    });
 
     get gfx() {
       return this.std.get(GfxControllerIdentifier);

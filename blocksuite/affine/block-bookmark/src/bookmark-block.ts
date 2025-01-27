@@ -4,7 +4,6 @@ import {
 } from '@blocksuite/affine-components/caption';
 import type { BookmarkBlockModel } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
-import { BlockSelection } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -70,13 +69,16 @@ export class BookmarkBlockComponent extends CaptionedBlockComponent<BookmarkBloc
   }
 
   override renderBlock() {
-    const selected = !!this.selected?.is(BlockSelection);
+    const selected = this.selected$.value;
+    const isInEdgeless =
+      this.std.get(DocModeProvider).getEditorMode() === 'edgeless';
+
     return html`
       <div
         draggable="${this.blockDraggable ? 'true' : 'false'}"
         class=${classMap({
           'affine-bookmark-container': true,
-          'selected-style': selected,
+          'selected-style': selected && !isInEdgeless,
         })}
         style=${this.containerStyleMap}
       >

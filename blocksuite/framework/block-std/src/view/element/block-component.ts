@@ -12,6 +12,7 @@ import { html } from 'lit/static-html.js';
 import type { EventName, UIEventHandler } from '../../event/index.js';
 import type { BlockService } from '../../extension/index.js';
 import type { BlockStdScope } from '../../scope/index.js';
+import { BlockSelection } from '../../selection/index.js';
 import { PropTypes, requiredProperties } from '../decorators/index.js';
 import {
   blockComponentSymbol,
@@ -35,16 +36,12 @@ export class BlockComponent<
   @consume({ context: stdContext })
   accessor std!: BlockStdScope;
 
-  private readonly _selected = computed(() => {
-    const selection = this.std.selection.value.find(selection => {
-      return selection.blockId === this.model?.id;
-    });
-
-    if (!selection) {
-      return null;
-    }
-
-    return selection;
+  selected$ = computed(() => {
+    const selection = this.std.selection.value.find(
+      selection => selection.blockId === this.model?.id
+    );
+    if (!selection) return false;
+    return selection.is(BlockSelection);
   });
 
   [blockComponentSymbol] = true;
@@ -139,10 +136,6 @@ export class BlockComponent<
     }
     const rootComponent = this.host.view.getBlock(rootId);
     return rootComponent ?? null;
-  }
-
-  get selected() {
-    return this._selected.value;
   }
 
   get selection() {

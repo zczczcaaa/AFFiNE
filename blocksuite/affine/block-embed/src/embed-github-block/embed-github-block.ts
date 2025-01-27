@@ -4,9 +4,9 @@ import type {
   EmbedGithubStyles,
 } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
-import { BlockSelection, SurfaceSelection } from '@blocksuite/block-std';
+import { BlockSelection } from '@blocksuite/block-std';
 import { html, nothing } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -108,14 +108,6 @@ export class EmbedGithubBlockComponent extends EmbedBlockComponent<
         }
       })
     );
-
-    this.disposables.add(
-      this.selection.slots.changed.on(() => {
-        this._isSelected =
-          !!this.selected?.is(BlockSelection) ||
-          !!this.selected?.is(SurfaceSelection);
-      })
-    );
   }
 
   override renderBlock() {
@@ -170,7 +162,7 @@ export class EmbedGithubBlockComponent extends EmbedBlockComponent<
             'affine-embed-github-block': true,
             loading,
             [style]: true,
-            selected: this._isSelected,
+            selected: this.selected$.value,
           })}
           style=${styleMap({
             transform: `scale(${this._scale})`,
@@ -268,9 +260,6 @@ export class EmbedGithubBlockComponent extends EmbedBlockComponent<
       `
     );
   }
-
-  @state()
-  private accessor _isSelected = false;
 
   @property({ attribute: false })
   accessor loading = false;

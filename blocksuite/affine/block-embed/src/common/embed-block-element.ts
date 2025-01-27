@@ -9,7 +9,7 @@ import {
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
-import { BlockSelection, type BlockService } from '@blocksuite/block-std';
+import type { BlockService } from '@blocksuite/block-std';
 import type { GfxCompatibleProps } from '@blocksuite/block-std/gfx';
 import type { BlockModel } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
@@ -43,6 +43,10 @@ export class EmbedBlockComponent<
   protected embedContainerStyle: StyleInfo = {};
 
   renderEmbed = (content: () => TemplateResult) => {
+    const selected = this.selected$.value;
+    const isInEdgeless =
+      this.std.get(DocModeProvider).getEditorMode() === 'edgeless';
+
     if (
       this._cardStyle === 'horizontal' ||
       this._cardStyle === 'horizontalThin' ||
@@ -50,19 +54,17 @@ export class EmbedBlockComponent<
     ) {
       this.style.display = 'block';
 
-      const mode = this.std.get(DocModeProvider).getEditorMode();
-      if (mode === 'edgeless') {
+      if (isInEdgeless) {
         this.style.minWidth = `${EMBED_CARD_MIN_WIDTH}px`;
       }
     }
 
-    const selected = !!this.selected?.is(BlockSelection);
     return html`
       <div
         draggable="${this.blockDraggable ? 'true' : 'false'}"
         class=${classMap({
           'embed-block-container': true,
-          'selected-style': selected,
+          'selected-style': selected && !isInEdgeless,
         })}
         style=${styleMap({
           height: `${this._cardHeight}px`,
