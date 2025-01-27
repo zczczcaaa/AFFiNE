@@ -1,4 +1,4 @@
-import { ZERO_WIDTH_SPACE } from '@inline/consts.js';
+import { ZERO_WIDTH_SPACE } from '@blocksuite/inline';
 import { expect } from '@playwright/test';
 import {
   assertRichTextInlineDeltas,

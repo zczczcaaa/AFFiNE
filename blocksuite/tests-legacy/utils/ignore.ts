@@ -1,4 +1,4 @@
-import type { BlockSnapshot } from '@store/index.js';
+import type { BlockSnapshot } from '@blocksuite/store';
 
 export function ignoreFields(target: unknown, keys: string[]): unknown {
   if (Array.isArray(target)) {

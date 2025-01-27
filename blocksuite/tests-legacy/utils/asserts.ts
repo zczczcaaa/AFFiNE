@@ -1,20 +1,20 @@
 import './declare-test-window.js';
 
 import type {
-  AffineInlineEditor,
-  NoteBlockModel,
-  RichText,
-  RootBlockModel,
-} from '@blocks/index.js';
-import type {
   BlockComponent,
   EditorHost,
   TextSelection,
 } from '@blocksuite/block-std';
+import type {
+  AffineInlineEditor,
+  NoteBlockModel,
+  RichText,
+  RootBlockModel,
+} from '@blocksuite/blocks';
 import { assertExists } from '@blocksuite/global/utils';
-import type { InlineRootElement } from '@inline/inline-editor.js';
+import type { InlineRootElement } from '@blocksuite/inline';
+import type { BlockModel } from '@blocksuite/store';
 import { expect, type Locator, type Page } from '@playwright/test';
-import type { BlockModel } from '@store/index.js';
 
 import {
   DEFAULT_NOTE_HEIGHT,
@@ -462,7 +462,9 @@ export async function assertBlockChildrenFlavours(
 ) {
   const actual = await page.evaluate(
     ({ blockId }) => {
-      const element = document.querySelector(`[data-block-id="${blockId}"]`);
+      const element = document.querySelector<BlockComponent>(
+        `[data-block-id="${blockId}"]`
+      );
       // @ts-ignore
       const model = element.model as BlockModel;
       return model.children.map(child => child.flavour);

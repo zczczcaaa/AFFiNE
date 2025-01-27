@@ -1,11 +1,11 @@
 import type { DocModeProvider } from '@blocksuite/blocks';
 import { assertExists } from '@blocksuite/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/presets';
-import type { Blocks, Doc, Workspace } from '@blocksuite/store';
+import type { Doc, Store, Workspace } from '@blocksuite/store';
 import type { LitElement } from 'lit';
 
 export function getDocFromUrlParams(collection: Workspace, url: URL) {
-  let doc: Blocks | null = null;
+  let doc: Store | null = null;
 
   const docId = decodeURIComponent(url.hash.slice(1));
 

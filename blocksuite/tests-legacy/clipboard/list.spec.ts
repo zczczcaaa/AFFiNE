@@ -1,5 +1,5 @@
+import type { BlockSnapshot } from '@blocksuite/store';
 import { expect } from '@playwright/test';
-import type { BlockSnapshot } from '@store/index.js';
 import { lightThemeV2 } from '@toeverything/theme/v2';
 
 import { initDatabaseColumn } from '../database/actions.js';

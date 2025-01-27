@@ -1,6 +1,6 @@
 import type { IPoint } from '@blocksuite/global/utils';
+import type { Store } from '@blocksuite/store';
 import type { Page } from '@playwright/test';
-import type { Store } from '@store/index.js';
 
 import { toViewCoord } from './edgeless.js';
 import { waitNextFrame } from './misc.js';

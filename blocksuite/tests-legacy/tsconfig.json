@@ -2,13 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "./dist",
-    "paths": {
-      "@blocks/*": ["../blocks/src/*"],
-      "@inline/*": ["../framework/inline/src/*"],
-      "@store/*": ["../framework/store/src/*"],
-      "@playground/*": ["../playground/*"]
-    }
+    "outDir": "./dist"
   },
   "include": ["**.spec.ts", "**.test.ts", "**/**.ts"],
   "exclude": ["dist"],
@@ -18,6 +12,8 @@
     { "path": "../affine/shared" },
     { "path": "../framework/block-std" },
     { "path": "../framework/global" },
-    { "path": "../presets" }
+    { "path": "../framework/inline" },
+    { "path": "../presets" },
+    { "path": "../framework/store" }
   ]
 }

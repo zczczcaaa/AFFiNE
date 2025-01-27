@@ -138,7 +138,9 @@ test('zoom by mouse without ctrl pressed when edgelessScrollZoom is enabled', as
 
   // enable edgelessScrollZoom
   await page.evaluate(() => {
+    // @ts-expect-error set a setting
     window.editorSetting$.value = {
+      // @ts-expect-error set a setting
       ...window.editorSetting$.value,
       edgelessScrollZoom: true,
     };
@@ -153,7 +155,9 @@ test('zoom by mouse without ctrl pressed when edgelessScrollZoom is enabled', as
 
   // disable edgelessScrollZoom
   await page.evaluate(() => {
+    // @ts-expect-error set a setting
     window.editorSetting$.value = {
+      // @ts-expect-error set a setting
       ...window.editorSetting$.value,
       edgelessScrollZoom: false,
     };

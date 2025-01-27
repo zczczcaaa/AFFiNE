@@ -1,17 +1,24 @@
-import type { RefNodeSlotsProvider, TestUtils } from '@blocks/index.js';
+import type {
+  DocModeProvider,
+  DocModeService,
+  ParseDocUrlProvider,
+  QuickSearchProvider,
+  ThemeProvider,
+} from '@blocksuite/affine-shared/services';
 import type {
   EditorHost,
-  ExtensionType,
+  WidgetViewMapExtension,
   WidgetViewMapIdentifier,
 } from '@blocksuite/block-std';
+import type { RefNodeSlotsProvider, TestUtils } from '@blocksuite/blocks';
 import type { AffineEditorContainer } from '@blocksuite/presets';
-import type { StarterDebugMenu } from '@playground/apps/_common/components/starter-debug-menu.js';
 import type {
   BlockModel,
-  Blocks,
+  ExtensionType,
+  Store,
   Transformer,
   Workspace,
-} from '@store/index.js';
+} from '@blocksuite/store';
 
 declare global {
   interface Window {
@@ -19,32 +26,32 @@ declare global {
      * the following instance are initialized in `packages/playground/apps/starter/main.ts`
      */
     $blocksuite: {
-      store: typeof import('../../framework/store/src/index.js');
-      blocks: typeof import('../../blocks/src/index.js');
+      store: typeof import('@blocksuite/store');
+      blocks: typeof import('@blocksuite/blocks');
       global: {
-        utils: typeof import('../../framework/global/src/utils.js');
+        utils: typeof import('@blocksuite/global/utils');
       };
-      editor: typeof import('../../presets/src/index.js');
+      editor: typeof import('@blocksuite/presets');
       identifiers: {
         WidgetViewMapIdentifier: typeof WidgetViewMapIdentifier;
-        QuickSearchProvider: typeof import('../../affine/shared/src/services/quick-search-service.js').QuickSearchProvider;
-        DocModeProvider: typeof import('../../affine/shared/src/services/doc-mode-service.js').DocModeProvider;
-        ThemeProvider: typeof import('../../affine/shared/src/services/theme-service.js').ThemeProvider;
+        QuickSearchProvider: typeof QuickSearchProvider;
+        DocModeProvider: typeof DocModeProvider;
+        ThemeProvider: typeof ThemeProvider;
         RefNodeSlotsProvider: typeof RefNodeSlotsProvider;
-        ParseDocUrlService: typeof import('../../affine/shared/src/services/parse-url-service.js').ParseDocUrlProvider;
+        ParseDocUrlService: typeof ParseDocUrlProvider;
       };
       defaultExtensions: () => ExtensionType[];
       extensions: {
-        WidgetViewMapExtension: typeof import('../../framework/block-std/src/extension/widget-view-map.js').WidgetViewMapExtension;
+        WidgetViewMapExtension: typeof WidgetViewMapExtension;
       };
       mockServices: {
-        mockDocModeService: typeof import('../../playground/apps/_common/mock-services.js').mockDocModeService;
+        mockDocModeService: typeof DocModeService;
       };
     };
     collection: Workspace;
     blockSchema: Record<string, typeof BlockModel>;
-    doc: Blocks;
-    debugMenu: StarterDebugMenu;
+    doc: Store;
+    debugMenu: HTMLElement;
     editor: AffineEditorContainer;
     host: EditorHost;
     testUtils: TestUtils;

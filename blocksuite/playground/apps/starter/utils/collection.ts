@@ -1,5 +1,4 @@
 import { AffineSchemas, SpecProvider, TestUtils } from '@blocksuite/blocks';
-import type { BlockSuiteFlags } from '@blocksuite/global/types';
 import { nanoid, Schema, Transformer } from '@blocksuite/store';
 import {
   createAutoIncrementIdGenerator,
@@ -48,27 +47,10 @@ export function createStarterDocCollection() {
     blobSources.shadows.push(new IndexedDBBlobSource(collectionId));
   }
 
-  const flags: Partial<BlockSuiteFlags> = Object.fromEntries(
-    Array.from(params.entries())
-      .filter(([key]) => key.startsWith('enable_'))
-      .map(([k, v]) => [k, v === 'true'])
-  );
-
   const options: DocCollectionOptions = {
     id: collectionId,
     schema,
     idGenerator,
-    defaultFlags: {
-      enable_synced_doc_block: true,
-      enable_pie_menu: true,
-      enable_lasso_tool: true,
-      enable_edgeless_text: true,
-      enable_color_picker: true,
-      enable_mind_map_import: true,
-      enable_advanced_block_visibility: true,
-      enable_shape_shadow_blur: false,
-      ...flags,
-    },
     awarenessSources: [new BroadcastChannelAwarenessSource(id)],
     docSources,
     blobSources,

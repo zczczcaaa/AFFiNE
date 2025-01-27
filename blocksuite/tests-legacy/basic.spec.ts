@@ -1,4 +1,4 @@
-import type { DeltaInsert } from '@inline/types.js';
+import type { DeltaInsert } from '@blocksuite/inline';
 import { expect } from '@playwright/test';
 
 import {

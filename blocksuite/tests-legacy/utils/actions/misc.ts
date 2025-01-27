@@ -1,20 +1,20 @@
 import '../declare-test-window.js';
 
-import type { DatabaseBlockModel, ListType, RichText } from '@blocks/index.js';
-import type { EditorHost, ExtensionType } from '@blocksuite/block-std';
-import type { BlockSuiteFlags } from '@blocksuite/global/types';
+import type { EditorHost } from '@blocksuite/block-std';
+import type {
+  BlockSuiteFlags,
+  DatabaseBlockModel,
+  ListType,
+  RichText,
+} from '@blocksuite/blocks';
+import type { Container } from '@blocksuite/global/di';
 import { assertExists } from '@blocksuite/global/utils';
+import type { InlineRange, InlineRootElement } from '@blocksuite/inline';
 import type { AffineEditorContainer } from '@blocksuite/presets';
-import type { InlineRange, InlineRootElement } from '@inline/index.js';
-import type { CustomFramePanel } from '@playground/apps/_common/components/custom-frame-panel.js';
-import type { CustomOutlinePanel } from '@playground/apps/_common/components/custom-outline-panel.js';
-import type { CustomOutlineViewer } from '@playground/apps/_common/components/custom-outline-viewer.js';
-import type { DocsPanel } from '@playground/apps/_common/components/docs-panel.js';
-import type { StarterDebugMenu } from '@playground/apps/_common/components/starter-debug-menu.js';
+import type { BlockModel, ExtensionType } from '@blocksuite/store';
+import { uuidv4 } from '@blocksuite/store';
 import type { ConsoleMessage, Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import type { BlockModel } from '@store/schema/index.js';
-import { uuidv4 } from '@store/utils/id-generator.js';
 import lz from 'lz-string';
 
 import { currentEditorIndex, multiEditor } from '../multiple-editor.js';
@@ -95,7 +95,7 @@ async function initEmptyEditor({
           for (const [key, value] of Object.entries(flags)) {
             doc
               .get(window.$blocksuite.blocks.FeatureFlagService)
-              .setFlag(key, value);
+              .setFlag(key as keyof BlockSuiteFlags, value);
           }
           doc
             .get(window.$blocksuite.blocks.FeatureFlagService)
@@ -105,7 +105,7 @@ async function initEmptyEditor({
           const defaultExtensions: ExtensionType[] = [
             ...window.$blocksuite.defaultExtensions(),
             {
-              setup: di => {
+              setup: (di: Container) => {
                 di.addImpl(window.$blocksuite.identifiers.ParseDocUrlService, {
                   parseDocUrl() {
                     return undefined;
@@ -114,12 +114,13 @@ async function initEmptyEditor({
               },
             },
             {
-              setup: di => {
+              setup: (di: Container) => {
                 di.override(
                   window.$blocksuite.identifiers.DocModeProvider,
+                  // @ts-expect-error set mock service
                   window.$blocksuite.mockServices.mockDocModeService(
                     () => editor.mode,
-                    mode => editor.switchEditor(mode)
+                    (mode: 'page' | 'edgeless') => editor.switchEditor(mode)
                   )
                 );
               },
@@ -149,28 +150,35 @@ async function initEmptyEditor({
 
         editor.updateComplete
           .then(() => {
-            const debugMenu: StarterDebugMenu =
-              document.createElement('starter-debug-menu');
-            const docsPanel: DocsPanel = document.createElement('docs-panel');
-            const framePanel: CustomFramePanel =
-              document.createElement('custom-frame-panel');
-            const outlinePanel: CustomOutlinePanel = document.createElement(
-              'custom-outline-panel'
-            );
-            const outlineViewer: CustomOutlineViewer = document.createElement(
+            const debugMenu = document.createElement('starter-debug-menu');
+            const docsPanel = document.createElement('docs-panel');
+            const framePanel = document.createElement('custom-frame-panel');
+            const outlinePanel = document.createElement('custom-outline-panel');
+            const outlineViewer = document.createElement(
               'custom-outline-viewer'
             );
+            // @ts-expect-error set test editor
             docsPanel.editor = editor;
+            // @ts-expect-error set test editor
             framePanel.editor = editor;
+            // @ts-expect-error set test editor
             outlinePanel.editor = editor;
+            // @ts-expect-error set test editor
             outlineViewer.editor = editor;
+            // @ts-expect-error set test collection
             debugMenu.collection = collection;
+            // @ts-expect-error set test editor
             debugMenu.editor = editor;
+            // @ts-expect-error set test docsPanel
             debugMenu.docsPanel = docsPanel;
+            // @ts-expect-error set test framePanel
             debugMenu.framePanel = framePanel;
+            // @ts-expect-error set test outlineViewer
             debugMenu.outlineViewer = outlineViewer;
+            // @ts-expect-error set test outlinePanel
             debugMenu.outlinePanel = outlinePanel;
             const leftSidePanel = document.createElement('left-side-panel');
+            // @ts-expect-error set test leftSidePanel
             debugMenu.leftSidePanel = leftSidePanel;
             document.body.append(debugMenu);
             document.body.append(leftSidePanel);

@@ -9,8 +9,7 @@ export async function updateBlockType(
 ) {
   await page.evaluate(
     ([flavour, type]) => {
-      window.host.std.command
-        .chain()
+      (window.host.std.command.chain() as any)
         .updateBlockType({
           flavour,
           props: {

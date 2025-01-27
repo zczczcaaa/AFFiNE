@@ -1,4 +1,3 @@
-import { press } from '@inline/__tests__/utils.js';
 import { expect } from '@playwright/test';
 
 import {
@@ -7,6 +6,7 @@ import {
   initEmptyDatabaseState,
 } from '../utils/actions/misc.js';
 import { test } from '../utils/playwright.js';
+import { press } from './actions.js';
 
 test.describe('title', () => {
   test('should able to link doc by press @', async ({ page }) => {

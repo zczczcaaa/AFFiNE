@@ -835,7 +835,7 @@ test.describe('slash menu with customize menu', () => {
       const SlashMenuWidget = window.$blocksuite.blocks.AffineSlashMenuWidget;
 
       class CustomSlashMenu extends SlashMenuWidget {
-        config = {
+        override config = {
           ...SlashMenuWidget.DEFAULT_CONFIG,
           items: [
             { groupName: 'Custom Menu' },

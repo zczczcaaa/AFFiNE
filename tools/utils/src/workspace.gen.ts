@@ -452,7 +452,9 @@ export const PackageList = [
       'blocksuite/affine/shared',
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',
+      'blocksuite/framework/inline',
       'blocksuite/presets',
+      'blocksuite/framework/store',
     ],
   },
   {

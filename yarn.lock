@@ -4011,7 +4011,9 @@ __metadata:
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/block-std": "workspace:*"
     "@blocksuite/global": "workspace:*"
+    "@blocksuite/inline": "workspace:*"
     "@blocksuite/presets": "workspace:*"
+    "@blocksuite/store": "workspace:*"
     "@playwright/test": "npm:=1.49.1"
     "@toeverything/theme": "npm:^1.1.7"
   languageName: unknown
