@@ -51,6 +51,7 @@ import {
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import {
   FeatureFlagService,
+  FileSizeLimitService,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
 import {
@@ -324,10 +325,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
         const file = await openFileOrFiles();
         if (!file) return;
 
-        const attachmentService =
-          rootComponent.std.getService('affine:attachment');
-        if (!attachmentService) return;
-        const maxFileSize = attachmentService.maxFileSize;
+        const maxFileSize =
+          rootComponent.std.store.get(FileSizeLimitService).maxFileSize;
 
         await addSiblingAttachmentBlocks(
           rootComponent.host,

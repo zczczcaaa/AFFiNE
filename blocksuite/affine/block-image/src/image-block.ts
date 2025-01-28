@@ -10,7 +10,6 @@ import { when } from 'lit/directives/when.js';
 
 import type { ImageBlockFallbackCard } from './components/image-block-fallback.js';
 import type { ImageBlockPageComponent } from './components/page-image-block.js';
-import type { ImageBlockService } from './image-service.js';
 import {
   copyImageBlob,
   downloadImageBlob,
@@ -21,10 +20,7 @@ import {
 @Peekable({
   enableOn: () => !IS_MOBILE,
 })
-export class ImageBlockComponent extends CaptionedBlockComponent<
-  ImageBlockModel,
-  ImageBlockService
-> {
+export class ImageBlockComponent extends CaptionedBlockComponent<ImageBlockModel> {
   convertToCardView = () => {
     turnImageIntoCardView(this).catch(console.error);
   };

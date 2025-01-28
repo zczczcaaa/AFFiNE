@@ -10,7 +10,7 @@ import { DividerBlockSpec } from '@blocksuite/affine-block-divider';
 import { EdgelessTextBlockSpec } from '@blocksuite/affine-block-edgeless-text';
 import { EmbedExtensions } from '@blocksuite/affine-block-embed';
 import { FrameBlockSpec } from '@blocksuite/affine-block-frame';
-import { ImageBlockSpec } from '@blocksuite/affine-block-image';
+import { ImageBlockSpec, ImageStoreSpec } from '@blocksuite/affine-block-image';
 import { LatexBlockSpec } from '@blocksuite/affine-block-latex';
 import { ListBlockSpec } from '@blocksuite/affine-block-list';
 import {
@@ -43,6 +43,7 @@ import {
   DocDisplayMetaService,
   EditPropsStore,
   FeatureFlagService,
+  FileSizeLimitService,
   FontLoaderService,
   LinkPreviewerService,
 } from '@blocksuite/affine-shared/services';
@@ -107,4 +108,7 @@ export const StoreExtensions: ExtensionType[] = [
   DatabaseSelectionExtension,
   TableSelectionExtension,
   LinkPreviewerService,
-];
+  FileSizeLimitService,
+
+  ImageStoreSpec,
+].flat();

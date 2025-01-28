@@ -11,7 +11,10 @@ import {
   type AttachmentBlockModel,
   AttachmentBlockStyles,
 } from '@blocksuite/affine-model';
-import { ThemeProvider } from '@blocksuite/affine-shared/services';
+import {
+  FileSizeLimitService,
+  ThemeProvider,
+} from '@blocksuite/affine-shared/services';
 import { humanFileSize } from '@blocksuite/affine-shared/utils';
 import { BlockSelection, TextSelection } from '@blocksuite/block-std';
 import { Slice } from '@blocksuite/store';
@@ -22,17 +25,13 @@ import { classMap } from 'lit/directives/class-map.js';
 import { ref } from 'lit/directives/ref.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { AttachmentBlockService } from './attachment-service.js';
 import { AttachmentOptionsTemplate } from './components/options.js';
 import { AttachmentEmbedProvider } from './embed.js';
 import { styles } from './styles.js';
 import { checkAttachmentBlob, downloadAttachmentBlob } from './utils.js';
 
 @Peekable()
-export class AttachmentBlockComponent extends CaptionedBlockComponent<
-  AttachmentBlockModel,
-  AttachmentBlockService
-> {
+export class AttachmentBlockComponent extends CaptionedBlockComponent<AttachmentBlockModel> {
   static override styles = styles;
 
   protected _isDragging = false;
@@ -86,10 +85,14 @@ export class AttachmentBlockComponent extends CaptionedBlockComponent<
     margin: '18px 0px',
   });
 
+  private get _maxFileSize() {
+    return this.std.store.get(FileSizeLimitService).maxFileSize;
+  }
+
   convertTo = () => {
     return this.std
       .get(AttachmentEmbedProvider)
-      .convertTo(this.model, this.service.maxFileSize);
+      .convertTo(this.model, this._maxFileSize);
   };
 
   copy = () => {
@@ -105,7 +108,7 @@ export class AttachmentBlockComponent extends CaptionedBlockComponent<
   embedded = () => {
     return this.std
       .get(AttachmentEmbedProvider)
-      .embedded(this.model, this.service.maxFileSize);
+      .embedded(this.model, this._maxFileSize);
   };
 
   open = () => {
@@ -122,7 +125,7 @@ export class AttachmentBlockComponent extends CaptionedBlockComponent<
   protected get embedView() {
     return this.std
       .get(AttachmentEmbedProvider)
-      .render(this.model, this.blobUrl, this.service.maxFileSize);
+      .render(this.model, this.blobUrl, this._maxFileSize);
   }
 
   private _selectBlock() {

@@ -23,7 +23,7 @@ import { WorkspaceService } from '@affine/core/modules/workspace';
 import { i18nTime } from '@affine/i18n';
 import {
   customImageProxyMiddleware,
-  ImageBlockService,
+  ImageProxyService,
   LinkPreviewerService,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
@@ -162,7 +162,7 @@ const DetailPageImpl = () => {
       ).toString();
 
       editorHost?.std.clipboard.use(customImageProxyMiddleware(imageProxyUrl));
-      ImageBlockService.setImageProxyURL(imageProxyUrl);
+      editorHost?.doc.get(ImageProxyService).setImageProxyURL(imageProxyUrl);
 
       // provide link preview endpoint to blocksuite
       editorHost?.doc.get(LinkPreviewerService).setEndpoint(linkPreviewUrl);

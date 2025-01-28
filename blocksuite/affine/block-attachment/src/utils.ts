@@ -8,7 +8,10 @@ import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
-import { TelemetryProvider } from '@blocksuite/affine-shared/services';
+import {
+  FileSizeLimitService,
+  TelemetryProvider,
+} from '@blocksuite/affine-shared/services';
 import { humanFileSize } from '@blocksuite/affine-shared/utils';
 import type { BlockStdScope, EditorHost } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
@@ -272,7 +275,7 @@ export async function addAttachments(
     console.error('Attachment service not found');
     return [];
   }
-  const maxFileSize = attachmentService.maxFileSize;
+  const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
   const isSizeExceeded = files.some(file => file.size > maxFileSize);
   if (isSizeExceeded) {
     toast(

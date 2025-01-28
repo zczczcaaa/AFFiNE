@@ -4,7 +4,7 @@ import { ServerService } from '@affine/core/modules/cloud';
 import {
   customImageProxyMiddleware,
   type DocMode,
-  ImageBlockService,
+  ImageProxyService,
   LinkPreviewerService,
 } from '@blocksuite/affine/blocks';
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
@@ -75,14 +75,14 @@ const BlockSuiteEditorImpl = ({
               BUILD_CONFIG.linkPreviewUrl,
               server.baseUrl
             ).toString();
+
             editor.host?.std.clipboard.use(
               customImageProxyMiddleware(imageProxyUrl)
             );
-            ImageBlockService.setImageProxyURL(imageProxyUrl);
 
-            editor.host?.doc
-              .get(LinkPreviewerService)
-              .setEndpoint(linkPreviewUrl);
+            page.get(LinkPreviewerService).setEndpoint(linkPreviewUrl);
+
+            page.get(ImageProxyService).setImageProxyURL(imageProxyUrl);
 
             return editor.host?.updateComplete;
           })

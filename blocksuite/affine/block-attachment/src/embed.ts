@@ -2,10 +2,12 @@ import type {
   AttachmentBlockModel,
   ImageBlockProps,
 } from '@blocksuite/affine-model';
+import { FileSizeLimitService } from '@blocksuite/affine-shared/services';
 import {
   transformModel,
   withTempBlobData,
 } from '@blocksuite/affine-shared/utils';
+import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
 import type { Container } from '@blocksuite/global/di';
 import { createIdentifier } from '@blocksuite/global/di';
 import type { ExtensionType } from '@blocksuite/store';
@@ -57,8 +59,9 @@ export const AttachmentEmbedProvider = createIdentifier<AttachmentEmbedService>(
 );
 
 export class AttachmentEmbedService extends Extension {
-  // 10MB
-  static MAX_EMBED_SIZE = 10 * 1024 * 1024;
+  private get _maxFileSize() {
+    return this.std.store.get(FileSizeLimitService).maxFileSize;
+  }
 
   get keys() {
     return this.configs.keys();
@@ -68,7 +71,10 @@ export class AttachmentEmbedService extends Extension {
     return this.configs.values();
   }
 
-  constructor(private readonly configs: Map<string, AttachmentEmbedConfig>) {
+  constructor(
+    private readonly std: BlockStdScope,
+    private readonly configs: Map<string, AttachmentEmbedConfig>
+  ) {
     super();
   }
 
@@ -77,15 +83,13 @@ export class AttachmentEmbedService extends Extension {
       provider.getAll(AttachmentEmbedConfigIdentifier)
     );
     di.addImpl(AttachmentEmbedProvider, AttachmentEmbedService, [
+      StdIdentifier,
       AttachmentEmbedConfigMapIdentifier,
     ]);
   }
 
   // Converts to embed view.
-  convertTo(
-    model: AttachmentBlockModel,
-    maxFileSize = AttachmentEmbedService.MAX_EMBED_SIZE
-  ) {
+  convertTo(model: AttachmentBlockModel, maxFileSize = this._maxFileSize) {
     const config = this.values.find(config => config.check(model, maxFileSize));
     if (!config || !config.action) {
       model.doc.updateBlock(model, { embed: true });
@@ -94,17 +98,14 @@ export class AttachmentEmbedService extends Extension {
     config.action(model)?.catch(console.error);
   }
 
-  embedded(
-    model: AttachmentBlockModel,
-    maxFileSize = AttachmentEmbedService.MAX_EMBED_SIZE
-  ) {
+  embedded(model: AttachmentBlockModel, maxFileSize = this._maxFileSize) {
     return this.values.some(config => config.check(model, maxFileSize));
   }
 
   render(
     model: AttachmentBlockModel,
     blobUrl?: string,
-    maxFileSize = AttachmentEmbedService.MAX_EMBED_SIZE
+    maxFileSize = this._maxFileSize
   ) {
     if (!model.embed || !blobUrl) return;
 

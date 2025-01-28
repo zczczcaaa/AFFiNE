@@ -7,6 +7,7 @@ import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
 import { ImageBlockAdapterExtensions } from './adapters/extension.js';
+import { ImageProxyService } from './image-proxy-service.js';
 import { ImageBlockService, ImageDropOption } from './image-service.js';
 
 export const ImageBlockSpec: ExtensionType[] = [
@@ -27,3 +28,5 @@ export const ImageBlockSpec: ExtensionType[] = [
   ImageDropOption,
   ImageBlockAdapterExtensions,
 ].flat();
+
+export const ImageStoreSpec: ExtensionType[] = [ImageProxyService].flat();
