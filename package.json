@@ -63,7 +63,7 @@
     "@types/eslint": "^9.6.1",
     "@types/node": "^22.0.0",
     "@typescript-eslint/parser": "^8.18.0",
-    "@vanilla-extract/vite-plugin": "^4.0.18",
+    "@vanilla-extract/vite-plugin": "^5.0.0",
     "@vitest/browser": "3.0.2",
     "@vitest/coverage-istanbul": "3.0.2",
     "@vitest/ui": "3.0.2",
