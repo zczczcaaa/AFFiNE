@@ -1535,7 +1535,7 @@ test('should be able to subscribe onetime payment subscription', async t => {
   );
 });
 
-test('should be able to recalculate onetime payment subscription period', async t => {
+test('should be able to accumulate onetime payment subscription period', async t => {
   const { service, db, u1 } = t.context;
 
   await service.saveStripeInvoice(onetimeMonthlyInvoice);
@@ -1547,15 +1547,6 @@ test('should be able to recalculate onetime payment subscription period', async 
   t.truthy(subInDB);
 
   let end = subInDB!.end!;
-  await service.saveStripeInvoice(onetimeMonthlyInvoice);
-  subInDB = await db.subscription.findFirst({
-    where: { targetId: u1.id },
-  });
-
-  // add 30 days
-  t.is(subInDB!.end!.getTime(), end.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-  end = subInDB!.end!;
   await service.saveStripeInvoice(onetimeYearlyInvoice);
   subInDB = await db.subscription.findFirst({
     where: { targetId: u1.id },
@@ -1563,6 +1554,16 @@ test('should be able to recalculate onetime payment subscription period', async 
 
   // add 365 days
   t.is(subInDB!.end!.getTime(), end.getTime() + 365 * 24 * 60 * 60 * 1000);
+});
+
+test('should be able to recalculate onetime payment subscription period after expiration', async t => {
+  const { service, db, u1 } = t.context;
+
+  await service.saveStripeInvoice(onetimeMonthlyInvoice);
+
+  let subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
+  });
 
   // make subscription expired
   await db.subscription.update({
@@ -1577,6 +1578,24 @@ test('should be able to recalculate onetime payment subscription period', async 
   });
 
   // add 365 days from now
+  t.is(
+    subInDB?.end?.toDateString(),
+    new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toDateString()
+  );
+});
+
+test('should not accumulate onetime payment subscription period for redeemed invoices', async t => {
+  const { service, db, u1 } = t.context;
+
+  // save invoices received more than once, should only redeem them once.
+  await service.saveStripeInvoice(onetimeYearlyInvoice);
+  await service.saveStripeInvoice(onetimeYearlyInvoice);
+  await service.saveStripeInvoice(onetimeYearlyInvoice);
+
+  const subInDB = await db.subscription.findFirst({
+    where: { targetId: u1.id },
+  });
+
   t.is(
     subInDB?.end?.toDateString(),
     new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toDateString()

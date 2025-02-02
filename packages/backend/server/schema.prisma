@@ -565,6 +565,8 @@ model Invoice {
   lastPaymentError String?  @map("last_payment_error") @db.Text
   // stripe hosted invoice link
   link             String?  @db.Text
+  // whether the onetime subscription has been redeemed
+  onetimeSubscriptionRedeemed Boolean @map("onetime_subscription_redeemed") @default(false)
 
   @@index([targetId])
   @@map("invoices")
