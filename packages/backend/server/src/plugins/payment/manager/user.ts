@@ -227,23 +227,6 @@ export class UserSubscriptionManager extends SubscriptionManager {
 
     const subscriptionData = this.transformSubscription(subscription);
 
-    // @deprecated backward compatibility
-    await this.db.deprecatedUserSubscription.upsert({
-      where: {
-        stripeSubscriptionId: stripeSubscription.id,
-      },
-      update: pick(subscriptionData, [
-        'status',
-        'stripeScheduleId',
-        'nextBillAt',
-        'canceledAt',
-      ]),
-      create: {
-        userId,
-        ...omit(subscriptionData, 'quantity'),
-      },
-    });
-
     return this.db.subscription.upsert({
       where: {
         stripeSubscriptionId: stripeSubscription.id,
@@ -274,13 +257,6 @@ export class UserSubscriptionManager extends SubscriptionManager {
       },
     });
 
-    // @deprecated backward compatibility
-    await this.db.deprecatedUserSubscription.deleteMany({
-      where: {
-        stripeSubscriptionId: stripeSubscription.id,
-      },
-    });
-
     if (deleted.count > 0) {
       this.event.emit('user.subscription.canceled', {
         userId,
@@ -291,17 +267,6 @@ export class UserSubscriptionManager extends SubscriptionManager {
   }
 
   async cancelSubscription(subscription: Subscription) {
-    // @deprecated backward compatibility
-    await this.db.deprecatedUserSubscription.updateMany({
-      where: {
-        stripeSubscriptionId: subscription.stripeSubscriptionId,
-      },
-      data: {
-        canceledAt: new Date(),
-        nextBillAt: null,
-      },
-    });
-
     return this.db.subscription.update({
       where: {
         // @ts-expect-error checked outside
@@ -315,17 +280,6 @@ export class UserSubscriptionManager extends SubscriptionManager {
   }
 
   async resumeSubscription(subscription: Subscription) {
-    // @deprecated backward compatibility
-    await this.db.deprecatedUserSubscription.updateMany({
-      where: {
-        stripeSubscriptionId: subscription.stripeSubscriptionId,
-      },
-      data: {
-        canceledAt: null,
-        nextBillAt: subscription.end,
-      },
-    });
-
     return this.db.subscription.update({
       where: {
         // @ts-expect-error checked outside
@@ -342,14 +296,6 @@ export class UserSubscriptionManager extends SubscriptionManager {
     subscription: Subscription,
     recurring: SubscriptionRecurring
   ) {
-    // @deprecated backward compatibility
-    await this.db.deprecatedUserSubscription.updateMany({
-      where: {
-        stripeSubscriptionId: subscription.stripeSubscriptionId,
-      },
-      data: { recurring },
-    });
-
     return this.db.subscription.update({
       where: {
         // @ts-expect-error checked outside
@@ -395,18 +341,6 @@ export class UserSubscriptionManager extends SubscriptionManager {
     this.assertUserIdExists(userId);
 
     const invoiceData = await this.transformInvoice(knownInvoice);
-
-    // @deprecated backward compatibility
-    await this.db.deprecatedUserInvoice.upsert({
-      where: {
-        stripeInvoiceId: stripeInvoice.id,
-      },
-      update: omit(invoiceData, 'stripeInvoiceId'),
-      create: {
-        userId,
-        ...invoiceData,
-      },
-    });
 
     const invoice = await this.db.invoice.upsert({
       where: {
