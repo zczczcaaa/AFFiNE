@@ -107,7 +107,7 @@ export class StaticFilesResolver implements OnModuleInit {
     // fallback all unknown routes
     app.get([basePath, basePath + '/*'], this.check.use, (req, res) => {
       const mobile =
-        this.config.AFFINE_ENV === 'dev' &&
+        this.config.affine.canary &&
         isMobile({
           ua: req.headers['user-agent'] ?? undefined,
         });

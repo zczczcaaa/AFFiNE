@@ -20,7 +20,7 @@ function getPredefinedAFFiNEConfig(): PreDefinedAFFiNEConfig {
     'production',
     'script',
   ]);
-  const AFFINE_ENV = readEnv<AFFINE_ENV>('AFFINE_ENV', 'dev', [
+  const AFFINE_ENV = readEnv<AFFINE_ENV>('AFFINE_ENV', 'production', [
     'dev',
     'beta',
     'production',
