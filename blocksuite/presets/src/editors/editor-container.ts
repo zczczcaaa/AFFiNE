@@ -6,7 +6,7 @@ import {
   PageEditorBlockSpecs,
   ThemeProvider,
 } from '@blocksuite/blocks';
-import { SignalWatcher, Slot, WithDisposable } from '@blocksuite/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import {
   type BlockModel,
   type ExtensionType,
@@ -115,13 +115,6 @@ export class AffineEditorContainer
     return this._std.value.render();
   });
 
-  /**
-   * @deprecated need to refactor
-   */
-  slots: AbstractEditor['slots'] = {
-    docUpdated: new Slot(),
-  };
-
   get doc() {
     return this._doc.value as Store;
   }
@@ -226,19 +219,6 @@ export class AffineEditorContainer
 
   switchEditor(mode: DocMode) {
     this._mode.value = mode;
-  }
-
-  /**
-   * @deprecated need to refactor
-   */
-  override updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has('doc')) {
-      this.slots.docUpdated.emit({ newDocId: this.doc.id });
-    }
-
-    if (!changedProperties.has('doc') && !changedProperties.has('mode')) {
-      return;
-    }
   }
 
   @property({ attribute: false })

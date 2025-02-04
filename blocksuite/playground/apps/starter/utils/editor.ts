@@ -118,9 +118,6 @@ export async function mountDefaultDocEditor(collection: Workspace) {
   const modeService = editor.std.provider.get(DocModeProvider);
   editor.mode = modeService.getPrimaryMode(doc.id);
   setDocModeFromUrlParams(modeService, url.searchParams, doc.id);
-  editor.slots.docUpdated.on(({ newDocId }) => {
-    editor.mode = modeService.getPrimaryMode(newDocId);
-  });
 
   const outlinePanel = new CustomOutlinePanel();
   outlinePanel.editor = editor;
