@@ -12,7 +12,7 @@ pub struct Ref<'a, V> {
   _guard: RwLockReadGuard<'a, V>,
 }
 
-impl<'a, V> Deref for Ref<'a, V> {
+impl<V> Deref for Ref<'_, V> {
   type Target = V;
 
   fn deref(&self) -> &Self::Target {
@@ -24,17 +24,17 @@ pub struct RefMut<'a, V> {
   _guard: RwLockMappedWriteGuard<'a, V>,
 }
 
-impl<'a, V> Deref for RefMut<'a, V> {
+impl<V> Deref for RefMut<'_, V> {
   type Target = V;
 
   fn deref(&self) -> &Self::Target {
-    &*self._guard
+    &self._guard
   }
 }
 
-impl<'a, V> DerefMut for RefMut<'a, V> {
+impl<V> DerefMut for RefMut<'_, V> {
   fn deref_mut(&mut self) -> &mut Self::Target {
-    &mut *self._guard
+    &mut self._guard
   }
 }
 
@@ -62,7 +62,7 @@ impl SqliteDocStoragePool {
     RefMut { _guard: lock }
   }
 
-  pub async fn get<'a>(&'a self, universal_id: String) -> Result<Ref<'a, SqliteDocStorage>> {
+  pub async fn get(&self, universal_id: String) -> Result<Ref<SqliteDocStorage>> {
     let lock = RwLockReadGuard::try_map(self.inner.read().await, |lock| {
       if let Some(storage) = lock.get(&universal_id) {
         Some(storage)

@@ -118,6 +118,26 @@ jobs:
       - name: Run Type Check
         run: yarn typecheck
 
+  lint-rust:
+    name: Lint Rust
+    runs-on: ubuntu-latest
+    needs: optimize_ci
+    if: needs.optimize_ci.outputs.skip == 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/build-rust
+        with:
+          no-build: 'true'
+      - name: fmt check
+        run: |
+          rustup toolchain add nightly
+          rustup component add --toolchain nightly-x86_64-unknown-linux-gnu rustfmt
+          cargo +nightly fmt --all -- --check
+      - name: Clippy
+        run: |
+          rustup component add clippy
+          cargo clippy --all-targets --all-features -- -D warnings
+
   check-yarn-binary:
     name: Check yarn binary
     runs-on: ubuntu-latest
@@ -855,6 +875,7 @@ jobs:
     needs:
       - analyze
       - lint
+      - lint-rust
       - check-yarn-binary
       - e2e-test
       - e2e-legacy-blocksuite-test

@@ -129,9 +129,10 @@ impl TryFrom<&str> for Stamp {
 
 #[cfg(test)]
 mod tests {
-  use super::Stamp;
   use rand::{distributions::Alphanumeric, Rng};
   use rayon::prelude::*;
+
+  use super::Stamp;
 
   #[test]
   fn test_mint() {

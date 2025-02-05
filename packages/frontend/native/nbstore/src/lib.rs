@@ -93,7 +93,7 @@ impl DocStoragePool {
     })
   }
 
-  async fn get<'a>(&'a self, universal_id: String) -> Result<Ref<'a, SqliteDocStorage>> {
+  async fn get(&self, universal_id: String) -> Result<Ref<SqliteDocStorage>> {
     Ok(self.pool.get(universal_id).await?)
   }
 

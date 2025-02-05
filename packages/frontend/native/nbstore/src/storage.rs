@@ -51,7 +51,7 @@ impl SqliteDocStorage {
         let name: &str = row.try_get("description")?;
         Ok(name == "init_v2")
       }
-      _ => return Ok(false),
+      _ => Ok(false),
     }
   }
 

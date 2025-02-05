@@ -89,7 +89,8 @@ impl SqliteConnection {
     let blob = blob.as_ref();
     sqlx::query_as!(
       BlobRow,
-      "INSERT INTO blobs (key, data) VALUES ($1, $2) ON CONFLICT(key) DO UPDATE SET data = excluded.data",
+      "INSERT INTO blobs (key, data) VALUES ($1, $2) ON CONFLICT(key) DO UPDATE SET data = \
+       excluded.data",
       key,
       blob,
     )
@@ -288,7 +289,8 @@ impl SqliteConnection {
   pub async fn set_server_clock(&self, key: String, data: Uint8Array) -> napi::Result<()> {
     let data = data.as_ref();
     sqlx::query!(
-      "INSERT INTO server_clock (key, data) VALUES ($1, $2) ON CONFLICT(key) DO UPDATE SET data = excluded.data",
+      "INSERT INTO server_clock (key, data) VALUES ($1, $2) ON CONFLICT(key) DO UPDATE SET data = \
+       excluded.data",
       key,
       data,
     )
@@ -342,7 +344,8 @@ impl SqliteConnection {
   pub async fn set_sync_metadata(&self, key: String, data: Uint8Array) -> napi::Result<()> {
     let data = data.as_ref();
     sqlx::query!(
-      "INSERT INTO sync_metadata (key, data) VALUES ($1, $2) ON CONFLICT(key) DO UPDATE SET data = excluded.data",
+      "INSERT INTO sync_metadata (key, data) VALUES ($1, $2) ON CONFLICT(key) DO UPDATE SET data \
+       = excluded.data",
       key,
       data,
     )
