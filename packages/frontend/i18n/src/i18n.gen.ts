@@ -5362,6 +5362,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.experimental-features.enable-page-block-header.description"](): string;
     /**
+      * `Editor RTL`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-editor-rtl.name"](): string;
+    /**
+      * `Once enabled, the editor will be displayed in RTL mode.`
+      */
+    ["com.affine.settings.workspace.experimental-features.enable-editor-rtl.description"](): string;
+    /**
       * `Only an owner can edit the workspace avatar and name. Changes will be shown for everyone.`
       */
     ["com.affine.settings.workspace.not-owner"](): string;
@@ -5370,7 +5378,7 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.preferences"](): string;
     /**
-      * `Team's Team's Billing`
+      * `Team's Billing`
       */
     ["com.affine.settings.workspace.billing"](): string;
     /**
@@ -5550,7 +5558,7 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.backup.import.success.action"](): string;
     /**
-      * `Deleted {{date}} at {{time}}`
+      * `Deleted on {{date}} at {{time}}`
       */
     ["com.affine.settings.workspace.backup.delete-at"](options: Readonly<{
         date: string;
@@ -6662,6 +6670,437 @@ export function useAFFiNEI18N(): {
       * `Remove template`
       */
     ["com.affine.settings.workspace.template.remove"](): string;
+    /**
+      * `Unused blobs`
+      */
+    ["com.affine.settings.workspace.storage.unused-blobs"](): string;
+    /**
+      * `No unused blobs`
+      */
+    ["com.affine.settings.workspace.storage.unused-blobs.empty"](): string;
+    /**
+      * `Selected`
+      */
+    ["com.affine.settings.workspace.storage.unused-blobs.selected"](): string;
+    /**
+      * `Delete blob files`
+      */
+    ["com.affine.settings.workspace.storage.unused-blobs.delete.title"](): string;
+    /**
+      * `Are you sure you want to delete these blob files? This action cannot be undone. Make sure you no longer need them before proceeding.`
+      */
+    ["com.affine.settings.workspace.storage.unused-blobs.delete.warning"](): string;
+    /**
+      * `An internal error occurred.`
+      */
+    ["error.INTERNAL_SERVER_ERROR"](): string;
+    /**
+      * `Too many requests.`
+      */
+    ["error.TOO_MANY_REQUEST"](): string;
+    /**
+      * `Resource not found.`
+      */
+    ["error.NOT_FOUND"](): string;
+    /**
+      * `Query is too long, max length is {{max}}.`
+      */
+    ["error.QUERY_TOO_LONG"](options: {
+        readonly max: string;
+    }): string;
+    /**
+      * `User not found.`
+      */
+    ["error.USER_NOT_FOUND"](): string;
+    /**
+      * `User avatar not found.`
+      */
+    ["error.USER_AVATAR_NOT_FOUND"](): string;
+    /**
+      * `This email has already been registered.`
+      */
+    ["error.EMAIL_ALREADY_USED"](): string;
+    /**
+      * `You are trying to update your account email to the same as the old one.`
+      */
+    ["error.SAME_EMAIL_PROVIDED"](): string;
+    /**
+      * `Wrong user email or password: {{email}}`
+      */
+    ["error.WRONG_SIGN_IN_CREDENTIALS"](options: {
+        readonly email: string;
+    }): string;
+    /**
+      * `Unknown authentication provider {{name}}.`
+      */
+    ["error.UNKNOWN_OAUTH_PROVIDER"](options: {
+        readonly name: string;
+    }): string;
+    /**
+      * `OAuth state expired, please try again.`
+      */
+    ["error.OAUTH_STATE_EXPIRED"](): string;
+    /**
+      * `Invalid callback state parameter.`
+      */
+    ["error.INVALID_OAUTH_CALLBACK_STATE"](): string;
+    /**
+      * `Missing query parameter `{{name}}`.`
+      */
+    ["error.MISSING_OAUTH_QUERY_PARAMETER"](options: {
+        readonly name: string;
+    }): string;
+    /**
+      * `The third-party account has already been connected to another user.`
+      */
+    ["error.OAUTH_ACCOUNT_ALREADY_CONNECTED"](): string;
+    /**
+      * `An invalid email provided: {{email}}`
+      */
+    ["error.INVALID_EMAIL"](options: {
+        readonly email: string;
+    }): string;
+    /**
+      * `Password must be between {{min}} and {{max}} characters`
+      */
+    ["error.INVALID_PASSWORD_LENGTH"](options: Readonly<{
+        min: string;
+        max: string;
+    }>): string;
+    /**
+      * `Password is required.`
+      */
+    ["error.PASSWORD_REQUIRED"](): string;
+    /**
+      * `You are trying to sign in by a different method than you signed up with.`
+      */
+    ["error.WRONG_SIGN_IN_METHOD"](): string;
+    /**
+      * `You don't have early access permission. Visit https://community.affine.pro/c/insider-general/ for more information.`
+      */
+    ["error.EARLY_ACCESS_REQUIRED"](): string;
+    /**
+      * `You are not allowed to sign up.`
+      */
+    ["error.SIGN_UP_FORBIDDEN"](): string;
+    /**
+      * `The email token provided is not found.`
+      */
+    ["error.EMAIL_TOKEN_NOT_FOUND"](): string;
+    /**
+      * `An invalid email token provided.`
+      */
+    ["error.INVALID_EMAIL_TOKEN"](): string;
+    /**
+      * `The link has expired.`
+      */
+    ["error.LINK_EXPIRED"](): string;
+    /**
+      * `You must sign in first to access this resource.`
+      */
+    ["error.AUTHENTICATION_REQUIRED"](): string;
+    /**
+      * `You are not allowed to perform this action.`
+      */
+    ["error.ACTION_FORBIDDEN"](): string;
+    /**
+      * `You do not have permission to access this resource.`
+      */
+    ["error.ACCESS_DENIED"](): string;
+    /**
+      * `You must verify your email before accessing this resource.`
+      */
+    ["error.EMAIL_VERIFICATION_REQUIRED"](): string;
+    /**
+      * `Space {{spaceId}} not found.`
+      */
+    ["error.SPACE_NOT_FOUND"](options: {
+        readonly spaceId: string;
+    }): string;
+    /**
+      * `Member not found in Space {{spaceId}}.`
+      */
+    ["error.MEMBER_NOT_FOUND_IN_SPACE"](options: {
+        readonly spaceId: string;
+    }): string;
+    /**
+      * `You should join in Space {{spaceId}} before broadcasting messages.`
+      */
+    ["error.NOT_IN_SPACE"](options: {
+        readonly spaceId: string;
+    }): string;
+    /**
+      * `You have already joined in Space {{spaceId}}.`
+      */
+    ["error.ALREADY_IN_SPACE"](options: {
+        readonly spaceId: string;
+    }): string;
+    /**
+      * `You do not have permission to access Space {{spaceId}}.`
+      */
+    ["error.SPACE_ACCESS_DENIED"](options: {
+        readonly spaceId: string;
+    }): string;
+    /**
+      * `Owner of Space {{spaceId}} not found.`
+      */
+    ["error.SPACE_OWNER_NOT_FOUND"](options: {
+        readonly spaceId: string;
+    }): string;
+    /**
+      * `Doc {{docId}} under Space {{spaceId}} not found.`
+      */
+    ["error.DOC_NOT_FOUND"](options: Readonly<{
+        docId: string;
+        spaceId: string;
+    }>): string;
+    /**
+      * `You do not have permission to access doc {{docId}} under Space {{spaceId}}.`
+      */
+    ["error.DOC_ACCESS_DENIED"](options: Readonly<{
+        docId: string;
+        spaceId: string;
+    }>): string;
+    /**
+      * `Your client with version {{version}} is rejected by remote sync server. Please upgrade to {{serverVersion}}.`
+      */
+    ["error.VERSION_REJECTED"](options: Readonly<{
+        version: string;
+        serverVersion: string;
+    }>): string;
+    /**
+      * `Invalid doc history timestamp provided.`
+      */
+    ["error.INVALID_HISTORY_TIMESTAMP"](): string;
+    /**
+      * `History of {{docId}} at {{timestamp}} under Space {{spaceId}}.`
+      */
+    ["error.DOC_HISTORY_NOT_FOUND"](options: Readonly<{
+        docId: string;
+        timestamp: string;
+        spaceId: string;
+    }>): string;
+    /**
+      * `Blob {{blobId}} not found in Space {{spaceId}}.`
+      */
+    ["error.BLOB_NOT_FOUND"](options: Readonly<{
+        blobId: string;
+        spaceId: string;
+    }>): string;
+    /**
+      * `Expected to publish a page, not a Space.`
+      */
+    ["error.EXPECT_TO_PUBLISH_PAGE"](): string;
+    /**
+      * `Expected to revoke a public page, not a Space.`
+      */
+    ["error.EXPECT_TO_REVOKE_PUBLIC_PAGE"](): string;
+    /**
+      * `Page is not public.`
+      */
+    ["error.PAGE_IS_NOT_PUBLIC"](): string;
+    /**
+      * `Failed to store doc updates.`
+      */
+    ["error.FAILED_TO_SAVE_UPDATES"](): string;
+    /**
+      * `Failed to store doc snapshot.`
+      */
+    ["error.FAILED_TO_UPSERT_SNAPSHOT"](): string;
+    /**
+      * `Unsupported subscription plan: {{plan}}.`
+      */
+    ["error.UNSUPPORTED_SUBSCRIPTION_PLAN"](options: {
+        readonly plan: string;
+    }): string;
+    /**
+      * `Failed to create checkout session.`
+      */
+    ["error.FAILED_TO_CHECKOUT"](): string;
+    /**
+      * `Invalid checkout parameters provided.`
+      */
+    ["error.INVALID_CHECKOUT_PARAMETERS"](): string;
+    /**
+      * `You have already subscribed to the {{plan}} plan.`
+      */
+    ["error.SUBSCRIPTION_ALREADY_EXISTS"](options: {
+        readonly plan: string;
+    }): string;
+    /**
+      * `Invalid subscription parameters provided.`
+      */
+    ["error.INVALID_SUBSCRIPTION_PARAMETERS"](): string;
+    /**
+      * `You didn't subscribe to the {{plan}} plan.`
+      */
+    ["error.SUBSCRIPTION_NOT_EXISTS"](options: {
+        readonly plan: string;
+    }): string;
+    /**
+      * `Your subscription has already been canceled.`
+      */
+    ["error.SUBSCRIPTION_HAS_BEEN_CANCELED"](): string;
+    /**
+      * `Your subscription has not been canceled.`
+      */
+    ["error.SUBSCRIPTION_HAS_NOT_BEEN_CANCELED"](): string;
+    /**
+      * `Your subscription has expired.`
+      */
+    ["error.SUBSCRIPTION_EXPIRED"](): string;
+    /**
+      * `Your subscription has already been in {{recurring}} recurring state.`
+      */
+    ["error.SAME_SUBSCRIPTION_RECURRING"](options: {
+        readonly recurring: string;
+    }): string;
+    /**
+      * `Failed to create customer portal session.`
+      */
+    ["error.CUSTOMER_PORTAL_CREATE_FAILED"](): string;
+    /**
+      * `You are trying to access a unknown subscription plan.`
+      */
+    ["error.SUBSCRIPTION_PLAN_NOT_FOUND"](): string;
+    /**
+      * `You cannot update an onetime payment subscription.`
+      */
+    ["error.CANT_UPDATE_ONETIME_PAYMENT_SUBSCRIPTION"](): string;
+    /**
+      * `A workspace is required to checkout for team subscription.`
+      */
+    ["error.WORKSPACE_ID_REQUIRED_FOR_TEAM_SUBSCRIPTION"](): string;
+    /**
+      * `Workspace id is required to update team subscription.`
+      */
+    ["error.WORKSPACE_ID_REQUIRED_TO_UPDATE_TEAM_SUBSCRIPTION"](): string;
+    /**
+      * `Copilot session not found.`
+      */
+    ["error.COPILOT_SESSION_NOT_FOUND"](): string;
+    /**
+      * `Copilot session has been deleted.`
+      */
+    ["error.COPILOT_SESSION_DELETED"](): string;
+    /**
+      * `No copilot provider available.`
+      */
+    ["error.NO_COPILOT_PROVIDER_AVAILABLE"](): string;
+    /**
+      * `Failed to generate text.`
+      */
+    ["error.COPILOT_FAILED_TO_GENERATE_TEXT"](): string;
+    /**
+      * `Failed to create chat message.`
+      */
+    ["error.COPILOT_FAILED_TO_CREATE_MESSAGE"](): string;
+    /**
+      * `Unsplash is not configured.`
+      */
+    ["error.UNSPLASH_IS_NOT_CONFIGURED"](): string;
+    /**
+      * `Action has been taken, no more messages allowed.`
+      */
+    ["error.COPILOT_ACTION_TAKEN"](): string;
+    /**
+      * `Copilot message {{messageId}} not found.`
+      */
+    ["error.COPILOT_MESSAGE_NOT_FOUND"](options: {
+        readonly messageId: string;
+    }): string;
+    /**
+      * `Copilot prompt {{name}} not found.`
+      */
+    ["error.COPILOT_PROMPT_NOT_FOUND"](options: {
+        readonly name: string;
+    }): string;
+    /**
+      * `Copilot prompt is invalid.`
+      */
+    ["error.COPILOT_PROMPT_INVALID"](): string;
+    /**
+      * `Provider {{provider}} failed with {{kind}} error: {{message}}`
+      */
+    ["error.COPILOT_PROVIDER_SIDE_ERROR"](options: Readonly<{
+        provider: string;
+        kind: string;
+        message: string;
+    }>): string;
+    /**
+      * `You have exceeded your blob storage quota.`
+      */
+    ["error.BLOB_QUOTA_EXCEEDED"](): string;
+    /**
+      * `You have exceeded your workspace member quota.`
+      */
+    ["error.MEMBER_QUOTA_EXCEEDED"](): string;
+    /**
+      * `You have reached the limit of actions in this workspace, please upgrade your plan.`
+      */
+    ["error.COPILOT_QUOTA_EXCEEDED"](): string;
+    /**
+      * `Runtime config {{key}} not found.`
+      */
+    ["error.RUNTIME_CONFIG_NOT_FOUND"](options: {
+        readonly key: string;
+    }): string;
+    /**
+      * `Invalid runtime config type  for '{{key}}', want '{{want}}', but get {{get}}.`
+      */
+    ["error.INVALID_RUNTIME_CONFIG_TYPE"](options: Readonly<{
+        key: string;
+        want: string;
+        get: string;
+    }>): string;
+    /**
+      * `Mailer service is not configured.`
+      */
+    ["error.MAILER_SERVICE_IS_NOT_CONFIGURED"](): string;
+    /**
+      * `Cannot delete all admin accounts.`
+      */
+    ["error.CANNOT_DELETE_ALL_ADMIN_ACCOUNT"](): string;
+    /**
+      * `Cannot delete own account.`
+      */
+    ["error.CANNOT_DELETE_OWN_ACCOUNT"](): string;
+    /**
+      * `Captcha verification failed.`
+      */
+    ["error.CAPTCHA_VERIFICATION_FAILED"](): string;
+    /**
+      * `Invalid session id to generate license key.`
+      */
+    ["error.INVALID_LICENSE_SESSION_ID"](): string;
+    /**
+      * `License key has been revealed. Please check your mail box of the one provided during checkout.`
+      */
+    ["error.LICENSE_REVEALED"](): string;
+    /**
+      * `Workspace already has a license applied.`
+      */
+    ["error.WORKSPACE_LICENSE_ALREADY_EXISTS"](): string;
+    /**
+      * `License not found.`
+      */
+    ["error.LICENSE_NOT_FOUND"](): string;
+    /**
+      * `Invalid license to activate.`
+      */
+    ["error.INVALID_LICENSE_TO_ACTIVATE"](): string;
+    /**
+      * `Invalid license update params. {{reason}}`
+      */
+    ["error.INVALID_LICENSE_UPDATE_PARAMS"](options: {
+        readonly reason: string;
+    }): string;
+    /**
+      * `You cannot downgrade the workspace from team workspace because there are more than {{limit}} members that are currently active.`
+      */
+    ["error.WORKSPACE_MEMBERS_EXCEED_LIMIT_TO_DOWNGRADE"](options: {
+        readonly limit: string;
+    }): string;
 } { const { t } = useTranslation(); return useMemo(() => createProxy((key) => t.bind(null, key)), [t]); }
 function createComponent(i18nKey: string) {
     return (props) => createElement(Trans, { i18nKey, shouldUnescape: true, ...props });

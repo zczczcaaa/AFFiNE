@@ -585,6 +585,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/i18n@workspace:packages/frontend/i18n"
   dependencies:
+    "@affine-tools/cli": "workspace:*"
+    "@affine-tools/utils": "workspace:*"
     "@affine/debug": "workspace:*"
     "@magic-works/i18n-codegen": "npm:^0.6.1"
     dayjs: "npm:^1.11.13"

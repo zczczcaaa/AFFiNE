@@ -78,10 +78,7 @@ export class FetchService extends Service {
           // ignore
         }
       }
-      throw new BackendError(
-        UserFriendlyError.fromAnyError(reason),
-        res.status
-      );
+      throw new BackendError(UserFriendlyError.fromAnyError(reason));
     }
     return res;
   };

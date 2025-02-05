@@ -1,7 +1,6 @@
 import { STATUS_CODES } from 'node:http';
 
 import { HttpStatus, Logger } from '@nestjs/common';
-import { capitalize } from 'lodash-es';
 import { ClsServiceManager } from 'nestjs-cls';
 
 export type UserFriendlyErrorBaseType =
@@ -17,7 +16,7 @@ export type UserFriendlyErrorBaseType =
   | 'internal_server_error';
 
 type ErrorArgType = 'string' | 'number' | 'boolean';
-type ErrorArgs = Record<string, ErrorArgType | Record<string, ErrorArgType>>;
+type ErrorArgs = Record<string, ErrorArgType>;
 
 export type UserFriendlyErrorOptions = {
   type: UserFriendlyErrorBaseType;
@@ -152,25 +151,14 @@ export class UserFriendlyError extends Error {
  * @ObjectType()
  * export class XXXDataType {
  *   @Field()
- *
+ *   [name]: [type];
  * }
  */
 function generateErrorArgs(name: string, args: ErrorArgs) {
   const typeName = `${name}DataType`;
   const lines = [`@ObjectType()`, `class ${typeName} {`];
   Object.entries(args).forEach(([arg, fieldArgs]) => {
-    if (typeof fieldArgs === 'object') {
-      const subResult = generateErrorArgs(
-        name + 'Field' + capitalize(arg),
-        fieldArgs
-      );
-      lines.unshift(subResult.def);
-      lines.push(
-        `  @Field(() => ${subResult.name}) ${arg}!: ${subResult.name};`
-      );
-    } else {
-      lines.push(`  @Field() ${arg}!: ${fieldArgs}`);
-    }
+    lines.push(`  @Field() ${arg}!: ${fieldArgs}`);
   });
 
   lines.push('}');
