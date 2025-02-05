@@ -42,6 +42,9 @@ class CanvasWorkerManager {
     const { canvas, ctx } = this;
     if (!canvas || !ctx) return;
 
+    // Track rendered positions to avoid duplicate rendering across all paragraphs and sentences
+    const renderedPositions = new Set<string>();
+
     paragraphs.forEach(paragraph => {
       const scale = paragraph.scale ?? 1;
       const fontSize = 15 * scale;
@@ -53,14 +56,16 @@ class CanvasWorkerManager {
         sentence.rects.forEach(textRect => {
           const x = textRect.rect.left - hostRect.left;
           const y = textRect.rect.top - hostRect.top;
-          ctx.strokeRect(x, y, textRect.rect.width, textRect.rect.height);
-        });
 
-        ctx.fillStyle = 'black';
-        sentence.rects.forEach(textRect => {
-          const x = textRect.rect.left - hostRect.left;
-          const y = textRect.rect.top - hostRect.top;
+          const posKey = `${x},${y}`;
+          // Only render if we haven't rendered at this position before
+          if (renderedPositions.has(posKey)) return;
+
+          ctx.strokeRect(x, y, textRect.rect.width, textRect.rect.height);
+          ctx.fillStyle = 'black';
           ctx.fillText(textRect.text, x, y + baselineY);
+
+          renderedPositions.add(posKey);
         });
       });
     });

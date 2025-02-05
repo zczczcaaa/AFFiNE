@@ -89,7 +89,6 @@ export function getSentenceRects(
   element: Element,
   sentence: string
 ): TextRect[] {
-  const range = document.createRange();
   const textNode = Array.from(element.childNodes).find(
     node => node.nodeType === Node.TEXT_NODE
   );
@@ -97,13 +96,20 @@ export function getSentenceRects(
   if (!textNode) return [];
 
   const text = textNode.textContent || '';
-  const startIndex = text.indexOf(sentence);
-  if (startIndex === -1) return [];
+  let rects: TextRect[] = [];
+  let startIndex = 0;
 
-  range.setStart(textNode, startIndex);
-  range.setEnd(textNode, startIndex + sentence.length);
+  // Find all occurrences of the sentence
+  while ((startIndex = text.indexOf(sentence, startIndex)) !== -1) {
+    const range = document.createRange();
+    range.setStart(textNode, startIndex);
+    range.setEnd(textNode, startIndex + sentence.length);
 
-  return getRangeRects(range, sentence);
+    rects = rects.concat(getRangeRects(range, sentence));
+    startIndex += sentence.length; // Move to next potential occurrence
+  }
+
+  return rects;
 }
 
 export function segmentSentences(text: string): string[] {
