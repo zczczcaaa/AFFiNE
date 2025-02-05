@@ -21,7 +21,7 @@ enum AffineWsError: Error {
 class AffineWsHandler: NSObject, WKURLSchemeHandler {
   var wsTasks: [UUID: URLSessionWebSocketTask] = [:]
   func webView(_ webView: WKWebView, start urlSchemeTask: any WKURLSchemeTask) {
-    urlSchemeTask.stopped = Mutex.init(false)
+    urlSchemeTask.stopped = false
     guard let rawUrl = urlSchemeTask.request.url else {
       urlSchemeTask.didFailWithError(AffineWsError.invalidOperation(reason: "bad request"))
       return
@@ -79,9 +79,8 @@ class AffineWsHandler: NSObject, WKURLSchemeHandler {
       var completionHandler: ((Result<URLSessionWebSocketTask.Message, any Error>) -> Void)!
       completionHandler = {
         let result = $0
-        urlSchemeTask.stopped?.withLock({
-          let stopped = $0
-          if stopped {
+        DispatchQueue.main.async {
+          if urlSchemeTask.stopped {
             return
           }
           let jsonEncoder = JSONEncoder()
@@ -96,7 +95,7 @@ class AffineWsHandler: NSObject, WKURLSchemeHandler {
             urlSchemeTask.didReceive("data: \(json)\n\n".data(using: .utf8)!)
             urlSchemeTask.didFinish()
           }
-        })
+        }
         
         // recursive calls
         webSocketTask.receive(completionHandler: completionHandler)
@@ -148,8 +147,8 @@ class AffineWsHandler: NSObject, WKURLSchemeHandler {
       
       webSocketTask.send(.string(stringBody), completionHandler: {
         error in
-        urlSchemeTask.stopped?.withLock({
-          if $0 {
+        DispatchQueue.main.async {
+          if urlSchemeTask.stopped {
             return
           }
           if error != nil {
@@ -161,26 +160,24 @@ class AffineWsHandler: NSObject, WKURLSchemeHandler {
             urlSchemeTask.didReceive(try! jsonEncoder.encode(["uuid": uuid.uuidString.data(using: .utf8)!]))
             urlSchemeTask.didFinish()
           }
-        })
+        }
       })
     }
   }
   
   func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-    urlSchemeTask.stopped?.withLock({
-      $0 = true
-    })
+    urlSchemeTask.stopped = true
     urlSchemeTask.wsTask?.cancel(with: .abnormalClosure, reason: "Closed".data(using: .utf8))
   }
 }
 
 private extension WKURLSchemeTask {
-  var stopped: Mutex<Bool>? {
+  var stopped: Bool {
     get {
-      return objc_getAssociatedObject(self, &stoppedKey) as? Mutex<Bool> ?? nil
+      return objc_getAssociatedObject(self, &stoppedKey) as? Bool ?? false
     }
     set {
-      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_RETAIN)
+      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_ASSIGN)
     }
   }
   var wsTask: URLSessionWebSocketTask? {

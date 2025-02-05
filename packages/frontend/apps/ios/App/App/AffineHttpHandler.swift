@@ -13,7 +13,7 @@ enum AffineHttpError: Error {
 
 class AffineHttpHandler: NSObject, WKURLSchemeHandler {
   func webView(_ webView: WKWebView, start urlSchemeTask: any WKURLSchemeTask) {
-    urlSchemeTask.stopped = Mutex.init(false)
+    urlSchemeTask.stopped = false
     guard let rawUrl = urlSchemeTask.request.url else {
       urlSchemeTask.didFailWithError(AffineHttpError.invalidOperation(reason: "bad request"))
       return
@@ -55,8 +55,8 @@ class AffineHttpHandler: NSObject, WKURLSchemeHandler {
     
     let task = URLSession.shared.dataTask(with: request) {
       (rawData, rawResponse, error) in
-      urlSchemeTask.stopped?.withLock({
-        if $0 {
+      DispatchQueue.main.async {
+        if urlSchemeTask.stopped {
           return
         }
         
@@ -89,7 +89,7 @@ class AffineHttpHandler: NSObject, WKURLSchemeHandler {
           }
           urlSchemeTask.didFinish()
         }
-      })
+      }
     }
     task.resume()
     
@@ -97,20 +97,18 @@ class AffineHttpHandler: NSObject, WKURLSchemeHandler {
   }
   
   func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-    urlSchemeTask.stopped?.withLock({
-      $0 = true
-    })
+    urlSchemeTask.stopped = true
     urlSchemeTask.dataTask?.cancel()
   }
 }
 
 private extension WKURLSchemeTask {
-  var stopped: Mutex<Bool>? {
+  var stopped: Bool {
     get {
-      return objc_getAssociatedObject(self, &stoppedKey) as? Mutex<Bool> ?? nil
+      return objc_getAssociatedObject(self, &stoppedKey) as? Bool ?? false
     }
     set {
-      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_RETAIN)
+      objc_setAssociatedObject(self, &stoppedKey, newValue, .OBJC_ASSOCIATION_ASSIGN)
     }
   }
   var dataTask: URLSessionDataTask? {
