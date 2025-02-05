@@ -72,57 +72,77 @@ export class CopilotClient {
   async createSession(
     options: OptionsField<typeof createCopilotSessionMutation>
   ) {
-    const res = await this.gql({
-      query: createCopilotSessionMutation,
-      variables: {
-        options,
-      },
-    });
-    return res.createCopilotSession;
+    try {
+      const res = await this.gql({
+        query: createCopilotSessionMutation,
+        variables: {
+          options,
+        },
+      });
+      return res.createCopilotSession;
+    } catch (err) {
+      throw resolveError(err);
+    }
   }
 
   async updateSession(
     options: OptionsField<typeof updateCopilotSessionMutation>
   ) {
-    const res = await this.gql({
-      query: updateCopilotSessionMutation,
-      variables: {
-        options,
-      },
-    });
-    return res.updateCopilotSession;
+    try {
+      const res = await this.gql({
+        query: updateCopilotSessionMutation,
+        variables: {
+          options,
+        },
+      });
+      return res.updateCopilotSession;
+    } catch (err) {
+      throw resolveError(err);
+    }
   }
 
   async forkSession(options: OptionsField<typeof forkCopilotSessionMutation>) {
-    const res = await this.gql({
-      query: forkCopilotSessionMutation,
-      variables: {
-        options,
-      },
-    });
-    return res.forkCopilotSession;
+    try {
+      const res = await this.gql({
+        query: forkCopilotSessionMutation,
+        variables: {
+          options,
+        },
+      });
+      return res.forkCopilotSession;
+    } catch (err) {
+      throw resolveError(err);
+    }
   }
 
   async createMessage(
     options: OptionsField<typeof createCopilotMessageMutation>
   ) {
-    const res = await this.gql({
-      query: createCopilotMessageMutation,
-      variables: {
-        options,
-      },
-    });
-    return res.createCopilotMessage;
+    try {
+      const res = await this.gql({
+        query: createCopilotMessageMutation,
+        variables: {
+          options,
+        },
+      });
+      return res.createCopilotMessage;
+    } catch (err) {
+      throw resolveError(err);
+    }
   }
 
   async getSessions(workspaceId: string) {
-    const res = await this.gql({
-      query: getCopilotSessionsQuery,
-      variables: {
-        workspaceId,
-      },
-    });
-    return res.currentUser?.copilot;
+    try {
+      const res = await this.gql({
+        query: getCopilotSessionsQuery,
+        variables: {
+          workspaceId,
+        },
+      });
+      return res.currentUser?.copilot;
+    } catch (err) {
+      throw resolveError(err);
+    }
   }
 
   async getHistories(
@@ -132,16 +152,20 @@ export class CopilotClient {
       typeof getCopilotHistoriesQuery
     >['variables']['options']
   ) {
-    const res = await this.gql({
-      query: getCopilotHistoriesQuery,
-      variables: {
-        workspaceId,
-        docId,
-        options,
-      },
-    });
+    try {
+      const res = await this.gql({
+        query: getCopilotHistoriesQuery,
+        variables: {
+          workspaceId,
+          docId,
+          options,
+        },
+      });
 
-    return res.currentUser?.copilot?.histories;
+      return res.currentUser?.copilot?.histories;
+    } catch (err) {
+      throw resolveError(err);
+    }
   }
 
   async getHistoryIds(
@@ -151,16 +175,20 @@ export class CopilotClient {
       typeof getCopilotHistoriesQuery
     >['variables']['options']
   ) {
-    const res = await this.gql({
-      query: getCopilotHistoryIdsQuery,
-      variables: {
-        workspaceId,
-        docId,
-        options,
-      },
-    });
+    try {
+      const res = await this.gql({
+        query: getCopilotHistoryIdsQuery,
+        variables: {
+          workspaceId,
+          docId,
+          options,
+        },
+      });
 
-    return res.currentUser?.copilot?.histories;
+      return res.currentUser?.copilot?.histories;
+    } catch (err) {
+      throw resolveError(err);
+    }
   }
 
   async cleanupSessions(input: {
@@ -168,13 +196,17 @@ export class CopilotClient {
     docId: string;
     sessionIds: string[];
   }) {
-    const res = await this.gql({
-      query: cleanupCopilotSessionMutation,
-      variables: {
-        input,
-      },
-    });
-    return res.cleanupCopilotSession;
+    try {
+      const res = await this.gql({
+        query: cleanupCopilotSessionMutation,
+        variables: {
+          input,
+        },
+      });
+      return res.cleanupCopilotSession;
+    } catch (err) {
+      throw resolveError(err);
+    }
   }
 
   async chatText({

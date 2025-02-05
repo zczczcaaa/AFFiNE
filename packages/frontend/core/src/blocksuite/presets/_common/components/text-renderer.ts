@@ -100,6 +100,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
 
     .ai-answer-text-editor .affine-page-root-block-container {
       padding: 0;
+      margin: 0;
       line-height: var(--affine-line-height);
       color: var(--affine-text-primary-color);
       font-weight: 400;

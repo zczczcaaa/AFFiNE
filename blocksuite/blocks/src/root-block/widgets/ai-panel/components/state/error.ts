@@ -155,7 +155,7 @@ export class AIPanelError extends WithDisposable(LitElement) {
                   <span>Cancel</span>
                 </div>
                 <div @click=${this.config.login} class="action-button primary">
-                  <span>login</span>
+                  <span>Login</span>
                 </div>
               </div>`,
         ],
