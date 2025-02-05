@@ -226,8 +226,10 @@ __metadata:
     "@blocksuite/affine": "workspace:*"
     "@blocksuite/icons": "npm:2.2.2"
     "@capacitor/android": "npm:^7.0.0"
+    "@capacitor/app": "npm:^7.0.0"
     "@capacitor/cli": "npm:^7.0.0"
     "@capacitor/core": "npm:^7.0.0"
+    "@capgo/inappbrowser": "npm:^6.9.35"
     "@sentry/react": "npm:^8.44.0"
     "@toeverything/infra": "workspace:*"
     "@types/react": "npm:^19.0.1"
@@ -4258,6 +4260,15 @@ __metadata:
   peerDependencies:
     "@capacitor/core": ">=7.0.0"
   checksum: 10/14df1267c7ff4fc050c0ce5c587030426d466dde09954f50965fb441a4dd27ad40281152604329ef6bc7b54195b34a9bfe368b4c23035355ca54e64503c371c8
+  languageName: node
+  linkType: hard
+
+"@capgo/inappbrowser@npm:^6.9.35":
+  version: 6.9.35
+  resolution: "@capgo/inappbrowser@npm:6.9.35"
+  peerDependencies:
+    "@capacitor/core": ^6.0.0
+  checksum: 10/81d3ef7fd89ddb1d9862a0d1db44b75620191678e19f8c5ee99859cbb2b883c9afee3960bf0b7c4847384929e6dd3ff2c223bbdd293ceefd3fd51fc42a7010ef
   languageName: node
   linkType: hard
 

@@ -16,6 +16,14 @@ const config: CapacitorConfig = {
       releaseType: 'AAB',
     },
   },
+  plugins: {
+    CapacitorHttp: {
+      enabled: true,
+    },
+    CapacitorCookies: {
+      enabled: true,
+    },
+  },
 };
 
 export default config;
