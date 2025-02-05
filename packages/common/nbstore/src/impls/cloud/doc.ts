@@ -25,7 +25,7 @@ export class CloudDocStorage extends DocStorageBase<CloudDocStorageOptions> {
   static readonly identifier = 'CloudDocStorage';
 
   get socket() {
-    return this.connection.inner;
+    return this.connection.inner.socket;
   }
   get idConverter() {
     if (!this.connection.idConverter) {
@@ -191,7 +191,7 @@ class CloudDocStorageConnection extends SocketConnection {
   idConverter: IdConverter | null = null;
 
   override async doConnect(signal?: AbortSignal) {
-    const socket = await super.doConnect(signal);
+    const { socket, disconnect } = await super.doConnect(signal);
 
     try {
       const res = await socket.emitWithAck('space:join', {
@@ -210,20 +210,26 @@ class CloudDocStorageConnection extends SocketConnection {
 
       socket.on('space:broadcast-doc-update', this.onServerUpdate);
 
-      return socket;
+      return { socket, disconnect };
     } catch (e) {
-      socket.close();
+      disconnect();
       throw e;
     }
   }
 
-  override doDisconnect(socket: Socket) {
+  override doDisconnect({
+    socket,
+    disconnect,
+  }: {
+    socket: Socket;
+    disconnect: () => void;
+  }) {
     socket.emit('space:leave', {
       spaceType: this.options.type,
       spaceId: this.options.id,
     });
     socket.off('space:broadcast-doc-update', this.onServerUpdate);
-    super.disconnect();
+    super.doDisconnect({ socket, disconnect });
   }
 
   async getIdConverter(socket: Socket) {

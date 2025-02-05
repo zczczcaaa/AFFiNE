@@ -1,4 +1,3 @@
-import { share } from '../../connection';
 import {
   type AwarenessRecord,
   AwarenessStorageBase,
@@ -23,10 +22,10 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
     super();
   }
 
-  connection = share(new SocketConnection(`${this.options.serverBaseUrl}/`));
+  connection = new SocketConnection(`${this.options.serverBaseUrl}/`);
 
   private get socket() {
-    return this.connection.inner;
+    return this.connection.inner.socket;
   }
 
   override async update(record: AwarenessRecord): Promise<void> {

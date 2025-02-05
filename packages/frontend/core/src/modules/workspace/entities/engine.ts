@@ -1,5 +1,5 @@
 import type {
-  WorkerClient,
+  StoreClient,
   WorkerInitOptions,
 } from '@affine/nbstore/worker/client';
 import { Entity } from '@toeverything/infra';
@@ -12,7 +12,7 @@ export class WorkspaceEngine extends Entity<{
   isSharedMode?: boolean;
   engineWorkerInitOptions: WorkerInitOptions;
 }> {
-  worker?: WorkerClient;
+  client?: StoreClient;
   started = false;
 
   constructor(
@@ -23,24 +23,24 @@ export class WorkspaceEngine extends Entity<{
   }
 
   get doc() {
-    if (!this.worker) {
+    if (!this.client) {
       throw new Error('Engine is not initialized');
     }
-    return this.worker.docFrontend;
+    return this.client.docFrontend;
   }
 
   get blob() {
-    if (!this.worker) {
+    if (!this.client) {
       throw new Error('Engine is not initialized');
     }
-    return this.worker.blobFrontend;
+    return this.client.blobFrontend;
   }
 
   get awareness() {
-    if (!this.worker) {
+    if (!this.client) {
       throw new Error('Engine is not initialized');
     }
-    return this.worker.awarenessFrontend;
+    return this.client.awarenessFrontend;
   }
 
   start() {
@@ -54,7 +54,7 @@ export class WorkspaceEngine extends Entity<{
         `workspace:${this.workspaceService.workspace.flavour}:${this.workspaceService.workspace.id}`,
       this.props.engineWorkerInitOptions
     );
-    this.worker = store;
+    this.client = store;
     this.disposables.push(dispose);
     this.eventBus.emit(WorkspaceEngineBeforeStart, this);
 

@@ -39,6 +39,10 @@ export class UserDB extends Entity<{
       });
     });
   }
+
+  override dispose(): void {
+    this.engine.dispose();
+  }
 }
 
 export type UserDBWithTables = UserDB & {

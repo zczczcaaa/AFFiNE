@@ -1,5 +1,5 @@
 import { MANUALLY_STOP } from '@toeverything/infra';
-import type { OpConsumer } from '@toeverything/infra/op';
+import { OpConsumer } from '@toeverything/infra/op';
 import { Observable } from 'rxjs';
 
 import { type StorageConstructor } from '../impls';
@@ -7,14 +7,13 @@ import { SpaceStorage } from '../storage';
 import type { AwarenessRecord } from '../storage/awareness';
 import { Sync } from '../sync';
 import type { PeerStorageOptions } from '../sync/types';
-import type { WorkerInitOptions, WorkerOps } from './ops';
+import type { StoreInitOptions, WorkerManagerOps, WorkerOps } from './ops';
 
-export type { WorkerOps };
+export type { WorkerManagerOps };
 
-export class WorkerConsumer {
-  private inited = false;
-  private storages: PeerStorageOptions<SpaceStorage> | null = null;
-  private sync: Sync | null = null;
+class StoreConsumer {
+  private readonly storages: PeerStorageOptions<SpaceStorage>;
+  private readonly sync: Sync;
 
   get ensureLocal() {
     if (!this.storages) {
@@ -59,18 +58,9 @@ export class WorkerConsumer {
   }
 
   constructor(
-    private readonly availableStorageImplementations: StorageConstructor[]
-  ) {}
-
-  bindConsumer(consumer: OpConsumer<WorkerOps>) {
-    this.registerHandlers(consumer);
-  }
-
-  init(init: WorkerInitOptions) {
-    if (this.inited) {
-      return;
-    }
-    this.inited = true;
+    private readonly availableStorageImplementations: StorageConstructor[],
+    init: StoreInitOptions
+  ) {
     this.storages = {
       local: new SpaceStorage(
         Object.fromEntries(
@@ -122,6 +112,10 @@ export class WorkerConsumer {
     this.sync.start();
   }
 
+  bindConsumer(consumer: OpConsumer<WorkerOps>) {
+    this.registerHandlers(consumer);
+  }
+
   async destroy() {
     this.sync?.stop();
     this.storages?.local.disconnect();
@@ -139,8 +133,6 @@ export class WorkerConsumer {
     >();
     let collectId = 0;
     consumer.registerAll({
-      'worker.init': this.init.bind(this),
-      'worker.destroy': this.destroy.bind(this),
       'docStorage.getDoc': (docId: string) => this.docStorage.getDoc(docId),
       'docStorage.getDocDiff': ({ docId, state }) =>
         this.docStorage.getDocDiff(docId, state),
@@ -295,6 +287,64 @@ export class WorkerConsumer {
         }),
       'awarenessSync.collect': ({ collectId, awareness }) =>
         collectJobs.get(collectId)?.(awareness),
+    });
+  }
+}
+
+export class StoreManagerConsumer {
+  private readonly storeDisposers = new Map<string, () => void>();
+  private readonly storePool = new Map<
+    string,
+    { store: StoreConsumer; refCount: number }
+  >();
+
+  constructor(
+    private readonly availableStorageImplementations: StorageConstructor[]
+  ) {}
+
+  bindConsumer(consumer: OpConsumer<WorkerManagerOps>) {
+    this.registerHandlers(consumer);
+  }
+
+  private registerHandlers(consumer: OpConsumer<WorkerManagerOps>) {
+    consumer.registerAll({
+      open: ({ port, key, closeKey, options }) => {
+        console.debug('open store', key, closeKey);
+        let storeRef = this.storePool.get(key);
+
+        if (!storeRef) {
+          const store = new StoreConsumer(
+            this.availableStorageImplementations,
+            options
+          );
+          storeRef = { store, refCount: 0 };
+        }
+        storeRef.refCount++;
+
+        const workerConsumer = new OpConsumer<WorkerOps>(port);
+        storeRef.store.bindConsumer(workerConsumer);
+
+        this.storeDisposers.set(closeKey, () => {
+          storeRef.refCount--;
+          if (storeRef.refCount === 0) {
+            storeRef.store.destroy().catch(error => {
+              console.error(error);
+            });
+            this.storePool.delete(key);
+          }
+        });
+        this.storePool.set(key, storeRef);
+        return closeKey;
+      },
+      close: key => {
+        console.debug('close store', key);
+        const workerDisposer = this.storeDisposers.get(key);
+        if (!workerDisposer) {
+          throw new Error('Worker not found');
+        }
+        workerDisposer();
+        this.storeDisposers.delete(key);
+      },
     });
   }
 }

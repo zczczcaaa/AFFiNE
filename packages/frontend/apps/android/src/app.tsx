@@ -14,13 +14,24 @@ import { PopupWindowProvider } from '@affine/core/modules/url';
 import { ClientSchemeProvider } from '@affine/core/modules/url/providers/client-schema';
 import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench';
 import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
-import { WorkerClient } from '@affine/nbstore/worker/client';
+import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { App as CapacitorApp } from '@capacitor/app';
 import { InAppBrowser } from '@capgo/inappbrowser';
 import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { OpClient } from '@toeverything/infra/op';
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
+
+const storeManagerClient = new StoreManagerClient(
+  new OpClient(
+    new Worker(
+      new URL(/* webpackChunkName: "nbstore" */ './nbstore.ts', import.meta.url)
+    )
+  )
+);
+window.addEventListener('beforeunload', () => {
+  storeManagerClient.dispose();
+});
 
 const future = {
   v7_startTransition: true,
@@ -33,15 +44,12 @@ configureLocalStorageStateStorageImpls(framework);
 configureBrowserWorkspaceFlavours(framework);
 configureMobileModules(framework);
 framework.impl(NbstoreProvider, {
-  openStore(_key, options) {
-    const worker = new Worker(
-      new URL(/* webpackChunkName: "nbstore" */ './nbstore.ts', import.meta.url)
-    );
-    const client = new WorkerClient(new OpClient(worker), options);
+  openStore(key, options) {
+    const { store, dispose } = storeManagerClient.open(key, options);
     return {
-      store: client,
+      store,
       dispose: () => {
-        worker.terminate();
+        dispose();
       },
     };
   },

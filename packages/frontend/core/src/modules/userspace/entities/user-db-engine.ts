@@ -1,6 +1,6 @@
 import { IndexedDBDocStorage } from '@affine/nbstore/idb';
 import { SqliteDocStorage } from '@affine/nbstore/sqlite';
-import type { WorkerClient } from '@affine/nbstore/worker/client';
+import type { StoreClient } from '@affine/nbstore/worker/client';
 import { Entity } from '@toeverything/infra';
 
 import type { ServerService } from '../../cloud';
@@ -10,7 +10,7 @@ export class UserDBEngine extends Entity<{
   userId: string;
 }> {
   private readonly userId = this.props.userId;
-  readonly client: WorkerClient;
+  readonly client: StoreClient;
 
   DocStorageType =
     BUILD_CONFIG.isElectron || BUILD_CONFIG.isIOS

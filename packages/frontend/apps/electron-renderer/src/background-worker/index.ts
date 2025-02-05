@@ -9,8 +9,8 @@ import {
   sqliteV1Storages,
 } from '@affine/nbstore/sqlite/v1';
 import {
-  WorkerConsumer,
-  type WorkerOps,
+  StoreManagerConsumer,
+  type WorkerManagerOps,
 } from '@affine/nbstore/worker/consumer';
 import { OpConsumer } from '@toeverything/infra/op';
 
@@ -19,7 +19,7 @@ bindNativeDBApis(apis!.nbstore);
 // oxlint-disable-next-line no-non-null-assertion
 bindNativeDBV1Apis(apis!.db);
 
-const worker = new WorkerConsumer([
+const storeManager = new StoreManagerConsumer([
   ...sqliteStorages,
   ...sqliteV1Storages,
   ...broadcastChannelStorages,
@@ -30,7 +30,7 @@ window.addEventListener('message', ev => {
   if (ev.data.type === 'electron:worker-connect') {
     const port = ev.ports[0];
 
-    const consumer = new OpConsumer<WorkerOps>(port);
-    worker.bindConsumer(consumer);
+    const consumer = new OpConsumer<WorkerManagerOps>(port);
+    storeManager.bindConsumer(consumer);
   }
 });

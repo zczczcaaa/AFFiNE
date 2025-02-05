@@ -27,7 +27,7 @@ import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench'
 import { WorkspacesService } from '@affine/core/modules/workspace';
 import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
 import { I18n } from '@affine/i18n';
-import { WorkerClient } from '@affine/nbstore/worker/client';
+import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import {
   defaultBlockMarkdownAdapterMatchers,
   docLinkBaseURLMiddleware,
@@ -56,6 +56,11 @@ import { Intelligents } from './plugins/intelligents';
 import { NbStoreNativeDBApis } from './plugins/nbstore';
 import { enableNavigationGesture$ } from './web-navigation-control';
 
+const storeManagerClient = createStoreManagerClient();
+window.addEventListener('beforeunload', () => {
+  storeManagerClient.dispose();
+});
+
 const future = {
   v7_startTransition: true,
 } as const;
@@ -67,46 +72,12 @@ configureLocalStorageStateStorageImpls(framework);
 configureBrowserWorkspaceFlavours(framework);
 configureMobileModules(framework);
 framework.impl(NbstoreProvider, {
-  openStore(_key, options) {
-    const worker = new Worker(
-      new URL(
-        /* webpackChunkName: "nbstore-worker" */ './worker.ts',
-        import.meta.url
-      )
-    );
-    const { port1: nativeDBApiChannelServer, port2: nativeDBApiChannelClient } =
-      new MessageChannel();
-    AsyncCall<typeof NbStoreNativeDBApis>(NbStoreNativeDBApis, {
-      channel: {
-        on(listener) {
-          const f = (e: MessageEvent<any>) => {
-            listener(e.data);
-          };
-          nativeDBApiChannelServer.addEventListener('message', f);
-          return () => {
-            nativeDBApiChannelServer.removeEventListener('message', f);
-          };
-        },
-        send(data) {
-          nativeDBApiChannelServer.postMessage(data);
-        },
-      },
-      log: false,
-    });
-    nativeDBApiChannelServer.start();
-    worker.postMessage(
-      {
-        type: 'native-db-api-channel',
-        port: nativeDBApiChannelClient,
-      },
-      [nativeDBApiChannelClient]
-    );
-    const client = new WorkerClient(new OpClient(worker), options);
+  openStore(key, options) {
+    const { store, dispose } = storeManagerClient.open(key, options);
     return {
-      store: client,
+      store,
       dispose: () => {
-        worker.terminate();
-        nativeDBApiChannelServer.close();
+        dispose();
       },
     };
   },
@@ -335,4 +306,41 @@ export function App() {
       </FrameworkRoot>
     </Suspense>
   );
+}
+
+function createStoreManagerClient() {
+  const worker = new Worker(
+    new URL(
+      /* webpackChunkName: "nbstore-worker" */ './worker.ts',
+      import.meta.url
+    )
+  );
+  const { port1: nativeDBApiChannelServer, port2: nativeDBApiChannelClient } =
+    new MessageChannel();
+  AsyncCall<typeof NbStoreNativeDBApis>(NbStoreNativeDBApis, {
+    channel: {
+      on(listener) {
+        const f = (e: MessageEvent<any>) => {
+          listener(e.data);
+        };
+        nativeDBApiChannelServer.addEventListener('message', f);
+        return () => {
+          nativeDBApiChannelServer.removeEventListener('message', f);
+        };
+      },
+      send(data) {
+        nativeDBApiChannelServer.postMessage(data);
+      },
+    },
+    log: false,
+  });
+  nativeDBApiChannelServer.start();
+  worker.postMessage(
+    {
+      type: 'native-db-api-channel',
+      port: nativeDBApiChannelClient,
+    },
+    [nativeDBApiChannelClient]
+  );
+  return new StoreManagerClient(new OpClient(worker));
 }

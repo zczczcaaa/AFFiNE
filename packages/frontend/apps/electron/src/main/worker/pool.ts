@@ -43,13 +43,9 @@ export class WorkerManager {
         show: false,
       });
       let disconnectHelperProcess: (() => void) | null = null;
-      worker.on('close', e => {
-        e.preventDefault();
-        if (worker && !worker.isDestroyed()) {
-          worker.destroy();
-          this.workers.delete(key);
-          disconnectHelperProcess?.();
-        }
+      worker.on('closed', () => {
+        this.workers.delete(key);
+        disconnectHelperProcess?.();
       });
       worker.loadURL(backgroundWorkerViewUrl).catch(e => {
         logger.error('failed to load url', e);
@@ -74,6 +70,7 @@ export class WorkerManager {
       this.disconnectWorker(key, portId);
     });
     const worker = await this.getOrCreateWorker(key);
+    worker.ports.add(portId);
     const { port1: portForWorker, port2: portForRenderer } =
       new MessageChannelMain();
 

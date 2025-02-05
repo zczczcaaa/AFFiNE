@@ -13,11 +13,29 @@ import {
 import { PopupWindowProvider } from '@affine/core/modules/url';
 import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench';
 import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
-import { WorkerClient } from '@affine/nbstore/worker/client';
+import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { OpClient } from '@toeverything/infra/op';
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
+
+let storeManagerClient: StoreManagerClient;
+
+if (window.SharedWorker) {
+  const worker = new SharedWorker(
+    new URL(/* webpackChunkName: "nbstore" */ './nbstore.ts', import.meta.url),
+    { name: 'affine-shared-worker' }
+  );
+  storeManagerClient = new StoreManagerClient(new OpClient(worker.port));
+} else {
+  const worker = new Worker(
+    new URL(/* webpackChunkName: "nbstore" */ './nbstore.ts', import.meta.url)
+  );
+  storeManagerClient = new StoreManagerClient(new OpClient(worker));
+}
+window.addEventListener('beforeunload', () => {
+  storeManagerClient.dispose();
+});
 
 const future = {
   v7_startTransition: true,
@@ -31,38 +49,13 @@ configureBrowserWorkspaceFlavours(framework);
 configureMobileModules(framework);
 framework.impl(NbstoreProvider, {
   openStore(key, options) {
-    if (window.SharedWorker) {
-      const worker = new SharedWorker(
-        new URL(
-          /* webpackChunkName: "nbstore" */ './nbstore.ts',
-          import.meta.url
-        ),
-        { name: key }
-      );
-      const client = new WorkerClient(new OpClient(worker.port), options);
-      worker.port.start();
-      return {
-        store: client,
-        dispose: () => {
-          worker.port.postMessage({ type: '__close__' });
-          worker.port.close();
-        },
-      };
-    } else {
-      const worker = new Worker(
-        new URL(
-          /* webpackChunkName: "nbstore" */ './nbstore.ts',
-          import.meta.url
-        )
-      );
-      const client = new WorkerClient(new OpClient(worker), options);
-      return {
-        store: client,
-        dispose: () => {
-          worker.terminate();
-        },
-      };
-    }
+    const { store, dispose } = storeManagerClient.open(key, options);
+    return {
+      store: store,
+      dispose: () => {
+        dispose();
+      },
+    };
   },
 });
 framework.impl(PopupWindowProvider, {

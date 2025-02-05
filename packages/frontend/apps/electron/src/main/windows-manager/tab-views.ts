@@ -395,7 +395,9 @@ export class WebContentViewsManager {
 
       if (this.mainWindow && view) {
         this.mainWindow.contentView.removeChildView(view);
-        view?.webContents.close();
+        view?.webContents.close({
+          waitForBeforeUnload: true,
+        });
       }
     }, 500); // delay a bit to get rid of the flicker
   };

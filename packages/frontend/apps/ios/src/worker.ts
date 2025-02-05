@@ -8,8 +8,8 @@ import {
   sqliteStorages,
 } from '@affine/nbstore/sqlite';
 import {
-  WorkerConsumer,
-  type WorkerOps,
+  StoreManagerConsumer,
+  type WorkerManagerOps,
 } from '@affine/nbstore/worker/consumer';
 import { type MessageCommunicapable, OpConsumer } from '@toeverything/infra/op';
 import { AsyncCall } from 'async-call-rpc';
@@ -41,12 +41,14 @@ globalThis.addEventListener('message', e => {
   }
 });
 
-const consumer = new OpConsumer<WorkerOps>(globalThis as MessageCommunicapable);
+const consumer = new OpConsumer<WorkerManagerOps>(
+  globalThis as MessageCommunicapable
+);
 
-const worker = new WorkerConsumer([
+const storeManager = new StoreManagerConsumer([
   ...sqliteStorages,
   ...broadcastChannelStorages,
   ...cloudStorages,
 ]);
 
-worker.bindConsumer(consumer);
+storeManager.bindConsumer(consumer);

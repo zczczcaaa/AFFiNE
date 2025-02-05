@@ -1,7 +1,6 @@
 import {
   Manager as SocketIOManager,
   type Socket as SocketIO,
-  type SocketOptions,
 } from 'socket.io-client';
 
 import { AutoReconnectConnection } from '../../connection';
@@ -151,49 +150,78 @@ export function base64ToUint8Array(base64: string) {
   return new Uint8Array(binaryArray);
 }
 
-const SOCKET_IOMANAGER_CACHE = new Map<string, SocketIOManager>();
-function getSocketIOManager(endpoint: string) {
-  let manager = SOCKET_IOMANAGER_CACHE.get(endpoint);
-  if (!manager) {
-    manager = new SocketIOManager(endpoint, {
+class SocketManager {
+  private readonly socketIOManager: SocketIOManager;
+  socket: Socket;
+  refCount = 0;
+
+  constructor(endpoint: string) {
+    this.socketIOManager = new SocketIOManager(endpoint, {
       autoConnect: false,
       transports: ['websocket'],
       secure: new URL(endpoint).protocol === 'https:',
       // we will handle reconnection by ourselves
       reconnection: false,
     });
-    SOCKET_IOMANAGER_CACHE.set(endpoint, manager);
+    this.socket = this.socketIOManager.socket('/');
+  }
+
+  connect() {
+    let disconnected = false;
+    this.refCount++;
+    this.socket.connect();
+    return {
+      socket: this.socket,
+      disconnect: () => {
+        if (disconnected) {
+          return;
+        }
+        disconnected = true;
+        this.refCount--;
+        if (this.refCount === 0) {
+          this.socket.disconnect();
+        }
+      },
+    };
+  }
+}
+
+const SOCKET_MANAGER_CACHE = new Map<string, SocketManager>();
+function getSocketManager(endpoint: string) {
+  let manager = SOCKET_MANAGER_CACHE.get(endpoint);
+  if (!manager) {
+    manager = new SocketManager(endpoint);
+    SOCKET_MANAGER_CACHE.set(endpoint, manager);
   }
   return manager;
 }
 
-export class SocketConnection extends AutoReconnectConnection<Socket> {
-  manager = getSocketIOManager(this.endpoint);
+export class SocketConnection extends AutoReconnectConnection<{
+  socket: Socket;
+  disconnect: () => void;
+}> {
+  manager = getSocketManager(this.endpoint);
 
-  constructor(
-    private readonly endpoint: string,
-    private readonly socketOptions?: SocketOptions
-  ) {
+  constructor(private readonly endpoint: string) {
     super();
   }
 
-  override get shareId() {
-    return `socket:${this.endpoint}`;
-  }
-
   override async doConnect(signal?: AbortSignal) {
-    const socket = this.manager.socket('/', this.socketOptions);
+    const { socket, disconnect } = this.manager.connect();
     try {
       throwIfAborted(signal);
       await Promise.race([
         new Promise<void>((resolve, reject) => {
+          if (socket.connected) {
+            resolve();
+            return;
+          }
           socket.once('connect', () => {
             resolve();
           });
           socket.once('connect_error', err => {
             reject(err);
           });
-          socket.open();
         }),
         new Promise<void>((_resolve, reject) => {
           signal?.addEventListener('abort', () => {
@@ -202,18 +230,21 @@ export class SocketConnection extends AutoReconnectConnection<Socket> {
         }),
       ]);
     } catch (err) {
-      socket.close();
+      disconnect();
       throw err;
     }
 
     socket.on('disconnect', this.handleDisconnect);
 
-    return socket;
+    return {
+      socket,
+      disconnect,
+    };
   }
 
-  override doDisconnect(conn: Socket) {
-    conn.off('disconnect', this.handleDisconnect);
-    conn.close();
+  override doDisconnect(conn: { socket: Socket; disconnect: () => void }) {
+    conn.socket.off('disconnect', this.handleDisconnect);
+    conn.disconnect();
   }
 
   handleDisconnect = (reason: SocketIO.DisconnectReason) => {

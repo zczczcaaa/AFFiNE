@@ -20,17 +20,12 @@ type StorageInitOptions = Values<{
   };
 }>;
 
-export interface WorkerInitOptions {
+export interface StoreInitOptions {
   local: { [key in StorageType]?: StorageInitOptions };
   remotes: Record<string, { [key in StorageType]?: StorageInitOptions }>;
 }
 
 interface GroupedWorkerOps {
-  worker: {
-    init: [WorkerInitOptions, void];
-    destroy: [void, void];
-  };
-
   docStorage: {
     getDoc: [string, DocRecord | null];
     getDocDiff: [{ docId: string; state?: Uint8Array }, DocDiff | null];
@@ -132,3 +127,16 @@ export type WorkerOps = UnionToIntersection<
     }>
   >
 >;
+
+export type WorkerManagerOps = {
+  open: [
+    {
+      port: MessagePort;
+      key: string;
+      closeKey: string;
+      options: StoreInitOptions;
+    },
+    string,
+  ];
+  close: [string, void];
+};
