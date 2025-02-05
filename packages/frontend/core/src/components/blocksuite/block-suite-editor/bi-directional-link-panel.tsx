@@ -154,7 +154,8 @@ const usePreviewExtensions = () => {
 
   const extensions = useMemo(() => {
     const specs = createPageModeSpecs(framework);
-    return [patchReferenceRenderer(reactToLit, referenceRenderer), ...specs];
+    specs.extend([patchReferenceRenderer(reactToLit, referenceRenderer)]);
+    return specs.value;
   }, [reactToLit, referenceRenderer, framework]);
 
   return [extensions, portals] as const;

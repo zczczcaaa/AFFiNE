@@ -2,20 +2,19 @@ import { createAIEdgelessRootBlockSpec } from '@affine/core/blocksuite/presets/a
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { builtInTemplates as builtInEdgelessTemplates } from '@affine/templates/edgeless';
 import { builtInTemplates as builtInStickersTemplates } from '@affine/templates/stickers';
-import type { TemplateManager } from '@blocksuite/affine/blocks';
+import type { SpecBuilder, TemplateManager } from '@blocksuite/affine/blocks';
 import {
   EdgelessRootBlockSpec,
   EdgelessTemplatePanel,
   SpecProvider,
 } from '@blocksuite/affine/blocks';
-import type { ExtensionType } from '@blocksuite/affine/store';
 import { type FrameworkProvider } from '@toeverything/infra';
 
 import { enableAffineExtension, enableAIExtension } from './custom/root-block';
 
 export function createEdgelessModeSpecs(
   framework: FrameworkProvider
-): ExtensionType[] {
+): SpecBuilder {
   const featureFlagService = framework.get(FeatureFlagService);
   const enableAI = featureFlagService.flags.enable_ai.value;
   const edgelessSpec = SpecProvider.getInstance().getSpec('edgeless');
@@ -28,7 +27,7 @@ export function createEdgelessModeSpecs(
     );
   }
 
-  return edgelessSpec.value;
+  return edgelessSpec;
 }
 
 export function effects() {

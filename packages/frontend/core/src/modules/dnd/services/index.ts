@@ -163,7 +163,7 @@ export class DndService extends Service {
 
     const std = new BlockStdScope({
       store: doc,
-      extensions: createPageModeSpecs(this.framework),
+      extensions: createPageModeSpecs(this.framework).value,
     });
     const dndAPI = std.get(DndApiExtensionIdentifier);
     return dndAPI;
