@@ -255,25 +255,24 @@ export function createWebpackConfig(
                   loader: 'postcss-loader',
                   options: {
                     postcssOptions: {
-                      plugins: [
-                        cssnano({
-                          preset: [
-                            'default',
-                            {
-                              convertValues: false,
-                            },
+                      plugins: pkg.join('tailwind.config.js').exists()
+                        ? [
+                            [
+                              '@tailwindcss/postcss',
+                              require(pkg.join('tailwind.config.js').value),
+                            ],
+                            ['autoprefixer'],
+                          ]
+                        : [
+                            cssnano({
+                              preset: [
+                                'default',
+                                {
+                                  convertValues: false,
+                                },
+                              ],
+                            }),
                           ],
-                        }),
-                      ].concat(
-                        pkg.join('tailwind.config.js').exists()
-                          ? [
-                              require('tailwindcss')(
-                                require(pkg.join('tailwind.config.js').value)
-                              ),
-                              'autoprefixer',
-                            ]
-                          : []
-                      ),
                     },
                   },
                 },
