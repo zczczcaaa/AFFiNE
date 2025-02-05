@@ -47,7 +47,6 @@ import { EdgelessPageKeyboardManager } from './edgeless-keyboard.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
 import { getBackgroundGrid, isCanvasElement } from './utils/query.js';
 import { mountShapeTextEditor } from './utils/text.js';
-import { fitToScreen } from './utils/viewport.js';
 
 export class EdgelessRootBlockComponent extends BlockComponent<
   RootBlockModel,
@@ -341,9 +340,7 @@ export class EdgelessRootBlockComponent extends BlockComponent<
       const storedViewport = std.get(EditPropsStore).getStorage('viewport');
 
       if (!storedViewport) {
-        fitToScreen(this.gfx.gfxElements, gfx.viewport, {
-          smooth: false,
-        });
+        this.gfx.fitToScreen();
         return;
       }
 

@@ -67,7 +67,6 @@ import {
   mountShapeTextEditor,
   mountTextElementEditor,
 } from '../utils/text.js';
-import { fitToScreen } from '../utils/viewport.js';
 import { CanvasElementEventExt } from './default-tool-ext/event-ext.js';
 import type { DefaultToolExt } from './default-tool-ext/ext.js';
 import { DefaultModeDragType } from './default-tool-ext/ext.js';
@@ -766,11 +765,7 @@ export class DefaultTool extends BaseTool {
     if (this.doc.readonly) {
       const viewport = this.gfx.viewport;
       if (viewport.zoom === 1) {
-        // Fit to Screen
-        fitToScreen(
-          [...this.gfx.layer.blocks, ...this.gfx.layer.canvasElements],
-          this.gfx.viewport
-        );
+        this.gfx.fitToScreen();
       } else {
         // Zoom to 100% and Center
         const [x, y] = viewport.toModelCoord(e.x, e.y);

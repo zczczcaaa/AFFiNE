@@ -117,13 +117,11 @@ function createNewNote(host: EditorHost): AIItemConfig {
             const newNote = doc.getBlock(noteBlockId)?.model;
             if (!newNote || !matchFlavours(newNote, ['affine:note'])) return;
             const newNoteBound = Bound.deserialize(newNote.xywh);
-
             const bounds = [bound, newNoteBound];
-            const { zoom, centerX, centerY } = service.getFitToScreenData(
-              [20, 20, 20, 20],
-              bounds
-            );
-            service.viewport.setViewport(zoom, [centerX, centerY]);
+            service.gfx.fitToScreen({
+              bounds,
+              padding: [20, 20, 20, 20],
+            });
           })
           .catch(err => {
             console.error(err);

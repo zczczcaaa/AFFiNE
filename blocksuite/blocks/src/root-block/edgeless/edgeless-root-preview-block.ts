@@ -23,7 +23,6 @@ import { query, state } from 'lit/decorators.js';
 import type { EdgelessRootBlockWidgetName } from '../types.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
 import { getBackgroundGrid, isCanvasElement } from './utils/query.js';
-import { fitToScreen } from './utils/viewport.js';
 
 export class EdgelessRootPreviewBlockComponent
   extends BlockComponent<
@@ -178,14 +177,6 @@ export class EdgelessRootPreviewBlockComponent
     );
   }
 
-  private _initViewport() {
-    const gfx = this.service.gfx;
-
-    fitToScreen(gfx.gfxElements, gfx.viewport, {
-      smooth: false,
-    });
-  }
-
   private get _disableScheduleUpdate() {
     const editorSetting = this.std.getOptional(EditorSettingProvider);
 
@@ -195,7 +186,6 @@ export class EdgelessRootPreviewBlockComponent
   override connectedCallback() {
     super.connectedCallback();
 
-    this._initViewport();
     this.handleEvent('selectionChange', () => {
       const surface = this.host.selection.value.find(
         (sel): sel is SurfaceSelection => sel.is(SurfaceSelection)

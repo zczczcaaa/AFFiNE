@@ -62,8 +62,7 @@ export const PPTBuilder = (host: EditorHost) => {
         const block = snapshot.snapshot.content[0];
         for (const child of block.children) {
           await addDoc(child);
-          const { centerX, centerY, zoom } = service.getFitToScreenData();
-          service.viewport.setViewport(zoom, [centerX, centerY]);
+          service.gfx.fitToScreen();
         }
       } catch (e) {
         console.error(e);

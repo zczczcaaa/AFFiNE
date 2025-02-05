@@ -15,6 +15,10 @@ function cutoff(value: number, ref: number, sign: number) {
 
 export const ZOOM_MAX = 6.0;
 export const ZOOM_MIN = 0.1;
+export const ZOOM_STEP = 0.25;
+export const ZOOM_INITIAL = 1.0;
+
+export const FIT_TO_SCREEN_PADDING = 100;
 
 export class Viewport {
   private _cachedBoundingClientRect: DOMRect | null = null;

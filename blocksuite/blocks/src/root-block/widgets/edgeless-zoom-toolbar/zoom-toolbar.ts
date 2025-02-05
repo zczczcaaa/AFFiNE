@@ -4,6 +4,7 @@ import {
   ViewBarIcon,
 } from '@blocksuite/affine-components/icons';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
+import { ZOOM_STEP } from '@blocksuite/block-std/gfx';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 import { baseTheme } from '@toeverything/theme';
@@ -11,7 +12,6 @@ import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
-import { ZOOM_STEP } from '../../edgeless/utils/zoom.js';
 
 export class EdgelessZoomToolbar extends WithDisposable(LitElement) {
   static override styles = css`
@@ -85,6 +85,10 @@ export class EdgelessZoomToolbar extends WithDisposable(LitElement) {
 
   get edgelessService() {
     return this.edgeless.service;
+  }
+
+  get gfx() {
+    return this.edgeless.gfx;
   }
 
   get edgelessTool() {
@@ -162,7 +166,7 @@ export class EdgelessZoomToolbar extends WithDisposable(LitElement) {
           .tooltip=${'Fit to screen'}
           .tipPosition=${this._isVerticalBar() ? 'right' : 'top-end'}
           .arrow=${!this._isVerticalBar()}
-          @click=${() => this.edgelessService.zoomToFit()}
+          @click=${() => this.gfx.fitToScreen()}
           .iconContainerPadding=${4}
           .disabled=${locked}
         >

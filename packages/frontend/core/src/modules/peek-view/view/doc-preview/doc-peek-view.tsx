@@ -64,12 +64,9 @@ function fitViewport(
         false
       );
     } else {
-      const data = rootService.getFitToScreenData();
-      rootService.viewport.setViewport(
-        data.zoom,
-        [data.centerX, data.centerY],
-        false
-      );
+      rootService.gfx.fitToScreen({
+        smooth: false,
+      });
     }
   } catch (e) {
     logger.warn('failed to fitViewPort', e);

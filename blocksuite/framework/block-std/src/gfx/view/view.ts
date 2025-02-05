@@ -72,7 +72,6 @@ export class GfxElementModelView<
     readonly gfx: GfxController
   ) {
     this.model = model;
-    this.onCreated();
   }
 
   static setup(di: Container): void {

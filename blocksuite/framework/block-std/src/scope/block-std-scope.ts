@@ -51,8 +51,6 @@ const internalExtensions = [
 export class BlockStdScope {
   static internalExtensions = internalExtensions;
 
-  private _getHost: () => EditorHost;
-
   readonly container: Container;
 
   readonly store: Store;
@@ -64,6 +62,8 @@ export class BlockStdScope {
   private get _lifeCycleWatchers() {
     return this.provider.getAll(LifeCycleWatcherIdentifier);
   }
+
+  private _host!: EditorHost;
 
   get dnd() {
     return this.get(DndController);
@@ -94,7 +94,14 @@ export class BlockStdScope {
   }
 
   get host() {
-    return this._getHost();
+    if (!this._host) {
+      throw new BlockSuiteError(
+        ErrorCode.ValueNotExists,
+        'Host is not ready to use, the `render` method should be called first'
+      );
+    }
+
+    return this._host;
   }
 
   get range() {
@@ -110,12 +117,6 @@ export class BlockStdScope {
   }
 
   constructor(options: BlockStdOptions) {
-    this._getHost = () => {
-      throw new BlockSuiteError(
-        ErrorCode.ValueNotExists,
-        'Host is not ready to use, the `render` method should be called first'
-      );
-    };
     this.store = options.store;
     this.userExtensions = options.extensions;
     this.container = new Container();
@@ -190,7 +191,7 @@ export class BlockStdScope {
     const element = new EditorHost();
     element.std = this;
     element.doc = this.store;
-    this._getHost = () => element;
+    this._host = element;
     this._lifeCycleWatchers.forEach(watcher => {
       watcher.rendered.call(watcher);
     });
@@ -202,7 +203,6 @@ export class BlockStdScope {
     this._lifeCycleWatchers.forEach(watcher => {
       watcher.unmounted.call(watcher);
     });
-    this._getHost = () => null as unknown as EditorHost;
   }
 }
 

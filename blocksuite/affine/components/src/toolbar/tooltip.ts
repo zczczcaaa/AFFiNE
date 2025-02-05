@@ -1,3 +1,4 @@
+import { requestConnectedFrame } from '@blocksuite/affine-shared/utils';
 import { assertExists } from '@blocksuite/global/utils';
 import {
   arrow,
@@ -188,9 +189,9 @@ export class Tooltip extends LitElement {
     assertExists(parent, 'Tooltip must have a parent element');
 
     // Wait for render
-    setTimeout(() => {
+    requestConnectedFrame(() => {
       this._hoverController.setReference(parent);
-    }, 0);
+    }, this);
   };
 
   private _getStyles() {

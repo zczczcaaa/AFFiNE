@@ -2,6 +2,7 @@ import {
   assertType,
   Bound,
   DisposableGroup,
+  getCommonBound,
   getCommonBoundWithRotation,
   type IBound,
   last,
@@ -30,7 +31,7 @@ import {
   GfxPrimitiveElementModel,
 } from './model/surface/element-model.js';
 import type { SurfaceBlockModel } from './model/surface/surface-model.js';
-import { Viewport } from './viewport.js';
+import { FIT_TO_SCREEN_PADDING, Viewport, ZOOM_INITIAL } from './viewport.js';
 
 export class GfxController extends LifeCycleWatcher {
   static override key = gfxControllerKey;
@@ -299,5 +300,29 @@ export class GfxController extends LifeCycleWatcher {
       const block = this.doc.getBlock(elemId);
       block && this.doc.updateBlock(block.model, props);
     }
+  }
+
+  fitToScreen(
+    options: {
+      bounds?: Bound[];
+      smooth?: boolean;
+      padding?: [number, number, number, number];
+    } = {
+      smooth: false,
+      padding: [0, 0, 0, 0],
+    }
+  ) {
+    const elemBounds =
+      options.bounds ??
+      this.gfxElements.map(element => Bound.deserialize(element.xywh));
+    const commonBound = getCommonBound(elemBounds);
+    const { zoom, centerX, centerY } = this.viewport.getFitToScreenData(
+      commonBound,
+      options.padding,
+      ZOOM_INITIAL,
+      FIT_TO_SCREEN_PADDING
+    );
+
+    this.viewport.setViewport(zoom, [centerX, centerY], options.smooth);
   }
 }

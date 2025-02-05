@@ -617,7 +617,7 @@ export class DragEventWatcher {
       onDrop: () => {
         this._cleanup();
       },
-      setDragPreview: ({ source, container }) => {
+      setDragPreview: ({ source, container, setOffset }) => {
         if (!source.data?.bsEntity?.modelIds.length) {
           return;
         }
@@ -626,6 +626,9 @@ export class DragEventWatcher {
           source.data?.bsEntity?.modelIds,
           container
         );
+
+        const rect = container.getBoundingClientRect();
+        setOffset({ x: rect.width / 2, y: rect.height / 2 });
       },
       setDragData: () => {
         const { snapshot } = this._getSnapshotFromHoveredBlocks();

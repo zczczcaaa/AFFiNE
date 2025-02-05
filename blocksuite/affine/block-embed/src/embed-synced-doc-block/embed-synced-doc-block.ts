@@ -30,7 +30,10 @@ import {
   BlockStdScope,
   type EditorHost,
 } from '@blocksuite/block-std';
-import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
+import {
+  GfxControllerIdentifier,
+  GfxExtension,
+} from '@blocksuite/block-std/gfx';
 import { assertExists, Bound, getCommonBound } from '@blocksuite/global/utils';
 import { type GetBlocksOptions, type Query, Text } from '@blocksuite/store';
 import { computed, signal } from '@preact/signals-core';
@@ -145,8 +148,17 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       }
     }
 
+    class GfxViewportInitializer extends GfxExtension {
+      static override key = 'gfx-viewport-initializer';
+
+      override mounted(): void {
+        this.gfx.fitToScreen();
+      }
+    }
+
     previewSpecBuilder.extend([
       EmbedSyncedDocWatcher,
+      GfxViewportInitializer,
       EditorSettingExtension(editorSetting),
     ]);
 

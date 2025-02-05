@@ -255,13 +255,13 @@ export class Transformer {
       this._flattenSnapshot(tmpRootSnapshot, flatSnapshots, parent, index);
 
       const blockTree = await this._convertFlatSnapshots(flatSnapshots);
-
       const first = content[0];
+
       // check if the slice is already in the doc
       if (first && doc.hasBlock(first.id)) {
         // if the slice is already in the doc, we need to move the blocks instead of adding them
-        const models = flatSnapshots
-          .map(flat => doc.getBlock(flat.snapshot.id)?.model)
+        const models = content
+          .map(block => doc.getBlock(block.id)?.model)
           .filter(Boolean) as BlockModel[];
         const parentModel = parent ? doc.getBlock(parent)?.model : undefined;
         if (!parentModel) {

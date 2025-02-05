@@ -18,7 +18,10 @@ import {
 } from '@blocksuite/affine-model';
 import {
   DocModeProvider,
+  EditorSettingExtension,
+  EditorSettingProvider,
   EditPropsStore,
+  GeneralSettingSchema,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import {
@@ -37,6 +40,7 @@ import {
 import {
   GfxBlockElementModel,
   GfxControllerIdentifier,
+  GfxExtension,
 } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import {
@@ -47,6 +51,7 @@ import {
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
 import type { BaseSelection, Store } from '@blocksuite/store';
+import { signal } from '@preact/signals-core';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -424,6 +429,11 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
   private _initSpec() {
     const refreshViewport = this._refreshViewport.bind(this);
+    // oxlint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    const editorSetting =
+      this.std.getOptional(EditorSettingProvider) ??
+      signal(GeneralSettingSchema.parse({}));
 
     class PageViewWatcher extends BlockServiceWatcher {
       static override readonly flavour = 'affine:page';
@@ -444,7 +454,23 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
         );
       }
     }
-    this._previewSpec.extend([PageViewWatcher]);
+
+    class ViewportInitializer extends GfxExtension {
+      static override readonly key = 'surface-ref-viewport-initializer';
+
+      override mounted() {
+        this.gfx.viewport.setViewportByBound(
+          Bound.deserialize(self._referenceXYWH!)
+        );
+        refreshViewport();
+      }
+    }
+
+    this._previewSpec.extend([
+      ViewportInitializer,
+      PageViewWatcher,
+      EditorSettingExtension(editorSetting),
+    ]);
 
     const referenceId = this.model.reference;
     const setReferenceXYWH = (xywh: typeof this._referenceXYWH) => {

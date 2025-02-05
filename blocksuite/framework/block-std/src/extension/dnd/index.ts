@@ -4,7 +4,10 @@ import {
   type ElementGetFeedbackArgs,
   monitorForElements,
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { centerUnderPointer } from '@atlaskit/pragmatic-drag-and-drop/element/center-under-pointer';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
+import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview';
+import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source';
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
 import type { DropTargetRecord } from '@atlaskit/pragmatic-drag-and-drop/types';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
@@ -89,7 +92,7 @@ export type DraggableOption<
    * If you want to completely disable the drag preview, just set `setDragPreview` to `false`.
    *
    * @example
-   * dnd.draggable{
+   * dnd.draggable({
    *  // ...
    *  setDragPreview: ({ container }) => {
    *    const preview = document.createElement('div');
@@ -98,8 +101,12 @@ export type DraggableOption<
    *    preview.style.backgroundColor = 'red';
    *    preview.innerText = 'Custom Drag Preview';
    *    container.appendChild(preview);
+   *
+   *    return () => {
+   *      // do some cleanup
+   *    }
    *  }
-   * }
+   * })
    *
    * @param callback - callback to set custom drag preview
    * @returns
@@ -116,8 +123,11 @@ export type DraggableOption<
            */
           nativeSetDragImage: DataTransfer['setDragImage'] | null;
           container: HTMLElement;
+          setOffset: (
+            offset: 'preserve' | 'center' | { x: number; y: number }
+          ) => void;
         }
-      ) => void);
+      ) => void | (() => void));
 } & ElementDragEventMap<DragPayload<PayloadEntity, PayloadFrom>, DropPayload>;
 
 export type DropTargetOption<
@@ -228,9 +238,55 @@ export class DndController extends LifeCycleWatcher {
       dragHandle,
       onGenerateDragPreview: options => {
         if (setDragPreview) {
+          let state: typeof centerUnderPointer | { x: number; y: number };
+
+          const setOffset = (
+            offset: 'preserve' | 'center' | { x: number; y: number }
+          ) => {
+            if (offset === 'center') {
+              state = centerUnderPointer;
+            } else if (offset === 'preserve') {
+              state = preserveOffsetOnSource({
+                element: options.source.element,
+                input: options.location.current.input,
+              });
+            } else if (typeof offset === 'object') {
+              if (
+                offset.x < 0 ||
+                offset.y < 0 ||
+                typeof offset.x === 'string' ||
+                typeof offset.y === 'string'
+              ) {
+                state = pointerOutsideOfPreview({
+                  x:
+                    typeof offset.x === 'number'
+                      ? `${Math.abs(offset.x)}px`
+                      : offset.x,
+                  y:
+                    typeof offset.y === 'number'
+                      ? `${Math.abs(offset.y)}px`
+                      : offset.y,
+                });
+              }
+              state = offset;
+            }
+          };
+
           setCustomNativeDragPreview({
+            getOffset: (...args) => {
+              if (!state) {
+                setOffset('center');
+              }
+
+              if (typeof state === 'function') {
+                return state(...args);
+              }
+
+              return state;
+            },
             render: renderOption => {
               setDragPreview({
+                setOffset,
                 ...options,
                 ...renderOption,
               });
