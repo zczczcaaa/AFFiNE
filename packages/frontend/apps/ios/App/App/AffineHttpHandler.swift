@@ -33,7 +33,8 @@ class AffineHttpHandler: NSObject, WKURLSchemeHandler {
     }
     let path = urlComponents.path
     let query = urlComponents.query != nil ? "?\(urlComponents.query!)" : ""
-    guard let targetUrl = URL(string: "\(httpProtocol)://\(host)\(path)\(query)") else {
+    let port = urlComponents.port != nil ? ":\(urlComponents.port!)" : ""
+    guard let targetUrl = URL(string: "\(httpProtocol)://\(host)\(port)\(path)\(query)") else {
       urlSchemeTask.didFailWithError(AffineHttpError.invalidOperation(reason: "bad url"))
       return
     }
