@@ -32,6 +32,11 @@ declare global {
       workspaceId: string;
       docId: string;
     };
+    'doc.update.pushed': {
+      workspaceId: string;
+      docId: string;
+      editor?: string;
+    };
   }
 }
 @Injectable()
@@ -104,6 +109,11 @@ export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
           done += batch.length;
           await this.updateCachedUpdatesCount(workspaceId, docId, batch.length);
         }
+      });
+      this.event.emit('doc.update.pushed', {
+        workspaceId,
+        docId,
+        editor: editorId,
       });
     } catch (e) {
       this.logger.error('Failed to insert doc updates', e);

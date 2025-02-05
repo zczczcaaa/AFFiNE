@@ -6,6 +6,7 @@ import { groupBy } from 'lodash-es';
 import {
   DocAccessDenied,
   EventBus,
+  OnEvent,
   SpaceAccessDenied,
   SpaceOwnerNotFound,
   SpaceShouldHaveOnlyOneOwner,
@@ -28,6 +29,18 @@ export class PermissionService {
     private readonly prisma: PrismaClient,
     private readonly event: EventBus
   ) {}
+
+  @OnEvent('doc.update.pushed')
+  async onDocUpdatePushed(payload: Events['doc.update.pushed']) {
+    const { workspaceId, docId, editor } = payload;
+
+    await this.prisma.$queryRaw`
+      INSERT INTO "workspace_page_user_permissions" ("workspace_id", "page_id", "user_id", "type", "accepted", "created_at", "updated_at")
+      VALUES (${workspaceId}, ${docId}, ${editor}, ${DocRole.Owner}, true, now(), now())
+      ON CONFLICT ("workspace_id", "page_id", "user_id")
+      DO NOTHING
+    `;
+  }
 
   private get acceptedCondition() {
     return [
