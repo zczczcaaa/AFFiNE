@@ -268,13 +268,7 @@ export async function addAttachments(
 ): Promise<string[]> {
   if (!files.length) return [];
 
-  const attachmentService = std.getService('affine:attachment');
   const gfx = std.get(GfxControllerIdentifier);
-
-  if (!attachmentService) {
-    console.error('Attachment service not found');
-    return [];
-  }
   const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
   const isSizeExceeded = files.some(file => file.size > maxFileSize);
   if (isSizeExceeded) {
