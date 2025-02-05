@@ -386,6 +386,17 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
       serverBaseUrl: this.server.serverMetadata.baseUrl,
     });
     await cloudStorage.delete(blob, permanent);
+
+    // should also delete from local storage
+    const storage = new this.BlobStorageType({
+      id: id,
+      flavour: this.flavour,
+      type: 'workspace',
+    });
+    storage.connection.connect();
+    await storage.connection.waitForConnected();
+    await storage.delete(blob, permanent);
+    storage.connection.disconnect();
   }
 
   onWorkspaceInitialized(workspace: Workspace): void {

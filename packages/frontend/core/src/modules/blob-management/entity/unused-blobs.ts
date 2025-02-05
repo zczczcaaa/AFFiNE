@@ -63,12 +63,6 @@ export class UnusedBlobs extends Entity {
     );
   }
 
-  private get localFlavourProvider() {
-    return this.flavoursService.flavours$.value.find(
-      f => f.flavour === 'local'
-    );
-  }
-
   async listBlobs() {
     const blobs = await this.flavourProvider?.listBlobs(
       this.workspaceService.workspace.id
@@ -90,14 +84,6 @@ export class UnusedBlobs extends Entity {
       blob,
       permanent
     );
-
-    if (this.localFlavourProvider !== this.flavourProvider) {
-      await this.localFlavourProvider?.deleteBlob(
-        this.workspaceService.workspace.id,
-        blob,
-        permanent
-      );
-    }
   }
 
   async getUnusedBlobs(abortSignal?: AbortSignal) {
