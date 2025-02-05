@@ -17,7 +17,7 @@
     "@capacitor/android": "^7.0.0",
     "@capacitor/app": "^7.0.0",
     "@capacitor/core": "^7.0.0",
-    "@capgo/inappbrowser": "^6.9.35",
+    "@capgo/inappbrowser": "^7.0.0",
     "@sentry/react": "^8.44.0",
     "@toeverything/infra": "workspace:*",
     "react": "^19.0.0",
