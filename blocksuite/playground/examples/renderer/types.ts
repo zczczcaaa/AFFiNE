@@ -5,6 +5,7 @@ export interface SentenceLayout {
 
 export interface ParagraphLayout {
   sentences: SentenceLayout[];
+  scale: number;
 }
 
 export interface TextRect {

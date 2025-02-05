@@ -1,3 +1,4 @@
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 
 import { getSentenceRects, segmentSentences } from './text-utils.js';
@@ -26,15 +27,20 @@ export class CanvasRenderer {
     this.worker.postMessage({ type: 'init', data: { width, height, dpr } });
   }
 
-  getHostRect() {
-    const hostRect = this.editorContainer.host!.getBoundingClientRect();
-    return hostRect;
+  get hostRect() {
+    return this.editorContainer.host!.getBoundingClientRect();
   }
 
-  getHostLayout() {
+  get hostZoom() {
+    return this.editorContainer.std.get(GfxControllerIdentifier).viewport.zoom;
+  }
+
+  get hostLayout() {
     const paragraphBlocks = this.editorContainer.host!.querySelectorAll(
       '.affine-paragraph-rich-text-wrapper [data-v-text="true"]'
     );
+
+    const zoom = this.hostZoom;
 
     const paragraphs: ParagraphLayout[] = Array.from(paragraphBlocks).map(p => {
       const sentences = segmentSentences(p.textContent || '');
@@ -45,18 +51,20 @@ export class CanvasRenderer {
           rects,
         };
       });
+
       return {
         sentences: sentenceLayouts,
+        scale: zoom,
       };
     });
 
-    const hostRect = this.getHostRect();
+    const hostRect = this.hostRect;
     const editorContainerRect = this.editorContainer.getBoundingClientRect();
     return { paragraphs, hostRect, editorContainerRect };
   }
 
   public async render(toScreen = true): Promise<void> {
-    const { paragraphs, hostRect, editorContainerRect } = this.getHostLayout();
+    const { paragraphs, hostRect, editorContainerRect } = this.hostLayout;
     this.initWorkerSize(hostRect.width, hostRect.height);
 
     return new Promise(resolve => {

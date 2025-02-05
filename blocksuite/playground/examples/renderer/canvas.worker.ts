@@ -42,10 +42,12 @@ class CanvasWorkerManager {
     const { canvas, ctx } = this;
     if (!canvas || !ctx) return;
 
-    ctx.font = '15px Inter';
-    const baselineY = getBaseline();
-
     paragraphs.forEach(paragraph => {
+      const scale = paragraph.scale ?? 1;
+      const fontSize = 15 * scale;
+      ctx.font = `${fontSize}px Inter`;
+      const baselineY = getBaseline() * scale;
+
       paragraph.sentences.forEach(sentence => {
         ctx.strokeStyle = 'yellow';
         sentence.rects.forEach(textRect => {

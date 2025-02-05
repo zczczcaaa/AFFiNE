@@ -23,14 +23,14 @@ export class SwitchModeAnimator {
 
   async switchMode() {
     this.initOverlay();
-    const beginLayout = this.renderer.getHostLayout();
+    const beginLayout = this.renderer.hostLayout;
 
     await this.renderer.render(false);
     document.body.append(this.overlay);
     this.editor.mode = this.editor.mode === 'page' ? 'edgeless' : 'page';
     await wait();
 
-    const endLayout = this.renderer.getHostLayout();
+    const endLayout = this.renderer.hostLayout;
 
     this.overlay.style.display = 'inherit';
     await this.animate(
