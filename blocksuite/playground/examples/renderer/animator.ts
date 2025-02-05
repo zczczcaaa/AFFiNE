@@ -2,7 +2,7 @@ import { type AffineEditorContainer } from '@blocksuite/presets';
 
 import { CanvasRenderer } from './canvas-renderer.js';
 import { editor } from './editor.js';
-import type { ParagraphLayout } from './types.js';
+import type { SectionLayout } from './types.js';
 
 async function wait(time: number = 100) {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -34,8 +34,8 @@ export class SwitchModeAnimator {
 
     this.overlay.style.display = 'inherit';
     await this.animate(
-      beginLayout.paragraphs,
-      endLayout.paragraphs,
+      beginLayout.section,
+      endLayout.section,
       beginLayout.hostRect,
       endLayout.hostRect
     );
@@ -43,8 +43,8 @@ export class SwitchModeAnimator {
   }
 
   async animate(
-    beginParagraphs: ParagraphLayout[],
-    endParagraphs: ParagraphLayout[],
+    beginSection: SectionLayout,
+    endSection: SectionLayout,
     beginHostRect: DOMRect,
     endHostRect: DOMRect
   ): Promise<void> {
@@ -58,8 +58,8 @@ export class SwitchModeAnimator {
         const progress = Math.min(elapsed / duration, 1);
 
         this.renderer.renderTransitionFrame(
-          beginParagraphs,
-          endParagraphs,
+          beginSection,
+          endSection,
           beginHostRect,
           endHostRect,
           progress

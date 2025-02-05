@@ -1,4 +1,4 @@
-import { type ParagraphLayout } from './types.js';
+import { type SectionLayout } from './types.js';
 
 const meta = {
   emSize: 2048,
@@ -38,14 +38,14 @@ class CanvasWorkerManager {
     this.ctx.fillRect(0, 0, width, height);
   }
 
-  draw(paragraphs: ParagraphLayout[], hostRect: DOMRect) {
+  draw(section: SectionLayout) {
     const { canvas, ctx } = this;
     if (!canvas || !ctx) return;
 
     // Track rendered positions to avoid duplicate rendering across all paragraphs and sentences
     const renderedPositions = new Set<string>();
 
-    paragraphs.forEach(paragraph => {
+    section.paragraphs.forEach(paragraph => {
       const scale = paragraph.scale ?? 1;
       const fontSize = 15 * scale;
       ctx.font = `${fontSize}px Inter`;
@@ -54,8 +54,8 @@ class CanvasWorkerManager {
       paragraph.sentences.forEach(sentence => {
         ctx.strokeStyle = 'yellow';
         sentence.rects.forEach(textRect => {
-          const x = textRect.rect.left - hostRect.left;
-          const y = textRect.rect.top - hostRect.top;
+          const x = textRect.rect.left - section.rect.x;
+          const y = textRect.rect.top - section.rect.y;
 
           const posKey = `${x},${y}`;
           // Only render if we haven't rendered at this position before
@@ -87,8 +87,8 @@ self.onmessage = async (e: MessageEvent) => {
     }
     case 'draw': {
       await font.load();
-      const { paragraphs, hostRect } = data;
-      manager.draw(paragraphs, hostRect);
+      const { section } = data;
+      manager.draw(section);
       break;
     }
   }

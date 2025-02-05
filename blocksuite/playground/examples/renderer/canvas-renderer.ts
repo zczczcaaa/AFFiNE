@@ -2,7 +2,7 @@ import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 
 import { getSentenceRects, segmentSentences } from './text-utils.js';
-import { type ParagraphLayout } from './types.js';
+import { type ParagraphLayout, type SectionLayout } from './types.js';
 
 export class CanvasRenderer {
   private readonly worker: Worker;
@@ -35,17 +35,34 @@ export class CanvasRenderer {
     return this.editorContainer.std.get(GfxControllerIdentifier).viewport.zoom;
   }
 
-  get hostLayout() {
+  get hostLayout(): {
+    section: SectionLayout;
+    hostRect: DOMRect;
+    editorContainerRect: DOMRect;
+  } {
     const paragraphBlocks = this.editorContainer.host!.querySelectorAll(
       '.affine-paragraph-rich-text-wrapper [data-v-text="true"]'
     );
 
     const zoom = this.hostZoom;
+    const hostRect = this.hostRect;
+    const editorContainerRect = this.editorContainer.getBoundingClientRect();
+
+    let sectionMinX = Infinity;
+    let sectionMinY = Infinity;
+    let sectionMaxX = -Infinity;
+    let sectionMaxY = -Infinity;
 
     const paragraphs: ParagraphLayout[] = Array.from(paragraphBlocks).map(p => {
       const sentences = segmentSentences(p.textContent || '');
       const sentenceLayouts = sentences.map(sentence => {
         const rects = getSentenceRects(p, sentence);
+        rects.forEach(({ rect }) => {
+          sectionMinX = Math.min(sectionMinX, rect.x);
+          sectionMinY = Math.min(sectionMinY, rect.y);
+          sectionMaxX = Math.max(sectionMaxX, rect.x + rect.width);
+          sectionMaxY = Math.max(sectionMaxY, rect.y + rect.height);
+        });
         return {
           text: sentence,
           rects,
@@ -58,14 +75,22 @@ export class CanvasRenderer {
       };
     });
 
-    const hostRect = this.hostRect;
-    const editorContainerRect = this.editorContainer.getBoundingClientRect();
-    return { paragraphs, hostRect, editorContainerRect };
+    const section: SectionLayout = {
+      paragraphs,
+      rect: {
+        x: sectionMinX,
+        y: sectionMinY,
+        width: sectionMaxX - sectionMinX,
+        height: sectionMaxY - sectionMinY,
+      },
+    };
+
+    return { section, hostRect, editorContainerRect };
   }
 
   public async render(toScreen = true): Promise<void> {
-    const { paragraphs, hostRect, editorContainerRect } = this.hostLayout;
-    this.initWorkerSize(hostRect.width, hostRect.height);
+    const { section, editorContainerRect } = this.hostLayout;
+    this.initWorkerSize(section.rect.width, section.rect.height);
 
     return new Promise(resolve => {
       if (!this.worker) return;
@@ -73,8 +98,7 @@ export class CanvasRenderer {
       this.worker.postMessage({
         type: 'draw',
         data: {
-          paragraphs,
-          hostRect,
+          section,
         },
       });
 
@@ -94,8 +118,8 @@ export class CanvasRenderer {
 
           const ctx = this.canvas.getContext('2d');
           const bitmapCanvas = new OffscreenCanvas(
-            hostRect.width * window.devicePixelRatio,
-            hostRect.height * window.devicePixelRatio
+            section.rect.width * window.devicePixelRatio,
+            section.rect.height * window.devicePixelRatio
           );
           const bitmapCtx = bitmapCanvas.getContext('bitmaprenderer');
           bitmapCtx?.transferFromImageBitmap(bitmap);
@@ -107,10 +131,10 @@ export class CanvasRenderer {
 
           ctx?.drawImage(
             bitmapCanvas,
-            (hostRect.x - editorContainerRect.x) * window.devicePixelRatio,
-            (hostRect.y - editorContainerRect.y) * window.devicePixelRatio,
-            hostRect.width * window.devicePixelRatio,
-            hostRect.height * window.devicePixelRatio
+            (section.rect.x - editorContainerRect.x) * window.devicePixelRatio,
+            (section.rect.y - editorContainerRect.y) * window.devicePixelRatio,
+            section.rect.width * window.devicePixelRatio,
+            section.rect.height * window.devicePixelRatio
           );
 
           resolve();
@@ -120,8 +144,8 @@ export class CanvasRenderer {
   }
 
   public renderTransitionFrame(
-    beginParagraphs: ParagraphLayout[],
-    endParagraphs: ParagraphLayout[],
+    beginSection: SectionLayout,
+    endSection: SectionLayout,
     beginHostRect: DOMRect,
     endHostRect: DOMRect,
     progress: number
@@ -185,18 +209,23 @@ export class CanvasRenderer {
 
     // Draw paragraph rects
     const maxParagraphs = Math.max(
-      beginParagraphs.length,
-      endParagraphs.length
+      beginSection.paragraphs.length,
+      endSection.paragraphs.length
     );
+
     for (let i = 0; i < maxParagraphs; i++) {
       const beginRect =
-        i < beginParagraphs.length
-          ? getParagraphRect(beginParagraphs[i])
-          : getParagraphRect(endParagraphs[endParagraphs.length - 1]);
+        i < beginSection.paragraphs.length
+          ? getParagraphRect(beginSection.paragraphs[i])
+          : getParagraphRect(
+              endSection.paragraphs[endSection.paragraphs.length - 1]
+            );
       const endRect =
-        i < endParagraphs.length
-          ? getParagraphRect(endParagraphs[i])
-          : getParagraphRect(beginParagraphs[beginParagraphs.length - 1]);
+        i < endSection.paragraphs.length
+          ? getParagraphRect(endSection.paragraphs[i])
+          : getParagraphRect(
+              beginSection.paragraphs[beginSection.paragraphs.length - 1]
+            );
 
       const currentRect = interpolateRect(beginRect, endRect, progress);
       ctx.fillStyle = '#efefef';
