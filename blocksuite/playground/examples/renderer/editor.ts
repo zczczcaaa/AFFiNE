@@ -13,3 +13,4 @@ export const doc = createEmptyDoc().init();
 export const editor = new AffineEditorContainer();
 
 editor.doc = doc;
+editor.mode = 'edgeless';
