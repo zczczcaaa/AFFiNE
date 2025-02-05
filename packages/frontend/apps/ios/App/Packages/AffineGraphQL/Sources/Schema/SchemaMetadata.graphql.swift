@@ -31,7 +31,6 @@ public enum SchemaMetadata: ApolloAPI.SchemaMetadata {
     case "DeleteAccount": return AffineGraphQL.Objects.DeleteAccount
     case "DocHistoryType": return AffineGraphQL.Objects.DocHistoryType
     case "EditorType": return AffineGraphQL.Objects.EditorType
-    case "HumanReadableQuotaType": return AffineGraphQL.Objects.HumanReadableQuotaType
     case "InvitationType": return AffineGraphQL.Objects.InvitationType
     case "InvitationWorkspaceType": return AffineGraphQL.Objects.InvitationWorkspaceType
     case "InviteLink": return AffineGraphQL.Objects.InviteLink
@@ -43,19 +42,20 @@ public enum SchemaMetadata: ApolloAPI.SchemaMetadata {
     case "Mutation": return AffineGraphQL.Objects.Mutation
     case "PasswordLimitsType": return AffineGraphQL.Objects.PasswordLimitsType
     case "Query": return AffineGraphQL.Objects.Query
-    case "QuotaQueryType": return AffineGraphQL.Objects.QuotaQueryType
     case "RemoveAvatar": return AffineGraphQL.Objects.RemoveAvatar
     case "ServerConfigType": return AffineGraphQL.Objects.ServerConfigType
     case "ServerRuntimeConfigType": return AffineGraphQL.Objects.ServerRuntimeConfigType
     case "ServerServiceConfig": return AffineGraphQL.Objects.ServerServiceConfig
     case "SubscriptionPrice": return AffineGraphQL.Objects.SubscriptionPrice
     case "SubscriptionType": return AffineGraphQL.Objects.SubscriptionType
-    case "UserQuota": return AffineGraphQL.Objects.UserQuota
-    case "UserQuotaHumanReadable": return AffineGraphQL.Objects.UserQuotaHumanReadable
-    case "UserQuotaUsage": return AffineGraphQL.Objects.UserQuotaUsage
+    case "UserQuotaHumanReadableType": return AffineGraphQL.Objects.UserQuotaHumanReadableType
+    case "UserQuotaType": return AffineGraphQL.Objects.UserQuotaType
+    case "UserQuotaUsageType": return AffineGraphQL.Objects.UserQuotaUsageType
     case "UserType": return AffineGraphQL.Objects.UserType
     case "WorkspacePage": return AffineGraphQL.Objects.WorkspacePage
     case "WorkspacePageMeta": return AffineGraphQL.Objects.WorkspacePageMeta
+    case "WorkspaceQuotaHumanReadableType": return AffineGraphQL.Objects.WorkspaceQuotaHumanReadableType
+    case "WorkspaceQuotaType": return AffineGraphQL.Objects.WorkspaceQuotaType
     case "WorkspaceType": return AffineGraphQL.Objects.WorkspaceType
     case "tokenType": return AffineGraphQL.Objects.TokenType
     default: return nil

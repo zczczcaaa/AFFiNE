@@ -6,6 +6,7 @@ import ApolloAPI
 public extension Objects {
   static let ServerRuntimeConfigType = ApolloAPI.Object(
     typename: "ServerRuntimeConfigType",
-    implementedInterfaces: []
+    implementedInterfaces: [],
+    keyFields: nil
   )
 }

@@ -4,8 +4,9 @@
 import ApolloAPI
 
 public extension Objects {
-  static let UserQuota = ApolloAPI.Object(
-    typename: "UserQuota",
-    implementedInterfaces: []
+  static let UserQuotaType = ApolloAPI.Object(
+    typename: "UserQuotaType",
+    implementedInterfaces: [],
+    keyFields: nil
   )
 }

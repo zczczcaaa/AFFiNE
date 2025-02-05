@@ -47,7 +47,7 @@ public class GetUserByEmailQuery: GraphQLQuery {
         .field("hasPassword", Bool?.self),
         .field("emailVerified", Bool.self),
         .field("avatarUrl", String?.self),
-        .field("quota", Quota?.self),
+        .field("quota", Quota.self),
       ] }
 
       public var id: AffineGraphQL.ID { __data["id"] }
@@ -63,16 +63,16 @@ public class GetUserByEmailQuery: GraphQLQuery {
       public var emailVerified: Bool { __data["emailVerified"] }
       /// User avatar url
       public var avatarUrl: String? { __data["avatarUrl"] }
-      public var quota: Quota? { __data["quota"] }
+      public var quota: Quota { __data["quota"] }
 
       /// UserByEmail.Quota
       ///
-      /// Parent Type: `UserQuota`
+      /// Parent Type: `UserQuotaType`
       public struct Quota: AffineGraphQL.SelectionSet {
         public let __data: DataDict
         public init(_dataDict: DataDict) { __data = _dataDict }
 
-        public static var __parentType: any ApolloAPI.ParentType { AffineGraphQL.Objects.UserQuota }
+        public static var __parentType: any ApolloAPI.ParentType { AffineGraphQL.Objects.UserQuotaType }
         public static var __selections: [ApolloAPI.Selection] { [
           .field("__typename", String.self),
           .field("humanReadable", HumanReadable.self),
@@ -82,12 +82,12 @@ public class GetUserByEmailQuery: GraphQLQuery {
 
         /// UserByEmail.Quota.HumanReadable
         ///
-        /// Parent Type: `UserQuotaHumanReadable`
+        /// Parent Type: `UserQuotaHumanReadableType`
         public struct HumanReadable: AffineGraphQL.SelectionSet {
           public let __data: DataDict
           public init(_dataDict: DataDict) { __data = _dataDict }
 
-          public static var __parentType: any ApolloAPI.ParentType { AffineGraphQL.Objects.UserQuotaHumanReadable }
+          public static var __parentType: any ApolloAPI.ParentType { AffineGraphQL.Objects.UserQuotaHumanReadableType }
           public static var __selections: [ApolloAPI.Selection] { [
             .field("__typename", String.self),
             .field("blobLimit", String.self),

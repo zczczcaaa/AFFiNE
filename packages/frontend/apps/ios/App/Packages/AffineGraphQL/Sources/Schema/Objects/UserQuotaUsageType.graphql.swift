@@ -4,8 +4,8 @@
 import ApolloAPI
 
 public extension Objects {
-  static let CopilotPromptType = ApolloAPI.Object(
-    typename: "CopilotPromptType",
+  static let UserQuotaUsageType = ApolloAPI.Object(
+    typename: "UserQuotaUsageType",
     implementedInterfaces: [],
     keyFields: nil
   )
