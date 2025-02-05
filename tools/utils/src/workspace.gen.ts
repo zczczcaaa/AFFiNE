@@ -642,7 +642,11 @@ export const PackageList = [
   {
     location: 'packages/frontend/i18n',
     name: '@affine/i18n',
-    workspaceDependencies: ['packages/common/debug'],
+    workspaceDependencies: [
+      'packages/common/debug',
+      'tools/cli',
+      'tools/utils',
+    ],
   },
   {
     location: 'packages/frontend/native',

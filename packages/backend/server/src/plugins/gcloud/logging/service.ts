@@ -1,4 +1,3 @@
-import { LoggingWinston } from '@google-cloud/logging-winston';
 import { LoggerService, Provider } from '@nestjs/common';
 import { createLogger, format, transports } from 'winston';
 
@@ -13,15 +12,9 @@ const moreMetadata = format(info => {
 export const loggerProvider: Provider<LoggerService> = {
   provide: LoggerProvide,
   useFactory: () => {
-    const loggingWinston = new LoggingWinston();
-    // Create a Winston logger that streams to Cloud Logging
     const instance = createLogger({
       level: 'info',
-      transports: [
-        new transports.Console(),
-        // Add Cloud Logging
-        loggingWinston,
-      ],
+      transports: [new transports.Console()],
       format: format.combine(moreMetadata(), format.json()),
     });
     return new AFFiNELogger(instance);
