@@ -27,7 +27,7 @@ import {
   WorkspaceIdRequiredToUpdateTeamSubscription,
 } from '../../base';
 import { CurrentUser, Public } from '../../core/auth';
-import { Permission, PermissionService } from '../../core/permission';
+import { PermissionService, WorkspaceRole } from '../../core/permission';
 import { UserType } from '../../core/user';
 import { WorkspaceType } from '../../core/workspaces';
 import { Invoice, Subscription, WorkspaceSubscriptionManager } from './manager';
@@ -541,7 +541,11 @@ export class WorkspaceSubscriptionResolver {
     @CurrentUser() me: CurrentUser,
     @Parent() workspace: WorkspaceType
   ) {
-    await this.permission.checkWorkspace(workspace.id, me.id, Permission.Owner);
+    await this.permission.checkWorkspace(
+      workspace.id,
+      me.id,
+      WorkspaceRole.Owner
+    );
     return this.db.invoice.count({
       where: {
         targetId: workspace.id,
@@ -557,7 +561,11 @@ export class WorkspaceSubscriptionResolver {
     take: number,
     @Args('skip', { type: () => Int, nullable: true }) skip?: number
   ) {
-    await this.permission.checkWorkspace(workspace.id, me.id, Permission.Owner);
+    await this.permission.checkWorkspace(
+      workspace.id,
+      me.id,
+      WorkspaceRole.Owner
+    );
 
     return this.db.invoice.findMany({
       where: {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 import { CannotDeleteAllAdminAccount } from '../../base';
-import { WorkspaceType } from '../workspaces/types';
+import { WorkspaceFeatureType } from '../workspaces/types';
 import { FeatureConfigType, getFeature } from './feature';
 import { FeatureKind, FeatureType } from './types';
 
@@ -20,7 +20,7 @@ export class FeatureService {
     if (data) {
       return getFeature(this.prisma, data.id) as Promise<FeatureConfigType<F>>;
     }
-    return undefined;
+    return;
   }
 
   // ======== User Features ========
@@ -315,7 +315,7 @@ export class FeatureService {
 
   async listWorkspacesByFeature(
     feature: FeatureType
-  ): Promise<WorkspaceType[]> {
+  ): Promise<WorkspaceFeatureType[]> {
     return this.prisma.workspaceFeature
       .findMany({
         where: {
@@ -335,7 +335,7 @@ export class FeatureService {
           },
         },
       })
-      .then(wss => wss.map(ws => ws.workspace as WorkspaceType));
+      .then(wss => wss.map(ws => ws.workspace));
   }
 
   async hasWorkspaceFeature(workspaceId: string, feature: FeatureType) {

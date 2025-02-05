@@ -15,7 +15,7 @@ import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 import type { FileUpload } from '../../../base';
 import { BlobQuotaExceeded, CloudThrottlerGuard } from '../../../base';
 import { CurrentUser } from '../../auth';
-import { Permission, PermissionService } from '../../permission';
+import { PermissionService, WorkspaceRole } from '../../permission';
 import { QuotaManagementService } from '../../quota';
 import { WorkspaceBlobStorage } from '../../storage';
 import { WorkspaceBlobSizes, WorkspaceType } from '../types';
@@ -102,7 +102,7 @@ export class WorkspaceBlobResolver {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      Permission.Write
+      WorkspaceRole.Collaborator
     );
 
     const checkExceeded =
@@ -174,7 +174,7 @@ export class WorkspaceBlobResolver {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      Permission.Write
+      WorkspaceRole.Collaborator
     );
 
     await this.storage.release(workspaceId);

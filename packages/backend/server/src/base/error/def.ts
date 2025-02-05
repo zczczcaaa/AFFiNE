@@ -363,6 +363,11 @@ export const USER_FRIENDLY_ERRORS = {
   },
 
   // Workspace & Userspace & Doc & Sync errors
+  workspace_permission_not_found: {
+    type: 'internal_server_error',
+    args: { spaceId: 'string' },
+    message: ({ spaceId }) => `Space ${spaceId} permission not found.`,
+  },
   space_not_found: {
     type: 'resource_not_found',
     args: { spaceId: 'string' },
@@ -394,6 +399,11 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'internal_server_error',
     args: { spaceId: 'string' },
     message: ({ spaceId }) => `Owner of Space ${spaceId} not found.`,
+  },
+  space_should_have_only_one_owner: {
+    type: 'invalid_input',
+    args: { spaceId: 'string' },
+    message: 'Space should have only one owner.',
   },
   doc_not_found: {
     type: 'resource_not_found',
@@ -437,6 +447,24 @@ export const USER_FRIENDLY_ERRORS = {
   expect_to_revoke_public_page: {
     type: 'invalid_input',
     message: 'Expected to revoke a public page, not a Space.',
+  },
+  expect_to_grant_doc_user_roles: {
+    type: 'invalid_input',
+    args: { spaceId: 'string', docId: 'string' },
+    message: ({ spaceId, docId }) =>
+      `Expect grant roles on doc ${docId} under Space ${spaceId}, not a Space.`,
+  },
+  expect_to_revoke_doc_user_roles: {
+    type: 'invalid_input',
+    args: { spaceId: 'string', docId: 'string' },
+    message: ({ spaceId, docId }) =>
+      `Expect revoke roles on doc ${docId} under Space ${spaceId}, not a Space.`,
+  },
+  expect_to_update_doc_user_role: {
+    type: 'invalid_input',
+    args: { spaceId: 'string', docId: 'string' },
+    message: ({ spaceId, docId }) =>
+      `Expect update roles on doc ${docId} under Space ${spaceId}, not a Space.`,
   },
   page_is_not_public: {
     type: 'bad_request',

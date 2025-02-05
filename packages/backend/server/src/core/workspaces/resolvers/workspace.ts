@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import {
   Args,
   Field,
@@ -15,6 +14,7 @@ import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
 import type { FileUpload } from '../../../base';
 import {
+  AFFiNELogger,
   AlreadyInSpace,
   Cache,
   DocNotFound,
@@ -33,7 +33,11 @@ import {
 import { Models } from '../../../models';
 import { CurrentUser, Public } from '../../auth';
 import { type Editor, PgWorkspaceDocStorageAdapter } from '../../doc';
-import { Permission, PermissionService } from '../../permission';
+import { PermissionService, WorkspaceRole } from '../../permission';
+import {
+  mapWorkspaceRoleToWorkspaceActions,
+  WorkspacePermissionsList,
+} from '../../permission/types';
 import { QuotaManagementService, QuotaQueryType } from '../../quota';
 import { UserType } from '../../user';
 import {
@@ -68,6 +72,45 @@ class WorkspacePageMeta {
   updatedBy!: EditorType | null;
 }
 
+@ObjectType()
+export class WorkspacePermissions implements WorkspacePermissionsList {
+  @Field()
+  Workspace_Organize_Read!: boolean;
+  @Field()
+  Workspace_Sync!: boolean;
+  @Field()
+  Workspace_CreateDoc!: boolean;
+  @Field()
+  Workspace_Users_Read!: boolean;
+  @Field()
+  Workspace_Properties_Read!: boolean;
+  @Field()
+  Workspace_Settings_Read!: boolean;
+  @Field()
+  Workspace_Users_Manage!: boolean;
+  @Field()
+  Workspace_Settings_Update!: boolean;
+  @Field()
+  Workspace_Properties_Create!: boolean;
+  @Field()
+  Workspace_Properties_Update!: boolean;
+  @Field()
+  Workspace_Properties_Delete!: boolean;
+  @Field()
+  Workspace_Delete!: boolean;
+  @Field()
+  Workspace_TransferOwner!: boolean;
+}
+
+@ObjectType()
+export class WorkspaceRolePermissions {
+  @Field(() => WorkspaceRole)
+  role!: WorkspaceRole;
+
+  @Field(() => WorkspacePermissions)
+  permissions!: WorkspacePermissions;
+}
+
 /**
  * Workspace resolver
  * Public apis rate limit: 10 req/m
@@ -75,8 +118,6 @@ class WorkspacePageMeta {
  */
 @Resolver(() => WorkspaceType)
 export class WorkspaceResolver {
-  private readonly logger = new Logger(WorkspaceResolver.name);
-
   constructor(
     private readonly cache: Cache,
     private readonly prisma: PrismaClient,
@@ -86,29 +127,32 @@ export class WorkspaceResolver {
     private readonly event: EventBus,
     private readonly mutex: RequestMutex,
     private readonly workspaceService: WorkspaceService,
-    private readonly workspaceStorage: PgWorkspaceDocStorageAdapter
-  ) {}
+    private readonly workspaceStorage: PgWorkspaceDocStorageAdapter,
+    private readonly logger: AFFiNELogger
+  ) {
+    logger.setContext(WorkspaceResolver.name);
+  }
 
-  @ResolveField(() => Permission, {
-    description: 'Permission of current signed in user in workspace',
+  @ResolveField(() => WorkspaceRole, {
+    description: 'Role of current signed in user in workspace',
     complexity: 2,
   })
-  async permission(
+  async role(
     @CurrentUser() user: CurrentUser,
     @Parent() workspace: WorkspaceType
   ) {
     // may applied in workspaces query
-    if ('permission' in workspace) {
-      return workspace.permission;
+    if ('role' in workspace) {
+      return workspace.role;
     }
 
-    const permission = await this.permissions.get(workspace.id, user.id);
+    const role = await this.permissions.get(workspace.id, user.id);
 
-    if (!permission) {
+    if (!role) {
       throw new SpaceAccessDenied({ spaceId: workspace.id });
     }
 
-    return permission;
+    return role;
   }
 
   @ResolveField(() => Int, {
@@ -249,7 +293,7 @@ export class WorkspaceResolver {
     return this.permissions.tryCheckWorkspaceIs(
       workspaceId,
       user.id,
-      Permission.Admin
+      WorkspaceRole.Admin
     );
   }
 
@@ -279,6 +323,7 @@ export class WorkspaceResolver {
       return {
         ...workspace,
         permission: type,
+        role: type,
       };
     });
   }
@@ -297,6 +342,25 @@ export class WorkspaceResolver {
     return workspace;
   }
 
+  @Query(() => WorkspaceRolePermissions, {
+    description: 'Get workspace role permissions',
+  })
+  async workspaceRolePermissions(
+    @CurrentUser() user: CurrentUser,
+    @Args('id') id: string
+  ) {
+    const workspace = await this.prisma.workspaceUserPermission.findFirst({
+      where: { workspaceId: id, userId: user.id },
+    });
+    if (!workspace) {
+      throw new SpaceAccessDenied({ spaceId: id });
+    }
+    return {
+      role: workspace.type,
+      permissions: mapWorkspaceRoleToWorkspaceActions(workspace.type),
+    };
+  }
+
   @Mutation(() => WorkspaceType, {
     description: 'Create a new workspace',
   })
@@ -312,7 +376,7 @@ export class WorkspaceResolver {
         public: false,
         permissions: {
           create: {
-            type: Permission.Owner,
+            type: WorkspaceRole.Owner,
             userId: user.id,
             accepted: true,
             status: WorkspaceMemberStatus.Accepted,
@@ -323,21 +387,18 @@ export class WorkspaceResolver {
 
     if (init) {
       // convert stream to buffer
-      const buffer = await new Promise<Buffer>(resolve => {
-        const stream = init.createReadStream();
-        const chunks: Uint8Array[] = [];
-        stream.on('data', chunk => {
+      const chunks: Uint8Array[] = [];
+      try {
+        for await (const chunk of init.createReadStream()) {
           chunks.push(chunk);
-        });
-        stream.on('error', () => {
-          resolve(Buffer.from([]));
-        });
-        stream.on('end', () => {
-          resolve(Buffer.concat(chunks));
-        });
-      });
+        }
+      } catch (e) {
+        this.logger.error('Failed to get file content from upload stream', e);
+        chunks.length = 0;
+      }
+      const buffer = chunks.length ? Buffer.concat(chunks) : null;
 
-      if (buffer.length) {
+      if (buffer) {
         await this.prisma.snapshot.create({
           data: {
             id: workspace.id,
@@ -364,7 +425,7 @@ export class WorkspaceResolver {
     await this.permissions.checkWorkspace(
       id,
       user.id,
-      isTeam ? Permission.Owner : Permission.Admin
+      isTeam ? WorkspaceRole.Owner : WorkspaceRole.Admin
     );
 
     return this.prisma.workspace.update({
@@ -380,7 +441,7 @@ export class WorkspaceResolver {
     @CurrentUser() user: CurrentUser,
     @Args('id') id: string
   ) {
-    await this.permissions.checkWorkspace(id, user.id, Permission.Owner);
+    await this.permissions.checkWorkspace(id, user.id, WorkspaceRole.Owner);
 
     await this.prisma.workspace.delete({
       where: {
@@ -401,16 +462,16 @@ export class WorkspaceResolver {
     @Args('email') email: string,
     @Args('sendInviteMail', { nullable: true }) sendInviteMail: boolean,
     @Args('permission', {
-      type: () => Permission,
+      type: () => WorkspaceRole,
       nullable: true,
       deprecationReason: 'never used',
     })
-    _permission?: Permission
+    _permission?: WorkspaceRole
   ) {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      Permission.Admin
+      WorkspaceRole.Admin
     );
 
     try {
@@ -418,7 +479,7 @@ export class WorkspaceResolver {
       const lockFlag = `invite:${workspaceId}`;
       await using lock = await this.mutex.acquire(lockFlag);
       if (!lock) {
-        return new TooManyRequest();
+        throw new TooManyRequest();
       }
 
       // member limit check
@@ -445,7 +506,7 @@ export class WorkspaceResolver {
       const inviteId = await this.permissions.grant(
         workspaceId,
         target.id,
-        Permission.Write
+        WorkspaceRole.Collaborator
       );
       if (sendInviteMail) {
         try {
@@ -474,10 +535,10 @@ export class WorkspaceResolver {
     } catch (e) {
       // pass through user friendly error
       if (e instanceof UserFriendlyError) {
-        return e;
+        throw e;
       }
       this.logger.error('failed to invite user', e);
-      return new TooManyRequest();
+      throw new TooManyRequest();
     }
   }
 
@@ -512,20 +573,20 @@ export class WorkspaceResolver {
     const isAdmin = await this.permissions.tryCheckWorkspaceIs(
       workspaceId,
       userId,
-      Permission.Admin
+      WorkspaceRole.Admin
     );
     if (isTeam && isAdmin) {
       // only owner can revoke team workspace admin
       await this.permissions.checkWorkspaceIs(
         workspaceId,
         user.id,
-        Permission.Owner
+        WorkspaceRole.Owner
       );
     } else {
       await this.permissions.checkWorkspace(
         workspaceId,
         user.id,
-        Permission.Admin
+        WorkspaceRole.Admin
       );
     }
 
@@ -543,7 +604,7 @@ export class WorkspaceResolver {
     const lockFlag = `invite:${workspaceId}`;
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
-      return new TooManyRequest();
+      throw new TooManyRequest();
     }
 
     const isTeam = await this.quota.isTeamWorkspace(workspaceId);
@@ -553,7 +614,7 @@ export class WorkspaceResolver {
         user.id
       );
       if (status === WorkspaceMemberStatus.Accepted) {
-        return new AlreadyInSpace({ spaceId: workspaceId });
+        throw new AlreadyInSpace({ spaceId: workspaceId });
       }
 
       // invite link
@@ -568,7 +629,7 @@ export class WorkspaceResolver {
             await this.permissions.grant(
               workspaceId,
               user.id,
-              Permission.Write,
+              WorkspaceRole.Collaborator,
               WorkspaceMemberStatus.NeedMoreSeatAndReview
             );
             const memberCount =
@@ -579,7 +640,7 @@ export class WorkspaceResolver {
             });
             return true;
           } else if (!status) {
-            return new MemberQuotaExceeded();
+            throw new MemberQuotaExceeded();
           }
         } else {
           const inviteId = await this.permissions.grant(workspaceId, user.id);

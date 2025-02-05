@@ -11,7 +11,7 @@ import {
 } from '../../../base';
 import { Models } from '../../../models';
 import { DocContentService } from '../../doc-renderer';
-import { Permission, PermissionService } from '../../permission';
+import { PermissionService, WorkspaceRole } from '../../permission';
 import { WorkspaceBlobStorage } from '../../storage';
 
 export const defaultWorkspaceAvatar =
@@ -221,14 +221,14 @@ export class WorkspaceService {
 
   async sendRoleChangedEmail(
     userId: string,
-    ws: { id: string; role: Permission }
+    ws: { id: string; role: WorkspaceRole }
   ) {
     const user = await this.models.user.getPublicUser(userId);
     if (!user) throw new UserNotFound();
 
     const workspace = await this.getWorkspaceInfo(ws.id);
 
-    if (ws.role === Permission.Admin) {
+    if (ws.role === WorkspaceRole.Admin) {
       await this.mailer.sendTeamBecomeAdminMail(user.email, {
         workspace,
         url: this.url.link(`/workspace/${workspace.id}`),

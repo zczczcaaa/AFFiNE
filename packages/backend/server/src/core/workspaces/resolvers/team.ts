@@ -21,7 +21,7 @@ import {
 } from '../../../base';
 import { Models } from '../../../models';
 import { CurrentUser } from '../../auth';
-import { Permission, PermissionService } from '../../permission';
+import { PermissionService, WorkspaceRole } from '../../permission';
 import { QuotaManagementService } from '../../quota';
 import {
   InviteLink,
@@ -71,7 +71,7 @@ export class TeamWorkspaceResolver {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      Permission.Admin
+      WorkspaceRole.Admin
     );
 
     if (emails.length > 512) {
@@ -113,7 +113,7 @@ export class TeamWorkspaceResolver {
         ret.inviteId = await this.permissions.grant(
           workspaceId,
           target.id,
-          Permission.Write,
+          WorkspaceRole.Collaborator,
           needMoreSeat
             ? WorkspaceMemberStatus.NeedMoreSeat
             : WorkspaceMemberStatus.Pending
@@ -159,7 +159,7 @@ export class TeamWorkspaceResolver {
     await this.permissions.checkWorkspace(
       workspace.id,
       user.id,
-      Permission.Admin
+      WorkspaceRole.Admin
     );
 
     const cacheId = `workspace:inviteLink:${workspace.id}`;
@@ -186,7 +186,7 @@ export class TeamWorkspaceResolver {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      Permission.Admin
+      WorkspaceRole.Admin
     );
     const cacheWorkspaceId = `workspace:inviteLink:${workspaceId}`;
     const invite = await this.cache.get<{ inviteId: string }>(cacheWorkspaceId);
@@ -222,7 +222,7 @@ export class TeamWorkspaceResolver {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      Permission.Admin
+      WorkspaceRole.Admin
     );
     const cacheId = `workspace:inviteLink:${workspaceId}`;
     return await this.cache.delete(cacheId);
@@ -237,7 +237,7 @@ export class TeamWorkspaceResolver {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      Permission.Admin
+      WorkspaceRole.Admin
     );
 
     try {
@@ -257,7 +257,7 @@ export class TeamWorkspaceResolver {
           const result = await this.permissions.grant(
             workspaceId,
             userId,
-            Permission.Write,
+            WorkspaceRole.Collaborator,
             WorkspaceMemberStatus.Accepted
           );
 
@@ -283,12 +283,12 @@ export class TeamWorkspaceResolver {
     @CurrentUser() user: CurrentUser,
     @Args('workspaceId') workspaceId: string,
     @Args('userId') userId: string,
-    @Args('permission', { type: () => Permission }) permission: Permission
+    @Args('permission', { type: () => WorkspaceRole }) permission: WorkspaceRole
   ) {
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      Permission.Owner
+      WorkspaceRole.Owner
     );
 
     try {
@@ -311,7 +311,7 @@ export class TeamWorkspaceResolver {
         );
 
         if (result) {
-          if (permission === Permission.Owner) {
+          if (permission === WorkspaceRole.Owner) {
             this.event.emit('workspace.members.ownershipTransferred', {
               workspaceId,
               from: user.id,

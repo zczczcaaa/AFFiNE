@@ -191,6 +191,16 @@ export class EmailVerificationRequired extends UserFriendlyError {
   }
 }
 @ObjectType()
+class WorkspacePermissionNotFoundDataType {
+  @Field() spaceId!: string
+}
+
+export class WorkspacePermissionNotFound extends UserFriendlyError {
+  constructor(args: WorkspacePermissionNotFoundDataType, message?: string | ((args: WorkspacePermissionNotFoundDataType) => string)) {
+    super('internal_server_error', 'workspace_permission_not_found', message, args);
+  }
+}
+@ObjectType()
 class SpaceNotFoundDataType {
   @Field() spaceId!: string
 }
@@ -248,6 +258,16 @@ class SpaceOwnerNotFoundDataType {
 export class SpaceOwnerNotFound extends UserFriendlyError {
   constructor(args: SpaceOwnerNotFoundDataType, message?: string | ((args: SpaceOwnerNotFoundDataType) => string)) {
     super('internal_server_error', 'space_owner_not_found', message, args);
+  }
+}
+@ObjectType()
+class SpaceShouldHaveOnlyOneOwnerDataType {
+  @Field() spaceId!: string
+}
+
+export class SpaceShouldHaveOnlyOneOwner extends UserFriendlyError {
+  constructor(args: SpaceShouldHaveOnlyOneOwnerDataType, message?: string | ((args: SpaceShouldHaveOnlyOneOwnerDataType) => string)) {
+    super('invalid_input', 'space_should_have_only_one_owner', message, args);
   }
 }
 @ObjectType()
@@ -326,6 +346,39 @@ export class ExpectToPublishPage extends UserFriendlyError {
 export class ExpectToRevokePublicPage extends UserFriendlyError {
   constructor(message?: string) {
     super('invalid_input', 'expect_to_revoke_public_page', message);
+  }
+}
+@ObjectType()
+class ExpectToGrantDocUserRolesDataType {
+  @Field() spaceId!: string
+  @Field() docId!: string
+}
+
+export class ExpectToGrantDocUserRoles extends UserFriendlyError {
+  constructor(args: ExpectToGrantDocUserRolesDataType, message?: string | ((args: ExpectToGrantDocUserRolesDataType) => string)) {
+    super('invalid_input', 'expect_to_grant_doc_user_roles', message, args);
+  }
+}
+@ObjectType()
+class ExpectToRevokeDocUserRolesDataType {
+  @Field() spaceId!: string
+  @Field() docId!: string
+}
+
+export class ExpectToRevokeDocUserRoles extends UserFriendlyError {
+  constructor(args: ExpectToRevokeDocUserRolesDataType, message?: string | ((args: ExpectToRevokeDocUserRolesDataType) => string)) {
+    super('invalid_input', 'expect_to_revoke_doc_user_roles', message, args);
+  }
+}
+@ObjectType()
+class ExpectToUpdateDocUserRoleDataType {
+  @Field() spaceId!: string
+  @Field() docId!: string
+}
+
+export class ExpectToUpdateDocUserRole extends UserFriendlyError {
+  constructor(args: ExpectToUpdateDocUserRoleDataType, message?: string | ((args: ExpectToUpdateDocUserRoleDataType) => string)) {
+    super('invalid_input', 'expect_to_update_doc_user_role', message, args);
   }
 }
 
@@ -679,12 +732,14 @@ export enum ErrorNames {
   ACTION_FORBIDDEN,
   ACCESS_DENIED,
   EMAIL_VERIFICATION_REQUIRED,
+  WORKSPACE_PERMISSION_NOT_FOUND,
   SPACE_NOT_FOUND,
   MEMBER_NOT_FOUND_IN_SPACE,
   NOT_IN_SPACE,
   ALREADY_IN_SPACE,
   SPACE_ACCESS_DENIED,
   SPACE_OWNER_NOT_FOUND,
+  SPACE_SHOULD_HAVE_ONLY_ONE_OWNER,
   DOC_NOT_FOUND,
   DOC_ACCESS_DENIED,
   VERSION_REJECTED,
@@ -693,6 +748,9 @@ export enum ErrorNames {
   BLOB_NOT_FOUND,
   EXPECT_TO_PUBLISH_PAGE,
   EXPECT_TO_REVOKE_PUBLIC_PAGE,
+  EXPECT_TO_GRANT_DOC_USER_ROLES,
+  EXPECT_TO_REVOKE_DOC_USER_ROLES,
+  EXPECT_TO_UPDATE_DOC_USER_ROLE,
   PAGE_IS_NOT_PUBLIC,
   FAILED_TO_SAVE_UPDATES,
   FAILED_TO_UPSERT_SNAPSHOT,
@@ -746,5 +804,5 @@ registerEnumType(ErrorNames, {
 export const ErrorDataUnionType = createUnionType({
   name: 'ErrorDataUnion',
   types: () =>
-    [QueryTooLongDataType, WrongSignInCredentialsDataType, UnknownOauthProviderDataType, MissingOauthQueryParameterDataType, InvalidEmailDataType, InvalidPasswordLengthDataType, SpaceNotFoundDataType, MemberNotFoundInSpaceDataType, NotInSpaceDataType, AlreadyInSpaceDataType, SpaceAccessDeniedDataType, SpaceOwnerNotFoundDataType, DocNotFoundDataType, DocAccessDeniedDataType, VersionRejectedDataType, InvalidHistoryTimestampDataType, DocHistoryNotFoundDataType, BlobNotFoundDataType, UnsupportedSubscriptionPlanDataType, SubscriptionAlreadyExistsDataType, SubscriptionNotExistsDataType, SameSubscriptionRecurringDataType, SubscriptionPlanNotFoundDataType, CopilotMessageNotFoundDataType, CopilotPromptNotFoundDataType, CopilotProviderSideErrorDataType, RuntimeConfigNotFoundDataType, InvalidRuntimeConfigTypeDataType, InvalidLicenseUpdateParamsDataType, WorkspaceMembersExceedLimitToDowngradeDataType] as const,
+    [QueryTooLongDataType, WrongSignInCredentialsDataType, UnknownOauthProviderDataType, MissingOauthQueryParameterDataType, InvalidEmailDataType, InvalidPasswordLengthDataType, WorkspacePermissionNotFoundDataType, SpaceNotFoundDataType, MemberNotFoundInSpaceDataType, NotInSpaceDataType, AlreadyInSpaceDataType, SpaceAccessDeniedDataType, SpaceOwnerNotFoundDataType, SpaceShouldHaveOnlyOneOwnerDataType, DocNotFoundDataType, DocAccessDeniedDataType, VersionRejectedDataType, InvalidHistoryTimestampDataType, DocHistoryNotFoundDataType, BlobNotFoundDataType, ExpectToGrantDocUserRolesDataType, ExpectToRevokeDocUserRolesDataType, ExpectToUpdateDocUserRoleDataType, UnsupportedSubscriptionPlanDataType, SubscriptionAlreadyExistsDataType, SubscriptionNotExistsDataType, SameSubscriptionRecurringDataType, SubscriptionPlanNotFoundDataType, CopilotMessageNotFoundDataType, CopilotPromptNotFoundDataType, CopilotProviderSideErrorDataType, RuntimeConfigNotFoundDataType, InvalidRuntimeConfigTypeDataType, InvalidLicenseUpdateParamsDataType, WorkspaceMembersExceedLimitToDowngradeDataType] as const,
 });

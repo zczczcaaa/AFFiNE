@@ -335,6 +335,7 @@ export class CopilotResolver {
       await this.permissions.checkCloudPagePermission(
         workspaceId,
         docId,
+        'Doc_Read',
         user.id
       );
     } else {
@@ -368,6 +369,7 @@ export class CopilotResolver {
     await this.permissions.checkCloudPagePermission(
       options.workspaceId,
       options.docId,
+      'Doc_Read',
       user.id
     );
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
@@ -401,6 +403,7 @@ export class CopilotResolver {
     await this.permissions.checkCloudPagePermission(
       workspaceId,
       docId,
+      'Doc_Update',
       user.id
     );
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${workspaceId}`;
@@ -428,6 +431,7 @@ export class CopilotResolver {
     await this.permissions.checkCloudPagePermission(
       options.workspaceId,
       options.docId,
+      'Doc_Copy',
       user.id
     );
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
@@ -456,6 +460,7 @@ export class CopilotResolver {
     await this.permissions.checkCloudPagePermission(
       options.workspaceId,
       options.docId,
+      'Doc_Delete',
       user.id
     );
     if (!options.sessionIds.length) {

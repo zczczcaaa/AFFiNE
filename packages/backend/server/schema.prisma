@@ -141,7 +141,7 @@ model WorkspaceUserPermission {
   id          String                @id @default(uuid()) @db.VarChar
   workspaceId String                @map("workspace_id") @db.VarChar
   userId      String                @map("user_id") @db.VarChar
-  // Read/Write
+  // Workspace Role, Owner/Admin/Collaborator/External
   type        Int                   @db.SmallInt
   /// @deprecated Whether the permission invitation is accepted by the user
   accepted    Boolean               @default(false)
@@ -165,7 +165,7 @@ model WorkspacePageUserPermission {
   workspaceId String   @map("workspace_id") @db.VarChar
   pageId      String   @map("page_id") @db.VarChar
   userId      String   @map("user_id") @db.VarChar
-  // Read/Write
+  // External/Reader/Editor/Manager/Owner
   type        Int      @db.SmallInt
   /// Whether the permission invitation is accepted by the user
   accepted    Boolean  @default(false)

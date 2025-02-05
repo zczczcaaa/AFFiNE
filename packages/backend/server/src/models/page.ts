@@ -5,9 +5,9 @@ import {
   type WorkspacePageUserPermission as PageUserPermission,
 } from '@prisma/client';
 
+import { WorkspaceRole } from '../core/permission';
 import { BaseModel } from './base';
-import { Permission, PublicPageMode } from './common';
-
+import { PublicPageMode } from './common';
 export type { Page };
 export type UpdatePageInput = {
   mode?: PublicPageMode;
@@ -93,7 +93,7 @@ export class PageModel extends BaseModel {
     workspaceId: string,
     pageId: string,
     userId: string,
-    permission: Permission = Permission.Read
+    permission: WorkspaceRole = WorkspaceRole.Collaborator
   ): Promise<PageUserPermission> {
     let data = await this.db.workspacePageUserPermission.findUnique({
       where: {
@@ -134,15 +134,15 @@ export class PageModel extends BaseModel {
       }
 
       // If the new permission is owner, we need to revoke old owner
-      if (permission === Permission.Owner) {
+      if (permission === WorkspaceRole.Owner) {
         await this.db.workspacePageUserPermission.updateMany({
           where: {
             workspaceId,
             pageId,
-            type: Permission.Owner,
+            type: WorkspaceRole.Owner,
             userId: { not: userId },
           },
-          data: { type: Permission.Admin },
+          data: { type: WorkspaceRole.Admin },
         });
         this.logger.log(
           `Change owner of workspace ${workspaceId} page ${pageId} to user ${userId}`
@@ -163,7 +163,7 @@ export class PageModel extends BaseModel {
     workspaceId: string,
     pageId: string,
     userId: string,
-    permission: Permission = Permission.Read
+    permission: WorkspaceRole = WorkspaceRole.Collaborator
   ) {
     const count = await this.db.workspacePageUserPermission.count({
       where: {
@@ -190,7 +190,7 @@ export class PageModel extends BaseModel {
         userId,
         type: {
           // We shouldn't revoke owner permission, should auto deleted by workspace/user delete cascading
-          not: Permission.Owner,
+          not: WorkspaceRole.Owner,
         },
       },
     });

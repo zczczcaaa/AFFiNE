@@ -3,7 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
 import { Config } from '../../base/config';
-import { Permission, PublicPageMode } from '../../models/common';
+import { WorkspaceRole } from '../../core/permission';
+import { PublicPageMode } from '../../models/common';
 import { PageModel } from '../../models/page';
 import { type User, UserModel } from '../../models/user';
 import { type Workspace, WorkspaceModel } from '../../models/workspace';
@@ -131,7 +132,7 @@ test('should grant a member to access a page', async t => {
     workspace.id,
     'page1',
     user.id,
-    Permission.Write
+    WorkspaceRole.Collaborator
   );
   t.false(hasAccess);
   // grant write permission
@@ -139,20 +140,20 @@ test('should grant a member to access a page', async t => {
     workspace.id,
     'page1',
     user.id,
-    Permission.Write
+    WorkspaceRole.Collaborator
   );
   hasAccess = await t.context.page.isMember(
     workspace.id,
     'page1',
     user.id,
-    Permission.Write
+    WorkspaceRole.Collaborator
   );
   t.true(hasAccess);
   hasAccess = await t.context.page.isMember(
     workspace.id,
     'page1',
     user.id,
-    Permission.Read
+    WorkspaceRole.Collaborator
   );
   t.true(hasAccess);
   // delete member
@@ -174,14 +175,14 @@ test('should change the page owner', async t => {
     workspace.id,
     'page1',
     user.id,
-    Permission.Owner
+    WorkspaceRole.Owner
   );
   t.true(
     await t.context.page.isMember(
       workspace.id,
       'page1',
       user.id,
-      Permission.Owner
+      WorkspaceRole.Owner
     )
   );
 
@@ -193,14 +194,14 @@ test('should change the page owner', async t => {
     workspace.id,
     'page1',
     otherUser.id,
-    Permission.Owner
+    WorkspaceRole.Owner
   );
   t.true(
     await t.context.page.isMember(
       workspace.id,
       'page1',
       otherUser.id,
-      Permission.Owner
+      WorkspaceRole.Owner
     )
   );
   t.false(
@@ -208,7 +209,7 @@ test('should change the page owner', async t => {
       workspace.id,
       'page1',
       user.id,
-      Permission.Owner
+      WorkspaceRole.Owner
     )
   );
 });
@@ -221,7 +222,7 @@ test('should not delete owner from page', async t => {
     workspace.id,
     'page1',
     user.id,
-    Permission.Owner
+    WorkspaceRole.Owner
   );
   const count = await t.context.page.deleteMember(
     workspace.id,

@@ -1,4 +1,8 @@
-import { INestApplication, ModuleMetadata } from '@nestjs/common';
+import {
+  ConsoleLogger,
+  INestApplication,
+  ModuleMetadata,
+} from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Query, Resolver } from '@nestjs/graphql';
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
@@ -14,8 +18,6 @@ import { GqlModule } from '../../base/graphql';
 import { AuthGuard, AuthModule } from '../../core/auth';
 import { UserFeaturesInit1698652531198 } from '../../data/migrations/1698652531198-user-features-init';
 import { ModelsModule } from '../../models';
-
-export type PermissionEnum = 'Owner' | 'Admin' | 'Write' | 'Read';
 
 async function flushDB(client: PrismaClient) {
   const result: { tablename: string }[] =
@@ -133,8 +135,11 @@ export async function createTestingApp(moduleDef: TestingModuleMeatdata = {}) {
     cors: true,
     bodyParser: true,
     rawBody: true,
-    logger: ['fatal'],
   });
+  const logger = new ConsoleLogger();
+
+  logger.setLogLevels(['fatal']);
+  app.useLogger(logger);
 
   app.useGlobalFilters(new GlobalExceptionFilter(app.getHttpAdapter()));
   app.use(

@@ -1,6 +1,9 @@
+import { Logger } from '@nestjs/common';
 import {
   Args,
   Field,
+  InputType,
+  Int,
   Mutation,
   ObjectType,
   Parent,
@@ -12,18 +15,25 @@ import type { WorkspacePage as PrismaWorkspacePage } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 
 import {
+  ExpectToGrantDocUserRoles,
   ExpectToPublishPage,
+  ExpectToRevokeDocUserRoles,
   ExpectToRevokePublicPage,
+  ExpectToUpdateDocUserRole,
   PageIsNotPublic,
 } from '../../../base';
 import { CurrentUser } from '../../auth';
 import {
-  Permission,
+  DocRole,
   PermissionService,
   PublicPageMode,
+  WorkspaceRole,
 } from '../../permission';
+import { mapRoleToActions, PermissionsList } from '../../permission/types';
+import { UserType } from '../../user';
 import { DocID } from '../../utils/doc';
 import { WorkspaceType } from '../types';
+import { WorkspacePermissions } from './workspace';
 
 registerEnumType(PublicPageMode, {
   name: 'PublicPageMode',
@@ -45,8 +55,133 @@ class WorkspacePage implements Partial<PrismaWorkspacePage> {
   public!: boolean;
 }
 
+@InputType()
+class GrantDocUserRolesInput {
+  @Field(() => String)
+  docId!: string;
+
+  @Field(() => String)
+  workspaceId!: string;
+
+  @Field(() => DocRole)
+  role!: DocRole;
+
+  @Field(() => [String])
+  userIds!: string[];
+}
+
+@InputType()
+class PageGrantedUsersInput {
+  @Field(() => Int)
+  first!: number;
+
+  @Field(() => Int)
+  offset?: number;
+
+  @Field(() => String, { description: 'Cursor', nullable: true })
+  after?: string;
+
+  @Field(() => String, { description: 'Cursor', nullable: true })
+  before?: string;
+}
+
+@ObjectType()
+class GrantedDocUserType {
+  @Field(() => UserType)
+  user!: UserType;
+
+  @Field(() => DocRole)
+  role!: DocRole;
+}
+
+@ObjectType()
+class PageInfo {
+  @Field(() => String, { nullable: true })
+  startCursor?: string;
+
+  @Field(() => String, { nullable: true })
+  endCursor?: string;
+
+  @Field(() => Boolean)
+  hasNextPage!: boolean;
+
+  @Field(() => Boolean)
+  hasPreviousPage!: boolean;
+}
+
+@ObjectType()
+class GrantedDocUserEdge {
+  @Field(() => GrantedDocUserType)
+  user!: GrantedDocUserType;
+
+  @Field(() => String)
+  cursor!: string;
+}
+
+@ObjectType()
+class GrantedDocUsersConnection {
+  @Field(() => Int)
+  totalCount!: number;
+
+  @Field(() => [GrantedDocUserEdge])
+  edges!: GrantedDocUserEdge[];
+
+  @Field(() => PageInfo)
+  pageInfo!: PageInfo;
+}
+
+@ObjectType()
+export class RolePermissions
+  extends WorkspacePermissions
+  implements PermissionsList
+{
+  @Field()
+  Doc_Read!: boolean;
+  @Field()
+  Doc_Copy!: boolean;
+  @Field()
+  Doc_Properties_Read!: boolean;
+  @Field()
+  Doc_Users_Read!: boolean;
+  @Field()
+  Doc_Duplicate!: boolean;
+  @Field()
+  Doc_Trash!: boolean;
+  @Field()
+  Doc_Restore!: boolean;
+  @Field()
+  Doc_Delete!: boolean;
+  @Field()
+  Doc_Properties_Update!: boolean;
+  @Field()
+  Doc_Update!: boolean;
+  @Field()
+  Doc_Publish!: boolean;
+  @Field()
+  Doc_Users_Manage!: boolean;
+  @Field()
+  Doc_TransferOwner!: boolean;
+}
+
+@ObjectType()
+class DocType {
+  @Field(() => String)
+  id!: string;
+
+  @Field(() => Boolean)
+  public!: boolean;
+
+  @Field(() => DocRole)
+  role!: DocRole;
+
+  @Field(() => RolePermissions)
+  permissions!: RolePermissions;
+}
+
 @Resolver(() => WorkspaceType)
 export class PagePermissionResolver {
+  private readonly logger = new Logger(PagePermissionResolver.name);
+
   constructor(
     private readonly prisma: PrismaClient,
     private readonly permission: PermissionService
@@ -102,6 +237,122 @@ export class PagePermissionResolver {
     });
   }
 
+  @ResolveField(() => DocType, {
+    description: 'Check if current user has permission to access the page',
+    complexity: 2,
+  })
+  async pagePermission(
+    @Parent() workspace: WorkspaceType,
+    @Args('pageId') pageId: string,
+    @CurrentUser() user: CurrentUser
+  ): Promise<DocType> {
+    const page = await this.prisma.workspacePage.findFirst({
+      where: {
+        workspaceId: workspace.id,
+        pageId,
+      },
+      select: {
+        public: true,
+      },
+    });
+
+    const [permission, workspacePermission] = await this.prisma.$transaction(
+      tx =>
+        Promise.all([
+          tx.workspacePageUserPermission.findFirst({
+            where: {
+              workspaceId: workspace.id,
+              pageId,
+              userId: user.id,
+            },
+          }),
+          tx.workspaceUserPermission.findFirst({
+            where: {
+              workspaceId: workspace.id,
+              userId: user.id,
+            },
+          }),
+        ])
+    );
+    return {
+      id: pageId,
+      public: page?.public ?? false,
+      role: permission?.type ?? DocRole.External,
+      permissions: mapRoleToActions(
+        workspacePermission?.type,
+        permission?.type
+      ),
+    };
+  }
+
+  @ResolveField(() => GrantedDocUsersConnection, {
+    description: 'Page granted users list',
+    complexity: 4,
+  })
+  async pageGrantedUsersList(
+    @Parent() workspace: WorkspaceType,
+    @Args('pageId') pageId: string,
+    @Args('pageGrantedUsersInput')
+    pageGrantedUsersInput: PageGrantedUsersInput
+  ): Promise<GrantedDocUsersConnection> {
+    const docId = new DocID(pageId, workspace.id);
+    const [permissions, totalCount] = await this.prisma.$transaction(tx => {
+      return Promise.all([
+        tx.workspacePageUserPermission.findMany({
+          where: {
+            workspaceId: workspace.id,
+            pageId: docId.guid,
+          },
+          include: {
+            user: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: pageGrantedUsersInput.first,
+          skip: pageGrantedUsersInput.offset,
+          cursor: pageGrantedUsersInput.after
+            ? {
+                id: pageGrantedUsersInput.after,
+              }
+            : undefined,
+        }),
+        tx.workspacePageUserPermission.count({
+          where: {
+            workspaceId: workspace.id,
+            pageId: docId.guid,
+          },
+        }),
+      ]);
+    });
+
+    return {
+      totalCount,
+      edges: permissions.map(permission => ({
+        user: {
+          user: {
+            id: permission.user.id,
+            name: permission.user.name,
+            email: permission.user.email,
+            avatarUrl: permission.user.avatarUrl,
+            emailVerified: permission.user.emailVerifiedAt !== null,
+            hasPassword: permission.user.password !== null,
+          },
+          role: permission.type,
+        },
+        cursor: permission.id,
+      })),
+      pageInfo: {
+        startCursor: permissions.at(0)?.id,
+        endCursor: permissions.at(-1)?.id,
+        hasNextPage: totalCount > pageGrantedUsersInput.first,
+        hasPreviousPage:
+          pageGrantedUsersInput.offset !== undefined &&
+          pageGrantedUsersInput.offset > 0,
+      },
+    };
+  }
+
   /**
    * @deprecated
    */
@@ -134,14 +385,25 @@ export class PagePermissionResolver {
     const docId = new DocID(pageId, workspaceId);
 
     if (docId.isWorkspace) {
+      this.logger.error('Expect to publish page, but it is a workspace', {
+        workspaceId,
+        pageId,
+      });
       throw new ExpectToPublishPage();
     }
 
-    await this.permission.checkWorkspace(
+    await this.permission.checkPagePermission(
       docId.workspace,
-      user.id,
-      Permission.Write
+      docId.guid,
+      'Doc_Publish',
+      user.id
     );
+
+    this.logger.log('Publish page', {
+      workspaceId,
+      pageId,
+      mode,
+    });
 
     return this.permission.publishPage(docId.workspace, docId.guid, mode);
   }
@@ -171,13 +433,18 @@ export class PagePermissionResolver {
     const docId = new DocID(pageId, workspaceId);
 
     if (docId.isWorkspace) {
+      this.logger.error('Expect to revoke public page, but it is a workspace', {
+        workspaceId,
+        pageId,
+      });
       throw new ExpectToRevokePublicPage('Expect page not to be workspace');
     }
 
-    await this.permission.checkWorkspace(
+    await this.permission.checkPagePermission(
       docId.workspace,
-      user.id,
-      Permission.Write
+      docId.guid,
+      'Doc_Publish',
+      user.id
     );
 
     const isPublic = await this.permission.isPublicPage(
@@ -186,9 +453,148 @@ export class PagePermissionResolver {
     );
 
     if (!isPublic) {
+      this.logger.log('Expect to revoke public page, but it is not public', {
+        workspaceId,
+        pageId,
+      });
       throw new PageIsNotPublic('Page is not public');
     }
 
+    this.logger.log('Revoke public page', {
+      workspaceId,
+      pageId,
+    });
+
     return this.permission.revokePublicPage(docId.workspace, docId.guid);
+  }
+
+  @Mutation(() => Boolean)
+  async grantDocUserRoles(
+    @CurrentUser() user: CurrentUser,
+    @Args('input') input: GrantDocUserRolesInput
+  ): Promise<boolean> {
+    const doc = new DocID(input.docId, input.workspaceId);
+    const pairs = {
+      spaceId: input.workspaceId,
+      docId: input.docId,
+    };
+    if (doc.isWorkspace) {
+      this.logger.error(
+        'Expect to grant doc user roles, but it is a workspace',
+        pairs
+      );
+      throw new ExpectToGrantDocUserRoles(
+        pairs,
+        'Expect doc not to be workspace'
+      );
+    }
+    await this.permission.checkPagePermission(
+      doc.workspace,
+      doc.guid,
+      'Doc_Users_Manage',
+      user.id
+    );
+    await this.permission.grantPagePermission(
+      doc.workspace,
+      doc.guid,
+      input.userIds,
+      input.role
+    );
+    this.logger.log('Grant doc user roles', {
+      ...pairs,
+      userIds: input.userIds,
+      role: input.role,
+    });
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async revokeDocUserRoles(
+    @CurrentUser() user: CurrentUser,
+    @Args('docId') docId: string,
+    @Args('userIds', { type: () => [String] }) userIds: string[]
+  ): Promise<boolean> {
+    const doc = new DocID(docId);
+    const pairs = {
+      spaceId: doc.workspace,
+      docId: doc.guid,
+    };
+    if (doc.isWorkspace) {
+      this.logger.error(
+        'Expect to revoke doc user roles, but it is a workspace',
+        pairs
+      );
+      throw new ExpectToRevokeDocUserRoles(
+        pairs,
+        'Expect doc not to be workspace'
+      );
+    }
+    await this.permission.checkWorkspace(
+      doc.workspace,
+      user.id,
+      WorkspaceRole.Collaborator
+    );
+    await this.permission.revokePage(doc.workspace, doc.guid, userIds);
+    this.logger.log('Revoke doc user roles', {
+      ...pairs,
+      userIds: userIds,
+    });
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async updateDocUserRole(
+    @CurrentUser() user: CurrentUser,
+    @Args('docId') docId: string,
+    @Args('userId') userId: string,
+    @Args('role', { type: () => DocRole }) role: DocRole
+  ): Promise<boolean> {
+    const doc = new DocID(docId);
+    const pairs = {
+      spaceId: doc.workspace,
+      docId: doc.guid,
+    };
+    if (doc.isWorkspace) {
+      this.logger.error(
+        'Expect to update doc user role, but it is a workspace',
+        pairs
+      );
+      throw new ExpectToUpdateDocUserRole(
+        pairs,
+        'Expect doc not to be workspace'
+      );
+    }
+    await this.permission.checkWorkspace(
+      doc.workspace,
+      user.id,
+      WorkspaceRole.Collaborator
+    );
+    if (role === DocRole.Owner) {
+      const ret = await this.permission.grantPagePermission(
+        doc.workspace,
+        doc.guid,
+        [userId],
+        role
+      );
+      this.logger.log('Transfer doc owner', {
+        ...pairs,
+        userId: userId,
+        role: role,
+      });
+      return ret.length > 0;
+    } else {
+      await this.permission.updatePagePermission(
+        doc.workspace,
+        doc.guid,
+        userId,
+        role
+      );
+      this.logger.log('Update doc user role', {
+        ...pairs,
+        userId: userId,
+        role: role,
+      });
+      return true;
+    }
   }
 }

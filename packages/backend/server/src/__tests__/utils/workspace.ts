@@ -1,9 +1,9 @@
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 
+import { WorkspaceRole } from '../../core/permission/types';
 import type { WorkspaceType } from '../../core/workspaces';
 import { gql } from './common';
-import { PermissionEnum } from './utils';
 
 export async function createWorkspace(
   app: INestApplication,
@@ -157,7 +157,7 @@ export async function grantMember(
   token: string,
   workspaceId: string,
   userId: string,
-  permission: PermissionEnum
+  permission: WorkspaceRole
 ) {
   const res = await request(app.getHttpServer())
     .post(gql)
@@ -169,7 +169,7 @@ export async function grantMember(
             grantMember(
               workspaceId: "${workspaceId}"
               userId: "${userId}"
-              permission: ${permission}
+              permission: ${WorkspaceRole[permission]}
             )
           }
           `,

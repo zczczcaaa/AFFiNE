@@ -204,12 +204,28 @@ type DocNotFoundDataType {
   spaceId: String!
 }
 
+"""User permission in doc"""
+enum DocRole {
+  Editor
+  External
+  Manager
+  Owner
+  Reader
+}
+
+type DocType {
+  id: String!
+  permissions: RolePermissions!
+  public: Boolean!
+  role: DocRole!
+}
+
 type EditorType {
   avatarUrl: String
   name: String!
 }
 
-union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotMessageNotFoundDataType | CopilotPromptNotFoundDataType | CopilotProviderSideErrorDataType | DocAccessDeniedDataType | DocHistoryNotFoundDataType | DocNotFoundDataType | InvalidEmailDataType | InvalidHistoryTimestampDataType | InvalidLicenseUpdateParamsDataType | InvalidPasswordLengthDataType | InvalidRuntimeConfigTypeDataType | MemberNotFoundInSpaceDataType | MissingOauthQueryParameterDataType | NotInSpaceDataType | QueryTooLongDataType | RuntimeConfigNotFoundDataType | SameSubscriptionRecurringDataType | SpaceAccessDeniedDataType | SpaceNotFoundDataType | SpaceOwnerNotFoundDataType | SubscriptionAlreadyExistsDataType | SubscriptionNotExistsDataType | SubscriptionPlanNotFoundDataType | UnknownOauthProviderDataType | UnsupportedSubscriptionPlanDataType | VersionRejectedDataType | WorkspaceMembersExceedLimitToDowngradeDataType | WrongSignInCredentialsDataType
+union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotMessageNotFoundDataType | CopilotPromptNotFoundDataType | CopilotProviderSideErrorDataType | DocAccessDeniedDataType | DocHistoryNotFoundDataType | DocNotFoundDataType | ExpectToGrantDocUserRolesDataType | ExpectToRevokeDocUserRolesDataType | ExpectToUpdateDocUserRoleDataType | InvalidEmailDataType | InvalidHistoryTimestampDataType | InvalidLicenseUpdateParamsDataType | InvalidPasswordLengthDataType | InvalidRuntimeConfigTypeDataType | MemberNotFoundInSpaceDataType | MissingOauthQueryParameterDataType | NotInSpaceDataType | QueryTooLongDataType | RuntimeConfigNotFoundDataType | SameSubscriptionRecurringDataType | SpaceAccessDeniedDataType | SpaceNotFoundDataType | SpaceOwnerNotFoundDataType | SpaceShouldHaveOnlyOneOwnerDataType | SubscriptionAlreadyExistsDataType | SubscriptionNotExistsDataType | SubscriptionPlanNotFoundDataType | UnknownOauthProviderDataType | UnsupportedSubscriptionPlanDataType | VersionRejectedDataType | WorkspaceMembersExceedLimitToDowngradeDataType | WorkspacePermissionNotFoundDataType | WrongSignInCredentialsDataType
 
 enum ErrorNames {
   ACCESS_DENIED
@@ -240,8 +256,11 @@ enum ErrorNames {
   EMAIL_ALREADY_USED
   EMAIL_TOKEN_NOT_FOUND
   EMAIL_VERIFICATION_REQUIRED
+  EXPECT_TO_GRANT_DOC_USER_ROLES
   EXPECT_TO_PUBLISH_PAGE
+  EXPECT_TO_REVOKE_DOC_USER_ROLES
   EXPECT_TO_REVOKE_PUBLIC_PAGE
+  EXPECT_TO_UPDATE_DOC_USER_ROLE
   FAILED_TO_CHECKOUT
   FAILED_TO_SAVE_UPDATES
   FAILED_TO_UPSERT_SNAPSHOT
@@ -279,6 +298,7 @@ enum ErrorNames {
   SPACE_ACCESS_DENIED
   SPACE_NOT_FOUND
   SPACE_OWNER_NOT_FOUND
+  SPACE_SHOULD_HAVE_ONLY_ONE_OWNER
   SUBSCRIPTION_ALREADY_EXISTS
   SUBSCRIPTION_EXPIRED
   SUBSCRIPTION_HAS_BEEN_CANCELED
@@ -296,8 +316,24 @@ enum ErrorNames {
   WORKSPACE_ID_REQUIRED_TO_UPDATE_TEAM_SUBSCRIPTION
   WORKSPACE_LICENSE_ALREADY_EXISTS
   WORKSPACE_MEMBERS_EXCEED_LIMIT_TO_DOWNGRADE
+  WORKSPACE_PERMISSION_NOT_FOUND
   WRONG_SIGN_IN_CREDENTIALS
   WRONG_SIGN_IN_METHOD
+}
+
+type ExpectToGrantDocUserRolesDataType {
+  docId: String!
+  spaceId: String!
+}
+
+type ExpectToRevokeDocUserRolesDataType {
+  docId: String!
+  spaceId: String!
+}
+
+type ExpectToUpdateDocUserRoleDataType {
+  docId: String!
+  spaceId: String!
 }
 
 """The type of workspace feature"""
@@ -319,6 +355,29 @@ input ForkChatSessionInput {
   latestMessageId: String!
   sessionId: String!
   workspaceId: String!
+}
+
+input GrantDocUserRolesInput {
+  docId: String!
+  role: DocRole!
+  userIds: [String!]!
+  workspaceId: String!
+}
+
+type GrantedDocUserEdge {
+  cursor: String!
+  user: GrantedDocUserType!
+}
+
+type GrantedDocUserType {
+  role: DocRole!
+  user: UserType!
+}
+
+type GrantedDocUsersConnection {
+  edges: [GrantedDocUserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
 }
 
 type HumanReadableQuotaType {
@@ -418,7 +477,10 @@ type InviteUserType {
   name: String
 
   """User permission in workspace"""
-  permission: Permission!
+  permission: Permission! @deprecated(reason: "Use role instead")
+
+  """User role in workspace"""
+  role: Permission!
 
   """Member invite status in workspace"""
   status: WorkspaceMemberStatus!
@@ -548,6 +610,7 @@ type Mutation {
   """Create a chat session"""
   forkCopilotSession(options: ForkChatSessionInput!): String!
   generateLicenseKey(sessionId: String!): String!
+  grantDocUserRoles(input: GrantDocUserRolesInput!): Boolean!
   grantMember(permission: Permission!, userId: String!, workspaceId: String!): String!
   invite(email: String!, permission: Permission @deprecated(reason: "never used"), sendInviteMail: Boolean, workspaceId: String!): String!
   inviteBatch(emails: [String!]!, sendInviteMail: Boolean, workspaceId: String!): [InviteResult!]!
@@ -561,6 +624,7 @@ type Mutation {
   removeWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Int!
   resumeSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
   revoke(userId: String!, workspaceId: String!): Boolean!
+  revokeDocUserRoles(docId: String!, userIds: [String!]!): Boolean!
   revokeInviteLink(workspaceId: String!): Boolean!
   revokePage(pageId: String!, workspaceId: String!): Boolean! @deprecated(reason: "use revokePublicPage")
   revokePublicPage(pageId: String!, workspaceId: String!): WorkspacePage!
@@ -578,6 +642,7 @@ type Mutation {
 
   """Update a chat session"""
   updateCopilotSession(options: UpdateChatSessionInput!): String!
+  updateDocUserRole(docId: String!, role: DocRole!, userId: String!): Boolean!
   updateProfile(input: UpdateUserInput!): UserType!
 
   """update server runtime configurable setting"""
@@ -611,6 +676,23 @@ enum OAuthProviderType {
   OIDC
 }
 
+input PageGrantedUsersInput {
+  """Cursor"""
+  after: String
+
+  """Cursor"""
+  before: String
+  first: Int!
+  offset: Int!
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
 type PasswordLimitsType {
   maxLength: Int!
   minLength: Int!
@@ -619,9 +701,9 @@ type PasswordLimitsType {
 """User permission in workspace"""
 enum Permission {
   Admin
+  Collaborator
+  External
   Owner
-  Read
-  Write
 }
 
 """The mode which the public page default in"""
@@ -651,7 +733,7 @@ type Query {
 
   """List all copilot prompts"""
   listCopilotPrompts: [CopilotPromptType!]!
-  listWorkspaceFeatures(feature: FeatureType!): [WorkspaceType!]!
+  listWorkspaceFeatures(feature: FeatureType!): [WorkspaceFeatureType!]!
   prices: [SubscriptionPrice!]!
 
   """server config"""
@@ -678,6 +760,9 @@ type Query {
 
   """Get workspace by id"""
   workspace(id: String!): WorkspaceType!
+
+  """Get workspace role permissions"""
+  workspaceRolePermissions(id: String!): WorkspaceRolePermissions!
 
   """Get all accessible workspaces for current user"""
   workspaces: [WorkspaceType!]!
@@ -711,6 +796,35 @@ type QuotaQueryType {
 
 type RemoveAvatar {
   success: Boolean!
+}
+
+type RolePermissions {
+  Doc_Copy: Boolean!
+  Doc_Delete: Boolean!
+  Doc_Duplicate: Boolean!
+  Doc_Properties_Read: Boolean!
+  Doc_Properties_Update: Boolean!
+  Doc_Publish: Boolean!
+  Doc_Read: Boolean!
+  Doc_Restore: Boolean!
+  Doc_TransferOwner: Boolean!
+  Doc_Trash: Boolean!
+  Doc_Update: Boolean!
+  Doc_Users_Manage: Boolean!
+  Doc_Users_Read: Boolean!
+  Workspace_CreateDoc: Boolean!
+  Workspace_Delete: Boolean!
+  Workspace_Organize_Read: Boolean!
+  Workspace_Properties_Create: Boolean!
+  Workspace_Properties_Delete: Boolean!
+  Workspace_Properties_Read: Boolean!
+  Workspace_Properties_Update: Boolean!
+  Workspace_Settings_Read: Boolean!
+  Workspace_Settings_Update: Boolean!
+  Workspace_Sync: Boolean!
+  Workspace_TransferOwner: Boolean!
+  Workspace_Users_Manage: Boolean!
+  Workspace_Users_Read: Boolean!
 }
 
 type RuntimeConfigNotFoundDataType {
@@ -811,6 +925,10 @@ type SpaceNotFoundDataType {
 }
 
 type SpaceOwnerNotFoundDataType {
+  spaceId: String!
+}
+
+type SpaceShouldHaveOnlyOneOwnerDataType {
   spaceId: String!
 }
 
@@ -988,6 +1106,15 @@ type WorkspaceBlobSizes {
   size: SafeInt!
 }
 
+type WorkspaceFeatureType {
+  """Workspace created date"""
+  createdAt: DateTime!
+  id: ID!
+
+  """is Public workspace"""
+  public: Boolean!
+}
+
 """Workspace invite link expire time"""
 enum WorkspaceInviteLinkExpireTime {
   OneDay
@@ -1021,6 +1148,31 @@ type WorkspacePageMeta {
   createdBy: EditorType
   updatedAt: DateTime!
   updatedBy: EditorType
+}
+
+type WorkspacePermissionNotFoundDataType {
+  spaceId: String!
+}
+
+type WorkspacePermissions {
+  Workspace_CreateDoc: Boolean!
+  Workspace_Delete: Boolean!
+  Workspace_Organize_Read: Boolean!
+  Workspace_Properties_Create: Boolean!
+  Workspace_Properties_Delete: Boolean!
+  Workspace_Properties_Read: Boolean!
+  Workspace_Properties_Update: Boolean!
+  Workspace_Settings_Read: Boolean!
+  Workspace_Settings_Update: Boolean!
+  Workspace_Sync: Boolean!
+  Workspace_TransferOwner: Boolean!
+  Workspace_Users_Manage: Boolean!
+  Workspace_Users_Read: Boolean!
+}
+
+type WorkspaceRolePermissions {
+  permissions: WorkspacePermissions!
+  role: Permission!
 }
 
 type WorkspaceType {
@@ -1069,11 +1221,14 @@ type WorkspaceType {
   """Owner of workspace"""
   owner: UserType!
 
+  """Page granted users list"""
+  pageGrantedUsersList(pageGrantedUsersInput: PageGrantedUsersInput!, pageId: String!): GrantedDocUsersConnection!
+
   """Cloud page metadata of workspace"""
   pageMeta(pageId: String!): WorkspacePageMeta!
 
-  """Permission of current signed in user in workspace"""
-  permission: Permission!
+  """Check if current user has permission to access the page"""
+  pagePermission(pageId: String!): DocType!
 
   """is Public workspace"""
   public: Boolean!
@@ -1086,6 +1241,9 @@ type WorkspaceType {
 
   """quota of workspace"""
   quota: QuotaQueryType!
+
+  """Role of current signed in user in workspace"""
+  role: Permission!
 
   """Shared pages of workspace"""
   sharedPages: [String!]! @deprecated(reason: "use WorkspaceType.publicPages")

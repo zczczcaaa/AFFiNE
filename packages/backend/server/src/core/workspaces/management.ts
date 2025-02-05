@@ -13,7 +13,7 @@ import { CurrentUser } from '../auth';
 import { Admin } from '../common';
 import { FeatureManagementService, FeatureType } from '../features';
 import { PermissionService } from '../permission';
-import { WorkspaceType } from './types';
+import { WorkspaceFeatureType, WorkspaceType } from './types';
 
 @Resolver(() => WorkspaceType)
 export class WorkspaceManagementResolver {
@@ -41,10 +41,10 @@ export class WorkspaceManagementResolver {
   }
 
   @Admin()
-  @Query(() => [WorkspaceType])
+  @Query(() => [WorkspaceFeatureType])
   async listWorkspaceFeatures(
     @Args('feature', { type: () => FeatureType }) feature: FeatureType
-  ): Promise<WorkspaceType[]> {
+  ): Promise<WorkspaceFeatureType[]> {
     return this.feature.listFeatureWorkspaces(feature);
   }
 

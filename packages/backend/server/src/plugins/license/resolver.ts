@@ -11,7 +11,7 @@ import {
 
 import { ActionForbidden, Config } from '../../base';
 import { CurrentUser } from '../../core/auth';
-import { Permission, PermissionService } from '../../core/permission';
+import { PermissionService, WorkspaceRole } from '../../core/permission';
 import { WorkspaceType } from '../../core/workspaces';
 import { SubscriptionRecurring } from '../payment/types';
 import { LicenseService } from './service';
@@ -61,7 +61,7 @@ export class LicenseResolver {
     await this.permission.checkWorkspaceIs(
       workspace.id,
       user.id,
-      Permission.Owner
+      WorkspaceRole.Owner
     );
 
     return this.service.getLicense(workspace.id);
@@ -80,7 +80,7 @@ export class LicenseResolver {
     await this.permission.checkWorkspaceIs(
       workspaceId,
       user.id,
-      Permission.Owner
+      WorkspaceRole.Owner
     );
 
     return this.service.activateTeamLicense(workspaceId, license);
@@ -98,7 +98,7 @@ export class LicenseResolver {
     await this.permission.checkWorkspaceIs(
       workspaceId,
       user.id,
-      Permission.Owner
+      WorkspaceRole.Owner
     );
 
     return this.service.deactivateTeamLicense(workspaceId);
@@ -116,7 +116,7 @@ export class LicenseResolver {
     await this.permission.checkWorkspaceIs(
       workspaceId,
       user.id,
-      Permission.Owner
+      WorkspaceRole.Owner
     );
 
     const { url } = await this.service.createCustomerPortal(workspaceId);
