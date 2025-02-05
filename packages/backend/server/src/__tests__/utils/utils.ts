@@ -3,9 +3,13 @@ import {
   INestApplication,
   ModuleMetadata,
 } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, ModuleRef } from '@nestjs/core';
 import { Query, Resolver } from '@nestjs/graphql';
-import { Test, TestingModuleBuilder } from '@nestjs/testing';
+import {
+  Test,
+  TestingModule as BaseTestingModule,
+  TestingModuleBuilder,
+} from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import cookieParser from 'cookie-parser';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
@@ -16,7 +20,7 @@ import { AppModule, FunctionalityModules } from '../../app.module';
 import { GlobalExceptionFilter, Runtime } from '../../base';
 import { GqlModule } from '../../base/graphql';
 import { AuthGuard, AuthModule } from '../../core/auth';
-import { UserFeaturesInit1698652531198 } from '../../data/migrations/1698652531198-user-features-init';
+import { RefreshFeatures0001 } from '../../data/migrations/0001-refresh-features';
 import { ModelsModule } from '../../models';
 
 async function flushDB(client: PrismaClient) {
@@ -35,19 +39,24 @@ async function flushDB(client: PrismaClient) {
   );
 }
 
-async function initFeatureConfigs(db: PrismaClient) {
-  await UserFeaturesInit1698652531198.up(db);
-}
-
-export async function initTestingDB(db: PrismaClient) {
-  await flushDB(db);
-  await initFeatureConfigs(db);
-}
-
 interface TestingModuleMeatdata extends ModuleMetadata {
   tapModule?(m: TestingModuleBuilder): void;
   tapApp?(app: INestApplication): void;
 }
+
+const initTestingDB = async (ref: ModuleRef) => {
+  const db = ref.get(PrismaClient, { strict: false });
+  await flushDB(db);
+  await RefreshFeatures0001.up(db, ref);
+};
+
+export type TestingModule = BaseTestingModule & {
+  initTestingDB(): Promise<void>;
+};
+
+export type TestingApp = INestApplication & {
+  initTestingDB(): Promise<void>;
+};
 
 function dedupeModules(modules: NonNullable<ModuleMetadata['imports']>) {
   const map = new Map();
@@ -73,7 +82,7 @@ class MockResolver {
 
 export async function createTestingModule(
   moduleDef: TestingModuleMeatdata = {},
-  init = true
+  autoInitialize = true
 ) {
   // setting up
   let imports = moduleDef.imports ?? [];
@@ -107,13 +116,9 @@ export async function createTestingModule(
 
   const m = await builder.compile();
 
-  const prisma = m.get(PrismaClient);
-  if (prisma instanceof PrismaClient) {
-    await initTestingDB(prisma);
-  }
-
-  if (init) {
-    await m.init();
+  const testingModule = m as TestingModule;
+  testingModule.initTestingDB = async () => {
+    await initTestingDB(m.get(ModuleRef));
     // we got a lot smoking tests try to break nestjs
     // can't tolerate the noisy logs
     // @ts-expect-error private
@@ -123,9 +128,14 @@ export async function createTestingModule(
     const runtime = m.get(Runtime);
     // by pass password min length validation
     await runtime.set('auth/password.min', 1);
+  };
+
+  if (autoInitialize) {
+    await testingModule.initTestingDB();
+    await testingModule.init();
   }
 
-  return m;
+  return testingModule;
 }
 
 export async function createTestingApp(moduleDef: TestingModuleMeatdata = {}) {
@@ -135,7 +145,7 @@ export async function createTestingApp(moduleDef: TestingModuleMeatdata = {}) {
     cors: true,
     bodyParser: true,
     rawBody: true,
-  });
+  }) as TestingApp;
   const logger = new ConsoleLogger();
 
   logger.setLogLevels(['fatal']);
@@ -155,15 +165,14 @@ export async function createTestingApp(moduleDef: TestingModuleMeatdata = {}) {
     moduleDef.tapApp(app);
   }
 
+  await m.initTestingDB();
   await app.init();
 
-  const runtime = app.get(Runtime);
-  // by pass password min length validation
-  await runtime.set('auth/password.min', 1);
+  app.initTestingDB = m.initTestingDB.bind(m);
 
   return {
     module: m,
-    app,
+    app: app,
   };
 }
 

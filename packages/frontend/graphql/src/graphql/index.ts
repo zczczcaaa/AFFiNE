@@ -206,17 +206,6 @@ mutation createCopilotSession($options: CreateChatSessionInput!) {
 }`,
 };
 
-export const updateCopilotSessionMutation = {
-  id: 'updateCopilotSessionMutation' as const,
-  operationName: 'updateCopilotSession',
-  definitionName: 'updateCopilotSession',
-  containsFile: false,
-  query: `
-mutation updateCopilotSession($options: UpdateChatSessionInput!) {
-  updateCopilotSession(options: $options)
-}`,
-};
-
 export const createCustomerPortalMutation = {
   id: 'createCustomerPortalMutation' as const,
   operationName: 'createCustomerPortal',
@@ -634,19 +623,6 @@ export const getUsersCountQuery = {
   query: `
 query getUsersCount {
   usersCount
-}`,
-};
-
-export const getWorkspaceFeaturesQuery = {
-  id: 'getWorkspaceFeaturesQuery' as const,
-  operationName: 'getWorkspaceFeatures',
-  definitionName: 'workspace',
-  containsFile: false,
-  query: `
-query getWorkspaceFeatures($workspaceId: String!) {
-  workspace(id: $workspaceId) {
-    features
-  }
 }`,
 };
 
@@ -1143,6 +1119,17 @@ mutation updateAccount($id: String!, $input: ManageUserInput!) {
 }`,
 };
 
+export const updateCopilotSessionMutation = {
+  id: 'updateCopilotSessionMutation' as const,
+  operationName: 'updateCopilotSession',
+  definitionName: 'updateCopilotSession',
+  containsFile: false,
+  query: `
+mutation updateCopilotSession($options: UpdateChatSessionInput!) {
+  updateCopilotSession(options: $options)
+}`,
+};
+
 export const updatePromptMutation = {
   id: 'updatePromptMutation' as const,
   operationName: 'updatePrompt',
@@ -1289,89 +1276,6 @@ mutation setEnableUrlPreview($id: ID!, $enableUrlPreview: Boolean!) {
 }`,
 };
 
-export const enabledFeaturesQuery = {
-  id: 'enabledFeaturesQuery' as const,
-  operationName: 'enabledFeatures',
-  definitionName: 'workspace',
-  containsFile: false,
-  query: `
-query enabledFeatures($id: String!) {
-  workspace(id: $id) {
-    features
-  }
-}`,
-};
-
-export const availableFeaturesQuery = {
-  id: 'availableFeaturesQuery' as const,
-  operationName: 'availableFeatures',
-  definitionName: 'workspace',
-  containsFile: false,
-  query: `
-query availableFeatures($id: String!) {
-  workspace(id: $id) {
-    availableFeatures
-  }
-}`,
-};
-
-export const setWorkspaceExperimentalFeatureMutation = {
-  id: 'setWorkspaceExperimentalFeatureMutation' as const,
-  operationName: 'setWorkspaceExperimentalFeature',
-  definitionName: 'setWorkspaceExperimentalFeature',
-  containsFile: false,
-  query: `
-mutation setWorkspaceExperimentalFeature($workspaceId: String!, $feature: FeatureType!, $enable: Boolean!) {
-  setWorkspaceExperimentalFeature(
-    workspaceId: $workspaceId
-    feature: $feature
-    enable: $enable
-  )
-}`,
-};
-
-export const addWorkspaceFeatureMutation = {
-  id: 'addWorkspaceFeatureMutation' as const,
-  operationName: 'addWorkspaceFeature',
-  definitionName: 'addWorkspaceFeature',
-  containsFile: false,
-  query: `
-mutation addWorkspaceFeature($workspaceId: String!, $feature: FeatureType!) {
-  addWorkspaceFeature(workspaceId: $workspaceId, feature: $feature)
-}`,
-};
-
-export const listWorkspaceFeaturesQuery = {
-  id: 'listWorkspaceFeaturesQuery' as const,
-  operationName: 'listWorkspaceFeatures',
-  definitionName: 'listWorkspaceFeatures',
-  containsFile: false,
-  query: `
-query listWorkspaceFeatures($feature: FeatureType!) {
-  listWorkspaceFeatures(feature: $feature) {
-    id
-    public
-    createdAt
-    memberCount
-    owner {
-      id
-    }
-    features
-  }
-}`,
-};
-
-export const removeWorkspaceFeatureMutation = {
-  id: 'removeWorkspaceFeatureMutation' as const,
-  operationName: 'removeWorkspaceFeature',
-  definitionName: 'removeWorkspaceFeature',
-  containsFile: false,
-  query: `
-mutation removeWorkspaceFeature($workspaceId: String!, $feature: FeatureType!) {
-  removeWorkspaceFeature(workspaceId: $workspaceId, feature: $feature)
-}`,
-};
-
 export const inviteByEmailMutation = {
   id: 'inviteByEmailMutation' as const,
   operationName: 'inviteByEmail',
@@ -1500,6 +1404,7 @@ query workspaceQuota($id: String!) {
       name
       blobLimit
       storageQuota
+      usedStorageQuota
       historyPeriod
       memberLimit
       memberCount
@@ -1510,7 +1415,6 @@ query workspaceQuota($id: String!) {
         historyPeriod
         memberLimit
       }
-      usedSize
     }
   }
 }`,

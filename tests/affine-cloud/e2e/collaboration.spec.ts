@@ -22,11 +22,8 @@ let user: {
   password: string;
 };
 
-test.beforeEach(async () => {
-  user = await createRandomUser();
-});
-
 test.beforeEach(async ({ page }) => {
+  user = await createRandomUser();
   await loginUser(page, user);
 });
 

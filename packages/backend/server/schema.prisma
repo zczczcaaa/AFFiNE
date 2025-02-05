@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   binaryTargets   = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
-  previewFeatures = ["metrics", "tracing", "relationJoins", "nativeDistinct"]
+  previewFeatures = ["metrics", "relationJoins", "nativeDistinct"]
 }
 
 datasource db {
@@ -102,10 +102,10 @@ model Workspace {
   enableAi         Boolean  @default(true) @map("enable_ai")
   enableUrlPreview Boolean  @default(false) @map("enable_url_preview")
 
+  features        WorkspaceFeature[]
   pages           WorkspacePage[]
   permissions     WorkspaceUserPermission[]
   pagePermissions WorkspacePageUserPermission[]
-  features        WorkspaceFeature[]
   blobs           Blob[]
 
   @@map("workspaces")
@@ -178,80 +178,74 @@ model WorkspacePageUserPermission {
   @@map("workspace_page_user_permissions")
 }
 
-// feature gates is a way to enable/disable features for a user
-// for example:
-// - early access is a feature that allow some users to access the insider version
-// - pro plan is a quota that allow some users access to more resources after they pay
-model UserFeature {
-  id        Int    @id @default(autoincrement())
-  userId    String @map("user_id") @db.VarChar
-  featureId Int    @map("feature_id") @db.Integer
+model Feature {
+  id                Int      @id @default(autoincrement())
+  name              String   @map("feature") @db.VarChar
+  configs           Json     @default("{}") @db.Json
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  /// TODO(@forehalo): remove in the coming version
+  /// @deprecated
+  /// we don't need to record all the historical version of features
+  deprecatedVersion Int      @default(0) @map("version") @db.Integer
+  /// @deprecated
+  /// we don't need to record type of features any more, there are always static,
+  /// but set it in `WorkspaceFeature` and `UserFeature` for fast query with just a little redundant.
+  deprecatedType    Int      @default(0) @map("type") @db.Integer
 
-  // we will record the reason why the feature is enabled/disabled
-  // for example:
-  // - pro_plan_v1: "user buy the pro plan"
+  userFeatures      UserFeature[]
+  workspaceFeatures WorkspaceFeature[]
+
+  @@unique([name, deprecatedVersion])
+  @@map("features")
+}
+
+model UserFeature {
+  id        Int       @id @default(autoincrement())
+  userId    String    @map("user_id") @db.VarChar
+  featureId Int       @map("feature_id") @db.Integer
+  // it should be typed as `optional` in the codebase, but we would keep all values exists during data migration.
+  // so it's safe to assert it a non-null value.
+  name      String    @default("") @map("name") @db.VarChar
+  // a little redundant, but fast the queries
+  type      Int       @default(0) @map("type") @db.Integer
   reason    String    @db.VarChar
-  // record the quota enabled time
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  // record the quota expired time, pay plan is a subscription, so it will expired
   expiredAt DateTime? @map("expired_at") @db.Timestamptz(3)
-  // whether the feature is activated
-  // for example:
-  // - if we switch the user to another plan, we will set the old plan to deactivated, but dont delete it
   activated Boolean   @default(false)
 
   feature Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([name])
+  @@index([featureId])
   @@map("user_features")
 }
 
-// feature gates is a way to enable/disable features for a workspace
-// for example:
-// - copilet is a feature that allow some users in a workspace to access the copilet feature
 model WorkspaceFeature {
-  id          Int    @id @default(autoincrement())
-  workspaceId String @map("workspace_id") @db.VarChar
-  featureId   Int    @map("feature_id") @db.Integer
-
-  // override quota's configs
-  configs   Json      @default("{}") @db.Json
-  // we will record the reason why the feature is enabled/disabled
-  // for example:
-  // - copilet_v1: "owner buy the copilet feature package"
-  reason    String    @db.VarChar
-  // record the feature enabled time
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  // record the quota expired time, pay plan is a subscription, so it will expired
-  expiredAt DateTime? @map("expired_at") @db.Timestamptz(3)
-  // whether the feature is activated
-  // for example:
-  // - if owner unsubscribe a feature package, we will set the feature to deactivated, but dont delete it
-  activated Boolean   @default(false)
+  id          Int       @id @default(autoincrement())
+  workspaceId String    @map("workspace_id") @db.VarChar
+  featureId   Int       @map("feature_id") @db.Integer
+  // it should be typed as `optional` in the codebase, but we would keep all values exists during data migration.
+  // so it's safe to assert it a non-null value.
+  name        String    @default("") @map("name") @db.VarChar
+  // a little redundant, but fast the queries
+  type        Int       @default(0) @map("type") @db.Integer
+  /// overrides for the default feature configs
+  configs     Json      @default("{}") @db.Json
+  reason      String    @db.VarChar
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  activated   Boolean   @default(false)
+  expiredAt   DateTime? @map("expired_at") @db.Timestamptz(3)
 
   feature   Feature   @relation(fields: [featureId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
+  @@index([name])
+  @@index([featureId])
   @@map("workspace_features")
-}
-
-model Feature {
-  id        Int      @id @default(autoincrement())
-  feature   String   @db.VarChar
-  version   Int      @default(0) @db.Integer
-  // 0: feature, 1: quota
-  type      Int      @db.Integer
-  // configs, define by feature controller
-  configs   Json     @db.Json
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-
-  UserFeatureGates  UserFeature[]
-  WorkspaceFeatures WorkspaceFeature[]
-
-  @@unique([feature, version])
-  @@map("features")
 }
 
 // the latest snapshot of each doc that we've seen
@@ -417,7 +411,7 @@ model AiSession {
 
 model DataMigration {
   id         String    @id @default(uuid()) @db.VarChar
-  name       String    @db.VarChar
+  name       String    @unique @db.VarChar
   startedAt  DateTime  @default(now()) @map("started_at") @db.Timestamptz(3)
   finishedAt DateTime? @map("finished_at") @db.Timestamptz(3)
 
@@ -552,21 +546,21 @@ model Subscription {
 }
 
 model Invoice {
-  stripeInvoiceId  String   @id @map("stripe_invoice_id")
-  targetId         String   @map("target_id") @db.VarChar
-  currency         String   @db.VarChar(3)
+  stripeInvoiceId             String   @id @map("stripe_invoice_id")
+  targetId                    String   @map("target_id") @db.VarChar
+  currency                    String   @db.VarChar(3)
   // CNY 12.50 stored as 1250
-  amount           Int      @db.Integer
-  status           String   @db.VarChar(20)
-  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  amount                      Int      @db.Integer
+  status                      String   @db.VarChar(20)
+  createdAt                   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt                   DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
   // billing reason
-  reason           String?  @db.VarChar
-  lastPaymentError String?  @map("last_payment_error") @db.Text
+  reason                      String?  @db.VarChar
+  lastPaymentError            String?  @map("last_payment_error") @db.Text
   // stripe hosted invoice link
-  link             String?  @db.Text
+  link                        String?  @db.Text
   // whether the onetime subscription has been redeemed
-  onetimeSubscriptionRedeemed Boolean @map("onetime_subscription_redeemed") @default(false)
+  onetimeSubscriptionRedeemed Boolean  @default(false) @map("onetime_subscription_redeemed")
 
   @@index([targetId])
   @@map("invoices")

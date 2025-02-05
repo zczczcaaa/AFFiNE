@@ -2,7 +2,6 @@
 
 import { randomUUID } from 'node:crypto';
 
-import { INestApplication } from '@nestjs/common';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 import Sinon from 'sinon';
@@ -27,6 +26,7 @@ import {
   createWorkspace,
   inviteUser,
   signUp,
+  TestingApp,
 } from './utils';
 import {
   array2sse,
@@ -47,7 +47,7 @@ import {
 
 const test = ava as TestFn<{
   auth: AuthService;
-  app: INestApplication;
+  app: TestingApp;
   prompt: PromptService;
   provider: CopilotProviderService;
   storage: CopilotStorage;

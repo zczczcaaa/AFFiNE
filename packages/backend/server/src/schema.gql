@@ -230,6 +230,7 @@ union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotMe
 enum ErrorNames {
   ACCESS_DENIED
   ACTION_FORBIDDEN
+  ACTION_FORBIDDEN_ON_NON_TEAM_WORKSPACE
   ALREADY_IN_SPACE
   AUTHENTICATION_REQUIRED
   BLOB_NOT_FOUND
@@ -336,12 +337,14 @@ type ExpectToUpdateDocUserRoleDataType {
   spaceId: String!
 }
 
-"""The type of workspace feature"""
 enum FeatureType {
   AIEarlyAccess
   Admin
-  Copilot
   EarlyAccess
+  FreePlan
+  LifetimeProPlan
+  ProPlan
+  TeamPlan
   UnlimitedCopilot
   UnlimitedWorkspace
 }
@@ -378,15 +381,6 @@ type GrantedDocUsersConnection {
   edges: [GrantedDocUserEdge!]!
   pageInfo: PageInfo!
   totalCount: Int!
-}
-
-type HumanReadableQuotaType {
-  blobLimit: String!
-  copilotActionLimit: String
-  historyPeriod: String!
-  memberLimit: String!
-  name: String!
-  storageQuota: String!
 }
 
 type InvalidEmailDataType {
@@ -565,7 +559,7 @@ type MissingOauthQueryParameterDataType {
 type Mutation {
   acceptInviteById(inviteId: String!, sendAcceptMail: Boolean, workspaceId: String!): Boolean!
   activateLicense(license: String!, workspaceId: String!): License!
-  addWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Int!
+  addWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Boolean!
   approveMember(userId: String!, workspaceId: String!): String!
   cancelSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
   changeEmail(email: String!, token: String!): UserType!
@@ -621,7 +615,7 @@ type Mutation {
 
   """Remove user avatar"""
   removeAvatar: RemoveAvatar!
-  removeWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Int!
+  removeWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Boolean!
   resumeSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
   revoke(userId: String!, workspaceId: String!): Boolean!
   revokeDocUserRoles(docId: String!, userIds: [String!]!): Boolean!
@@ -634,7 +628,6 @@ type Mutation {
   sendVerifyChangeEmail(callbackUrl: String!, email: String!, token: String!): Boolean!
   sendVerifyEmail(callbackUrl: String!): Boolean!
   setBlob(blob: Upload!, workspaceId: String!): String!
-  setWorkspaceExperimentalFeature(enable: Boolean!, feature: FeatureType!, workspaceId: String!): Boolean!
   sharePage(pageId: String!, workspaceId: String!): Boolean! @deprecated(reason: "renamed to publishPage")
 
   """Update a copilot prompt"""
@@ -733,7 +726,6 @@ type Query {
 
   """List all copilot prompts"""
   listCopilotPrompts: [CopilotPromptType!]!
-  listWorkspaceFeatures(feature: FeatureType!): [WorkspaceFeatureType!]!
   prices: [SubscriptionPrice!]!
 
   """server config"""
@@ -780,18 +772,6 @@ input QueryChatHistoriesInput {
 
 type QueryTooLongDataType {
   max: Int!
-}
-
-type QuotaQueryType {
-  blobLimit: SafeInt!
-  copilotActionLimit: SafeInt
-  historyPeriod: SafeInt!
-  humanReadable: HumanReadableQuotaType!
-  memberCount: SafeInt!
-  memberLimit: SafeInt!
-  name: String!
-  storageQuota: SafeInt!
-  usedSize: SafeInt!
 }
 
 type RemoveAvatar {
@@ -1043,25 +1023,29 @@ scalar Upload
 
 union UserOrLimitedUser = LimitedUserType | UserType
 
-type UserQuota {
-  blobLimit: SafeInt!
-  historyPeriod: SafeInt!
-  humanReadable: UserQuotaHumanReadable!
-  memberLimit: Int!
-  name: String!
-  storageQuota: SafeInt!
-}
-
-type UserQuotaHumanReadable {
+type UserQuotaHumanReadableType {
   blobLimit: String!
+  copilotActionLimit: String!
   historyPeriod: String!
   memberLimit: String!
   name: String!
   storageQuota: String!
+  usedStorageQuota: String!
 }
 
-type UserQuotaUsage {
+type UserQuotaType {
+  blobLimit: SafeInt!
+  copilotActionLimit: Int
+  historyPeriod: SafeInt!
+  humanReadable: UserQuotaHumanReadableType!
+  memberLimit: Int!
+  name: String!
   storageQuota: SafeInt!
+  usedStorageQuota: SafeInt!
+}
+
+type UserQuotaUsageType {
+  storageQuota: SafeInt! @deprecated(reason: "use `UserQuotaType['usedStorageQuota']` instead")
 }
 
 type UserType {
@@ -1091,8 +1075,8 @@ type UserType {
 
   """User name"""
   name: String!
-  quota: UserQuota
-  quotaUsage: UserQuotaUsage!
+  quota: UserQuotaType!
+  quotaUsage: UserQuotaUsageType!
   subscriptions: [SubscriptionType!]!
   token: tokenType! @deprecated(reason: "use [/api/auth/sign-in?native=true] instead")
 }
@@ -1104,15 +1088,6 @@ type VersionRejectedDataType {
 
 type WorkspaceBlobSizes {
   size: SafeInt!
-}
-
-type WorkspaceFeatureType {
-  """Workspace created date"""
-  createdAt: DateTime!
-  id: ID!
-
-  """is Public workspace"""
-  public: Boolean!
 }
 
 """Workspace invite link expire time"""
@@ -1170,15 +1145,34 @@ type WorkspacePermissions {
   Workspace_Users_Read: Boolean!
 }
 
+type WorkspaceQuotaHumanReadableType {
+  blobLimit: String!
+  historyPeriod: String!
+  memberCount: String!
+  memberLimit: String!
+  name: String!
+  storageQuota: String!
+  storageQuotaUsed: String!
+}
+
+type WorkspaceQuotaType {
+  blobLimit: SafeInt!
+  historyPeriod: SafeInt!
+  humanReadable: WorkspaceQuotaHumanReadableType!
+  memberCount: Int!
+  memberLimit: Int!
+  name: String!
+  storageQuota: SafeInt!
+  usedSize: SafeInt! @deprecated(reason: "use `usedStorageQuota` instead")
+  usedStorageQuota: SafeInt!
+}
+
 type WorkspaceRolePermissions {
   permissions: WorkspacePermissions!
   role: Permission!
 }
 
 type WorkspaceType {
-  """Available features of workspace"""
-  availableFeatures: [FeatureType!]!
-
   """List blobs of workspace"""
   blobs: [ListedBlob!]!
 
@@ -1193,9 +1187,6 @@ type WorkspaceType {
 
   """Enable url previous when sharing"""
   enableUrlPreview: Boolean!
-
-  """Enabled features of workspace"""
-  features: [FeatureType!]!
   histories(before: DateTime, guid: String!, take: Int): [DocHistoryType!]!
   id: ID!
 
@@ -1240,7 +1231,7 @@ type WorkspaceType {
   publicPages: [WorkspacePage!]!
 
   """quota of workspace"""
-  quota: QuotaQueryType!
+  quota: WorkspaceQuotaType!
 
   """Role of current signed in user in workspace"""
   role: Permission!

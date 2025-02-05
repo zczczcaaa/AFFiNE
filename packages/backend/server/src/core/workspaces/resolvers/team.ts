@@ -10,6 +10,7 @@ import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
 import { nanoid } from 'nanoid';
 
 import {
+  ActionForbiddenOnNonTeamWorkspace,
   Cache,
   EventBus,
   MemberNotFoundInSpace,
@@ -22,7 +23,7 @@ import {
 import { Models } from '../../../models';
 import { CurrentUser } from '../../auth';
 import { PermissionService, WorkspaceRole } from '../../permission';
-import { QuotaManagementService } from '../../quota';
+import { QuotaService } from '../../quota';
 import {
   InviteLink,
   InviteResult,
@@ -47,7 +48,7 @@ export class TeamWorkspaceResolver {
     private readonly prisma: PrismaClient,
     private readonly permissions: PermissionService,
     private readonly models: Models,
-    private readonly quota: QuotaManagementService,
+    private readonly quota: QuotaService,
     private readonly mutex: RequestMutex,
     private readonly workspaceService: WorkspaceService
   ) {}
@@ -58,7 +59,7 @@ export class TeamWorkspaceResolver {
     complexity: 2,
   })
   team(@Parent() workspace: WorkspaceType) {
-    return this.quota.isTeamWorkspace(workspace.id);
+    return this.workspaceService.isTeamWorkspace(workspace.id);
   }
 
   @Mutation(() => [InviteResult])
@@ -85,7 +86,7 @@ export class TeamWorkspaceResolver {
       return new TooManyRequest();
     }
 
-    const quota = await this.quota.getWorkspaceUsage(workspaceId);
+    const quota = await this.quota.getWorkspaceSeatQuota(workspaceId);
 
     const results = [];
     for (const [idx, email] of emails.entries()) {
@@ -285,10 +286,20 @@ export class TeamWorkspaceResolver {
     @Args('userId') userId: string,
     @Args('permission', { type: () => WorkspaceRole }) permission: WorkspaceRole
   ) {
+    // non-team workspace can only transfer ownership, but no detailed permission control
+    if (permission !== WorkspaceRole.Owner) {
+      const isTeam = await this.workspaceService.isTeamWorkspace(workspaceId);
+      if (!isTeam) {
+        throw new ActionForbiddenOnNonTeamWorkspace();
+      }
+    }
+
     await this.permissions.checkWorkspace(
       workspaceId,
       user.id,
-      WorkspaceRole.Owner
+      permission >= WorkspaceRole.Admin
+        ? WorkspaceRole.Owner
+        : WorkspaceRole.Admin
     );
 
     try {

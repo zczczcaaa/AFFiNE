@@ -1,4 +1,3 @@
-import { TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
@@ -8,7 +7,7 @@ import { PublicPageMode } from '../../models/common';
 import { PageModel } from '../../models/page';
 import { type User, UserModel } from '../../models/user';
 import { type Workspace, WorkspaceModel } from '../../models/workspace';
-import { createTestingModule, initTestingDB } from '../utils';
+import { createTestingModule, type TestingModule } from '../utils';
 
 interface Context {
   config: Config;
@@ -36,7 +35,7 @@ let user: User;
 let workspace: Workspace;
 
 test.beforeEach(async t => {
-  await initTestingDB(t.context.db);
+  await t.context.module.initTestingDB();
   user = await t.context.user.create({
     email: 'test@affine.pro',
   });

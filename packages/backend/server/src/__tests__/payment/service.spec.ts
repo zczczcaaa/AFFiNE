@@ -1,6 +1,5 @@
 import '../../plugins/payment';
 
-import { INestApplication } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
@@ -11,7 +10,7 @@ import { EventBus, Runtime } from '../../base';
 import { ConfigModule } from '../../base/config';
 import { CurrentUser } from '../../core/auth';
 import { AuthService } from '../../core/auth/service';
-import { EarlyAccessType, FeatureManagementService } from '../../core/features';
+import { EarlyAccessType, FeatureService } from '../../core/features';
 import { SubscriptionService } from '../../plugins/payment/service';
 import {
   CouponType,
@@ -21,7 +20,7 @@ import {
   SubscriptionStatus,
   SubscriptionVariant,
 } from '../../plugins/payment/types';
-import { createTestingApp, initTestingDB } from '../utils';
+import { createTestingApp, type TestingApp } from '../utils';
 
 const PRO_MONTHLY = `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Monthly}`;
 const PRO_YEARLY = `${SubscriptionPlan.Pro}_${SubscriptionRecurring.Yearly}`;
@@ -156,10 +155,10 @@ const sub: Stripe.Subscription = {
 const test = ava as TestFn<{
   u1: CurrentUser;
   db: PrismaClient;
-  app: INestApplication;
+  app: TestingApp;
   service: SubscriptionService;
   event: Sinon.SinonStubbedInstance<EventBus>;
-  feature: Sinon.SinonStubbedInstance<FeatureManagementService>;
+  feature: Sinon.SinonStubbedInstance<FeatureService>;
   runtime: Sinon.SinonStubbedInstance<Runtime>;
   stripe: {
     customers: Sinon.SinonStubbedInstance<Stripe.CustomersResource>;
@@ -200,8 +199,8 @@ test.before(async t => {
       AppModule,
     ],
     tapModule: m => {
-      m.overrideProvider(FeatureManagementService).useValue(
-        Sinon.createStubInstance(FeatureManagementService)
+      m.overrideProvider(FeatureService).useValue(
+        Sinon.createStubInstance(FeatureService)
       );
       m.overrideProvider(EventBus).useValue(Sinon.createStubInstance(EventBus));
       m.overrideProvider(Runtime).useValue(Sinon.createStubInstance(Runtime));
@@ -210,7 +209,7 @@ test.before(async t => {
 
   t.context.event = app.get(EventBus);
   t.context.service = app.get(SubscriptionService);
-  t.context.feature = app.get(FeatureManagementService);
+  t.context.feature = app.get(FeatureService);
   t.context.runtime = app.get(Runtime);
   t.context.db = app.get(PrismaClient);
   t.context.app = app;
@@ -232,7 +231,7 @@ test.before(async t => {
 
 test.beforeEach(async t => {
   const { db, app, stripe } = t.context;
-  await initTestingDB(db);
+  await t.context.app.initTestingDB();
   t.context.u1 = await app.get(AuthService).signUp('u1@affine.pro', '1');
 
   await db.workspace.create({

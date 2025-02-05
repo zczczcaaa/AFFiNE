@@ -5,7 +5,6 @@ import Sinon from 'sinon';
 
 import { AppModule } from '../app.module';
 import { MailService } from '../base/mailer';
-import { FeatureManagementService } from '../core/features';
 import { createTestingApp, createWorkspace, inviteUser, signUp } from './utils';
 const test = ava as TestFn<{
   app: INestApplication;
@@ -16,13 +15,6 @@ import * as renderers from '../mails';
 test.beforeEach(async t => {
   const { module, app } = await createTestingApp({
     imports: [AppModule],
-    tapModule: module => {
-      module.overrideProvider(FeatureManagementService).useValue({
-        hasWorkspaceFeature() {
-          return false;
-        },
-      });
-    },
   });
 
   const mail = module.get(MailService);

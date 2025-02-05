@@ -5,9 +5,10 @@ import { z } from 'zod';
 
 import { BaseModel } from './base';
 import {
-  type FeatureConfigs,
+  type FeatureConfig,
+  FeatureConfigs,
   type FeatureName,
-  Features,
+  FeaturesShapes,
   FeatureType,
 } from './common';
 
@@ -29,7 +30,12 @@ export class FeatureModel extends BaseModel {
   }
 
   @Transactional()
-  async upsert<T extends FeatureName>(name: T, configs: FeatureConfigs<T>) {
+  async upsert<T extends FeatureName>(
+    name: T,
+    configs: FeatureConfig<T>,
+    deprecatedType: FeatureType,
+    deprecatedVersion: number
+  ) {
     const parsedConfigs = this.check(name, configs);
 
     // TODO(@forehalo):
@@ -41,8 +47,9 @@ export class FeatureModel extends BaseModel {
     if (!latest) {
       feature = await this.db.feature.create({
         data: {
-          type: FeatureType.Feature,
-          feature: name,
+          name,
+          deprecatedType,
+          deprecatedVersion,
           configs: parsedConfigs,
         },
       });
@@ -57,7 +64,7 @@ export class FeatureModel extends BaseModel {
 
     this.logger.verbose(`Feature ${name} upserted`);
 
-    return feature as Feature & { configs: FeatureConfigs<T> };
+    return feature as Feature & { configs: FeatureConfig<T> };
   }
 
   /**
@@ -67,8 +74,7 @@ export class FeatureModel extends BaseModel {
    */
   async try_get_unchecked<T extends FeatureName>(name: T) {
     const feature = await this.db.feature.findFirst({
-      where: { feature: name },
-      orderBy: { version: 'desc' },
+      where: { name },
     });
 
     return feature as Omit<Feature, 'configs'> & {
@@ -104,10 +110,22 @@ export class FeatureModel extends BaseModel {
       });
     }
 
-    return parseResult.data as FeatureConfigs<T>;
+    return parseResult.data as FeatureConfig<T>;
   }
 
   getConfigShape(name: FeatureName): z.ZodObject<any> {
-    return Features[name]?.shape.configs ?? z.object({});
+    return FeaturesShapes[name] ?? z.object({});
+  }
+
+  getFeatureType(name: FeatureName): FeatureType {
+    return FeatureConfigs[name].type;
+  }
+
+  async refreshFeatures() {
+    for (const key in FeatureConfigs) {
+      const name = key as FeatureName;
+      const def = FeatureConfigs[name];
+      await this.upsert(name, def.configs, def.type, def.deprecatedVersion);
+    }
   }
 }

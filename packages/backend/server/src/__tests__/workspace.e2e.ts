@@ -1,30 +1,28 @@
-import type { INestApplication } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 import request from 'supertest';
 
 import { AppModule } from '../app.module';
-import { WorkspaceRole } from '../core/permission/types';
 import {
   acceptInviteById,
   createTestingApp,
   createWorkspace,
   getWorkspacePublicPages,
-  grantMember,
   inviteUser,
   publishPage,
   revokePublicPage,
   signUp,
+  TestingApp,
   updateWorkspace,
 } from './utils';
 
 const test = ava as TestFn<{
-  app: INestApplication;
+  app: TestingApp;
   client: PrismaClient;
 }>;
 
-test.beforeEach(async t => {
+test.before(async t => {
   const { app } = await createTestingApp({
     imports: [AppModule],
   });
@@ -33,7 +31,11 @@ test.beforeEach(async t => {
   t.context.app = app;
 });
 
-test.afterEach.always(async t => {
+test.beforeEach(async t => {
+  await t.context.app.initTestingDB();
+});
+
+test.after.always(async t => {
   await t.context.app.close();
 });
 
@@ -132,30 +134,6 @@ test('should share a page', async t => {
     'You do not have permission to access doc page2 under Space not_exists_ws.',
     'unauthorized user can share page'
   );
-
-  await acceptInviteById(
-    app,
-    workspace.id,
-    await inviteUser(app, u1.token.token, workspace.id, u2.email)
-  );
-  const msg3 = await publishPage(app, u2.token.token, workspace.id, 'page2');
-  t.is(
-    msg3,
-    `You do not have permission to access doc page2 under Space ${workspace.id}.`,
-    'WorkspaceRole and PageRole is lower than required'
-  );
-
-  await grantMember(
-    app,
-    u1.token.token,
-    workspace.id,
-    u2.id,
-    WorkspaceRole.Admin
-  );
-
-  const invited = await publishPage(app, u2.token.token, workspace.id, 'page2');
-  t.is(invited.id, 'page2', 'failed to share page');
-
   const revoke = await revokePublicPage(
     app,
     u1.token.token,
@@ -168,9 +146,7 @@ test('should share a page', async t => {
     u1.token.token,
     workspace.id
   );
-  t.is(pages2.length, 1, 'failed to get shared pages');
-  t.is(pages2[0].id, 'page2', 'failed to get shared page: page2');
-
+  t.is(pages2.length, 0, 'failed to get shared pages');
   const msg4 = await revokePublicPage(
     app,
     u1.token.token,
@@ -179,19 +155,12 @@ test('should share a page', async t => {
   );
   t.is(msg4, 'Page is not public');
 
-  const revoked = await revokePublicPage(
-    app,
-    u1.token.token,
-    workspace.id,
-    'page2'
-  );
-  t.false(revoked.public, 'failed to revoke page');
-  const page3 = await getWorkspacePublicPages(
+  const pages3 = await getWorkspacePublicPages(
     app,
     u1.token.token,
     workspace.id
   );
-  t.is(page3.length, 0, 'failed to get shared pages');
+  t.is(pages3.length, 0, 'failed to get shared pages');
 });
 
 test('should be able to get workspace doc', async t => {

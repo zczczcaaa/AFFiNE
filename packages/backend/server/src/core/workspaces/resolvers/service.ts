@@ -148,6 +148,9 @@ export class WorkspaceService {
   }
 
   // ================ Team ================
+  async isTeamWorkspace(workspaceId: string) {
+    return this.models.workspaceFeature.has(workspaceId, 'team_plan_v1');
+  }
 
   async sendTeamWorkspaceUpgradedEmail(workspaceId: string) {
     const workspace = await this.getWorkspaceInfo(workspaceId);

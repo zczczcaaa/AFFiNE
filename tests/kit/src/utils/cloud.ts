@@ -119,9 +119,8 @@ export async function createRandomUser(): Promise<{
   const result = await runPrisma(async client => {
     const featureId = await client.feature
       .findFirst({
-        where: { feature: 'free_plan_v1' },
+        where: { name: 'free_plan_v1' },
         select: { id: true },
-        orderBy: { version: 'desc' },
       })
       .then(f => f!.id);
 
@@ -135,6 +134,8 @@ export async function createRandomUser(): Promise<{
             reason: 'created by test case',
             activated: true,
             featureId,
+            name: 'free_plan_v1',
+            type: 1,
           },
         },
       },
@@ -169,16 +170,14 @@ export async function createRandomAIUser(): Promise<{
   const result = await runPrisma(async client => {
     const freeFeatureId = await client.feature
       .findFirst({
-        where: { feature: 'free_plan_v1' },
+        where: { name: 'free_plan_v1' },
         select: { id: true },
-        orderBy: { version: 'desc' },
       })
       .then(f => f!.id);
     const aiFeatureId = await client.feature
       .findFirst({
-        where: { feature: 'unlimited_copilot' },
+        where: { name: 'unlimited_copilot' },
         select: { id: true },
-        orderBy: { version: 'desc' },
       })
       .then(f => f!.id);
 
@@ -193,11 +192,15 @@ export async function createRandomAIUser(): Promise<{
               reason: 'created by test case',
               activated: true,
               featureId: freeFeatureId,
+              name: 'free_plan_v1',
+              type: 1,
             },
             {
               reason: 'created by test case',
               activated: true,
               featureId: aiFeatureId,
+              name: 'unlimited_copilot',
+              type: 0,
             },
           ],
         },

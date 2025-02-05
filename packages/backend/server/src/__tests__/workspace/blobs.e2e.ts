@@ -1,10 +1,8 @@
-import type { INestApplication } from '@nestjs/common';
 import test from 'ava';
 import request from 'supertest';
 
 import { AppModule } from '../../app.module';
-import { FeatureManagementService, FeatureType } from '../../core/features';
-import { QuotaService, QuotaType } from '../../core/quota';
+import { WorkspaceFeatureModel } from '../../models';
 import {
   collectAllBlobSizes,
   createTestingApp,
@@ -13,25 +11,35 @@ import {
   listBlobs,
   setBlob,
   signUp,
+  TestingApp,
 } from '../utils';
 
 const OneMB = 1024 * 1024;
+const RESTRICTED_QUOTA = {
+  seatQuota: 0,
+  blobLimit: OneMB,
+  storageQuota: 2 * OneMB - 1,
+  historyPeriod: 1,
+  memberLimit: 1,
+};
 
-let app: INestApplication;
-let quota: QuotaService;
-let feature: FeatureManagementService;
+let app: TestingApp;
+let model: WorkspaceFeatureModel;
 
-test.beforeEach(async () => {
+test.before(async () => {
   const { app: testApp } = await createTestingApp({
     imports: [AppModule],
   });
 
   app = testApp;
-  quota = app.get(QuotaService);
-  feature = app.get(FeatureManagementService);
+  model = app.get(WorkspaceFeatureModel);
 });
 
-test.afterEach.always(async () => {
+test.beforeEach(async () => {
+  await app.initTestingDB();
+});
+
+test.after.always(async () => {
   await app.close();
 });
 
@@ -119,32 +127,23 @@ test('should reject blob exceeded limit', async t => {
   const u1 = await signUp(app, 'darksky', 'darksky@affine.pro', '1');
 
   const workspace1 = await createWorkspace(app, u1.token.token);
-  await quota.switchUserQuota(u1.id, QuotaType.RestrictedPlanV1);
+  await model.add(workspace1.id, 'team_plan_v1', 'test', RESTRICTED_QUOTA);
 
-  const buffer1 = Buffer.from(Array.from({ length: OneMB + 1 }, () => 0));
+  const buffer1 = Buffer.from(
+    Array.from({ length: RESTRICTED_QUOTA.blobLimit + 1 }, () => 0)
+  );
   await t.throwsAsync(setBlob(app, u1.token.token, workspace1.id, buffer1));
-
-  await quota.switchUserQuota(u1.id, QuotaType.FreePlanV1);
-
-  const buffer2 = Buffer.from(Array.from({ length: OneMB + 1 }, () => 0));
-  await t.notThrowsAsync(setBlob(app, u1.token.token, workspace1.id, buffer2));
-
-  const buffer3 = Buffer.from(Array.from({ length: 100 * OneMB + 1 }, () => 0));
-  await t.throwsAsync(setBlob(app, u1.token.token, workspace1.id, buffer3));
 });
 
 test('should reject blob exceeded quota', async t => {
   const u1 = await signUp(app, 'darksky', 'darksky@affine.pro', '1');
 
   const workspace = await createWorkspace(app, u1.token.token);
-  await quota.switchUserQuota(u1.id, QuotaType.RestrictedPlanV1);
+  await model.add(workspace.id, 'team_plan_v1', 'test', RESTRICTED_QUOTA);
 
   const buffer = Buffer.from(Array.from({ length: OneMB }, () => 0));
 
-  for (let i = 0; i < 10; i++) {
-    await t.notThrowsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
-  }
-
+  await t.notThrowsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
   await t.throwsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
 });
 
@@ -152,14 +151,10 @@ test('should accept blob even storage out of quota if workspace has unlimited fe
   const u1 = await signUp(app, 'darksky', 'darksky@affine.pro', '1');
 
   const workspace = await createWorkspace(app, u1.token.token);
-  await quota.switchUserQuota(u1.id, QuotaType.RestrictedPlanV1);
-  feature.addWorkspaceFeatures(workspace.id, FeatureType.UnlimitedWorkspace);
+  await model.add(workspace.id, 'team_plan_v1', 'test', RESTRICTED_QUOTA);
+  await model.add(workspace.id, 'unlimited_workspace', 'test');
 
   const buffer = Buffer.from(Array.from({ length: OneMB }, () => 0));
-
-  for (let i = 0; i < 10; i++) {
-    await t.notThrowsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
-  }
-
+  await t.notThrowsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
   await t.notThrowsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
 });

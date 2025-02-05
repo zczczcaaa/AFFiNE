@@ -16,7 +16,7 @@ import type { FileUpload } from '../../../base';
 import { BlobQuotaExceeded, CloudThrottlerGuard } from '../../../base';
 import { CurrentUser } from '../../auth';
 import { PermissionService, WorkspaceRole } from '../../permission';
-import { QuotaManagementService } from '../../quota';
+import { QuotaService } from '../../quota';
 import { WorkspaceBlobStorage } from '../../storage';
 import { WorkspaceBlobSizes, WorkspaceType } from '../types';
 
@@ -41,7 +41,7 @@ export class WorkspaceBlobResolver {
   logger = new Logger(WorkspaceBlobResolver.name);
   constructor(
     private readonly permissions: PermissionService,
-    private readonly quota: QuotaManagementService,
+    private readonly quota: QuotaService,
     private readonly storage: WorkspaceBlobStorage
   ) {}
 
@@ -106,7 +106,7 @@ export class WorkspaceBlobResolver {
     );
 
     const checkExceeded =
-      await this.quota.getQuotaCalculatorByWorkspace(workspaceId);
+      await this.quota.getWorkspaceQuotaCalculator(workspaceId);
 
     // TODO(@darksky): need a proper way to separate `BlobQuotaExceeded` and `BlobSizeTooLarge`
     if (checkExceeded(0)) {

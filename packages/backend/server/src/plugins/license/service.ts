@@ -12,7 +12,7 @@ import {
   WorkspaceLicenseAlreadyExists,
 } from '../../base';
 import { PermissionService } from '../../core/permission';
-import { QuotaManagementService, QuotaType } from '../../core/quota';
+import { Models } from '../../models';
 import { SubscriptionPlan, SubscriptionRecurring } from '../payment/types';
 
 interface License {
@@ -29,9 +29,9 @@ export class LicenseService {
   constructor(
     private readonly config: Config,
     private readonly db: PrismaClient,
-    private readonly quota: QuotaManagementService,
     private readonly event: EventBus,
-    private readonly permission: PermissionService
+    private readonly permission: PermissionService,
+    private readonly models: Models
   ) {}
 
   async getLicense(workspaceId: string) {
@@ -316,14 +316,13 @@ export class LicenseService {
   }: Events['workspace.subscription.activated']) {
     switch (plan) {
       case SubscriptionPlan.SelfHostedTeam:
-        await this.quota.addTeamWorkspace(
+        await this.models.workspaceFeature.add(
           workspaceId,
-          `${recurring} team subscription activated`
-        );
-        await this.quota.updateWorkspaceConfig(
-          workspaceId,
-          QuotaType.TeamPlanV1,
-          { memberLimit: quantity }
+          'team_plan_v1',
+          `${recurring} team subscription activated`,
+          {
+            memberLimit: quantity,
+          }
         );
         await this.permission.refreshSeatStatus(workspaceId, quantity);
         break;
@@ -339,7 +338,7 @@ export class LicenseService {
   }: Events['workspace.subscription.canceled']) {
     switch (plan) {
       case SubscriptionPlan.SelfHostedTeam:
-        await this.quota.removeTeamWorkspace(workspaceId);
+        await this.models.workspaceFeature.remove(workspaceId, 'team_plan_v1');
         break;
       default:
         break;

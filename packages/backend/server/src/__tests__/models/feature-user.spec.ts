@@ -1,9 +1,8 @@
-import { TestingModule } from '@nestjs/testing';
-import { PrismaClient, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
-import { UserFeatureModel, UserModel } from '../../models';
-import { createTestingModule, initTestingDB } from '../utils';
+import { FeatureType, UserFeatureModel, UserModel } from '../../models';
+import { createTestingModule, TestingModule } from '../utils';
 
 interface Context {
   module: TestingModule;
@@ -21,7 +20,7 @@ test.before(async t => {
 });
 
 test.beforeEach(async t => {
-  await initTestingDB(t.context.module.get(PrismaClient));
+  await t.context.module.initTestingDB();
   t.context.u1 = await t.context.module.get(UserModel).create({
     email: 'u1@affine.pro',
     registered: true,
@@ -41,13 +40,29 @@ test('should get null if user feature not found', async t => {
 test('should get user feature', async t => {
   const { model, u1 } = t.context;
   const userFeature = await model.get(u1.id, 'free_plan_v1');
-  t.is(userFeature?.feature, 'free_plan_v1');
+  t.is(userFeature?.name, 'free_plan_v1');
+});
+
+test('should get user quota', async t => {
+  const { model, u1 } = t.context;
+  const userQuota = await model.getQuota(u1.id);
+  t.snapshot(userQuota?.configs, 'free plan');
 });
 
 test('should list user features', async t => {
   const { model, u1 } = t.context;
 
   t.like(await model.list(u1.id), ['free_plan_v1']);
+});
+
+test('should list user features by type', async t => {
+  const { model, u1 } = t.context;
+
+  await model.add(u1.id, 'free_plan_v1', 'test');
+  await model.add(u1.id, 'unlimited_copilot', 'test');
+
+  t.like(await model.list(u1.id, FeatureType.Quota), ['free_plan_v1']);
+  t.like(await model.list(u1.id, FeatureType.Feature), ['unlimited_copilot']);
 });
 
 test('should directly test user feature existence', async t => {
@@ -82,14 +97,29 @@ test('should remove user feature', async t => {
   t.false((await model.list(u1.id)).includes('free_plan_v1'));
 });
 
-test('should switch user feature', async t => {
+test('should switch user quota', async t => {
   const { model, u1 } = t.context;
 
-  await model.switch(u1.id, 'free_plan_v1', 'pro_plan_v1', 'test');
+  await model.switchQuota(u1.id, 'pro_plan_v1', 'test');
+  const quota = await model.getQuota(u1.id);
+  t.snapshot(quota?.configs, 'switch to pro plan');
 
-  t.false(await model.has(u1.id, 'free_plan_v1'));
-  t.true(await model.has(u1.id, 'pro_plan_v1'));
+  await model.switchQuota(u1.id, 'free_plan_v1', 'test');
+  const quota2 = await model.getQuota(u1.id);
+  t.snapshot(quota2?.configs, 'switch to free plan');
+});
 
-  t.false((await model.list(u1.id)).includes('free_plan_v1'));
-  t.true((await model.list(u1.id)).includes('pro_plan_v1'));
+test('should not switch user quota if the new quota is the same as the current one', async t => {
+  const { model, u1 } = t.context;
+
+  await model.switchQuota(u1.id, 'free_plan_v1', 'test not switch');
+
+  // @ts-expect-error private
+  const quota = await model.db.userFeature.findFirst({
+    where: {
+      userId: u1.id,
+    },
+  });
+
+  t.not(quota?.reason, 'test not switch');
 });

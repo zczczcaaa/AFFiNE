@@ -1,4 +1,3 @@
-/* oxlint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -188,11 +187,6 @@ export interface CreateChatSessionInput {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface UpdateChatSessionInput {
-  sessionId: Scalars['String']['input'];
-  promptName: Scalars['String']['input'];
-}
-
 export interface CreateCheckoutSessionInput {
   args?: InputMaybe<Scalars['JSONObject']['input']>;
   coupon?: InputMaybe<Scalars['String']['input']>;
@@ -282,6 +276,7 @@ export type ErrorDataUnion =
   | MemberNotFoundInSpaceDataType
   | MissingOauthQueryParameterDataType
   | NotInSpaceDataType
+  | QueryTooLongDataType
   | RuntimeConfigNotFoundDataType
   | SameSubscriptionRecurringDataType
   | SpaceAccessDeniedDataType
@@ -356,6 +351,7 @@ export enum ErrorNames {
   OAUTH_STATE_EXPIRED = 'OAUTH_STATE_EXPIRED',
   PAGE_IS_NOT_PUBLIC = 'PAGE_IS_NOT_PUBLIC',
   PASSWORD_REQUIRED = 'PASSWORD_REQUIRED',
+  QUERY_TOO_LONG = 'QUERY_TOO_LONG',
   RUNTIME_CONFIG_NOT_FOUND = 'RUNTIME_CONFIG_NOT_FOUND',
   SAME_EMAIL_PROVIDED = 'SAME_EMAIL_PROVIDED',
   SAME_SUBSCRIPTION_RECURRING = 'SAME_SUBSCRIPTION_RECURRING',
@@ -384,12 +380,14 @@ export enum ErrorNames {
   WRONG_SIGN_IN_METHOD = 'WRONG_SIGN_IN_METHOD',
 }
 
-/** The type of workspace feature */
 export enum FeatureType {
   AIEarlyAccess = 'AIEarlyAccess',
   Admin = 'Admin',
-  Copilot = 'Copilot',
   EarlyAccess = 'EarlyAccess',
+  FreePlan = 'FreePlan',
+  LifetimeProPlan = 'LifetimeProPlan',
+  ProPlan = 'ProPlan',
+  TeamPlan = 'TeamPlan',
   UnlimitedCopilot = 'UnlimitedCopilot',
   UnlimitedWorkspace = 'UnlimitedWorkspace',
 }
@@ -400,16 +398,6 @@ export interface ForkChatSessionInput {
   latestMessageId: Scalars['String']['input'];
   sessionId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
-}
-
-export interface HumanReadableQuotaType {
-  __typename?: 'HumanReadableQuotaType';
-  blobLimit: Scalars['String']['output'];
-  copilotActionLimit: Maybe<Scalars['String']['output']>;
-  historyPeriod: Scalars['String']['output'];
-  memberLimit: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  storageQuota: Scalars['String']['output'];
 }
 
 export interface InvalidEmailDataType {
@@ -533,6 +521,15 @@ export interface InvoiceType {
   updatedAt: Scalars['DateTime']['output'];
 }
 
+export interface License {
+  __typename?: 'License';
+  expiredAt: Maybe<Scalars['DateTime']['output']>;
+  installedAt: Scalars['DateTime']['output'];
+  quantity: Scalars['Int']['output'];
+  recurring: SubscriptionRecurring;
+  validatedAt: Scalars['DateTime']['output'];
+}
+
 export interface LimitedUserType {
   __typename?: 'LimitedUserType';
   /** User email */
@@ -574,7 +571,8 @@ export interface MissingOauthQueryParameterDataType {
 export interface Mutation {
   __typename?: 'Mutation';
   acceptInviteById: Scalars['Boolean']['output'];
-  addWorkspaceFeature: Scalars['Int']['output'];
+  activateLicense: License;
+  addWorkspaceFeature: Scalars['Boolean']['output'];
   approveMember: Scalars['String']['output'];
   cancelSubscription: SubscriptionType;
   changeEmail: UserType;
@@ -594,10 +592,12 @@ export interface Mutation {
   /** Create a stripe customer portal to manage payment methods */
   createCustomerPortal: Scalars['String']['output'];
   createInviteLink: InviteLink;
+  createSelfhostWorkspaceCustomerPortal: Scalars['String']['output'];
   /** Create a new user */
   createUser: UserType;
   /** Create a new workspace */
   createWorkspace: WorkspaceType;
+  deactivateLicense: Scalars['Boolean']['output'];
   deleteAccount: DeleteAccount;
   deleteBlob: Scalars['Boolean']['output'];
   /** Delete a user account */
@@ -615,7 +615,7 @@ export interface Mutation {
   releaseDeletedBlobs: Scalars['Boolean']['output'];
   /** Remove user avatar */
   removeAvatar: RemoveAvatar;
-  removeWorkspaceFeature: Scalars['Int']['output'];
+  removeWorkspaceFeature: Scalars['Boolean']['output'];
   resumeSubscription: SubscriptionType;
   revoke: Scalars['Boolean']['output'];
   revokeInviteLink: Scalars['Boolean']['output'];
@@ -628,11 +628,12 @@ export interface Mutation {
   sendVerifyChangeEmail: Scalars['Boolean']['output'];
   sendVerifyEmail: Scalars['Boolean']['output'];
   setBlob: Scalars['String']['output'];
-  setWorkspaceExperimentalFeature: Scalars['Boolean']['output'];
   /** @deprecated renamed to publishPage */
   sharePage: Scalars['Boolean']['output'];
   /** Update a copilot prompt */
   updateCopilotPrompt: CopilotPromptType;
+  /** Update a chat session */
+  updateCopilotSession: Scalars['String']['output'];
   updateProfile: UserType;
   /** update server runtime configurable setting */
   updateRuntimeConfig: ServerRuntimeConfigType;
@@ -653,6 +654,11 @@ export interface Mutation {
 export interface MutationAcceptInviteByIdArgs {
   inviteId: Scalars['String']['input'];
   sendAcceptMail?: InputMaybe<Scalars['Boolean']['input']>;
+  workspaceId: Scalars['String']['input'];
+}
+
+export interface MutationActivateLicenseArgs {
+  license: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 }
 
@@ -708,12 +714,12 @@ export interface MutationCreateCopilotSessionArgs {
   options: CreateChatSessionInput;
 }
 
-export interface MutationUpdateCopilotSessionArgs {
-  options: UpdateChatSessionInput;
-}
-
 export interface MutationCreateInviteLinkArgs {
   expireTime: WorkspaceInviteLinkExpireTime;
+  workspaceId: Scalars['String']['input'];
+}
+
+export interface MutationCreateSelfhostWorkspaceCustomerPortalArgs {
   workspaceId: Scalars['String']['input'];
 }
 
@@ -723,6 +729,10 @@ export interface MutationCreateUserArgs {
 
 export interface MutationCreateWorkspaceArgs {
   init?: InputMaybe<Scalars['Upload']['input']>;
+}
+
+export interface MutationDeactivateLicenseArgs {
+  workspaceId: Scalars['String']['input'];
 }
 
 export interface MutationDeleteBlobArgs {
@@ -849,12 +859,6 @@ export interface MutationSetBlobArgs {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface MutationSetWorkspaceExperimentalFeatureArgs {
-  enable: Scalars['Boolean']['input'];
-  feature: FeatureType;
-  workspaceId: Scalars['String']['input'];
-}
-
 export interface MutationSharePageArgs {
   pageId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
@@ -863,6 +867,10 @@ export interface MutationSharePageArgs {
 export interface MutationUpdateCopilotPromptArgs {
   messages: Array<CopilotPromptMessageInput>;
   name: Scalars['String']['input'];
+}
+
+export interface MutationUpdateCopilotSessionArgs {
+  options: UpdateChatSessionInput;
 }
 
 export interface MutationUpdateProfileArgs {
@@ -958,7 +966,6 @@ export interface Query {
   listBlobs: Array<Scalars['String']['output']>;
   /** List all copilot prompts */
   listCopilotPrompts: Array<CopilotPromptType>;
-  listWorkspaceFeatures: Array<WorkspaceType>;
   prices: Array<SubscriptionPrice>;
   /** server config */
   serverConfig: ServerConfigType;
@@ -1001,10 +1008,6 @@ export interface QueryListBlobsArgs {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface QueryListWorkspaceFeaturesArgs {
-  feature: FeatureType;
-}
-
 export interface QueryUserArgs {
   email: Scalars['String']['input'];
 }
@@ -1035,17 +1038,9 @@ export interface QueryChatHistoriesInput {
   skip?: InputMaybe<Scalars['Int']['input']>;
 }
 
-export interface QuotaQueryType {
-  __typename?: 'QuotaQueryType';
-  blobLimit: Scalars['SafeInt']['output'];
-  copilotActionLimit: Maybe<Scalars['SafeInt']['output']>;
-  historyPeriod: Scalars['SafeInt']['output'];
-  humanReadable: HumanReadableQuotaType;
-  memberCount: Scalars['SafeInt']['output'];
-  memberLimit: Scalars['SafeInt']['output'];
-  name: Scalars['String']['output'];
-  storageQuota: Scalars['SafeInt']['output'];
-  usedSize: Scalars['SafeInt']['output'];
+export interface QueryTooLongDataType {
+  __typename?: 'QueryTooLongDataType';
+  max: Scalars['Int']['output'];
 }
 
 export interface RemoveAvatar {
@@ -1241,6 +1236,12 @@ export interface UnsupportedSubscriptionPlanDataType {
   plan: Scalars['String']['output'];
 }
 
+export interface UpdateChatSessionInput {
+  /** The prompt name to use for the session */
+  promptName: Scalars['String']['input'];
+  sessionId: Scalars['String']['input'];
+}
+
 export interface UpdateUserInput {
   /** User name */
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1258,27 +1259,32 @@ export interface UpdateWorkspaceInput {
 
 export type UserOrLimitedUser = LimitedUserType | UserType;
 
-export interface UserQuota {
-  __typename?: 'UserQuota';
-  blobLimit: Scalars['SafeInt']['output'];
-  historyPeriod: Scalars['SafeInt']['output'];
-  humanReadable: UserQuotaHumanReadable;
-  memberLimit: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
-  storageQuota: Scalars['SafeInt']['output'];
-}
-
-export interface UserQuotaHumanReadable {
-  __typename?: 'UserQuotaHumanReadable';
+export interface UserQuotaHumanReadableType {
+  __typename?: 'UserQuotaHumanReadableType';
   blobLimit: Scalars['String']['output'];
+  copilotActionLimit: Scalars['String']['output'];
   historyPeriod: Scalars['String']['output'];
   memberLimit: Scalars['String']['output'];
   name: Scalars['String']['output'];
   storageQuota: Scalars['String']['output'];
+  usedStorageQuota: Scalars['String']['output'];
 }
 
-export interface UserQuotaUsage {
-  __typename?: 'UserQuotaUsage';
+export interface UserQuotaType {
+  __typename?: 'UserQuotaType';
+  blobLimit: Scalars['SafeInt']['output'];
+  copilotActionLimit: Maybe<Scalars['Int']['output']>;
+  historyPeriod: Scalars['SafeInt']['output'];
+  humanReadable: UserQuotaHumanReadableType;
+  memberLimit: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  storageQuota: Scalars['SafeInt']['output'];
+  usedStorageQuota: Scalars['SafeInt']['output'];
+}
+
+export interface UserQuotaUsageType {
+  __typename?: 'UserQuotaUsageType';
+  /** @deprecated use `UserQuotaType['usedStorageQuota']` instead */
   storageQuota: Scalars['SafeInt']['output'];
 }
 
@@ -1306,8 +1312,8 @@ export interface UserType {
   invoices: Array<InvoiceType>;
   /** User name */
   name: Scalars['String']['output'];
-  quota: Maybe<UserQuota>;
-  quotaUsage: UserQuotaUsage;
+  quota: UserQuotaType;
+  quotaUsage: UserQuotaUsageType;
   subscriptions: Array<SubscriptionType>;
   /** @deprecated use [/api/auth/sign-in?native=true] instead */
   token: TokenType;
@@ -1371,10 +1377,33 @@ export interface WorkspacePageMeta {
   updatedBy: Maybe<EditorType>;
 }
 
+export interface WorkspaceQuotaHumanReadableType {
+  __typename?: 'WorkspaceQuotaHumanReadableType';
+  blobLimit: Scalars['String']['output'];
+  historyPeriod: Scalars['String']['output'];
+  memberCount: Scalars['String']['output'];
+  memberLimit: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  storageQuota: Scalars['String']['output'];
+  storageQuotaUsed: Scalars['String']['output'];
+}
+
+export interface WorkspaceQuotaType {
+  __typename?: 'WorkspaceQuotaType';
+  blobLimit: Scalars['SafeInt']['output'];
+  historyPeriod: Scalars['SafeInt']['output'];
+  humanReadable: WorkspaceQuotaHumanReadableType;
+  memberCount: Scalars['Int']['output'];
+  memberLimit: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  storageQuota: Scalars['SafeInt']['output'];
+  /** @deprecated use `usedStorageQuota` instead */
+  usedSize: Scalars['SafeInt']['output'];
+  usedStorageQuota: Scalars['SafeInt']['output'];
+}
+
 export interface WorkspaceType {
   __typename?: 'WorkspaceType';
-  /** Available features of workspace */
-  availableFeatures: Array<FeatureType>;
   /** List blobs of workspace */
   blobs: Array<ListedBlob>;
   /** Blobs size of workspace */
@@ -1385,8 +1414,6 @@ export interface WorkspaceType {
   enableAi: Scalars['Boolean']['output'];
   /** Enable url previous when sharing */
   enableUrlPreview: Scalars['Boolean']['output'];
-  /** Enabled features of workspace */
-  features: Array<FeatureType>;
   histories: Array<DocHistoryType>;
   id: Scalars['ID']['output'];
   /** is current workspace initialized */
@@ -1396,6 +1423,8 @@ export interface WorkspaceType {
   /** Get user invoice count */
   invoiceCount: Scalars['Int']['output'];
   invoices: Array<InvoiceType>;
+  /** The selfhost license of the workspace */
+  license: Maybe<License>;
   /** member count of workspace */
   memberCount: Scalars['Int']['output'];
   /** Members of workspace */
@@ -1413,7 +1442,7 @@ export interface WorkspaceType {
   /** Public pages of a workspace */
   publicPages: Array<WorkspacePage>;
   /** quota of workspace */
-  quota: QuotaQueryType;
+  quota: WorkspaceQuotaType;
   /**
    * Shared pages of workspace
    * @deprecated use WorkspaceType.publicPages
@@ -1437,6 +1466,7 @@ export interface WorkspaceTypeInvoicesArgs {
 }
 
 export interface WorkspaceTypeMembersArgs {
+  query?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
 }
@@ -1628,15 +1658,6 @@ export type CreateCopilotSessionMutationVariables = Exact<{
 export type CreateCopilotSessionMutation = {
   __typename?: 'Mutation';
   createCopilotSession: string;
-};
-
-export type UpdateCopilotSessionMutationVariables = Exact<{
-  options: UpdateChatSessionInput;
-}>;
-
-export type UpdateCopilotSessionMutation = {
-  __typename?: 'Mutation';
-  updateCopilotSession: string;
 };
 
 export type CreateCustomerPortalMutationVariables = Exact<{
@@ -1975,16 +1996,16 @@ export type GetUserByEmailQuery = {
     emailVerified: boolean;
     avatarUrl: string | null;
     quota: {
-      __typename?: 'UserQuota';
+      __typename?: 'UserQuotaType';
       humanReadable: {
-        __typename?: 'UserQuotaHumanReadable';
+        __typename?: 'UserQuotaHumanReadableType';
         blobLimit: string;
         historyPeriod: string;
         memberLimit: string;
         name: string;
         storageQuota: string;
       };
-    } | null;
+    };
   } | null;
 };
 
@@ -2025,15 +2046,6 @@ export type GetUserQuery = {
 export type GetUsersCountQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetUsersCountQuery = { __typename?: 'Query'; usersCount: number };
-
-export type GetWorkspaceFeaturesQueryVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-}>;
-
-export type GetWorkspaceFeaturesQuery = {
-  __typename?: 'Query';
-  workspace: { __typename?: 'WorkspaceType'; features: Array<FeatureType> };
-};
 
 export type GetWorkspaceInfoQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
@@ -2281,22 +2293,22 @@ export type QuotaQuery = {
     __typename?: 'UserType';
     id: string;
     quota: {
-      __typename?: 'UserQuota';
+      __typename?: 'UserQuotaType';
       name: string;
       blobLimit: number;
       storageQuota: number;
       historyPeriod: number;
       memberLimit: number;
       humanReadable: {
-        __typename?: 'UserQuotaHumanReadable';
+        __typename?: 'UserQuotaHumanReadableType';
         name: string;
         blobLimit: string;
         storageQuota: string;
         historyPeriod: string;
         memberLimit: string;
       };
-    } | null;
-    quotaUsage: { __typename?: 'UserQuotaUsage'; storageQuota: number };
+    };
+    quotaUsage: { __typename?: 'UserQuotaUsageType'; storageQuota: number };
   } | null;
 };
 
@@ -2487,6 +2499,15 @@ export type UpdateAccountMutation = {
   };
 };
 
+export type UpdateCopilotSessionMutationVariables = Exact<{
+  options: UpdateChatSessionInput;
+}>;
+
+export type UpdateCopilotSessionMutation = {
+  __typename?: 'Mutation';
+  updateCopilotSession: string;
+};
+
 export type UpdatePromptMutationVariables = Exact<{
   name: Scalars['String']['input'];
   messages: Array<CopilotPromptMessageInput> | CopilotPromptMessageInput;
@@ -2617,75 +2638,6 @@ export type SetEnableUrlPreviewMutation = {
   updateWorkspace: { __typename?: 'WorkspaceType'; id: string };
 };
 
-export type EnabledFeaturesQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-export type EnabledFeaturesQuery = {
-  __typename?: 'Query';
-  workspace: { __typename?: 'WorkspaceType'; features: Array<FeatureType> };
-};
-
-export type AvailableFeaturesQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-export type AvailableFeaturesQuery = {
-  __typename?: 'Query';
-  workspace: {
-    __typename?: 'WorkspaceType';
-    availableFeatures: Array<FeatureType>;
-  };
-};
-
-export type SetWorkspaceExperimentalFeatureMutationVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-  feature: FeatureType;
-  enable: Scalars['Boolean']['input'];
-}>;
-
-export type SetWorkspaceExperimentalFeatureMutation = {
-  __typename?: 'Mutation';
-  setWorkspaceExperimentalFeature: boolean;
-};
-
-export type AddWorkspaceFeatureMutationVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-  feature: FeatureType;
-}>;
-
-export type AddWorkspaceFeatureMutation = {
-  __typename?: 'Mutation';
-  addWorkspaceFeature: number;
-};
-
-export type ListWorkspaceFeaturesQueryVariables = Exact<{
-  feature: FeatureType;
-}>;
-
-export type ListWorkspaceFeaturesQuery = {
-  __typename?: 'Query';
-  listWorkspaceFeatures: Array<{
-    __typename?: 'WorkspaceType';
-    id: string;
-    public: boolean;
-    createdAt: string;
-    memberCount: number;
-    features: Array<FeatureType>;
-    owner: { __typename?: 'UserType'; id: string };
-  }>;
-};
-
-export type RemoveWorkspaceFeatureMutationVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-  feature: FeatureType;
-}>;
-
-export type RemoveWorkspaceFeatureMutation = {
-  __typename?: 'Mutation';
-  removeWorkspaceFeature: number;
-};
-
 export type InviteByEmailMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   email: Scalars['String']['input'];
@@ -2794,16 +2746,16 @@ export type WorkspaceQuotaQuery = {
   workspace: {
     __typename?: 'WorkspaceType';
     quota: {
-      __typename?: 'QuotaQueryType';
+      __typename?: 'WorkspaceQuotaType';
       name: string;
       blobLimit: number;
       storageQuota: number;
+      usedStorageQuota: number;
       historyPeriod: number;
       memberLimit: number;
       memberCount: number;
-      usedSize: number;
       humanReadable: {
-        __typename?: 'HumanReadableQuotaType';
+        __typename?: 'WorkspaceQuotaHumanReadableType';
         name: string;
         blobLimit: string;
         storageQuota: string;
@@ -2942,11 +2894,6 @@ export type Queries =
       response: GetUsersCountQuery;
     }
   | {
-      name: 'getWorkspaceFeaturesQuery';
-      variables: GetWorkspaceFeaturesQueryVariables;
-      response: GetWorkspaceFeaturesQuery;
-    }
-  | {
       name: 'getWorkspaceInfoQuery';
       variables: GetWorkspaceInfoQueryVariables;
       response: GetWorkspaceInfoQuery;
@@ -3032,21 +2979,6 @@ export type Queries =
       response: GetWorkspaceConfigQuery;
     }
   | {
-      name: 'enabledFeaturesQuery';
-      variables: EnabledFeaturesQueryVariables;
-      response: EnabledFeaturesQuery;
-    }
-  | {
-      name: 'availableFeaturesQuery';
-      variables: AvailableFeaturesQueryVariables;
-      response: AvailableFeaturesQuery;
-    }
-  | {
-      name: 'listWorkspaceFeaturesQuery';
-      variables: ListWorkspaceFeaturesQueryVariables;
-      response: ListWorkspaceFeaturesQuery;
-    }
-  | {
       name: 'workspaceInvoicesQuery';
       variables: WorkspaceInvoicesQueryVariables;
       response: WorkspaceInvoicesQuery;
@@ -3113,11 +3045,6 @@ export type Mutations =
       variables: CreateCopilotSessionMutationVariables;
       response: CreateCopilotSessionMutation;
     }
-  | {
-    name: 'updateCopilotSessionMutation';
-    variables: UpdateCopilotSessionMutationVariables;
-    response: UpdateCopilotSessionMutation;
-  }
   | {
       name: 'createCustomerPortalMutation';
       variables: CreateCustomerPortalMutationVariables;
@@ -3229,6 +3156,11 @@ export type Mutations =
       response: UpdateAccountMutation;
     }
   | {
+      name: 'updateCopilotSessionMutation';
+      variables: UpdateCopilotSessionMutationVariables;
+      response: UpdateCopilotSessionMutation;
+    }
+  | {
       name: 'updatePromptMutation';
       variables: UpdatePromptMutationVariables;
       response: UpdatePromptMutation;
@@ -3267,21 +3199,6 @@ export type Mutations =
       name: 'setEnableUrlPreviewMutation';
       variables: SetEnableUrlPreviewMutationVariables;
       response: SetEnableUrlPreviewMutation;
-    }
-  | {
-      name: 'setWorkspaceExperimentalFeatureMutation';
-      variables: SetWorkspaceExperimentalFeatureMutationVariables;
-      response: SetWorkspaceExperimentalFeatureMutation;
-    }
-  | {
-      name: 'addWorkspaceFeatureMutation';
-      variables: AddWorkspaceFeatureMutationVariables;
-      response: AddWorkspaceFeatureMutation;
-    }
-  | {
-      name: 'removeWorkspaceFeatureMutation';
-      variables: RemoveWorkspaceFeatureMutationVariables;
-      response: RemoveWorkspaceFeatureMutation;
     }
   | {
       name: 'inviteByEmailMutation';

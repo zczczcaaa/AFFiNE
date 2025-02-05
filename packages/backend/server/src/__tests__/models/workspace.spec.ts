@@ -1,4 +1,3 @@
-import { TestingModule } from '@nestjs/testing';
 import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
@@ -7,7 +6,7 @@ import { Config, EventBus } from '../../base';
 import { WorkspaceRole } from '../../core/permission';
 import { UserModel } from '../../models/user';
 import { WorkspaceModel } from '../../models/workspace';
-import { createTestingModule, initTestingDB } from '../utils';
+import { createTestingModule, type TestingModule } from '../utils';
 
 interface Context {
   config: Config;
@@ -29,7 +28,7 @@ test.before(async t => {
 });
 
 test.beforeEach(async t => {
-  await initTestingDB(t.context.db);
+  await t.context.module.initTestingDB();
 });
 
 test.after(async t => {

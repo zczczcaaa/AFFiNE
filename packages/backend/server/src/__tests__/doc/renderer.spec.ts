@@ -75,7 +75,8 @@ test('should render correct html', async t => {
   );
 });
 
-test('should render correct mobile html', async t => {
+// TODO(@forehalo): enable it when mobile version is ready
+test.skip('should render correct mobile html', async t => {
   const res = await request(t.context.app.getHttpServer())
     .get('/workspace/xxxx/xxx')
     .set('user-agent', mobileUAString)

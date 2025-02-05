@@ -478,6 +478,10 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'internal_server_error',
     message: 'Failed to store doc snapshot.',
   },
+  action_forbidden_on_non_team_workspace: {
+    type: 'action_forbidden',
+    message: 'A Team workspace is required to perform this action.',
+  },
 
   // Subscription Errors
   unsupported_subscription_plan: {

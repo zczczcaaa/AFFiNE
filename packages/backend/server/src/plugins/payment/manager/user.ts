@@ -15,10 +15,7 @@ import {
   TooManyRequest,
   URLHelper,
 } from '../../../base';
-import {
-  EarlyAccessType,
-  FeatureManagementService,
-} from '../../../core/features';
+import { EarlyAccessType, FeatureService } from '../../../core/features';
 import {
   CouponType,
   KnownStripeInvoice,
@@ -59,7 +56,7 @@ export class UserSubscriptionManager extends SubscriptionManager {
     stripe: Stripe,
     db: PrismaClient,
     private readonly runtime: Runtime,
-    private readonly feature: FeatureManagementService,
+    private readonly feature: FeatureService,
     private readonly event: EventBus,
     private readonly url: URLHelper,
     private readonly mutex: Mutex

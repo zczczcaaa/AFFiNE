@@ -1,6 +1,5 @@
 /// <reference types="../global.d.ts" />
 
-import { TestingModule } from '@nestjs/testing';
 import type { ExecutionContext, TestFn } from 'ava';
 import ava from 'ava';
 
@@ -27,7 +26,7 @@ import {
   CopilotCheckHtmlExecutor,
   CopilotCheckJsonExecutor,
 } from '../plugins/copilot/workflow/executor';
-import { createTestingModule } from './utils';
+import { createTestingModule, TestingModule } from './utils';
 import { TestAssets } from './utils/copilot';
 
 type Tester = {

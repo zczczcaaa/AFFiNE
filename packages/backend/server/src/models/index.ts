@@ -77,6 +77,7 @@ const ModelsSymbolProvider: ExistingProvider = {
 })
 export class ModelsModule {}
 
+export * from './common';
 export * from './feature';
 export * from './page';
 export * from './session';

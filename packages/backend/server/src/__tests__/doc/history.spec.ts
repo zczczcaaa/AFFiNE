@@ -1,4 +1,3 @@
-import { TestingModule } from '@nestjs/testing';
 import type { Snapshot } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import test from 'ava';
@@ -7,7 +6,7 @@ import * as Sinon from 'sinon';
 import { DocStorageModule, PgWorkspaceDocStorageAdapter } from '../../core/doc';
 import { DocStorageOptions } from '../../core/doc/options';
 import { DocRecord } from '../../core/doc/storage';
-import { createTestingModule, initTestingDB } from '../utils';
+import { createTestingModule, type TestingModule } from '../utils';
 
 let m: TestingModule;
 let adapter: PgWorkspaceDocStorageAdapter;
@@ -24,7 +23,7 @@ test.before(async () => {
 });
 
 test.beforeEach(async () => {
-  await initTestingDB(db);
+  await m.initTestingDB();
   const options = m.get(DocStorageOptions);
   Sinon.stub(options, 'historyMaxAge').resolves(1000);
 });

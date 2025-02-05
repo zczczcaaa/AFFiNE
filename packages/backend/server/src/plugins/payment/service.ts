@@ -26,7 +26,7 @@ import {
   UserNotFound,
 } from '../../base';
 import { CurrentUser } from '../../core/auth';
-import { FeatureManagementService } from '../../core/features';
+import { FeatureService } from '../../core/features';
 import { Models } from '../../models';
 import {
   CheckoutParams,
@@ -83,7 +83,7 @@ export class SubscriptionService implements OnApplicationBootstrap {
     private readonly config: Config,
     private readonly stripe: Stripe,
     private readonly db: PrismaClient,
-    private readonly feature: FeatureManagementService,
+    private readonly feature: FeatureService,
     private readonly models: Models,
     private readonly userManager: UserSubscriptionManager,
     private readonly workspaceManager: WorkspaceSubscriptionManager,

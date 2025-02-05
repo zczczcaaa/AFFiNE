@@ -1,13 +1,6 @@
 import '../../plugins/config';
 
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  INestApplication,
-  UseGuards,
-} from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Controller, Get, HttpStatus, UseGuards } from '@nestjs/common';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
 import request, { type Response } from 'supertest';
@@ -21,12 +14,12 @@ import {
   ThrottlerStorage,
 } from '../../base/throttler';
 import { AuthService, Public } from '../../core/auth';
-import { createTestingApp, initTestingDB, internalSignIn } from '../utils';
+import { createTestingApp, internalSignIn, TestingApp } from '../utils';
 
 const test = ava as TestFn<{
   storage: ThrottlerStorage;
   cookie: string;
-  app: INestApplication;
+  app: TestingApp;
 }>;
 
 @UseGuards(CloudThrottlerGuard)
@@ -115,7 +108,7 @@ test.before(async t => {
 });
 
 test.beforeEach(async t => {
-  await initTestingDB(t.context.app.get(PrismaClient));
+  await t.context.app.initTestingDB();
   const { app } = t.context;
   const auth = app.get(AuthService);
   const u1 = await auth.signUp('u1@affine.pro', 'test');

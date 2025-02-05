@@ -3,7 +3,6 @@
 import { randomUUID } from 'node:crypto';
 
 import { getCurrentMailMessageCount } from '@affine-test/kit/utils/cloud';
-import { INestApplication } from '@nestjs/common';
 import { WorkspaceMemberStatus } from '@prisma/client';
 import type { TestFn } from 'ava';
 import ava from 'ava';
@@ -14,8 +13,8 @@ import { EventBus } from '../base';
 import { AuthService } from '../core/auth';
 import { DocContentService } from '../core/doc-renderer';
 import { PermissionService, WorkspaceRole } from '../core/permission';
-import { QuotaManagementService, QuotaService, QuotaType } from '../core/quota';
 import { WorkspaceType } from '../core/workspaces';
+import { Models } from '../models';
 import {
   acceptInviteById,
   approveMember,
@@ -34,19 +33,19 @@ import {
   revokeUser,
   signUp,
   sleep,
+  TestingApp,
   UserAuthedType,
 } from './utils';
 
 const test = ava as TestFn<{
-  app: INestApplication;
+  app: TestingApp;
   auth: AuthService;
   event: Sinon.SinonStubbedInstance<EventBus>;
-  quota: QuotaService;
-  quotaManager: QuotaManagementService;
+  models: Models;
   permissions: PermissionService;
 }>;
 
-test.beforeEach(async t => {
+test.before(async t => {
   const { app } = await createTestingApp({
     imports: [AppModule],
     tapModule: module => {
@@ -67,17 +66,20 @@ test.beforeEach(async t => {
   t.context.app = app;
   t.context.auth = app.get(AuthService);
   t.context.event = app.get(EventBus);
-  t.context.quota = app.get(QuotaService);
-  t.context.quotaManager = app.get(QuotaManagementService);
+  t.context.models = app.get(Models);
   t.context.permissions = app.get(PermissionService);
 });
 
-test.afterEach.always(async t => {
+test.beforeEach(async t => {
+  await t.context.app.initTestingDB();
+});
+
+test.after.always(async t => {
   await t.context.app.close();
 });
 
 const init = async (
-  app: INestApplication,
+  app: TestingApp,
   memberLimit = 10,
   prefix = randomUUID()
 ) => {
@@ -87,17 +89,15 @@ const init = async (
     `${prefix}owner@affine.pro`,
     '123456'
   );
+  const models = app.get(Models);
   {
-    const quota = app.get(QuotaService);
-    await quota.switchUserQuota(owner.id, QuotaType.ProPlanV1);
+    await models.userFeature.add(owner.id, 'pro_plan_v1', 'test');
   }
 
   const workspace = await createWorkspace(app, owner.token.token);
   const teamWorkspace = await createWorkspace(app, owner.token.token);
   {
-    const quota = app.get(QuotaManagementService);
-    await quota.addTeamWorkspace(teamWorkspace.id, 'test');
-    await quota.updateWorkspaceConfig(teamWorkspace.id, QuotaType.TeamPlanV1, {
+    models.workspaceFeature.add(teamWorkspace.id, 'team_plan_v1', 'test', {
       memberLimit,
     });
   }
@@ -264,7 +264,7 @@ test('should be able to invite multiple users', async t => {
 });
 
 test('should be able to check seat limit', async t => {
-  const { app, permissions, quotaManager } = t.context;
+  const { app, permissions, models } = t.context;
   const { invite, inviteBatch, teamWorkspace: ws } = await init(app, 4);
 
   {
@@ -274,7 +274,7 @@ test('should be able to check seat limit', async t => {
       { message: 'You have exceeded your workspace member quota.' },
       'should throw error if exceed member limit'
     );
-    await quotaManager.updateWorkspaceConfig(ws.id, QuotaType.TeamPlanV1, {
+    models.workspaceFeature.add(ws.id, 'team_plan_v1', 'test', {
       memberLimit: 5,
     });
     await t.notThrowsAsync(
@@ -323,7 +323,7 @@ test('should be able to check seat limit', async t => {
 
 test('should be able to grant team member permission', async t => {
   const { app, permissions } = t.context;
-  const { owner, teamWorkspace: ws, admin, write, read } = await init(app);
+  const { owner, teamWorkspace: ws, write, read } = await init(app);
 
   await t.throwsAsync(
     grantMember(
@@ -350,13 +350,13 @@ test('should be able to grant team member permission', async t => {
   await t.throwsAsync(
     grantMember(
       app,
-      admin.token.token,
+      write.token.token,
       ws.id,
       read.id,
       WorkspaceRole.Collaborator
     ),
     { instanceOf: Error },
-    'should throw error if not owner'
+    'should throw error if not admin'
   );
 
   {
@@ -571,7 +571,7 @@ test('should be able to approve team member', async t => {
 });
 
 test('should be able to invite by link', async t => {
-  const { app, permissions, quotaManager } = t.context;
+  const { app, permissions, models } = t.context;
   const {
     createInviteLink,
     owner,
@@ -631,7 +631,7 @@ test('should be able to invite by link', async t => {
       'should not change status'
     );
 
-    await quotaManager.updateWorkspaceConfig(tws.id, QuotaType.TeamPlanV1, {
+    models.workspaceFeature.add(tws.id, 'team_plan_v1', 'test', {
       memberLimit: 5,
     });
     await permissions.refreshSeatStatus(tws.id, 5);
@@ -646,7 +646,7 @@ test('should be able to invite by link', async t => {
       'should not change status'
     );
 
-    await quotaManager.updateWorkspaceConfig(tws.id, QuotaType.TeamPlanV1, {
+    models.workspaceFeature.add(tws.id, 'team_plan_v1', 'test', {
       memberLimit: 6,
     });
     await permissions.refreshSeatStatus(tws.id, 6);

@@ -1,9 +1,8 @@
-import { TestingModule } from '@nestjs/testing';
-import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
+import { FeatureType } from '../../models';
 import { FeatureModel } from '../../models/feature';
-import { createTestingModule, initTestingDB } from '../utils';
+import { createTestingModule, type TestingModule } from '../utils';
 
 interface Context {
   module: TestingModule;
@@ -20,7 +19,7 @@ test.before(async t => {
 });
 
 test.beforeEach(async t => {
-  await initTestingDB(t.context.module.get(PrismaClient));
+  await t.context.module.initTestingDB();
 });
 
 test.after(async t => {
@@ -91,7 +90,12 @@ test('should get feature if extra fields exist in feature config', async t => {
 test('should create feature', async t => {
   const { feature } = t.context;
 
-  const newFeature = await feature.upsert('new_feature' as any, {});
+  const newFeature = await feature.upsert(
+    'new_feature' as any,
+    {},
+    FeatureType.Feature,
+    1
+  );
 
   t.deepEqual(newFeature.configs, {});
 });
@@ -100,10 +104,15 @@ test('should update feature', async t => {
   const { feature } = t.context;
   const freePlanFeature = await feature.get('free_plan_v1');
 
-  const newFreePlanFeature = await feature.upsert('free_plan_v1', {
-    ...freePlanFeature.configs,
-    memberLimit: 10,
-  });
+  const newFreePlanFeature = await feature.upsert(
+    'free_plan_v1',
+    {
+      ...freePlanFeature.configs,
+      memberLimit: 10,
+    },
+    FeatureType.Quota,
+    1
+  );
 
   t.deepEqual(newFreePlanFeature.configs, {
     ...freePlanFeature.configs,
@@ -113,7 +122,10 @@ test('should update feature', async t => {
 
 test('should throw if feature config is invalid when updating', async t => {
   const { feature } = t.context;
-  await t.throwsAsync(feature.upsert('free_plan_v1', {} as any), {
-    message: 'Invalid feature config for free_plan_v1',
-  });
+  await t.throwsAsync(
+    feature.upsert('free_plan_v1', {} as any, FeatureType.Quota, 1),
+    {
+      message: 'Invalid feature config for free_plan_v1',
+    }
+  );
 });

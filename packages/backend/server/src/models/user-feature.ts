@@ -1,47 +1,49 @@
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@nestjs-cls/transactional';
+import { Prisma } from '@prisma/client';
 
 import { BaseModel } from './base';
-import type { UserFeatureName } from './common';
+import { FeatureType, type UserFeatureName } from './common';
 
 @Injectable()
 export class UserFeatureModel extends BaseModel {
   async get<T extends UserFeatureName>(userId: string, name: T) {
-    // TODO(@forehalo):
-    // all feature query-and-use queries should be simplified like the below when `feature(name)` becomes a unique index
-    //
-    // this.db.userFeature.findFirst({
-    //   include: {
-    //     feature: true
-    //   },
-    //   where: {
-    //     userId,
-    //     activated: true,
-    //     feature: {
-    //       feature: name,
-    //     }
-    //   }
-    // })
-    const feature = await this.models.feature.get(name);
-
     const count = await this.db.userFeature.count({
       where: {
         userId,
-        featureId: feature.id,
+        name,
         activated: true,
       },
     });
 
-    return count > 0 ? feature : null;
+    if (count === 0) {
+      return null;
+    }
+
+    return await this.models.feature.get(name);
+  }
+
+  async getQuota(userId: string) {
+    const quota = await this.db.userFeature.findFirst({
+      where: {
+        userId,
+        type: FeatureType.Quota,
+        activated: true,
+      },
+    });
+
+    if (!quota) {
+      return null;
+    }
+
+    return await this.models.feature.get<'free_plan_v1'>(quota.name as any);
   }
 
   async has(userId: string, name: UserFeatureName) {
-    const feature = await this.models.feature.get_unchecked(name);
-
     const count = await this.db.userFeature.count({
       where: {
         userId,
-        featureId: feature.id,
+        name,
         activated: true,
       },
     });
@@ -49,29 +51,37 @@ export class UserFeatureModel extends BaseModel {
     return count > 0;
   }
 
-  async list(userId: string) {
+  async list(userId: string, type?: FeatureType) {
+    const filter: Prisma.UserFeatureWhereInput =
+      type === undefined
+        ? {
+            userId,
+            activated: true,
+          }
+        : {
+            userId,
+            activated: true,
+            type,
+          };
+
     const userFeatures = await this.db.userFeature.findMany({
-      include: {
-        feature: true,
-      },
-      where: {
-        userId,
-        activated: true,
+      where: filter,
+      select: {
+        name: true,
       },
     });
 
     return userFeatures.map(
-      userFeature => userFeature.feature.feature
+      userFeature => userFeature.name
     ) as UserFeatureName[];
   }
 
-  async add(userId: string, featureName: UserFeatureName, reason: string) {
-    const feature = await this.models.feature.get_unchecked(featureName);
-
+  async add(userId: string, name: UserFeatureName, reason: string) {
+    const feature = await this.models.feature.get_unchecked(name);
     const existing = await this.db.userFeature.findFirst({
       where: {
         userId,
-        featureId: feature.id,
+        name: name,
         activated: true,
       },
     });
@@ -84,37 +94,56 @@ export class UserFeatureModel extends BaseModel {
       data: {
         userId,
         featureId: feature.id,
+        name,
+        type: this.models.feature.getFeatureType(name),
         activated: true,
         reason,
       },
     });
 
-    this.logger.verbose(`Feature ${featureName} added to user ${userId}`);
+    this.logger.verbose(`Feature ${name} added to user ${userId}`);
 
     return userFeature;
   }
 
   async remove(userId: string, featureName: UserFeatureName) {
-    const feature = await this.models.feature.get_unchecked(featureName);
-
-    await this.db.userFeature.deleteMany({
+    await this.db.userFeature.updateMany({
       where: {
         userId,
-        featureId: feature.id,
+        name: featureName,
+      },
+      data: {
+        activated: false,
       },
     });
 
-    this.logger.verbose(`Feature ${featureName} removed from user ${userId}`);
+    this.logger.verbose(
+      `Feature ${featureName} deactivated for user ${userId}`
+    );
   }
 
   @Transactional()
-  async switch(
-    userId: string,
-    from: UserFeatureName,
-    to: UserFeatureName,
-    reason: string
-  ) {
-    await this.remove(userId, from);
+  async switchQuota(userId: string, to: UserFeatureName, reason: string) {
+    const quotas = await this.list(userId, FeatureType.Quota);
+
+    // deactivate the previous quota
+    if (quotas.length) {
+      // db state error
+      if (quotas.length > 1) {
+        this.logger.error(
+          `User ${userId} has multiple quotas, please check the database state.`
+        );
+      }
+
+      const from = quotas.at(-1) as UserFeatureName;
+
+      if (from === to) {
+        return;
+      }
+
+      await this.remove(userId, from);
+    }
+
     await this.add(userId, to, reason);
   }
 }

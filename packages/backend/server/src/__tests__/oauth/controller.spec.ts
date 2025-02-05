@@ -1,6 +1,6 @@
 import '../../plugins/config';
 
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
@@ -15,7 +15,7 @@ import { Models } from '../../models';
 import { OAuthProviderName } from '../../plugins/oauth/config';
 import { GoogleOAuthProvider } from '../../plugins/oauth/providers/google';
 import { OAuthService } from '../../plugins/oauth/service';
-import { createTestingApp, getSession, initTestingDB } from '../utils';
+import { createTestingApp, getSession, TestingApp } from '../utils';
 
 const test = ava as TestFn<{
   auth: AuthService;
@@ -23,7 +23,7 @@ const test = ava as TestFn<{
   models: Models;
   u1: CurrentUser;
   db: PrismaClient;
-  app: INestApplication;
+  app: TestingApp;
 }>;
 
 test.before(async t => {
@@ -54,7 +54,7 @@ test.before(async t => {
 
 test.beforeEach(async t => {
   Sinon.restore();
-  await initTestingDB(t.context.db);
+  await t.context.app.initTestingDB();
   t.context.u1 = await t.context.auth.signUp('u1@affine.pro', '1');
 });
 
@@ -247,7 +247,7 @@ test('should throw if provider is invalid in callback uri', async t => {
   t.pass();
 });
 
-function mockOAuthProvider(app: INestApplication, email: string) {
+function mockOAuthProvider(app: TestingApp, email: string) {
   const provider = app.get(GoogleOAuthProvider);
   const oauth = app.get(OAuthService);
 

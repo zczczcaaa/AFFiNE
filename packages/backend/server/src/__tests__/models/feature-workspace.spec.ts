@@ -1,9 +1,13 @@
-import { TestingModule } from '@nestjs/testing';
-import { PrismaClient, Workspace } from '@prisma/client';
+import { Workspace } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
-import { UserModel, WorkspaceFeatureModel, WorkspaceModel } from '../../models';
-import { createTestingModule, initTestingDB } from '../utils';
+import {
+  FeatureType,
+  UserModel,
+  WorkspaceFeatureModel,
+  WorkspaceModel,
+} from '../../models';
+import { createTestingModule, type TestingModule } from '../utils';
 
 interface Context {
   module: TestingModule;
@@ -21,7 +25,7 @@ test.before(async t => {
 });
 
 test.beforeEach(async t => {
-  await initTestingDB(t.context.module.get(PrismaClient));
+  await t.context.module.initTestingDB();
   const u1 = await t.context.module.get(UserModel).create({
     email: 'u1@affine.pro',
     registered: true,
@@ -46,10 +50,44 @@ test('should directly test workspace feature existence', async t => {
   t.false(await model.has(ws.id, 'unlimited_workspace'));
 });
 
+test('should get workspace quota', async t => {
+  const { model, ws } = t.context;
+
+  await model.add(ws.id, 'team_plan_v1', 'test', {
+    memberLimit: 100,
+  });
+
+  const quota = await model.getQuota(ws.id);
+  t.snapshot(quota?.configs, 'team plan');
+});
+
+test('should return null if quota removed', async t => {
+  const { model, ws } = t.context;
+
+  await model.add(ws.id, 'team_plan_v1', 'test', {
+    memberLimit: 100,
+  });
+
+  await model.remove(ws.id, 'team_plan_v1');
+
+  const quota = await model.getQuota(ws.id);
+  t.is(quota, null);
+});
+
 test('should list empty workspace features', async t => {
   const { model, ws } = t.context;
 
   t.deepEqual(await model.list(ws.id), []);
+});
+
+test('should list workspace features by type', async t => {
+  const { model, ws } = t.context;
+
+  await model.add(ws.id, 'unlimited_workspace', 'test');
+  await model.add(ws.id, 'team_plan_v1', 'test');
+
+  t.like(await model.list(ws.id, FeatureType.Quota), ['team_plan_v1']);
+  t.like(await model.list(ws.id, FeatureType.Feature), ['unlimited_workspace']);
 });
 
 test('should add workspace feature', async t => {
@@ -57,7 +95,7 @@ test('should add workspace feature', async t => {
 
   await model.add(ws.id, 'unlimited_workspace', 'test');
   t.is(
-    (await model.get(ws.id, 'unlimited_workspace'))?.feature,
+    (await model.get(ws.id, 'unlimited_workspace'))?.name,
     'unlimited_workspace'
   );
   t.true(await model.has(ws.id, 'unlimited_workspace'));
@@ -102,26 +140,4 @@ test('should remove workspace feature', async t => {
   await model.remove(ws.id, 'team_plan_v1');
   t.false(await model.has(ws.id, 'team_plan_v1'));
   t.false((await model.list(ws.id)).includes('team_plan_v1'));
-});
-
-test('should switch workspace feature', async t => {
-  const { model, ws } = t.context;
-
-  await model.switch(ws.id, 'team_plan_v1', 'unlimited_workspace', 'test');
-
-  t.false(await model.has(ws.id, 'team_plan_v1'));
-  t.true(await model.has(ws.id, 'unlimited_workspace'));
-
-  t.false((await model.list(ws.id)).includes('team_plan_v1'));
-  t.true((await model.list(ws.id)).includes('unlimited_workspace'));
-});
-
-test('should switch workspace feature with overrides', async t => {
-  const { model, ws } = t.context;
-
-  await model.add(ws.id, 'unlimited_workspace', 'test');
-  await model.add(ws.id, 'team_plan_v1', 'test', { memberLimit: 100 });
-  const f2 = await model.get(ws.id, 'team_plan_v1');
-
-  t.is(f2!.configs.memberLimit, 100);
 });

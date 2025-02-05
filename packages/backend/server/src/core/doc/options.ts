@@ -89,7 +89,7 @@ export class DocStorageOptions implements IDocStorageOptions {
   historyMaxAge = async (spaceId: string) => {
     const owner = await this.permission.getWorkspaceOwner(spaceId);
     const quota = await this.quota.getUserQuota(owner.id);
-    return quota.feature.historyPeriod;
+    return quota.historyPeriod;
   };
 
   historyMinInterval = (_spaceId: string) => {

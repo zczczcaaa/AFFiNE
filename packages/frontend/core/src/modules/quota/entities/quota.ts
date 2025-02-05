@@ -74,7 +74,7 @@ export class WorkspaceQuota extends Entity {
           this.workspaceService.workspace.id,
           signal
         );
-        return { quota: data, used: data.usedSize };
+        return { quota: data, used: data.usedStorageQuota };
       }).pipe(
         backoffRetry({
           when: isNetworkError,

@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { Transactional } from '@nestjs-cls/transactional';
+import { Prisma } from '@prisma/client';
 
 import { BaseModel } from './base';
-import type { FeatureConfigs, WorkspaceFeatureName } from './common';
+import {
+  type FeatureConfig,
+  FeatureType,
+  type WorkspaceFeatureName,
+} from './common';
 
 @Injectable()
 export class WorkspaceFeatureModel extends BaseModel {
   async get<T extends WorkspaceFeatureName>(workspaceId: string, name: T) {
-    const feature = await this.models.feature.get_unchecked(name);
-
     const workspaceFeature = await this.db.workspaceFeature.findFirst({
       where: {
         workspaceId,
-        featureId: feature.id,
+        name,
         activated: true,
       },
     });
@@ -20,6 +23,8 @@ export class WorkspaceFeatureModel extends BaseModel {
     if (!workspaceFeature) {
       return null;
     }
+
+    const feature = await this.models.feature.get_unchecked(name);
 
     return {
       ...feature,
@@ -30,13 +35,47 @@ export class WorkspaceFeatureModel extends BaseModel {
     };
   }
 
-  async has(workspaceId: string, name: WorkspaceFeatureName) {
-    const feature = await this.models.feature.get_unchecked(name);
+  async getQuota(workspaceId: string) {
+    const quota = await this.db.workspaceFeature.findFirst({
+      where: {
+        workspaceId,
+        type: FeatureType.Quota,
+        activated: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
+    if (!quota) {
+      return null;
+    }
+
+    const rawFeature = await this.models.feature.get_unchecked(
+      quota.name as WorkspaceFeatureName
+    );
+
+    const feature = {
+      ...rawFeature,
+      configs: this.models.feature.check(quota.name as 'team_plan_v1', {
+        ...rawFeature.configs,
+        ...(quota?.configs as {}),
+      }),
+    };
+
+    // workspace's storage quota is the sum of base quota and seats * quota per seat
+    feature.configs.storageQuota =
+      feature.configs.seatQuota * feature.configs.memberLimit +
+      feature.configs.storageQuota;
+
+    return feature;
+  }
+
+  async has(workspaceId: string, name: WorkspaceFeatureName) {
     const count = await this.db.workspaceFeature.count({
       where: {
         workspaceId,
-        featureId: feature.id,
+        name,
         activated: true,
       },
     });
@@ -44,35 +83,62 @@ export class WorkspaceFeatureModel extends BaseModel {
     return count > 0;
   }
 
-  async list(workspaceId: string) {
+  /**
+   * helper function to check if a list of workspaces have a standalone quota feature when calculating owner's quota usage
+   */
+  async batchHasQuota(workspaceIds: string[]) {
     const workspaceFeatures = await this.db.workspaceFeature.findMany({
-      include: {
-        feature: true,
+      select: {
+        workspaceId: true,
       },
       where: {
-        workspaceId,
+        workspaceId: { in: workspaceIds },
+        type: FeatureType.Quota,
         activated: true,
       },
     });
 
+    return workspaceFeatures.map(feature => feature.workspaceId);
+  }
+
+  async list(workspaceId: string, type?: FeatureType) {
+    const filter: Prisma.WorkspaceFeatureWhereInput =
+      type === undefined
+        ? {
+            workspaceId,
+            activated: true,
+          }
+        : {
+            workspaceId,
+            activated: true,
+            type,
+          };
+
+    const workspaceFeatures = await this.db.workspaceFeature.findMany({
+      select: {
+        name: true,
+      },
+      where: filter,
+    });
+
     return workspaceFeatures.map(
-      workspaceFeature => workspaceFeature.feature.feature
+      workspaceFeature => workspaceFeature.name
     ) as WorkspaceFeatureName[];
   }
 
   @Transactional()
   async add<T extends WorkspaceFeatureName>(
     workspaceId: string,
-    featureName: T,
+    name: T,
     reason: string,
-    overrides?: Partial<FeatureConfigs<T>>
+    overrides?: Partial<FeatureConfig<T>>
   ) {
-    const feature = await this.models.feature.get_unchecked(featureName);
+    const feature = await this.models.feature.get_unchecked(name);
 
     const existing = await this.db.workspaceFeature.findFirst({
       where: {
         workspaceId,
-        featureId: feature.id,
+        name: name,
         activated: true,
       },
     });
@@ -87,12 +153,12 @@ export class WorkspaceFeatureModel extends BaseModel {
     };
 
     const parseResult = this.models.feature
-      .getConfigShape(featureName)
+      .getConfigShape(name)
       .partial()
       .safeParse(configs);
 
     if (!parseResult.success) {
-      throw new Error(`Invalid feature config for ${featureName}`, {
+      throw new Error(`Invalid feature config for ${name}`, {
         cause: parseResult.error,
       });
     }
@@ -113,6 +179,8 @@ export class WorkspaceFeatureModel extends BaseModel {
         data: {
           workspaceId,
           featureId: feature.id,
+          name,
+          type: this.models.feature.getFeatureType(name),
           activated: true,
           reason,
           configs: parseResult.data,
@@ -120,37 +188,21 @@ export class WorkspaceFeatureModel extends BaseModel {
       });
     }
 
-    this.logger.verbose(
-      `Feature ${featureName} added to workspace ${workspaceId}`
-    );
+    this.logger.verbose(`Feature ${name} added to workspace ${workspaceId}`);
 
     return workspaceFeature;
   }
 
   async remove(workspaceId: string, featureName: WorkspaceFeatureName) {
-    const feature = await this.models.feature.get_unchecked(featureName);
-
     await this.db.workspaceFeature.deleteMany({
       where: {
         workspaceId,
-        featureId: feature.id,
+        name: featureName,
       },
     });
 
     this.logger.verbose(
       `Feature ${featureName} removed from workspace ${workspaceId}`
     );
-  }
-
-  @Transactional()
-  async switch<T extends WorkspaceFeatureName>(
-    workspaceId: string,
-    from: WorkspaceFeatureName,
-    to: T,
-    reason: string,
-    overrides?: Partial<FeatureConfigs<T>>
-  ) {
-    await this.remove(workspaceId, from);
-    return await this.add(workspaceId, to, reason, overrides);
   }
 }

@@ -1,4 +1,3 @@
-import { TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
@@ -8,7 +7,7 @@ import { FeatureModule } from '../../core/features';
 import { QuotaModule } from '../../core/quota';
 import { UserModule } from '../../core/user';
 import { Models } from '../../models';
-import { createTestingModule, initTestingDB } from '../utils';
+import { createTestingModule, type TestingModule } from '../utils';
 
 const test = ava as TestFn<{
   auth: AuthService;
@@ -31,7 +30,7 @@ test.before(async t => {
 });
 
 test.beforeEach(async t => {
-  await initTestingDB(t.context.db);
+  await t.context.m.initTestingDB();
   t.context.u1 = await t.context.auth.signUp('u1@affine.pro', '1');
 });
 

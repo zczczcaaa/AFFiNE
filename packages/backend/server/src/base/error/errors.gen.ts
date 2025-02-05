@@ -399,6 +399,12 @@ export class FailedToUpsertSnapshot extends UserFriendlyError {
     super('internal_server_error', 'failed_to_upsert_snapshot', message);
   }
 }
+
+export class ActionForbiddenOnNonTeamWorkspace extends UserFriendlyError {
+  constructor(message?: string) {
+    super('action_forbidden', 'action_forbidden_on_non_team_workspace', message);
+  }
+}
 @ObjectType()
 class UnsupportedSubscriptionPlanDataType {
   @Field() plan!: string
@@ -754,6 +760,7 @@ export enum ErrorNames {
   PAGE_IS_NOT_PUBLIC,
   FAILED_TO_SAVE_UPDATES,
   FAILED_TO_UPSERT_SNAPSHOT,
+  ACTION_FORBIDDEN_ON_NON_TEAM_WORKSPACE,
   UNSUPPORTED_SUBSCRIPTION_PLAN,
   FAILED_TO_CHECKOUT,
   INVALID_CHECKOUT_PARAMETERS,

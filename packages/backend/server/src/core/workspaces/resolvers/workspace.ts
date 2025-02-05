@@ -38,7 +38,7 @@ import {
   mapWorkspaceRoleToWorkspaceActions,
   WorkspacePermissionsList,
 } from '../../permission/types';
-import { QuotaManagementService, QuotaQueryType } from '../../quota';
+import { QuotaService, WorkspaceQuotaType } from '../../quota';
 import { UserType } from '../../user';
 import {
   InvitationType,
@@ -122,7 +122,7 @@ export class WorkspaceResolver {
     private readonly cache: Cache,
     private readonly prisma: PrismaClient,
     private readonly permissions: PermissionService,
-    private readonly quota: QuotaManagementService,
+    private readonly quota: QuotaService,
     private readonly models: Models,
     private readonly event: EventBus,
     private readonly mutex: RequestMutex,
@@ -260,13 +260,19 @@ export class WorkspaceResolver {
     };
   }
 
-  @ResolveField(() => QuotaQueryType, {
+  @ResolveField(() => WorkspaceQuotaType, {
     name: 'quota',
     description: 'quota of workspace',
     complexity: 2,
   })
-  workspaceQuota(@Parent() workspace: WorkspaceType) {
-    return this.quota.getWorkspaceUsage(workspace.id);
+  async workspaceQuota(
+    @Parent() workspace: WorkspaceType
+  ): Promise<WorkspaceQuotaType> {
+    const quota = await this.quota.getWorkspaceQuotaWithUsage(workspace.id);
+    return {
+      ...quota,
+      humanReadable: this.quota.formatWorkspaceQuota(quota),
+    };
   }
 
   @Query(() => Boolean, {
@@ -421,12 +427,7 @@ export class WorkspaceResolver {
     @Args({ name: 'input', type: () => UpdateWorkspaceInput })
     { id, ...updates }: UpdateWorkspaceInput
   ) {
-    const isTeam = await this.quota.isTeamWorkspace(id);
-    await this.permissions.checkWorkspace(
-      id,
-      user.id,
-      isTeam ? WorkspaceRole.Owner : WorkspaceRole.Admin
-    );
+    await this.permissions.checkWorkspace(id, user.id, WorkspaceRole.Admin);
 
     return this.prisma.workspace.update({
       where: {
@@ -483,7 +484,7 @@ export class WorkspaceResolver {
       }
 
       // member limit check
-      await this.quota.checkWorkspaceSeat(workspaceId);
+      await this.quota.checkSeat(workspaceId);
 
       let target = await this.models.user.getUserByEmail(email);
       if (target) {
@@ -569,14 +570,14 @@ export class WorkspaceResolver {
     @Args('workspaceId') workspaceId: string,
     @Args('userId') userId: string
   ) {
-    const isTeam = await this.quota.isTeamWorkspace(workspaceId);
     const isAdmin = await this.permissions.tryCheckWorkspaceIs(
       workspaceId,
       userId,
       WorkspaceRole.Admin
     );
-    if (isTeam && isAdmin) {
-      // only owner can revoke team workspace admin
+
+    if (isAdmin) {
+      // only owner can revoke workspace admin
       await this.permissions.checkWorkspaceIs(
         workspaceId,
         user.id,
@@ -607,7 +608,6 @@ export class WorkspaceResolver {
       throw new TooManyRequest();
     }
 
-    const isTeam = await this.quota.isTeamWorkspace(workspaceId);
     if (user) {
       const status = await this.permissions.getWorkspaceMemberStatus(
         workspaceId,
@@ -622,8 +622,9 @@ export class WorkspaceResolver {
         `workspace:inviteLink:${workspaceId}`
       );
       if (invite?.inviteId === inviteId) {
-        const quota = await this.quota.getWorkspaceUsage(workspaceId);
-        if (quota.memberCount >= quota.memberLimit) {
+        const isTeam = await this.workspaceService.isTeamWorkspace(workspaceId);
+        const seatAvailable = await this.quota.tryCheckSeat(workspaceId);
+        if (!seatAvailable) {
           // only team workspace allow over limit
           if (isTeam) {
             await this.permissions.grant(
@@ -660,10 +661,6 @@ export class WorkspaceResolver {
         }
       }
     }
-
-    // we added seats when sending invitation emails, but the payment may fail
-    // so we need to check seat again here
-    await this.quota.checkWorkspaceSeat(workspaceId, true);
 
     if (sendAcceptMail) {
       const success = await this.workspaceService.sendAcceptedEmail(inviteId);

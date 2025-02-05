@@ -1,4 +1,3 @@
-import { TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import test from 'ava';
 import * as Sinon from 'sinon';
@@ -9,7 +8,7 @@ import {
   DocStorageModule,
   PgWorkspaceDocStorageAdapter as Adapter,
 } from '../../core/doc';
-import { createTestingModule, initTestingDB } from '../utils';
+import { createTestingModule, type TestingModule } from '../utils';
 
 let m: TestingModule;
 let db: PrismaClient;
@@ -35,7 +34,7 @@ test.before('init testing module', async () => {
 });
 
 test.beforeEach(async () => {
-  await initTestingDB(db);
+  await m.initTestingDB();
 });
 
 test.after.always(async () => {

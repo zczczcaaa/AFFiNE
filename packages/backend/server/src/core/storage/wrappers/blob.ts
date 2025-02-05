@@ -112,8 +112,17 @@ export class WorkspaceBlobStorage {
   }
 
   async totalSize(workspaceId: string) {
-    const blobs = await this.list(workspaceId);
-    return blobs.reduce((acc, item) => acc + item.size, 0);
+    const sum = await this.db.blob.aggregate({
+      where: {
+        workspaceId,
+        deletedAt: null,
+      },
+      _sum: {
+        size: true,
+      },
+    });
+
+    return sum._sum.size ?? 0;
   }
 
   private trySyncBlobsMeta(workspaceId: string, blobs: ListObjectsMetadata[]) {

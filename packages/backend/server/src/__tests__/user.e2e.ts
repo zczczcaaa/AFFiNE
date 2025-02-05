@@ -1,20 +1,23 @@
-import type { INestApplication } from '@nestjs/common';
 import test from 'ava';
 import request from 'supertest';
 
 import { AppModule } from '../app.module';
-import { createTestingApp, currentUser, signUp } from './utils';
+import { createTestingApp, currentUser, signUp, TestingApp } from './utils';
 
-let app: INestApplication;
+let app: TestingApp;
 
-test.beforeEach(async () => {
+test.before(async () => {
   const { app: testApp } = await createTestingApp({
     imports: [AppModule],
   });
   app = testApp;
 });
 
-test.afterEach.always(async () => {
+test.beforeEach(async () => {
+  await app.initTestingDB();
+});
+
+test.after.always(async () => {
   await app.close();
 });
 

@@ -9,7 +9,6 @@ import {
   WrongSignInCredentials,
   WrongSignInMethod,
 } from '../base';
-import { Quota_FreePlanV1_1 } from '../core/quota/schema';
 import { BaseModel } from './base';
 import type { Workspace } from './workspace';
 
@@ -22,23 +21,6 @@ const publicUserSelect = {
 type CreateUserInput = Omit<Prisma.UserCreateInput, 'name'> & { name?: string };
 type UpdateUserInput = Omit<Partial<Prisma.UserCreateInput>, 'id'>;
 
-const defaultUserCreatingData = {
-  name: 'Unnamed',
-  // TODO(@forehalo): it's actually a external dependency for user
-  // how could we avoid user model's knowledge of feature?
-  features: {
-    create: {
-      reason: 'sign up',
-      activated: true,
-      feature: {
-        connect: {
-          feature_version: Quota_FreePlanV1_1,
-        },
-      },
-    },
-  },
-};
-
 declare global {
   interface Events {
     'user.created': User;
@@ -48,6 +30,7 @@ declare global {
       // dealing of owned workspaces of deleted users to workspace model
       ownedWorkspaces: Workspace['id'][];
     };
+    'user.postCreated': User;
   }
 }
 
@@ -134,16 +117,15 @@ export class UserModel extends BaseModel {
       data.password = await this.crypto.encryptPassword(data.password);
     }
 
-    if (!data.name) {
-      data.name = data.email.split('@')[0];
-    }
-
     user = await this.db.user.create({
       data: {
-        ...defaultUserCreatingData,
         ...data,
+        name: data.name ?? data.email.split('@')[0],
       },
     });
+
+    // delegate the responsibility of finish user creating setup to the corresponding models
+    await this.event.emitAsync('user.postCreated', user);
 
     this.logger.debug(`User [${user.id}] created with email [${user.email}]`);
     this.event.emit('user.created', user);

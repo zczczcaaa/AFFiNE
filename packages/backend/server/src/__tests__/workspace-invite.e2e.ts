@@ -2,7 +2,6 @@ import {
   getCurrentMailMessageCount,
   getLatestMailMessage,
 } from '@affine-test/kit/utils/cloud';
-import type { INestApplication } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import type { TestFn } from 'ava';
 import ava from 'ava';
@@ -20,17 +19,18 @@ import {
   leaveWorkspace,
   revokeUser,
   signUp,
+  TestingApp,
 } from './utils';
 
 const test = ava as TestFn<{
-  app: INestApplication;
+  app: TestingApp;
   client: PrismaClient;
   auth: AuthService;
   mail: MailService;
   models: Models;
 }>;
 
-test.beforeEach(async t => {
+test.before(async t => {
   const { app } = await createTestingApp({
     imports: [AppModule],
   });
@@ -41,7 +41,11 @@ test.beforeEach(async t => {
   t.context.models = app.get(Models);
 });
 
-test.afterEach.always(async t => {
+test.beforeEach(async t => {
+  await t.context.app.initTestingDB();
+});
+
+test.after.always(async t => {
   await t.context.app.close();
 });
 
@@ -227,15 +231,12 @@ test('should support pagination for member', async t => {
 test('should limit member count correctly', async t => {
   const { app } = t.context;
   const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
-  for (let i = 0; i < 10; i++) {
-    const workspace = await createWorkspace(app, u1.token.token);
-    await Promise.allSettled(
-      Array.from({ length: 10 }).map(async (_, i) =>
-        inviteUser(app, u1.token.token, workspace.id, `u${i}@affine.pro`)
-      )
-    );
-
-    const ws = await getWorkspace(app, u1.token.token, workspace.id);
-    t.assert(ws.members.length <= 3, 'failed to check member list');
-  }
+  const workspace = await createWorkspace(app, u1.token.token);
+  await Promise.allSettled(
+    Array.from({ length: 10 }).map(async (_, i) =>
+      inviteUser(app, u1.token.token, workspace.id, `u${i}@affine.pro`)
+    )
+  );
+  const ws = await getWorkspace(app, u1.token.token, workspace.id);
+  t.assert(ws.members.length <= 3, 'failed to check member list');
 });

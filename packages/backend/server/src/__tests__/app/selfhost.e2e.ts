@@ -1,7 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
-import type { INestApplication } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import type { TestFn } from 'ava';
 import ava from 'ava';
@@ -10,10 +9,10 @@ import request from 'supertest';
 import { buildAppModule } from '../../app.module';
 import { Config } from '../../base';
 import { ServerService } from '../../core/config';
-import { createTestingApp, initTestingDB } from '../utils';
+import { createTestingApp, type TestingApp } from '../utils';
 
 const test = ava as TestFn<{
-  app: INestApplication;
+  app: TestingApp;
   db: PrismaClient;
 }>;
 
@@ -54,7 +53,7 @@ test.before('init selfhost server', async t => {
 });
 
 test.beforeEach(async t => {
-  await initTestingDB(t.context.db);
+  await t.context.app.initTestingDB();
   const server = t.context.app.get(ServerService);
   // @ts-expect-error disable cache
   server._initialized = false;
@@ -188,7 +187,8 @@ test('should redirect to admin if initialized', async t => {
   t.is(res.header.location, '/admin');
 });
 
-test('should return mobile assets if visited by mobile', async t => {
+// TODO(@forehalo): return mobile when it's ready
+test.skip('should return web assets if visited by mobile', async t => {
   await t.context.db.user.create({
     data: {
       name: 'test',

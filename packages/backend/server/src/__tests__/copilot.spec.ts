@@ -1,6 +1,3 @@
-/// <reference types="../global.d.ts" />
-
-import { TestingModule } from '@nestjs/testing';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 import Sinon from 'sinon';
@@ -41,7 +38,7 @@ import {
 } from '../plugins/copilot/workflow/executor';
 import { AutoRegisteredWorkflowExecutor } from '../plugins/copilot/workflow/executor/utils';
 import { WorkflowGraphList } from '../plugins/copilot/workflow/graph';
-import { createTestingModule } from './utils';
+import { createTestingModule, TestingModule } from './utils';
 import { MockCopilotTestProvider, WorkflowTestCases } from './utils/copilot';
 
 const test = ava as TestFn<{
