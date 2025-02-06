@@ -609,6 +609,7 @@ export const PackageList = [
       'packages/frontend/electron-api',
       'packages/frontend/graphql',
       'packages/frontend/i18n',
+      'tools/utils',
       'blocksuite/affine/all',
     ],
   },

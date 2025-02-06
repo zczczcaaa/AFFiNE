@@ -270,6 +270,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@affine/component@workspace:packages/frontend/component"
   dependencies:
+    "@affine-tools/utils": "workspace:*"
     "@affine/debug": "workspace:*"
     "@affine/electron-api": "workspace:*"
     "@affine/graphql": "workspace:*"

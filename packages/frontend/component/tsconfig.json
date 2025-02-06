@@ -16,6 +16,7 @@
     { "path": "../electron-api" },
     { "path": "../graphql" },
     { "path": "../i18n" },
+    { "path": "../../../tools/utils" },
     { "path": "../../../blocksuite/affine/all" }
   ]
 }
