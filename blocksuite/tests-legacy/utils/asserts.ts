@@ -1,5 +1,6 @@
 import './declare-test-window.js';
 
+import type { EdgelessNoteBackground } from '@blocksuite/affine-block-note';
 import type {
   BlockComponent,
   EditorHost,
@@ -965,12 +966,13 @@ export async function assertEdgelessNoteBackground(
   const backgroundColor = await editor
     .locator(`affine-edgeless-note[data-block-id="${noteId}"]`)
     .evaluate(ele => {
-      const noteWrapper =
-        ele?.querySelector<HTMLDivElement>('.note-background');
+      const noteWrapper = ele?.querySelector<EdgelessNoteBackground>(
+        'edgeless-note-background'
+      );
       if (!noteWrapper) {
         throw new Error(`Could not find note: ${noteId}`);
       }
-      return noteWrapper.style.backgroundColor;
+      return noteWrapper.backgroundStyle$.value.backgroundColor;
     });
 
   expect(toHex(backgroundColor)).toEqual(color);

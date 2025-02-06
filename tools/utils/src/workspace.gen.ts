@@ -450,6 +450,7 @@ export const PackageList = [
     workspaceDependencies: [
       'blocksuite/affine/block-note',
       'blocksuite/affine/block-surface',
+      'blocksuite/affine/components',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
       'blocksuite/framework/block-std',

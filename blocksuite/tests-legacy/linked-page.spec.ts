@@ -665,6 +665,8 @@ test('linked doc can be dragged from note to surface top level block', async ({
 }) => {
   await enterPlaygroundRoom(page);
   await initEmptyEdgelessState(page);
+  await focusTitle(page);
+  await type(page, 'title0');
   await focusRichText(page);
   await createAndConvertToEmbedLinkedDoc(page);
 

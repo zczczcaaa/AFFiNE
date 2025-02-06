@@ -9,6 +9,7 @@
   "references": [
     { "path": "../affine/block-note" },
     { "path": "../affine/block-surface" },
+    { "path": "../affine/components" },
     { "path": "../affine/model" },
     { "path": "../affine/shared" },
     { "path": "../framework/block-std" },

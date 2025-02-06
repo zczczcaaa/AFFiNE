@@ -145,8 +145,8 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
       .getFlag('enable_advanced_block_visibility');
   }
 
-  private get _pageBlockHeaderEnabled() {
-    return this.doc.get(FeatureFlagService).getFlag('enable_page_block_header');
+  private get _pageBlockEnabled() {
+    return this.doc.get(FeatureFlagService).getFlag('enable_page_block');
   }
 
   private get doc() {
@@ -155,7 +155,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
 
   private get _enableAutoHeight() {
     return !(
-      this._pageBlockHeaderEnabled &&
+      this._pageBlockEnabled &&
       this.notes.length === 1 &&
       this.notes[0].parent?.children.find(child =>
         matchFlavours(child, ['affine:note'])
@@ -373,7 +373,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
 
       onlyOne &&
       !isFirstNote &&
-      this._pageBlockHeaderEnabled &&
+      this._pageBlockEnabled &&
       !this._advancedVisibilityEnabled
         ? html`<editor-icon-button
             aria-label="Display In Page"

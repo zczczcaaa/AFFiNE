@@ -171,7 +171,7 @@ export const EdgelessNoteHeader = ({ note }: { note: NoteBlockModel }) => {
   const flags = useService(FeatureFlagService).flags;
   const insidePeekView = useInsidePeekView();
 
-  if (!flags.enable_page_block_header) return null;
+  if (!flags.enable_page_block) return null;
 
   const isFirstVisibleNote =
     note.parent?.children.find(

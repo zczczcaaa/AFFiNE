@@ -1,11 +1,17 @@
-import type { EditorHost } from '@blocksuite/block-std';
+import {
+  type NoteBlockModel,
+  NoteDisplayMode,
+  type RootBlockModel,
+} from '@blocksuite/affine-model';
+import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import { ShadowlessElement } from '@blocksuite/block-std';
-import type { RichText, RootBlockModel } from '@blocksuite/blocks';
-import { assertExists, WithDisposable } from '@blocksuite/global/utils';
+import { WithDisposable } from '@blocksuite/global/utils';
 import type { Store } from '@blocksuite/store';
 import { effect } from '@preact/signals-core';
 import { css, html } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
+
+import { focusTextModel, type RichText } from '../rich-text';
 
 const DOC_BLOCK_CHILD_PADDING = 24;
 
@@ -60,23 +66,55 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
     }
   `;
 
+  private _getOrCreateFirstPageVisibleNote() {
+    const note = this._rootModel.children.find(
+      (child): child is NoteBlockModel =>
+        matchFlavours(child, ['affine:note']) &&
+        child.displayMode !== NoteDisplayMode.EdgelessOnly
+    );
+    if (note) return note;
+
+    const noteId = this.doc.addBlock('affine:note', {}, this._rootModel, 0);
+    return this.doc.getBlock(noteId)?.model as NoteBlockModel;
+  }
+
   private readonly _onTitleKeyDown = (event: KeyboardEvent) => {
     if (event.isComposing || this.doc.readonly) return;
 
-    if (event.key === 'Enter' && this._pageRoot) {
+    if (event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
 
-      const inlineEditor = this._inlineEditor;
-      const inlineRange = inlineEditor?.getInlineRange();
+      const inlineRange = this.inlineEditor?.getInlineRange();
       if (inlineRange) {
         const rightText = this._rootModel.title.split(inlineRange.index);
-        this._pageRoot.prependParagraphWithText(rightText);
+        const newFirstParagraphId = this.doc.addBlock(
+          'affine:paragraph',
+          { text: rightText },
+          this._getOrCreateFirstPageVisibleNote(),
+          0
+        );
+        if (this._std) focusTextModel(this._std, newFirstParagraphId);
       }
     } else if (event.key === 'ArrowDown') {
       event.preventDefault();
       event.stopPropagation();
-      this._pageRoot?.focusFirstParagraph();
+
+      const note = this._getOrCreateFirstPageVisibleNote();
+      const firstText = note?.children.find(block =>
+        matchFlavours(block, ['affine:paragraph', 'affine:list', 'affine:code'])
+      );
+      if (firstText) {
+        if (this._std) focusTextModel(this._std, firstText.id);
+      } else {
+        const newFirstParagraphId = this.doc.addBlock(
+          'affine:paragraph',
+          {},
+          note,
+          0
+        );
+        if (this._std) focusTextModel(this._std, newFirstParagraphId);
+      }
     } else if (event.key === 'Tab') {
       event.preventDefault();
       event.stopPropagation();
@@ -89,12 +127,8 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
     });
   };
 
-  private get _inlineEditor() {
-    return this._richTextElement.inlineEditor;
-  }
-
-  private get _pageRoot() {
-    return this._viewport.querySelector('affine-page-root');
+  private get _std() {
+    return this._viewport?.querySelector('editor-host')?.std;
   }
 
   private get _rootModel() {
@@ -102,9 +136,14 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
   }
 
   private get _viewport() {
-    const el = this.closest<HTMLElement>('.affine-page-viewport');
-    assertExists(el);
-    return el;
+    return (
+      this.closest<HTMLElement>('.affine-page-viewport') ??
+      this.closest<HTMLElement>('.affine-edgeless-viewport')
+    );
+  }
+
+  get inlineEditor() {
+    return this._richTextElement.inlineEditor;
   }
 
   override connectedCallback() {
@@ -161,6 +200,7 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
           .verticalScrollContainerGetter=${() => this._viewport}
           .readonly=${this.doc.readonly}
           .enableFormat=${false}
+          .wrapText=${this.wrapText}
         ></rich-text>
       </div>
     `;
@@ -177,18 +217,7 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
 
   @property({ attribute: false })
   accessor doc!: Store;
-}
 
-export function getDocTitleByEditorHost(
-  editorHost: EditorHost
-): DocTitle | null {
-  const docViewport = editorHost.closest('.affine-page-viewport');
-  if (!docViewport) return null;
-  return docViewport.querySelector('doc-title');
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'doc-title': DocTitle;
-  }
+  @property({ attribute: false })
+  accessor wrapText = false;
 }

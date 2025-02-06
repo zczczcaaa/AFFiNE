@@ -1,3 +1,7 @@
+import {
+  AFFINE_EDGELESS_NOTE,
+  type EdgelessNoteBlockComponent,
+} from '@blocksuite/affine-block-note';
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
 import type { ParagraphBlockModel } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
@@ -155,7 +159,7 @@ export const getClosestNoteBlock = (
     editorHost.std.get(DocModeProvider).getEditorMode() === 'page';
   return isInsidePageEditor
     ? findClosestBlockComponent(rootComponent, point, 'affine-note')
-    : getHoveringNote(point)?.closest('affine-edgeless-note');
+    : getHoveringNote(point);
 };
 
 export const getClosestBlockByPoint = (
@@ -261,11 +265,11 @@ export function getDuplicateBlocks(blocks: BlockModel[]) {
  */
 function getHoveringNote(point: Point) {
   return (
-    document.elementsFromPoint(point.x, point.y).find(isEdgelessChildNote) ||
-    null
+    document
+      .elementsFromPoint(point.x, point.y)
+      .find(
+        (e): e is EdgelessNoteBlockComponent =>
+          e.tagName.toLowerCase() === AFFINE_EDGELESS_NOTE
+      ) || null
   );
-}
-
-function isEdgelessChildNote({ classList }: Element) {
-  return classList.contains('note-background');
 }

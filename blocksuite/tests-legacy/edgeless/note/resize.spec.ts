@@ -94,7 +94,7 @@ test('resize note then collapse note', async ({ page }) => {
     { x: box.x + 50, y: box.y + box.height + 100 }
   );
   let noteRect = await getNoteRect(page, noteId);
-  await expect(page.locator('.edgeless-note-collapse-button')).toBeVisible();
+  await expect(page.getByTestId('edgeless-note-collapse-button')).toBeVisible();
   assertRectEqual(noteRect, {
     x: initRect.x,
     y: initRect.y,
@@ -102,11 +102,11 @@ test('resize note then collapse note', async ({ page }) => {
     h: initRect.h + 100,
   });
 
-  await page.locator('.edgeless-note-collapse-button')!.click();
+  await page.getByTestId('edgeless-note-collapse-button')!.click();
   let domRect = await page.locator('affine-edgeless-note').boundingBox();
   expect(domRect!.height).toBeCloseTo(NOTE_MIN_HEIGHT);
 
-  await page.locator('.edgeless-note-collapse-button')!.click();
+  await page.getByTestId('edgeless-note-collapse-button')!.click();
   domRect = await page.locator('affine-edgeless-note').boundingBox();
   expect(domRect!.height).toBeCloseTo(initRect.h + 100);
 
@@ -120,7 +120,7 @@ test('resize note then collapse note', async ({ page }) => {
   );
   noteRect = await getNoteRect(page, noteId);
   await expect(
-    page.locator('.edgeless-note-collapse-button')
+    page.getByTestId('edgeless-note-collapse-button')
   ).not.toBeVisible();
   assertRectEqual(noteRect, {
     x: initRect.x,

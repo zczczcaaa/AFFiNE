@@ -240,9 +240,9 @@ export const AFFINE_FLAGS = {
     defaultState: isCanaryBuild,
   },
   // TODO(@L-Sun): remove this flag when ready
-  enable_page_block_header: {
+  enable_page_block: {
     category: 'blocksuite',
-    bsFlag: 'enable_page_block_header',
+    bsFlag: 'enable_page_block',
     displayName:
       'com.affine.settings.workspace.experimental-features.enable-page-block-header.name',
     description:

@@ -3,7 +3,7 @@ import { NoteDisplayMode } from '@blocksuite/blocks';
 import { clamp, DisposableGroup } from '@blocksuite/global/utils';
 
 import type { AffineEditorContainer } from '../../../editors/editor-container.js';
-import { getDocTitleByEditorHost } from '../../doc-title/doc-title.js';
+import { getDocTitleByEditorHost } from '../../doc-title/index.js';
 import { getHeadingBlocksFromDoc } from './query.js';
 
 export function scrollToBlock(editor: AffineEditorContainer, blockId: string) {
