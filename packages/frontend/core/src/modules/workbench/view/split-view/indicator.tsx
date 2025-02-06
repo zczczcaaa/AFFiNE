@@ -1,5 +1,6 @@
 import type { MenuProps } from '@affine/component';
-import { Menu } from '@affine/component';
+import { Menu, Tooltip } from '@affine/component';
+import { useI18n } from '@affine/i18n';
 import clsx from 'clsx';
 import type { HTMLAttributes, MouseEventHandler } from 'react';
 import { forwardRef, memo, useCallback, useMemo, useState } from 'react';
@@ -87,6 +88,7 @@ export const SplitViewIndicator = memo(
         []
       );
 
+      const t = useI18n();
       return (
         <div
           ref={ref}
@@ -100,13 +102,18 @@ export const SplitViewIndicator = memo(
           >
             <div className={styles.menuTrigger} />
           </Menu>
-          <SplitViewDragHandle
-            ref={dragHandleRef}
-            open={menuOpen}
-            onOpenMenu={openMenu}
-            active={isActive}
-            dragging={isDragging}
-          />
+          <Tooltip
+            content={t['com.affine.split-view-drag-handle.tooltip']()}
+            side="bottom"
+          >
+            <SplitViewDragHandle
+              ref={dragHandleRef}
+              open={menuOpen}
+              onOpenMenu={openMenu}
+              active={isActive}
+              dragging={isDragging}
+            />
+          </Tooltip>
         </div>
       );
     }

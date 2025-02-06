@@ -1047,6 +1047,7 @@
   "com.affine.peek-view-controls.open-attachment-in-new-tab": "Open in new tab",
   "com.affine.peek-view-controls.open-attachment-in-split-view": "Open in split view",
   "com.affine.peek-view-controls.open-doc-in-center-peek": "Open in center peek",
+  "com.affine.split-view-drag-handle.tooltip": "Click or drag",
   "com.affine.quicksearch.group.creation": "New",
   "com.affine.quicksearch.group.searchfor": "Search for \"{{query}}\"",
   "com.affine.resetSyncStatus.button": "Reset sync",
