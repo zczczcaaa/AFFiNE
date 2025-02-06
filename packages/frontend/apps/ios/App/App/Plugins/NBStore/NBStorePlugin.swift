@@ -235,13 +235,13 @@ public class NbStorePlugin: CAPPlugin, CAPBridgedPlugin {
         let id = try call.getStringEnsure("id")
         let key = try call.getStringEnsure("key")
         if let blob = try await docStoragePool.getBlob(universalId: id, key: key) {
-          call.resolve(["blob":[
+          call.resolve([
             "key": blob.key,
             "data": blob.data,
             "mime": blob.mime,
             "size": blob.size,
             "createdAt": blob.createdAt
-          ]])
+          ])
         } else {
           call.resolve()
         }
