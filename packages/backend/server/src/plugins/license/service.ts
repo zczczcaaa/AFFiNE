@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InstalledLicense, PrismaClient } from '@prisma/client';
 
@@ -23,7 +23,7 @@ interface License {
 }
 
 @Injectable()
-export class LicenseService {
+export class LicenseService implements OnModuleInit {
   private readonly logger = new Logger(LicenseService.name);
 
   constructor(
@@ -33,6 +33,55 @@ export class LicenseService {
     private readonly permission: PermissionService,
     private readonly models: Models
   ) {}
+
+  async onModuleInit() {
+    if (this.config.isSelfhosted) {
+      this.event.on(
+        'workspace.subscription.activated',
+        this.onWorkspaceSubscriptionUpdated
+      );
+      this.event.on(
+        'workspace.subscription.canceled',
+        this.onWorkspaceSubscriptionCanceled
+      );
+    }
+  }
+
+  private readonly onWorkspaceSubscriptionUpdated = async ({
+    workspaceId,
+    plan,
+    recurring,
+    quantity,
+  }: Events['workspace.subscription.activated']) => {
+    switch (plan) {
+      case SubscriptionPlan.SelfHostedTeam:
+        await this.models.workspaceFeature.add(
+          workspaceId,
+          'team_plan_v1',
+          `${recurring} team subscription activated`,
+          {
+            memberLimit: quantity,
+          }
+        );
+        await this.permission.refreshSeatStatus(workspaceId, quantity);
+        break;
+      default:
+        break;
+    }
+  };
+
+  private readonly onWorkspaceSubscriptionCanceled = async ({
+    workspaceId,
+    plan,
+  }: Events['workspace.subscription.canceled']) => {
+    switch (plan) {
+      case SubscriptionPlan.SelfHostedTeam:
+        await this.models.workspaceFeature.remove(workspaceId, 'team_plan_v1');
+        break;
+      default:
+        break;
+    }
+  };
 
   async getLicense(workspaceId: string) {
     return this.db.installedLicense.findUnique({
@@ -208,10 +257,14 @@ export class LicenseService {
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   async licensesHealthCheck() {
+    if (!this.config.isSelfhosted) {
+      return;
+    }
+
     const licenses = await this.db.installedLicense.findMany({
       where: {
         validatedAt: {
-          lte: new Date(Date.now() - 1000 * 60 * 60),
+          lte: new Date(Date.now() - 1000 * 60 * 60 /* 1h */),
         },
       },
     });
@@ -224,7 +277,12 @@ export class LicenseService {
   private async revalidateLicense(license: InstalledLicense) {
     try {
       const res = await this.fetch<License>(
-        `/api/team/licenses/${license.key}/health`
+        `/api/team/licenses/${license.key}/health`,
+        {
+          headers: {
+            'x-validate-key': license.validateKey,
+          },
+        }
       );
 
       await this.db.installedLicense.update({
@@ -272,18 +330,23 @@ export class LicenseService {
     init?: RequestInit
   ): Promise<T & { res: Response }> {
     try {
-      const res = await fetch('https://app.affine.pro' + path, {
-        ...init,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const res = await fetch(
+        process.env.AFFINE_PRO_SERVER_ENDPOINT ??
+          'https://app.affine.pro' + path,
+        {
+          ...init,
+          headers: {
+            'Content-Type': 'application/json',
+            ...init?.headers,
+          },
+        }
+      );
 
       if (!res.ok) {
         const body = (await res.json()) as UserFriendlyError;
         throw new UserFriendlyError(
           body.type as any,
-          body.name as any,
+          body.name.toLowerCase() as any,
           body.message,
           body.data
         );
@@ -304,44 +367,6 @@ export class LicenseService {
           ? e.message
           : 'Failed to contact with https://app.affine.pro'
       );
-    }
-  }
-
-  @OnEvent('workspace.subscription.activated')
-  async onWorkspaceSubscriptionUpdated({
-    workspaceId,
-    plan,
-    recurring,
-    quantity,
-  }: Events['workspace.subscription.activated']) {
-    switch (plan) {
-      case SubscriptionPlan.SelfHostedTeam:
-        await this.models.workspaceFeature.add(
-          workspaceId,
-          'team_plan_v1',
-          `${recurring} team subscription activated`,
-          {
-            memberLimit: quantity,
-          }
-        );
-        await this.permission.refreshSeatStatus(workspaceId, quantity);
-        break;
-      default:
-        break;
-    }
-  }
-
-  @OnEvent('workspace.subscription.canceled')
-  async onWorkspaceSubscriptionCanceled({
-    workspaceId,
-    plan,
-  }: Events['workspace.subscription.canceled']) {
-    switch (plan) {
-      case SubscriptionPlan.SelfHostedTeam:
-        await this.models.workspaceFeature.remove(workspaceId, 'team_plan_v1');
-        break;
-      default:
-        break;
     }
   }
 }
