@@ -90,6 +90,7 @@ test('should get feature if extra fields exist in feature config', async t => {
 test('should create feature', async t => {
   const { feature } = t.context;
 
+  // @ts-expect-error internal
   const newFeature = await feature.upsert(
     'new_feature' as any,
     {},
@@ -104,6 +105,7 @@ test('should update feature', async t => {
   const { feature } = t.context;
   const freePlanFeature = await feature.get('free_plan_v1');
 
+  // @ts-expect-error internal
   const newFreePlanFeature = await feature.upsert(
     'free_plan_v1',
     {
@@ -123,6 +125,7 @@ test('should update feature', async t => {
 test('should throw if feature config is invalid when updating', async t => {
   const { feature } = t.context;
   await t.throwsAsync(
+    // @ts-expect-error internal
     feature.upsert('free_plan_v1', {} as any, FeatureType.Quota, 1),
     {
       message: 'Invalid feature config for free_plan_v1',

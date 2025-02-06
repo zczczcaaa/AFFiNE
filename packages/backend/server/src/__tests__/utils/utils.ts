@@ -52,10 +52,12 @@ const initTestingDB = async (ref: ModuleRef) => {
 
 export type TestingModule = BaseTestingModule & {
   initTestingDB(): Promise<void>;
+  [Symbol.asyncDispose](): Promise<void>;
 };
 
 export type TestingApp = INestApplication & {
   initTestingDB(): Promise<void>;
+  [Symbol.asyncDispose](): Promise<void>;
 };
 
 function dedupeModules(modules: NonNullable<ModuleMetadata['imports']>) {
@@ -83,7 +85,7 @@ class MockResolver {
 export async function createTestingModule(
   moduleDef: TestingModuleMeatdata = {},
   autoInitialize = true
-) {
+): Promise<TestingModule> {
   // setting up
   let imports = moduleDef.imports ?? [];
   imports =
@@ -129,6 +131,9 @@ export async function createTestingModule(
     // by pass password min length validation
     await runtime.set('auth/password.min', 1);
   };
+  testingModule[Symbol.asyncDispose] = async () => {
+    await m.close();
+  };
 
   if (autoInitialize) {
     await testingModule.initTestingDB();
@@ -138,7 +143,9 @@ export async function createTestingModule(
   return testingModule;
 }
 
-export async function createTestingApp(moduleDef: TestingModuleMeatdata = {}) {
+export async function createTestingApp(
+  moduleDef: TestingModuleMeatdata = {}
+): Promise<{ module: TestingModule; app: TestingApp }> {
   const m = await createTestingModule(moduleDef, false);
 
   const app = m.createNestApplication({
@@ -169,7 +176,10 @@ export async function createTestingApp(moduleDef: TestingModuleMeatdata = {}) {
   await app.init();
 
   app.initTestingDB = m.initTestingDB.bind(m);
-
+  app[Symbol.asyncDispose] = async () => {
+    await m[Symbol.asyncDispose]();
+    await app.close();
+  };
   return {
     module: m,
     app: app,

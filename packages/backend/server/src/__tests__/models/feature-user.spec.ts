@@ -1,7 +1,8 @@
 import { User } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 
-import { FeatureType, UserFeatureModel, UserModel } from '../../models';
+import { ConfigModule } from '../../base/config';
+import { FeatureType, Models, UserFeatureModel, UserModel } from '../../models';
 import { createTestingModule, TestingModule } from '../utils';
 
 interface Context {
@@ -122,4 +123,26 @@ test('should not switch user quota if the new quota is the same as the current o
   });
 
   t.not(quota?.reason, 'test not switch');
+});
+
+test('should use pro plan as free for selfhost instance', async t => {
+  await using module = await createTestingModule({
+    imports: [
+      ConfigModule.forRoot({
+        isSelfhosted: true,
+      }),
+    ],
+  });
+
+  const models = module.get(Models);
+  const u1 = await models.user.create({
+    email: 'u1@affine.pro',
+    registered: true,
+  });
+
+  const quota = await models.userFeature.getQuota(u1.id);
+  t.snapshot(
+    quota?.configs,
+    'use pro plan as free plan for selfhosted instance'
+  );
 });
