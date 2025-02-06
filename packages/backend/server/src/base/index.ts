@@ -16,6 +16,7 @@ export {
 export * from './error';
 export { EventBus, OnEvent } from './event';
 export type { GraphqlContext } from './graphql';
+export { registerObjectType } from './graphql/register';
 export * from './guard';
 export { CryptoHelper, URLHelper } from './helpers';
 export { AFFiNELogger } from './logger';

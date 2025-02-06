@@ -9,4 +9,15 @@ import { PermissionService } from './service';
 export class PermissionModule {}
 
 export { PermissionService } from './service';
-export { DocRole, PublicPageMode, WorkspaceRole } from './types';
+export {
+  DOC_ACTIONS,
+  type DocActionPermissions,
+  DocRole,
+  fixupDocRole,
+  mapDocRoleToPermissions,
+  mapWorkspaceRoleToPermissions,
+  PublicPageMode,
+  WORKSPACE_ACTIONS,
+  type WorkspaceActionPermissions,
+  WorkspaceRole,
+} from './types';

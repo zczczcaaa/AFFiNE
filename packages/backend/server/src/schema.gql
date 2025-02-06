@@ -204,6 +204,22 @@ type DocNotFoundDataType {
   spaceId: String!
 }
 
+type DocPermissions {
+  Doc_Copy: Boolean!
+  Doc_Delete: Boolean!
+  Doc_Duplicate: Boolean!
+  Doc_Properties_Read: Boolean!
+  Doc_Properties_Update: Boolean!
+  Doc_Publish: Boolean!
+  Doc_Read: Boolean!
+  Doc_Restore: Boolean!
+  Doc_TransferOwner: Boolean!
+  Doc_Trash: Boolean!
+  Doc_Update: Boolean!
+  Doc_Users_Manage: Boolean!
+  Doc_Users_Read: Boolean!
+}
+
 """User permission in doc"""
 enum DocRole {
   Editor
@@ -215,7 +231,7 @@ enum DocRole {
 
 type DocType {
   id: String!
-  permissions: RolePermissions!
+  permissions: DocPermissions!
   public: Boolean!
   role: DocRole!
 }
@@ -776,35 +792,6 @@ type QueryTooLongDataType {
 
 type RemoveAvatar {
   success: Boolean!
-}
-
-type RolePermissions {
-  Doc_Copy: Boolean!
-  Doc_Delete: Boolean!
-  Doc_Duplicate: Boolean!
-  Doc_Properties_Read: Boolean!
-  Doc_Properties_Update: Boolean!
-  Doc_Publish: Boolean!
-  Doc_Read: Boolean!
-  Doc_Restore: Boolean!
-  Doc_TransferOwner: Boolean!
-  Doc_Trash: Boolean!
-  Doc_Update: Boolean!
-  Doc_Users_Manage: Boolean!
-  Doc_Users_Read: Boolean!
-  Workspace_CreateDoc: Boolean!
-  Workspace_Delete: Boolean!
-  Workspace_Organize_Read: Boolean!
-  Workspace_Properties_Create: Boolean!
-  Workspace_Properties_Delete: Boolean!
-  Workspace_Properties_Read: Boolean!
-  Workspace_Properties_Update: Boolean!
-  Workspace_Settings_Read: Boolean!
-  Workspace_Settings_Update: Boolean!
-  Workspace_Sync: Boolean!
-  Workspace_TransferOwner: Boolean!
-  Workspace_Users_Manage: Boolean!
-  Workspace_Users_Read: Boolean!
 }
 
 type RuntimeConfigNotFoundDataType {

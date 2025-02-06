@@ -147,7 +147,7 @@ export class WorkspacesController {
     await this.permission.checkPagePermission(
       docId.workspace,
       docId.guid,
-      'Doc_Read',
+      'Doc.Read',
       user.id
     );
 

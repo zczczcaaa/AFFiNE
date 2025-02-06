@@ -22,6 +22,7 @@ import {
   InternalServerError,
   MemberQuotaExceeded,
   QueryTooLong,
+  registerObjectType,
   RequestMutex,
   SpaceAccessDenied,
   SpaceNotFound,
@@ -33,11 +34,13 @@ import {
 import { Models } from '../../../models';
 import { CurrentUser, Public } from '../../auth';
 import { type Editor, PgWorkspaceDocStorageAdapter } from '../../doc';
-import { PermissionService, WorkspaceRole } from '../../permission';
 import {
-  mapWorkspaceRoleToWorkspaceActions,
-  WorkspacePermissionsList,
-} from '../../permission/types';
+  mapWorkspaceRoleToPermissions,
+  PermissionService,
+  WORKSPACE_ACTIONS,
+  type WorkspaceActionPermissions,
+  WorkspaceRole,
+} from '../../permission';
 import { QuotaService, WorkspaceQuotaType } from '../../quota';
 import { UserType } from '../../user';
 import {
@@ -72,35 +75,12 @@ class WorkspacePageMeta {
   updatedBy!: EditorType | null;
 }
 
-@ObjectType()
-export class WorkspacePermissions implements WorkspacePermissionsList {
-  @Field()
-  Workspace_Organize_Read!: boolean;
-  @Field()
-  Workspace_Sync!: boolean;
-  @Field()
-  Workspace_CreateDoc!: boolean;
-  @Field()
-  Workspace_Users_Read!: boolean;
-  @Field()
-  Workspace_Properties_Read!: boolean;
-  @Field()
-  Workspace_Settings_Read!: boolean;
-  @Field()
-  Workspace_Users_Manage!: boolean;
-  @Field()
-  Workspace_Settings_Update!: boolean;
-  @Field()
-  Workspace_Properties_Create!: boolean;
-  @Field()
-  Workspace_Properties_Update!: boolean;
-  @Field()
-  Workspace_Properties_Delete!: boolean;
-  @Field()
-  Workspace_Delete!: boolean;
-  @Field()
-  Workspace_TransferOwner!: boolean;
-}
+const WorkspacePermissions = registerObjectType<WorkspaceActionPermissions>(
+  Object.fromEntries(
+    WORKSPACE_ACTIONS.map(action => [action.replaceAll('.', '_'), Boolean])
+  ),
+  { name: 'WorkspacePermissions' }
+);
 
 @ObjectType()
 export class WorkspaceRolePermissions {
@@ -108,7 +88,7 @@ export class WorkspaceRolePermissions {
   role!: WorkspaceRole;
 
   @Field(() => WorkspacePermissions)
-  permissions!: WorkspacePermissions;
+  permissions!: WorkspaceActionPermissions;
 }
 
 /**
@@ -363,7 +343,7 @@ export class WorkspaceResolver {
     }
     return {
       role: workspace.type,
-      permissions: mapWorkspaceRoleToWorkspaceActions(workspace.type),
+      permissions: mapWorkspaceRoleToPermissions(workspace.type),
     };
   }
 

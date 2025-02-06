@@ -79,7 +79,7 @@ export class DocHistoryResolver {
     await this.permission.checkPagePermission(
       docId.workspace,
       docId.guid,
-      'Doc_Restore',
+      'Doc.Update',
       user.id
     );
 

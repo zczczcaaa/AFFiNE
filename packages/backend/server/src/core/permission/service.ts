@@ -13,11 +13,11 @@ import {
   WorkspacePermissionNotFound,
 } from '../../base';
 import {
-  AllPossibleGraphQLDocActionsKeys,
+  DocAction,
+  docActionRequiredRole,
+  docActionRequiredWorkspaceRole,
   DocRole,
-  findMinimalDocRole,
   PublicPageMode,
-  requiredWorkspaceRoleByDocRole,
   WorkspaceRole,
 } from './types';
 
@@ -175,7 +175,7 @@ export class PermissionService {
       return isPublicWorkspace || publicPages > 0;
     }
 
-    return this.tryCheckPage(ws, id, 'Doc_Read', user);
+    return this.tryCheckPage(ws, id, 'Doc.Read', user);
   }
 
   async getWorkspaceMemberStatus(ws: string, user: string) {
@@ -526,7 +526,7 @@ export class PermissionService {
   async checkCloudPagePermission(
     workspaceId: string,
     pageId: string,
-    action: AllPossibleGraphQLDocActionsKeys,
+    action: DocAction,
     userId?: string
   ) {
     const hasWorkspace = await this.hasWorkspace(workspaceId);
@@ -538,7 +538,7 @@ export class PermissionService {
   async checkPagePermission(
     ws: string,
     page: string,
-    action: AllPossibleGraphQLDocActionsKeys,
+    action: DocAction,
     user?: string
   ) {
     if (!(await this.tryCheckPage(ws, page, action, user))) {
@@ -549,12 +549,12 @@ export class PermissionService {
   async tryCheckPage(
     ws: string,
     page: string,
-    action: AllPossibleGraphQLDocActionsKeys,
+    action: DocAction,
     user?: string
   ) {
-    const role = findMinimalDocRole(action);
+    const role = docActionRequiredRole(action);
     // check whether page is public
-    if (action === 'Doc_Read') {
+    if (action === 'Doc.Read') {
       const count = await this.prisma.workspacePage.count({
         where: {
           workspaceId: ws,
@@ -602,7 +602,7 @@ export class PermissionService {
     return this.tryCheckWorkspace(
       ws,
       user,
-      requiredWorkspaceRoleByDocRole(role)
+      docActionRequiredWorkspaceRole(action)
     );
   }
 

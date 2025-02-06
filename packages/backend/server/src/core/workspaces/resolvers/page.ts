@@ -21,19 +21,22 @@ import {
   ExpectToRevokePublicPage,
   ExpectToUpdateDocUserRole,
   PageIsNotPublic,
+  registerObjectType,
 } from '../../../base';
 import { CurrentUser } from '../../auth';
 import {
+  DOC_ACTIONS,
+  type DocActionPermissions,
   DocRole,
+  fixupDocRole,
+  mapDocRoleToPermissions,
   PermissionService,
   PublicPageMode,
   WorkspaceRole,
 } from '../../permission';
-import { mapRoleToActions, PermissionsList } from '../../permission/types';
 import { UserType } from '../../user';
 import { DocID } from '../../utils/doc';
 import { WorkspaceType } from '../types';
-import { WorkspacePermissions } from './workspace';
 
 registerEnumType(PublicPageMode, {
   name: 'PublicPageMode',
@@ -130,38 +133,12 @@ class GrantedDocUsersConnection {
   pageInfo!: PageInfo;
 }
 
-@ObjectType()
-export class RolePermissions
-  extends WorkspacePermissions
-  implements PermissionsList
-{
-  @Field()
-  Doc_Read!: boolean;
-  @Field()
-  Doc_Copy!: boolean;
-  @Field()
-  Doc_Properties_Read!: boolean;
-  @Field()
-  Doc_Users_Read!: boolean;
-  @Field()
-  Doc_Duplicate!: boolean;
-  @Field()
-  Doc_Trash!: boolean;
-  @Field()
-  Doc_Restore!: boolean;
-  @Field()
-  Doc_Delete!: boolean;
-  @Field()
-  Doc_Properties_Update!: boolean;
-  @Field()
-  Doc_Update!: boolean;
-  @Field()
-  Doc_Publish!: boolean;
-  @Field()
-  Doc_Users_Manage!: boolean;
-  @Field()
-  Doc_TransferOwner!: boolean;
-}
+const DocPermissions = registerObjectType<DocActionPermissions>(
+  Object.fromEntries(
+    DOC_ACTIONS.map(action => [action.replaceAll('.', '_'), Boolean])
+  ),
+  { name: 'DocPermissions' }
+);
 
 @ObjectType()
 class DocType {
@@ -174,8 +151,8 @@ class DocType {
   @Field(() => DocRole)
   role!: DocRole;
 
-  @Field(() => RolePermissions)
-  permissions!: RolePermissions;
+  @Field(() => DocPermissions)
+  permissions!: DocActionPermissions;
 }
 
 @Resolver(() => WorkspaceType)
@@ -278,9 +255,8 @@ export class PagePermissionResolver {
       id: pageId,
       public: page?.public ?? false,
       role: permission?.type ?? DocRole.External,
-      permissions: mapRoleToActions(
-        workspacePermission?.type,
-        permission?.type
+      permissions: mapDocRoleToPermissions(
+        fixupDocRole(workspacePermission?.type, permission?.type)
       ),
     };
   }
@@ -395,7 +371,7 @@ export class PagePermissionResolver {
     await this.permission.checkPagePermission(
       docId.workspace,
       docId.guid,
-      'Doc_Publish',
+      'Doc.Publish',
       user.id
     );
 
@@ -443,7 +419,7 @@ export class PagePermissionResolver {
     await this.permission.checkPagePermission(
       docId.workspace,
       docId.guid,
-      'Doc_Publish',
+      'Doc.Publish',
       user.id
     );
 
@@ -491,7 +467,7 @@ export class PagePermissionResolver {
     await this.permission.checkPagePermission(
       doc.workspace,
       doc.guid,
-      'Doc_Users_Manage',
+      'Doc.Users.Manage',
       user.id
     );
     await this.permission.grantPagePermission(
