@@ -376,7 +376,14 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
           user-select: none;
         }
       </style>
-      <div class="chat-panel-input">
+      <div
+        class="chat-panel-input"
+        @pointerdown=${(e: MouseEvent) => {
+          // by default the div will be focused and will blur the textarea
+          e.preventDefault();
+          this.textarea.focus();
+        }}
+      >
         ${hasImages ? this._renderImages(images) : nothing}
         ${this.chatContextValue.quote
           ? html`<div class="chat-selection-quote">
