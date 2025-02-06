@@ -1,6 +1,7 @@
 import {
   Button,
   createReactComponentFromLit,
+  Divider,
   useLitPortalFactory,
 } from '@affine/component';
 import { TextRenderer } from '@affine/core/blocksuite/presets';
@@ -339,11 +340,7 @@ export const BiDirectionalLinkPanel = () => {
   }, [show, setShow]);
   return (
     <div className={styles.container}>
-      {!show && (
-        <div className={styles.dividerContainer}>
-          <div className={styles.divider}></div>
-        </div>
-      )}
+      {!show && <Divider size="thinner" />}
 
       <div className={styles.titleLine}>
         <div className={styles.title}>Bi-Directional Links</div>
@@ -356,9 +353,8 @@ export const BiDirectionalLinkPanel = () => {
 
       {show && (
         <>
-          <div className={styles.dividerContainer}>
-            <div className={styles.divider}></div>
-          </div>
+          <Divider size="thinner" />
+
           <div className={styles.linksContainer}>
             <div className={styles.linksTitles}>
               {t['com.affine.page-properties.backlinks']()} · {backlinkCount}

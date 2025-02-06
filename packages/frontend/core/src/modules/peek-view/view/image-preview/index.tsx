@@ -1,4 +1,4 @@
-import { toast } from '@affine/component';
+import { Divider, toast } from '@affine/component';
 import { Button, IconButton } from '@affine/component/ui/button';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import type { ImageBlockModel } from '@blocksuite/affine/blocks';
@@ -326,7 +326,7 @@ const ImagePreviewModalImpl = ({
             disabled={cursor + 1 === blocks.length}
             onClick={() => goto(cursor + 1)}
           />
-          <div className={styles.dividerStyle}></div>
+          <Divider size="thinner" orientation="vertical" />
           <IconButton
             data-testid="fit-to-screen-button"
             tooltip="Fit to screen"
@@ -347,14 +347,13 @@ const ImagePreviewModalImpl = ({
           >
             {`${(currentScale * 100).toFixed(0)}%`}
           </Button>
-
           <IconButton
             data-testid="zoom-in-button"
             tooltip="Zoom in"
             icon={<PlusIcon />}
             onClick={zoomIn}
           />
-          <div className={styles.dividerStyle}></div>
+          <Divider size="thinner" orientation="vertical" />
           <IconButton
             data-testid="download-button"
             tooltip="Download"
@@ -369,7 +368,7 @@ const ImagePreviewModalImpl = ({
           />
           {blockModel && !blockModel.doc.readonly && (
             <>
-              <div className={styles.dividerStyle}></div>
+              <Divider size="thinner" orientation="vertical" />
               <IconButton
                 data-testid="delete-button"
                 tooltip="Delete"
