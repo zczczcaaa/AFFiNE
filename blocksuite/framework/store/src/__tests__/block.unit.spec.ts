@@ -453,6 +453,33 @@ describe('flat', () => {
     );
 
     onChange.mockClear();
+    onColUpdated.mockClear();
+    delete (model.props.cols.a as Record<string, unknown>).color;
+    expect(yBlock.get('prop:cols.a.color')).toBe(undefined);
+    expect(model.props.cols.a).toEqual({});
+    expect(model.props.cols$.value).toEqual({ a: {} });
+    expect(onColUpdated).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.anything(),
+      'cols',
+      expect.anything()
+    );
+
+    model.props.cols = {
+      a: { color: 'red' },
+      b: { color: 'blue' },
+    };
+    onChange.mockClear();
+    onColUpdated.mockClear();
+    delete (model.props as Record<string, unknown>).cols;
+    expect(model.props.cols$.value).toBeUndefined();
+    expect(yBlock.get('prop:cols.a.color')).toBe(undefined);
+    expect(yBlock.get('prop:cols.b.color')).toBe(undefined);
+    expect(onColUpdated).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    onChange.mockClear();
     model.props.title.insert('test', 0);
     expect((yBlock.get('prop:title') as Y.Text).toJSON()).toBe('test');
     expect(model.props.title$.value.toDelta()).toEqual([{ insert: 'test' }]);
@@ -478,6 +505,16 @@ describe('flat', () => {
     onChange.mockClear();
     model.props.labels$.value = ['test2'];
     expect(getLabels().toJSON()).toEqual(['test2']);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.anything(),
+      'labels',
+      expect.anything()
+    );
+
+    onChange.mockClear();
+    model.props.labels.splice(0, 1);
+    expect(getLabels().toJSON()).toEqual([]);
+    expect(model.props.labels$.value).toEqual([]);
     expect(onChange).toHaveBeenCalledWith(
       expect.anything(),
       'labels',

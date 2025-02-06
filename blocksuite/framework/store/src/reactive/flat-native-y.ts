@@ -8,6 +8,7 @@ import {
   type YMapEvent,
 } from 'yjs';
 
+import { SYS_KEYS } from '../consts';
 import { BaseReactiveYData } from './base-reactive-data';
 import { Boxed, type OnBoxedChange } from './boxed';
 import { isPureObject } from './is-pure-object';
@@ -17,6 +18,9 @@ import { type OnTextChange, Text } from './text';
 import type { ProxyOptions, UnRecord } from './types';
 
 const keyWithoutPrefix = (key: string) => key.replace(/(prop|sys):/, '');
+
+const keyWithPrefix = (key: string) =>
+  SYS_KEYS.has(key) ? `sys:${key}` : `prop:${key}`;
 
 type OnChange = (key: string, value: unknown) => void;
 type Transform = (key: string, value: unknown, origin: unknown) => unknown;
@@ -144,7 +148,7 @@ function createProxy(
                   run(value, fullPath);
                 } else {
                   list.push(() => {
-                    yMap.set(`prop:${fullPath}`, value);
+                    yMap.set(keyWithPrefix(fullPath), value);
                   });
                 }
               });
@@ -179,7 +183,7 @@ function createProxy(
         if (!isStashed) {
           yMap.doc?.transact(
             () => {
-              yMap.set(`prop:${fullPath}`, yValue);
+              yMap.set(keyWithPrefix(fullPath), yValue);
             },
             { proxy: true }
           );
@@ -190,6 +194,64 @@ function createProxy(
         return result;
       }
       return Reflect.set(target, p, value, receiver);
+    },
+    deleteProperty: (target, p) => {
+      if (typeof p === 'string') {
+        const fullPath = basePath ? `${basePath}.${p}` : p;
+        const firstKey = fullPath.split('.')[0];
+        if (!firstKey) {
+          throw new Error(`Invalid key for: ${fullPath}`);
+        }
+
+        const isStashed = stashed.has(firstKey);
+
+        const updateSignal = () => {
+          if (shouldByPassSignal()) {
+            return;
+          }
+
+          const signalKey = `${firstKey}$`;
+          if (!(signalKey in root)) {
+            if (!isRoot) {
+              return;
+            }
+            delete root[signalKey];
+            return;
+          }
+          byPassSignalUpdate(() => {
+            const prev = root[firstKey];
+            const next = isRoot
+              ? prev
+              : isPureObject(prev)
+                ? { ...prev }
+                : Array.isArray(prev)
+                  ? [...prev]
+                  : prev;
+            // @ts-expect-error allow magic props
+            root[signalKey].value = next;
+            onChange?.(firstKey, next);
+          });
+        };
+
+        if (!isStashed) {
+          yMap.doc?.transact(
+            () => {
+              const fullKey = keyWithPrefix(fullPath);
+              yMap.forEach((_, key) => {
+                if (key.startsWith(fullKey)) {
+                  yMap.delete(key);
+                }
+              });
+            },
+            { proxy: true }
+          );
+        }
+
+        const result = Reflect.deleteProperty(target, p);
+        updateSignal();
+        return result;
+      }
+      return Reflect.deleteProperty(target, p);
     },
   });
 
@@ -217,7 +279,7 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
         }
         if (type.action === 'update' || type.action === 'add') {
           const value = yMap.get(key);
-          const keyName: string = key.replace('prop:', '');
+          const keyName: string = keyWithoutPrefix(key);
           const keys = keyName.split('.');
           const firstKey = keys[0];
           if (this._stashed.has(firstKey)) {
@@ -232,7 +294,7 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
           return;
         }
         if (type.action === 'delete') {
-          const keyName: string = key.replace('prop:', '');
+          const keyName: string = keyWithoutPrefix(key);
           const keys = keyName.split('.');
           const firstKey = keys[0];
           if (this._stashed.has(firstKey)) {
