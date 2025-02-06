@@ -102,7 +102,7 @@ export class Viewport {
    * The editor itself may be scaled by outer container which is common in nested editor scenarios.
    * This property is used to calculate the scale of the editor.
    */
-  get scale() {
+  get viewScale() {
     if (!this._el || this._cachedOffsetWidth === null) return 1;
     return this.boundingClientRect.width / this._cachedOffsetWidth;
   }
@@ -416,8 +416,11 @@ export class Viewport {
   }
 
   toModelCoord(viewX: number, viewY: number): IVec {
-    const { viewportX, viewportY, zoom, scale } = this;
-    return [viewportX + viewX / zoom / scale, viewportY + viewY / zoom / scale];
+    const { viewportX, viewportY, zoom, viewScale } = this;
+    return [
+      viewportX + viewX / zoom / viewScale,
+      viewportY + viewY / zoom / viewScale,
+    ];
   }
 
   toModelCoordFromClientCoord([x, y]: IVec): IVec {
@@ -433,10 +436,10 @@ export class Viewport {
   }
 
   toViewCoord(modelX: number, modelY: number): IVec {
-    const { viewportX, viewportY, zoom, scale } = this;
+    const { viewportX, viewportY, zoom, viewScale } = this;
     return [
-      (modelX - viewportX) * zoom * scale,
-      (modelY - viewportY) * zoom * scale,
+      (modelX - viewportX) * zoom * viewScale,
+      (modelY - viewportY) * zoom * viewScale,
     ];
   }
 

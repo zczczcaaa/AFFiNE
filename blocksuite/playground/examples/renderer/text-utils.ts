@@ -6,8 +6,15 @@ interface WordSegment {
   end: number;
 }
 
+const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/u;
+
+function hasCJK(text: string): boolean {
+  return CJK_REGEX.test(text);
+}
+
 function getWordSegments(text: string): WordSegment[] {
-  const segmenter = new Intl.Segmenter(undefined, { granularity: 'word' });
+  const granularity = hasCJK(text) ? 'grapheme' : 'word';
+  const segmenter = new Intl.Segmenter(undefined, { granularity });
   return Array.from(segmenter.segment(text)).map(({ segment, index }) => ({
     text: segment,
     start: index,
@@ -23,8 +30,14 @@ function getRangeRects(range: Range, fullText: string): TextRect[] {
 
   // If there's only one rect, use the full text
   if (rects.length === 1) {
+    const rect = rects[0];
     textRects.push({
-      rect: rects[0],
+      rect: {
+        x: rect.x,
+        y: rect.y,
+        w: rect.width,
+        h: rect.height,
+      },
       text: fullText,
     });
     return textRects;
@@ -33,7 +46,9 @@ function getRangeRects(range: Range, fullText: string): TextRect[] {
   const segments = getWordSegments(fullText);
 
   // Calculate the total width and average width per character
-  const totalWidth = rects.reduce((sum, rect) => sum + rect.width, 0);
+  const totalWidth = Math.floor(
+    rects.reduce((sum, rect) => sum + rect.width, 0)
+  );
   const charWidthEstimate = totalWidth / fullText.length;
 
   let currentRect = 0;
@@ -42,26 +57,18 @@ function getRangeRects(range: Range, fullText: string): TextRect[] {
 
   segments.forEach(segment => {
     const segmentWidth = segment.text.length * charWidthEstimate;
-    const isPunctuation = /^[.,!?;:]$/.test(segment.text.trim());
-
-    // Handle punctuation: if the punctuation doesn't exceed the rect width, merge it with the previous segment
-    if (isPunctuation && currentSegments.length > 0) {
-      const withPunctuationWidth = currentWidth + segmentWidth;
-      // Allow slight overflow (120%) since punctuation is usually very narrow
-      if (withPunctuationWidth <= rects[currentRect]?.width * 1.2) {
-        currentSegments.push(segment);
-        currentWidth = withPunctuationWidth;
-        return;
-      }
-    }
-
     if (
       currentWidth + segmentWidth > rects[currentRect]?.width &&
-      currentSegments.length > 0 &&
-      !isPunctuation // If it's punctuation, try merging with the previous word first
+      currentSegments.length > 0
     ) {
+      const rect = rects[currentRect];
       textRects.push({
-        rect: rects[currentRect],
+        rect: {
+          x: rect.x,
+          y: rect.y,
+          w: rect.width,
+          h: rect.height,
+        },
         text: currentSegments.map(seg => seg.text).join(''),
       });
 
@@ -75,9 +82,15 @@ function getRangeRects(range: Range, fullText: string): TextRect[] {
   });
 
   // Handle remaining segments if any
-  if (currentSegments.length > 0 && currentRect < rects.length) {
+  if (currentSegments.length > 0) {
+    const rect = rects[Math.min(currentRect, rects.length - 1)];
     textRects.push({
-      rect: rects[currentRect],
+      rect: {
+        x: rect.x,
+        y: rect.y,
+        w: rect.width,
+        h: rect.height,
+      },
       text: currentSegments.map(seg => seg.text).join(''),
     });
   }
@@ -99,14 +112,18 @@ export function getSentenceRects(
   let rects: TextRect[] = [];
   let startIndex = 0;
 
-  // Find all occurrences of the sentence
+  // Find all occurrences of the sentence and ensure we capture complete words
   while ((startIndex = text.indexOf(sentence, startIndex)) !== -1) {
     const range = document.createRange();
-    range.setStart(textNode, startIndex);
-    range.setEnd(textNode, startIndex + sentence.length);
+    let endIndex = startIndex + sentence.length;
 
-    rects = rects.concat(getRangeRects(range, sentence));
-    startIndex += sentence.length; // Move to next potential occurrence
+    range.setStart(textNode, startIndex);
+    range.setEnd(textNode, endIndex);
+
+    rects = rects.concat(
+      getRangeRects(range, text.slice(startIndex, endIndex))
+    );
+    startIndex = endIndex;
   }
 
   return rects;

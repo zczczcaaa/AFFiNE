@@ -223,9 +223,13 @@ export class EdgelessRootBlockComponent extends BlockComponent<
         const [p1, p2] = multiPointersState.pointers;
 
         const dx =
-          (0.25 * (p1.delta.x + p2.delta.x)) / viewport.zoom / viewport.scale;
+          (0.25 * (p1.delta.x + p2.delta.x)) /
+          viewport.zoom /
+          viewport.viewScale;
         const dy =
-          (0.25 * (p1.delta.y + p2.delta.y)) / viewport.zoom / viewport.scale;
+          (0.25 * (p1.delta.y + p2.delta.y)) /
+          viewport.zoom /
+          viewport.viewScale;
 
         // direction is opposite
         viewport.applyDeltaCenter(-dx, -dy);

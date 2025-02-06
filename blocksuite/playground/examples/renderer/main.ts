@@ -1,6 +1,5 @@
 import { Text } from '@blocksuite/store';
 
-import { animator } from './animator.js';
 import { CanvasRenderer } from './canvas-renderer.js';
 import { doc, editor } from './editor.js';
 
@@ -14,7 +13,7 @@ function initUI() {
   });
   const switchModeButton = document.querySelector('#switch-mode-button')!;
   switchModeButton.addEventListener('click', async () => {
-    await animator.switchMode();
+    editor.mode = editor.mode === 'page' ? 'edgeless' : 'page';
   });
   document.querySelector('#left-column')?.append(editor);
 }

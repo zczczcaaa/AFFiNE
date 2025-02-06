@@ -1,4 +1,23 @@
-import { type SectionLayout } from './types.js';
+import { type SectionLayout, type ViewportState } from './types.js';
+
+type WorkerMessageInit = {
+  type: 'init';
+  data: {
+    width: number;
+    height: number;
+    dpr: number;
+    viewport: ViewportState;
+  };
+};
+
+type WorkerMessageDraw = {
+  type: 'draw';
+  data: {
+    section: SectionLayout;
+  };
+};
+
+type WorkerMessage = WorkerMessageInit | WorkerMessageDraw;
 
 const meta = {
   emSize: 2048,
@@ -29,39 +48,50 @@ function getBaseline() {
 class CanvasWorkerManager {
   private canvas: OffscreenCanvas | null = null;
   private ctx: OffscreenCanvasRenderingContext2D | null = null;
+  private viewport: ViewportState | null = null;
 
-  init(width: number, height: number, dpr: number) {
-    this.canvas = new OffscreenCanvas(width * dpr, height * dpr);
+  init(
+    modelWidth: number,
+    modelHeight: number,
+    dpr: number,
+    viewport: ViewportState
+  ) {
+    const width = modelWidth * dpr * viewport.zoom;
+    const height = modelHeight * dpr * viewport.zoom;
+    this.canvas = new OffscreenCanvas(width, height);
     this.ctx = this.canvas.getContext('2d')!;
     this.ctx.scale(dpr, dpr);
     this.ctx.fillStyle = 'lightgrey';
     this.ctx.fillRect(0, 0, width, height);
+    this.viewport = viewport;
   }
 
   draw(section: SectionLayout) {
     const { canvas, ctx } = this;
     if (!canvas || !ctx) return;
 
+    const zoom = this.viewport!.zoom;
+    ctx.scale(zoom, zoom);
+
     // Track rendered positions to avoid duplicate rendering across all paragraphs and sentences
     const renderedPositions = new Set<string>();
 
     section.paragraphs.forEach(paragraph => {
-      const scale = paragraph.scale ?? 1;
-      const fontSize = 15 * scale;
-      ctx.font = `${fontSize}px Inter`;
-      const baselineY = getBaseline() * scale;
+      const fontSize = 15;
+      ctx.font = `300 ${fontSize}px Inter`;
+      const baselineY = getBaseline();
 
       paragraph.sentences.forEach(sentence => {
         ctx.strokeStyle = 'yellow';
         sentence.rects.forEach(textRect => {
-          const x = textRect.rect.left - section.rect.x;
-          const y = textRect.rect.top - section.rect.y;
+          const x = textRect.rect.x - section.rect.x;
+          const y = textRect.rect.y - section.rect.y;
 
           const posKey = `${x},${y}`;
           // Only render if we haven't rendered at this position before
           if (renderedPositions.has(posKey)) return;
 
-          ctx.strokeRect(x, y, textRect.rect.width, textRect.rect.height);
+          ctx.strokeRect(x, y, textRect.rect.w, textRect.rect.h);
           ctx.fillStyle = 'black';
           ctx.fillText(textRect.text, x, y + baselineY);
 
@@ -77,12 +107,12 @@ class CanvasWorkerManager {
 
 const manager = new CanvasWorkerManager();
 
-self.onmessage = async (e: MessageEvent) => {
+self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   const { type, data } = e.data;
   switch (type) {
     case 'init': {
-      const { width, height, dpr } = data;
-      manager.init(width, height, dpr);
+      const { width, height, dpr, viewport } = data;
+      manager.init(width, height, dpr, viewport);
       break;
     }
     case 'draw': {
