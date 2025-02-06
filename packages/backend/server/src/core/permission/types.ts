@@ -240,7 +240,7 @@ export function mapDocRoleToPermissions(docRole: DocRole) {
 export function fixupDocRole(
   workspaceRole: WorkspaceRole = WorkspaceRole.External,
   docRole: DocRole = DocRole.External
-) {
+): DocRole {
   switch (workspaceRole) {
     case WorkspaceRole.External:
       // Workspace External user won't be able to have any high permission doc role

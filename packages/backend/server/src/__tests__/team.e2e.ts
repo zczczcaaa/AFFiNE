@@ -6,7 +6,9 @@ import { getCurrentMailMessageCount } from '@affine-test/kit/utils/cloud';
 import { WorkspaceMemberStatus } from '@prisma/client';
 import type { TestFn } from 'ava';
 import ava from 'ava';
+import { nanoid } from 'nanoid';
 import Sinon from 'sinon';
+import request from 'supertest';
 
 import { AppModule } from '../app.module';
 import { EventBus } from '../base';
@@ -199,6 +201,11 @@ const init = async (
     WorkspaceRole.Collaborator
   );
 
+  const external = await invite(
+    `${prefix}external@affine.pro`,
+    WorkspaceRole.External
+  );
+
   return {
     invite,
     inviteBatch,
@@ -209,12 +216,13 @@ const init = async (
     admin,
     write,
     read,
+    external,
   };
 };
 
 test('should be able to invite multiple users', async t => {
   const { app } = t.context;
-  const { teamWorkspace: ws, owner, admin, write, read } = await init(app, 4);
+  const { teamWorkspace: ws, owner, admin, write, read } = await init(app, 5);
 
   {
     // no permission
@@ -265,7 +273,7 @@ test('should be able to invite multiple users', async t => {
 
 test('should be able to check seat limit', async t => {
   const { app, permissions, models } = t.context;
-  const { invite, inviteBatch, teamWorkspace: ws } = await init(app, 4);
+  const { invite, inviteBatch, teamWorkspace: ws } = await init(app, 5);
 
   {
     // invite
@@ -275,7 +283,7 @@ test('should be able to check seat limit', async t => {
       'should throw error if exceed member limit'
     );
     models.workspaceFeature.add(ws.id, 'team_plan_v1', 'test', {
-      memberLimit: 5,
+      memberLimit: 6,
     });
     await t.notThrowsAsync(
       invite('member4@affine.pro', WorkspaceRole.Collaborator),
@@ -303,7 +311,7 @@ test('should be able to check seat limit', async t => {
     // refresh seat, fifo
     sleep(1000);
     const [[members2]] = await inviteBatch(['member6@affine.pro']);
-    await permissions.refreshSeatStatus(ws.id, 6);
+    await permissions.refreshSeatStatus(ws.id, 7);
 
     t.is(
       await permissions.getWorkspaceMemberStatus(
@@ -471,7 +479,7 @@ test('should be able to manage invite link', async t => {
     admin,
     write,
     read,
-  } = await init(app, 4);
+  } = await init(app);
 
   for (const [workspace, managers] of [
     [ws, [owner]],
@@ -519,7 +527,7 @@ test('should be able to manage invite link', async t => {
 
 test('should be able to approve team member', async t => {
   const { app } = t.context;
-  const { teamWorkspace: tws, owner, admin, write, read } = await init(app, 5);
+  const { teamWorkspace: tws, owner, admin, write, read } = await init(app, 6);
 
   {
     const { link } = await createInviteLink(
@@ -577,7 +585,7 @@ test('should be able to invite by link', async t => {
     owner,
     workspace: ws,
     teamWorkspace: tws,
-  } = await init(app, 4);
+  } = await init(app, 5);
   const [inviteId, invite] = await createInviteLink(ws);
   const [teamInviteId, teamInvite, acceptTeamInvite] =
     await createInviteLink(tws);
@@ -594,7 +602,7 @@ test('should be able to invite by link', async t => {
 
   {
     // invite link
-    for (const [i] of Array.from({ length: 6 }).entries()) {
+    for (const [i] of Array.from({ length: 5 }).entries()) {
       const user = await invite(`test${i}@affine.pro`);
       const status = await permissions.getWorkspaceMemberStatus(ws.id, user.id);
       t.is(
@@ -632,9 +640,9 @@ test('should be able to invite by link', async t => {
     );
 
     models.workspaceFeature.add(tws.id, 'team_plan_v1', 'test', {
-      memberLimit: 5,
+      memberLimit: 6,
     });
-    await permissions.refreshSeatStatus(tws.id, 5);
+    await permissions.refreshSeatStatus(tws.id, 6);
     t.is(
       await permissions.getWorkspaceMemberStatus(tws.id, m3.id),
       WorkspaceMemberStatus.UnderReview,
@@ -647,9 +655,9 @@ test('should be able to invite by link', async t => {
     );
 
     models.workspaceFeature.add(tws.id, 'team_plan_v1', 'test', {
-      memberLimit: 6,
+      memberLimit: 7,
     });
-    await permissions.refreshSeatStatus(tws.id, 6);
+    await permissions.refreshSeatStatus(tws.id, 7);
     t.is(
       await permissions.getWorkspaceMemberStatus(tws.id, m4.id),
       WorkspaceMemberStatus.UnderReview,
@@ -669,7 +677,7 @@ test('should be able to invite by link', async t => {
 
 test('should be able to send mails', async t => {
   const { app } = t.context;
-  const { inviteBatch } = await init(app, 4);
+  const { inviteBatch } = await init(app, 5);
   const primitiveMailCount = await getCurrentMailMessageCount();
 
   {
@@ -682,7 +690,7 @@ test('should be able to emit events', async t => {
   const { app, event } = t.context;
 
   {
-    const { teamWorkspace: tws, inviteBatch } = await init(app, 4);
+    const { teamWorkspace: tws, inviteBatch } = await init(app, 5);
 
     await inviteBatch(['m1@affine.pro', 'm2@affine.pro']);
     const [membersUpdated] = event.emit
@@ -693,7 +701,7 @@ test('should be able to emit events', async t => {
       'workspace.members.updated',
       {
         workspaceId: tws.id,
-        count: 6,
+        count: 7,
       },
     ]);
   }
@@ -787,11 +795,233 @@ test('should be able to emit events', async t => {
       [
         'workspace.members.updated',
         {
-          count: 3,
+          count: 4,
           workspaceId: tws.id,
         },
       ],
       'should emit role changed event'
     );
+  }
+});
+
+test('should be able to change the default role in page', async t => {
+  const { app } = t.context;
+  const { teamWorkspace: ws, admin } = await init(app, 5);
+  const pageId = nanoid();
+  const res = await request(app.getHttpServer())
+    .post('/graphql')
+    .auth(admin.token.token, { type: 'bearer' })
+    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+    .send({
+      query: `
+          mutation {
+            updatePageDefaultRole(input: {
+              workspaceId: "${ws.id}",
+              docId: "${pageId}",
+              role: Reader,
+            })
+          }
+        `,
+    })
+    .expect(200);
+
+  t.deepEqual(res.body, {
+    data: {
+      updatePageDefaultRole: true,
+    },
+  });
+});
+
+test('Default page role should be able to override the workspace role', async t => {
+  const { app } = t.context;
+  const {
+    teamWorkspace: workspace,
+    admin,
+    read,
+    external,
+  } = await init(app, 5);
+
+  const pageId = nanoid();
+
+  const res = await request(app.getHttpServer())
+    .post('/graphql')
+    .auth(admin.token.token, { type: 'bearer' })
+    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+    .send({
+      query: `
+          mutation {
+            updatePageDefaultRole(input: {
+              workspaceId: "${workspace.id}",
+              docId: "${pageId}",
+              role: Manager,
+            })
+          }
+        `,
+    })
+    .expect(200);
+
+  t.deepEqual(res.body, {
+    data: {
+      updatePageDefaultRole: true,
+    },
+  });
+
+  // reader can manage the page if the page default role is Manager
+  {
+    const readerRes = await request(app.getHttpServer())
+      .post('/graphql')
+      .auth(read.token.token, { type: 'bearer' })
+      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+      .send({
+        query: `
+          mutation {
+            updatePageDefaultRole(input: {
+              workspaceId: "${workspace.id}",
+              docId: "${pageId}",
+              role: Manager,
+            })
+          }
+        `,
+      })
+      .expect(200);
+
+    t.deepEqual(readerRes.body, {
+      data: {
+        updatePageDefaultRole: true,
+      },
+    });
+  }
+
+  // external can't manage the page even if the page default role is Manager
+  {
+    const externalRes = await request(app.getHttpServer())
+      .post('/graphql')
+      .auth(external.token.token, { type: 'bearer' })
+      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+      .send({
+        query: `
+          mutation {
+            updatePageDefaultRole(input: {
+              workspaceId: "${workspace.id}",
+              docId: "${pageId}",
+              role: Manager,
+            })
+          }
+        `,
+      })
+      .expect(200);
+
+    t.like(externalRes.body, {
+      errors: [
+        {
+          message: `You do not have permission to access doc ${pageId} under Space ${workspace.id}.`,
+        },
+      ],
+    });
+  }
+});
+
+test('should be able to grant and revoke doc user role', async t => {
+  const { app } = t.context;
+  const { teamWorkspace: ws, admin, read, external } = await init(app, 5);
+  const pageId = nanoid();
+  const res = await request(app.getHttpServer())
+    .post('/graphql')
+    .auth(admin.token.token, { type: 'bearer' })
+    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+    .send({
+      query: `
+        mutation {
+          grantDocUserRoles(input: {
+            workspaceId: "${ws.id}",
+            docId: "${pageId}",
+            role: Manager,
+            userIds: ["${external.id}"]
+          })
+        }
+      `,
+    })
+    .expect(200);
+
+  t.deepEqual(res.body, {
+    data: {
+      grantDocUserRoles: true,
+    },
+  });
+
+  // external user now can manage the page
+  {
+    const externalRes = await request(app.getHttpServer())
+      .post('/graphql')
+      .auth(external.token.token, { type: 'bearer' })
+      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+      .send({
+        query: `
+        mutation {
+          grantDocUserRoles(input: {
+            workspaceId: "${ws.id}",
+            docId: "${pageId}",
+            role: Manager,
+            userIds: ["${read.id}"]
+          })
+        }
+      `,
+      })
+      .expect(200);
+    t.deepEqual(externalRes.body, {
+      data: {
+        grantDocUserRoles: true,
+      },
+    });
+  }
+
+  // revoke the role of the external user
+  {
+    const revokeRes = await request(app.getHttpServer())
+      .post('/graphql')
+      .auth(admin.token.token, { type: 'bearer' })
+      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+      .send({
+        query: `
+        mutation {
+          revokeDocUserRoles(input: {
+            workspaceId: "${ws.id}",
+            docId: "${pageId}",
+            userIds: ["${external.id}"]
+          })
+        }
+      `,
+      })
+      .expect(200);
+    t.deepEqual(revokeRes.body, {
+      data: {
+        revokeDocUserRoles: true,
+      },
+    });
+
+    // external user can't manage the page
+    const externalRes = await request(app.getHttpServer())
+      .post('/graphql')
+      .auth(external.token.token, { type: 'bearer' })
+      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+      .send({
+        query: `
+          mutation {
+            revokeDocUserRoles(input: {
+              workspaceId: "${ws.id}",
+              docId: "${pageId}",
+              userIds: ["${read.id}"]
+            })
+          }
+        `,
+      })
+      .expect(200);
+    t.like(externalRes.body, {
+      errors: [
+        {
+          message: `You do not have permission to access Space ${ws.id}.`,
+        },
+      ],
+    });
   }
 });

@@ -14,11 +14,13 @@ import type { WorkspacePage as PrismaWorkspacePage } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 
 import {
+  DocAccessDenied,
   ExpectToGrantDocUserRoles,
   ExpectToPublishPage,
   ExpectToRevokeDocUserRoles,
   ExpectToRevokePublicPage,
   ExpectToUpdateDocUserRole,
+  PageDefaultRoleCanNotBeOwner,
   PageIsNotPublic,
   paginate,
   Paginated,
@@ -72,6 +74,45 @@ class GrantDocUserRolesInput {
 
   @Field(() => [String])
   userIds!: string[];
+}
+
+@InputType()
+class UpdateDocUserRoleInput {
+  @Field(() => String)
+  docId!: string;
+
+  @Field(() => String)
+  workspaceId!: string;
+
+  @Field(() => String)
+  userId!: string;
+
+  @Field(() => DocRole)
+  role!: DocRole;
+}
+
+@InputType()
+class RevokeDocUserRolesInput {
+  @Field(() => String)
+  docId!: string;
+
+  @Field(() => String)
+  workspaceId!: string;
+
+  @Field(() => [String])
+  userIds!: string[];
+}
+
+@InputType()
+class UpdatePageDefaultRoleInput {
+  @Field(() => String)
+  docId!: string;
+
+  @Field(() => String)
+  workspaceId!: string;
+
+  @Field(() => DocRole)
+  role!: DocRole;
 }
 
 @ObjectType()
@@ -413,12 +454,11 @@ export class PagePermissionResolver {
   @Mutation(() => Boolean)
   async revokeDocUserRoles(
     @CurrentUser() user: CurrentUser,
-    @Args('docId') docId: string,
-    @Args('userIds', { type: () => [String] }) userIds: string[]
+    @Args('input') input: RevokeDocUserRolesInput
   ): Promise<boolean> {
-    const doc = new DocID(docId);
+    const doc = new DocID(input.docId, input.workspaceId);
     const pairs = {
-      spaceId: doc.workspace,
+      spaceId: input.workspaceId,
       docId: doc.guid,
     };
     if (doc.isWorkspace) {
@@ -436,10 +476,10 @@ export class PagePermissionResolver {
       user.id,
       WorkspaceRole.Collaborator
     );
-    await this.permission.revokePage(doc.workspace, doc.guid, userIds);
+    await this.permission.revokePage(doc.workspace, doc.guid, input.userIds);
     this.logger.log('Revoke doc user roles', {
       ...pairs,
-      userIds: userIds,
+      userIds: input.userIds,
     });
     return true;
   }
@@ -447,11 +487,9 @@ export class PagePermissionResolver {
   @Mutation(() => Boolean)
   async updateDocUserRole(
     @CurrentUser() user: CurrentUser,
-    @Args('docId') docId: string,
-    @Args('userId') userId: string,
-    @Args('role', { type: () => DocRole }) role: DocRole
+    @Args('input') input: UpdateDocUserRoleInput
   ): Promise<boolean> {
-    const doc = new DocID(docId);
+    const doc = new DocID(input.docId, input.workspaceId);
     const pairs = {
       spaceId: doc.workspace,
       docId: doc.guid,
@@ -471,32 +509,94 @@ export class PagePermissionResolver {
       user.id,
       WorkspaceRole.Collaborator
     );
-    if (role === DocRole.Owner) {
+    if (input.role === DocRole.Owner) {
       const ret = await this.permission.grantPagePermission(
         doc.workspace,
         doc.guid,
-        [userId],
-        role
+        [input.userId],
+        input.role
       );
       this.logger.log('Transfer doc owner', {
         ...pairs,
-        userId: userId,
-        role: role,
+        userId: input.userId,
+        role: input.role,
       });
       return ret.length > 0;
     } else {
       await this.permission.updatePagePermission(
         doc.workspace,
         doc.guid,
-        userId,
-        role
+        input.userId,
+        input.role
       );
       this.logger.log('Update doc user role', {
         ...pairs,
-        userId: userId,
-        role: role,
+        userId: input.userId,
+        role: input.role,
       });
       return true;
     }
+  }
+
+  @Mutation(() => Boolean)
+  async updatePageDefaultRole(
+    @CurrentUser() user: CurrentUser,
+    @Args('input') input: UpdatePageDefaultRoleInput
+  ) {
+    if (input.role === DocRole.Owner) {
+      this.logger.log('Page default role can not be owner', input);
+      throw new PageDefaultRoleCanNotBeOwner();
+    }
+    const doc = new DocID(input.docId, input.workspaceId);
+    const pairs = {
+      spaceId: doc.workspace,
+      docId: doc.guid,
+    };
+    if (doc.isWorkspace) {
+      this.logger.error(
+        'Expect to update page default role, but it is a workspace',
+        pairs
+      );
+      throw new ExpectToUpdateDocUserRole(
+        pairs,
+        'Expect doc not to be workspace'
+      );
+    }
+    try {
+      await this.permission.checkCloudPagePermission(
+        doc.workspace,
+        doc.guid,
+        'Doc.Users.Manage',
+        user.id
+      );
+    } catch (error) {
+      if (error instanceof DocAccessDenied) {
+        this.logger.log(
+          'User does not have permission to update page default role',
+          {
+            ...pairs,
+            userId: user.id,
+          }
+        );
+      }
+      throw error;
+    }
+    await this.prisma.workspacePage.upsert({
+      where: {
+        workspaceId_pageId: {
+          workspaceId: doc.workspace,
+          pageId: doc.guid,
+        },
+      },
+      update: {
+        defaultRole: input.role,
+      },
+      create: {
+        workspaceId: doc.workspace,
+        pageId: doc.guid,
+        defaultRole: input.role,
+      },
+    });
+    return true;
   }
 }

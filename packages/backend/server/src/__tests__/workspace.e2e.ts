@@ -54,7 +54,7 @@ test('should create a workspace', async t => {
   t.is(typeof workspace.id, 'string', 'workspace.id is not a string');
 });
 
-test('should can publish workspace', async t => {
+test('should be able to publish workspace', async t => {
   const { app } = t.context;
   const user = await signUp(app, 'u1', 'u1@affine.pro', '1');
   const workspace = await createWorkspace(app, user.token.token);

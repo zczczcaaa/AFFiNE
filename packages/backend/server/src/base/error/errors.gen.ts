@@ -405,6 +405,12 @@ export class ActionForbiddenOnNonTeamWorkspace extends UserFriendlyError {
     super('action_forbidden', 'action_forbidden_on_non_team_workspace', message);
   }
 }
+
+export class PageDefaultRoleCanNotBeOwner extends UserFriendlyError {
+  constructor(message?: string) {
+    super('invalid_input', 'page_default_role_can_not_be_owner', message);
+  }
+}
 @ObjectType()
 class UnsupportedSubscriptionPlanDataType {
   @Field() plan!: string
@@ -761,6 +767,7 @@ export enum ErrorNames {
   FAILED_TO_SAVE_UPDATES,
   FAILED_TO_UPSERT_SNAPSHOT,
   ACTION_FORBIDDEN_ON_NON_TEAM_WORKSPACE,
+  PAGE_DEFAULT_ROLE_CAN_NOT_BE_OWNER,
   UNSUPPORTED_SUBSCRIPTION_PLAN,
   FAILED_TO_CHECKOUT,
   INVALID_CHECKOUT_PARAMETERS,

@@ -571,30 +571,69 @@ export class PermissionService {
     }
 
     if (user) {
-      const count = await this.prisma.workspacePageUserPermission.count({
-        where: {
-          workspaceId: ws,
-          pageId: page,
-          userId: user,
-          type: {
-            gte: role,
+      const [roleEntity, pageEntity, workspaceRoleEntity] = await Promise.all([
+        this.prisma.workspacePageUserPermission.findFirst({
+          where: {
+            workspaceId: ws,
+            pageId: page,
+            userId: user,
           },
-        },
-      });
+          select: {
+            type: true,
+          },
+        }),
+        this.prisma.workspacePage.findFirst({
+          where: {
+            workspaceId: ws,
+            pageId: page,
+          },
+          select: {
+            defaultRole: true,
+          },
+        }),
+        this.prisma.workspaceUserPermission.findFirst({
+          where: {
+            workspaceId: ws,
+            userId: user,
+            OR: this.acceptedCondition,
+          },
+          select: {
+            type: true,
+          },
+        }),
+      ]);
 
-      // page shared to user
-      // accessible
-      if (count > 0) {
+      if (
+        // Page role exists, check it first
+        (roleEntity && roleEntity.type >= role) ||
+        // if
+        //   - page has a default role
+        //   - the user is in this workspace
+        //   - the user is not an external user in this workspace
+        // then use the max of the two
+        (workspaceRoleEntity &&
+          workspaceRoleEntity.type !== WorkspaceRole.External &&
+          Math.max(
+            roleEntity?.type ?? Number.MIN_SAFE_INTEGER,
+            pageEntity?.defaultRole ?? Number.MIN_SAFE_INTEGER
+          ) >= role)
+      ) {
         return true;
-      } else {
-        this.logger.log("User's PageRole is lower than required", {
-          workspaceId: ws,
-          pageId: page,
-          userId: user,
-          requiredRole: DocRole[role],
-          action,
-        });
       }
+      this.logger.log("User's role is lower than required", {
+        workspaceId: ws,
+        docId: page,
+        userId: user,
+        workspaceRole: workspaceRoleEntity
+          ? WorkspaceRole[workspaceRoleEntity.type]
+          : undefined,
+        pageRole: roleEntity ? DocRole[roleEntity.type] : undefined,
+        pageDefaultRole: pageEntity
+          ? DocRole[pageEntity.defaultRole]
+          : undefined,
+        requiredRole: DocRole[role],
+        action,
+      });
     }
 
     // check whether user has workspace related permission

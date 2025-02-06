@@ -470,6 +470,10 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'action_forbidden',
     message: 'A Team workspace is required to perform this action.',
   },
+  page_default_role_can_not_be_owner: {
+    type: 'invalid_input',
+    message: 'Page default role can not be owner.',
+  },
 
   // Subscription Errors
   unsupported_subscription_plan: {
