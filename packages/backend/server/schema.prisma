@@ -161,20 +161,17 @@ model WorkspaceUserPermission {
 }
 
 model WorkspacePageUserPermission {
-  id          String   @id @default(uuid()) @db.VarChar
   workspaceId String   @map("workspace_id") @db.VarChar
   pageId      String   @map("page_id") @db.VarChar
   userId      String   @map("user_id") @db.VarChar
   // External/Reader/Editor/Manager/Owner
   type        Int      @db.SmallInt
-  /// Whether the permission invitation is accepted by the user
-  accepted    Boolean  @default(false)
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-  @@unique([workspaceId, pageId, userId])
+  @@id([workspaceId, pageId, userId])
   @@map("workspace_page_user_permissions")
 }
 

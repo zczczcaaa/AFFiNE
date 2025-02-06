@@ -383,20 +383,16 @@ input GrantDocUserRolesInput {
   workspaceId: String!
 }
 
-type GrantedDocUserEdge {
-  cursor: String!
-  user: GrantedDocUserType!
-}
-
 type GrantedDocUserType {
+  pageId: String!
   role: DocRole!
-  user: UserType!
+  userId: String!
+  workspaceId: String!
 }
 
-type GrantedDocUsersConnection {
-  edges: [GrantedDocUserEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
+type GrantedDocUserTypeEdge {
+  cursor: String!
+  node: GrantedDocUserType!
 }
 
 type InvalidEmailDataType {
@@ -685,21 +681,33 @@ enum OAuthProviderType {
   OIDC
 }
 
-input PageGrantedUsersInput {
-  """Cursor"""
-  after: String
-
-  """Cursor"""
-  before: String
-  first: Int!
-  offset: Int!
-}
-
 type PageInfo {
   endCursor: String
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
   startCursor: String
+}
+
+type PaginatedGrantedDocUserType {
+  edges: [GrantedDocUserTypeEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+input PaginationInput {
+  """returns the elements in the list that come after the specified cursor."""
+  after: String
+
+  """
+  returns the elements in the list that come before the specified cursor.
+  """
+  before: String
+
+  """returns the first n elements from the list."""
+  first: Int = 10
+
+  """ignore the first n elements from the list."""
+  offset: Int = 0
 }
 
 type PasswordLimitsType {
@@ -1200,7 +1208,7 @@ type WorkspaceType {
   owner: UserType!
 
   """Page granted users list"""
-  pageGrantedUsersList(pageGrantedUsersInput: PageGrantedUsersInput!, pageId: String!): GrantedDocUsersConnection!
+  pageGrantedUsersList(pageId: String!, pagination: PaginationInput!): PaginatedGrantedDocUserType!
 
   """Cloud page metadata of workspace"""
   pageMeta(pageId: String!): WorkspacePageMeta!

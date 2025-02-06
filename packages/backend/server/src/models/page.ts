@@ -127,8 +127,6 @@ export class PageModel extends BaseModel {
             pageId,
             userId,
             type: permission,
-            // page permission does not require invitee to accept, the accepted field will be deprecated later.
-            accepted: true,
           },
         });
       }

@@ -15,8 +15,13 @@ export {
 } from './config';
 export * from './error';
 export { EventBus, OnEvent } from './event';
-export type { GraphqlContext } from './graphql';
-export { registerObjectType } from './graphql/register';
+export {
+  type GraphqlContext,
+  paginate,
+  Paginated,
+  PaginationInput,
+  registerObjectType,
+} from './graphql';
 export * from './guard';
 export { CryptoHelper, URLHelper } from './helpers';
 export { AFFiNELogger } from './logger';

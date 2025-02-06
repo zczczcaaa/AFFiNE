@@ -3,7 +3,6 @@ import {
   Args,
   Field,
   InputType,
-  Int,
   Mutation,
   ObjectType,
   Parent,
@@ -21,6 +20,9 @@ import {
   ExpectToRevokePublicPage,
   ExpectToUpdateDocUserRole,
   PageIsNotPublic,
+  paginate,
+  Paginated,
+  PaginationInput,
   registerObjectType,
 } from '../../../base';
 import { CurrentUser } from '../../auth';
@@ -34,7 +36,6 @@ import {
   PublicPageMode,
   WorkspaceRole,
 } from '../../permission';
-import { UserType } from '../../user';
 import { DocID } from '../../utils/doc';
 import { WorkspaceType } from '../types';
 
@@ -73,65 +74,23 @@ class GrantDocUserRolesInput {
   userIds!: string[];
 }
 
-@InputType()
-class PageGrantedUsersInput {
-  @Field(() => Int)
-  first!: number;
-
-  @Field(() => Int)
-  offset?: number;
-
-  @Field(() => String, { description: 'Cursor', nullable: true })
-  after?: string;
-
-  @Field(() => String, { description: 'Cursor', nullable: true })
-  before?: string;
-}
-
 @ObjectType()
 class GrantedDocUserType {
-  @Field(() => UserType)
-  user!: UserType;
-
-  @Field(() => DocRole)
-  role!: DocRole;
-}
-
-@ObjectType()
-class PageInfo {
-  @Field(() => String, { nullable: true })
-  startCursor?: string;
-
-  @Field(() => String, { nullable: true })
-  endCursor?: string;
-
-  @Field(() => Boolean)
-  hasNextPage!: boolean;
-
-  @Field(() => Boolean)
-  hasPreviousPage!: boolean;
-}
-
-@ObjectType()
-class GrantedDocUserEdge {
-  @Field(() => GrantedDocUserType)
-  user!: GrantedDocUserType;
+  @Field(() => String)
+  workspaceId!: string;
 
   @Field(() => String)
-  cursor!: string;
+  pageId!: string;
+
+  @Field(() => String)
+  userId!: string;
+
+  @Field(() => DocRole, { name: 'role' })
+  type!: DocRole;
 }
 
 @ObjectType()
-class GrantedDocUsersConnection {
-  @Field(() => Int)
-  totalCount!: number;
-
-  @Field(() => [GrantedDocUserEdge])
-  edges!: GrantedDocUserEdge[];
-
-  @Field(() => PageInfo)
-  pageInfo!: PageInfo;
-}
+class PaginatedGrantedDocUserType extends Paginated(GrantedDocUserType) {}
 
 const DocPermissions = registerObjectType<DocActionPermissions>(
   Object.fromEntries(
@@ -261,16 +220,15 @@ export class PagePermissionResolver {
     };
   }
 
-  @ResolveField(() => GrantedDocUsersConnection, {
+  @ResolveField(() => PaginatedGrantedDocUserType, {
     description: 'Page granted users list',
     complexity: 4,
   })
   async pageGrantedUsersList(
     @Parent() workspace: WorkspaceType,
     @Args('pageId') pageId: string,
-    @Args('pageGrantedUsersInput')
-    pageGrantedUsersInput: PageGrantedUsersInput
-  ): Promise<GrantedDocUsersConnection> {
+    @Args('pagination') pagination: PaginationInput
+  ): Promise<PaginatedGrantedDocUserType> {
     const docId = new DocID(pageId, workspace.id);
     const [permissions, totalCount] = await this.prisma.$transaction(tx => {
       return Promise.all([
@@ -279,19 +237,11 @@ export class PagePermissionResolver {
             workspaceId: workspace.id,
             pageId: docId.guid,
           },
-          include: {
-            user: true,
-          },
           orderBy: {
             createdAt: 'desc',
           },
-          take: pageGrantedUsersInput.first,
-          skip: pageGrantedUsersInput.offset,
-          cursor: pageGrantedUsersInput.after
-            ? {
-                id: pageGrantedUsersInput.after,
-              }
-            : undefined,
+          take: pagination.first,
+          skip: pagination.offset,
         }),
         tx.workspacePageUserPermission.count({
           where: {
@@ -302,31 +252,7 @@ export class PagePermissionResolver {
       ]);
     });
 
-    return {
-      totalCount,
-      edges: permissions.map(permission => ({
-        user: {
-          user: {
-            id: permission.user.id,
-            name: permission.user.name,
-            email: permission.user.email,
-            avatarUrl: permission.user.avatarUrl,
-            emailVerified: permission.user.emailVerifiedAt !== null,
-            hasPassword: permission.user.password !== null,
-          },
-          role: permission.type,
-        },
-        cursor: permission.id,
-      })),
-      pageInfo: {
-        startCursor: permissions.at(0)?.id,
-        endCursor: permissions.at(-1)?.id,
-        hasNextPage: totalCount > pageGrantedUsersInput.first,
-        hasPreviousPage:
-          pageGrantedUsersInput.offset !== undefined &&
-          pageGrantedUsersInput.offset > 0,
-      },
-    };
+    return paginate(permissions, 'createdAt', pagination, totalCount);
   }
 
   /**

@@ -35,8 +35,8 @@ export class PermissionService {
     const { workspaceId, docId, editor } = payload;
 
     await this.prisma.$queryRaw`
-      INSERT INTO "workspace_page_user_permissions" ("workspace_id", "page_id", "user_id", "type", "accepted", "created_at", "updated_at")
-      VALUES (${workspaceId}, ${docId}, ${editor}, ${DocRole.Owner}, true, now(), now())
+      INSERT INTO "workspace_page_user_permissions" ("workspace_id", "page_id", "user_id", "type", "created_at")
+      VALUES (${workspaceId}, ${docId}, ${editor}, ${DocRole.Owner}, now())
       ON CONFLICT ("workspace_id", "page_id", "user_id")
       DO NOTHING
     `;
@@ -576,7 +576,6 @@ export class PermissionService {
           workspaceId: ws,
           pageId: page,
           userId: user,
-          accepted: true,
           type: {
             gte: role,
           },
@@ -658,65 +657,48 @@ export class PermissionService {
     });
   }
 
-  async grantPage(
-    ws: string,
-    page: string,
-    user: string,
-    permission: DocRole
-  ): Promise<string> {
-    const data = await this.prisma.workspacePageUserPermission.findFirst({
-      where: {
-        workspaceId: ws,
-        pageId: page,
-        userId: user,
-        accepted: true,
-      },
-    });
-
-    if (data) {
-      const [p] = await this.prisma.$transaction(
-        [
-          this.prisma.workspacePageUserPermission.update({
-            where: {
-              id: data.id,
+  async grantPage(ws: string, page: string, user: string, permission: DocRole) {
+    const [p] = await this.prisma.$transaction(
+      [
+        this.prisma.workspacePageUserPermission.upsert({
+          where: {
+            workspaceId_pageId_userId: {
+              workspaceId: ws,
+              pageId: page,
+              userId: user,
             },
-            data: {
-              type: permission,
-            },
-          }),
+          },
+          update: {
+            type: permission,
+          },
+          create: {
+            workspaceId: ws,
+            pageId: page,
+            userId: user,
+            type: permission,
+          },
+        }),
 
-          // If the new permission is owner, we need to revoke old owner
-          permission === DocRole.Owner
-            ? this.prisma.workspacePageUserPermission.updateMany({
-                where: {
-                  workspaceId: ws,
-                  pageId: page,
-                  type: DocRole.Owner,
-                  userId: {
-                    not: user,
-                  },
+        // If the new permission is owner, we need to revoke old owner
+        permission === DocRole.Owner
+          ? this.prisma.workspacePageUserPermission.updateMany({
+              where: {
+                workspaceId: ws,
+                pageId: page,
+                type: DocRole.Owner,
+                userId: {
+                  not: user,
                 },
-                data: {
-                  type: DocRole.Manager,
-                },
-              })
-            : null,
-        ].filter(Boolean) as Prisma.PrismaPromise<any>[]
-      );
+              },
+              data: {
+                type: DocRole.Manager,
+              },
+            })
+          : null,
+      ].filter(Boolean) as Prisma.PrismaPromise<any>[]
+    );
 
-      return p.id;
-    }
-
-    return this.prisma.workspacePageUserPermission
-      .create({
-        data: {
-          workspaceId: ws,
-          pageId: page,
-          userId: user,
-          type: permission,
-        },
-      })
-      .then(p => p.id);
+    return p;
   }
 
   async revokePage(ws: string, page: string, users: string[]) {
@@ -746,14 +728,11 @@ export class PermissionService {
     if (userIds.length === 0) {
       return [];
     }
-    if (role === DocRole.Owner) {
-      if (userIds.length > 1) {
-        throw new SpaceShouldHaveOnlyOneOwner({ spaceId: workspaceId });
-      }
-      return [await this.grantPage(workspaceId, pageId, userIds[0], role)];
+    if (role === DocRole.Owner && userIds.length > 1) {
+      throw new SpaceShouldHaveOnlyOneOwner({ spaceId: workspaceId });
     }
 
-    const ret = await this.prisma.$transaction(async tx =>
+    return await this.prisma.$transaction(async tx =>
       Promise.all(
         userIds.map(id =>
           tx.workspacePageUserPermission.upsert({
@@ -777,7 +756,6 @@ export class PermissionService {
         )
       )
     );
-    return ret.map(p => p.id);
   }
 
   async updatePagePermission(
@@ -798,14 +776,17 @@ export class PermissionService {
       return this.grantPage(workspaceId, pageId, userId, role);
     }
 
-    const { id } = await this.prisma.workspacePageUserPermission.update({
+    return await this.prisma.workspacePageUserPermission.update({
       where: {
-        id: permission.id,
+        workspaceId_pageId_userId: {
+          workspaceId,
+          pageId,
+          userId,
+        },
       },
       data: {
         type: role,
       },
     });
-    return id;
   }
 }

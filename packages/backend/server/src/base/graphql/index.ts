@@ -84,3 +84,6 @@ export type GraphqlContext = {
   ],
 })
 export class GqlModule {}
+
+export * from './pagination';
+export { registerObjectType } from './register';
