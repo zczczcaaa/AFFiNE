@@ -18,7 +18,7 @@ let package = Package(
     .package(url: "https://github.com/Lakr233/SpringInterpolation", from: "1.3.0"),
     .package(url: "https://github.com/Lakr233/MSDisplayLink", from: "1.1.1"),
     .package(path: "../AffineGraphQL"),
-    .package(url: "https://github.com/apollographql/apollo-ios.git", from: "1.16.0"),
+    .package(url: "https://github.com/apollographql/apollo-ios.git", from: "1.17.0"),
     .package(url: "https://github.com/LaunchDarkly/swift-eventsource.git", from: "3.3.0"),
   ],
   targets: [

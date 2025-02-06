@@ -6,14 +6,14 @@ coreKtx = "1.15.0"
 coreSplashScreenVersion = "1.0.1"
 jna = "5.16.0"
 junitVersion = "4.13.2"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 kotlinxCoroutinesCore = "1.10.1"
 rustAndroid = "0.9.6"
 appcompat = "1.7.0"
 coordinatorLayout = "1.2.0"
 googleServices = "4.4.2"
 androidGradlePlugin = "8.8.0"
-apollo = "4.1.0"
+apollo = "4.1.1"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
