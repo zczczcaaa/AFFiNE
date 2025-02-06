@@ -435,6 +435,7 @@ export class TableCell extends SignalWatcher(
 
   renderColumnOptions(column: TableColumn, columnIndex: number) {
     const openColumnOptions = (e: Event) => {
+      e.stopPropagation();
       const element = e.currentTarget;
       if (element instanceof HTMLElement) {
         this.openColumnOptions(
@@ -461,6 +462,7 @@ export class TableCell extends SignalWatcher(
 
   renderRowOptions(row: TableRow, rowIndex: number) {
     const openRowOptions = (e: Event) => {
+      e.stopPropagation();
       const element = e.currentTarget;
       if (element instanceof HTMLElement) {
         this.openRowOptions(popupTargetFromElement(element), row, rowIndex);

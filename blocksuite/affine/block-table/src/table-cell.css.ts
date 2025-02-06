@@ -1,5 +1,5 @@
 import { cssVar, cssVarV2 } from '@blocksuite/affine-shared/theme';
-import { style } from '@vanilla-extract/css';
+import { createVar, style } from '@vanilla-extract/css';
 
 export const cellContainerStyle = style({
   position: 'relative',
@@ -22,11 +22,12 @@ export const columnOptionsCellStyle = style({
   justifyContent: 'center',
 });
 
+const threePointerIconColorVar = createVar();
 export const columnOptionsStyle = style({
   cursor: 'pointer',
   zIndex: 2,
-  width: '22px',
-  height: '12px',
+  width: '28px',
+  height: '16px',
   backgroundColor: cssVarV2.table.headerBackground.default,
   borderRadius: '8px',
   boxShadow: cssVar('buttonShadow'),
@@ -35,6 +36,9 @@ export const columnOptionsStyle = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  vars: {
+    [threePointerIconColorVar]: cssVarV2.icon.secondary,
+  },
   selectors: {
     '&:hover': {
       opacity: 1,
@@ -42,6 +46,9 @@ export const columnOptionsStyle = style({
     '&.active': {
       opacity: 1,
       backgroundColor: cssVarV2.table.indicator.activated,
+      vars: {
+        [threePointerIconColorVar]: cssVarV2.table.indicator.pointerActive,
+      },
     },
   },
 });
@@ -57,12 +64,11 @@ export const rowOptionsCellStyle = style({
   alignItems: 'center',
   justifyContent: 'center',
 });
-
 export const rowOptionsStyle = style({
   cursor: 'pointer',
   zIndex: 2,
-  width: '12px',
-  height: '22px',
+  width: '16px',
+  height: '28px',
   backgroundColor: cssVarV2.table.headerBackground.default,
   borderRadius: '8px',
   boxShadow: cssVar('buttonShadow'),
@@ -71,6 +77,9 @@ export const rowOptionsStyle = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  vars: {
+    [threePointerIconColorVar]: cssVarV2.icon.secondary,
+  },
   selectors: {
     '&:hover': {
       opacity: 1,
@@ -78,6 +87,9 @@ export const rowOptionsStyle = style({
     '&.active': {
       opacity: 1,
       backgroundColor: cssVarV2.table.indicator.activated,
+      vars: {
+        [threePointerIconColorVar]: cssVarV2.table.indicator.pointerActive,
+      },
     },
   },
 });
@@ -90,9 +102,9 @@ export const threePointerIconStyle = style({
 });
 
 export const threePointerIconDotStyle = style({
-  width: '2px',
-  height: '2px',
-  backgroundColor: cssVarV2.icon.secondary,
+  width: '3px',
+  height: '3px',
+  backgroundColor: threePointerIconColorVar,
   borderRadius: '50%',
 });
 

@@ -60,7 +60,12 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import { viewPresets } from '@blocksuite/data-view/view-presets';
 import { assertType } from '@blocksuite/global/utils';
-import { DualLinkIcon, GroupingIcon, TeXIcon } from '@blocksuite/icons/lit';
+import {
+  DualLinkIcon,
+  GroupingIcon,
+  TableIcon,
+  TeXIcon,
+} from '@blocksuite/icons/lit';
 import type { DeltaInsert } from '@blocksuite/inline';
 import type { BlockModel } from '@blocksuite/store';
 import { Slice, Text } from '@blocksuite/store';
@@ -259,8 +264,11 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     { groupName: 'Content & Media' },
     {
       name: 'Table',
-      description: 'Create a table block.',
-      icon: DatabaseTableViewIcon20,
+      description: 'Create a simple table.',
+      icon: TableIcon({
+        width: '20',
+        height: '20',
+      }),
       tooltip: slashMenuToolTips['Table View'],
       showWhen: ({ model }) => !insideEdgelessText(model),
       action: ({ rootComponent }) => {
