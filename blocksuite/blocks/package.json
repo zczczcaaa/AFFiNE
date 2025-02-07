@@ -58,7 +58,7 @@
     "html2canvas": "^1.4.1",
     "katex": "^0.16.11",
     "lit": "^3.2.0",
-    "lodash.isequal": "^4.5.0",
+    "lodash-es": "^4.17.21",
     "lz-string": "^1.5.0",
     "minimatch": "^10.0.1",
     "nanoid": "^5.0.7",
@@ -83,7 +83,7 @@
   ],
   "devDependencies": {
     "@types/katex": "^0.16.7",
-    "@types/lodash.isequal": "^4.5.8",
+    "@types/lodash-es": "^4.17.12",
     "@vanilla-extract/vite-plugin": "^5.0.0",
     "vitest": "3.0.5"
   }

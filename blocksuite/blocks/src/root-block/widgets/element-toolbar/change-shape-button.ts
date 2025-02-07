@@ -44,7 +44,7 @@ import { choose } from 'lit/directives/choose.js';
 import { join } from 'lit/directives/join.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
-import isEqual from 'lodash.isequal';
+import { isEqual } from 'lodash-es';
 
 import {
   type LineStyleEvent,
