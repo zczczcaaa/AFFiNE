@@ -196,7 +196,7 @@ class CreateCheckoutSessionInput implements z.infer<typeof CheckoutParams> {
   idempotencyKey?: string;
 
   @Field(() => GraphQLJSONObject, { nullable: true })
-  args!: { workspaceId?: string; quantity?: number };
+  args!: { workspaceId?: string; quantity?: number } | null;
 }
 
 @Resolver(() => SubscriptionType)
@@ -278,7 +278,7 @@ export class SubscriptionResolver {
     if (input.plan === SubscriptionPlan.SelfHostedTeam) {
       session = await this.service.checkout(input, {
         plan: input.plan as any,
-        quantity: input.args.quantity ?? 10,
+        quantity: input.args?.quantity ?? 10,
       });
     } else {
       if (!user) {

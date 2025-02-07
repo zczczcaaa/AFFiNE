@@ -4,12 +4,13 @@ import {
   catchErrorInto,
   effect,
   Entity,
+  exhaustMapWithTrailing,
   fromPromise,
   LiveData,
   onComplete,
   onStart,
 } from '@toeverything/infra';
-import { EMPTY, exhaustMap, mergeMap } from 'rxjs';
+import { EMPTY, mergeMap } from 'rxjs';
 
 import { isBackendError, isNetworkError } from '../../cloud';
 import type { WorkspaceService } from '../../workspace';
@@ -32,7 +33,7 @@ export class WorkspacePermission extends Entity {
   }
 
   revalidate = effect(
-    exhaustMap(() => {
+    exhaustMapWithTrailing(() => {
       return fromPromise(async signal => {
         if (this.workspaceService.workspace.flavour !== 'local') {
           const info = await this.store.fetchWorkspaceInfo(

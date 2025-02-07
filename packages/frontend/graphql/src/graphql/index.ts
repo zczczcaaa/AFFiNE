@@ -18,6 +18,20 @@ fragment CredentialsRequirements on CredentialsRequirementType {
     ...PasswordLimits
   }
 }`
+export const activateLicenseMutation = {
+  id: 'activateLicenseMutation' as const,
+  operationName: 'activateLicense',
+  definitionName: 'activateLicense',
+  containsFile: false,
+  query: `
+mutation activateLicense($workspaceId: String!, $license: String!) {
+  activateLicense(workspaceId: $workspaceId, license: $license) {
+    installedAt
+    validatedAt
+  }
+}`,
+};
+
 export const adminServerConfigQuery = {
   id: 'adminServerConfigQuery' as const,
   operationName: 'adminServerConfig',
@@ -217,6 +231,17 @@ mutation createCustomerPortal {
 }`,
 };
 
+export const createSelfhostCustomerPortalMutation = {
+  id: 'createSelfhostCustomerPortalMutation' as const,
+  operationName: 'createSelfhostCustomerPortal',
+  definitionName: 'createSelfhostWorkspaceCustomerPortal',
+  containsFile: false,
+  query: `
+mutation createSelfhostCustomerPortal($workspaceId: String!) {
+  createSelfhostWorkspaceCustomerPortal(workspaceId: $workspaceId)
+}`,
+};
+
 export const createUserMutation = {
   id: 'createUserMutation' as const,
   operationName: 'createUser',
@@ -242,6 +267,17 @@ mutation createWorkspace {
     public
     createdAt
   }
+}`,
+};
+
+export const deactivateLicenseMutation = {
+  id: 'deactivateLicenseMutation' as const,
+  operationName: 'deactivateLicense',
+  definitionName: 'deactivateLicense',
+  containsFile: false,
+  query: `
+mutation deactivateLicense($workspaceId: String!) {
+  deactivateLicense(workspaceId: $workspaceId)
 }`,
 };
 
@@ -290,6 +326,17 @@ export const forkCopilotSessionMutation = {
   query: `
 mutation forkCopilotSession($options: ForkChatSessionInput!) {
   forkCopilotSession(options: $options)
+}`,
+};
+
+export const generateLicenseKeyMutation = {
+  id: 'generateLicenseKeyMutation' as const,
+  operationName: 'generateLicenseKey',
+  definitionName: 'generateLicenseKey',
+  containsFile: false,
+  query: `
+mutation generateLicenseKey($sessionId: String!) {
+  generateLicenseKey(sessionId: $sessionId)
 }`,
 };
 
@@ -437,6 +484,25 @@ export const getIsOwnerQuery = {
   query: `
 query getIsOwner($workspaceId: String!) {
   isOwner(workspaceId: $workspaceId)
+}`,
+};
+
+export const getLicenseQuery = {
+  id: 'getLicenseQuery' as const,
+  operationName: 'getLicense',
+  definitionName: 'workspace',
+  containsFile: false,
+  query: `
+query getLicense($workspaceId: String!) {
+  workspace(id: $workspaceId) {
+    license {
+      expiredAt
+      installedAt
+      quantity
+      recurring
+      validatedAt
+    }
+  }
 }`,
 };
 

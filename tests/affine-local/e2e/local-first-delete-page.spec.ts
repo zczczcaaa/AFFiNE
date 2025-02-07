@@ -71,7 +71,7 @@ test('page delete -> create new page -> refresh page -> new page should be appea
     .click();
   await page.getByText('Delete permanently?').dblclick();
   await page.getByRole('button', { name: 'Delete' }).click();
-  expect(page.getByText("There's no page here yet")).not.toBeUndefined();
+  expect(page.getByText('Deleted docs will appear here')).not.toBeUndefined();
   await page.getByTestId('all-pages').click();
 
   await clickNewPageButton(page);

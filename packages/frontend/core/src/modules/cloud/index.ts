@@ -19,6 +19,8 @@ export { EventSourceService } from './services/eventsource';
 export { FetchService } from './services/fetch';
 export { GraphQLService } from './services/graphql';
 export { InvoicesService } from './services/invoices';
+export { SelfhostGenerateLicenseService } from './services/selfhost-generate-license';
+export { SelfhostLicenseService } from './services/selfhost-license';
 export { ServerService } from './services/server';
 export { ServersService } from './services/servers';
 export { SubscriptionService } from './services/subscription';
@@ -58,6 +60,8 @@ import { EventSourceService } from './services/eventsource';
 import { FetchService } from './services/fetch';
 import { GraphQLService } from './services/graphql';
 import { InvoicesService } from './services/invoices';
+import { SelfhostGenerateLicenseService } from './services/selfhost-generate-license';
+import { SelfhostLicenseService } from './services/selfhost-license';
 import { ServerService } from './services/server';
 import { ServersService } from './services/servers';
 import { SubscriptionService } from './services/subscription';
@@ -70,6 +74,8 @@ import { WorkspaceSubscriptionService } from './services/workspace-subscription'
 import { AuthStore } from './stores/auth';
 import { CloudDocMetaStore } from './stores/cloud-doc-meta';
 import { InvoicesStore } from './stores/invoices';
+import { SelfhostGenerateLicenseStore } from './stores/selfhost-generate-license';
+import { SelfhostLicenseStore } from './stores/selfhost-license';
 import { ServerConfigStore } from './stores/server-config';
 import { ServerListStore } from './stores/server-list';
 import { SubscriptionStore } from './stores/subscription';
@@ -128,7 +134,9 @@ export function configureCloudModule(framework: Framework) {
     .store(UserFeatureStore, [GraphQLService])
     .service(InvoicesService)
     .store(InvoicesStore, [GraphQLService])
-    .entity(Invoices, [InvoicesStore]);
+    .entity(Invoices, [InvoicesStore])
+    .service(SelfhostGenerateLicenseService, [SelfhostGenerateLicenseStore])
+    .store(SelfhostGenerateLicenseStore, [GraphQLService]);
 
   framework
     .scope(WorkspaceScope)
@@ -142,5 +150,7 @@ export function configureCloudModule(framework: Framework) {
     .service(WorkspaceSubscriptionService, [WorkspaceServerService])
     .entity(WorkspaceSubscription, [WorkspaceService, WorkspaceServerService])
     .service(WorkspaceInvoicesService)
-    .entity(WorkspaceInvoices, [WorkspaceService, WorkspaceServerService]);
+    .entity(WorkspaceInvoices, [WorkspaceService, WorkspaceServerService])
+    .service(SelfhostLicenseService, [SelfhostLicenseStore, WorkspaceService])
+    .store(SelfhostLicenseStore, [WorkspaceServerService]);
 }

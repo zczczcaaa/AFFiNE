@@ -141,7 +141,7 @@ export const MemberOptions = ({
   }, [member, membersService, t]);
   const handleChangeToCollaborator = useCallback(() => {
     membersService
-      .adjustMemberPermission(member.id, Permission.Write)
+      .adjustMemberPermission(member.id, Permission.Collaborator)
       .then(result => {
         if (result) {
           notify.success({

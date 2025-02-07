@@ -23,6 +23,7 @@ declare interface BUILD_CONFIG_TYPE {
 
   githubUrl: string;
   changelogUrl: string;
+  pricingUrl: string;
   downloadUrl: string;
   // see: tools/workers
   imageProxyUrl: string;

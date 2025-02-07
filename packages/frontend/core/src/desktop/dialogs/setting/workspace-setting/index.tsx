@@ -1,6 +1,8 @@
 import { useWorkspaceInfo } from '@affine/core/components/hooks/use-workspace-info';
+import { ServerService } from '@affine/core/modules/cloud';
 import type { SettingTab } from '@affine/core/modules/dialogs/constant';
 import { WorkspaceService } from '@affine/core/modules/workspace';
+import { ServerDeploymentType } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import {
   CollaborationIcon,
@@ -9,11 +11,12 @@ import {
   SaveIcon,
   SettingsIcon,
 } from '@blocksuite/icons/rc';
-import { useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useMemo } from 'react';
 
 import type { SettingSidebarItem, SettingState } from '../types';
 import { WorkspaceSettingBilling } from './billing';
+import { WorkspaceSettingLicense } from './license';
 import { MembersPanel } from './members';
 import { WorkspaceSettingDetail } from './preference';
 import { WorkspaceSettingProperties } from './properties';
@@ -44,6 +47,8 @@ export const WorkspaceSetting = ({
       return <WorkspaceSettingBilling />;
     case 'workspace:storage':
       return <WorkspaceSettingStorage onCloseSetting={onCloseSetting} />;
+    case 'workspace:license':
+      return <WorkspaceSettingLicense onCloseSetting={onCloseSetting} />;
     default:
       return null;
   }
@@ -52,10 +57,19 @@ export const WorkspaceSetting = ({
 export const useWorkspaceSettingList = (): SettingSidebarItem[] => {
   const workspaceService = useService(WorkspaceService);
   const information = useWorkspaceInfo(workspaceService.workspace);
+  const serverService = useService(ServerService);
+
+  const isSelfhosted = useLiveData(
+    serverService.server.config$.selector(
+      c => c.type === ServerDeploymentType.Selfhosted
+    )
+  );
 
   const t = useI18n();
 
-  const showBilling = information?.isTeam && information?.isOwner;
+  const showBilling =
+    !isSelfhosted && information?.isTeam && information?.isOwner;
+  const showLicense = information?.isOwner && isSelfhosted;
   const items = useMemo<SettingSidebarItem[]>(() => {
     return [
       {
@@ -88,10 +102,14 @@ export const useWorkspaceSettingList = (): SettingSidebarItem[] => {
         icon: <PaymentIcon />,
         testId: 'workspace-setting:billing',
       },
-
-      // todo(@pengx17): add selfhost's team license
+      showLicense && {
+        key: 'workspace:license' as SettingTab,
+        title: t['com.affine.settings.workspace.license'](),
+        icon: <PaymentIcon />,
+        testId: 'workspace-setting:license',
+      },
     ].filter((item): item is SettingSidebarItem => !!item);
-  }, [showBilling, t]);
+  }, [showBilling, showLicense, t]);
 
   return items;
 };

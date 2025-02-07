@@ -260,7 +260,7 @@ const getMemberStatus = (member: Member): I18nString => {
           return 'Workspace Owner';
         case Permission.Admin:
           return 'Admin';
-        case Permission.Write:
+        case Permission.Collaborator:
           return 'Collaborator';
         default:
           return 'Member';

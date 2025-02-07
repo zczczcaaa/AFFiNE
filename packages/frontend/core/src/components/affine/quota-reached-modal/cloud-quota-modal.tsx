@@ -1,6 +1,5 @@
 import { ConfirmModal } from '@affine/component/ui/modal';
 import { openQuotaModalAtom } from '@affine/core/components/atoms';
-import { UserQuotaService } from '@affine/core/modules/cloud';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
@@ -30,18 +29,6 @@ export const CloudQuotaModal = () => {
     permissionService.permission.revalidate();
   }, [permissionService]);
 
-  const quotaService = useService(UserQuotaService);
-  const userQuota = useLiveData(
-    quotaService.quota.quota$.map(q =>
-      q
-        ? {
-            name: q.humanReadable.name,
-            blobLimit: q.humanReadable.blobLimit,
-          }
-        : null
-    )
-  );
-
   const workspaceDialogService = useService(WorkspaceDialogService);
   const handleUpgradeConfirm = useCallback(() => {
     workspaceDialogService.open('setting', {
@@ -54,18 +41,19 @@ export const CloudQuotaModal = () => {
   }, [workspaceDialogService, setOpen]);
 
   const description = useMemo(() => {
-    if (userQuota && isOwner) {
-      return <OwnerDescription quota={userQuota.blobLimit} />;
-    }
-    if (workspaceQuota) {
-      return t['com.affine.payment.blob-limit.description.member']({
-        quota: workspaceQuota.humanReadable.blobLimit,
-      });
-    } else {
-      // loading
+    if (!workspaceQuota) {
       return null;
     }
-  }, [userQuota, isOwner, workspaceQuota, t]);
+    if (isOwner) {
+      return (
+        <OwnerDescription quota={workspaceQuota.humanReadable.blobLimit} />
+      );
+    }
+
+    return t['com.affine.payment.blob-limit.description.member']({
+      quota: workspaceQuota.humanReadable.blobLimit,
+    });
+  }, [isOwner, workspaceQuota, t]);
 
   const onAbortLargeBlob = useAsyncCallback(
     async (byteSize: number) => {
