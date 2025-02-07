@@ -13,6 +13,10 @@ export class CanvasRenderer {
   private readonly editorContainer: AffineEditorContainer;
   private readonly targetContainer: HTMLElement;
   public readonly canvas: HTMLCanvasElement = document.createElement('canvas');
+  private lastZoom: number | null = null;
+  private lastSection: SectionLayout | null = null;
+  private lastBitmap: ImageBitmap | null = null;
+  private lastMode: 'page' | 'edgeless' = 'edgeless';
 
   constructor(
     editorContainer: AffineEditorContainer,
@@ -47,21 +51,18 @@ export class CanvasRenderer {
     return this.editorContainer.std.get(GfxControllerIdentifier).viewport;
   }
 
-  get hostRect() {
+  getHostRect() {
     return this.editorContainer.host!.getBoundingClientRect();
   }
 
-  get hostLayout(): {
-    section: SectionLayout;
-    hostRect: DOMRect;
-  } {
+  getHostLayout() {
     const paragraphBlocks = this.editorContainer.host!.querySelectorAll(
       '.affine-paragraph-rich-text-wrapper [data-v-text="true"]'
     );
 
     const { viewport } = this;
     const zoom = this.viewport.zoom;
-    const hostRect = this.hostRect;
+    const hostRect = this.getHostRect();
 
     let sectionMinX = Infinity;
     let sectionMinY = Infinity;
@@ -104,6 +105,8 @@ export class CanvasRenderer {
       };
     });
 
+    if (paragraphs.length === 0) return null;
+
     const sectionModelCoord = viewport.toModelCoordFromClientCoord([
       sectionMinX,
       sectionMinY,
@@ -121,8 +124,25 @@ export class CanvasRenderer {
     return { section, hostRect };
   }
 
-  public async render(toScreen = true): Promise<void> {
-    const { section } = this.hostLayout;
+  public async render(): Promise<void> {
+    const hostLayout = this.getHostLayout();
+    if (!hostLayout) return;
+
+    const { section } = hostLayout;
+    const currentZoom = this.viewport.zoom;
+
+    // Use bitmap cache
+    if (
+      this.lastZoom === currentZoom &&
+      this.lastSection &&
+      this.lastBitmap &&
+      this.lastMode === this.editorContainer.mode
+    ) {
+      this.drawBitmap(this.lastBitmap, this.lastSection);
+      return;
+    }
+
+    // Need to re-render if zoom changed or no cached bitmap
     this.initWorkerSize(section.rect.w, section.rect.h);
 
     return new Promise(resolve => {
@@ -138,48 +158,75 @@ export class CanvasRenderer {
       this.worker.onmessage = (e: MessageEvent) => {
         const { type, bitmap } = e.data;
         if (type === 'render') {
-          this.canvas.style.width = this.hostRect.width + 'px';
-          this.canvas.style.height = this.hostRect.height + 'px';
-          this.canvas.width = this.hostRect.width * window.devicePixelRatio;
-          this.canvas.height = this.hostRect.height * window.devicePixelRatio;
+          const hostRect = this.getHostRect();
+          this.canvas.style.width = hostRect.width + 'px';
+          this.canvas.style.height = hostRect.height + 'px';
+          this.canvas.width = hostRect.width * window.devicePixelRatio;
+          this.canvas.height = hostRect.height * window.devicePixelRatio;
 
           if (!this.targetContainer.querySelector('canvas')) {
             this.targetContainer.append(this.canvas);
           }
 
-          const ctx = this.canvas.getContext('2d');
-          const bitmapCanvas = new OffscreenCanvas(
-            section.rect.w * window.devicePixelRatio * this.viewport.zoom,
-            section.rect.h * window.devicePixelRatio * this.viewport.zoom
-          );
-          const bitmapCtx = bitmapCanvas.getContext('bitmaprenderer');
-          bitmapCtx?.transferFromImageBitmap(bitmap);
+          // Create a copy of bitmap for caching
+          const tempCanvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+          const tempCtx = tempCanvas.getContext('2d')!;
+          tempCtx.drawImage(bitmap, 0, 0);
+          const bitmapCopy = tempCanvas.transferToImageBitmap();
 
-          if (!toScreen) {
-            resolve();
-            return;
+          // Cache the current state
+          this.lastZoom = currentZoom;
+          this.lastSection = section;
+          this.lastMode = this.editorContainer.mode;
+          if (this.lastBitmap) {
+            this.lastBitmap.close();
           }
+          this.lastBitmap = bitmapCopy;
 
-          const sectionViewCoord = this.viewport.toViewCoord(
-            section.rect.x,
-            section.rect.y
-          );
-
-          ctx?.drawImage(
-            bitmapCanvas,
-            sectionViewCoord[0] * window.devicePixelRatio,
-            sectionViewCoord[1] * window.devicePixelRatio,
-            section.rect.w * window.devicePixelRatio * this.viewport.zoom,
-            section.rect.h * window.devicePixelRatio * this.viewport.zoom
-          );
-
+          this.drawBitmap(bitmap, section);
           resolve();
         }
       };
     });
   }
 
+  private drawBitmap(bitmap: ImageBitmap, section: SectionLayout) {
+    const ctx = this.canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const bitmapCanvas = new OffscreenCanvas(
+      section.rect.w * window.devicePixelRatio * this.viewport.zoom,
+      section.rect.h * window.devicePixelRatio * this.viewport.zoom
+    );
+    const bitmapCtx = bitmapCanvas.getContext('bitmaprenderer');
+    if (!bitmapCtx) return;
+
+    const tempCanvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    const tempCtx = tempCanvas.getContext('2d')!;
+    tempCtx.drawImage(bitmap, 0, 0);
+    const bitmapCopy = tempCanvas.transferToImageBitmap();
+
+    bitmapCtx.transferFromImageBitmap(bitmapCopy);
+
+    const sectionViewCoord = this.viewport.toViewCoord(
+      section.rect.x,
+      section.rect.y
+    );
+
+    ctx.drawImage(
+      bitmapCanvas,
+      sectionViewCoord[0] * window.devicePixelRatio,
+      sectionViewCoord[1] * window.devicePixelRatio,
+      section.rect.w * window.devicePixelRatio * this.viewport.zoom,
+      section.rect.h * window.devicePixelRatio * this.viewport.zoom
+    );
+  }
+
   public destroy() {
+    if (this.lastBitmap) {
+      this.lastBitmap.close();
+    }
     this.worker.terminate();
   }
 }

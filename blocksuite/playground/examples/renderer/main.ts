@@ -1,3 +1,4 @@
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Text } from '@blocksuite/store';
 
 import { CanvasRenderer } from './canvas-renderer.js';
@@ -10,6 +11,11 @@ function initUI() {
   const toCanvasButton = document.querySelector('#to-canvas-button')!;
   toCanvasButton.addEventListener('click', async () => {
     await renderer.render();
+
+    const viewport = editor.std.get(GfxControllerIdentifier).viewport;
+    viewport.viewportUpdated.on(async () => {
+      await renderer.render();
+    });
   });
   const switchModeButton = document.querySelector('#switch-mode-button')!;
   switchModeButton.addEventListener('click', async () => {
@@ -19,7 +25,7 @@ function initUI() {
 }
 
 function addParagraph(content: string) {
-  const note = doc.getBlockByFlavour('affine:note')[0];
+  const note = doc.getBlocksByFlavour('affine:note')[0];
   const props = {
     text: new Text(content),
   };
