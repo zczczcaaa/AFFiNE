@@ -14,7 +14,7 @@ import { AppModule } from '../app.module';
 import { EventBus } from '../base';
 import { AuthService } from '../core/auth';
 import { DocContentService } from '../core/doc-renderer';
-import { PermissionService, WorkspaceRole } from '../core/permission';
+import { DocRole, PermissionService, WorkspaceRole } from '../core/permission';
 import { WorkspaceType } from '../core/workspaces';
 import { Models } from '../models';
 import {
@@ -26,16 +26,20 @@ import {
   getInviteInfo,
   getInviteLink,
   getWorkspace,
+  grantDocUserRoles,
   grantMember,
   inviteUser,
   inviteUsers,
   leaveWorkspace,
+  pageGrantedUsersList,
+  revokeDocUserRoles,
   revokeInviteLink,
   revokeMember,
   revokeUser,
   signUp,
   sleep,
   TestingApp,
+  updatePageDefaultRole,
   UserAuthedType,
 } from './utils';
 
@@ -804,26 +808,83 @@ test('should be able to emit events', async t => {
   }
 });
 
+test('should be able to grant and revoke users role in page', async t => {
+  const { app } = t.context;
+  const {
+    teamWorkspace: ws,
+    admin,
+    write,
+    read,
+    external,
+  } = await init(app, 5);
+  const pageId = nanoid();
+
+  const res = await grantDocUserRoles(
+    app,
+    admin.token.token,
+    ws.id,
+    pageId,
+    [read.id, write.id],
+    DocRole.Manager
+  );
+
+  t.deepEqual(res.body, {
+    data: {
+      grantDocUserRoles: true,
+    },
+  });
+
+  // should not downgrade the role if role exists
+  {
+    await grantDocUserRoles(
+      app,
+      admin.token.token,
+      ws.id,
+      pageId,
+      [read.id],
+      DocRole.Reader
+    );
+    // read still be the Manager of this doc
+    const res = await grantDocUserRoles(
+      app,
+      read.token.token,
+      ws.id,
+      pageId,
+      [external.id],
+      DocRole.Editor
+    );
+    t.deepEqual(res.body, {
+      data: {
+        grantDocUserRoles: true,
+      },
+    });
+
+    const pageUsersList = await pageGrantedUsersList(
+      app,
+      admin.token.token,
+      ws.id,
+      pageId
+    );
+    t.is(pageUsersList.data.workspace.pageGrantedUsersList.totalCount, 3);
+    const externalRole =
+      pageUsersList.data.workspace.pageGrantedUsersList.edges.find(
+        (edge: any) => edge.node.user.id === external.id
+      )?.node.role;
+    t.is(externalRole, DocRole[DocRole.Editor]);
+  }
+});
+
 test('should be able to change the default role in page', async t => {
   const { app } = t.context;
   const { teamWorkspace: ws, admin } = await init(app, 5);
   const pageId = nanoid();
-  const res = await request(app.getHttpServer())
-    .post('/graphql')
-    .auth(admin.token.token, { type: 'bearer' })
-    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-    .send({
-      query: `
-          mutation {
-            updatePageDefaultRole(input: {
-              workspaceId: "${ws.id}",
-              docId: "${pageId}",
-              role: Reader,
-            })
-          }
-        `,
-    })
-    .expect(200);
+  const res = await updatePageDefaultRole(
+    app,
+    admin.token.token,
+    ws.id,
+    pageId,
+    DocRole.Reader
+  );
 
   t.deepEqual(res.body, {
     data: {
@@ -832,7 +893,7 @@ test('should be able to change the default role in page', async t => {
   });
 });
 
-test('Default page role should be able to override the workspace role', async t => {
+test('default page role should be able to override the workspace role', async t => {
   const { app } = t.context;
   const {
     teamWorkspace: workspace,
@@ -843,22 +904,13 @@ test('Default page role should be able to override the workspace role', async t 
 
   const pageId = nanoid();
 
-  const res = await request(app.getHttpServer())
-    .post('/graphql')
-    .auth(admin.token.token, { type: 'bearer' })
-    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-    .send({
-      query: `
-          mutation {
-            updatePageDefaultRole(input: {
-              workspaceId: "${workspace.id}",
-              docId: "${pageId}",
-              role: Manager,
-            })
-          }
-        `,
-    })
-    .expect(200);
+  const res = await updatePageDefaultRole(
+    app,
+    admin.token.token,
+    workspace.id,
+    pageId,
+    DocRole.Manager
+  );
 
   t.deepEqual(res.body, {
     data: {
@@ -868,22 +920,13 @@ test('Default page role should be able to override the workspace role', async t 
 
   // reader can manage the page if the page default role is Manager
   {
-    const readerRes = await request(app.getHttpServer())
-      .post('/graphql')
-      .auth(read.token.token, { type: 'bearer' })
-      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-      .send({
-        query: `
-          mutation {
-            updatePageDefaultRole(input: {
-              workspaceId: "${workspace.id}",
-              docId: "${pageId}",
-              role: Manager,
-            })
-          }
-        `,
-      })
-      .expect(200);
+    const readerRes = await updatePageDefaultRole(
+      app,
+      read.token.token,
+      workspace.id,
+      pageId,
+      DocRole.Manager
+    );
 
     t.deepEqual(readerRes.body, {
       data: {
@@ -894,22 +937,13 @@ test('Default page role should be able to override the workspace role', async t 
 
   // external can't manage the page even if the page default role is Manager
   {
-    const externalRes = await request(app.getHttpServer())
-      .post('/graphql')
-      .auth(external.token.token, { type: 'bearer' })
-      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-      .send({
-        query: `
-          mutation {
-            updatePageDefaultRole(input: {
-              workspaceId: "${workspace.id}",
-              docId: "${pageId}",
-              role: Manager,
-            })
-          }
-        `,
-      })
-      .expect(200);
+    const externalRes = await updatePageDefaultRole(
+      app,
+      external.token.token,
+      workspace.id,
+      pageId,
+      DocRole.Manager
+    );
 
     t.like(externalRes.body, {
       errors: [
@@ -925,23 +959,15 @@ test('should be able to grant and revoke doc user role', async t => {
   const { app } = t.context;
   const { teamWorkspace: ws, admin, read, external } = await init(app, 5);
   const pageId = nanoid();
-  const res = await request(app.getHttpServer())
-    .post('/graphql')
-    .auth(admin.token.token, { type: 'bearer' })
-    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-    .send({
-      query: `
-        mutation {
-          grantDocUserRoles(input: {
-            workspaceId: "${ws.id}",
-            docId: "${pageId}",
-            role: Manager,
-            userIds: ["${external.id}"]
-          })
-        }
-      `,
-    })
-    .expect(200);
+
+  const res = await grantDocUserRoles(
+    app,
+    admin.token.token,
+    ws.id,
+    pageId,
+    [external.id],
+    DocRole.Manager
+  );
 
   t.deepEqual(res.body, {
     data: {
@@ -951,23 +977,15 @@ test('should be able to grant and revoke doc user role', async t => {
 
   // external user now can manage the page
   {
-    const externalRes = await request(app.getHttpServer())
-      .post('/graphql')
-      .auth(external.token.token, { type: 'bearer' })
-      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-      .send({
-        query: `
-        mutation {
-          grantDocUserRoles(input: {
-            workspaceId: "${ws.id}",
-            docId: "${pageId}",
-            role: Manager,
-            userIds: ["${read.id}"]
-          })
-        }
-      `,
-      })
-      .expect(200);
+    const externalRes = await grantDocUserRoles(
+      app,
+      external.token.token,
+      ws.id,
+      pageId,
+      [read.id],
+      DocRole.Manager
+    );
+
     t.deepEqual(externalRes.body, {
       data: {
         grantDocUserRoles: true,
@@ -977,22 +995,14 @@ test('should be able to grant and revoke doc user role', async t => {
 
   // revoke the role of the external user
   {
-    const revokeRes = await request(app.getHttpServer())
-      .post('/graphql')
-      .auth(admin.token.token, { type: 'bearer' })
-      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-      .send({
-        query: `
-        mutation {
-          revokeDocUserRoles(input: {
-            workspaceId: "${ws.id}",
-            docId: "${pageId}",
-            userId: "${external.id}"
-          })
-        }
-      `,
-      })
-      .expect(200);
+    const revokeRes = await revokeDocUserRoles(
+      app,
+      admin.token.token,
+      ws.id,
+      pageId,
+      external.id
+    );
+
     t.deepEqual(revokeRes.body, {
       data: {
         revokeDocUserRoles: true,
@@ -1000,22 +1010,14 @@ test('should be able to grant and revoke doc user role', async t => {
     });
 
     // external user can't manage the page
-    const externalRes = await request(app.getHttpServer())
-      .post('/graphql')
-      .auth(external.token.token, { type: 'bearer' })
-      .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-      .send({
-        query: `
-          mutation {
-            revokeDocUserRoles(input: {
-              workspaceId: "${ws.id}",
-              docId: "${pageId}",
-              userId: "${read.id}"
-            })
-          }
-        `,
-      })
-      .expect(200);
+    const externalRes = await revokeDocUserRoles(
+      app,
+      external.token.token,
+      ws.id,
+      pageId,
+      read.id
+    );
+
     t.like(externalRes.body, {
       errors: [
         {
