@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import ava, { TestFn } from 'ava';
+import { CLS_ID, ClsServiceManager } from 'nestjs-cls';
 import Sinon from 'sinon';
 
 import { EventBus } from '../../base';
@@ -11,6 +12,7 @@ const test = ava as TestFn<{
   app1: INestApplication;
   app2: INestApplication;
 }>;
+
 async function createApp() {
   const m = await createTestingModule(
     {
@@ -49,14 +51,20 @@ test('should broadcast event to cluster instances', async t => {
 
   // app 2 for broadcasting
   const eventbus2 = app2.get(EventBus);
-  eventbus2.broadcast('__test__.event', { count: 0 });
+  const cls = ClsServiceManager.getClsService();
+  cls.run(() => {
+    cls.set(CLS_ID, 'test-request-id');
+    eventbus2.broadcast('__test__.event', { count: 0, requestId: cls.getId() });
+  });
 
   // cause the cross instances broadcasting is asynchronization calling
   // we should wait for the event's arriving before asserting
   await eventbus1.waitFor('__test__.event');
 
-  t.true(listener.calledOnceWith({ count: 0 }));
-  t.true(runtimeListener.calledOnceWith({ count: 0 }));
+  t.true(listener.calledOnceWith({ count: 0, requestId: 'test-request-id' }));
+  t.true(
+    runtimeListener.calledOnceWith({ count: 0, requestId: 'test-request-id' })
+  );
 
   off();
 });

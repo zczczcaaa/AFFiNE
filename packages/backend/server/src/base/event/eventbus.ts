@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import {
   applyDecorators,
   Injectable,
@@ -15,6 +17,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { CLS_ID, ClsService } from 'nestjs-cls';
 import type { Server, Socket } from 'socket.io';
 
 import { CallMetric } from '../metrics';
@@ -69,7 +72,8 @@ export class EventBus implements OnGatewayConnection, OnApplicationBootstrap {
 
   constructor(
     private readonly emitter: EventEmitter2,
-    private readonly watcher: EventEmitterReadinessWatcher
+    private readonly watcher: EventEmitterReadinessWatcher,
+    private readonly cls: ClsService
   ) {}
 
   handleConnection(client: Socket) {
@@ -88,9 +92,13 @@ export class EventBus implements OnGatewayConnection, OnApplicationBootstrap {
         events.forEach(event => {
           // Proxy all events received from server(trigger by `server.serverSideEmit`)
           // to internal event system
-          this.server?.on(event, payload => {
-            this.logger.log(`Server Event: ${event} (Received)`);
-            this.emit(event, payload);
+          this.server?.on(event, (payload, requestId?: string) => {
+            this.cls.run(() => {
+              requestId = requestId ?? `server_event-${randomUUID()}`;
+              this.cls.set(CLS_ID, requestId);
+              this.logger.log(`Server Event: ${event} (Received)`);
+              this.emit(event, payload);
+            });
           });
         });
       })
@@ -120,7 +128,7 @@ export class EventBus implements OnGatewayConnection, OnApplicationBootstrap {
    */
   broadcast<T extends EventName>(event: T, payload: Events[T]) {
     this.logger.log(`Server Event: ${event} (Send)`);
-    this.server?.serverSideEmit(event, payload);
+    this.server?.serverSideEmit(event, payload, this.cls.getId());
   }
 
   on<T extends EventName>(
