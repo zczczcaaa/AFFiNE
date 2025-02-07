@@ -25,7 +25,14 @@ import {
   TextAlignSchema,
   TextVerticalAlign,
 } from '@blocksuite/affine-model';
-import { z, ZodDefault, ZodObject, type ZodTypeAny, ZodUnion } from 'zod';
+import {
+  z,
+  ZodDefault,
+  ZodIntersection,
+  ZodObject,
+  type ZodTypeAny,
+  ZodUnion,
+} from 'zod';
 
 const ConnectorEndpointSchema = z.nativeEnum(PointStyle);
 const LineWidthSchema = z.nativeEnum(LineWidth);
@@ -183,6 +190,11 @@ export function makeDeepOptional(schema: ZodTypeAny): ZodTypeAny {
     return z.object(deepOptionalShape).optional();
   } else if (schema instanceof ZodUnion) {
     return schema.or(z.undefined());
+  } else if (schema instanceof ZodIntersection) {
+    return z.intersection(
+      makeDeepOptional(schema._def.left),
+      makeDeepOptional(schema._def.right)
+    );
   } else {
     return schema.optional();
   }

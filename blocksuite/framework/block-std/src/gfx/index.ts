@@ -29,8 +29,10 @@ export {
 export {
   GfxBlockElementModel,
   type GfxCommonBlockProps,
+  GfxCommonBlockZodSchema,
   GfxCompatibleBlockModel as GfxCompatible,
   type GfxCompatibleProps,
+  GfxCompatibleZodSchema,
 } from './model/gfx-block-model.js';
 export { type GfxModel } from './model/model.js';
 export {

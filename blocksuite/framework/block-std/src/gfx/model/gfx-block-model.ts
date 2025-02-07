@@ -15,8 +15,10 @@ import {
   polygonGetPointTangent,
   polygonNearestPoint,
   rotatePoints,
+  SerializedXYWHZodSchema,
 } from '@blocksuite/global/utils';
 import { BlockModel } from '@blocksuite/store';
+import { z } from 'zod';
 
 import {
   isLockedByAncestorImpl,
@@ -33,20 +35,24 @@ import type { SurfaceBlockModel } from './surface/surface-model.js';
 /**
  * The props that a graphics block model should have.
  */
-export type GfxCompatibleProps = {
-  xywh: SerializedXYWH;
-  index: string;
-  lockedBySelf?: boolean;
-};
+export const GfxCompatibleZodSchema = z.object({
+  xywh: SerializedXYWHZodSchema,
+  index: z.string(),
+  lockedBySelf: z.boolean().optional(),
+});
+export type GfxCompatibleProps = z.infer<typeof GfxCompatibleZodSchema>;
 
 /**
  * This type include the common props for the graphic block model.
  * You can use this type with Omit to define the props of a graphic block model.
  */
-export type GfxCommonBlockProps = GfxCompatibleProps & {
-  rotate: number;
-  scale: number;
-};
+export const GfxCommonBlockZodSchema = GfxCompatibleZodSchema.and(
+  z.object({
+    rotate: z.number(),
+    scale: z.number(),
+  })
+);
+export type GfxCommonBlockProps = z.infer<typeof GfxCommonBlockZodSchema>;
 
 /**
  * The graphic block model that can be rendered in the graphics mode.

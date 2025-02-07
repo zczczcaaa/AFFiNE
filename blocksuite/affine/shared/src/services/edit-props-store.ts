@@ -139,7 +139,10 @@ export class EditPropsStore extends LifeCycleWatcher {
     }
   }
 
-  applyLastProps(key: LastPropsKey, props: Record<string, unknown>) {
+  applyLastProps<K extends LastPropsKey>(
+    key: K,
+    props: Record<string, unknown>
+  ) {
     if (['__proto__', 'constructor', 'prototype'].includes(key)) {
       throw new BlockSuiteError(
         ErrorCode.DefaultRuntimeError,
