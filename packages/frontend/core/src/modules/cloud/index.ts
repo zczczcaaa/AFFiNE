@@ -12,6 +12,7 @@ export { AccountLoggedIn } from './events/account-logged-in';
 export { AccountLoggedOut } from './events/account-logged-out';
 export { ServerInitialized } from './events/server-initialized';
 export { ValidatorProvider } from './provider/validator';
+export { AcceptInviteService } from './services/accept-invite';
 export { AuthService } from './services/auth';
 export { CaptchaService } from './services/captcha';
 export { DefaultServerService } from './services/default-server';
@@ -52,6 +53,7 @@ import { WorkspaceInvoices } from './entities/workspace-invoices';
 import { WorkspaceSubscription } from './entities/workspace-subscription';
 import { ValidatorProvider } from './provider/validator';
 import { ServerScope } from './scopes/server';
+import { AcceptInviteService } from './services/accept-invite';
 import { AuthService } from './services/auth';
 import { CaptchaService } from './services/captcha';
 import { CloudDocMetaService } from './services/cloud-doc-meta';
@@ -71,8 +73,10 @@ import { UserQuotaService } from './services/user-quota';
 import { WorkspaceInvoicesService } from './services/workspace-invoices';
 import { WorkspaceServerService } from './services/workspace-server';
 import { WorkspaceSubscriptionService } from './services/workspace-subscription';
+import { AcceptInviteStore } from './stores/accept-invite';
 import { AuthStore } from './stores/auth';
 import { CloudDocMetaStore } from './stores/cloud-doc-meta';
+import { InviteInfoStore } from './stores/invite-info';
 import { InvoicesStore } from './stores/invoices';
 import { SelfhostGenerateLicenseStore } from './stores/selfhost-generate-license';
 import { SelfhostLicenseStore } from './stores/selfhost-license';
@@ -136,7 +140,10 @@ export function configureCloudModule(framework: Framework) {
     .store(InvoicesStore, [GraphQLService])
     .entity(Invoices, [InvoicesStore])
     .service(SelfhostGenerateLicenseService, [SelfhostGenerateLicenseStore])
-    .store(SelfhostGenerateLicenseStore, [GraphQLService]);
+    .store(SelfhostGenerateLicenseStore, [GraphQLService])
+    .store(InviteInfoStore, [GraphQLService])
+    .service(AcceptInviteService, [AcceptInviteStore, InviteInfoStore])
+    .store(AcceptInviteStore, [GraphQLService]);
 
   framework
     .scope(WorkspaceScope)

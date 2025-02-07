@@ -97,6 +97,9 @@ export const roleOrStatus = style({
     '&.pending': {
       color: cssVarV2('text/emphasis'),
     },
+    '&.error': {
+      color: cssVarV2('status/error'),
+    },
   },
 });
 

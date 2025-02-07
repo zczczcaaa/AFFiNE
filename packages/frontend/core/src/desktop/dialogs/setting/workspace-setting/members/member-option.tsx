@@ -14,11 +14,13 @@ export const MemberOptions = ({
   isOwner,
   isAdmin,
   openAssignModal,
+  goToTeamBilling,
 }: {
   member: Member;
   isOwner: boolean;
   isAdmin: boolean;
   openAssignModal: () => void;
+  goToTeamBilling: () => void;
 }) => {
   const t = useI18n();
   const membersService = useService(WorkspaceMembersService);
@@ -163,12 +165,48 @@ export const MemberOptions = ({
       });
   }, [member, membersService, t]);
 
+  const handleRetryPayment = useCallback(() => {
+    openConfirmModal({
+      title: t['com.affine.payment.member.team.retry-payment.title'](),
+      description:
+        t[
+          `com.affine.payment.member.team.retry-payment.${isOwner ? 'owner' : 'admin'}.description`
+        ](),
+      confirmText:
+        t[
+          isOwner
+            ? 'com.affine.payment.member.team.retry-payment.update-payment'
+            : 'Got it'
+        ](),
+      confirmButtonOptions: {
+        variant: 'primary',
+      },
+      onConfirm: isOwner ? goToTeamBilling : undefined,
+      cancelText: t['Cancel'](),
+      cancelButtonOptions: {
+        style: {
+          visibility: isOwner ? 'visible' : 'hidden',
+        },
+      },
+    });
+  }, [goToTeamBilling, isOwner, openConfirmModal, t]);
+
   const operationButtonInfo = useMemo(() => {
     return [
+      {
+        label: t['com.affine.payment.member.team.retry-payment'](),
+        onClick: handleRetryPayment,
+        show: member.status === WorkspaceMemberStatus.NeedMoreSeat,
+      },
       {
         label: t['com.affine.payment.member.team.approve'](),
         onClick: handleApprove,
         show: member.status === WorkspaceMemberStatus.UnderReview,
+      },
+      {
+        label: t['com.affine.payment.member.team.approve'](),
+        onClick: handleRetryPayment,
+        show: member.status === WorkspaceMemberStatus.NeedMoreSeatAndReview,
       },
       {
         label: t['com.affine.payment.member.team.decline'](),
@@ -230,11 +268,13 @@ export const MemberOptions = ({
     handleChangeToCollaborator,
     handleDecline,
     handleRemove,
+    handleRetryPayment,
     handleRevoke,
     isAdmin,
     isOwner,
     isTeam,
-    member,
+    member.permission,
+    member.status,
     t,
   ]);
 

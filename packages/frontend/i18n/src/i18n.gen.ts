@@ -290,6 +290,10 @@ export function useAFFiNEI18N(): {
       */
     ["Invite Members Message"](): string;
     /**
+      * `Insufficient team seat`
+      */
+    ["insufficient-team-seat"](): string;
+    /**
       * `Joined workspace`
       */
     ["Joined Workspace"](): string;
@@ -3882,6 +3886,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.payment.member.team.remove"](): string;
     /**
+      * `Retry payment`
+      */
+    ["com.affine.payment.member.team.retry-payment"](): string;
+    /**
       * `Change role to admin`
       */
     ["com.affine.payment.member.team.change.admin"](): string;
@@ -3893,6 +3901,34 @@ export function useAFFiNEI18N(): {
       * `Assign as owner`
       */
     ["com.affine.payment.member.team.assign"](): string;
+    /**
+      * `Insufficient Team Seats`
+      */
+    ["com.affine.payment.member.team.retry-payment.title"](): string;
+    /**
+      * `The payment for adding new team members has failed. To add more seats, please update your payment method and process unpaid invoices.`
+      */
+    ["com.affine.payment.member.team.retry-payment.owner.description"](): string;
+    /**
+      * `The payment for adding new team members has failed. Please contact your workspace owner to update the payment method and process unpaid invoices.`
+      */
+    ["com.affine.payment.member.team.retry-payment.admin.description"](): string;
+    /**
+      * `Update Payment`
+      */
+    ["com.affine.payment.member.team.retry-payment.update-payment"](): string;
+    /**
+      * `Subscription has been disabled for your team workspace. To add more seats, you'll need to resume subscription first.`
+      */
+    ["com.affine.payment.member.team.disabled-subscription.owner.description"](): string;
+    /**
+      * `Your team workspace has subscription disabled, which prevents adding more seats. Please contact your workspace owner to enable subscription.`
+      */
+    ["com.affine.payment.member.team.disabled-subscription.admin.description"](): string;
+    /**
+      * `Resume Subscription`
+      */
+    ["com.affine.payment.member.team.disabled-subscription.resume-subscription"](): string;
     /**
       * `Invitation Revoked`
       */
@@ -4082,6 +4118,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.payment.resume"](): string;
     /**
+      * `Subscription Resumed`
+      */
+    ["com.affine.payment.resume.success.title"](): string;
+    /**
+      * `Your team workspace subscription has been enabled successfully. Changes will take effect immediately.`
+      */
+    ["com.affine.payment.resume.success.team.message"](): string;
+    /**
       * `Resume auto-renewal`
       */
     ["com.affine.payment.resume-renewal"](): string;
@@ -4241,6 +4285,10 @@ export function useAFFiNEI18N(): {
       * `Open in center peek`
       */
     ["com.affine.peek-view-controls.open-doc-in-center-peek"](): string;
+    /**
+      * `Click or drag`
+      */
+    ["com.affine.split-view-drag-handle.tooltip"](): string;
     /**
       * `New`
       */
@@ -6821,6 +6869,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.storage.unused-blobs.delete.warning"](): string;
     /**
+      * `Join Failed`
+      */
+    ["com.affine.fail-to-join-workspace.title"](): string;
+    /**
+      * `Please contact your workspace owner to add more seats.`
+      */
+    ["com.affine.fail-to-join-workspace.description-2"](): string;
+    /**
       * `An internal error occurred.`
       */
     ["error.INTERNAL_SERVER_ERROR"](): string;
@@ -7072,6 +7128,10 @@ export function useAFFiNEI18N(): {
       * `A Team workspace is required to perform this action.`
       */
     ["error.ACTION_FORBIDDEN_ON_NON_TEAM_WORKSPACE"](): string;
+    /**
+      * `Page default role can not be owner.`
+      */
+    ["error.PAGE_DEFAULT_ROLE_CAN_NOT_BE_OWNER"](): string;
     /**
       * `Unsupported subscription plan: {{plan}}.`
       */
@@ -7689,5 +7749,14 @@ export const TypedTrans: {
         readonly workspaceName: string;
     }, {
         ["1"]: JSX.Element;
+    }>>;
+    /**
+      * `Unable to join <1/> <2>{{workspaceName}}</2> due to insufficient seats available.`
+      */
+    ["com.affine.fail-to-join-workspace.description-1"]: ComponentType<TypedTransProps<{
+        readonly workspaceName: string;
+    }, {
+        ["1"]: JSX.Element;
+        ["2"]: JSX.Element;
     }>>;
 } = /*#__PURE__*/ createProxy(createComponent);

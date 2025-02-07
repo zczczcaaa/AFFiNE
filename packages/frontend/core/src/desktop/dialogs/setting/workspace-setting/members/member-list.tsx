@@ -29,9 +29,11 @@ import * as styles from './styles.css';
 export const MemberList = ({
   isOwner,
   isAdmin,
+  goToTeamBilling,
 }: {
   isOwner: boolean;
   isAdmin: boolean;
+  goToTeamBilling: () => void;
 }) => {
   const membersService = useService(WorkspaceMembersService);
   const memberCount = useLiveData(membersService.members.memberCount$);
@@ -85,6 +87,7 @@ export const MemberList = ({
             member={member}
             isOwner={isOwner}
             isAdmin={isAdmin}
+            goToTeamBilling={goToTeamBilling}
           />
         ))
       )}
@@ -130,11 +133,13 @@ const MemberItem = ({
   isOwner,
   isAdmin,
   currentAccount,
+  goToTeamBilling,
 }: {
   member: Member;
   isAdmin: boolean;
   isOwner: boolean;
   currentAccount: AuthAccountInfo;
+  goToTeamBilling: () => void;
 }) => {
   const t = useI18n();
   const [open, setOpen] = useState(false);
@@ -208,7 +213,10 @@ const MemberItem = ({
       </div>
       <div
         className={clsx(styles.roleOrStatus, {
-          pending: member.status !== WorkspaceMemberStatus.Accepted,
+          pending:
+            member.status !== WorkspaceMemberStatus.Accepted &&
+            member.status !== WorkspaceMemberStatus.NeedMoreSeat,
+          error: member.status === WorkspaceMemberStatus.NeedMoreSeat,
         })}
       >
         {t.t(memberStatus)}
@@ -220,6 +228,7 @@ const MemberItem = ({
             openAssignModal={handleOpenAssignModal}
             isAdmin={isAdmin}
             isOwner={isOwner}
+            goToTeamBilling={goToTeamBilling}
           />
         }
       >
@@ -249,9 +258,10 @@ const MemberItem = ({
 const getMemberStatus = (member: Member): I18nString => {
   switch (member.status) {
     case WorkspaceMemberStatus.NeedMoreSeat:
-    case WorkspaceMemberStatus.NeedMoreSeatAndReview:
+      return 'insufficient-team-seat';
     case WorkspaceMemberStatus.Pending:
       return 'Pending';
+    case WorkspaceMemberStatus.NeedMoreSeatAndReview:
     case WorkspaceMemberStatus.UnderReview:
       return 'Under-Review';
     case WorkspaceMemberStatus.Accepted:

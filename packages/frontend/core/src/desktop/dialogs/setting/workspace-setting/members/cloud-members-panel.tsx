@@ -1,4 +1,4 @@
-import { Button, Loading, notify } from '@affine/component';
+import { Button, Loading, notify, useConfirmModal } from '@affine/component';
 import {
   InviteTeamMemberModal,
   type InviteTeamMemberModalProps,
@@ -7,7 +7,11 @@ import {
 import { SettingRow } from '@affine/component/setting-components';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { Upload } from '@affine/core/components/pure/file-upload';
-import { ServerService, SubscriptionService } from '@affine/core/modules/cloud';
+import {
+  ServerService,
+  SubscriptionService,
+  WorkspaceSubscriptionService,
+} from '@affine/core/modules/cloud';
 import {
   WorkspaceMembersService,
   WorkspacePermissionService,
@@ -17,11 +21,12 @@ import { WorkspaceShareSettingService } from '@affine/core/modules/share-setting
 import { copyTextToClipboard } from '@affine/core/utils/clipboard';
 import { emailRegex } from '@affine/core/utils/email-regex';
 import type { WorkspaceInviteLinkExpireTime } from '@affine/graphql';
-import { UserFriendlyError } from '@affine/graphql';
+import { SubscriptionPlan, UserFriendlyError } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { ExportIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
+import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { SettingState } from '../../types';
@@ -51,6 +56,8 @@ export const CloudWorkspaceMembersPanel = ({
   isTeam?: boolean;
 }) => {
   const workspaceShareSettingService = useService(WorkspaceShareSettingService);
+  const subscription = useService(WorkspaceSubscriptionService).subscription;
+  const workspaceSubscription = useLiveData(subscription.subscription$);
   const inviteLink = useLiveData(
     workspaceShareSettingService.sharePreview.inviteLink$
   );
@@ -89,9 +96,77 @@ export const CloudWorkspaceMembersPanel = ({
   const [openMemberLimit, setOpenMemberLimit] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
 
+  const { openConfirmModal, closeConfirmModal } = useConfirmModal();
+  const goToTeamBilling = useCallback(() => {
+    onChangeSettingState({
+      activeTab: 'workspace:billing',
+    });
+  }, [onChangeSettingState]);
+  const [idempotencyKey, setIdempotencyKey] = useState(nanoid());
+  const resume = useAsyncCallback(async () => {
+    try {
+      setIsMutating(true);
+      await subscription.resumeSubscription(
+        idempotencyKey,
+        SubscriptionPlan.Team
+      );
+      await subscription.waitForRevalidation();
+      // refresh idempotency key
+      setIdempotencyKey(nanoid());
+      closeConfirmModal();
+      notify.success({
+        title: t['com.affine.payment.resume.success.title'](),
+        message: t['com.affine.payment.resume.success.team.message'](),
+      });
+    } catch (err) {
+      const error = UserFriendlyError.fromAnyError(err);
+      notify.error({
+        title: error.name,
+        message: error.message,
+      });
+    } finally {
+      setIsMutating(false);
+    }
+  }, [subscription, idempotencyKey, closeConfirmModal, t]);
   const openInviteModal = useCallback(() => {
+    if (isTeam && workspaceSubscription?.canceledAt) {
+      openConfirmModal({
+        title: t['com.affine.payment.member.team.retry-payment.title'](),
+        description:
+          t[
+            `com.affine.payment.member.team.disabled-subscription.${isOwner ? 'owner' : 'admin'}.description`
+          ](),
+        confirmText:
+          t[
+            isOwner
+              ? 'com.affine.payment.member.team.disabled-subscription.resume-subscription'
+              : 'Got it'
+          ](),
+        cancelText: t['Cancel'](),
+        cancelButtonOptions: {
+          style: {
+            visibility: isOwner ? 'visible' : 'hidden',
+          },
+        },
+        onConfirm: isOwner ? resume : undefined,
+        confirmButtonOptions: {
+          variant: 'primary',
+          loading: isMutating,
+        },
+      });
+
+      return;
+    }
     setOpenInvite(true);
-  }, []);
+  }, [
+    isMutating,
+    isOwner,
+    isTeam,
+    openConfirmModal,
+    resume,
+    t,
+    workspaceSubscription?.canceledAt,
+  ]);
 
   const onGenerateInviteLink = useCallback(
     async (expireTime: WorkspaceInviteLinkExpireTime) => {
@@ -253,7 +328,11 @@ export const CloudWorkspaceMembersPanel = ({
       </SettingRow>
 
       <div className={styles.membersPanel}>
-        <MemberList isOwner={!!isOwner} isAdmin={!!isAdmin} />
+        <MemberList
+          isOwner={!!isOwner}
+          isAdmin={!!isAdmin}
+          goToTeamBilling={goToTeamBilling}
+        />
       </div>
     </>
   );
