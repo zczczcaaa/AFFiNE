@@ -2,11 +2,7 @@ import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 
 import { getSentenceRects, segmentSentences } from './text-utils.js';
-import {
-  type ParagraphLayout,
-  type SectionLayout,
-  type ViewportState,
-} from './types.js';
+import { type ParagraphLayout, type SectionLayout } from './types.js';
 
 export class CanvasRenderer {
   private readonly worker: Worker;
@@ -25,26 +21,13 @@ export class CanvasRenderer {
     this.editorContainer = editorContainer;
     this.targetContainer = targetContainer;
 
-    this.worker = new Worker(new URL('./canvas.worker.ts', import.meta.url), {
+    this.worker = new Worker(new URL('./painter.worker.ts', import.meta.url), {
       type: 'module',
     });
-  }
 
-  private initWorkerSize(width: number, height: number) {
-    const dpr = window.devicePixelRatio;
-    const viewport = this.editorContainer.std.get(
-      GfxControllerIdentifier
-    ).viewport;
-    const viewportState: ViewportState = {
-      zoom: viewport.zoom,
-      viewScale: viewport.viewScale,
-      viewportX: viewport.viewportX,
-      viewportY: viewport.viewportY,
-    };
-    this.worker.postMessage({
-      type: 'init',
-      data: { width, height, dpr, viewport: viewportState },
-    });
+    if (!this.targetContainer.querySelector('canvas')) {
+      this.targetContainer.append(this.canvas);
+    }
   }
 
   get viewport() {
@@ -124,70 +107,72 @@ export class CanvasRenderer {
     return { section, hostRect };
   }
 
-  public async render(): Promise<void> {
-    const hostLayout = this.getHostLayout();
-    if (!hostLayout) return;
+  private initSectionRenderer(width: number, height: number) {
+    const dpr = window.devicePixelRatio;
+    this.worker.postMessage({
+      type: 'initSection',
+      data: { width, height, dpr, zoom: this.viewport.zoom },
+    });
+  }
 
-    const { section } = hostLayout;
-    const currentZoom = this.viewport.zoom;
-
-    // Use bitmap cache
-    if (
-      this.lastZoom === currentZoom &&
-      this.lastSection &&
-      this.lastBitmap &&
-      this.lastMode === this.editorContainer.mode
-    ) {
-      this.drawBitmap(this.lastBitmap, this.lastSection);
-      return;
-    }
-
-    // Need to re-render if zoom changed or no cached bitmap
-    this.initWorkerSize(section.rect.w, section.rect.h);
-
+  private async renderSection(section: SectionLayout): Promise<void> {
     return new Promise(resolve => {
       if (!this.worker) return;
 
       this.worker.postMessage({
-        type: 'draw',
-        data: {
-          section,
-        },
+        type: 'paintSection',
+        data: { section },
       });
 
       this.worker.onmessage = (e: MessageEvent) => {
-        const { type, bitmap } = e.data;
-        if (type === 'render') {
-          const hostRect = this.getHostRect();
-          this.canvas.style.width = hostRect.width + 'px';
-          this.canvas.style.height = hostRect.height + 'px';
-          this.canvas.width = hostRect.width * window.devicePixelRatio;
-          this.canvas.height = hostRect.height * window.devicePixelRatio;
-
-          if (!this.targetContainer.querySelector('canvas')) {
-            this.targetContainer.append(this.canvas);
-          }
-
-          // Create a copy of bitmap for caching
-          const tempCanvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-          const tempCtx = tempCanvas.getContext('2d')!;
-          tempCtx.drawImage(bitmap, 0, 0);
-          const bitmapCopy = tempCanvas.transferToImageBitmap();
-
-          // Cache the current state
-          this.lastZoom = currentZoom;
-          this.lastSection = section;
-          this.lastMode = this.editorContainer.mode;
-          if (this.lastBitmap) {
-            this.lastBitmap.close();
-          }
-          this.lastBitmap = bitmapCopy;
-
-          this.drawBitmap(bitmap, section);
-          resolve();
+        if (e.data.type === 'bitmapPainted') {
+          this.handlePaintedBitmap(e.data.bitmap, section, resolve);
         }
       };
     });
+  }
+
+  private handlePaintedBitmap(
+    bitmap: ImageBitmap,
+    section: SectionLayout,
+    resolve: () => void
+  ) {
+    const tempCanvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    const tempCtx = tempCanvas.getContext('2d')!;
+    tempCtx.drawImage(bitmap, 0, 0);
+    const bitmapCopy = tempCanvas.transferToImageBitmap();
+
+    this.updateCacheState(section, bitmapCopy);
+    this.drawBitmap(bitmap, section);
+    resolve();
+  }
+
+  private syncCanvasSize() {
+    const hostRect = this.getHostRect();
+    const dpr = window.devicePixelRatio;
+    this.canvas.style.width = `${hostRect.width}px`;
+    this.canvas.style.height = `${hostRect.height}px`;
+    this.canvas.width = hostRect.width * dpr;
+    this.canvas.height = hostRect.height * dpr;
+  }
+
+  private updateCacheState(section: SectionLayout, bitmapCopy: ImageBitmap) {
+    this.lastZoom = this.viewport.zoom;
+    this.lastSection = section;
+    this.lastMode = this.editorContainer.mode;
+    if (this.lastBitmap) {
+      this.lastBitmap.close();
+    }
+    this.lastBitmap = bitmapCopy;
+  }
+
+  private canUseCache(currentZoom: number): boolean {
+    return (
+      this.lastZoom === currentZoom &&
+      !!this.lastSection &&
+      !!this.lastBitmap &&
+      this.lastMode === this.editorContainer.mode
+    );
   }
 
   private drawBitmap(bitmap: ImageBitmap, section: SectionLayout) {
@@ -221,6 +206,22 @@ export class CanvasRenderer {
       section.rect.w * window.devicePixelRatio * this.viewport.zoom,
       section.rect.h * window.devicePixelRatio * this.viewport.zoom
     );
+  }
+
+  public async render(): Promise<void> {
+    const hostLayout = this.getHostLayout();
+    if (!hostLayout) return;
+
+    const { section } = hostLayout;
+    const currentZoom = this.viewport.zoom;
+
+    if (this.canUseCache(currentZoom)) {
+      this.drawBitmap(this.lastBitmap!, this.lastSection!);
+    } else {
+      this.syncCanvasSize();
+      this.initSectionRenderer(section.rect.w, section.rect.h);
+      await this.renderSection(section);
+    }
   }
 
   public destroy() {

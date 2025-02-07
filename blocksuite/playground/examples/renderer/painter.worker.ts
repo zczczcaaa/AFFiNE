@@ -1,23 +1,23 @@
-import { type SectionLayout, type ViewportState } from './types.js';
+import { type SectionLayout } from './types.js';
 
 type WorkerMessageInit = {
-  type: 'init';
+  type: 'initSection';
   data: {
     width: number;
     height: number;
     dpr: number;
-    viewport: ViewportState;
+    zoom: number;
   };
 };
 
-type WorkerMessageDraw = {
-  type: 'draw';
+type WorkerMessagePaint = {
+  type: 'paintSection';
   data: {
     section: SectionLayout;
   };
 };
 
-type WorkerMessage = WorkerMessageInit | WorkerMessageDraw;
+type WorkerMessage = WorkerMessageInit | WorkerMessagePaint;
 
 const meta = {
   emSize: 2048,
@@ -45,33 +45,28 @@ function getBaseline() {
   return y;
 }
 
-class CanvasWorkerManager {
+/** Section painter in worker */
+class SectionPainter {
   private canvas: OffscreenCanvas | null = null;
   private ctx: OffscreenCanvasRenderingContext2D | null = null;
-  private viewport: ViewportState | null = null;
+  private zoom = 1;
 
-  init(
-    modelWidth: number,
-    modelHeight: number,
-    dpr: number,
-    viewport: ViewportState
-  ) {
-    const width = modelWidth * dpr * viewport.zoom;
-    const height = modelHeight * dpr * viewport.zoom;
+  init(modelWidth: number, modelHeight: number, dpr: number, zoom: number) {
+    const width = modelWidth * dpr * zoom;
+    const height = modelHeight * dpr * zoom;
     this.canvas = new OffscreenCanvas(width, height);
     this.ctx = this.canvas.getContext('2d')!;
     this.ctx.scale(dpr, dpr);
     this.ctx.fillStyle = 'lightgrey';
     this.ctx.fillRect(0, 0, width, height);
-    this.viewport = viewport;
+    this.zoom = zoom;
   }
 
-  draw(section: SectionLayout) {
+  paint(section: SectionLayout) {
     const { canvas, ctx } = this;
     if (!canvas || !ctx) return;
 
-    const zoom = this.viewport!.zoom;
-    ctx.scale(zoom, zoom);
+    ctx.scale(this.zoom, this.zoom);
 
     // Track rendered positions to avoid duplicate rendering across all paragraphs and sentences
     const renderedPositions = new Set<string>();
@@ -101,24 +96,24 @@ class CanvasWorkerManager {
     });
 
     const bitmap = canvas.transferToImageBitmap();
-    self.postMessage({ type: 'render', bitmap }, { transfer: [bitmap] });
+    self.postMessage({ type: 'bitmapPainted', bitmap }, { transfer: [bitmap] });
   }
 }
 
-const manager = new CanvasWorkerManager();
+const painter = new SectionPainter();
 
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   const { type, data } = e.data;
   switch (type) {
-    case 'init': {
-      const { width, height, dpr, viewport } = data;
-      manager.init(width, height, dpr, viewport);
+    case 'initSection': {
+      const { width, height, dpr, zoom } = data;
+      painter.init(width, height, dpr, zoom);
       break;
     }
-    case 'draw': {
+    case 'paintSection': {
       await font.load();
       const { section } = data;
-      manager.draw(section);
+      painter.paint(section);
       break;
     }
   }

@@ -37,16 +37,15 @@
         justify-content: center;
       }
 
-      #to-canvas-button {
+      .top-bar {
         position: absolute;
-        top: 5px;
-        left: 5px;
-      }
-
-      #switch-mode-button {
-        position: absolute;
-        top: 5px;
-        left: 85px;
+        top: 0;
+        left: 0;
+        padding: 5px;
+        display: flex;
+        gap: 5px;
+        justify-content: flex-start;
+        align-items: center;
       }
     </style>
   </head>
@@ -54,8 +53,10 @@
     <div id="container">
       <div id="left-column"></div>
       <div id="right-column">
-        <button id="to-canvas-button">to canvas</button>
-        <button id="switch-mode-button">switch mode</button>
+        <div class="top-bar">
+          <button id="to-canvas-button">to canvas</button>
+          <button id="switch-mode-button">switch mode</button>
+        </div>
       </div>
     </div>
     <script type="module" src="./main.ts"></script>
