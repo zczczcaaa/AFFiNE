@@ -428,6 +428,7 @@ export async function addImages(
   options: {
     point?: IVec;
     maxWidth?: number;
+    transformPoint?: boolean; // determines whether we should use `toModelCoord` to convert the point
   }
 ): Promise<string[]> {
   const imageFiles = [...files].filter(file => file.type.startsWith('image/'));
@@ -449,9 +450,15 @@ export async function addImages(
     return [];
   }
 
-  const { point, maxWidth } = options;
+  const { point, maxWidth, transformPoint = true } = options;
   let { x, y } = gfx.viewport.center;
-  if (point) [x, y] = gfx.viewport.toModelCoord(...point);
+  if (point) {
+    if (transformPoint) {
+      [x, y] = gfx.viewport.toModelCoord(...point);
+    } else {
+      [x, y] = point;
+    }
+  }
 
   const dropInfos: { point: Point; blockId: string }[] = [];
   const IMAGE_STACK_GAP = 32;

@@ -574,3 +574,25 @@ export const importMindMapIcon = svg`<svg width="64" height="48" viewBox="0 0 64
 <rect x="5.5" y="17.9183" width="17.3771" height="12.1639" rx="3" fill="black" fill-opacity="0.03" stroke="#929292" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 3"/>
 </svg>
 `;
+
+export const mindmapMenuMediaIcon = svg`<svg width="56" height="49" viewBox="0 0 56 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_215_65373)">
+<path d="M4.51611 7.83333C4.51611 5.99238 6.01812 4.5 7.87095 4.5H48.129C49.9818 4.5 51.4838 5.99239 51.4838 7.83334V41.1667C51.4838 43.0076 49.9818 44.5 48.129 44.5H7.87095C6.01813 44.5 4.51611 43.0076 4.51611 41.1667V7.83333Z" fill="#F4F9FF"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M7.87096 2H48.129C51.3714 2 53.9999 4.61167 53.9999 7.83333V41.1667C53.9999 44.3883 51.3714 47 48.129 47H7.87096C4.62852 47 2 44.3883 2 41.1667V7.83333C2 4.61167 4.62852 2 7.87096 2ZM7.87096 4.5C6.01814 4.5 4.51613 5.99238 4.51613 7.83333V41.1667C4.51613 43.0076 6.01814 44.5 7.87096 44.5H48.129C49.9818 44.5 51.4838 43.0076 51.4838 41.1667V7.83333C51.4838 5.99238 49.9818 4.5 48.129 4.5H7.87096Z" fill="#3883FF"/>
+<path d="M7.87095 44.5001H48.129C49.9818 44.5001 51.4838 43.0077 51.4838 41.1667V39.7435L35.8959 17.6424C33.3356 14.0123 28.3633 13.009 24.5807 15.3591L4.51611 27.8252V41.1667C4.51611 43.0077 6.01813 44.5001 7.87095 44.5001Z" fill="#3883FF"/>
+<ellipse cx="5.03225" cy="5" rx="5.03225" ry="5" transform="matrix(-1 -8.76786e-08 -8.88135e-08 1 47.9972 7.41357)" fill="#3883FF"/>
+</g>
+<defs>
+<filter id="filter0_d_215_65373" x="0" y="0" width="56" height="49" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="1"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_215_65373"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_215_65373" result="shape"/>
+</filter>
+</defs>
+</svg>
+`;

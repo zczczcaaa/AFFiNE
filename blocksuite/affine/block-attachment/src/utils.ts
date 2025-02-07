@@ -264,7 +264,8 @@ export async function addSiblingAttachmentBlocks(
 export async function addAttachments(
   std: BlockStdScope,
   files: File[],
-  point?: IVec
+  point?: IVec,
+  transformPoint?: boolean // determines whether we should use `toModelCoord` to convert the point
 ): Promise<string[]> {
   if (!files.length) return [];
 
@@ -284,7 +285,14 @@ export async function addAttachments(
   }
 
   let { x, y } = gfx.viewport.center;
-  if (point) [x, y] = gfx.viewport.toModelCoord(...point);
+  if (point) {
+    let transform = transformPoint ?? true;
+    if (transform) {
+      [x, y] = gfx.viewport.toModelCoord(...point);
+    } else {
+      [x, y] = point;
+    }
+  }
 
   const CARD_STACK_GAP = 32;
 
