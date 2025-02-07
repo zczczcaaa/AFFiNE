@@ -44,6 +44,11 @@ export async function createApp() {
   app.useGlobalInterceptors(app.get(CacheInterceptor));
   app.useGlobalFilters(new GlobalExceptionFilter(app.getHttpAdapter()));
   app.use(cookieParser());
+  // only enable shutdown hooks in production
+  // https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown
+  if (AFFiNE.NODE_ENV === 'production') {
+    app.enableShutdownHooks();
+  }
 
   const adapter = new SocketIoAdapter(app);
   app.useWebSocketAdapter(adapter);
