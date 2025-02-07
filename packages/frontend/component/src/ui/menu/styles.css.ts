@@ -85,7 +85,6 @@ export const menuItem = style({
     '&.checked, &.selected': {
       vars: {
         [iconColor]: cssVar('primaryColor'),
-        [labelColor]: cssVar('primaryColor'),
       },
     },
   },

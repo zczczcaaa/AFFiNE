@@ -525,10 +525,10 @@ export const getMembersByWorkspaceIdQuery = {
   definitionName: 'workspace',
   containsFile: false,
   query: `
-query getMembersByWorkspaceId($workspaceId: String!, $skip: Int!, $take: Int!) {
+query getMembersByWorkspaceId($workspaceId: String!, $skip: Int, $take: Int, $query: String) {
   workspace(id: $workspaceId) {
     memberCount
-    members(skip: $skip, take: $take) {
+    members(skip: $skip, take: $take, query: $query) {
       id
       name
       email
@@ -551,6 +551,38 @@ export const oauthProvidersQuery = {
 query oauthProviders {
   serverConfig {
     oauthProviders
+  }
+}`,
+};
+
+export const getPageGrantedUsersListQuery = {
+  id: 'getPageGrantedUsersListQuery' as const,
+  operationName: 'getPageGrantedUsersList',
+  definitionName: 'workspace',
+  containsFile: false,
+  query: `
+query getPageGrantedUsersList($pagination: PaginationInput!, $docId: String!, $workspaceId: String!) {
+  workspace(id: $workspaceId) {
+    doc(docId: $docId) {
+      grantedUsersList(pagination: $pagination) {
+        totalCount
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            role
+            user {
+              id
+              name
+              email
+              avatarUrl
+            }
+          }
+        }
+      }
+    }
   }
 }`,
 };
@@ -830,6 +862,17 @@ query getWorkspaces {
 }`,
 };
 
+export const grantDocUserRolesMutation = {
+  id: 'grantDocUserRolesMutation' as const,
+  operationName: 'grantDocUserRoles',
+  definitionName: 'grantDocUserRoles',
+  containsFile: false,
+  query: `
+mutation grantDocUserRoles($input: GrantDocUserRolesInput!) {
+  grantDocUserRoles(input: $input)
+}`,
+};
+
 export const listHistoryQuery = {
   id: 'listHistoryQuery' as const,
   operationName: 'listHistory',
@@ -1019,6 +1062,17 @@ mutation resumeSubscription($plan: SubscriptionPlan = Pro, $workspaceId: String)
 }`,
 };
 
+export const revokeDocUserRolesMutation = {
+  id: 'revokeDocUserRolesMutation' as const,
+  operationName: 'revokeDocUserRoles',
+  definitionName: 'revokeDocUserRoles',
+  containsFile: false,
+  query: `
+mutation revokeDocUserRoles($input: RevokeDocUserRoleInput!) {
+  revokeDocUserRoles(input: $input)
+}`,
+};
+
 export const revokeMemberPermissionMutation = {
   id: 'revokeMemberPermissionMutation' as const,
   operationName: 'revokeMemberPermission',
@@ -1193,6 +1247,17 @@ export const updateCopilotSessionMutation = {
   query: `
 mutation updateCopilotSession($options: UpdateChatSessionInput!) {
   updateCopilotSession(options: $options)
+}`,
+};
+
+export const updateDocUserRoleMutation = {
+  id: 'updateDocUserRoleMutation' as const,
+  operationName: 'updateDocUserRole',
+  definitionName: 'updateDocUserRole',
+  containsFile: false,
+  query: `
+mutation updateDocUserRole($input: UpdateDocUserRoleInput!) {
+  updateDocUserRole(input: $input)
 }`,
 };
 

@@ -6,7 +6,6 @@ import {
   MenuSub,
 } from '@affine/component/ui/menu';
 import { PageHistoryModal } from '@affine/core/components/affine/page-history-modal';
-import { ShareMenuContent } from '@affine/core/components/affine/share-page-modal/share-menu';
 import { useBlockSuiteMetaHelper } from '@affine/core/components/hooks/affine/use-block-suite-meta-helper';
 import { useEnableCloud } from '@affine/core/components/hooks/affine/use-enable-cloud';
 import { useExportPage } from '@affine/core/components/hooks/affine/use-export-page';
@@ -17,6 +16,7 @@ import { useDetailPageHeaderResponsive } from '@affine/core/desktop/pages/worksp
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { EditorService } from '@affine/core/modules/editor';
 import { OpenInAppService } from '@affine/core/modules/open-in-app/services';
+import { ShareMenuContent } from '@affine/core/modules/share-menu';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
 import { WorkspaceService } from '@affine/core/modules/workspace';

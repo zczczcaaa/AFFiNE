@@ -5755,6 +5755,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.share-menu.SharePage"](): string;
     /**
+      * `General access`
+      */
+    ["com.affine.share-menu.generalAccess"](): string;
+    /**
       * `Share via export`
       */
     ["com.affine.share-menu.ShareViaExport"](): string;
@@ -5859,9 +5863,17 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.share-menu.option.link.readonly.description"](): string;
     /**
-      * `Can Edit`
+      * `Can manage`
+      */
+    ["com.affine.share-menu.option.permission.can-manage"](): string;
+    /**
+      * `Can edit`
       */
     ["com.affine.share-menu.option.permission.can-edit"](): string;
+    /**
+      * `Can read`
+      */
+    ["com.affine.share-menu.option.permission.can-read"](): string;
     /**
       * `Members in workspace`
       */
@@ -5882,6 +5894,71 @@ export function useAFFiNEI18N(): {
       * `Shared`
       */
     ["com.affine.share-menu.sharedButton"](): string;
+    /**
+      * `{{member1}} and {{member2}} are in this doc`
+      */
+    ["com.affine.share-menu.member-management.member-count-2"](options: Readonly<{
+        member1: string;
+        member2: string;
+    }>): string;
+    /**
+      * `{{member1}}, {{member2}} and {{member3}} are in this doc`
+      */
+    ["com.affine.share-menu.member-management.member-count-3"](options: Readonly<{
+        member1: string;
+        member2: string;
+        member3: string;
+    }>): string;
+    /**
+      * `{{member1}}, {{member2}} and {{memberCount}} others`
+      */
+    ["com.affine.share-menu.member-management.member-count-more"](options: Readonly<{
+        member1: string;
+        member2: string;
+        memberCount: string;
+    }>): string;
+    /**
+      * `Remove`
+      */
+    ["com.affine.share-menu.member-management.remove"](): string;
+    /**
+      * `Set as owner`
+      */
+    ["com.affine.share-menu.member-management.set-as-owner"](): string;
+    /**
+      * `{{memberCount}} collaborators in the doc`
+      */
+    ["com.affine.share-menu.member-management.header"](options: {
+        readonly memberCount: string;
+    }): string;
+    /**
+      * `Add collaborators`
+      */
+    ["com.affine.share-menu.member-management.add-collaborators"](): string;
+    /**
+      * `Send invite`
+      */
+    ["com.affine.share-menu.invite-editor.header"](): string;
+    /**
+      * `Manage members`
+      */
+    ["com.affine.share-menu.invite-editor.manage-members"](): string;
+    /**
+      * `Invite`
+      */
+    ["com.affine.share-menu.invite-editor.invite"](): string;
+    /**
+      * `No results found`
+      */
+    ["com.affine.share-menu.invite-editor.no-found"](): string;
+    /**
+      * `Invite other members`
+      */
+    ["com.affine.share-menu.invite-editor.placeholder"](): string;
+    /**
+      * `Notify via Email`
+      */
+    ["com.affine.share-menu.invite-editor.sent-email"](): string;
     /**
       * `Built with`
       */

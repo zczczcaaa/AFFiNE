@@ -11,7 +11,7 @@ import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import { useCallback, useMemo } from 'react';
 
-import * as styles from './index.css';
+import * as styles from './copy-link-button.css';
 
 export const CopyLinkButton = ({
   workspaceId,

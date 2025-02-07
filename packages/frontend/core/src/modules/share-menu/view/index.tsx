@@ -5,6 +5,8 @@ import type { Store } from '@blocksuite/affine/store';
 import { useCallback } from 'react';
 
 import { ShareMenu } from './share-menu';
+export { CloudSvg } from './cloud-svg';
+export { ShareMenuContent } from './share-menu';
 
 type SharePageModalProps = {
   workspace: Workspace;
