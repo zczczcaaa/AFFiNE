@@ -32,7 +32,7 @@ declare global {
       workspaceId: string;
       docId: string;
     };
-    'doc.update.pushed': {
+    'doc.created': {
       workspaceId: string;
       docId: string;
       editor?: string;
@@ -62,6 +62,8 @@ export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
     if (!updates.length) {
       return 0;
     }
+
+    const isNewDoc = !(await this.docExisted(workspaceId, docId));
 
     let pendings = updates;
     let done = 0;
@@ -110,11 +112,14 @@ export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
           await this.updateCachedUpdatesCount(workspaceId, docId, batch.length);
         }
       });
-      this.event.emit('doc.update.pushed', {
-        workspaceId,
-        docId,
-        editor: editorId,
-      });
+
+      if (isNewDoc) {
+        this.event.emit('doc.created', {
+          workspaceId,
+          docId,
+          editor: editorId,
+        });
+      }
     } catch (e) {
       this.logger.error('Failed to insert doc updates', e);
       metrics.doc.counter('doc_update_insert_failed').add(1);
@@ -589,6 +594,27 @@ export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
     }
   }
 
+  private async docExisted(workspaceId: string, docId: string) {
+    const snapshot = await this.db.snapshot.count({
+      where: {
+        workspaceId,
+        id: docId,
+      },
+    });
+
+    if (snapshot > 0) {
+      return true;
+    }
+
+    const updates = await this.db.update.count({
+      where: {
+        workspaceId,
+        id: docId,
+      },
+    });
+
+    return updates > 0;
+  }
   /**
    * @deprecated
    */

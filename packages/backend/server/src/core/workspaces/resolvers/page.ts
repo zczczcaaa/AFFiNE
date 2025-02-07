@@ -130,7 +130,15 @@ class PaginatedGrantedDocUserType extends Paginated(GrantedDocUserType) {}
 
 const DocPermissions = registerObjectType<DocActionPermissions>(
   Object.fromEntries(
-    DOC_ACTIONS.map(action => [action.replaceAll('.', '_'), Boolean])
+    DOC_ACTIONS.map(action => [
+      action,
+      {
+        type: () => Boolean,
+        options: {
+          name: action.replaceAll('.', '_'),
+        },
+      },
+    ])
   ),
   { name: 'DocPermissions' }
 );
@@ -281,10 +289,20 @@ export class PagePermissionResolver {
           where: {
             workspaceId: workspace.id,
             pageId: docId.guid,
+            createdAt: pagination.after
+              ? {
+                  gt: pagination.after,
+                }
+              : undefined,
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
+          orderBy: [
+            {
+              type: 'desc',
+            },
+            {
+              createdAt: 'desc',
+            },
+          ],
           take: pagination.first,
           skip: pagination.offset,
         }),

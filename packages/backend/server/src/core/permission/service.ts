@@ -30,16 +30,23 @@ export class PermissionService {
     private readonly event: EventBus
   ) {}
 
-  @OnEvent('doc.update.pushed')
-  async onDocUpdatePushed(payload: Events['doc.update.pushed']) {
+  @OnEvent('doc.created')
+  async setDefaultPageOwner(payload: Events['doc.created']) {
     const { workspaceId, docId, editor } = payload;
 
-    await this.prisma.$queryRaw`
-      INSERT INTO "workspace_page_user_permissions" ("workspace_id", "page_id", "user_id", "type", "created_at")
-      VALUES (${workspaceId}, ${docId}, ${editor}, ${DocRole.Owner}, now())
-      ON CONFLICT ("workspace_id", "page_id", "user_id")
-      DO NOTHING
-    `;
+    if (!editor) {
+      return;
+    }
+
+    await this.prisma.workspacePageUserPermission.createMany({
+      data: {
+        workspaceId,
+        pageId: docId,
+        userId: editor,
+        type: DocRole.Owner,
+        createdAt: new Date(),
+      },
+    });
   }
 
   private get acceptedCondition() {

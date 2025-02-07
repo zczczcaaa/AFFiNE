@@ -77,7 +77,15 @@ class WorkspacePageMeta {
 
 const WorkspacePermissions = registerObjectType<WorkspaceActionPermissions>(
   Object.fromEntries(
-    WORKSPACE_ACTIONS.map(action => [action.replaceAll('.', '_'), Boolean])
+    WORKSPACE_ACTIONS.map(action => [
+      action,
+      {
+        type: () => Boolean,
+        options: {
+          name: action.replaceAll('.', '_'),
+        },
+      },
+    ])
   ),
   { name: 'WorkspacePermissions' }
 );

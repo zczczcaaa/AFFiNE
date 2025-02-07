@@ -39,15 +39,16 @@ export class PaginationInput {
       'returns the elements in the list that come after the specified cursor.',
     middleware: [parseCursorMiddleware],
   })
-  after!: string | null;
+  after?: string | null;
 
-  @Field(() => String, {
-    nullable: true,
-    description:
-      'returns the elements in the list that come before the specified cursor.',
-    middleware: [parseCursorMiddleware],
-  })
-  before!: string | null;
+  // NOT IMPLEMENTED YET
+  // @Field(() => String, {
+  //   nullable: true,
+  //   description:
+  //     'returns the elements in the list that come before the specified cursor.',
+  //   middleware: [parseCursorMiddleware],
+  // })
+  // before?: string | null;
 }
 
 const encode = (input: string) => Buffer.from(input).toString('base64');

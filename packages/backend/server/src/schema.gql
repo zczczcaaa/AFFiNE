@@ -699,11 +699,6 @@ input PaginationInput {
   """returns the elements in the list that come after the specified cursor."""
   after: String
 
-  """
-  returns the elements in the list that come before the specified cursor.
-  """
-  before: String
-
   """returns the first n elements from the list."""
   first: Int = 10
 
