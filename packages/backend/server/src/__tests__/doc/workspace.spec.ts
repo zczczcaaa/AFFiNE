@@ -41,10 +41,7 @@ test.after.always(async () => {
   await m?.close();
 });
 
-/**
- * @deprecated `seq` would be removed
- */
-test('should have sequential update number', async t => {
+test('should have timestamp update', async t => {
   const doc = new YDoc();
   const text = doc.getText('content');
   const updates: Buffer[] = [];
@@ -59,7 +56,6 @@ test('should have sequential update number', async t => {
 
   await adapter.pushDocUpdates('2', '2', updates);
 
-  // [1,2,3]
   let records = await db.update.findMany({
     where: {
       workspaceId: '2',
@@ -67,27 +63,16 @@ test('should have sequential update number', async t => {
     },
   });
 
+  let firstTimestamp = records[0].createdAt.getTime();
   t.deepEqual(
-    records.map(({ seq }) => seq),
-    [1, 2, 3]
+    records.map(({ createdAt }) => createdAt.getTime()),
+    [firstTimestamp, firstTimestamp + 1, firstTimestamp + 2]
   );
 
   // merge
   await adapter.getDoc('2', '2');
 
-  // fake the seq num is about to overflow
-  await db.snapshot.update({
-    where: {
-      workspaceId_id: {
-        id: '2',
-        workspaceId: '2',
-      },
-    },
-    data: {
-      seq: 0x3ffffffe,
-    },
-  });
-
+  // change timestamp again
   await adapter.pushDocUpdates('2', '2', updates);
 
   records = await db.update.findMany({
@@ -97,12 +82,13 @@ test('should have sequential update number', async t => {
     },
   });
 
+  firstTimestamp = records[0].createdAt.getTime();
   t.deepEqual(
-    records.map(({ seq }) => seq),
-    [0x3ffffffe + 1, 0x3ffffffe + 2, 0x3ffffffe + 3]
+    records.map(({ createdAt }) => createdAt.getTime()),
+    [firstTimestamp, firstTimestamp + 1, firstTimestamp + 2]
   );
 
-  // push a new update with new seq num
+  // push a new update
   await adapter.pushDocUpdates('2', '2', updates.slice(0, 1));
 
   // let the manager ignore update with the new seq num
@@ -174,7 +160,6 @@ test('should be able to merge updates as snapshot', async t => {
         id: '1',
         workspaceId: '1',
         blob: Buffer.from(update),
-        seq: 1,
         createdAt: new Date(Date.now() + 1),
         createdBy: null,
       },
@@ -197,7 +182,6 @@ test('should be able to merge updates as snapshot', async t => {
       workspaceId: '1',
       id: '1',
       blob: appendUpdate,
-      seq: 2,
       createdAt: new Date(),
       createdBy: null,
     },

@@ -5,10 +5,7 @@ import type { Update } from '@prisma/client';
 import { BaseModel } from './base';
 import type { Doc, DocEditor } from './common';
 
-export interface DocRecord extends Doc {
-  // TODO: deprecated field, remove in the future
-  seq: number | null;
-}
+export interface DocRecord extends Doc {}
 
 export interface DocHistorySimple {
   timestamp: number;
@@ -53,7 +50,6 @@ export class DocModel extends BaseModel {
       blob: row.blob,
       timestamp: row.createdAt.getTime(),
       editorId: row.createdBy || undefined,
-      seq: row.seq,
     };
   }
 
@@ -64,7 +60,7 @@ export class DocModel extends BaseModel {
       blob: record.blob,
       createdAt: new Date(record.timestamp),
       createdBy: record.editorId || null,
-      seq: record.seq,
+      seq: null,
     };
   }
 
@@ -344,49 +340,21 @@ export class DocModel extends BaseModel {
   }
 
   /**
-   * @deprecated updates do not rely on seq number anymore
+   * Detect a doc exists or not, including updates
    */
-  async increaseSeq(workspaceId: string, docId: string, increment: number) {
-    const MAX_SEQ_NUM = 0x3fffffff; // u31
-    const { seq } = await this.db.snapshot.update({
-      select: {
-        seq: true,
-      },
+  async exists(workspaceId: string, docId: string) {
+    const count = await this.db.snapshot.count({
       where: {
-        workspaceId_id: {
-          workspaceId,
-          id: docId,
-        },
-      },
-      data: {
-        seq: {
-          increment,
-        },
+        workspaceId,
+        id: docId,
       },
     });
-
-    if (!seq) {
-      return increment;
+    if (count > 0) {
+      return true;
     }
 
-    // reset
-    if (seq >= MAX_SEQ_NUM) {
-      await this.db.snapshot.update({
-        select: {
-          seq: true,
-        },
-        where: {
-          workspaceId_id: {
-            workspaceId,
-            id: docId,
-          },
-        },
-        data: {
-          seq: 0,
-        },
-      });
-    }
-    return seq;
+    const updateCount = await this.getUpdateCount(workspaceId, docId);
+    return updateCount > 0;
   }
 
   /**

@@ -243,7 +243,7 @@ test('should be able to get last history record', async t => {
   );
 
   t.truthy(history);
-  t.is(history?.timestamp.getTime(), timestamp + 9);
+  t.is(history?.timestamp, timestamp + 9);
 });
 
 test('should be able to recover from history', async t => {

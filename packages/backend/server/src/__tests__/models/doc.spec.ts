@@ -52,14 +52,12 @@ test('should create a batch updates on a doc', async t => {
       blob: Buffer.from('blob1'),
       timestamp: Date.now(),
       editorId: user.id,
-      seq: 1,
     },
     {
       spaceId: workspace.id,
       docId,
       blob: Buffer.from('blob2'),
       timestamp: Date.now() + 1000,
-      seq: 2,
     },
   ]);
   t.is(updates.count, 2);
@@ -75,7 +73,6 @@ test('should create error when createdAt timestamp is not unique', async t => {
       blob: Buffer.from('blob1'),
       timestamp,
       editorId: user.id,
-      seq: 1,
     },
   ]);
   await t.throwsAsync(
@@ -86,7 +83,6 @@ test('should create error when createdAt timestamp is not unique', async t => {
         blob: Buffer.from('blob2'),
         timestamp,
         editorId: user.id,
-        seq: 2,
       },
     ]),
     {
@@ -105,7 +101,6 @@ test('should find updates by spaceId and docId', async t => {
       blob: Buffer.from('blob1'),
       timestamp: Date.now(),
       editorId: user.id,
-      seq: 1,
     },
     {
       spaceId: workspace.id,
@@ -113,7 +108,6 @@ test('should find updates by spaceId and docId', async t => {
       blob: Buffer.from('blob2'),
       timestamp: Date.now() + 1000,
       editorId: user.id,
-      seq: 2,
     },
   ]);
   const foundUpdates = await t.context.doc.findUpdates(workspace.id, docId);
@@ -130,7 +124,6 @@ test('should find updates by spaceId and docId', async t => {
       blob: Buffer.from('blob3'),
       timestamp: Date.now(),
       editorId: user.id,
-      seq: 3,
     },
   ]);
   count = await t.context.doc.getUpdateCount(workspace.id, docId);
@@ -147,14 +140,12 @@ test('should delete updates by spaceId, docId, and createdAts', async t => {
       blob: Buffer.from('blob1'),
       timestamp: timestamps[0],
       editorId: user.id,
-      seq: 1,
     },
     {
       spaceId: workspace.id,
       docId,
       blob: Buffer.from('blob2'),
       timestamp: timestamps[1],
-      seq: 2,
     },
   ]);
   let count = await t.context.doc.deleteUpdates(
@@ -181,7 +172,6 @@ test('should get global update count', async t => {
       blob: Buffer.from('blob1'),
       timestamp: Date.now(),
       editorId: user.id,
-      seq: 1,
     },
     {
       spaceId: workspace.id,
@@ -189,7 +179,6 @@ test('should get global update count', async t => {
       blob: Buffer.from('blob2'),
       timestamp: Date.now() + 1000,
       editorId: user.id,
-      seq: 2,
     },
     {
       spaceId: workspace.id,
@@ -197,7 +186,6 @@ test('should get global update count', async t => {
       blob: Buffer.from('blob2'),
       timestamp: Date.now() + 1000,
       editorId: user.id,
-      seq: 2,
     },
   ]);
   const count = await t.context.doc.getGlobalUpdateCount();
@@ -449,7 +437,6 @@ test('should delete a doc, including histories, snapshots and updates', async t 
       blob: Buffer.from('blob2'),
       timestamp: Date.now(),
       editorId: user.id,
-      seq: 1,
     },
   ]);
   await t.context.doc.delete(workspace.id, docId);
@@ -490,7 +477,6 @@ test('should delete all docs in a workspace', async t => {
       blob: Buffer.from('blob2'),
       timestamp: Date.now(),
       editorId: user.id,
-      seq: 1,
     },
   ]);
   await t.context.doc.upsert(snapshot2);
@@ -502,7 +488,6 @@ test('should delete all docs in a workspace', async t => {
       blob: Buffer.from('blob2'),
       timestamp: Date.now(),
       editorId: user.id,
-      seq: 1,
     },
   ]);
   const deletedCount = await t.context.doc.deleteAllByWorkspaceId(workspace.id);
@@ -555,7 +540,6 @@ test('should find all docs timestamps in a workspace', async t => {
       blob: Buffer.from('blob2'),
       timestamp: timestamp3,
       editorId: user.id,
-      seq: 1,
     },
   ]);
   await t.context.doc.upsert(snapshot2);
@@ -568,22 +552,30 @@ test('should find all docs timestamps in a workspace', async t => {
   });
 });
 
-test('should increase doc seq', async t => {
+test('should detect doc exists or not', async t => {
   const docId = randomUUID();
+  t.false(await t.context.doc.exists(workspace.id, docId));
   const snapshot = {
     spaceId: workspace.id,
-    docId,
+    docId: docId,
     blob: Buffer.from('blob1'),
     timestamp: Date.now(),
     editorId: user.id,
   };
   await t.context.doc.upsert(snapshot);
-  const seq1 = await t.context.doc.increaseSeq(workspace.id, docId, 88);
-  t.is(seq1, 88);
-  const seq2 = await t.context.doc.increaseSeq(workspace.id, docId, 2);
-  t.is(seq2, 90);
-  // hit max seq, then reset to zero
-  await t.context.doc.increaseSeq(workspace.id, docId, 0x3fffffff);
-  const seq3 = await t.context.doc.increaseSeq(workspace.id, docId, 1);
-  t.is(seq3, 1);
+  t.true(await t.context.doc.exists(workspace.id, docId));
+});
+
+test('should detect doc exists on only updates exists', async t => {
+  const docId = randomUUID();
+  await t.context.doc.createUpdates([
+    {
+      spaceId: workspace.id,
+      docId: docId,
+      blob: Buffer.from('blob2'),
+      timestamp: Date.now(),
+      editorId: user.id,
+    },
+  ]);
+  t.true(await t.context.doc.exists(workspace.id, docId));
 });
