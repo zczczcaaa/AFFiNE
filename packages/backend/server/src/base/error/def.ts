@@ -352,7 +352,7 @@ export const USER_FRIENDLY_ERRORS = {
 
   // Workspace & Userspace & Doc & Sync errors
   workspace_permission_not_found: {
-    type: 'internal_server_error',
+    type: 'resource_not_found',
     args: { spaceId: 'string' },
     message: ({ spaceId }) => `Space ${spaceId} permission not found.`,
   },

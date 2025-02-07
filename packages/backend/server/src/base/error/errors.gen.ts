@@ -197,7 +197,7 @@ class WorkspacePermissionNotFoundDataType {
 
 export class WorkspacePermissionNotFound extends UserFriendlyError {
   constructor(args: WorkspacePermissionNotFoundDataType, message?: string | ((args: WorkspacePermissionNotFoundDataType) => string)) {
-    super('internal_server_error', 'workspace_permission_not_found', message, args);
+    super('resource_not_found', 'workspace_permission_not_found', message, args);
   }
 }
 @ObjectType()

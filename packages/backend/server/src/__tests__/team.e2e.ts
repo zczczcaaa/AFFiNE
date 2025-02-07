@@ -1025,3 +1025,33 @@ test('should be able to grant and revoke doc user role', async t => {
     });
   }
 });
+
+test('update page default role should throw error if the space does not exist', async t => {
+  const { app } = t.context;
+  const { admin } = await init(app, 5);
+  const pageId = nanoid();
+  const nonExistWorkspaceId = 'non-exist-workspace';
+  const res = await request(app.getHttpServer())
+    .post('/graphql')
+    .auth(admin.token.token, { type: 'bearer' })
+    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
+    .send({
+      query: `
+          mutation {
+            updatePageDefaultRole(input: {
+              workspaceId: "${nonExistWorkspaceId}",
+              docId: "${pageId}",
+              role: Manager,
+            })
+          }
+        `,
+    })
+    .expect(200);
+  t.like(res.body, {
+    errors: [
+      {
+        message: `You do not have permission to access doc ${pageId} under Space ${nonExistWorkspaceId}.`,
+      },
+    ],
+  });
+});
