@@ -322,7 +322,6 @@ export async function enterPlaygroundRoom(
   page.on('console', message => {
     if (
       [
-        '',
         // React devtools:
         '%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold',
         // Vite:
@@ -334,7 +333,7 @@ export async function enterPlaygroundRoom(
         'Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.',
         // Figma embed:
         'Running frontend commit',
-      ].includes(message.text())
+      ].some(text => message.text().startsWith(text))
     ) {
       return;
     }

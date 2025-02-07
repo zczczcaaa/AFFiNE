@@ -30,19 +30,11 @@ const insertInputText = async (page: Page, text: string) => {
   expect(actual).toBe(text);
 };
 
-const keyboardDownAndSelect = async (page: Page, label: string) => {
-  await page.keyboard.press('ArrowDown');
-  const selectedEl = page.locator(
-    '[cmdk-item][data-selected="true"] [data-testid="cmdk-label"]'
-  );
-  if (
-    !(await selectedEl.isVisible()) ||
-    (await selectedEl.innerText()) !== label
-  ) {
-    await keyboardDownAndSelect(page, label);
-  } else {
-    await page.keyboard.press('Enter');
-  }
+const selectItem = async (page: Page, label: string) => {
+  const selectedEl = page
+    .locator('[cmdk-item] [data-testid="cmdk-label"]')
+    .filter({ hasText: label });
+  await selectedEl.click();
 };
 
 const commandsIsVisible = async (page: Page, label: string) => {
@@ -257,7 +249,7 @@ test('can use keyboard down to select goto setting', async ({ page }) => {
   await openHomePage(page);
   await waitForEditorLoad(page);
   await openQuickSearchByShortcut(page);
-  await keyboardDownAndSelect(page, 'Go to Settings');
+  await selectItem(page, 'Go to Settings');
 
   await expect(page.getByTestId('setting-modal')).toBeVisible();
 });
@@ -351,7 +343,7 @@ test('can use cmdk to export png', async ({ page }) => {
   await openQuickSearchByShortcut(page);
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    keyboardDownAndSelect(page, 'Export to PNG'),
+    selectItem(page, 'Export to PNG'),
   ]);
   expect(download.suggestedFilename()).toBe('this is a new page to export.png');
 });
@@ -363,7 +355,7 @@ test('can use cmdk to delete page and restore it', async ({ page }) => {
   await getBlockSuiteEditorTitle(page).click();
   await getBlockSuiteEditorTitle(page).fill('this is a new page to delete');
   await openQuickSearchByShortcut(page);
-  await keyboardDownAndSelect(page, 'Move to trash');
+  await selectItem(page, 'Move to trash');
   await page.getByTestId('confirm-modal-confirm').click();
   const restoreButton = page.getByTestId('page-restore-button');
   await expect(restoreButton).toBeVisible();
@@ -371,7 +363,7 @@ test('can use cmdk to delete page and restore it', async ({ page }) => {
   await openQuickSearchByShortcut(page);
   expect(await commandsIsVisible(page, 'Move to trash')).toBe(false);
   expect(await commandsIsVisible(page, 'Restore from trash')).toBe(true);
-  await keyboardDownAndSelect(page, 'Restore from trash');
+  await selectItem(page, 'Restore from trash');
   await expect(restoreButton).not.toBeVisible();
 });
 

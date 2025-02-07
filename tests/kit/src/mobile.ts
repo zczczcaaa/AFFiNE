@@ -20,5 +20,9 @@ export const test = baseTest.extend<{
     });
     await page.goto('/');
     await use(page);
+    console.log(
+      'Browser User Agent:',
+      await page.evaluate(() => navigator.userAgent)
+    );
   },
 });

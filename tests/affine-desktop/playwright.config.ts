@@ -23,7 +23,7 @@ const config: PlaywrightTestConfig = {
   outputDir: testResultDir,
   use: {
     viewport: { width: 1440, height: 800 },
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
   },
 };
 
