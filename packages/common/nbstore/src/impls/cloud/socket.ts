@@ -158,7 +158,7 @@ class SocketManager {
   constructor(endpoint: string) {
     this.socketIOManager = new SocketIOManager(endpoint, {
       autoConnect: false,
-      transports: ['websocket'],
+      transports: [BUILD_CONFIG.isIOS ? 'polling' : 'websocket'],
       secure: new URL(endpoint).protocol === 'https:',
       // we will handle reconnection by ourselves
       reconnection: false,
