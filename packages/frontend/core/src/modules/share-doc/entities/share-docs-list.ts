@@ -18,8 +18,7 @@ import type { GlobalCache } from '../../storage';
 import type { WorkspaceService } from '../../workspace';
 import type { ShareDocsStore } from '../stores/share-docs';
 
-type ShareDocListType =
-  GetWorkspacePublicPagesQuery['workspace']['publicPages'];
+type ShareDocListType = GetWorkspacePublicPagesQuery['workspace']['publicDocs'];
 
 export const logger = new DebugLogger('affine:share-doc-list');
 

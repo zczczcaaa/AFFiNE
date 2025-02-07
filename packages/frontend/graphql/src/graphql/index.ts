@@ -752,7 +752,7 @@ export const getWorkspacePublicPageByIdQuery = {
   query: `
 query getWorkspacePublicPageById($workspaceId: String!, $pageId: String!) {
   workspace(id: $workspaceId) {
-    publicPage(pageId: $pageId) {
+    publicDoc(docId: $pageId) {
       id
       mode
     }
@@ -768,7 +768,7 @@ export const getWorkspacePublicPagesQuery = {
   query: `
 query getWorkspacePublicPages($workspaceId: String!) {
   workspace(id: $workspaceId) {
-    publicPages {
+    publicDocs {
       id
       mode
     }
@@ -937,11 +937,11 @@ query prices {
 export const publishPageMutation = {
   id: 'publishPageMutation' as const,
   operationName: 'publishPage',
-  definitionName: 'publishPage',
+  definitionName: 'publishDoc',
   containsFile: false,
   query: `
-mutation publishPage($workspaceId: String!, $pageId: String!, $mode: PublicPageMode = Page) {
-  publishPage(workspaceId: $workspaceId, pageId: $pageId, mode: $mode) {
+mutation publishPage($workspaceId: String!, $pageId: String!, $mode: PublicDocMode = Page) {
+  publishDoc(workspaceId: $workspaceId, docId: $pageId, mode: $mode) {
     id
     mode
   }
@@ -1033,11 +1033,11 @@ mutation revokeMemberPermission($workspaceId: String!, $userId: String!) {
 export const revokePublicPageMutation = {
   id: 'revokePublicPageMutation' as const,
   operationName: 'revokePublicPage',
-  definitionName: 'revokePublicPage',
+  definitionName: 'revokePublicDoc',
   containsFile: false,
   query: `
 mutation revokePublicPage($workspaceId: String!, $pageId: String!) {
-  revokePublicPage(workspaceId: $workspaceId, pageId: $pageId) {
+  revokePublicDoc(workspaceId: $workspaceId, docId: $pageId) {
     id
     mode
     public

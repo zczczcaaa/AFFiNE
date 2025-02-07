@@ -1,4 +1,4 @@
-import type { PublicPageMode } from '@affine/graphql';
+import type { PublicDocMode } from '@affine/graphql';
 import {
   getWorkspacePublicPageByIdQuery,
   publishPageMutation,
@@ -31,13 +31,13 @@ export class ShareStore extends Store {
         signal,
       },
     });
-    return data.workspace.publicPage ?? undefined;
+    return data.workspace.publicDoc ?? undefined;
   }
 
   async enableSharePage(
     workspaceId: string,
     pageId: string,
-    docMode?: PublicPageMode,
+    docMode?: PublicDocMode,
     signal?: AbortSignal
   ) {
     if (!this.workspaceServerService.server) {

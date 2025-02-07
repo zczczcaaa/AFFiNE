@@ -337,15 +337,15 @@ export class BlobNotFound extends UserFriendlyError {
   }
 }
 
-export class ExpectToPublishPage extends UserFriendlyError {
+export class ExpectToPublishDoc extends UserFriendlyError {
   constructor(message?: string) {
-    super('invalid_input', 'expect_to_publish_page', message);
+    super('invalid_input', 'expect_to_publish_doc', message);
   }
 }
 
-export class ExpectToRevokePublicPage extends UserFriendlyError {
+export class ExpectToRevokePublicDoc extends UserFriendlyError {
   constructor(message?: string) {
-    super('invalid_input', 'expect_to_revoke_public_page', message);
+    super('invalid_input', 'expect_to_revoke_public_doc', message);
   }
 }
 @ObjectType()
@@ -382,9 +382,9 @@ export class ExpectToUpdateDocUserRole extends UserFriendlyError {
   }
 }
 
-export class PageIsNotPublic extends UserFriendlyError {
+export class DocIsNotPublic extends UserFriendlyError {
   constructor(message?: string) {
-    super('bad_request', 'page_is_not_public', message);
+    super('bad_request', 'doc_is_not_public', message);
   }
 }
 
@@ -406,15 +406,15 @@ export class ActionForbiddenOnNonTeamWorkspace extends UserFriendlyError {
   }
 }
 
-export class PageDefaultRoleCanNotBeOwner extends UserFriendlyError {
+export class DocDefaultRoleCanNotBeOwner extends UserFriendlyError {
   constructor(message?: string) {
-    super('invalid_input', 'page_default_role_can_not_be_owner', message);
+    super('invalid_input', 'doc_default_role_can_not_be_owner', message);
   }
 }
 
-export class CanNotBatchGrantPageOwnerPermissions extends UserFriendlyError {
+export class CanNotBatchGrantDocOwnerPermissions extends UserFriendlyError {
   constructor(message?: string) {
-    super('invalid_input', 'can_not_batch_grant_page_owner_permissions', message);
+    super('invalid_input', 'can_not_batch_grant_doc_owner_permissions', message);
   }
 }
 @ObjectType()
@@ -764,17 +764,17 @@ export enum ErrorNames {
   INVALID_HISTORY_TIMESTAMP,
   DOC_HISTORY_NOT_FOUND,
   BLOB_NOT_FOUND,
-  EXPECT_TO_PUBLISH_PAGE,
-  EXPECT_TO_REVOKE_PUBLIC_PAGE,
+  EXPECT_TO_PUBLISH_DOC,
+  EXPECT_TO_REVOKE_PUBLIC_DOC,
   EXPECT_TO_GRANT_DOC_USER_ROLES,
   EXPECT_TO_REVOKE_DOC_USER_ROLES,
   EXPECT_TO_UPDATE_DOC_USER_ROLE,
-  PAGE_IS_NOT_PUBLIC,
+  DOC_IS_NOT_PUBLIC,
   FAILED_TO_SAVE_UPDATES,
   FAILED_TO_UPSERT_SNAPSHOT,
   ACTION_FORBIDDEN_ON_NON_TEAM_WORKSPACE,
-  PAGE_DEFAULT_ROLE_CAN_NOT_BE_OWNER,
-  CAN_NOT_BATCH_GRANT_PAGE_OWNER_PERMISSIONS,
+  DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER,
+  CAN_NOT_BATCH_GRANT_DOC_OWNER_PERMISSIONS,
   UNSUPPORTED_SUBSCRIPTION_PLAN,
   FAILED_TO_CHECKOUT,
   INVALID_CHECKOUT_PARAMETERS,

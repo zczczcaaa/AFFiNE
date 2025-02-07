@@ -13,7 +13,7 @@ import {
 } from '../../base';
 import { CurrentUser, Public } from '../auth';
 import { PgWorkspaceDocStorageAdapter } from '../doc';
-import { PermissionService, PublicPageMode } from '../permission';
+import { PermissionService, PublicDocMode } from '../permission';
 import { WorkspaceBlobStorage } from '../storage';
 import { DocID } from '../utils/doc';
 
@@ -109,16 +109,16 @@ export class WorkspacesController {
 
     if (!docId.isWorkspace) {
       // fetch the publish page mode for publish page
-      const publishPage = await this.prisma.workspacePage.findUnique({
+      const publishPage = await this.prisma.workspaceDoc.findUnique({
         where: {
-          workspaceId_pageId: {
+          workspaceId_docId: {
             workspaceId: docId.workspace,
-            pageId: docId.guid,
+            docId: docId.guid,
           },
         },
       });
       const publishPageMode =
-        publishPage?.mode === PublicPageMode.Edgeless ? 'edgeless' : 'page';
+        publishPage?.mode === PublicDocMode.Edgeless ? 'edgeless' : 'page';
 
       res.setHeader('publish-mode', publishPageMode);
     }

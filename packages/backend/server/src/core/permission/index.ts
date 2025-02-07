@@ -16,7 +16,7 @@ export {
   fixupDocRole,
   mapDocRoleToPermissions,
   mapWorkspaceRoleToPermissions,
-  PublicPageMode,
+  PublicDocMode,
   WORKSPACE_ACTIONS,
   type WorkspaceActionPermissions,
   WorkspaceRole,

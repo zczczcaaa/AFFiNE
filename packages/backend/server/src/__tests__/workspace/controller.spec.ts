@@ -41,7 +41,7 @@ test.before(async t => {
   t.context.storage = app.get(WorkspaceBlobStorage);
   t.context.workspace = app.get(PgWorkspaceDocStorageAdapter);
 
-  await db.workspacePage.create({
+  await db.workspaceDoc.create({
     data: {
       workspace: {
         create: {
@@ -49,12 +49,12 @@ test.before(async t => {
           public: true,
         },
       },
-      pageId: 'private',
+      docId: 'private',
       public: false,
     },
   });
 
-  await db.workspacePage.create({
+  await db.workspaceDoc.create({
     data: {
       workspace: {
         create: {
@@ -62,12 +62,12 @@ test.before(async t => {
           public: false,
         },
       },
-      pageId: 'public',
+      docId: 'public',
       public: true,
     },
   });
 
-  await db.workspacePage.create({
+  await db.workspaceDoc.create({
     data: {
       workspace: {
         create: {
@@ -75,7 +75,7 @@ test.before(async t => {
           public: false,
         },
       },
-      pageId: 'private',
+      docId: 'private',
       public: false,
     },
   });
@@ -261,8 +261,8 @@ test('should be able to change page publish mode', async t => {
   t.is(res.status, HttpStatus.OK);
   t.is(res.get('publish-mode'), 'page');
 
-  await db.workspacePage.update({
-    where: { workspaceId_pageId: { workspaceId: 'private', pageId: 'public' } },
+  await db.workspaceDoc.update({
+    where: { workspaceId_docId: { workspaceId: 'private', docId: 'public' } },
     data: { mode: 1 },
   });
 

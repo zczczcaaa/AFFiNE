@@ -10,8 +10,8 @@ import {
   createWorkspace,
   getWorkspacePublicPages,
   inviteUser,
-  publishPage,
-  revokePublicPage,
+  publishDoc,
+  revokePublicDoc,
   signUp,
   TestingApp,
   updateWorkspace,
@@ -83,8 +83,8 @@ test('should share a page', async t => {
 
   const workspace = await createWorkspace(app, u1.token.token);
 
-  const share = await publishPage(app, u1.token.token, workspace.id, 'page1');
-  t.is(share.id, 'page1', 'failed to share page');
+  const share = await publishDoc(app, u1.token.token, workspace.id, 'doc1');
+  t.is(share.id, 'doc1', 'failed to share doc');
   const pages = await getWorkspacePublicPages(
     app,
     u1.token.token,
@@ -93,8 +93,8 @@ test('should share a page', async t => {
   t.is(pages.length, 1, 'failed to get shared pages');
   t.deepEqual(
     pages[0],
-    { id: 'page1', mode: 'Page' },
-    'failed to get shared page: page1'
+    { id: 'doc1', mode: 'Page' },
+    'failed to get shared doc: doc1'
   );
 
   const resp1 = await request(app.getHttpServer())
@@ -107,53 +107,48 @@ test('should share a page', async t => {
   t.is(resp2.statusCode, 200, 'failed to get root doc with public pages');
 
   const resp3 = await request(app.getHttpServer())
-    .get(`/api/workspaces/${workspace.id}/docs/page1`)
+    .get(`/api/workspaces/${workspace.id}/docs/doc1`)
     .auth(u1.token.token, { type: 'bearer' });
   // 404 because we don't put the page doc to server
   t.is(resp3.statusCode, 404, 'failed to get shared doc with u1 token');
   const resp4 = await request(app.getHttpServer()).get(
-    `/api/workspaces/${workspace.id}/docs/page1`
+    `/api/workspaces/${workspace.id}/docs/doc1`
   );
   // 404 because we don't put the page doc to server
   t.is(resp4.statusCode, 404, 'should not get shared doc without token');
 
-  const msg1 = await publishPage(app, u2.token.token, 'not_exists_ws', 'page2');
+  const msg1 = await publishDoc(app, u2.token.token, 'not_exists_ws', 'doc2');
   t.is(
     msg1,
-    'You do not have permission to access doc page2 under Space not_exists_ws.',
-    'unauthorized user can share page'
+    'You do not have permission to access doc doc2 under Space not_exists_ws.',
+    'unauthorized user can share doc'
   );
-  const msg2 = await revokePublicPage(
+  const msg2 = await revokePublicDoc(
     app,
     u2.token.token,
     'not_exists_ws',
-    'page2'
+    'doc2'
   );
   t.is(
     msg2,
-    'You do not have permission to access doc page2 under Space not_exists_ws.',
-    'unauthorized user can share page'
+    'You do not have permission to access doc doc2 under Space not_exists_ws.',
+    'unauthorized user can share doc'
   );
-  const revoke = await revokePublicPage(
+  const revoke = await revokePublicDoc(
     app,
     u1.token.token,
     workspace.id,
-    'page1'
+    'doc1'
   );
-  t.false(revoke.public, 'failed to revoke page');
+  t.false(revoke.public, 'failed to revoke doc');
   const pages2 = await getWorkspacePublicPages(
     app,
     u1.token.token,
     workspace.id
   );
   t.is(pages2.length, 0, 'failed to get shared pages');
-  const msg4 = await revokePublicPage(
-    app,
-    u1.token.token,
-    workspace.id,
-    'page3'
-  );
-  t.is(msg4, 'Page is not public');
+  const msg4 = await revokePublicDoc(app, u1.token.token, workspace.id, 'doc3');
+  t.is(msg4, 'Doc is not public');
 
   const pages3 = await getWorkspacePublicPages(
     app,

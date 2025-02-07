@@ -25,16 +25,16 @@ model User {
   features              UserFeature[]
   userStripeCustomer    UserStripeCustomer?
   workspacePermissions  WorkspaceUserPermission[]
-  pagePermissions       WorkspacePageUserPermission[]
+  docPermissions        WorkspaceDocUserPermission[]
   connectedAccounts     ConnectedAccount[]
   sessions              UserSession[]
   aiSessions            AiSession[]
   updatedRuntimeConfigs RuntimeConfig[]
   userSnapshots         UserSnapshot[]
-  createdSnapshot       Snapshot[]                    @relation("createdSnapshot")
-  updatedSnapshot       Snapshot[]                    @relation("updatedSnapshot")
-  createdUpdate         Update[]                      @relation("createdUpdate")
-  createdHistory        SnapshotHistory[]             @relation("createdHistory")
+  createdSnapshot       Snapshot[]                   @relation("createdSnapshot")
+  updatedSnapshot       Snapshot[]                   @relation("updatedSnapshot")
+  createdUpdate         Update[]                     @relation("createdUpdate")
+  createdHistory        SnapshotHistory[]            @relation("createdHistory")
 
   @@index([email])
   @@map("users")
@@ -102,11 +102,11 @@ model Workspace {
   enableAi         Boolean  @default(true) @map("enable_ai")
   enableUrlPreview Boolean  @default(false) @map("enable_url_preview")
 
-  features        WorkspaceFeature[]
-  pages           WorkspacePage[]
-  permissions     WorkspaceUserPermission[]
-  pagePermissions WorkspacePageUserPermission[]
-  blobs           Blob[]
+  features       WorkspaceFeature[]
+  docs           WorkspaceDoc[]
+  permissions    WorkspaceUserPermission[]
+  docPermissions WorkspaceDocUserPermission[]
+  blobs          Blob[]
 
   @@map("workspaces")
 }
@@ -116,18 +116,18 @@ model Workspace {
 //   We won't make sure every page has a corresponding record in this table.
 //   Only the ones that have ever changed will have records here,
 //   and for others we will make sure it's has a default value return in our business logic.
-model WorkspacePage {
-  workspaceId   String  @map("workspace_id") @db.VarChar
-  pageId        String  @map("page_id") @db.VarChar
-  public        Boolean @default(false)
+model WorkspaceDoc {
+  workspaceId String  @map("workspace_id") @db.VarChar
+  docId       String  @map("page_id") @db.VarChar
+  public      Boolean @default(false)
   // Workspace user's default role in this page, default is `Manager`
-  defaultRole   Int     @default(30) @db.SmallInt
+  defaultRole Int     @default(30) @db.SmallInt
   // Page/Edgeless
-  mode          Int     @default(0) @db.SmallInt
+  mode        Int     @default(0) @db.SmallInt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-  @@id([workspaceId, pageId])
+  @@id([workspaceId, docId])
   @@map("workspace_pages")
 }
 
@@ -162,9 +162,9 @@ model WorkspaceUserPermission {
   @@map("workspace_user_permissions")
 }
 
-model WorkspacePageUserPermission {
+model WorkspaceDocUserPermission {
   workspaceId String   @map("workspace_id") @db.VarChar
-  pageId      String   @map("page_id") @db.VarChar
+  docId       String   @map("page_id") @db.VarChar
   userId      String   @map("user_id") @db.VarChar
   // External/Reader/Editor/Manager/Owner
   type        Int      @db.SmallInt
@@ -173,7 +173,7 @@ model WorkspacePageUserPermission {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-  @@id([workspaceId, pageId, userId])
+  @@id([workspaceId, docId, userId])
   @@map("workspace_page_user_permissions")
 }
 

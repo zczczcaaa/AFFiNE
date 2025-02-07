@@ -6,7 +6,7 @@ import { ServerService } from '@affine/core/modules/cloud';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { ShareInfoService } from '@affine/core/modules/share-doc';
-import { PublicPageMode } from '@affine/graphql';
+import { PublicDocMode } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
@@ -92,7 +92,7 @@ export const AFFiNESharePage = (props: ShareMenuProps) => {
     }
     try {
       // TODO(@JimmFly): remove mode when we have a better way to handle it
-      await shareInfoService.shareInfo.enableShare(PublicPageMode.Page);
+      await shareInfoService.shareInfo.enableShare(PublicDocMode.Page);
       track.$.sharePanel.$.createShareLink();
       notify.success({
         title:

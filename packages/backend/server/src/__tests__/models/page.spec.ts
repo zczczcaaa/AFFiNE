@@ -49,7 +49,7 @@ test.after(async t => {
 test('should create page with default mode and public false', async t => {
   const page = await t.context.page.upsert(workspace.id, 'page1');
   t.is(page.workspaceId, workspace.id);
-  t.is(page.pageId, 'page1');
+  t.is(page.docId, 'page1');
   t.is(page.mode, PublicPageMode.Page);
   t.is(page.public, false);
 });
@@ -110,7 +110,7 @@ test('should get public pages of a workspace', async t => {
   await t.context.page.upsert(workspace.id, 'page3');
   const pages = await t.context.page.findPublics(workspace.id);
   t.is(pages.length, 2);
-  t.deepEqual(pages.map(p => p.pageId).sort(), ['page1', 'page2']);
+  t.deepEqual(pages.map(p => p.docId).sort(), ['page1', 'page2']);
 });
 
 test('should grant a member to access a page', async t => {

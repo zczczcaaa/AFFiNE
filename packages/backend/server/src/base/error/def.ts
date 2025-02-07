@@ -428,13 +428,13 @@ export const USER_FRIENDLY_ERRORS = {
     message: ({ spaceId, blobId }) =>
       `Blob ${blobId} not found in Space ${spaceId}.`,
   },
-  expect_to_publish_page: {
+  expect_to_publish_doc: {
     type: 'invalid_input',
-    message: 'Expected to publish a page, not a Space.',
+    message: 'Expected to publish a doc, not a Space.',
   },
-  expect_to_revoke_public_page: {
+  expect_to_revoke_public_doc: {
     type: 'invalid_input',
-    message: 'Expected to revoke a public page, not a Space.',
+    message: 'Expected to revoke a public doc, not a Space.',
   },
   expect_to_grant_doc_user_roles: {
     type: 'invalid_input',
@@ -454,9 +454,9 @@ export const USER_FRIENDLY_ERRORS = {
     message: ({ spaceId, docId }) =>
       `Expect update roles on doc ${docId} under Space ${spaceId}, not a Space.`,
   },
-  page_is_not_public: {
+  doc_is_not_public: {
     type: 'bad_request',
-    message: 'Page is not public.',
+    message: 'Doc is not public.',
   },
   failed_to_save_updates: {
     type: 'internal_server_error',
@@ -470,13 +470,13 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'action_forbidden',
     message: 'A Team workspace is required to perform this action.',
   },
-  page_default_role_can_not_be_owner: {
+  doc_default_role_can_not_be_owner: {
     type: 'invalid_input',
-    message: 'Page default role can not be owner.',
+    message: 'Doc default role can not be owner.',
   },
-  can_not_batch_grant_page_owner_permissions: {
+  can_not_batch_grant_doc_owner_permissions: {
     type: 'invalid_input',
-    message: 'Can not batch grant page owner permissions.',
+    message: 'Can not batch grant doc owner permissions.',
   },
 
   // Subscription Errors

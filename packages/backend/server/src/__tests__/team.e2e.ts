@@ -23,6 +23,7 @@ import {
   createInviteLink,
   createTestingApp,
   createWorkspace,
+  docGrantedUsersList,
   getInviteInfo,
   getInviteLink,
   getWorkspace,
@@ -31,7 +32,6 @@ import {
   inviteUser,
   inviteUsers,
   leaveWorkspace,
-  pageGrantedUsersList,
   revokeDocUserRoles,
   revokeInviteLink,
   revokeMember,
@@ -39,7 +39,7 @@ import {
   signUp,
   sleep,
   TestingApp,
-  updatePageDefaultRole,
+  updateDocDefaultRole,
   UserAuthedType,
 } from './utils';
 
@@ -817,13 +817,13 @@ test('should be able to grant and revoke users role in page', async t => {
     read,
     external,
   } = await init(app, 5);
-  const pageId = nanoid();
+  const docId = nanoid();
 
   const res = await grantDocUserRoles(
     app,
     admin.token.token,
     ws.id,
-    pageId,
+    docId,
     [read.id, write.id],
     DocRole.Manager
   );
@@ -840,7 +840,7 @@ test('should be able to grant and revoke users role in page', async t => {
       app,
       admin.token.token,
       ws.id,
-      pageId,
+      docId,
       [read.id],
       DocRole.Reader
     );
@@ -849,7 +849,7 @@ test('should be able to grant and revoke users role in page', async t => {
       app,
       read.token.token,
       ws.id,
-      pageId,
+      docId,
       [external.id],
       DocRole.Editor
     );
@@ -859,15 +859,15 @@ test('should be able to grant and revoke users role in page', async t => {
       },
     });
 
-    const pageUsersList = await pageGrantedUsersList(
+    const docUsersList = await docGrantedUsersList(
       app,
       admin.token.token,
       ws.id,
-      pageId
+      docId
     );
-    t.is(pageUsersList.data.workspace.pageGrantedUsersList.totalCount, 3);
+    t.is(docUsersList.data.workspace.doc.grantedUsersList.totalCount, 3);
     const externalRole =
-      pageUsersList.data.workspace.pageGrantedUsersList.edges.find(
+      docUsersList.data.workspace.doc.grantedUsersList.edges.find(
         (edge: any) => edge.node.user.id === external.id
       )?.node.role;
     t.is(externalRole, DocRole[DocRole.Editor]);
@@ -877,18 +877,18 @@ test('should be able to grant and revoke users role in page', async t => {
 test('should be able to change the default role in page', async t => {
   const { app } = t.context;
   const { teamWorkspace: ws, admin } = await init(app, 5);
-  const pageId = nanoid();
-  const res = await updatePageDefaultRole(
+  const docId = nanoid();
+  const res = await updateDocDefaultRole(
     app,
     admin.token.token,
     ws.id,
-    pageId,
+    docId,
     DocRole.Reader
   );
 
   t.deepEqual(res.body, {
     data: {
-      updatePageDefaultRole: true,
+      updateDocDefaultRole: true,
     },
   });
 });
@@ -902,53 +902,53 @@ test('default page role should be able to override the workspace role', async t 
     external,
   } = await init(app, 5);
 
-  const pageId = nanoid();
+  const docId = nanoid();
 
-  const res = await updatePageDefaultRole(
+  const res = await updateDocDefaultRole(
     app,
     admin.token.token,
     workspace.id,
-    pageId,
+    docId,
     DocRole.Manager
   );
 
   t.deepEqual(res.body, {
     data: {
-      updatePageDefaultRole: true,
+      updateDocDefaultRole: true,
     },
   });
 
   // reader can manage the page if the page default role is Manager
   {
-    const readerRes = await updatePageDefaultRole(
+    const readerRes = await updateDocDefaultRole(
       app,
       read.token.token,
       workspace.id,
-      pageId,
+      docId,
       DocRole.Manager
     );
 
     t.deepEqual(readerRes.body, {
       data: {
-        updatePageDefaultRole: true,
+        updateDocDefaultRole: true,
       },
     });
   }
 
   // external can't manage the page even if the page default role is Manager
   {
-    const externalRes = await updatePageDefaultRole(
+    const externalRes = await updateDocDefaultRole(
       app,
       external.token.token,
       workspace.id,
-      pageId,
+      docId,
       DocRole.Manager
     );
 
     t.like(externalRes.body, {
       errors: [
         {
-          message: `You do not have permission to access doc ${pageId} under Space ${workspace.id}.`,
+          message: `You do not have permission to access doc ${docId} under Space ${workspace.id}.`,
         },
       ],
     });
@@ -958,13 +958,13 @@ test('default page role should be able to override the workspace role', async t 
 test('should be able to grant and revoke doc user role', async t => {
   const { app } = t.context;
   const { teamWorkspace: ws, admin, read, external } = await init(app, 5);
-  const pageId = nanoid();
+  const docId = nanoid();
 
   const res = await grantDocUserRoles(
     app,
     admin.token.token,
     ws.id,
-    pageId,
+    docId,
     [external.id],
     DocRole.Manager
   );
@@ -981,7 +981,7 @@ test('should be able to grant and revoke doc user role', async t => {
       app,
       external.token.token,
       ws.id,
-      pageId,
+      docId,
       [read.id],
       DocRole.Manager
     );
@@ -999,7 +999,7 @@ test('should be able to grant and revoke doc user role', async t => {
       app,
       admin.token.token,
       ws.id,
-      pageId,
+      docId,
       external.id
     );
 
@@ -1014,14 +1014,14 @@ test('should be able to grant and revoke doc user role', async t => {
       app,
       external.token.token,
       ws.id,
-      pageId,
+      docId,
       read.id
     );
 
     t.like(externalRes.body, {
       errors: [
         {
-          message: `You do not have permission to access doc ${pageId} under Space ${ws.id}.`,
+          message: `You do not have permission to access doc ${docId} under Space ${ws.id}.`,
         },
       ],
     });
@@ -1031,7 +1031,7 @@ test('should be able to grant and revoke doc user role', async t => {
 test('update page default role should throw error if the space does not exist', async t => {
   const { app } = t.context;
   const { admin } = await init(app, 5);
-  const pageId = nanoid();
+  const docId = nanoid();
   const nonExistWorkspaceId = 'non-exist-workspace';
   const res = await request(app.getHttpServer())
     .post('/graphql')
@@ -1040,9 +1040,9 @@ test('update page default role should throw error if the space does not exist', 
     .send({
       query: `
           mutation {
-            updatePageDefaultRole(input: {
+            updateDocDefaultRole(input: {
               workspaceId: "${nonExistWorkspaceId}",
-              docId: "${pageId}",
+              docId: "${docId}",
               role: Manager,
             })
           }
@@ -1052,7 +1052,7 @@ test('update page default role should throw error if the space does not exist', 
   t.like(res.body, {
     errors: [
       {
-        message: `You do not have permission to access doc ${pageId} under Space ${nonExistWorkspaceId}.`,
+        message: `You do not have permission to access doc ${docId} under Space ${nonExistWorkspaceId}.`,
       },
     ],
   });

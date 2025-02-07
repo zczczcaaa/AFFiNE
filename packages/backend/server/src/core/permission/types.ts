@@ -1,6 +1,6 @@
 import { LeafPaths, LeafVisitor } from '../../base';
 
-export enum PublicPageMode {
+export enum PublicDocMode {
   Page,
   Edgeless,
 }

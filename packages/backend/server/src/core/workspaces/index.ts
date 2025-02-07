@@ -10,9 +10,10 @@ import { UserModule } from '../user';
 import { WorkspacesController } from './controller';
 import {
   DocHistoryResolver,
-  PagePermissionResolver,
+  DocResolver,
   TeamWorkspaceResolver,
   WorkspaceBlobResolver,
+  WorkspaceDocResolver,
   WorkspaceResolver,
   WorkspaceService,
 } from './resolvers';
@@ -31,7 +32,8 @@ import {
   providers: [
     WorkspaceResolver,
     TeamWorkspaceResolver,
-    PagePermissionResolver,
+    WorkspaceDocResolver,
+    DocResolver,
     DocHistoryResolver,
     WorkspaceBlobResolver,
     WorkspaceService,

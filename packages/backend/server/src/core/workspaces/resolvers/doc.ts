@@ -10,18 +10,18 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import type { WorkspacePage as PrismaWorkspacePage } from '@prisma/client';
+import type { WorkspaceDoc as PrismaWorkspaceDoc } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 
 import {
   DocAccessDenied,
+  DocDefaultRoleCanNotBeOwner,
+  DocIsNotPublic,
   ExpectToGrantDocUserRoles,
-  ExpectToPublishPage,
+  ExpectToPublishDoc,
   ExpectToRevokeDocUserRoles,
-  ExpectToRevokePublicPage,
+  ExpectToRevokePublicDoc,
   ExpectToUpdateDocUserRole,
-  PageDefaultRoleCanNotBeOwner,
-  PageIsNotPublic,
   paginate,
   Paginated,
   PaginationInput,
@@ -36,27 +36,27 @@ import {
   fixupDocRole,
   mapDocRoleToPermissions,
   PermissionService,
-  PublicPageMode,
+  PublicDocMode,
 } from '../../permission';
 import { PublicUserType } from '../../user';
 import { DocID } from '../../utils/doc';
 import { WorkspaceType } from '../types';
 
-registerEnumType(PublicPageMode, {
-  name: 'PublicPageMode',
-  description: 'The mode which the public page default in',
+registerEnumType(PublicDocMode, {
+  name: 'PublicDocMode',
+  description: 'The mode which the public doc default in',
 });
 
 @ObjectType()
-class WorkspacePage implements Partial<PrismaWorkspacePage> {
+class DocType implements Partial<PrismaWorkspaceDoc> {
   @Field(() => String, { name: 'id' })
-  pageId!: string;
+  docId!: string;
 
   @Field()
   workspaceId!: string;
 
-  @Field(() => PublicPageMode)
-  mode!: PublicPageMode;
+  @Field(() => PublicDocMode)
+  mode!: PublicDocMode;
 
   @Field()
   public!: boolean;
@@ -105,7 +105,7 @@ class RevokeDocUserRoleInput {
 }
 
 @InputType()
-class UpdatePageDefaultRoleInput {
+class UpdateDocDefaultRoleInput {
   @Field(() => String)
   docId!: string;
 
@@ -144,13 +144,7 @@ const DocPermissions = registerObjectType<DocActionPermissions>(
 );
 
 @ObjectType()
-class DocType {
-  @Field(() => String)
-  id!: string;
-
-  @Field(() => Boolean)
-  public!: boolean;
-
+export class DocRolePermissions {
   @Field(() => DocRole)
   role!: DocRole;
 
@@ -159,8 +153,207 @@ class DocType {
 }
 
 @Resolver(() => WorkspaceType)
-export class PagePermissionResolver {
-  private readonly logger = new Logger(PagePermissionResolver.name);
+export class WorkspaceDocResolver {
+  private readonly logger = new Logger(WorkspaceDocResolver.name);
+
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly permission: PermissionService
+  ) {}
+
+  @ResolveField(() => [DocType], {
+    complexity: 2,
+    deprecationReason: 'use [WorkspaceType.publicDocs] instead',
+  })
+  async publicPages(@Parent() workspace: WorkspaceType) {
+    return this.publicDocs(workspace);
+  }
+
+  @ResolveField(() => [DocType], {
+    description: 'Get public docs of a workspace',
+    complexity: 2,
+  })
+  async publicDocs(@Parent() workspace: WorkspaceType) {
+    return this.prisma.workspaceDoc.findMany({
+      where: {
+        workspaceId: workspace.id,
+        public: true,
+      },
+    });
+  }
+
+  @ResolveField(() => DocType, {
+    description: 'Get public page of a workspace by page id.',
+    complexity: 2,
+    nullable: true,
+    deprecationReason: 'use [WorkspaceType.publicDoc] instead',
+  })
+  async publicPage(
+    @Parent() workspace: WorkspaceType,
+    @Args('pageId') pageId: string
+  ) {
+    return this.publicDoc(workspace, pageId);
+  }
+
+  @ResolveField(() => DocType, {
+    description: 'Get public page of a workspace by page id.',
+    complexity: 2,
+    nullable: true,
+  })
+  async publicDoc(
+    @Parent() workspace: WorkspaceType,
+    @Args('docId') docId: string
+  ) {
+    return this.prisma.workspaceDoc.findFirst({
+      where: {
+        workspaceId: workspace.id,
+        docId,
+        public: true,
+      },
+    });
+  }
+
+  @ResolveField(() => DocType, {
+    description: 'Get get with given id',
+    complexity: 2,
+  })
+  async doc(
+    @Parent() workspace: WorkspaceType,
+    @Args('docId') docId: string
+  ): Promise<DocType> {
+    const doc = await this.prisma.workspaceDoc.findFirst({
+      where: {
+        workspaceId: workspace.id,
+        docId,
+      },
+    });
+
+    return (
+      doc ?? {
+        docId,
+        workspaceId: workspace.id,
+        public: false,
+        mode: PublicDocMode.Page,
+      }
+    );
+  }
+
+  @Mutation(() => DocType, {
+    deprecationReason: 'use publishDoc instead',
+  })
+  async publishPage(
+    @CurrentUser() user: CurrentUser,
+    @Args('workspaceId') workspaceId: string,
+    @Args('pageId') pageId: string,
+    @Args({
+      name: 'mode',
+      type: () => PublicDocMode,
+      nullable: true,
+      defaultValue: PublicDocMode.Page,
+    })
+    mode: PublicDocMode
+  ) {
+    return this.publishDoc(user, workspaceId, pageId, mode);
+  }
+
+  @Mutation(() => DocType)
+  async publishDoc(
+    @CurrentUser() user: CurrentUser,
+    @Args('workspaceId') workspaceId: string,
+    @Args('docId') rawDocId: string,
+    @Args({
+      name: 'mode',
+      type: () => PublicDocMode,
+      nullable: true,
+      defaultValue: PublicDocMode.Page,
+    })
+    mode: PublicDocMode
+  ) {
+    const docId = new DocID(rawDocId, workspaceId);
+
+    if (docId.isWorkspace) {
+      this.logger.error('Expect to publish doc, but it is a workspace', {
+        workspaceId,
+        docId: rawDocId,
+      });
+      throw new ExpectToPublishDoc();
+    }
+
+    await this.permission.checkPagePermission(
+      docId.workspace,
+      docId.guid,
+      'Doc.Publish',
+      user.id
+    );
+
+    this.logger.log('Publish page', {
+      workspaceId,
+      docId: rawDocId,
+      mode,
+    });
+
+    return this.permission.publishPage(docId.workspace, docId.guid, mode);
+  }
+
+  @Mutation(() => DocType, {
+    deprecationReason: 'use revokePublicDoc instead',
+  })
+  async revokePublicPage(
+    @CurrentUser() user: CurrentUser,
+    @Args('workspaceId') workspaceId: string,
+    @Args('docId') docId: string
+  ) {
+    return this.revokePublicDoc(user, workspaceId, docId);
+  }
+
+  @Mutation(() => DocType)
+  async revokePublicDoc(
+    @CurrentUser() user: CurrentUser,
+    @Args('workspaceId') workspaceId: string,
+    @Args('docId') rawDocId: string
+  ) {
+    const docId = new DocID(rawDocId, workspaceId);
+
+    if (docId.isWorkspace) {
+      this.logger.error('Expect to revoke public doc, but it is a workspace', {
+        workspaceId,
+        docId: rawDocId,
+      });
+      throw new ExpectToRevokePublicDoc('Expect doc not to be workspace');
+    }
+
+    await this.permission.checkPagePermission(
+      docId.workspace,
+      docId.guid,
+      'Doc.Publish',
+      user.id
+    );
+
+    const isPublic = await this.permission.isPublicPage(
+      docId.workspace,
+      docId.guid
+    );
+
+    if (!isPublic) {
+      this.logger.log('Expect to revoke public doc, but it is not public', {
+        workspaceId,
+        docId: rawDocId,
+      });
+      throw new DocIsNotPublic('Doc is not public');
+    }
+
+    this.logger.log('Revoke public doc', {
+      workspaceId,
+      docId: rawDocId,
+    });
+
+    return this.permission.revokePublicPage(docId.workspace, docId.guid);
+  }
+}
+
+@Resolver(() => DocType)
+export class DocResolver {
+  private readonly logger = new Logger(DocResolver.name);
 
   constructor(
     private readonly prisma: PrismaClient,
@@ -168,96 +361,31 @@ export class PagePermissionResolver {
     private readonly models: Models
   ) {}
 
-  /**
-   * @deprecated
-   */
-  @ResolveField(() => [String], {
-    description: 'Shared pages of workspace',
-    complexity: 2,
-    deprecationReason: 'use WorkspaceType.publicPages',
-  })
-  async sharedPages(@Parent() workspace: WorkspaceType) {
-    const data = await this.prisma.workspacePage.findMany({
-      where: {
-        workspaceId: workspace.id,
-        public: true,
-      },
-    });
-
-    return data.map(row => row.pageId);
-  }
-
-  @ResolveField(() => [WorkspacePage], {
-    description: 'Public pages of a workspace',
-    complexity: 2,
-  })
-  async publicPages(@Parent() workspace: WorkspaceType) {
-    return this.prisma.workspacePage.findMany({
-      where: {
-        workspaceId: workspace.id,
-        public: true,
-      },
-    });
-  }
-
-  @ResolveField(() => WorkspacePage, {
-    description: 'Get public page of a workspace by page id.',
-    complexity: 2,
-    nullable: true,
-  })
-  async publicPage(
-    @Parent() workspace: WorkspaceType,
-    @Args('pageId') pageId: string
-  ) {
-    return this.prisma.workspacePage.findFirst({
-      where: {
-        workspaceId: workspace.id,
-        pageId,
-        public: true,
-      },
-    });
-  }
-
-  @ResolveField(() => DocType, {
-    description: 'Check if current user has permission to access the page',
-    complexity: 2,
-  })
-  async pagePermission(
-    @Parent() workspace: WorkspaceType,
-    @Args('pageId') pageId: string,
-    @CurrentUser() user: CurrentUser
-  ): Promise<DocType> {
-    const page = await this.prisma.workspacePage.findFirst({
-      where: {
-        workspaceId: workspace.id,
-        pageId,
-      },
-      select: {
-        public: true,
-      },
-    });
-
+  @ResolveField(() => DocPermissions)
+  async permissions(
+    @CurrentUser() user: CurrentUser,
+    @Parent() doc: DocType
+  ): Promise<DocRolePermissions> {
     const [permission, workspacePermission] = await this.prisma.$transaction(
       tx =>
         Promise.all([
-          tx.workspacePageUserPermission.findFirst({
+          tx.workspaceDocUserPermission.findFirst({
             where: {
-              workspaceId: workspace.id,
-              pageId,
+              workspaceId: doc.workspaceId,
+              docId: doc.docId,
               userId: user.id,
             },
           }),
           tx.workspaceUserPermission.findFirst({
             where: {
-              workspaceId: workspace.id,
+              workspaceId: doc.workspaceId,
               userId: user.id,
             },
           }),
         ])
     );
+
     return {
-      id: pageId,
-      public: page?.public ?? false,
       role: permission?.type ?? DocRole.External,
       permissions: mapDocRoleToPermissions(
         fixupDocRole(workspacePermission?.type, permission?.type)
@@ -266,29 +394,27 @@ export class PagePermissionResolver {
   }
 
   @ResolveField(() => PaginatedGrantedDocUserType, {
-    description: 'Page granted users list',
+    description: 'paginated doc granted users list',
     complexity: 4,
   })
-  async pageGrantedUsersList(
+  async grantedUsersList(
     @CurrentUser() user: CurrentUser,
-    @Parent() workspace: WorkspaceType,
-    @Args('pageId') pageId: string,
+    @Parent() doc: DocType,
     @Args('pagination') pagination: PaginationInput
   ): Promise<PaginatedGrantedDocUserType> {
     await this.permission.checkPagePermission(
-      workspace.id,
-      pageId,
+      doc.workspaceId,
+      doc.docId,
       'Doc.Users.Read',
       user.id
     );
 
-    const docId = new DocID(pageId, workspace.id);
     const [permissions, totalCount] = await this.prisma.$transaction(tx => {
       return Promise.all([
-        tx.workspacePageUserPermission.findMany({
+        tx.workspaceDocUserPermission.findMany({
           where: {
-            workspaceId: workspace.id,
-            pageId: docId.guid,
+            workspaceId: doc.workspaceId,
+            docId: doc.docId,
             createdAt: pagination.after
               ? {
                   gt: pagination.after,
@@ -306,10 +432,10 @@ export class PagePermissionResolver {
           take: pagination.first,
           skip: pagination.offset,
         }),
-        tx.workspacePageUserPermission.count({
+        tx.workspaceDocUserPermission.count({
           where: {
-            workspaceId: workspace.id,
-            pageId: docId.guid,
+            workspaceId: doc.workspaceId,
+            docId: doc.docId,
           },
         }),
       ]);
@@ -336,121 +462,6 @@ export class PagePermissionResolver {
       pagination,
       totalCount
     );
-  }
-
-  /**
-   * @deprecated
-   */
-  @Mutation(() => Boolean, {
-    name: 'sharePage',
-    deprecationReason: 'renamed to publishPage',
-  })
-  async deprecatedSharePage(
-    @CurrentUser() user: CurrentUser,
-    @Args('workspaceId') workspaceId: string,
-    @Args('pageId') pageId: string
-  ) {
-    await this.publishPage(user, workspaceId, pageId, PublicPageMode.Page);
-    return true;
-  }
-
-  @Mutation(() => WorkspacePage)
-  async publishPage(
-    @CurrentUser() user: CurrentUser,
-    @Args('workspaceId') workspaceId: string,
-    @Args('pageId') pageId: string,
-    @Args({
-      name: 'mode',
-      type: () => PublicPageMode,
-      nullable: true,
-      defaultValue: PublicPageMode.Page,
-    })
-    mode: PublicPageMode
-  ) {
-    const docId = new DocID(pageId, workspaceId);
-
-    if (docId.isWorkspace) {
-      this.logger.error('Expect to publish page, but it is a workspace', {
-        workspaceId,
-        pageId,
-      });
-      throw new ExpectToPublishPage();
-    }
-
-    await this.permission.checkPagePermission(
-      docId.workspace,
-      docId.guid,
-      'Doc.Publish',
-      user.id
-    );
-
-    this.logger.log('Publish page', {
-      workspaceId,
-      pageId,
-      mode,
-    });
-
-    return this.permission.publishPage(docId.workspace, docId.guid, mode);
-  }
-
-  /**
-   * @deprecated
-   */
-  @Mutation(() => Boolean, {
-    name: 'revokePage',
-    deprecationReason: 'use revokePublicPage',
-  })
-  async deprecatedRevokePage(
-    @CurrentUser() user: CurrentUser,
-    @Args('workspaceId') workspaceId: string,
-    @Args('pageId') pageId: string
-  ) {
-    await this.revokePublicPage(user, workspaceId, pageId);
-    return true;
-  }
-
-  @Mutation(() => WorkspacePage)
-  async revokePublicPage(
-    @CurrentUser() user: CurrentUser,
-    @Args('workspaceId') workspaceId: string,
-    @Args('pageId') pageId: string
-  ) {
-    const docId = new DocID(pageId, workspaceId);
-
-    if (docId.isWorkspace) {
-      this.logger.error('Expect to revoke public page, but it is a workspace', {
-        workspaceId,
-        pageId,
-      });
-      throw new ExpectToRevokePublicPage('Expect page not to be workspace');
-    }
-
-    await this.permission.checkPagePermission(
-      docId.workspace,
-      docId.guid,
-      'Doc.Publish',
-      user.id
-    );
-
-    const isPublic = await this.permission.isPublicPage(
-      docId.workspace,
-      docId.guid
-    );
-
-    if (!isPublic) {
-      this.logger.log('Expect to revoke public page, but it is not public', {
-        workspaceId,
-        pageId,
-      });
-      throw new PageIsNotPublic('Page is not public');
-    }
-
-    this.logger.log('Revoke public page', {
-      workspaceId,
-      pageId,
-    });
-
-    return this.permission.revokePublicPage(docId.workspace, docId.guid);
   }
 
   @Mutation(() => Boolean)
@@ -580,13 +591,13 @@ export class PagePermissionResolver {
   }
 
   @Mutation(() => Boolean)
-  async updatePageDefaultRole(
+  async updateDocDefaultRole(
     @CurrentUser() user: CurrentUser,
-    @Args('input') input: UpdatePageDefaultRoleInput
+    @Args('input') input: UpdateDocDefaultRoleInput
   ) {
     if (input.role === DocRole.Owner) {
-      this.logger.log('Page default role can not be owner', input);
-      throw new PageDefaultRoleCanNotBeOwner();
+      this.logger.log('Doc default role can not be owner', input);
+      throw new DocDefaultRoleCanNotBeOwner();
     }
     const doc = new DocID(input.docId, input.workspaceId);
     const pairs = {
@@ -622,11 +633,11 @@ export class PagePermissionResolver {
       }
       throw error;
     }
-    await this.prisma.workspacePage.upsert({
+    await this.prisma.workspaceDoc.upsert({
       where: {
-        workspaceId_pageId: {
+        workspaceId_docId: {
           workspaceId: doc.workspace,
-          pageId: doc.guid,
+          docId: doc.guid,
         },
       },
       update: {
@@ -634,7 +645,7 @@ export class PagePermissionResolver {
       },
       create: {
         workspaceId: doc.workspace,
-        pageId: doc.guid,
+        docId: doc.guid,
         defaultRole: input.role,
       },
     });

@@ -103,11 +103,11 @@ export async function updateWorkspace(
   return res.body.data.updateWorkspace.public;
 }
 
-export async function publishPage(
+export async function publishDoc(
   app: INestApplication,
   token: string,
   workspaceId: string,
-  pageId: string
+  docId: string
 ) {
   const res = await request(app.getHttpServer())
     .post(gql)
@@ -116,7 +116,7 @@ export async function publishPage(
     .send({
       query: `
             mutation {
-              publishPage(workspaceId: "${workspaceId}", pageId: "${pageId}") {
+              publishDoc(workspaceId: "${workspaceId}", docId: "${docId}") {
                 id
                 mode
               }
@@ -124,14 +124,14 @@ export async function publishPage(
           `,
     })
     .expect(200);
-  return res.body.errors?.[0]?.message || res.body.data?.publishPage;
+  return res.body.errors?.[0]?.message || res.body.data?.publishDoc;
 }
 
-export async function revokePublicPage(
+export async function revokePublicDoc(
   app: INestApplication,
   token: string,
   workspaceId: string,
-  pageId: string
+  docId: string
 ) {
   const res = await request(app.getHttpServer())
     .post(gql)
@@ -140,7 +140,7 @@ export async function revokePublicPage(
     .send({
       query: `
             mutation {
-              revokePublicPage(workspaceId: "${workspaceId}", pageId: "${pageId}") {
+              revokePublicDoc(workspaceId: "${workspaceId}", docId: "${docId}") {
                 id
                 mode
                 public
@@ -149,7 +149,7 @@ export async function revokePublicPage(
           `,
     })
     .expect(200);
-  return res.body.errors?.[0]?.message || res.body.data?.revokePublicPage;
+  return res.body.errors?.[0]?.message || res.body.data?.revokePublicDoc;
 }
 
 export async function grantMember(

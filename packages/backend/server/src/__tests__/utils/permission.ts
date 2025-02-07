@@ -54,7 +54,7 @@ export function revokeDocUserRoles(
     });
 }
 
-export function updatePageDefaultRole(
+export function updateDocDefaultRole(
   app: INestApplication,
   token: string,
   workspaceId: string,
@@ -68,7 +68,7 @@ export function updatePageDefaultRole(
     .send({
       query: `
         mutation {
-          updatePageDefaultRole(input: {
+          updateDocDefaultRole(input: {
             workspaceId: "${workspaceId}",
             docId: "${docId}",
             role: ${DocRole[role]}
@@ -78,7 +78,7 @@ export function updatePageDefaultRole(
     });
 }
 
-export async function pageGrantedUsersList(
+export async function docGrantedUsersList(
   app: INestApplication,
   token: string,
   workspaceId: string,
@@ -94,14 +94,16 @@ export async function pageGrantedUsersList(
       query: `
         query {
           workspace(id: "${workspaceId}") {
-            pageGrantedUsersList(pageId: "${docId}", pagination: { first: ${first}, offset: ${offset} }) {
-              totalCount
-              edges {
+            doc(docId: "${docId}") {
+              grantedUsersList(pagination: { first: ${first}, offset: ${offset} }) {
+                totalCount
+                edges {
                 cursor
-                node {
-                  role
-                  user {
-                    id
+                  node {
+                    role
+                    user {
+                      id
+                    }
                   }
                 }
               }

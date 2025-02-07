@@ -230,10 +230,13 @@ enum DocRole {
 }
 
 type DocType {
+  """paginated doc granted users list"""
+  grantedUsersList(pagination: PaginationInput!): PaginatedGrantedDocUserType!
   id: String!
+  mode: PublicDocMode!
   permissions: DocPermissions!
   public: Boolean!
-  role: DocRole!
+  workspaceId: String!
 }
 
 type EditorType {
@@ -254,7 +257,7 @@ enum ErrorNames {
   CANNOT_DELETE_ALL_ADMIN_ACCOUNT
   CANNOT_DELETE_OWN_ACCOUNT
   CANT_UPDATE_ONETIME_PAYMENT_SUBSCRIPTION
-  CAN_NOT_BATCH_GRANT_PAGE_OWNER_PERMISSIONS
+  CAN_NOT_BATCH_GRANT_DOC_OWNER_PERMISSIONS
   CAPTCHA_VERIFICATION_FAILED
   COPILOT_ACTION_TAKEN
   COPILOT_FAILED_TO_CREATE_MESSAGE
@@ -268,16 +271,18 @@ enum ErrorNames {
   COPILOT_SESSION_NOT_FOUND
   CUSTOMER_PORTAL_CREATE_FAILED
   DOC_ACCESS_DENIED
+  DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER
   DOC_HISTORY_NOT_FOUND
+  DOC_IS_NOT_PUBLIC
   DOC_NOT_FOUND
   EARLY_ACCESS_REQUIRED
   EMAIL_ALREADY_USED
   EMAIL_TOKEN_NOT_FOUND
   EMAIL_VERIFICATION_REQUIRED
   EXPECT_TO_GRANT_DOC_USER_ROLES
-  EXPECT_TO_PUBLISH_PAGE
+  EXPECT_TO_PUBLISH_DOC
   EXPECT_TO_REVOKE_DOC_USER_ROLES
-  EXPECT_TO_REVOKE_PUBLIC_PAGE
+  EXPECT_TO_REVOKE_PUBLIC_DOC
   EXPECT_TO_UPDATE_DOC_USER_ROLE
   FAILED_TO_CHECKOUT
   FAILED_TO_SAVE_UPDATES
@@ -306,8 +311,6 @@ enum ErrorNames {
   NO_COPILOT_PROVIDER_AVAILABLE
   OAUTH_ACCOUNT_ALREADY_CONNECTED
   OAUTH_STATE_EXPIRED
-  PAGE_DEFAULT_ROLE_CAN_NOT_BE_OWNER
-  PAGE_IS_NOT_PUBLIC
   PASSWORD_REQUIRED
   QUERY_TOO_LONG
   RUNTIME_CONFIG_NOT_FOUND
@@ -621,7 +624,8 @@ type Mutation {
   invite(email: String!, permission: Permission @deprecated(reason: "never used"), sendInviteMail: Boolean, workspaceId: String!): String!
   inviteBatch(emails: [String!]!, sendInviteMail: Boolean, workspaceId: String!): [InviteResult!]!
   leaveWorkspace(sendLeaveMail: Boolean, workspaceId: String!, workspaceName: String @deprecated(reason: "no longer used")): Boolean!
-  publishPage(mode: PublicPageMode = Page, pageId: String!, workspaceId: String!): WorkspacePage!
+  publishDoc(docId: String!, mode: PublicDocMode = Page, workspaceId: String!): DocType!
+  publishPage(mode: PublicDocMode = Page, pageId: String!, workspaceId: String!): DocType! @deprecated(reason: "use publishDoc instead")
   recoverDoc(guid: String!, timestamp: DateTime!, workspaceId: String!): DateTime!
   releaseDeletedBlobs(workspaceId: String!): Boolean!
 
@@ -632,23 +636,22 @@ type Mutation {
   revoke(userId: String!, workspaceId: String!): Boolean!
   revokeDocUserRoles(input: RevokeDocUserRoleInput!): Boolean!
   revokeInviteLink(workspaceId: String!): Boolean!
-  revokePage(pageId: String!, workspaceId: String!): Boolean! @deprecated(reason: "use revokePublicPage")
-  revokePublicPage(pageId: String!, workspaceId: String!): WorkspacePage!
+  revokePublicDoc(docId: String!, workspaceId: String!): DocType!
+  revokePublicPage(docId: String!, workspaceId: String!): DocType! @deprecated(reason: "use revokePublicDoc instead")
   sendChangeEmail(callbackUrl: String!, email: String): Boolean!
   sendChangePasswordEmail(callbackUrl: String!, email: String @deprecated(reason: "fetched from signed in user")): Boolean!
   sendSetPasswordEmail(callbackUrl: String!, email: String @deprecated(reason: "fetched from signed in user")): Boolean!
   sendVerifyChangeEmail(callbackUrl: String!, email: String!, token: String!): Boolean!
   sendVerifyEmail(callbackUrl: String!): Boolean!
   setBlob(blob: Upload!, workspaceId: String!): String!
-  sharePage(pageId: String!, workspaceId: String!): Boolean! @deprecated(reason: "renamed to publishPage")
 
   """Update a copilot prompt"""
   updateCopilotPrompt(messages: [CopilotPromptMessageInput!]!, name: String!): CopilotPromptType!
 
   """Update a chat session"""
   updateCopilotSession(options: UpdateChatSessionInput!): String!
+  updateDocDefaultRole(input: UpdateDocDefaultRoleInput!): Boolean!
   updateDocUserRole(input: UpdateDocUserRoleInput!): Boolean!
-  updatePageDefaultRole(input: UpdatePageDefaultRoleInput!): Boolean!
   updateProfile(input: UpdateUserInput!): UserType!
 
   """update server runtime configurable setting"""
@@ -719,8 +722,8 @@ enum Permission {
   Owner
 }
 
-"""The mode which the public page default in"""
-enum PublicPageMode {
+"""The mode which the public doc default in"""
+enum PublicDocMode {
   Edgeless
   Page
 }
@@ -1005,16 +1008,16 @@ input UpdateChatSessionInput {
   sessionId: String!
 }
 
+input UpdateDocDefaultRoleInput {
+  docId: String!
+  role: DocRole!
+  workspaceId: String!
+}
+
 input UpdateDocUserRoleInput {
   docId: String!
   role: DocRole!
   userId: String!
-  workspaceId: String!
-}
-
-input UpdatePageDefaultRoleInput {
-  docId: String!
-  role: DocRole!
   workspaceId: String!
 }
 
@@ -1128,13 +1131,6 @@ type WorkspaceMembersExceedLimitToDowngradeDataType {
   limit: Int!
 }
 
-type WorkspacePage {
-  id: String!
-  mode: PublicPageMode!
-  public: Boolean!
-  workspaceId: String!
-}
-
 type WorkspacePageMeta {
   createdAt: DateTime!
   createdBy: EditorType
@@ -1199,6 +1195,9 @@ type WorkspaceType {
   """Workspace created date"""
   createdAt: DateTime!
 
+  """Get get with given id"""
+  doc(docId: String!): DocType!
+
   """Enable AI"""
   enableAi: Boolean!
 
@@ -1229,32 +1228,27 @@ type WorkspaceType {
   """Owner of workspace"""
   owner: UserType!
 
-  """Page granted users list"""
-  pageGrantedUsersList(pageId: String!, pagination: PaginationInput!): PaginatedGrantedDocUserType!
-
   """Cloud page metadata of workspace"""
   pageMeta(pageId: String!): WorkspacePageMeta!
-
-  """Check if current user has permission to access the page"""
-  pagePermission(pageId: String!): DocType!
 
   """is Public workspace"""
   public: Boolean!
 
   """Get public page of a workspace by page id."""
-  publicPage(pageId: String!): WorkspacePage
+  publicDoc(docId: String!): DocType
 
-  """Public pages of a workspace"""
-  publicPages: [WorkspacePage!]!
+  """Get public docs of a workspace"""
+  publicDocs: [DocType!]!
+
+  """Get public page of a workspace by page id."""
+  publicPage(pageId: String!): DocType @deprecated(reason: "use [WorkspaceType.publicDoc] instead")
+  publicPages: [DocType!]! @deprecated(reason: "use [WorkspaceType.publicDocs] instead")
 
   """quota of workspace"""
   quota: WorkspaceQuotaType!
 
   """Role of current signed in user in workspace"""
   role: Permission!
-
-  """Shared pages of workspace"""
-  sharedPages: [String!]! @deprecated(reason: "use WorkspaceType.publicPages")
 
   """The team subscription of the workspace, if exists."""
   subscription: SubscriptionType

@@ -253,6 +253,23 @@ export interface DocNotFoundDataType {
   spaceId: Scalars['String']['output'];
 }
 
+export interface DocPermissions {
+  __typename?: 'DocPermissions';
+  Doc_Copy: Scalars['Boolean']['output'];
+  Doc_Delete: Scalars['Boolean']['output'];
+  Doc_Duplicate: Scalars['Boolean']['output'];
+  Doc_Properties_Read: Scalars['Boolean']['output'];
+  Doc_Properties_Update: Scalars['Boolean']['output'];
+  Doc_Publish: Scalars['Boolean']['output'];
+  Doc_Read: Scalars['Boolean']['output'];
+  Doc_Restore: Scalars['Boolean']['output'];
+  Doc_TransferOwner: Scalars['Boolean']['output'];
+  Doc_Trash: Scalars['Boolean']['output'];
+  Doc_Update: Scalars['Boolean']['output'];
+  Doc_Users_Manage: Scalars['Boolean']['output'];
+  Doc_Users_Read: Scalars['Boolean']['output'];
+}
+
 /** User permission in doc */
 export enum DocRole {
   Editor = 'Editor',
@@ -264,10 +281,17 @@ export enum DocRole {
 
 export interface DocType {
   __typename?: 'DocType';
+  /** paginated doc granted users list */
+  grantedUsersList: PaginatedGrantedDocUserType;
   id: Scalars['String']['output'];
-  permissions: RolePermissions;
+  mode: PublicDocMode;
+  permissions: DocPermissions;
   public: Scalars['Boolean']['output'];
-  role: DocRole;
+  workspaceId: Scalars['String']['output'];
+}
+
+export interface DocTypeGrantedUsersListArgs {
+  pagination: PaginationInput;
 }
 
 export interface EditorType {
@@ -337,16 +361,18 @@ export enum ErrorNames {
   COPILOT_SESSION_NOT_FOUND = 'COPILOT_SESSION_NOT_FOUND',
   CUSTOMER_PORTAL_CREATE_FAILED = 'CUSTOMER_PORTAL_CREATE_FAILED',
   DOC_ACCESS_DENIED = 'DOC_ACCESS_DENIED',
+  DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER = 'DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER',
   DOC_HISTORY_NOT_FOUND = 'DOC_HISTORY_NOT_FOUND',
+  DOC_IS_NOT_PUBLIC = 'DOC_IS_NOT_PUBLIC',
   DOC_NOT_FOUND = 'DOC_NOT_FOUND',
   EARLY_ACCESS_REQUIRED = 'EARLY_ACCESS_REQUIRED',
   EMAIL_ALREADY_USED = 'EMAIL_ALREADY_USED',
   EMAIL_TOKEN_NOT_FOUND = 'EMAIL_TOKEN_NOT_FOUND',
   EMAIL_VERIFICATION_REQUIRED = 'EMAIL_VERIFICATION_REQUIRED',
   EXPECT_TO_GRANT_DOC_USER_ROLES = 'EXPECT_TO_GRANT_DOC_USER_ROLES',
-  EXPECT_TO_PUBLISH_PAGE = 'EXPECT_TO_PUBLISH_PAGE',
+  EXPECT_TO_PUBLISH_DOC = 'EXPECT_TO_PUBLISH_DOC',
   EXPECT_TO_REVOKE_DOC_USER_ROLES = 'EXPECT_TO_REVOKE_DOC_USER_ROLES',
-  EXPECT_TO_REVOKE_PUBLIC_PAGE = 'EXPECT_TO_REVOKE_PUBLIC_PAGE',
+  EXPECT_TO_REVOKE_PUBLIC_DOC = 'EXPECT_TO_REVOKE_PUBLIC_DOC',
   EXPECT_TO_UPDATE_DOC_USER_ROLE = 'EXPECT_TO_UPDATE_DOC_USER_ROLE',
   FAILED_TO_CHECKOUT = 'FAILED_TO_CHECKOUT',
   FAILED_TO_SAVE_UPDATES = 'FAILED_TO_SAVE_UPDATES',
@@ -375,7 +401,6 @@ export enum ErrorNames {
   NO_COPILOT_PROVIDER_AVAILABLE = 'NO_COPILOT_PROVIDER_AVAILABLE',
   OAUTH_ACCOUNT_ALREADY_CONNECTED = 'OAUTH_ACCOUNT_ALREADY_CONNECTED',
   OAUTH_STATE_EXPIRED = 'OAUTH_STATE_EXPIRED',
-  PAGE_IS_NOT_PUBLIC = 'PAGE_IS_NOT_PUBLIC',
   PASSWORD_REQUIRED = 'PASSWORD_REQUIRED',
   QUERY_TOO_LONG = 'QUERY_TOO_LONG',
   RUNTIME_CONFIG_NOT_FOUND = 'RUNTIME_CONFIG_NOT_FOUND',
@@ -453,23 +478,16 @@ export interface GrantDocUserRolesInput {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface GrantedDocUserEdge {
-  __typename?: 'GrantedDocUserEdge';
-  cursor: Scalars['String']['output'];
-  user: GrantedDocUserType;
-}
-
 export interface GrantedDocUserType {
   __typename?: 'GrantedDocUserType';
   role: DocRole;
-  user: UserType;
+  user: PublicUserType;
 }
 
-export interface GrantedDocUsersConnection {
-  __typename?: 'GrantedDocUsersConnection';
-  edges: Array<GrantedDocUserEdge>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int']['output'];
+export interface GrantedDocUserTypeEdge {
+  __typename?: 'GrantedDocUserTypeEdge';
+  cursor: Scalars['String']['output'];
+  node: GrantedDocUserType;
 }
 
 export interface InvalidEmailDataType {
@@ -688,7 +706,9 @@ export interface Mutation {
   invite: Scalars['String']['output'];
   inviteBatch: Array<InviteResult>;
   leaveWorkspace: Scalars['Boolean']['output'];
-  publishPage: WorkspacePage;
+  publishDoc: DocType;
+  /** @deprecated use publishDoc instead */
+  publishPage: DocType;
   recoverDoc: Scalars['DateTime']['output'];
   releaseDeletedBlobs: Scalars['Boolean']['output'];
   /** Remove user avatar */
@@ -698,21 +718,20 @@ export interface Mutation {
   revoke: Scalars['Boolean']['output'];
   revokeDocUserRoles: Scalars['Boolean']['output'];
   revokeInviteLink: Scalars['Boolean']['output'];
-  /** @deprecated use revokePublicPage */
-  revokePage: Scalars['Boolean']['output'];
-  revokePublicPage: WorkspacePage;
+  revokePublicDoc: DocType;
+  /** @deprecated use revokePublicDoc instead */
+  revokePublicPage: DocType;
   sendChangeEmail: Scalars['Boolean']['output'];
   sendChangePasswordEmail: Scalars['Boolean']['output'];
   sendSetPasswordEmail: Scalars['Boolean']['output'];
   sendVerifyChangeEmail: Scalars['Boolean']['output'];
   sendVerifyEmail: Scalars['Boolean']['output'];
   setBlob: Scalars['String']['output'];
-  /** @deprecated renamed to publishPage */
-  sharePage: Scalars['Boolean']['output'];
   /** Update a copilot prompt */
   updateCopilotPrompt: CopilotPromptType;
   /** Update a chat session */
   updateCopilotSession: Scalars['String']['output'];
+  updateDocDefaultRole: Scalars['Boolean']['output'];
   updateDocUserRole: Scalars['Boolean']['output'];
   updateProfile: UserType;
   /** update server runtime configurable setting */
@@ -867,8 +886,14 @@ export interface MutationLeaveWorkspaceArgs {
   workspaceName?: InputMaybe<Scalars['String']['input']>;
 }
 
+export interface MutationPublishDocArgs {
+  docId: Scalars['String']['input'];
+  mode?: InputMaybe<PublicDocMode>;
+  workspaceId: Scalars['String']['input'];
+}
+
 export interface MutationPublishPageArgs {
-  mode?: InputMaybe<PublicPageMode>;
+  mode?: InputMaybe<PublicDocMode>;
   pageId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 }
@@ -900,21 +925,20 @@ export interface MutationRevokeArgs {
 }
 
 export interface MutationRevokeDocUserRolesArgs {
-  docId: Scalars['String']['input'];
-  userIds: Array<Scalars['String']['input']>;
+  input: RevokeDocUserRolesInput;
 }
 
 export interface MutationRevokeInviteLinkArgs {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface MutationRevokePageArgs {
-  pageId: Scalars['String']['input'];
+export interface MutationRevokePublicDocArgs {
+  docId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 }
 
 export interface MutationRevokePublicPageArgs {
-  pageId: Scalars['String']['input'];
+  docId: Scalars['String']['input'];
   workspaceId: Scalars['String']['input'];
 }
 
@@ -948,11 +972,6 @@ export interface MutationSetBlobArgs {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface MutationSharePageArgs {
-  pageId: Scalars['String']['input'];
-  workspaceId: Scalars['String']['input'];
-}
-
 export interface MutationUpdateCopilotPromptArgs {
   messages: Array<CopilotPromptMessageInput>;
   name: Scalars['String']['input'];
@@ -962,10 +981,12 @@ export interface MutationUpdateCopilotSessionArgs {
   options: UpdateChatSessionInput;
 }
 
+export interface MutationUpdateDocDefaultRoleArgs {
+  input: UpdateDocDefaultRoleInput;
+}
+
 export interface MutationUpdateDocUserRoleArgs {
-  docId: Scalars['String']['input'];
-  role: DocRole;
-  userId: Scalars['String']['input'];
+  input: UpdateDocUserRoleInput;
 }
 
 export interface MutationUpdateProfileArgs {
@@ -1021,21 +1042,28 @@ export enum OAuthProviderType {
   OIDC = 'OIDC',
 }
 
-export interface PageGrantedUsersInput {
-  /** Cursor */
-  after?: InputMaybe<Scalars['String']['input']>;
-  /** Cursor */
-  before?: InputMaybe<Scalars['String']['input']>;
-  first: Scalars['Int']['input'];
-  offset: Scalars['Int']['input'];
-}
-
 export interface PageInfo {
   __typename?: 'PageInfo';
   endCursor: Maybe<Scalars['String']['output']>;
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
   startCursor: Maybe<Scalars['String']['output']>;
+}
+
+export interface PaginatedGrantedDocUserType {
+  __typename?: 'PaginatedGrantedDocUserType';
+  edges: Array<GrantedDocUserTypeEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+}
+
+export interface PaginationInput {
+  /** returns the elements in the list that come after the specified cursor. */
+  after?: InputMaybe<Scalars['String']['input']>;
+  /** returns the first n elements from the list. */
+  first?: InputMaybe<Scalars['Int']['input']>;
+  /** ignore the first n elements from the list. */
+  offset?: InputMaybe<Scalars['Int']['input']>;
 }
 
 export interface PasswordLimitsType {
@@ -1052,10 +1080,18 @@ export enum Permission {
   Owner = 'Owner',
 }
 
-/** The mode which the public page default in */
-export enum PublicPageMode {
+/** The mode which the public doc default in */
+export enum PublicDocMode {
   Edgeless = 'Edgeless',
   Page = 'Page',
+}
+
+export interface PublicUserType {
+  __typename?: 'PublicUserType';
+  avatarUrl: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 }
 
 export interface Query {
@@ -1166,34 +1202,10 @@ export interface RemoveAvatar {
   success: Scalars['Boolean']['output'];
 }
 
-export interface RolePermissions {
-  __typename?: 'RolePermissions';
-  Doc_Copy: Scalars['Boolean']['output'];
-  Doc_Delete: Scalars['Boolean']['output'];
-  Doc_Duplicate: Scalars['Boolean']['output'];
-  Doc_Properties_Read: Scalars['Boolean']['output'];
-  Doc_Properties_Update: Scalars['Boolean']['output'];
-  Doc_Publish: Scalars['Boolean']['output'];
-  Doc_Read: Scalars['Boolean']['output'];
-  Doc_Restore: Scalars['Boolean']['output'];
-  Doc_TransferOwner: Scalars['Boolean']['output'];
-  Doc_Trash: Scalars['Boolean']['output'];
-  Doc_Update: Scalars['Boolean']['output'];
-  Doc_Users_Manage: Scalars['Boolean']['output'];
-  Doc_Users_Read: Scalars['Boolean']['output'];
-  Workspace_CreateDoc: Scalars['Boolean']['output'];
-  Workspace_Delete: Scalars['Boolean']['output'];
-  Workspace_Organize_Read: Scalars['Boolean']['output'];
-  Workspace_Properties_Create: Scalars['Boolean']['output'];
-  Workspace_Properties_Delete: Scalars['Boolean']['output'];
-  Workspace_Properties_Read: Scalars['Boolean']['output'];
-  Workspace_Properties_Update: Scalars['Boolean']['output'];
-  Workspace_Settings_Read: Scalars['Boolean']['output'];
-  Workspace_Settings_Update: Scalars['Boolean']['output'];
-  Workspace_Sync: Scalars['Boolean']['output'];
-  Workspace_TransferOwner: Scalars['Boolean']['output'];
-  Workspace_Users_Manage: Scalars['Boolean']['output'];
-  Workspace_Users_Read: Scalars['Boolean']['output'];
+export interface RevokeDocUserRolesInput {
+  docId: Scalars['String']['input'];
+  userIds: Array<Scalars['String']['input']>;
+  workspaceId: Scalars['String']['input'];
 }
 
 export interface RuntimeConfigNotFoundDataType {
@@ -1395,6 +1407,19 @@ export interface UpdateChatSessionInput {
   sessionId: Scalars['String']['input'];
 }
 
+export interface UpdateDocDefaultRoleInput {
+  docId: Scalars['String']['input'];
+  role: DocRole;
+  workspaceId: Scalars['String']['input'];
+}
+
+export interface UpdateDocUserRoleInput {
+  docId: Scalars['String']['input'];
+  role: DocRole;
+  userId: Scalars['String']['input'];
+  workspaceId: Scalars['String']['input'];
+}
+
 export interface UpdateUserInput {
   /** User name */
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1514,14 +1539,6 @@ export interface WorkspaceMembersExceedLimitToDowngradeDataType {
   limit: Scalars['Int']['output'];
 }
 
-export interface WorkspacePage {
-  __typename?: 'WorkspacePage';
-  id: Scalars['String']['output'];
-  mode: PublicPageMode;
-  public: Scalars['Boolean']['output'];
-  workspaceId: Scalars['String']['output'];
-}
-
 export interface WorkspacePageMeta {
   __typename?: 'WorkspacePageMeta';
   createdAt: Scalars['DateTime']['output'];
@@ -1591,6 +1608,8 @@ export interface WorkspaceType {
   blobsSize: Scalars['Int']['output'];
   /** Workspace created date */
   createdAt: Scalars['DateTime']['output'];
+  /** Get get with given id */
+  doc: DocType;
   /** Enable AI */
   enableAi: Scalars['Boolean']['output'];
   /** Enable url previous when sharing */
@@ -1612,31 +1631,33 @@ export interface WorkspaceType {
   members: Array<InviteUserType>;
   /** Owner of workspace */
   owner: UserType;
-  /** Page granted users list */
-  pageGrantedUsersList: GrantedDocUsersConnection;
   /** Cloud page metadata of workspace */
   pageMeta: WorkspacePageMeta;
-  /** Check if current user has permission to access the page */
-  pagePermission: DocType;
   /** is Public workspace */
   public: Scalars['Boolean']['output'];
   /** Get public page of a workspace by page id. */
-  publicPage: Maybe<WorkspacePage>;
-  /** Public pages of a workspace */
-  publicPages: Array<WorkspacePage>;
+  publicDoc: Maybe<DocType>;
+  /** Get public docs of a workspace */
+  publicDocs: Array<DocType>;
+  /**
+   * Get public page of a workspace by page id.
+   * @deprecated use [WorkspaceType.publicDoc] instead
+   */
+  publicPage: Maybe<DocType>;
+  /** @deprecated use [WorkspaceType.publicDocs] instead */
+  publicPages: Array<DocType>;
   /** quota of workspace */
   quota: WorkspaceQuotaType;
   /** Role of current signed in user in workspace */
   role: Permission;
-  /**
-   * Shared pages of workspace
-   * @deprecated use WorkspaceType.publicPages
-   */
-  sharedPages: Array<Scalars['String']['output']>;
   /** The team subscription of the workspace, if exists. */
   subscription: Maybe<SubscriptionType>;
   /** if workspace is team workspace */
   team: Scalars['Boolean']['output'];
+}
+
+export interface WorkspaceTypeDocArgs {
+  docId: Scalars['String']['input'];
 }
 
 export interface WorkspaceTypeHistoriesArgs {
@@ -1656,17 +1677,12 @@ export interface WorkspaceTypeMembersArgs {
   take?: InputMaybe<Scalars['Int']['input']>;
 }
 
-export interface WorkspaceTypePageGrantedUsersListArgs {
-  pageGrantedUsersInput: PageGrantedUsersInput;
-  pageId: Scalars['String']['input'];
-}
-
 export interface WorkspaceTypePageMetaArgs {
   pageId: Scalars['String']['input'];
 }
 
-export interface WorkspaceTypePagePermissionArgs {
-  pageId: Scalars['String']['input'];
+export interface WorkspaceTypePublicDocArgs {
+  docId: Scalars['String']['input'];
 }
 
 export interface WorkspaceTypePublicPageArgs {
@@ -2357,10 +2373,10 @@ export type GetWorkspacePublicPageByIdQuery = {
   __typename?: 'Query';
   workspace: {
     __typename?: 'WorkspaceType';
-    publicPage: {
-      __typename?: 'WorkspacePage';
+    publicDoc: {
+      __typename?: 'DocType';
       id: string;
-      mode: PublicPageMode;
+      mode: PublicDocMode;
     } | null;
   };
 };
@@ -2373,10 +2389,10 @@ export type GetWorkspacePublicPagesQuery = {
   __typename?: 'Query';
   workspace: {
     __typename?: 'WorkspaceType';
-    publicPages: Array<{
-      __typename?: 'WorkspacePage';
+    publicDocs: Array<{
+      __typename?: 'DocType';
       id: string;
-      mode: PublicPageMode;
+      mode: PublicDocMode;
     }>;
   };
 };
@@ -2527,16 +2543,12 @@ export type PricesQuery = {
 export type PublishPageMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   pageId: Scalars['String']['input'];
-  mode?: InputMaybe<PublicPageMode>;
+  mode?: InputMaybe<PublicDocMode>;
 }>;
 
 export type PublishPageMutation = {
   __typename?: 'Mutation';
-  publishPage: {
-    __typename?: 'WorkspacePage';
-    id: string;
-    mode: PublicPageMode;
-  };
+  publishDoc: { __typename?: 'DocType'; id: string; mode: PublicDocMode };
 };
 
 export type QuotaQueryVariables = Exact<{ [key: string]: never }>;
@@ -2618,10 +2630,10 @@ export type RevokePublicPageMutationVariables = Exact<{
 
 export type RevokePublicPageMutation = {
   __typename?: 'Mutation';
-  revokePublicPage: {
-    __typename?: 'WorkspacePage';
+  revokePublicDoc: {
+    __typename?: 'DocType';
     id: string;
-    mode: PublicPageMode;
+    mode: PublicDocMode;
     public: boolean;
   };
 };
