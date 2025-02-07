@@ -27,6 +27,7 @@ import {
   PaginationInput,
   registerObjectType,
 } from '../../../base';
+import { Models } from '../../../models';
 import { CurrentUser } from '../../auth';
 import {
   DOC_ACTIONS,
@@ -38,6 +39,7 @@ import {
   PublicPageMode,
   WorkspaceRole,
 } from '../../permission';
+import { PublicUserType } from '../../user';
 import { DocID } from '../../utils/doc';
 import { WorkspaceType } from '../types';
 
@@ -117,17 +119,11 @@ class UpdatePageDefaultRoleInput {
 
 @ObjectType()
 class GrantedDocUserType {
-  @Field(() => String)
-  workspaceId!: string;
-
-  @Field(() => String)
-  pageId!: string;
-
-  @Field(() => String)
-  userId!: string;
-
   @Field(() => DocRole, { name: 'role' })
   type!: DocRole;
+
+  @Field(() => PublicUserType)
+  user!: PublicUserType;
 }
 
 @ObjectType()
@@ -161,7 +157,8 @@ export class PagePermissionResolver {
 
   constructor(
     private readonly prisma: PrismaClient,
-    private readonly permission: PermissionService
+    private readonly permission: PermissionService,
+    private readonly models: Models
   ) {}
 
   /**
@@ -293,7 +290,27 @@ export class PagePermissionResolver {
       ]);
     });
 
-    return paginate(permissions, 'createdAt', pagination, totalCount);
+    const users = new Map<string, PublicUserType>(
+      await Promise.all(
+        permissions.map(
+          async p =>
+            [p.userId, await this.models.user.getPublicUser(p.userId)] as [
+              string,
+              PublicUserType,
+            ]
+        )
+      )
+    );
+
+    return paginate(
+      permissions.map(p => ({
+        ...p,
+        user: users.get(p.userId),
+      })),
+      'createdAt',
+      pagination,
+      totalCount
+    );
   }
 
   /**

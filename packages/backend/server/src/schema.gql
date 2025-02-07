@@ -385,10 +385,8 @@ input GrantDocUserRolesInput {
 }
 
 type GrantedDocUserType {
-  pageId: String!
   role: DocRole!
-  userId: String!
-  workspaceId: String!
+  user: PublicUserType!
 }
 
 type GrantedDocUserTypeEdge {
@@ -729,6 +727,13 @@ enum Permission {
 enum PublicPageMode {
   Edgeless
   Page
+}
+
+type PublicUserType {
+  avatarUrl: String
+  email: String!
+  id: String!
+  name: String!
 }
 
 type Query {

@@ -59,6 +59,13 @@ export class UserModel extends BaseModel {
     });
   }
 
+  async getPublicUsers(ids: string[]): Promise<PublicUser[]> {
+    return this.db.user.findMany({
+      select: publicUserSelect,
+      where: { id: { in: ids } },
+    });
+  }
+
   async getUserByEmail(email: string): Promise<User | null> {
     const rows = await this.db.$queryRaw<User[]>`
       SELECT id, name, email, password, registered, email_verified as emailVerifiedAt, avatar_url as avatarUrl, registered, created_at as createdAt
