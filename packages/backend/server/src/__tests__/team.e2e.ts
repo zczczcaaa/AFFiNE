@@ -987,7 +987,7 @@ test('should be able to grant and revoke doc user role', async t => {
           revokeDocUserRoles(input: {
             workspaceId: "${ws.id}",
             docId: "${pageId}",
-            userIds: ["${external.id}"]
+            userId: "${external.id}"
           })
         }
       `,
@@ -1010,7 +1010,7 @@ test('should be able to grant and revoke doc user role', async t => {
             revokeDocUserRoles(input: {
               workspaceId: "${ws.id}",
               docId: "${pageId}",
-              userIds: ["${read.id}"]
+              userId: "${read.id}"
             })
           }
         `,
@@ -1019,7 +1019,7 @@ test('should be able to grant and revoke doc user role', async t => {
     t.like(externalRes.body, {
       errors: [
         {
-          message: `You do not have permission to access Space ${ws.id}.`,
+          message: `You do not have permission to access doc ${pageId} under Space ${ws.id}.`,
         },
       ],
     });

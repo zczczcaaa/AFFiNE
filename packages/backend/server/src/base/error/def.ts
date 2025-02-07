@@ -474,6 +474,10 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'invalid_input',
     message: 'Page default role can not be owner.',
   },
+  can_not_batch_grant_page_owner_permissions: {
+    type: 'invalid_input',
+    message: 'Can not batch grant page owner permissions.',
+  },
 
   // Subscription Errors
   unsupported_subscription_plan: {

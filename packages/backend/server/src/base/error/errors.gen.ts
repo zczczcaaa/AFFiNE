@@ -411,6 +411,12 @@ export class PageDefaultRoleCanNotBeOwner extends UserFriendlyError {
     super('invalid_input', 'page_default_role_can_not_be_owner', message);
   }
 }
+
+export class CanNotBatchGrantPageOwnerPermissions extends UserFriendlyError {
+  constructor(message?: string) {
+    super('invalid_input', 'can_not_batch_grant_page_owner_permissions', message);
+  }
+}
 @ObjectType()
 class UnsupportedSubscriptionPlanDataType {
   @Field() plan!: string
@@ -768,6 +774,7 @@ export enum ErrorNames {
   FAILED_TO_UPSERT_SNAPSHOT,
   ACTION_FORBIDDEN_ON_NON_TEAM_WORKSPACE,
   PAGE_DEFAULT_ROLE_CAN_NOT_BE_OWNER,
+  CAN_NOT_BATCH_GRANT_PAGE_OWNER_PERMISSIONS,
   UNSUPPORTED_SUBSCRIPTION_PLAN,
   FAILED_TO_CHECKOUT,
   INVALID_CHECKOUT_PARAMETERS,

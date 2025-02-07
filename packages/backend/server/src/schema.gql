@@ -254,6 +254,7 @@ enum ErrorNames {
   CANNOT_DELETE_ALL_ADMIN_ACCOUNT
   CANNOT_DELETE_OWN_ACCOUNT
   CANT_UPDATE_ONETIME_PAYMENT_SUBSCRIPTION
+  CAN_NOT_BATCH_GRANT_PAGE_OWNER_PERMISSIONS
   CAPTCHA_VERIFICATION_FAILED
   COPILOT_ACTION_TAKEN
   COPILOT_FAILED_TO_CREATE_MESSAGE
@@ -629,7 +630,7 @@ type Mutation {
   removeWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Boolean!
   resumeSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
   revoke(userId: String!, workspaceId: String!): Boolean!
-  revokeDocUserRoles(input: RevokeDocUserRolesInput!): Boolean!
+  revokeDocUserRoles(input: RevokeDocUserRoleInput!): Boolean!
   revokeInviteLink(workspaceId: String!): Boolean!
   revokePage(pageId: String!, workspaceId: String!): Boolean! @deprecated(reason: "use revokePublicPage")
   revokePublicPage(pageId: String!, workspaceId: String!): WorkspacePage!
@@ -809,9 +810,9 @@ type RemoveAvatar {
   success: Boolean!
 }
 
-input RevokeDocUserRolesInput {
+input RevokeDocUserRoleInput {
   docId: String!
-  userIds: [String!]!
+  userId: String!
   workspaceId: String!
 }
 

@@ -1,15 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, WorkspacePageUserPermission } from '@prisma/client';
 import { PrismaClient, WorkspaceMemberStatus } from '@prisma/client';
 import { groupBy } from 'lodash-es';
 
 import {
+  CanNotBatchGrantPageOwnerPermissions,
   DocAccessDenied,
   EventBus,
   OnEvent,
   SpaceAccessDenied,
   SpaceOwnerNotFound,
-  SpaceShouldHaveOnlyOneOwner,
   WorkspacePermissionNotFound,
 } from '../../base';
 import {
@@ -737,17 +737,15 @@ export class PermissionService {
       ].filter(Boolean) as Prisma.PrismaPromise<any>[]
     );
 
-    return p;
+    return p as WorkspacePageUserPermission;
   }
 
-  async revokePage(ws: string, page: string, users: string[]) {
+  async revokePage(ws: string, page: string, user: string) {
     const result = await this.prisma.workspacePageUserPermission.deleteMany({
       where: {
         workspaceId: ws,
         pageId: page,
-        userId: {
-          in: users,
-        },
+        userId: user,
         type: {
           // We shouldn't revoke owner permission, should auto deleted by workspace/user delete cascading
           not: DocRole.Owner,
@@ -758,74 +756,30 @@ export class PermissionService {
     return result.count > 0;
   }
 
-  async grantPagePermission(
+  async batchGrantPage(
     workspaceId: string,
     pageId: string,
     userIds: string[],
     role: DocRole
   ) {
     if (userIds.length === 0) {
-      return [];
-    }
-    if (role === DocRole.Owner && userIds.length > 1) {
-      throw new SpaceShouldHaveOnlyOneOwner({ spaceId: workspaceId });
+      return 0;
     }
 
-    return await this.prisma.$transaction(async tx =>
-      Promise.all(
-        userIds.map(id =>
-          tx.workspacePageUserPermission.upsert({
-            where: {
-              workspaceId_pageId_userId: {
-                workspaceId,
-                pageId,
-                userId: id,
-              },
-            },
-            create: {
-              workspaceId,
-              pageId,
-              userId: id,
-              type: role,
-            },
-            update: {
-              type: role,
-            },
-          })
-        )
-      )
-    );
-  }
+    if (role === DocRole.Owner) {
+      throw new CanNotBatchGrantPageOwnerPermissions();
+    }
 
-  async updatePagePermission(
-    workspaceId: string,
-    pageId: string,
-    userId: string,
-    role: DocRole
-  ) {
-    const permission = await this.prisma.workspacePageUserPermission.findFirst({
-      where: {
+    const result = await this.prisma.workspacePageUserPermission.createMany({
+      skipDuplicates: true,
+      data: userIds.map(id => ({
         workspaceId,
         pageId,
-        userId,
-      },
-    });
-
-    if (!permission) {
-      return this.grantPage(workspaceId, pageId, userId, role);
-    }
-
-    return await this.prisma.workspacePageUserPermission.update({
-      where: {
-        workspaceId_pageId_userId: {
-          workspaceId,
-          pageId,
-          userId,
-        },
-      },
-      data: {
+        userId: id,
         type: role,
-      },
+      })),
     });
+
+    return result.count;
   }
 }

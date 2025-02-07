@@ -37,7 +37,6 @@ import {
   mapDocRoleToPermissions,
   PermissionService,
   PublicPageMode,
-  WorkspaceRole,
 } from '../../permission';
 import { PublicUserType } from '../../user';
 import { DocID } from '../../utils/doc';
@@ -94,15 +93,15 @@ class UpdateDocUserRoleInput {
 }
 
 @InputType()
-class RevokeDocUserRolesInput {
+class RevokeDocUserRoleInput {
   @Field(() => String)
   docId!: string;
 
   @Field(() => String)
   workspaceId!: string;
 
-  @Field(() => [String])
-  userIds!: string[];
+  @Field(() => String)
+  userId!: string;
 }
 
 @InputType()
@@ -263,10 +262,18 @@ export class PagePermissionResolver {
     complexity: 4,
   })
   async pageGrantedUsersList(
+    @CurrentUser() user: CurrentUser,
     @Parent() workspace: WorkspaceType,
     @Args('pageId') pageId: string,
     @Args('pagination') pagination: PaginationInput
   ): Promise<PaginatedGrantedDocUserType> {
+    await this.permission.checkPagePermission(
+      workspace.id,
+      pageId,
+      'Doc.Users.Read',
+      user.id
+    );
+
     const docId = new DocID(pageId, workspace.id);
     const [permissions, totalCount] = await this.prisma.$transaction(tx => {
       return Promise.all([
@@ -454,7 +461,7 @@ export class PagePermissionResolver {
       'Doc.Users.Manage',
       user.id
     );
-    await this.permission.grantPagePermission(
+    await this.permission.batchGrantPage(
       doc.workspace,
       doc.guid,
       input.userIds,
@@ -471,7 +478,7 @@ export class PagePermissionResolver {
   @Mutation(() => Boolean)
   async revokeDocUserRoles(
     @CurrentUser() user: CurrentUser,
-    @Args('input') input: RevokeDocUserRolesInput
+    @Args('input') input: RevokeDocUserRoleInput
   ): Promise<boolean> {
     const doc = new DocID(input.docId, input.workspaceId);
     const pairs = {
@@ -488,15 +495,16 @@ export class PagePermissionResolver {
         'Expect doc not to be workspace'
       );
     }
-    await this.permission.checkWorkspace(
+    await this.permission.checkPagePermission(
       doc.workspace,
-      user.id,
-      WorkspaceRole.Collaborator
+      doc.guid,
+      'Doc.Users.Manage',
+      user.id
     );
-    await this.permission.revokePage(doc.workspace, doc.guid, input.userIds);
+    await this.permission.revokePage(doc.workspace, doc.guid, input.userId);
     this.logger.log('Revoke doc user roles', {
       ...pairs,
-      userIds: input.userIds,
+      userId: input.userId,
     });
     return true;
   }
@@ -521,38 +529,36 @@ export class PagePermissionResolver {
         'Expect doc not to be workspace'
       );
     }
-    await this.permission.checkWorkspace(
+
+    await this.permission.checkPagePermission(
       doc.workspace,
-      user.id,
-      WorkspaceRole.Collaborator
+      doc.guid,
+      input.role === DocRole.Owner ? 'Doc.TransferOwner' : 'Doc.Users.Manage',
+      user.id
     );
+
+    await this.permission.grantPage(
+      doc.workspace,
+      doc.guid,
+      input.userId,
+      input.role
+    );
+
     if (input.role === DocRole.Owner) {
-      const ret = await this.permission.grantPagePermission(
-        doc.workspace,
-        doc.guid,
-        [input.userId],
-        input.role
-      );
       this.logger.log('Transfer doc owner', {
         ...pairs,
         userId: input.userId,
         role: input.role,
       });
-      return ret.length > 0;
     } else {
-      await this.permission.updatePagePermission(
-        doc.workspace,
-        doc.guid,
-        input.userId,
-        input.role
-      );
       this.logger.log('Update doc user role', {
         ...pairs,
         userId: input.userId,
         role: input.role,
       });
-      return true;
     }
+
+    return true;
   }
 
   @Mutation(() => Boolean)
@@ -580,7 +586,7 @@ export class PagePermissionResolver {
       );
     }
     try {
-      await this.permission.checkCloudPagePermission(
+      await this.permission.checkPagePermission(
         doc.workspace,
         doc.guid,
         'Doc.Users.Manage',
