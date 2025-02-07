@@ -4,12 +4,14 @@ import type {
   BookmarkBlockModel,
   EmbedBlockModel,
   ImageBlockModel,
+  TableBlockModel,
 } from '@blocksuite/affine/blocks';
 import {
   defaultBlockMarkdownAdapterMatchers,
   InlineDeltaToMarkdownAdapterExtensions,
   MarkdownAdapter,
   MarkdownInlineToDeltaAdapterExtensions,
+  TableModelFlavour,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
 import {
@@ -372,6 +374,23 @@ function generateMarkdownPreviewBuilder(
     return `[${draftModel.name}](${draftModel.sourceId})\n`;
   };
 
+  const generateTableMarkdownPreview = (block: BlockDocumentInfo) => {
+    const isTableModel = (
+      model: DraftModel | null
+    ): model is DraftModel<TableBlockModel> => {
+      return model?.flavour === TableModelFlavour;
+    };
+
+    const draftModel = yblockToDraftModal(block.yblock);
+    if (!isTableModel(draftModel)) {
+      return null;
+    }
+
+    const url = getDocLink(block.docId, draftModel.id);
+
+    return `[table][](${url})\n`;
+  };
+
   const generateMarkdownPreview = async (block: BlockDocumentInfo) => {
     if (markdownPreviewCache.has(block)) {
       return markdownPreviewCache.get(block);
@@ -415,6 +434,8 @@ function generateMarkdownPreviewBuilder(
       markdown = generateLatexMarkdownPreview(block);
     } else if (bookmarkFlavours.has(flavour)) {
       markdown = generateBookmarkMarkdownPreview(block);
+    } else if (flavour === TableModelFlavour) {
+      markdown = generateTableMarkdownPreview(block);
     } else {
       console.warn(`unknown flavour: ${flavour}`);
     }
@@ -801,7 +822,10 @@ async function crawlingDocData({
           ...commonBlockProps,
           content: block.get('prop:latex')?.toString() ?? '',
         });
-      } else if (bookmarkFlavours.has(flavour)) {
+      } else if (
+        bookmarkFlavours.has(flavour) ||
+        flavour === TableModelFlavour
+      ) {
         blockDocuments.push({
           ...commonBlockProps,
         });
