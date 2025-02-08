@@ -95,7 +95,7 @@ spec:
                 key: secretAccessKey
           {{ end }}
           - name: DOC_SERVICE_ENDPOINT
-            value: "{{ .Values.global.docService.endpoint }}"
+            value: "http://{{ .Values.global.docService.name }}:{{ .Values.global.docService.port }}"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

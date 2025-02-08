@@ -119,7 +119,7 @@ spec:
           - name: DOC_MERGE_INTERVAL
             value: "{{ .Values.app.doc.mergeInterval }}"
           - name: DOC_SERVICE_ENDPOINT
-            value: "{{ .Values.global.docService.endpoint }}"
+            value: "http://{{ .Values.global.docService.name }}:{{ .Values.global.docService.port }}"
           {{ if .Values.app.experimental.enableJwstCodec }}
           - name: DOC_MERGE_USE_JWST_CODEC
             value: "true"

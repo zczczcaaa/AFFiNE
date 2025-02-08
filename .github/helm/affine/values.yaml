@@ -40,7 +40,8 @@ global:
   gke:
     enabled: true
   docService:
-    endpoint: 'http://affine-doc:3020'
+    name: 'affine-doc'
+    port: 3020
 
 graphql:
   service:
@@ -66,7 +67,6 @@ renderer:
 doc:
   service:
     type: ClusterIP
-    port: 3020
     annotations:
       cloud.google.com/backend-config: '{"default": "affine-api-backendconfig"}'
 

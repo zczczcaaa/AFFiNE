@@ -56,8 +56,8 @@ Create the name of the service account to use
 */}}
 {{- define "doc.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "doc.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "doc.fullname" .) .Values.global.docService.name }}
 {{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- default "default" .Values.global.docService.name }}
 {{- end }}
 {{- end }}
