@@ -1,8 +1,4 @@
-import {
-  ConsoleLogger,
-  INestApplication,
-  ModuleMetadata,
-} from '@nestjs/common';
+import { INestApplication, LogLevel, ModuleMetadata } from '@nestjs/common';
 import { APP_GUARD, ModuleRef } from '@nestjs/core';
 import { Query, Resolver } from '@nestjs/graphql';
 import {
@@ -17,11 +13,14 @@ import type { Response } from 'supertest';
 import supertest from 'supertest';
 
 import { AppModule, FunctionalityModules } from '../../app.module';
-import { GlobalExceptionFilter, Runtime } from '../../base';
+import { AFFiNELogger, GlobalExceptionFilter, Runtime } from '../../base';
 import { GqlModule } from '../../base/graphql';
 import { AuthGuard, AuthModule } from '../../core/auth';
 import { RefreshFeatures0001 } from '../../data/migrations/0001-refresh-features';
 import { ModelsModule } from '../../models';
+
+const TEST_LOG_LEVEL: LogLevel =
+  (process.env.TEST_LOG_LEVEL as LogLevel) ?? 'fatal';
 
 async function flushDB(client: PrismaClient) {
   const result: { tablename: string }[] =
@@ -39,7 +38,7 @@ async function flushDB(client: PrismaClient) {
   );
 }
 
-interface TestingModuleMeatdata extends ModuleMetadata {
+interface TestingModuleMetadata extends ModuleMetadata {
   tapModule?(m: TestingModuleBuilder): void;
   tapApp?(app: INestApplication): void;
 }
@@ -85,7 +84,7 @@ class MockResolver {
 }
 
 export async function createTestingModule(
-  moduleDef: TestingModuleMeatdata = {},
+  moduleDef: TestingModuleMetadata = {},
   autoInitialize = true
 ): Promise<TestingModule> {
   // setting up
@@ -127,7 +126,7 @@ export async function createTestingModule(
     // can't tolerate the noisy logs
     // @ts-expect-error private
     m.applyLogger({
-      logger: ['fatal'],
+      logger: [TEST_LOG_LEVEL],
     });
     const runtime = m.get(Runtime);
     // by pass password min length validation
@@ -146,7 +145,7 @@ export async function createTestingModule(
 }
 
 export async function createTestingApp(
-  moduleDef: TestingModuleMeatdata = {}
+  moduleDef: TestingModuleMetadata = {}
 ): Promise<{ module: TestingModule; app: TestingApp }> {
   const m = await createTestingModule(moduleDef, false);
 
@@ -155,9 +154,9 @@ export async function createTestingApp(
     bodyParser: true,
     rawBody: true,
   }) as TestingApp;
-  const logger = new ConsoleLogger();
+  const logger = new AFFiNELogger();
 
-  logger.setLogLevels(['fatal']);
+  logger.setLogLevels([TEST_LOG_LEVEL]);
   app.useLogger(logger);
 
   app.useGlobalFilters(new GlobalExceptionFilter(app.getHttpAdapter()));

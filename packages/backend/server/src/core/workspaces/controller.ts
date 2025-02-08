@@ -13,6 +13,7 @@ import {
 } from '../../base';
 import { CurrentUser, Public } from '../auth';
 import { PgWorkspaceDocStorageAdapter } from '../doc';
+import { DocReader } from '../doc/reader';
 import { PermissionService, PublicDocMode } from '../permission';
 import { WorkspaceBlobStorage } from '../storage';
 import { DocID } from '../utils/doc';
@@ -24,6 +25,7 @@ export class WorkspacesController {
     private readonly storage: WorkspaceBlobStorage,
     private readonly permission: PermissionService,
     private readonly workspace: PgWorkspaceDocStorageAdapter,
+    private readonly docReader: DocReader,
     private readonly prisma: PrismaClient
   ) {}
 
@@ -95,7 +97,7 @@ export class WorkspacesController {
       throw new AccessDenied();
     }
 
-    const binResponse = await this.workspace.getDoc(
+    const binResponse = await this.docReader.getDoc(
       docId.workspace,
       docId.guid
     );

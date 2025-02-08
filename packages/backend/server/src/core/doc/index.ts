@@ -19,7 +19,11 @@ import { DocReader, DocReaderProvider } from './reader';
     DocStorageCronJob,
     DocReaderProvider,
   ],
-  exports: [PgWorkspaceDocStorageAdapter, PgUserspaceDocStorageAdapter],
+  exports: [
+    DocReader,
+    PgWorkspaceDocStorageAdapter,
+    PgUserspaceDocStorageAdapter,
+  ],
 })
 export class DocStorageModule {}
 export {

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { IncomingMessage } from 'node:http';
 
 import type { ArgumentsHost, ExecutionContext } from '@nestjs/common';
@@ -76,4 +77,19 @@ export function parseCookies(
     },
     {} as Record<string, string>
   );
+}
+
+/**
+ * Request type
+ *
+ * @description
+ * - `req`: http request
+ * - `ws`: websocket request
+ * - `se`: server event
+ * - `job`: cron job
+ */
+export type RequestType = 'req' | 'ws' | 'se' | 'job';
+
+export function genRequestId(type: RequestType) {
+  return `${AFFiNE.flavor.type}:${type}-${randomUUID()}`;
 }

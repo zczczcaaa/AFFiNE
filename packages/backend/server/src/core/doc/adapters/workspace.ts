@@ -334,7 +334,7 @@ export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
       });
 
       if (updatedSnapshot) {
-        this.event.emit('doc.snapshot.updated', {
+        this.event.broadcast('doc.snapshot.updated', {
           workspaceId: snapshot.spaceId,
           docId: snapshot.docId,
         });

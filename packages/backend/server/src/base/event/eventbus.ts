@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import {
   applyDecorators,
   Injectable,
@@ -21,6 +19,7 @@ import { CLS_ID, ClsService } from 'nestjs-cls';
 import type { Server, Socket } from 'socket.io';
 
 import { CallMetric } from '../metrics';
+import { genRequestId } from '../utils';
 import type { EventName } from './def';
 
 const EventHandlerWrapper = (event: EventName): MethodDecorator => {
@@ -94,7 +93,7 @@ export class EventBus implements OnGatewayConnection, OnApplicationBootstrap {
           // to internal event system
           this.server?.on(event, (payload, requestId?: string) => {
             this.cls.run(() => {
-              requestId = requestId ?? `server_event-${randomUUID()}`;
+              requestId = requestId ?? genRequestId('se');
               this.cls.set(CLS_ID, requestId);
               this.logger.log(`Server Event: ${event} (Received)`);
               this.emit(event, payload);

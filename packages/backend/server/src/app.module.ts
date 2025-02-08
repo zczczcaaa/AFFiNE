@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import {
   DynamicModule,
   ForwardReference,
@@ -15,7 +13,7 @@ import { get } from 'lodash-es';
 import { ClsModule } from 'nestjs-cls';
 
 import { AppController } from './app.controller';
-import { getOptionalModuleMetadata } from './base';
+import { genRequestId, getOptionalModuleMetadata } from './base';
 import { CacheModule } from './base/cache';
 import { AFFiNEConfig, ConfigModule, mergeConfigOverride } from './base/config';
 import { ErrorModule } from './base/error';
@@ -59,7 +57,7 @@ export const FunctionalityModules = [
       generateId: true,
       idGenerator(req: Request) {
         // make every request has a unique id to tracing
-        return req.get('x-rpc-trace-id') ?? `req-${randomUUID()}`;
+        return req.get('x-rpc-trace-id') ?? genRequestId('req');
       },
       setup(cls, _req, res: Response) {
         res.setHeader('X-Request-Id', cls.getId());
@@ -72,7 +70,7 @@ export const FunctionalityModules = [
       generateId: true,
       idGenerator() {
         // make every request has a unique id to tracing
-        return `ws-${randomUUID()}`;
+        return genRequestId('ws');
       },
     },
     plugins: [
@@ -200,6 +198,12 @@ export function buildAppModule() {
     .use(...FunctionalityModules)
     .use(ModelsModule)
 
+    // enable schedule module on graphql server and doc service
+    .useIf(
+      config => config.flavor.graphql || config.flavor.doc,
+      ScheduleModule.forRoot()
+    )
+
     // auth
     .use(UserModule, AuthModule, PermissionModule)
 
@@ -212,7 +216,6 @@ export function buildAppModule() {
     // graphql server only
     .useIf(
       config => config.flavor.graphql,
-      ScheduleModule.forRoot(),
       GqlModule,
       StorageModule,
       ServerConfigModule,
