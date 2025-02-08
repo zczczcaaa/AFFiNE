@@ -116,15 +116,38 @@ export class SelectionController implements ReactiveController {
       this.dataManager.clearCells(deleteCells);
     }
     const text = cells.map(row => row.join('\t')).join('\n');
+
+    const htmlTable = `<table style="border-collapse: collapse;">
+      <tbody>
+        ${cells
+          .map(
+            row => `
+          <tr>
+            ${row
+              .map(
+                cell => `
+              <td style="border: 1px solid var(--affine-border-color); padding: 8px 12px; min-width: ${DefaultColumnWidth}px; min-height: 22px;">${cell}</td>
+            `
+              )
+              .join('')}
+          </tr>
+        `
+          )
+          .join('')}
+      </tbody>
+    </table>`;
+
     this.clipboard
       .writeToClipboard(items => ({
         ...items,
         [TEXT]: text,
+        'text/html': htmlTable,
       }))
       .catch(console.error);
   };
   onCopy = () => {
     const selection = this.getSelected();
+    console.log('selection', selection);
     if (!selection || selection.type !== 'area') {
       return false;
     }
@@ -194,9 +217,42 @@ export class SelectionController implements ReactiveController {
     if (!selection || selection.type !== 'area') {
       return false;
     }
-    const plainText = clipboardData.getData('text/plain');
-    this.doPaste(plainText, selection);
-    return true;
+
+    try {
+      const html = clipboardData.getData('text/html');
+      if (html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const table = doc.querySelector('table');
+        if (table) {
+          const rows: string[][] = [];
+          table.querySelectorAll('tr').forEach(tr => {
+            const rowData: string[] = [];
+            tr.querySelectorAll('td,th').forEach(cell => {
+              rowData.push(cell.textContent?.trim() ?? '');
+            });
+            if (rowData.length > 0) {
+              rows.push(rowData);
+            }
+          });
+          if (rows.length > 0) {
+            this.doPaste(rows.map(row => row.join('\t')).join('\n'), selection);
+            return true;
+          }
+        }
+      }
+
+      // If no HTML format or parsing failed, try to read plain text
+      const plainText = clipboardData.getData('text/plain');
+      if (plainText) {
+        this.doPaste(plainText, selection);
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to paste:', error);
+    }
+
+    return false;
   };
   onDragStart(event: MouseEvent) {
     const target = event.target;
