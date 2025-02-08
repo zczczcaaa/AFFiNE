@@ -10,7 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { PrismaClient } from '@prisma/client';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { get } from 'lodash-es';
 import { ClsModule } from 'nestjs-cls';
 
@@ -36,6 +36,7 @@ import { AuthModule } from './core/auth';
 import { ADD_ENABLED_FEATURES, ServerConfigModule } from './core/config';
 import { DocStorageModule } from './core/doc';
 import { DocRendererModule } from './core/doc-renderer';
+import { DocServiceModule } from './core/doc-service';
 import { FeatureModule } from './core/features';
 import { PermissionModule } from './core/permission';
 import { QuotaModule } from './core/quota';
@@ -56,9 +57,9 @@ export const FunctionalityModules = [
     middleware: {
       mount: true,
       generateId: true,
-      idGenerator() {
+      idGenerator(req: Request) {
         // make every request has a unique id to tracing
-        return `req-${randomUUID()}`;
+        return req.get('x-rpc-trace-id') ?? `req-${randomUUID()}`;
       },
       setup(cls, _req, res: Response) {
         res.setHeader('X-Request-Id', cls.getId());
@@ -218,6 +219,9 @@ export function buildAppModule() {
       WorkspaceModule,
       LicenseModule
     )
+
+    // doc service only
+    .useIf(config => config.flavor.doc, DocServiceModule)
 
     // self hosted server only
     .useIf(config => config.isSelfhosted, SelfhostModule)

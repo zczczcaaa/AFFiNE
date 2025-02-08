@@ -2,7 +2,7 @@ import type { LeafPaths } from '../utils/types';
 import { AppStartupConfig } from './types';
 
 export type EnvConfigType = 'string' | 'int' | 'float' | 'boolean';
-export type ServerFlavor = 'allinone' | 'graphql' | 'sync' | 'renderer';
+export type ServerFlavor = 'allinone' | 'graphql' | 'sync' | 'renderer' | 'doc';
 export type AFFINE_ENV = 'dev' | 'beta' | 'production';
 export type NODE_ENV = 'development' | 'test' | 'production' | 'script';
 
@@ -41,9 +41,9 @@ export type AFFiNEConfig = PreDefinedAFFiNEConfig &
   AppPluginsConfig;
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+  // oxlint-disable-next-line @typescript-eslint/no-namespace
   namespace globalThis {
-    // eslint-disable-next-line no-var
+    // oxlint-disable-next-line no-var
     var AFFiNE: AFFiNEConfig;
   }
 }

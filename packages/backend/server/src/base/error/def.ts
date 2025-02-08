@@ -101,6 +101,15 @@ export class UserFriendlyError extends Error {
     this.requestId = ClsServiceManager.getClsService()?.getId();
   }
 
+  static fromUserFriendlyErrorJSON(body: UserFriendlyError) {
+    return new UserFriendlyError(
+      body.type as UserFriendlyErrorBaseType,
+      body.name.toLowerCase() as keyof typeof USER_FRIENDLY_ERRORS,
+      body.message,
+      body.data
+    );
+  }
+
   toJSON() {
     return {
       status: this.status,

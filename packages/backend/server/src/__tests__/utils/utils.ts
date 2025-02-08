@@ -58,6 +58,8 @@ export type TestingModule = BaseTestingModule & {
 export type TestingApp = INestApplication & {
   initTestingDB(): Promise<void>;
   [Symbol.asyncDispose](): Promise<void>;
+  // get the url of the http server, e.g. http://localhost:random-port
+  getHttpServerUrl(): string;
 };
 
 function dedupeModules(modules: NonNullable<ModuleMetadata['imports']>) {
@@ -180,6 +182,15 @@ export async function createTestingApp(
     await m[Symbol.asyncDispose]();
     await app.close();
   };
+
+  app.getHttpServerUrl = () => {
+    const server = app.getHttpServer();
+    if (!server.address()) {
+      server.listen();
+    }
+    return `http://localhost:${server.address().port}`;
+  };
+
   return {
     module: m,
     app: app,

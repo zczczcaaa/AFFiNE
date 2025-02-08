@@ -41,7 +41,9 @@ declare global {
 }
 @Injectable()
 export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
-  private readonly logger = new Logger(PgWorkspaceDocStorageAdapter.name);
+  protected override readonly logger = new Logger(
+    PgWorkspaceDocStorageAdapter.name
+  );
 
   constructor(
     private readonly models: Models,

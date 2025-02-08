@@ -345,12 +345,7 @@ export class LicenseService implements OnModuleInit {
 
       if (!res.ok) {
         const body = (await res.json()) as UserFriendlyError;
-        throw new UserFriendlyError(
-          body.type as any,
-          body.name.toLowerCase() as any,
-          body.message,
-          body.data
-        );
+        throw UserFriendlyError.fromUserFriendlyErrorJSON(body);
       }
 
       const data = (await res.json()) as T;

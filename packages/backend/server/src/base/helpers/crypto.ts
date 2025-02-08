@@ -46,10 +46,14 @@ export class CryptoHelper {
     const sign = createSign('rsa-sha256');
     sign.update(data, 'utf-8');
     sign.end();
-    return sign.sign(this.keyPair.privateKey, 'base64');
+    return `${data},${sign.sign(this.keyPair.privateKey, 'base64')}`;
   }
 
-  verify(data: string, signature: string) {
+  verify(signatureWithData: string) {
+    const [data, signature] = signatureWithData.split(',');
+    if (!signature) {
+      return false;
+    }
     const verify = createVerify('rsa-sha256');
     verify.update(data, 'utf-8');
     verify.end();

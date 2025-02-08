@@ -18,6 +18,7 @@ test.before('start app', async t => {
     graphql: false,
     sync: false,
     renderer: true,
+    doc: false,
   } satisfies typeof AFFiNE.flavor;
   const { app } = await createTestingApp({
     imports: [buildAppModule()],
