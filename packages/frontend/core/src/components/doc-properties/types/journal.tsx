@@ -17,7 +17,7 @@ import * as styles from './journal.css';
 import type { PropertyValueProps } from './types';
 
 const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
-export const JournalValue = ({ onChange }: PropertyValueProps) => {
+export const JournalValue = ({ readonly }: PropertyValueProps) => {
   const t = useI18n();
 
   const journalService = useService(JournalService);
@@ -53,9 +53,8 @@ export const JournalValue = ({ onChange }: PropertyValueProps) => {
       const date = dayjs(day).format('YYYY-MM-DD');
       setSelectedDate(date);
       journalService.setJournalDate(doc.id, date);
-      onChange?.(date, true);
     },
-    [journalService, doc.id, onChange]
+    [journalService, doc.id]
   );
 
   const handleCheck = useCallback(
@@ -63,12 +62,11 @@ export const JournalValue = ({ onChange }: PropertyValueProps) => {
       if (!v) {
         journalService.removeJournalDate(doc.id);
         setShowDatePicker(false);
-        onChange?.(null, true);
       } else {
         handleDateSelect(selectedDate);
       }
     },
-    [onChange, journalService, doc.id, handleDateSelect, selectedDate]
+    [journalService, doc.id, handleDateSelect, selectedDate]
   );
 
   const workbench = useService(WorkbenchService).workbench;
@@ -88,11 +86,12 @@ export const JournalValue = ({ onChange }: PropertyValueProps) => {
 
   const toggle = useCallback(
     (e: React.MouseEvent) => {
+      if (readonly) return;
       if (propertyRef.current?.contains(e.target as Node)) {
         handleCheck(null, !checked);
       }
     },
-    [checked, handleCheck]
+    [checked, handleCheck, readonly]
   );
 
   return (
@@ -100,9 +99,14 @@ export const JournalValue = ({ onChange }: PropertyValueProps) => {
       ref={propertyRef}
       className={styles.property}
       onClick={toggle}
+      readonly={readonly}
     >
       <div className={styles.root}>
-        <Checkbox className={styles.checkbox} checked={checked} />
+        <Checkbox
+          className={styles.checkbox}
+          checked={checked}
+          disabled={readonly}
+        />
         {checked ? (
           <Menu
             contentOptions={{
@@ -113,7 +117,7 @@ export const JournalValue = ({ onChange }: PropertyValueProps) => {
             }}
             rootOptions={{
               modal: true,
-              open: showDatePicker,
+              open: !readonly && showDatePicker,
               onOpenChange: setShowDatePicker,
             }}
             items={
@@ -132,6 +136,7 @@ export const JournalValue = ({ onChange }: PropertyValueProps) => {
               onClick={e => {
                 e.stopPropagation();
               }}
+              data-disabled={readonly ? 'true' : undefined}
             >
               {displayDate}
             </div>

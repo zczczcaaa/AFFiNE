@@ -158,10 +158,7 @@ export function NormalPageHeader({ page, workspace }: PageHeaderProps) {
       <ViewTitle title={title} />
       <ViewIcon icon={currentMode ?? 'page'} />
       <EditorModeSwitch />
-      <BlocksuiteHeaderTitle
-        docId={page.id}
-        inputHandleRef={titleInputHandleRef}
-      />
+      <BlocksuiteHeaderTitle inputHandleRef={titleInputHandleRef} />
       <TemplateMark />
       <div className={styles.iconButtonContainer}>
         {hideCollect ? null : (

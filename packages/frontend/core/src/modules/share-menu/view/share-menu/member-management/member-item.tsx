@@ -8,13 +8,15 @@ import {
   Tooltip,
 } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
+import { DocService } from '@affine/core/modules/doc';
 import {
   DocGrantedUsersService,
   type GrantedUser,
+  GuardService,
 } from '@affine/core/modules/permissions';
 import { DocRole, UserFriendlyError } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
-import { useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useMemo } from 'react';
 
 import { PlanTag } from '../plan-tag';
@@ -77,7 +79,6 @@ export const MemberItem = ({
         </div>
       </div>
 
-      {/* TODO(@eyhn): add guard here */}
       <Menu
         items={
           <Options
@@ -118,6 +119,15 @@ const Options = ({
 }) => {
   const t = useI18n();
   const docGrantedUsersService = useService(DocGrantedUsersService);
+  const docService = useService(DocService);
+  const guardService = useService(GuardService);
+
+  const canTransferOwner = useLiveData(
+    guardService.can$('Doc_TransferOwner', docService.doc.id)
+  );
+  const canManageUsers = useLiveData(
+    guardService.can$('Doc_Users_Manage', docService.doc.id)
+  );
 
   const changeToManager = useAsyncCallback(async () => {
     try {
@@ -188,20 +198,17 @@ const Options = ({
         label: t['com.affine.share-menu.option.permission.can-manage'](),
         onClick: changeToManager,
         role: DocRole.Manager,
-        show: true, // TODO(@eyhn): add guard here
       },
       {
         label: t['com.affine.share-menu.option.permission.can-edit'](),
         onClick: changeToEditor,
         role: DocRole.Editor,
-        show: true, // TODO(@eyhn): add guard here
         showPlanTag: true,
       },
       {
         label: t['com.affine.share-menu.option.permission.can-read'](),
         onClick: changeToReader,
         role: DocRole.Reader,
-        show: true, // TODO(@eyhn): add guard here
         showPlanTag: true,
       },
     ];
@@ -209,26 +216,28 @@ const Options = ({
 
   return (
     <>
-      {operationButtonInfo.map(item =>
-        item.show ? (
-          <MenuItem
-            key={item.label}
-            onSelect={item.onClick}
-            selected={memberRole === item.role}
-          >
-            <div className={styles.planTagContainer}>
-              {item.label} {item.showPlanTag ? <PlanTag /> : null}
-            </div>
-          </MenuItem>
-        ) : null
-      )}
-      {/* TODO(@eyhn): add guard here */}
-      <MenuItem onSelect={changeToOwner}>
+      {operationButtonInfo.map(item => (
+        <MenuItem
+          key={item.label}
+          onSelect={item.onClick}
+          selected={memberRole === item.role}
+          disabled={!canManageUsers}
+        >
+          <div className={styles.planTagContainer}>
+            {item.label} {item.showPlanTag ? <PlanTag /> : null}
+          </div>
+        </MenuItem>
+      ))}
+      <MenuItem onSelect={changeToOwner} disabled={!canTransferOwner}>
         {t['com.affine.share-menu.member-management.set-as-owner']()}
       </MenuItem>
-      {/* TODO(@eyhn): add guard here */}
       <MenuSeparator />
-      <MenuItem onSelect={removeMember} type="danger" className={styles.remove}>
+      <MenuItem
+        onSelect={removeMember}
+        type="danger"
+        className={styles.remove}
+        disabled={!canManageUsers}
+      >
         {t['com.affine.share-menu.member-management.remove']()}
       </MenuItem>
     </>

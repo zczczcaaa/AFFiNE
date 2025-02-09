@@ -2,8 +2,13 @@ import type { WorkspaceServerService } from '@affine/core/modules/cloud';
 import { getWorkspaceInfoQuery, leaveWorkspaceMutation } from '@affine/graphql';
 import { Store } from '@toeverything/infra';
 
+import type { WorkspaceLocalState } from '../../workspace';
+
 export class WorkspacePermissionStore extends Store {
-  constructor(private readonly workspaceServerService: WorkspaceServerService) {
+  constructor(
+    private readonly workspaceServerService: WorkspaceServerService,
+    private readonly workspaceLocalState: WorkspaceLocalState
+  ) {
     super();
   }
 
@@ -35,5 +40,21 @@ export class WorkspacePermissionStore extends Store {
         workspaceId,
       },
     });
+  }
+
+  watchWorkspacePermissionCache() {
+    return this.workspaceLocalState.watch<{
+      isOwner: boolean;
+      isAdmin: boolean;
+      isTeam: boolean;
+    }>('permission');
+  }
+
+  setWorkspacePermissionCache(permission: {
+    isOwner: boolean;
+    isAdmin: boolean;
+    isTeam: boolean;
+  }) {
+    this.workspaceLocalState.set('permission', permission);
   }
 }

@@ -23,7 +23,10 @@ const getThemeOptions = (t: ReturnType<typeof useI18n>) =>
     },
   ] satisfies RadioItem[];
 
-export const EdgelessThemeValue = ({ onChange }: PropertyValueProps) => {
+export const EdgelessThemeValue = ({
+  onChange,
+  readonly,
+}: PropertyValueProps) => {
   const t = useI18n();
   const doc = useService(DocService).doc;
   const edgelessTheme = useLiveData(doc.properties$).edgelessColorTheme;
@@ -38,13 +41,18 @@ export const EdgelessThemeValue = ({ onChange }: PropertyValueProps) => {
   const themeItems = useMemo<RadioItem[]>(() => getThemeOptions(t), [t]);
 
   return (
-    <PropertyValue className={styles.container} hoverable={false}>
+    <PropertyValue
+      className={styles.container}
+      hoverable={false}
+      readonly={readonly}
+    >
       <RadioGroup
         width={BUILD_CONFIG.isMobileEdition ? '100%' : 194}
         itemHeight={24}
         value={edgelessTheme || 'system'}
         onChange={handleChange}
         items={themeItems}
+        disabled={readonly}
       />
     </PropertyValue>
   );

@@ -4,6 +4,7 @@ import {
   VirtualizedPageList,
 } from '@affine/core/components/page-list';
 import { GlobalContextService } from '@affine/core/modules/global-context';
+import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { TagService } from '@affine/core/modules/tag';
 import {
   useIsActiveView,
@@ -26,6 +27,9 @@ export const TagDetail = ({ tagId }: { tagId?: string }) => {
   const globalContext = useService(GlobalContextService).globalContext;
   const currentWorkspace = useService(WorkspaceService).workspace;
   const pageMetas = useBlockSuiteDocMeta(currentWorkspace.docCollection);
+  const permissionService = useService(WorkspacePermissionService);
+  const isAdmin = useLiveData(permissionService.permission.isAdmin$);
+  const isOwner = useLiveData(permissionService.permission.isOwner$);
 
   const tagList = useService(TagService).tagList;
   const currentTag = useLiveData(tagList.tagByTagId$(tagId));
@@ -72,6 +76,7 @@ export const TagDetail = ({ tagId }: { tagId?: string }) => {
             <VirtualizedPageList
               tag={currentTag}
               listItem={filteredPageMetas}
+              disableMultiDelete={!isAdmin && !isOwner}
             />
           ) : (
             <EmptyPageList

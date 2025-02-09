@@ -5,11 +5,12 @@ import {
 } from '@affine/core/components/page-list';
 import { Header } from '@affine/core/components/pure/header';
 import { GlobalContextService } from '@affine/core/modules/global-context';
+import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { assertExists } from '@blocksuite/affine/global/utils';
 import { DeleteIcon } from '@blocksuite/icons/rc';
-import { useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useEffect } from 'react';
 
 import {
@@ -39,6 +40,9 @@ const TrashHeader = () => {
 export const TrashPage = () => {
   const globalContextService = useService(GlobalContextService);
   const currentWorkspace = useService(WorkspaceService).workspace;
+  const permissionService = useService(WorkspacePermissionService);
+  const isAdmin = useLiveData(permissionService.permission.isAdmin$);
+  const isOwner = useLiveData(permissionService.permission.isOwner$);
   const docCollection = currentWorkspace.docCollection;
   assertExists(docCollection);
 
@@ -71,7 +75,10 @@ export const TrashPage = () => {
       <ViewBody>
         <div className={styles.body}>
           {filteredPageMetas.length > 0 ? (
-            <VirtualizedTrashList />
+            <VirtualizedTrashList
+              disableMultiDelete={!isAdmin && !isOwner}
+              disableMultiRestore={!isAdmin && !isOwner}
+            />
           ) : (
             <EmptyPageList type="trash" />
           )}

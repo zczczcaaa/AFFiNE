@@ -22,9 +22,11 @@ const getRoleName = (role: DocRole, t: ReturnType<typeof useI18n>) => {
 export const MembersPermission = ({
   openPaywallModal,
   hittingPaywall,
+  disabled,
 }: {
   hittingPaywall: boolean;
   openPaywallModal?: () => void;
+  disabled?: boolean;
 }) => {
   const t = useI18n();
   const [docRole, setDocRole] = useState<DocRole>(DocRole.Manager);
@@ -63,38 +65,40 @@ export const MembersPermission = ({
           align: 'end',
         }}
         items={
-          <>
-            <MenuItem
-              onSelect={selectManage}
-              selected={docRole === DocRole.Manager}
-            >
-              <div className={styles.publicItemRowStyle}>
-                {t['com.affine.share-menu.option.permission.can-manage']()}
-              </div>
-            </MenuItem>
-            <MenuItem
-              onSelect={selectEdit}
-              selected={docRole === DocRole.Editor}
-            >
-              <div className={styles.publicItemRowStyle}>
-                <div className={styles.tagContainerStyle}>
-                  {t['com.affine.share-menu.option.permission.can-edit']()}
-                  <PlanTag />
+          disabled ? null : (
+            <>
+              <MenuItem
+                onSelect={selectManage}
+                selected={docRole === DocRole.Manager}
+              >
+                <div className={styles.publicItemRowStyle}>
+                  {t['com.affine.share-menu.option.permission.can-manage']()}
                 </div>
-              </div>
-            </MenuItem>
-            <MenuItem
-              onSelect={selectRead}
-              selected={docRole === DocRole.Reader}
-            >
-              <div className={styles.publicItemRowStyle}>
-                <div className={styles.tagContainerStyle}>
-                  {t['com.affine.share-menu.option.permission.can-read']()}
-                  <PlanTag />
+              </MenuItem>
+              <MenuItem
+                onSelect={selectEdit}
+                selected={docRole === DocRole.Editor}
+              >
+                <div className={styles.publicItemRowStyle}>
+                  <div className={styles.tagContainerStyle}>
+                    {t['com.affine.share-menu.option.permission.can-edit']()}
+                    <PlanTag />
+                  </div>
                 </div>
-              </div>
-            </MenuItem>
-          </>
+              </MenuItem>
+              <MenuItem
+                onSelect={selectRead}
+                selected={docRole === DocRole.Reader}
+              >
+                <div className={styles.publicItemRowStyle}>
+                  <div className={styles.tagContainerStyle}>
+                    {t['com.affine.share-menu.option.permission.can-read']()}
+                    <PlanTag />
+                  </div>
+                </div>
+              </MenuItem>
+            </>
+          )
         }
       >
         <MenuTrigger
@@ -103,6 +107,7 @@ export const MembersPermission = ({
           contentStyle={{
             width: '100%',
           }}
+          disabled={disabled}
         >
           {currentRoleName}
         </MenuTrigger>

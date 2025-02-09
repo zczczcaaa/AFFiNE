@@ -1,4 +1,4 @@
-import { notify, useConfirmModal } from '@affine/component';
+import { notify, toast, useConfirmModal } from '@affine/component';
 import {
   Menu,
   MenuItem,
@@ -9,13 +9,13 @@ import { PageHistoryModal } from '@affine/core/components/affine/page-history-mo
 import { useBlockSuiteMetaHelper } from '@affine/core/components/hooks/affine/use-block-suite-meta-helper';
 import { useEnableCloud } from '@affine/core/components/hooks/affine/use-enable-cloud';
 import { useExportPage } from '@affine/core/components/hooks/affine/use-export-page';
-import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-page-meta';
 import { Export, MoveToTrash } from '@affine/core/components/page-list';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
 import { useDetailPageHeaderResponsive } from '@affine/core/desktop/pages/workspace/detail-page/use-header-responsive';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { EditorService } from '@affine/core/modules/editor';
 import { OpenInAppService } from '@affine/core/modules/open-in-app/services';
+import { GuardService } from '@affine/core/modules/permissions';
 import { ShareMenuContent } from '@affine/core/modules/share-menu';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
@@ -34,7 +34,6 @@ import {
   LocalWorkspaceIcon,
   OpenInNewIcon,
   PageIcon,
-  SaveIcon,
   ShareIcon,
   SplitViewIcon,
   TocIcon,
@@ -56,24 +55,95 @@ type PageMenuProps = {
   isJournal?: boolean;
   containerWidth: number;
 };
-// fixme: refactor this file
+
 export const PageHeaderMenuButton = ({
   rename,
   page,
   isJournal,
   containerWidth,
 }: PageMenuProps) => {
+  const workspace = useService(WorkspaceService).workspace;
+  const editorService = useService(EditorService);
+  const isInTrash = useLiveData(
+    editorService.editor.doc.meta$.map(meta => meta.trash)
+  );
+
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [openHistoryTipsModal, setOpenHistoryTipsModal] = useState(false);
+
+  const handleMenuOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      track.$.header.docOptions.open();
+    }
+  }, []);
+
+  const openHistoryModal = useCallback(() => {
+    track.$.header.history.open();
+    if (workspace.flavour === 'affine-cloud') {
+      return setHistoryModalOpen(true);
+    }
+    return setOpenHistoryTipsModal(true);
+  }, [setOpenHistoryTipsModal, workspace.flavour]);
+
+  if (isInTrash) {
+    return null;
+  }
+
+  return (
+    <>
+      <Menu
+        items={
+          <PageHeaderMenuItem
+            page={page}
+            containerWidth={containerWidth}
+            rename={rename}
+            isJournal={isJournal}
+            openHistoryModal={openHistoryModal}
+          />
+        }
+        contentOptions={{
+          align: 'center',
+        }}
+        rootOptions={{
+          onOpenChange: handleMenuOpenChange,
+        }}
+      >
+        <HeaderDropDownButton />
+      </Menu>
+      {workspace.flavour !== 'local' ? (
+        <PageHistoryModal
+          docCollection={workspace.docCollection}
+          open={historyModalOpen}
+          pageId={page.id}
+          onOpenChange={setHistoryModalOpen}
+        />
+      ) : null}
+      <HistoryTipsModal
+        open={openHistoryTipsModal}
+        setOpen={setOpenHistoryTipsModal}
+      />
+    </>
+  );
+};
+
+// fixme: refactor this file
+const PageHeaderMenuItem = ({
+  rename,
+  page,
+  isJournal,
+  containerWidth,
+  openHistoryModal,
+}: PageMenuProps & {
+  openHistoryModal: () => void;
+}) => {
   const pageId = page?.id;
   const t = useI18n();
   const { hideShare } = useDetailPageHeaderResponsive(containerWidth);
   const confirmEnableCloud = useEnableCloud();
 
   const workspace = useService(WorkspaceService).workspace;
-
+  const guardService = useService(GuardService);
   const editorService = useService(EditorService);
-  const isInTrash = useLiveData(
-    editorService.editor.doc.meta$.map(meta => meta.trash)
-  );
   const currentMode = useLiveData(editorService.editor.mode$);
   const primaryMode = useLiveData(editorService.editor.doc.primaryMode$);
 
@@ -83,9 +153,6 @@ export const PageHeaderMenuButton = ({
   const { favorite, toggleFavorite } = useFavorite(pageId);
 
   const { duplicate } = useBlockSuiteMetaHelper();
-
-  const [isEditing, setEditing] = useState(!page.readonly);
-  const { setDocReadonly } = useDocMetaHelper();
 
   const view = useService(ViewService).view;
 
@@ -104,17 +171,6 @@ export const PageHeaderMenuButton = ({
   const openOutlinePanel = useCallback(() => {
     openSidePanel('outline');
   }, [openSidePanel]);
-
-  const [historyModalOpen, setHistoryModalOpen] = useState(false);
-  const [openHistoryTipsModal, setOpenHistoryTipsModal] = useState(false);
-
-  const openHistoryModal = useCallback(() => {
-    track.$.header.history.open();
-    if (workspace.flavour === 'affine-cloud') {
-      return setHistoryModalOpen(true);
-    }
-    return setOpenHistoryTipsModal(true);
-  }, [setOpenHistoryTipsModal, workspace.flavour]);
 
   const workspaceDialogService = useService(WorkspaceDialogService);
   const openInfoModal = useCallback(() => {
@@ -148,11 +204,16 @@ export const PageHeaderMenuButton = ({
       confirmButtonOptions: {
         variant: 'error',
       },
-      onConfirm: () => {
+      onConfirm: async () => {
+        const canTrash = await guardService.can('Doc_Trash', pageId);
+        if (!canTrash) {
+          toast(t['com.affine.no-permission']());
+          return;
+        }
         editorService.editor.doc.moveToTrash();
       },
     });
-  }, [editorService.editor.doc, openConfirmModal, t]);
+  }, [editorService.editor.doc, guardService, openConfirmModal, pageId, t]);
 
   const handleRename = useCallback(() => {
     rename?.();
@@ -177,12 +238,6 @@ export const PageHeaderMenuButton = ({
           : t['com.affine.toastMessage.defaultMode.page.message'](),
     });
   }, [primaryMode, editorService, t]);
-
-  const handleMenuOpenChange = useCallback((open: boolean) => {
-    if (open) {
-      track.$.header.docOptions.open();
-    }
-  }, []);
 
   const exportHandler = useExportPage();
 
@@ -238,21 +293,6 @@ export const PageHeaderMenuButton = ({
     toggleFavorite();
   }, [toggleFavorite]);
 
-  const handleToggleEdit = useCallback(() => {
-    setDocReadonly(page.id, !page.readonly);
-    setEditing(!isEditing);
-  }, [isEditing, page.id, page.readonly, setDocReadonly]);
-
-  const isMobile = environment.isMobile;
-  const mobileEditMenuItem = (
-    <MenuItem
-      prefixIcon={isEditing ? <SaveIcon /> : <EditIcon />}
-      onSelect={handleToggleEdit}
-    >
-      {t[isEditing ? 'Save' : 'Edit']()}
-    </MenuItem>
-  );
-
   const showResponsiveMenu = hideShare;
   const ResponsiveMenuItems = (
     <>
@@ -293,15 +333,18 @@ export const PageHeaderMenuButton = ({
     openInAppService?.showOpenInAppPage();
   }, [openInAppService]);
 
-  const EditMenu = (
+  const canEdit = useLiveData(guardService.can$('Doc_Update', pageId));
+  const canMoveToTrash = useLiveData(guardService.can$('Doc_Trash', pageId));
+
+  return (
     <>
       {showResponsiveMenu ? ResponsiveMenuItems : null}
-      {isMobile && mobileEditMenuItem}
       {!isJournal && (
         <MenuItem
           prefixIcon={<EditIcon />}
           data-testid="editor-option-menu-rename"
           onSelect={handleRename}
+          disabled={!canEdit}
         >
           {t['Rename']()}
         </MenuItem>
@@ -310,6 +353,7 @@ export const PageHeaderMenuButton = ({
         prefixIcon={primaryMode === 'page' ? <EdgelessIcon /> : <PageIcon />}
         data-testid="editor-option-menu-edgeless"
         onSelect={handleSwitchMode}
+        disabled={!canEdit}
       >
         {primaryMode === 'page'
           ? t['com.affine.editorDefaultMode.edgeless']()
@@ -396,6 +440,7 @@ export const PageHeaderMenuButton = ({
       <MoveToTrash
         data-testid="editor-option-menu-delete"
         onSelect={handleOpenTrashModal}
+        disabled={!canMoveToTrash}
       />
       {BUILD_CONFIG.isWeb && workspace.flavour === 'affine-cloud' ? (
         <MenuItem
@@ -406,36 +451,6 @@ export const PageHeaderMenuButton = ({
           {t['com.affine.header.option.open-in-desktop']()}
         </MenuItem>
       ) : null}
-    </>
-  );
-  if (isInTrash) {
-    return null;
-  }
-  return (
-    <>
-      <Menu
-        items={EditMenu}
-        contentOptions={{
-          align: 'center',
-        }}
-        rootOptions={{
-          onOpenChange: handleMenuOpenChange,
-        }}
-      >
-        <HeaderDropDownButton />
-      </Menu>
-      {workspace.flavour !== 'local' ? (
-        <PageHistoryModal
-          docCollection={workspace.docCollection}
-          open={historyModalOpen}
-          pageId={pageId}
-          onOpenChange={setHistoryModalOpen}
-        />
-      ) : null}
-      <HistoryTipsModal
-        open={openHistoryTipsModal}
-        setOpen={setOpenHistoryTipsModal}
-      />
     </>
   );
 };

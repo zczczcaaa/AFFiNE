@@ -10,7 +10,11 @@ import {
 import * as styles from './number.css';
 import type { PropertyValueProps } from './types';
 
-export const NumberValue = ({ value, onChange }: PropertyValueProps) => {
+export const NumberValue = ({
+  value,
+  onChange,
+  readonly,
+}: PropertyValueProps) => {
   const parsedValue = isNaN(Number(value)) ? null : value;
   const [tempValue, setTempValue] = useState(parsedValue);
   const handleBlur = useCallback(
@@ -33,6 +37,7 @@ export const NumberValue = ({ value, onChange }: PropertyValueProps) => {
     <PropertyValue
       className={styles.numberPropertyValueContainer}
       isEmpty={!parsedValue}
+      readonly={readonly}
     >
       <input
         className={styles.numberPropertyValueInput}
@@ -45,6 +50,7 @@ export const NumberValue = ({ value, onChange }: PropertyValueProps) => {
         placeholder={t[
           'com.affine.page-properties.property-value-placeholder'
         ]()}
+        disabled={readonly}
       />
     </PropertyValue>
   );

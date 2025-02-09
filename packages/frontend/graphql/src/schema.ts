@@ -1958,6 +1958,37 @@ export type DeleteWorkspaceMutation = {
   deleteWorkspace: boolean;
 };
 
+export type GetDocRolePermissionsQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  docId: Scalars['String']['input'];
+}>;
+
+export type GetDocRolePermissionsQuery = {
+  __typename?: 'Query';
+  workspace: {
+    __typename?: 'WorkspaceType';
+    doc: {
+      __typename?: 'DocType';
+      permissions: {
+        __typename?: 'DocPermissions';
+        Doc_Copy: boolean;
+        Doc_Delete: boolean;
+        Doc_Duplicate: boolean;
+        Doc_Properties_Read: boolean;
+        Doc_Properties_Update: boolean;
+        Doc_Publish: boolean;
+        Doc_Read: boolean;
+        Doc_Restore: boolean;
+        Doc_TransferOwner: boolean;
+        Doc_Trash: boolean;
+        Doc_Update: boolean;
+        Doc_Users_Manage: boolean;
+        Doc_Users_Read: boolean;
+      };
+    };
+  };
+};
+
 export type ForkCopilotSessionMutationVariables = Exact<{
   options: ForkChatSessionInput;
 }>;
@@ -3100,6 +3131,33 @@ export type WorkspaceQuotaQuery = {
   };
 };
 
+export type GetWorkspaceRolePermissionsQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type GetWorkspaceRolePermissionsQuery = {
+  __typename?: 'Query';
+  workspaceRolePermissions: {
+    __typename?: 'WorkspaceRolePermissions';
+    permissions: {
+      __typename?: 'WorkspacePermissions';
+      Workspace_CreateDoc: boolean;
+      Workspace_Delete: boolean;
+      Workspace_Organize_Read: boolean;
+      Workspace_Properties_Create: boolean;
+      Workspace_Properties_Delete: boolean;
+      Workspace_Properties_Read: boolean;
+      Workspace_Properties_Update: boolean;
+      Workspace_Settings_Read: boolean;
+      Workspace_Settings_Update: boolean;
+      Workspace_Sync: boolean;
+      Workspace_TransferOwner: boolean;
+      Workspace_Users_Manage: boolean;
+      Workspace_Users_Read: boolean;
+    };
+  };
+};
+
 export type ApproveWorkspaceTeamMemberMutationVariables = Exact<{
   workspaceId: Scalars['String']['input'];
   userId: Scalars['String']['input'];
@@ -3136,6 +3194,11 @@ export type Queries =
       name: 'copilotQuotaQuery';
       variables: CopilotQuotaQueryVariables;
       response: CopilotQuotaQuery;
+    }
+  | {
+      name: 'getDocRolePermissionsQuery';
+      variables: GetDocRolePermissionsQueryVariables;
+      response: GetDocRolePermissionsQuery;
     }
   | {
       name: 'getCopilotHistoriesQuery';
@@ -3331,6 +3394,11 @@ export type Queries =
       name: 'workspaceQuotaQuery';
       variables: WorkspaceQuotaQueryVariables;
       response: WorkspaceQuotaQuery;
+    }
+  | {
+      name: 'getWorkspaceRolePermissionsQuery';
+      variables: GetWorkspaceRolePermissionsQueryVariables;
+      response: GetWorkspaceRolePermissionsQuery;
     };
 
 export type Mutations =

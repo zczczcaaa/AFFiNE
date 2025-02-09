@@ -13,7 +13,11 @@ import { ConfigModal } from '../../mobile';
 import * as styles from './text.css';
 import type { PropertyValueProps } from './types';
 
-const DesktopTextValue = ({ value, onChange }: PropertyValueProps) => {
+const DesktopTextValue = ({
+  value,
+  onChange,
+  readonly,
+}: PropertyValueProps) => {
   const [tempValue, setTempValue] = useState<string>(value);
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -50,6 +54,7 @@ const DesktopTextValue = ({ value, onChange }: PropertyValueProps) => {
       className={styles.textPropertyValueContainer}
       onClick={handleClick}
       isEmpty={!value}
+      readonly={readonly}
     >
       <textarea
         ref={ref}
@@ -62,6 +67,7 @@ const DesktopTextValue = ({ value, onChange }: PropertyValueProps) => {
         placeholder={t[
           'com.affine.page-properties.property-value-placeholder'
         ]()}
+        disabled={readonly}
       />
       <div className={styles.textInvisible}>
         {tempValue}

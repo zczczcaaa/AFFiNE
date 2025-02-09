@@ -316,7 +316,11 @@ export const useDropTarget = <D extends DNDData = DNDData>(
 
         // external data is only available in drop event thus
         // this is the only case for getAdaptedEventArgs
-        const args = getAdaptedEventArgs(_args, options.fromExternalData, true);
+        const args = {
+          ...getAdaptedEventArgs(_args, options.fromExternalData, true),
+          treeInstruction: extractInstruction(_args.self.data),
+          closestEdge: extractClosestEdge(_args.self.data),
+        };
         if (
           isExternalDrag(_args) &&
           options.fromExternalData &&
@@ -329,11 +333,7 @@ export const useDropTarget = <D extends DNDData = DNDData>(
         }
 
         if (args.location.current.dropTargets[0]?.element === element) {
-          options.onDrop?.({
-            ...args,
-            treeInstruction: extractInstruction(args.self.data),
-            closestEdge: extractClosestEdge(args.self.data),
-          } as DropTargetDropEvent<D>);
+          options.onDrop?.(args as DropTargetDropEvent<D>);
         }
       },
       getData: (args: DropTargetGetFeedback<D>) => {

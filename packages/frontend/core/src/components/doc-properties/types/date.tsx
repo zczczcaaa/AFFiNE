@@ -23,8 +23,24 @@ const useParsedDate = (value: string) => {
   };
 };
 
-export const DateValue = ({ value, onChange }: PropertyValueProps) => {
+export const DateValue = ({
+  value,
+  onChange,
+  readonly,
+}: PropertyValueProps) => {
   const { parsedValue, displayValue } = useParsedDate(value);
+
+  if (readonly) {
+    return (
+      <PropertyValue
+        className={parsedValue ? '' : styles.empty}
+        isEmpty={!parsedValue}
+        readonly
+      >
+        {displayValue}
+      </PropertyValue>
+    );
+  }
 
   return (
     <Menu

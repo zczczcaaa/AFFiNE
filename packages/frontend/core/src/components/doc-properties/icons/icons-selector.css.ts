@@ -51,8 +51,14 @@ export const iconSelectorButton = style({
   border: `1px solid ${cssVar('borderColor')}`,
   background: cssVar('backgroundSecondaryColor'),
   cursor: 'pointer',
-  ':hover': {
-    backgroundColor: cssVar('backgroundTertiaryColor'),
+
+  selectors: {
+    '&:hover:not([data-readonly=true])': {
+      backgroundColor: cssVar('backgroundTertiaryColor'),
+    },
+    '&[data-readonly=true]': {
+      cursor: 'default',
+    },
   },
 });
 

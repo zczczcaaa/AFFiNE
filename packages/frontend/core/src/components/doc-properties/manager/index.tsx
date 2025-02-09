@@ -8,6 +8,7 @@ import {
 } from '@affine/component';
 import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
 import { DocsService } from '@affine/core/modules/doc';
+import { GuardService } from '@affine/core/modules/permissions';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { useI18n } from '@affine/i18n';
@@ -37,9 +38,13 @@ const PropertyItem = ({
   ) => void;
 }) => {
   const t = useI18n();
+  const guardService = useService(GuardService);
   const workspaceService = useService(WorkspaceService);
   const docsService = useService(DocsService);
   const [moreMenuOpen, setMoreMenuOpen] = useState(defaultOpenEditMenu);
+  const canEditPropertyInfo = useLiveData(
+    guardService.can$('Workspace_Properties_Update')
+  );
 
   const typeInfo = isSupportedDocPropertyType(propertyInfo.type)
     ? DocPropertyTypes[propertyInfo.type]
@@ -51,6 +56,7 @@ const PropertyItem = ({
 
   const { dragRef } = useDraggable<AffineDNDData>(
     () => ({
+      canDrag: canEditPropertyInfo,
       data: {
         entity: {
           type: 'custom-property',
@@ -62,13 +68,14 @@ const PropertyItem = ({
         },
       },
     }),
-    [propertyInfo, workspaceService]
+    [propertyInfo, workspaceService, canEditPropertyInfo]
   );
 
   const { dropTargetRef, closestEdge } = useDropTarget<AffineDNDData>(
     () => ({
       canDrop(data) {
         return (
+          canEditPropertyInfo &&
           data.source.data.entity?.type === 'custom-property' &&
           data.source.data.from?.at === 'doc-property:manager' &&
           data.source.data.from?.workspaceId ===
@@ -97,7 +104,7 @@ const PropertyItem = ({
         });
       },
     }),
-    [docsService, propertyInfo, workspaceService]
+    [docsService, propertyInfo, workspaceService, canEditPropertyInfo]
   );
 
   return (
@@ -139,6 +146,7 @@ const PropertyItem = ({
             <EditDocPropertyMenuItems
               propertyId={propertyInfo.id}
               onPropertyInfoChange={onPropertyInfoChange}
+              readonly={!canEditPropertyInfo}
             />
           }
         >

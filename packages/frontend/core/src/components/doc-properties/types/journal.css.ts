@@ -25,8 +25,11 @@ export const date = style({
   padding: '0 4px',
   borderRadius: 4,
   whiteSpace: 'nowrap',
-  ':hover': {
-    background: cssVarV2('layer/background/hoverOverlay'),
+
+  selectors: {
+    '&:hover:not([data-disabled])': {
+      background: cssVarV2('layer/background/hoverOverlay'),
+    },
   },
 });
 

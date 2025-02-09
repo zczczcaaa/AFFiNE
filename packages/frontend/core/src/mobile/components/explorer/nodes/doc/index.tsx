@@ -1,4 +1,5 @@
 import { Loading } from '@affine/component';
+import { DocPermissionGuard } from '@affine/core/components/guard/doc-guard';
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { DocsService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
@@ -136,10 +137,16 @@ export const ExplorerDocNode = ({
         <ExplorerDocNode key={child.docId} docId={child.docId} isLinked />
       ))}
 
-      <AddItemPlaceholder
-        label={t['com.affine.rootAppSidebar.explorer.doc-add-tooltip']()}
-        onClick={handleAddLinkedPage}
-      />
+      <DocPermissionGuard docId={docId} permission="Doc_Update">
+        {canEdit =>
+          canEdit ? (
+            <AddItemPlaceholder
+              label={t['com.affine.rootAppSidebar.explorer.doc-add-tooltip']()}
+              onClick={handleAddLinkedPage}
+            />
+          ) : null
+        }
+      </DocPermissionGuard>
     </ExplorerTreeNode>
   );
 };

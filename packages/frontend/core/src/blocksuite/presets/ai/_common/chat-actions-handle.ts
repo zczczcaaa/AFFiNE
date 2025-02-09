@@ -199,6 +199,9 @@ const REPLACE_SELECTION = {
   icon: ReplaceIcon,
   title: 'Replace selection',
   showWhen: (host: EditorHost) => {
+    if (host.std.store.readonly$.value) {
+      return false;
+    }
     const textSelection = host.selection.find(TextSelection);
     const blockSelections = host.selection.filter(BlockSelection);
     if (
@@ -252,7 +255,12 @@ const REPLACE_SELECTION = {
 const INSERT_BELOW = {
   icon: InsertBelowIcon,
   title: 'Insert below',
-  showWhen: () => true,
+  showWhen: (host: EditorHost) => {
+    if (host.std.store.readonly$.value) {
+      return false;
+    }
+    return true;
+  },
   toast: 'Successfully inserted',
   handler: async (
     host: EditorHost,
@@ -282,7 +290,12 @@ const SAVE_CHAT_TO_BLOCK_ACTION: ChatAction = {
   icon: BlockIcon,
   title: 'Save chat to block',
   toast: 'Successfully saved chat to a block',
-  showWhen: () => true,
+  showWhen: (host: EditorHost) => {
+    if (host.std.store.readonly$.value) {
+      return false;
+    }
+    return true;
+  },
   handler: async (
     host: EditorHost,
     _,
@@ -378,7 +391,12 @@ const SAVE_CHAT_TO_BLOCK_ACTION: ChatAction = {
 const ADD_TO_EDGELESS_AS_NOTE = {
   icon: CreateIcon,
   title: 'Add to edgeless as note',
-  showWhen: () => true,
+  showWhen: (host: EditorHost) => {
+    if (host.std.store.readonly$.value) {
+      return false;
+    }
+    return true;
+  },
   toast: 'New note created',
   handler: async (host: EditorHost, content: string) => {
     reportResponse('result:add-note');
@@ -451,7 +469,12 @@ const CREATE_AS_DOC = {
 const CREATE_AS_LINKED_DOC = {
   icon: CreateIcon,
   title: 'Create as a linked doc',
-  showWhen: () => true,
+  showWhen: (host: EditorHost) => {
+    if (host.std.store.readonly$.value) {
+      return false;
+    }
+    return true;
+  },
   toast: 'New doc created',
   handler: async (host: EditorHost, content: string) => {
     reportResponse('result:add-page');

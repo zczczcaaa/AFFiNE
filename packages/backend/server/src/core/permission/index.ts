@@ -11,13 +11,13 @@ export class PermissionModule {}
 export { PermissionService } from './service';
 export {
   DOC_ACTIONS,
-  type DocActionPermissions,
+  type DocAction,
   DocRole,
   fixupDocRole,
   mapDocRoleToPermissions,
   mapWorkspaceRoleToPermissions,
   PublicDocMode,
   WORKSPACE_ACTIONS,
-  type WorkspaceActionPermissions,
+  type WorkspaceAction,
   WorkspaceRole,
 } from './types';

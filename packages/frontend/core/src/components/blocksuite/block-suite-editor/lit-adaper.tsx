@@ -89,6 +89,7 @@ const adapted = {
 
 interface BlocksuiteEditorProps {
   page: Store;
+  readonly?: boolean;
   shared?: boolean;
   defaultOpenProperty?: DefaultOpenProperty;
 }
@@ -220,6 +221,7 @@ export const BlocksuiteDocEditor = forwardRef<
     onClickBlank,
     titleRef: externalTitleRef,
     defaultOpenProperty,
+    readonly,
   },
   ref
 ) {
@@ -334,7 +336,7 @@ export const BlocksuiteDocEditor = forwardRef<
           data-testid="page-editor-blank"
           onClick={onClickBlank}
         ></div>
-        <StarterBar doc={page} />
+        {!readonly && <StarterBar doc={page} />}
         {!shared && displayBiDirectionalLink ? (
           <BiDirectionalLinkPanel />
         ) : null}

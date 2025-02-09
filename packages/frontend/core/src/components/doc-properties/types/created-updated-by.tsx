@@ -77,14 +77,14 @@ export const CreatedByValue = () => {
 
   if (!isCloud) {
     return (
-      <PropertyValue>
+      <PropertyValue readonly>
         <LocalUserValue />
       </PropertyValue>
     );
   }
 
   return (
-    <PropertyValue>
+    <PropertyValue readonly>
       <CloudUserAvatar type="CreatedBy" />
     </PropertyValue>
   );
@@ -96,14 +96,14 @@ export const UpdatedByValue = () => {
 
   if (!isCloud) {
     return (
-      <PropertyValue>
+      <PropertyValue readonly>
         <LocalUserValue />
       </PropertyValue>
     );
   }
 
   return (
-    <PropertyValue>
+    <PropertyValue readonly>
       <CloudUserAvatar type="UpdatedBy" />
     </PropertyValue>
   );

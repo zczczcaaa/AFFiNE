@@ -1,6 +1,7 @@
 import { Divider, IconButton, Tooltip } from '@affine/component';
 import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
 import { DocsService } from '@affine/core/modules/doc';
+import { GuardService } from '@affine/core/modules/permissions';
 import { generateUniqueNameInSequence } from '@affine/core/utils/unique-name';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
@@ -28,9 +29,12 @@ export const DocPropertySidebar = () => {
   const [newPropertyId, setNewPropertyId] = useState<string>();
 
   const docsService = useService(DocsService);
+  const guardService = useService(GuardService);
   const propertyList = docsService.propertyList;
   const properties = useLiveData(propertyList.properties$);
-
+  const canEditPropertyInfo = useLiveData(
+    guardService.can$('Workspace_Properties_Update')
+  );
   const onAddProperty = useCallback(
     (option: { type: string; name: string }) => {
       if (!isSupportedDocPropertyType(option.type)) {
@@ -104,12 +108,15 @@ export const DocPropertySidebar = () => {
                   <div
                     className={styles.itemContainer}
                     onClick={() => {
+                      if (!canEditPropertyInfo) {
+                        return;
+                      }
                       onAddProperty({
                         type: key,
                         name,
                       });
                     }}
-                    data-disabled={isUniqueExist}
+                    data-disabled={isUniqueExist || !canEditPropertyInfo}
                   >
                     <Icon className={styles.itemIcon} />
                     <span className={styles.itemName}>{t.t(value.name)}</span>

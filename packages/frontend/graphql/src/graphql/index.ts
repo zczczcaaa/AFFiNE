@@ -318,6 +318,35 @@ mutation deleteWorkspace($id: String!) {
 }`,
 };
 
+export const getDocRolePermissionsQuery = {
+  id: 'getDocRolePermissionsQuery' as const,
+  operationName: 'getDocRolePermissions',
+  definitionName: 'workspace',
+  containsFile: false,
+  query: `
+query getDocRolePermissions($workspaceId: String!, $docId: String!) {
+  workspace(id: $workspaceId) {
+    doc(docId: $docId) {
+      permissions {
+        Doc_Copy
+        Doc_Delete
+        Doc_Duplicate
+        Doc_Properties_Read
+        Doc_Properties_Update
+        Doc_Publish
+        Doc_Read
+        Doc_Restore
+        Doc_TransferOwner
+        Doc_Trash
+        Doc_Update
+        Doc_Users_Manage
+        Doc_Users_Read
+      }
+    }
+  }
+}`,
+};
+
 export const forkCopilotSessionMutation = {
   id: 'forkCopilotSessionMutation' as const,
   operationName: 'forkCopilotSession',
@@ -1546,6 +1575,33 @@ query workspaceQuota($id: String!) {
         historyPeriod
         memberLimit
       }
+    }
+  }
+}`,
+};
+
+export const getWorkspaceRolePermissionsQuery = {
+  id: 'getWorkspaceRolePermissionsQuery' as const,
+  operationName: 'getWorkspaceRolePermissions',
+  definitionName: 'workspaceRolePermissions',
+  containsFile: false,
+  query: `
+query getWorkspaceRolePermissions($id: String!) {
+  workspaceRolePermissions(id: $id) {
+    permissions {
+      Workspace_CreateDoc
+      Workspace_Delete
+      Workspace_Organize_Read
+      Workspace_Properties_Create
+      Workspace_Properties_Delete
+      Workspace_Properties_Read
+      Workspace_Properties_Update
+      Workspace_Settings_Read
+      Workspace_Settings_Update
+      Workspace_Sync
+      Workspace_TransferOwner
+      Workspace_Users_Manage
+      Workspace_Users_Read
     }
   }
 }`,

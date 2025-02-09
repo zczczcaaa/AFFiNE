@@ -28,8 +28,10 @@ import * as styles from './edit-doc-property.css';
 export const EditDocPropertyMenuItems = ({
   propertyId,
   onPropertyInfoChange,
+  readonly,
 }: {
   propertyId: string;
+  readonly?: boolean;
   onPropertyInfoChange?: (
     field: keyof DocCustomPropertyInfo,
     value: string
@@ -142,9 +144,10 @@ export const EditDocPropertyMenuItems = ({
       >
         <DocPropertyIconSelector
           propertyInfo={propertyInfo}
+          readonly={readonly}
           onSelectedChange={handleIconChange}
         />
-        {typeInfo?.renameable === false ? (
+        {typeInfo?.renameable === false || readonly ? (
           <span className={styles.propertyName}>{name}</span>
         ) : (
           <Input
@@ -180,6 +183,7 @@ export const EditDocPropertyMenuItems = ({
           propertyInfo.show !== 'always-hide'
         }
         data-property-visibility="always-show"
+        disabled={readonly}
       >
         {t['com.affine.page-properties.property.always-show']()}
       </MenuItem>
@@ -188,6 +192,7 @@ export const EditDocPropertyMenuItems = ({
         onClick={handleClickHideWhenEmpty}
         selected={propertyInfo.show === 'hide-when-empty'}
         data-property-visibility="hide-when-empty"
+        disabled={readonly}
       >
         {t['com.affine.page-properties.property.hide-when-empty']()}
       </MenuItem>
@@ -196,6 +201,7 @@ export const EditDocPropertyMenuItems = ({
         onClick={handleClickAlwaysHide}
         selected={propertyInfo.show === 'always-hide'}
         data-property-visibility="always-hide"
+        disabled={readonly}
       >
         {t['com.affine.page-properties.property.always-hide']()}
       </MenuItem>
@@ -203,6 +209,7 @@ export const EditDocPropertyMenuItems = ({
       <MenuItem
         prefixIcon={<DeleteIcon />}
         type="danger"
+        disabled={readonly}
         onClick={() => {
           confirmModal.openConfirmModal({
             title:

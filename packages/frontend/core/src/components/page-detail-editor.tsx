@@ -3,6 +3,7 @@ import './page-detail-editor.css';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
+import { useEffect } from 'react';
 
 import { DocService } from '../modules/doc';
 import { EditorService } from '../modules/editor';
@@ -24,9 +25,13 @@ export type OnLoadEditor = (
 
 export interface PageDetailEditorProps {
   onLoad?: OnLoadEditor;
+  readonly?: boolean;
 }
 
-export const PageDetailEditor = ({ onLoad }: PageDetailEditorProps) => {
+export const PageDetailEditor = ({
+  onLoad,
+  readonly,
+}: PageDetailEditorProps) => {
   const editor = useService(EditorService).editor;
   const mode = useLiveData(editor.mode$);
   const defaultOpenProperty = useLiveData(editor.defaultOpenProperty$);
@@ -47,6 +52,10 @@ export const PageDetailEditor = ({ onLoad }: PageDetailEditorProps) => {
     ? pageWidth === 'fullWidth'
     : settings.fullWidthLayout;
 
+  useEffect(() => {
+    editor.doc.blockSuiteDoc.readonly = readonly ?? false;
+  }, [editor, readonly]);
+
   return (
     <CustomEditorWrapper>
       <Editor
@@ -58,6 +67,7 @@ export const PageDetailEditor = ({ onLoad }: PageDetailEditorProps) => {
         defaultOpenProperty={defaultOpenProperty}
         page={editor.doc.blockSuiteDoc}
         shared={isSharedMode}
+        readonly={readonly}
         onEditorReady={onLoad}
       />
     </CustomEditorWrapper>

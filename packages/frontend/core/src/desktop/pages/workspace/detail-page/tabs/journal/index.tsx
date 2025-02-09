@@ -8,6 +8,7 @@ import {
   Scrollable,
   useConfirmModal,
 } from '@affine/component';
+import { DocPermissionGuard } from '@affine/core/components/guard/doc-guard';
 import { useJournalRouteHelper } from '@affine/core/components/hooks/use-journal';
 import { MoveToTrash } from '@affine/core/components/page-list';
 import {
@@ -362,22 +363,38 @@ const ConflictList = ({
                 }}
                 items={
                   <>
-                    <MenuItem
-                      prefixIcon={<CalendarXmarkIcon />}
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleRemoveJournalMark(docRecord.id);
-                      }}
-                      data-testid="journal-conflict-remove-mark"
+                    <DocPermissionGuard
+                      docId={docRecord.id}
+                      permission="Doc_Update"
                     >
-                      {t[
-                        'com.affine.page-properties.property.journal-remove'
-                      ]()}
-                    </MenuItem>
+                      {canEdit => (
+                        <MenuItem
+                          prefixIcon={<CalendarXmarkIcon />}
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleRemoveJournalMark(docRecord.id);
+                          }}
+                          data-testid="journal-conflict-remove-mark"
+                          disabled={!canEdit}
+                        >
+                          {t[
+                            'com.affine.page-properties.property.journal-remove'
+                          ]()}
+                        </MenuItem>
+                      )}
+                    </DocPermissionGuard>
                     <MenuSeparator />
-                    <MoveToTrash
-                      onSelect={() => handleOpenTrashModal(docRecord)}
-                    />
+                    <DocPermissionGuard
+                      docId={docRecord.id}
+                      permission="Doc_Trash"
+                    >
+                      {canTrash => (
+                        <MoveToTrash
+                          onSelect={() => handleOpenTrashModal(docRecord)}
+                          disabled={!canTrash}
+                        />
+                      )}
+                    </DocPermissionGuard>
                   </>
                 }
               >

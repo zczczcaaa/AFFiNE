@@ -15,7 +15,7 @@ import { useEffect } from 'react';
 
 import * as styles from './styles.css';
 
-export const PublicDoc = () => {
+export const PublicDoc = ({ disabled }: { disabled?: boolean }) => {
   const t = useI18n();
   const shareInfoService = useService(ShareInfoService);
   const isSharedPage = useLiveData(shareInfoService.shareInfo.isShared$);
@@ -98,27 +98,31 @@ export const PublicDoc = () => {
           align: 'end',
         }}
         items={
-          <>
-            <MenuItem
-              prefixIcon={<LockIcon />}
-              onSelect={onDisablePublic}
-              selected={!isSharedPage}
-            >
-              <div className={styles.publicItemRowStyle}>
-                <div>{t['com.affine.share-menu.option.link.no-access']()}</div>
-              </div>
-            </MenuItem>
-            <MenuItem
-              prefixIcon={<ViewIcon />}
-              onSelect={onClickAnyoneReadOnlyShare}
-              data-testid="share-link-menu-enable-share"
-              selected={!!isSharedPage}
-            >
-              <div className={styles.publicItemRowStyle}>
-                <div>{t['com.affine.share-menu.option.link.readonly']()}</div>
-              </div>
-            </MenuItem>
-          </>
+          disabled ? null : (
+            <>
+              <MenuItem
+                prefixIcon={<LockIcon />}
+                onSelect={onDisablePublic}
+                selected={!isSharedPage}
+              >
+                <div className={styles.publicItemRowStyle}>
+                  <div>
+                    {t['com.affine.share-menu.option.link.no-access']()}
+                  </div>
+                </div>
+              </MenuItem>
+              <MenuItem
+                prefixIcon={<ViewIcon />}
+                onSelect={onClickAnyoneReadOnlyShare}
+                data-testid="share-link-menu-enable-share"
+                selected={!!isSharedPage}
+              >
+                <div className={styles.publicItemRowStyle}>
+                  <div>{t['com.affine.share-menu.option.link.readonly']()}</div>
+                </div>
+              </MenuItem>
+            </>
+          )
         }
       >
         <MenuTrigger
@@ -128,6 +132,7 @@ export const PublicDoc = () => {
           contentStyle={{
             width: '100%',
           }}
+          disabled={disabled}
         >
           {isSharedPage
             ? t['com.affine.share-menu.option.link.readonly']()

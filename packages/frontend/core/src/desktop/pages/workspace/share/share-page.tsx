@@ -260,7 +260,7 @@ const SharePageInner = ({
                     styles.editorContainer
                   )}
                 >
-                  <PageDetailEditor onLoad={onEditorLoad} />
+                  <PageDetailEditor onLoad={onEditorLoad} readonly />
                   {publishMode === 'page' && !BUILD_CONFIG.isElectron ? (
                     <ShareFooter />
                   ) : null}

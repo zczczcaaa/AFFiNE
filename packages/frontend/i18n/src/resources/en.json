@@ -1730,6 +1730,7 @@
   "com.affine.settings.workspace.template.page-desc": "New docs will use the specified template, ignoring default settings.",
   "com.affine.settings.workspace.template.page-select": "Template for new doc",
   "com.affine.settings.workspace.template.remove": "Remove template",
+  "com.affine.no-permission": "You don't have permission to do this",
   "com.affine.settings.workspace.storage.unused-blobs": "Unused blobs",
   "com.affine.settings.workspace.storage.unused-blobs.empty": "No unused blobs",
   "com.affine.settings.workspace.storage.unused-blobs.selected": "Selected",

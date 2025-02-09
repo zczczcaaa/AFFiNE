@@ -9,7 +9,9 @@ import type { Editor } from '@affine/core/modules/editor';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { CompatibleFavoriteItemsAdapter } from '@affine/core/modules/favorite';
 import { OpenInAppService } from '@affine/core/modules/open-in-app';
+import { GuardService } from '@affine/core/modules/permissions';
 import { WorkspaceService } from '@affine/core/modules/workspace';
+import { UserFriendlyError } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import {
@@ -35,6 +37,7 @@ export function useRegisterBlocksuiteEditorCommands(
   active: boolean
 ) {
   const doc = useService(DocService).doc;
+  const guardService = useService(GuardService);
   const docId = doc.id;
   const mode = useLiveData(editor.mode$);
   const t = useI18n();
@@ -74,11 +77,22 @@ export function useRegisterBlocksuiteEditorCommands(
       }),
       cancelText: t['com.affine.confirmModal.button.cancel'](),
       confirmText: t.Delete(),
-      onConfirm: () => {
-        doc.moveToTrash();
+      onConfirm: async () => {
+        try {
+          const canTrash = await guardService.can('Doc_Trash', docId);
+          if (!canTrash) {
+            toast(t['com.affine.no-permission']());
+            return;
+          }
+          doc.moveToTrash();
+        } catch (error) {
+          console.error(error);
+          const userFriendlyError = UserFriendlyError.fromAnyError(error);
+          toast(t[`error.${userFriendlyError.name}`](userFriendlyError.data));
+        }
       },
     });
-  }, [doc, openConfirmModal, t]);
+  }, [doc, docId, guardService, openConfirmModal, t]);
 
   const isCloudWorkspace = workspace.flavour !== 'local';
 
@@ -190,6 +204,11 @@ export function useRegisterBlocksuiteEditorCommands(
           ? t['com.affine.cmdk.affine.current-page-width-layout.standard']()
           : t['com.affine.cmdk.affine.current-page-width-layout.full-width'](),
         async run() {
+          const canEdit = await guardService.can('Doc_Update', docId);
+          if (!canEdit) {
+            toast(t['com.affine.no-permission']());
+            return;
+          }
           doc.record.setProperty(
             'pageWidth',
             checked ? 'standard' : 'fullWidth'
@@ -306,7 +325,12 @@ export function useRegisterBlocksuiteEditorCommands(
         category: `editor:${mode}`,
         icon: mode === 'page' ? <PageIcon /> : <EdgelessIcon />,
         label: t['com.affine.cmdk.affine.editor.restore-from-trash'](),
-        run() {
+        async run() {
+          const canRestore = await guardService.can('Doc_Restore', docId);
+          if (!canRestore) {
+            toast(t['com.affine.no-permission']());
+            return;
+          }
           track.$.cmdk.editor.restoreDoc();
 
           doc.restoreFromTrash();
@@ -383,5 +407,6 @@ export function useRegisterBlocksuiteEditorCommands(
     checked,
     openInAppService,
     active,
+    guardService,
   ]);
 }

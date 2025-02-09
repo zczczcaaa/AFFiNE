@@ -11,6 +11,7 @@ import { DocInfoSheet } from '@affine/core/mobile/components';
 import { MobileTocMenu } from '@affine/core/mobile/components/toc-menu';
 import { DocService } from '@affine/core/modules/doc';
 import { EditorService } from '@affine/core/modules/editor';
+import { GuardService } from '@affine/core/modules/permissions';
 import { ViewService } from '@affine/core/modules/workbench/services/view';
 import { preventDefault } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
@@ -34,6 +35,8 @@ export const PageHeaderMenuButton = () => {
   const t = useI18n();
 
   const docId = useService(DocService).doc.id;
+  const guardService = useService(GuardService);
+  const canEdit = useLiveData(guardService.can$('Doc_Update', docId));
 
   const editorService = useService(EditorService);
   const editorContainer = useLiveData(editorService.editor.editorContainer$);
@@ -94,6 +97,7 @@ export const PageHeaderMenuButton = () => {
         prefixIcon={primaryMode === 'page' ? <EdgelessIcon /> : <PageIcon />}
         data-testid="editor-option-menu-mode-switch"
         onSelect={handleSwitchMode}
+        disabled={!canEdit}
       >
         {primaryMode === 'page'
           ? t['com.affine.editorDefaultMode.edgeless']()

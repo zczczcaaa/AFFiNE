@@ -38,7 +38,7 @@ import {
   mapWorkspaceRoleToPermissions,
   PermissionService,
   WORKSPACE_ACTIONS,
-  type WorkspaceActionPermissions,
+  WorkspaceAction,
   WorkspaceRole,
 } from '../../permission';
 import { QuotaService, WorkspaceQuotaType } from '../../quota';
@@ -50,6 +50,22 @@ import {
   WorkspaceType,
 } from '../types';
 import { WorkspaceService } from './service';
+
+export type DotToUnderline<T extends string> =
+  T extends `${infer Prefix}.${infer Suffix}`
+    ? `${Prefix}_${DotToUnderline<Suffix>}`
+    : T;
+
+export function mapPermissionToGraphqlPermissions<A extends string>(
+  permission: Record<A, boolean>
+): Record<DotToUnderline<A>, boolean> {
+  return Object.fromEntries(
+    Object.entries(permission).map(([key, value]) => [
+      key.replaceAll('.', '_'),
+      value,
+    ])
+  ) as Record<DotToUnderline<A>, boolean>;
+}
 
 @ObjectType()
 export class EditorType implements Partial<Editor> {
@@ -75,10 +91,12 @@ class WorkspacePageMeta {
   updatedBy!: EditorType | null;
 }
 
-const WorkspacePermissions = registerObjectType<WorkspaceActionPermissions>(
+const WorkspacePermissions = registerObjectType<
+  Record<DotToUnderline<WorkspaceAction>, boolean>
+>(
   Object.fromEntries(
     WORKSPACE_ACTIONS.map(action => [
-      action,
+      action.replaceAll('.', '_'),
       {
         type: () => Boolean,
         options: {
@@ -96,7 +114,7 @@ export class WorkspaceRolePermissions {
   role!: WorkspaceRole;
 
   @Field(() => WorkspacePermissions)
-  permissions!: WorkspaceActionPermissions;
+  permissions!: Record<DotToUnderline<WorkspaceAction>, boolean>;
 }
 
 /**
@@ -342,7 +360,7 @@ export class WorkspaceResolver {
   async workspaceRolePermissions(
     @CurrentUser() user: CurrentUser,
     @Args('id') id: string
-  ) {
+  ): Promise<WorkspaceRolePermissions> {
     const workspace = await this.prisma.workspaceUserPermission.findFirst({
       where: { workspaceId: id, userId: user.id },
     });
@@ -351,7 +369,9 @@ export class WorkspaceResolver {
     }
     return {
       role: workspace.type,
-      permissions: mapWorkspaceRoleToPermissions(workspace.type),
+      permissions: mapPermissionToGraphqlPermissions(
+        mapWorkspaceRoleToPermissions(workspace.type)
+      ),
     };
   }
 

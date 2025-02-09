@@ -55,11 +55,20 @@ const IconsSelectorPanel = ({
 
 export const DocPropertyIconSelector = ({
   propertyInfo,
+  readonly,
   onSelectedChange,
 }: {
   propertyInfo: DocCustomPropertyInfo;
+  readonly?: boolean;
   onSelectedChange: (icon: DocPropertyIconName) => void;
 }) => {
+  if (readonly) {
+    return (
+      <div className={styles.iconSelectorButton} data-readonly={readonly}>
+        <DocPropertyIcon propertyInfo={propertyInfo} />
+      </div>
+    );
+  }
   return (
     <Menu
       items={

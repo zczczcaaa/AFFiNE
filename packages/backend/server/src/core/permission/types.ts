@@ -146,12 +146,6 @@ type ResourceActionName<T extends keyof typeof Actions> =
 export type WorkspaceAction = ResourceActionName<'Workspace'>;
 export type DocAction = ResourceActionName<'Doc'>;
 export type Action = WorkspaceAction | DocAction;
-export type WorkspaceActionPermissions = {
-  [key in WorkspaceAction]: boolean;
-};
-export type DocActionPermissions = {
-  [key in DocAction]: boolean;
-};
 
 const cache = new WeakMap<object, any>();
 const buildPathReader = (

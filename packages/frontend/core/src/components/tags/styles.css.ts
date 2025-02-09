@@ -7,6 +7,9 @@ export const tagsInlineEditor = style({
     '&[data-empty=true]': {
       color: cssVar('placeholderColor'),
     },
+    '&[data-readonly="true"]': {
+      pointerEvents: 'none',
+    },
   },
 });
 

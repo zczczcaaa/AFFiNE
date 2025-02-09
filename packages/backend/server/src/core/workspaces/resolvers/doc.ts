@@ -31,7 +31,7 @@ import { Models } from '../../../models';
 import { CurrentUser } from '../../auth';
 import {
   DOC_ACTIONS,
-  type DocActionPermissions,
+  DocAction,
   DocRole,
   fixupDocRole,
   mapDocRoleToPermissions,
@@ -41,6 +41,7 @@ import {
 import { PublicUserType } from '../../user';
 import { DocID } from '../../utils/doc';
 import { WorkspaceType } from '../types';
+import { DotToUnderline, mapPermissionToGraphqlPermissions } from './workspace';
 
 registerEnumType(PublicDocMode, {
   name: 'PublicDocMode',
@@ -128,10 +129,12 @@ class GrantedDocUserType {
 @ObjectType()
 class PaginatedGrantedDocUserType extends Paginated(GrantedDocUserType) {}
 
-const DocPermissions = registerObjectType<DocActionPermissions>(
+const DocPermissions = registerObjectType<
+  Record<DotToUnderline<DocAction>, boolean>
+>(
   Object.fromEntries(
     DOC_ACTIONS.map(action => [
-      action,
+      action.replaceAll('.', '_'),
       {
         type: () => Boolean,
         options: {
@@ -142,15 +145,6 @@ const DocPermissions = registerObjectType<DocActionPermissions>(
   ),
   { name: 'DocPermissions' }
 );
-
-@ObjectType()
-export class DocRolePermissions {
-  @Field(() => DocRole)
-  role!: DocRole;
-
-  @Field(() => DocPermissions)
-  permissions!: DocActionPermissions;
-}
 
 @Resolver(() => WorkspaceType)
 export class WorkspaceDocResolver {
@@ -365,7 +359,7 @@ export class DocResolver {
   async permissions(
     @CurrentUser() user: CurrentUser,
     @Parent() doc: DocType
-  ): Promise<DocRolePermissions> {
+  ): Promise<InstanceType<typeof DocPermissions>> {
     const [permission, workspacePermission] = await this.prisma.$transaction(
       tx =>
         Promise.all([
@@ -385,12 +379,11 @@ export class DocResolver {
         ])
     );
 
-    return {
-      role: permission?.type ?? DocRole.External,
-      permissions: mapDocRoleToPermissions(
+    return mapPermissionToGraphqlPermissions(
+      mapDocRoleToPermissions(
         fixupDocRole(workspacePermission?.type, permission?.type)
-      ),
-    };
+      )
+    );
   }
 
   @ResolveField(() => PaginatedGrantedDocUserType, {

@@ -1,7 +1,9 @@
 import { Skeleton } from '@affine/component';
+import { DocService } from '@affine/core/modules/doc';
 import {
   DocGrantedUsersService,
   type GrantedUser,
+  GuardService,
 } from '@affine/core/modules/permissions';
 import { useI18n } from '@affine/i18n';
 import { ArrowLeftBigIcon } from '@blocksuite/icons/rc';
@@ -29,6 +31,12 @@ export const MemberManagement = ({
   const grantedUserList = useLiveData(docGrantedUsersService.grantedUsers$);
   const grantedUserCount = useLiveData(
     docGrantedUsersService.grantedUserCount$
+  );
+  const docService = useService(DocService);
+  const guardService = useService(GuardService);
+
+  const canManageUsers = useLiveData(
+    guardService.can$('Doc_Users_Manage', docService.doc.id)
   );
 
   const t = useI18n();
@@ -62,11 +70,15 @@ export const MemberManagement = ({
       ) : (
         <Skeleton className={styles.scrollableRootStyle} />
       )}
-      {/* TODO(@eyhn): add guard here */}
       <div className={styles.footerStyle}>
-        <span className={styles.addCollaboratorsStyle} onClick={onClickInvite}>
-          {t['com.affine.share-menu.member-management.add-collaborators']()}
-        </span>
+        {canManageUsers ? (
+          <span
+            className={styles.addCollaboratorsStyle}
+            onClick={onClickInvite}
+          >
+            {t['com.affine.share-menu.member-management.add-collaborators']()}
+          </span>
+        ) : null}
       </div>
     </div>
   );

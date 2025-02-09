@@ -133,10 +133,12 @@ export const propertyValueContainer = style({
     '&[data-readonly="false"][data-hoverable="true"]': {
       cursor: 'pointer',
     },
-    '&[data-readonly="false"][data-hoverable="true"]:is(:hover, :focus-within)':
-      {
-        backgroundColor: cssVarV2('layer/background/hoverOverlay'),
-      },
+    '&[data-readonly="true"][data-hoverable="true"]': {
+      cursor: 'default',
+    },
+    '&[data-hoverable="true"]:is(:hover, :focus-within)': {
+      backgroundColor: cssVarV2('layer/background/hoverOverlay'),
+    },
   },
 });
 

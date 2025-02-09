@@ -47,10 +47,7 @@ export const DocInfoDialog = ({
               className={styles.titleContainer}
               data-testid="info-modal-title"
             >
-              <BlocksuiteHeaderTitle
-                docId={docId}
-                className={styles.titleStyle}
-              />
+              <BlocksuiteHeaderTitle className={styles.titleStyle} />
             </div>
             <InfoTable docId={docId} onClose={() => close()} />
           </Scrollable.Viewport>
