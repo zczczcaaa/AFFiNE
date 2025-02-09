@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, type User } from '@prisma/client';
+import { type ConnectedAccount, Prisma, type User } from '@prisma/client';
 import { pick } from 'lodash-es';
 
 import {
@@ -21,6 +21,15 @@ const publicUserSelect = {
 type CreateUserInput = Omit<Prisma.UserCreateInput, 'name'> & { name?: string };
 type UpdateUserInput = Omit<Partial<Prisma.UserCreateInput>, 'id'>;
 
+type CreateConnectedAccountInput = Omit<
+  Prisma.ConnectedAccountUncheckedCreateInput,
+  'id'
+> & { accessToken: string };
+type UpdateConnectedAccountInput = Omit<
+  Prisma.ConnectedAccountUncheckedUpdateInput,
+  'id'
+>;
+
 declare global {
   interface Events {
     'user.created': User;
@@ -35,7 +44,7 @@ declare global {
 }
 
 export type PublicUser = Pick<User, keyof typeof publicUserSelect>;
-export type { User };
+export type { ConnectedAccount, User };
 
 @Injectable()
 export class UserModel extends BaseModel {
@@ -228,4 +237,40 @@ export class UserModel extends BaseModel {
   async count() {
     return this.db.user.count();
   }
+
+  // #region ConnectedAccount
+
+  async createConnectedAccount(data: CreateConnectedAccountInput) {
+    return await this.db.connectedAccount.create({
+      data,
+    });
+  }
+
+  async getConnectedAccount(provider: string, providerAccountId: string) {
+    return await this.db.connectedAccount.findFirst({
+      where: { provider, providerAccountId },
+      include: {
+        user: true,
+      },
+    });
+  }
+
+  async updateConnectedAccount(id: string, data: UpdateConnectedAccountInput) {
+    return await this.db.connectedAccount.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async deleteConnectedAccount(id: string) {
+    const { count } = await this.db.connectedAccount.deleteMany({
+      where: { id },
+    });
+    if (count > 0) {
+      this.logger.log(`Deleted connected account ${id}`);
+    }
+    return count;
+  }
+
+  // #endregion
 }

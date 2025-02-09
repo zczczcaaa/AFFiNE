@@ -297,3 +297,49 @@ test('should paginate users', async t => {
     Array.from({ length: 10 }).map((_, i) => `test${i}@affine.pro`)
   );
 });
+
+// #region ConnectedAccount
+
+test('should create, get, update, delete connected account', async t => {
+  const user = await t.context.user.create({
+    email: 'test@affine.pro',
+  });
+  const connectedAccount = await t.context.user.createConnectedAccount({
+    userId: user.id,
+    provider: 'test-provider',
+    providerAccountId: 'test-provider-account-id',
+    accessToken: 'test-access-token',
+  });
+  t.truthy(connectedAccount);
+
+  const connectedAccount2 = await t.context.user.getConnectedAccount(
+    connectedAccount.provider,
+    connectedAccount.providerAccountId
+  );
+  t.truthy(connectedAccount2);
+  t.is(connectedAccount2!.id, connectedAccount.id);
+  t.is(connectedAccount2!.user.id, user.id);
+
+  const updatedConnectedAccount = await t.context.user.updateConnectedAccount(
+    connectedAccount.id,
+    {
+      accessToken: 'new-access-token',
+    }
+  );
+  t.is(updatedConnectedAccount.accessToken, 'new-access-token');
+  // get the updated connected account
+  const connectedAccount3 = await t.context.user.getConnectedAccount(
+    connectedAccount.provider,
+    connectedAccount.providerAccountId
+  );
+  t.is(connectedAccount3!.accessToken, 'new-access-token');
+
+  await t.context.user.deleteConnectedAccount(connectedAccount.id);
+  const connectedAccount4 = await t.context.user.getConnectedAccount(
+    connectedAccount.provider,
+    connectedAccount.providerAccountId
+  );
+  t.is(connectedAccount4, null);
+});
+
+// #endregion
