@@ -236,7 +236,7 @@ test.describe('edgeless note element toolbar', () => {
     await locateModeSwitchButton(page, 'page').click();
     expect(notes).toHaveCount(2);
 
-    await locateModeSwitchButton(page, 'edgeless').click();
+    await clickEdgelessModeButton(page);
     await clickView(page, [100, 100]);
     await displayInPage.click();
     await locateModeSwitchButton(page, 'page').click();
@@ -246,7 +246,7 @@ test.describe('edgeless note element toolbar', () => {
     const undoButton = page.getByTestId('undo-display-in-page');
     const viewTocButton = page.getByTestId('view-in-toc');
 
-    await locateModeSwitchButton(page, 'edgeless').click();
+    await clickEdgelessModeButton(page);
     await waitForEditorLoad(page);
     await clickView(page, [100, 100]);
     await displayInPage.click();
@@ -259,7 +259,7 @@ test.describe('edgeless note element toolbar', () => {
     await waitForEditorLoad(page);
     expect(notes).toHaveCount(1);
 
-    await locateModeSwitchButton(page, 'edgeless').click();
+    await clickEdgelessModeButton(page);
     await waitForEditorLoad(page);
     await clickView(page, [100, 100]);
     await displayInPage.click();

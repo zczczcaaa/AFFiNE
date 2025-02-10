@@ -6,7 +6,9 @@ import {
   createEdgelessNoteBlock,
   focusDocTitle,
   getEdgelessSelectedIds,
+  getViewportCenter,
   locateElementToolbar,
+  setViewportCenter,
 } from '@affine-test/kit/utils/editor';
 import {
   pressBackspace,
@@ -207,7 +209,8 @@ test.describe('TOC display', () => {
   }) => {
     await clickEdgelessModeButton(page);
     const toc = await openTocPanel(page);
-    await createEdgelessNoteBlock(page, [100, 100]);
+    const viewportCenter = await getViewportCenter(page);
+    await createEdgelessNoteBlock(page, [viewportCenter.x, viewportCenter.y]);
     const card = locateCards(toc, 'edgeless');
     await changeNoteDisplayMode(card, 'doc');
 
@@ -337,6 +340,7 @@ test.describe('TOC and edgeless selection', () => {
     page,
   }) => {
     await clickEdgelessModeButton(page);
+    await setViewportCenter(page, [0, 0]);
     await selectAllByKeyboard(page);
     await pressBackspace(page);
     await createEdgelessNoteBlock(page, [100, 100]);
@@ -490,6 +494,7 @@ test.describe('advanced visibility control', () => {
     page,
   }) => {
     await clickEdgelessModeButton(page);
+    await setViewportCenter(page, [0, 0]);
     await createEdgelessNoteBlock(page, [100, 100]);
     await type(page, 'hello');
     await clickView(page, [200, 200]);

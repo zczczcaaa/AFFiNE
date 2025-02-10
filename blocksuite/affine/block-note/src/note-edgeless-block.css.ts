@@ -64,9 +64,6 @@ globalStyle(`${edgelessNoteContainer} > doc-title`, {
 
 globalStyle(`${edgelessNoteContainer} > doc-title .doc-title-container`, {
   padding: '26px 0px',
-  fontSize: cssVar('fontTitle'),
-  fontWeight: 700,
-  lineHeight: '44px',
 });
 
 export const pageContent = style({

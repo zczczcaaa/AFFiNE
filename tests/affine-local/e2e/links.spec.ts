@@ -1,5 +1,5 @@
 import { test } from '@affine-test/kit/playwright';
-import { locateModeSwitchButton } from '@affine-test/kit/utils/editor';
+import { clickEdgelessModeButton } from '@affine-test/kit/utils/editor';
 import {
   pasteByKeyboard,
   writeTextToClipboard,
@@ -506,7 +506,7 @@ test('the viewport should be fit when the linked document is with edgeless mode'
 }) => {
   await page.keyboard.press('Enter');
 
-  await locateModeSwitchButton(page, 'edgeless').click();
+  await clickEdgelessModeButton(page);
 
   const note = page.locator('affine-edgeless-note');
   const noteBoundingBox = await note.boundingBox();
@@ -570,7 +570,7 @@ test('should show edgeless content when switching card view of linked mode doc i
 }) => {
   await page.keyboard.press('Enter');
 
-  await locateModeSwitchButton(page, 'edgeless').click();
+  await clickEdgelessModeButton(page);
 
   const note = page.locator('affine-edgeless-note');
   const noteBoundingBox = await note.boundingBox();
@@ -596,7 +596,7 @@ test('should show edgeless content when switching card view of linked mode doc i
   const url = new URL(page.url());
 
   await clickNewPageButton(page);
-  await locateModeSwitchButton(page, 'edgeless').click();
+  await clickEdgelessModeButton(page);
 
   await page.mouse.move(x, y);
   await writeTextToClipboard(page, url.toString());

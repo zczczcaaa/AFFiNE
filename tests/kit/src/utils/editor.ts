@@ -36,6 +36,8 @@ export async function ensureInPageMode(page: Page) {
 
 export async function ensureInEdgelessMode(page: Page) {
   await expect(locateModeSwitchButton(page, 'edgeless', true)).toBeVisible();
+  // wait zoom animation
+  await page.waitForTimeout(500);
 }
 
 export async function getPageMode(page: Page): Promise<'page' | 'edgeless'> {
@@ -78,6 +80,32 @@ export async function getEdgelessSelectedIds(page: Page, editorIndex = 0) {
     }
     return root.gfx.selection.selectedIds;
   });
+}
+
+export async function getViewportCenter(page: Page, editorIndex = 0) {
+  const container = locateEditorContainer(page, editorIndex);
+  return container.evaluate((container: AffineEditorContainer) => {
+    const root = container.querySelector('affine-edgeless-root');
+    if (!root) {
+      throw new Error('Edgeless root not found');
+    }
+    return root.gfx.viewport.center;
+  });
+}
+
+export async function setViewportCenter(
+  page: Page,
+  center: IVec,
+  editorIndex = 0
+) {
+  const container = locateEditorContainer(page, editorIndex);
+  return container.evaluate((container: AffineEditorContainer, center) => {
+    const root = container.querySelector('affine-edgeless-root');
+    if (!root) {
+      throw new Error('Edgeless root not found');
+    }
+    root.gfx.viewport.setCenter(center[0], center[1]);
+  }, center);
 }
 
 /**

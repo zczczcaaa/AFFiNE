@@ -6,19 +6,25 @@ import {
   EdgelessLegacySlotIdentifier,
   normalizeWheelDeltaY,
 } from '@blocksuite/affine-block-surface';
-import type {
-  RootBlockModel,
-  ShapeElementModel,
-} from '@blocksuite/affine-model';
 import {
+  type NoteBlockModel,
+  NoteDisplayMode,
+  type RootBlockModel,
+  type ShapeElementModel,
+} from '@blocksuite/affine-model';
+import { EDGELESS_BLOCK_CHILD_PADDING } from '@blocksuite/affine-shared/consts';
+import {
+  DocModeProvider,
   EditorSettingProvider,
   EditPropsStore,
+  FeatureFlagService,
   FontLoaderService,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
   isTouchPadPinchEvent,
+  matchFlavours,
   requestConnectedFrame,
   requestThrottledConnectedFrame,
 } from '@blocksuite/affine-shared/utils';
@@ -340,11 +346,65 @@ export class EdgelessRootBlockComponent extends BlockComponent<
   private _initViewport() {
     const { std, gfx } = this;
 
+    const pageBlockViewportFitAnimation = () => {
+      const primaryMode = std.get(DocModeProvider).getPrimaryMode(this.doc.id);
+      const note = this.model.children.find(
+        (child): child is NoteBlockModel =>
+          matchFlavours(child, ['affine:note']) &&
+          child.displayMode !== NoteDisplayMode.EdgelessOnly
+      );
+
+      if (primaryMode !== 'page' || !note || note.edgeless.collapse)
+        return false;
+
+      const leftPadding = parseInt(
+        window
+          .getComputedStyle(this)
+          .getPropertyValue('--affine-editor-side-padding')
+          .replace('px', '')
+      );
+      if (isNaN(leftPadding)) return false;
+
+      let editorWidth = parseInt(
+        window
+          .getComputedStyle(this)
+          .getPropertyValue('--affine-editor-width')
+          .replace('px', '')
+      );
+      if (isNaN(editorWidth)) return false;
+
+      const containerWidth = this.getBoundingClientRect().width;
+      const leftMargin =
+        containerWidth > editorWidth ? (containerWidth - editorWidth) / 2 : 0;
+
+      const pageTitleAnchor = gfx.viewport.toModelCoord(
+        leftPadding + leftMargin,
+        0
+      );
+
+      const noteBound = Bound.deserialize(note.xywh);
+      const edgelessTitleAnchor = Vec.add(noteBound.tl, [
+        EDGELESS_BLOCK_CHILD_PADDING,
+        12,
+      ]);
+
+      const center = Vec.sub(edgelessTitleAnchor, pageTitleAnchor);
+      gfx.viewport.setCenter(center[0], center[1]);
+      gfx.viewport.smoothZoom(0.65, undefined, 15);
+
+      return true;
+    };
+
     const run = () => {
       const storedViewport = std.get(EditPropsStore).getStorage('viewport');
-
       if (!storedViewport) {
-        this.gfx.fitToScreen();
+        const enablePageBlock = this.std
+          .get(FeatureFlagService)
+          .getFlag('enable_page_block');
+
+        if (!(enablePageBlock && pageBlockViewportFitAnimation())) {
+          this.gfx.fitToScreen();
+        }
         return;
       }
 

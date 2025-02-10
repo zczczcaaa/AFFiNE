@@ -365,14 +365,13 @@ export class Viewport {
     });
   }
 
-  smoothTranslate(x: number, y: number) {
+  smoothTranslate(x: number, y: number, numSteps = 10) {
     const { center } = this;
     const delta = { x: x - center.x, y: y - center.y };
     const innerSmoothTranslate = () => {
       if (this._rafId) cancelAnimationFrame(this._rafId);
       this._rafId = requestAnimationFrame(() => {
-        const rate = 10;
-        const step = { x: delta.x / rate, y: delta.y / rate };
+        const step = { x: delta.x / numSteps, y: delta.y / numSteps };
         const nextCenter = {
           x: this.centerX + step.x,
           y: this.centerY + step.y,
@@ -389,15 +388,14 @@ export class Viewport {
     innerSmoothTranslate();
   }
 
-  smoothZoom(zoom: number, focusPoint?: IPoint) {
+  smoothZoom(zoom: number, focusPoint?: IPoint, numSteps = 10) {
     const delta = zoom - this.zoom;
     if (this._rafId) cancelAnimationFrame(this._rafId);
 
     const innerSmoothZoom = () => {
       this._rafId = requestAnimationFrame(() => {
         const sign = delta > 0 ? 1 : -1;
-        const total = 10;
-        const step = delta / total;
+        const step = delta / numSteps;
         const nextZoom = cutoff(this.zoom + step, zoom, sign);
 
         this.setZoom(nextZoom, focusPoint);
