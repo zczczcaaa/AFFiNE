@@ -122,7 +122,7 @@ export class EmbedCardCreateModal extends WithDisposable(ShadowlessElement) {
       })
       .catch(console.error);
     this.disposables.addFromEvent(this, 'keydown', this._onDocumentKeydown);
-    this.disposables.addFromEvent(this, 'cup', stopPropagation);
+    this.disposables.addFromEvent(this, 'cut', stopPropagation);
     this.disposables.addFromEvent(this, 'copy', stopPropagation);
     this.disposables.addFromEvent(this, 'paste', stopPropagation);
   }

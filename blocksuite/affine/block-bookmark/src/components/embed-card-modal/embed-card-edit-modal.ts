@@ -306,7 +306,7 @@ export class EmbedCardEditModal extends SignalWatcher(
     this.disposables.add(listenClickAway(this, this._hide));
     this.disposables.addFromEvent(this, 'keydown', this._onKeydown);
     this.disposables.addFromEvent(this, 'pointerdown', stopPropagation);
-    this.disposables.addFromEvent(this, 'cup', stopPropagation);
+    this.disposables.addFromEvent(this, 'cut', stopPropagation);
     this.disposables.addFromEvent(this, 'copy', stopPropagation);
     this.disposables.addFromEvent(this, 'paste', stopPropagation);
 
