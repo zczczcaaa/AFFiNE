@@ -68,7 +68,7 @@ spec:
           - name: REDIS_SERVER_DATABASE
             value: "{{ .Values.global.redis.database }}"
           - name: AFFINE_SERVER_PORT
-            value: "{{ .Values.service.port }}"
+            value: "{{ .Values.global.docService.port }}"
           - name: AFFINE_SERVER_SUB_PATH
             value: "{{ .Values.app.path }}"
           - name: AFFINE_SERVER_HOST
@@ -77,7 +77,7 @@ spec:
             value: "{{ .Values.app.https }}"
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.global.docService.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
