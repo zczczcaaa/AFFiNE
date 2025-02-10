@@ -4,12 +4,10 @@ import {
   getCurrentMailMessageCount,
   getTokenFromLatestMailMessage,
 } from '@affine-test/kit/utils/cloud';
-import type { INestApplication } from '@nestjs/common';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 
 import { MailService } from '../../base/mailer';
-import { AuthService } from '../../core/auth/service';
 import {
   changeEmail,
   changePassword,
@@ -18,21 +16,18 @@ import {
   sendChangeEmail,
   sendSetPasswordEmail,
   sendVerifyChangeEmail,
-  signUp,
+  TestingApp,
 } from '../utils';
 
 const test = ava as TestFn<{
-  app: INestApplication;
-  auth: AuthService;
+  app: TestingApp;
   mail: MailService;
 }>;
 
 test.beforeEach(async t => {
-  const { app } = await createTestingApp();
-  const auth = app.get(AuthService);
+  const app = await createTestingApp();
   const mail = app.get(MailService);
   t.context.app = app;
-  t.context.auth = auth;
   t.context.mail = mail;
 });
 
@@ -46,11 +41,9 @@ test('change email', async t => {
     const u1Email = 'u1@affine.pro';
     const u2Email = 'u2@affine.pro';
 
-    const u1 = await signUp(app, 'u1', u1Email, '1');
-
+    await app.signup(u1Email);
     const primitiveMailCount = await getCurrentMailMessageCount();
-
-    await sendChangeEmail(app, u1.token.token, u1Email, 'affine.pro');
+    await sendChangeEmail(app, u1Email, 'affine.pro');
 
     const afterSendChangeMailCount = await getCurrentMailMessageCount();
     t.is(
@@ -69,7 +62,6 @@ test('change email', async t => {
 
     await sendVerifyChangeEmail(
       app,
-      u1.token.token,
       changeEmailToken as string,
       u2Email,
       'affine.pro'
@@ -91,7 +83,7 @@ test('change email', async t => {
       'fail to get verify change email token from email content'
     );
 
-    await changeEmail(app, u1.token.token, verifyEmailToken as string, u2Email);
+    await changeEmail(app, verifyEmailToken as string, u2Email);
 
     const afterNotificationMailCount = await getCurrentMailMessageCount();
 
@@ -105,15 +97,15 @@ test('change email', async t => {
 });
 
 test('set and change password', async t => {
-  const { mail, app, auth } = t.context;
+  const { mail, app } = t.context;
   if (mail.hasConfigured()) {
     const u1Email = 'u1@affine.pro';
 
-    const u1 = await signUp(app, 'u1', u1Email, '1');
+    const u1 = await app.signup(u1Email);
 
     const primitiveMailCount = await getCurrentMailMessageCount();
 
-    await sendSetPasswordEmail(app, u1.token.token, u1Email, 'affine.pro');
+    await sendSetPasswordEmail(app, u1Email, 'affine.pro');
 
     const afterSendSetMailCount = await getCurrentMailMessageCount();
 
@@ -141,78 +133,84 @@ test('set and change password', async t => {
 
     t.true(success, 'failed to change password');
 
-    const ret = auth.signIn(u1Email, newPassword);
-    t.notThrowsAsync(ret, 'failed to check password');
-    t.is((await ret).id, u1.id, 'failed to check password');
+    await app.login({
+      ...u1,
+      password: newPassword,
+    });
+
+    const user = await currentUser(app);
+
+    t.not(user, null, 'failed to get current user');
+    t.is(user?.email, u1Email, 'failed to get current user');
   }
   t.pass();
 });
 test('should revoke token after change user identify', async t => {
-  const { mail, app, auth } = t.context;
+  const { mail, app } = t.context;
   if (mail.hasConfigured()) {
     // change email
     {
       const u1Email = 'u1@affine.pro';
       const u2Email = 'u2@affine.pro';
 
-      const u1 = await signUp(app, 'u1', u1Email, '1');
+      const u1 = await app.signup(u1Email);
 
       {
-        const user = await currentUser(app, u1.token.token);
+        const user = await currentUser(app);
         t.is(user?.email, u1Email, 'failed to get current user');
       }
 
-      await sendChangeEmail(app, u1.token.token, u1Email, 'affine.pro');
+      await sendChangeEmail(app, u1Email, 'affine.pro');
 
       const changeEmailToken = await getTokenFromLatestMailMessage();
       await sendVerifyChangeEmail(
         app,
-        u1.token.token,
         changeEmailToken as string,
         u2Email,
         'affine.pro'
       );
 
       const verifyEmailToken = await getTokenFromLatestMailMessage();
-      await changeEmail(
-        app,
-        u1.token.token,
-        verifyEmailToken as string,
-        u2Email
-      );
+      await changeEmail(app, verifyEmailToken as string, u2Email);
 
-      const user = await currentUser(app, u1.token.token);
+      let user = await currentUser(app);
       t.is(user, null, 'token should be revoked');
 
-      const newUserSession = await auth.signIn(u2Email, '1');
-      t.is(newUserSession?.email, u2Email, 'failed to sign in with new email');
+      await app.login({
+        ...u1,
+        email: u2Email,
+      });
+
+      user = await currentUser(app);
+      t.is(user?.email, u2Email, 'failed to sign in with new email');
     }
 
     // change password
     {
       const u3Email = 'u3@affine.pro';
 
-      const u3 = await signUp(app, 'u1', u3Email, '1');
+      await app.logout();
+      const u3 = await app.signup(u3Email);
 
       {
-        const user = await currentUser(app, u3.token.token);
+        const user = await currentUser(app);
         t.is(user?.email, u3Email, 'failed to get current user');
       }
 
-      await sendSetPasswordEmail(app, u3.token.token, u3Email, 'affine.pro');
+      await sendSetPasswordEmail(app, u3Email, 'affine.pro');
       const token = await getTokenFromLatestMailMessage();
       const newPassword = randomBytes(16).toString('hex');
       await changePassword(app, u3.id, token as string, newPassword);
 
-      const user = await currentUser(app, u3.token.token);
+      let user = await currentUser(app);
       t.is(user, null, 'token should be revoked');
 
-      const newUserSession = await auth.signIn(u3Email, newPassword);
-      t.is(
-        newUserSession?.email,
-        u3Email,
-        'failed to sign in with new password'
-      );
+      await app.login({
+        ...u3,
+        password: newPassword,
+      });
+      user = await currentUser(app);
+      t.is(user?.email, u3Email, 'failed to sign in with new password');
     }
   }
   t.pass();

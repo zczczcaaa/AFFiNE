@@ -55,8 +55,9 @@ const test = ava as TestFn<{
     json: CopilotCheckJsonExecutor;
   };
 }>;
+let userId: string;
 
-test.beforeEach(async t => {
+test.before(async t => {
   const module = await createTestingModule({
     imports: [
       ConfigModule.forRoot({
@@ -99,15 +100,17 @@ test.beforeEach(async t => {
   };
 });
 
-test.afterEach.always(async t => {
-  await t.context.module.close();
-});
-
-let userId: string;
 test.beforeEach(async t => {
-  const { auth } = t.context;
+  Sinon.restore();
+  const { module, auth, prompt } = t.context;
+  await module.initTestingDB();
+  await prompt.onModuleInit();
   const user = await auth.signUp('test@affine.pro', '123456');
   userId = user.id;
+});
+
+test.after.always(async t => {
+  await t.context.module.close();
 });
 
 // ==================== prompt ====================

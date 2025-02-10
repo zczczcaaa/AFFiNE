@@ -40,7 +40,7 @@ test.before('init selfhost server', async t => {
   // @ts-expect-error override
   AFFiNE.isSelfhosted = true;
   AFFiNE.flavor.renderer = true;
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     imports: [buildAppModule()],
   });
 

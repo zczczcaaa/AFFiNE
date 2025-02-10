@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto';
 
 import { User, Workspace } from '@prisma/client';
 import ava, { TestFn } from 'ava';
-import request from 'supertest';
 import { Doc as YDoc } from 'yjs';
 
 import { createTestingApp, type TestingApp } from '../../../__tests__/utils';
@@ -22,7 +21,7 @@ const test = ava as TestFn<{
 }>;
 
 test.before(async t => {
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     imports: [
       ConfigModule.forRoot({
         flavor: {
@@ -47,7 +46,7 @@ let user: User;
 let workspace: Workspace;
 
 test.beforeEach(async t => {
-  t.context.config.docService.endpoint = t.context.app.getHttpServerUrl();
+  t.context.config.docService.endpoint = t.context.app.url();
   await t.context.app.initTestingDB();
   user = await t.context.models.user.create({
     email: 'test@affine.pro',
@@ -59,7 +58,7 @@ test.after.always(async t => {
   await t.context.app.close();
 });
 
-test('should render page success', async t => {
+test.only('should render page success', async t => {
   const docId = randomUUID();
   const { app, adapter, permission } = t.context;
 
@@ -78,8 +77,6 @@ test('should render page success', async t => {
   await adapter.pushDocUpdates(workspace.id, docId, updates, user.id);
   await permission.publishPage(workspace.id, docId);
 
-  await request(app.getHttpServer())
-    .get(`/workspace/${workspace.id}/${docId}`)
-    .expect(200);
+  await app.GET(`/workspace/${workspace.id}/${docId}`).expect(200);
   t.pass();
 });

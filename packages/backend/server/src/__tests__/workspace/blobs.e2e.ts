@@ -1,7 +1,5 @@
 import test from 'ava';
-import request from 'supertest';
 
-import { AppModule } from '../../app.module';
 import { WorkspaceFeatureModel } from '../../models';
 import {
   collectAllBlobSizes,
@@ -10,7 +8,6 @@ import {
   getWorkspaceBlobsSize,
   listBlobs,
   setBlob,
-  signUp,
   TestingApp,
 } from '../utils';
 
@@ -27,11 +24,7 @@ let app: TestingApp;
 let model: WorkspaceFeatureModel;
 
 test.before(async () => {
-  const { app: testApp } = await createTestingApp({
-    imports: [AppModule],
-  });
-
-  app = testApp;
+  app = await createTestingApp();
   model = app.get(WorkspaceFeatureModel);
 });
 
@@ -44,117 +37,113 @@ test.after.always(async () => {
 });
 
 test('should set blobs', async t => {
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
+  const workspace = await createWorkspace(app);
 
   const buffer1 = Buffer.from([0, 0]);
-  const hash1 = await setBlob(app, u1.token.token, workspace.id, buffer1);
+  const hash1 = await setBlob(app, workspace.id, buffer1);
   const buffer2 = Buffer.from([0, 1]);
-  const hash2 = await setBlob(app, u1.token.token, workspace.id, buffer2);
+  const hash2 = await setBlob(app, workspace.id, buffer2);
 
-  const server = app.getHttpServer();
-
-  const response1 = await request(server)
-    .get(`/api/workspaces/${workspace.id}/blobs/${hash1}`)
-    .auth(u1.token.token, { type: 'bearer' })
+  const response1 = await app
+    .GET(`/api/workspaces/${workspace.id}/blobs/${hash1}`)
     .buffer();
 
   t.deepEqual(response1.body, buffer1, 'failed to get blob');
 
-  const response2 = await request(server)
-    .get(`/api/workspaces/${workspace.id}/blobs/${hash2}`)
-    .auth(u1.token.token, { type: 'bearer' })
+  const response2 = await app
+    .GET(`/api/workspaces/${workspace.id}/blobs/${hash2}`)
     .buffer();
 
   t.deepEqual(response2.body, buffer2, 'failed to get blob');
 });
 
 test('should list blobs', async t => {
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
-  const blobs = await listBlobs(app, u1.token.token, workspace.id);
+  const workspace = await createWorkspace(app);
+  const blobs = await listBlobs(app, workspace.id);
   t.is(blobs.length, 0, 'failed to list blobs');
 
   const buffer1 = Buffer.from([0, 0]);
-  const hash1 = await setBlob(app, u1.token.token, workspace.id, buffer1);
+  const hash1 = await setBlob(app, workspace.id, buffer1);
   const buffer2 = Buffer.from([0, 1]);
-  const hash2 = await setBlob(app, u1.token.token, workspace.id, buffer2);
+  const hash2 = await setBlob(app, workspace.id, buffer2);
 
-  const ret = await listBlobs(app, u1.token.token, workspace.id);
+  const ret = await listBlobs(app, workspace.id);
   t.is(ret.length, 2, 'failed to list blobs');
   // list blob result is not ordered
   t.deepEqual(ret.sort(), [hash1, hash2].sort());
 });
 
 test('should calc blobs size', async t => {
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
+  const workspace = await createWorkspace(app);
 
   const buffer1 = Buffer.from([0, 0]);
-  await setBlob(app, u1.token.token, workspace.id, buffer1);
+  await setBlob(app, workspace.id, buffer1);
   const buffer2 = Buffer.from([0, 1]);
-  await setBlob(app, u1.token.token, workspace.id, buffer2);
+  await setBlob(app, workspace.id, buffer2);
 
-  const size = await getWorkspaceBlobsSize(app, u1.token.token, workspace.id);
+  const size = await getWorkspaceBlobsSize(app, workspace.id);
   t.is(size, 4, 'failed to collect blob sizes');
 });
 
 test('should calc all blobs size', async t => {
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace1 = await createWorkspace(app, u1.token.token);
+  const workspace1 = await createWorkspace(app);
 
   const buffer1 = Buffer.from([0, 0]);
-  await setBlob(app, u1.token.token, workspace1.id, buffer1);
+  await setBlob(app, workspace1.id, buffer1);
   const buffer2 = Buffer.from([0, 1]);
-  await setBlob(app, u1.token.token, workspace1.id, buffer2);
+  await setBlob(app, workspace1.id, buffer2);
 
-  const workspace2 = await createWorkspace(app, u1.token.token);
+  const workspace2 = await createWorkspace(app);
 
   const buffer3 = Buffer.from([0, 0]);
-  await setBlob(app, u1.token.token, workspace2.id, buffer3);
+  await setBlob(app, workspace2.id, buffer3);
   const buffer4 = Buffer.from([0, 1]);
-  await setBlob(app, u1.token.token, workspace2.id, buffer4);
+  await setBlob(app, workspace2.id, buffer4);
 
-  const size = await collectAllBlobSizes(app, u1.token.token);
+  const size = await collectAllBlobSizes(app);
   t.is(size, 8, 'failed to collect all blob sizes');
 });
 
 test('should reject blob exceeded limit', async t => {
-  const u1 = await signUp(app, 'darksky', 'darksky@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace1 = await createWorkspace(app, u1.token.token);
+  const workspace1 = await createWorkspace(app);
   await model.add(workspace1.id, 'team_plan_v1', 'test', RESTRICTED_QUOTA);
 
   const buffer1 = Buffer.from(
     Array.from({ length: RESTRICTED_QUOTA.blobLimit + 1 }, () => 0)
   );
-  await t.throwsAsync(setBlob(app, u1.token.token, workspace1.id, buffer1));
+  await t.throwsAsync(setBlob(app, workspace1.id, buffer1));
 });
 
 test('should reject blob exceeded quota', async t => {
-  const u1 = await signUp(app, 'darksky', 'darksky@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
+  const workspace = await createWorkspace(app);
   await model.add(workspace.id, 'team_plan_v1', 'test', RESTRICTED_QUOTA);
 
   const buffer = Buffer.from(Array.from({ length: OneMB }, () => 0));
 
-  await t.notThrowsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
-  await t.throwsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
+  await t.notThrowsAsync(setBlob(app, workspace.id, buffer));
+  await t.throwsAsync(setBlob(app, workspace.id, buffer));
 });
 
 test('should accept blob even storage out of quota if workspace has unlimited feature', async t => {
-  const u1 = await signUp(app, 'darksky', 'darksky@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
+  const workspace = await createWorkspace(app);
   await model.add(workspace.id, 'team_plan_v1', 'test', RESTRICTED_QUOTA);
   await model.add(workspace.id, 'unlimited_workspace', 'test');
 
   const buffer = Buffer.from(Array.from({ length: OneMB }, () => 0));
-  await t.notThrowsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
-  await t.notThrowsAsync(setBlob(app, u1.token.token, workspace.id, buffer));
+  await t.notThrowsAsync(setBlob(app, workspace.id, buffer));
+  await t.notThrowsAsync(setBlob(app, workspace.id, buffer));
 });

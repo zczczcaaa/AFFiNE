@@ -1,8 +1,5 @@
 import { randomBytes } from 'node:crypto';
 
-import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-
 import {
   DEFAULT_DIMENSIONS,
   OpenAIProvider,
@@ -26,8 +23,8 @@ import {
   WorkflowNodeType,
   WorkflowParams,
 } from '../../plugins/copilot/workflow/types';
-import { gql } from './common';
-import { handleGraphQLError, sleep } from './utils';
+import { TestingApp } from './testing-app';
+import { sleep } from './utils';
 
 // @ts-expect-error no error
 export class MockCopilotTestProvider
@@ -159,167 +156,123 @@ export class MockCopilotTestProvider
 }
 
 export async function createCopilotSession(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   workspaceId: string,
   docId: string,
   promptName: string
 ): Promise<string> {
-  const res = await request(app.getHttpServer())
-    .post(gql)
-    .auth(userToken, { type: 'bearer' })
-    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-    .send({
-      query: `
-        mutation createCopilotSession($options: CreateChatSessionInput!) {
-          createCopilotSession(options: $options)
-        }
-      `,
-      variables: { options: { workspaceId, docId, promptName } },
-    })
-    .expect(200);
+  const res = await app.gql(
+    `
+    mutation createCopilotSession($options: CreateChatSessionInput!) {
+      createCopilotSession(options: $options)
+    }
+  `,
+    { options: { workspaceId, docId, promptName } }
+  );
 
-  handleGraphQLError(res);
-
-  return res.body.data.createCopilotSession;
+  return res.createCopilotSession;
 }
 
 export async function updateCopilotSession(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   sessionId: string,
   promptName: string
 ): Promise<string> {
-  const res = await request(app.getHttpServer())
-    .post(gql)
-    .auth(userToken, { type: 'bearer' })
-    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-    .send({
-      query: `
-        mutation updateCopilotSession($options: UpdateChatSessionInput!) {
-          updateCopilotSession(options: $options)
-        }
-      `,
-      variables: { options: { sessionId, promptName } },
-    })
-    .expect(200);
+  const res = await app.gql(
+    `
+    mutation updateCopilotSession($options: UpdateChatSessionInput!) {
+      updateCopilotSession(options: $options)
+    }
+  `,
+    { options: { sessionId, promptName } }
+  );
 
-  handleGraphQLError(res);
-
-  return res.body.data.updateCopilotSession;
+  return res.updateCopilotSession;
 }
 
 export async function forkCopilotSession(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   workspaceId: string,
   docId: string,
   sessionId: string,
   latestMessageId: string
 ): Promise<string> {
-  const res = await request(app.getHttpServer())
-    .post(gql)
-    .auth(userToken, { type: 'bearer' })
-    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-    .send({
-      query: `
-        mutation forkCopilotSession($options: ForkChatSessionInput!) {
-          forkCopilotSession(options: $options)
-        }
-      `,
-      variables: {
-        options: { workspaceId, docId, sessionId, latestMessageId },
-      },
-    })
-    .expect(200);
+  const res = await app.gql(
+    `
+    mutation forkCopilotSession($options: ForkChatSessionInput!) {
+      forkCopilotSession(options: $options)
+    }
+  `,
+    { options: { workspaceId, docId, sessionId, latestMessageId } }
+  );
 
-  handleGraphQLError(res);
-
-  return res.body.data.forkCopilotSession;
+  return res.forkCopilotSession;
 }
 
 export async function createCopilotMessage(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   sessionId: string,
   content?: string,
   attachments?: string[],
   blobs?: ArrayBuffer[],
   params?: Record<string, string>
 ): Promise<string> {
-  const res = await request(app.getHttpServer())
-    .post(gql)
-    .auth(userToken, { type: 'bearer' })
-    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-    .send({
-      query: `
-        mutation createCopilotMessage($options: CreateChatMessageInput!) {
-          createCopilotMessage(options: $options)
-        }
-      `,
-      variables: {
-        options: { sessionId, content, attachments, blobs, params },
-      },
-    })
-    .expect(200);
+  const res = await app.gql(
+    `
+    mutation createCopilotMessage($options: CreateChatMessageInput!) {
+      createCopilotMessage(options: $options)
+    }
+  `,
+    { options: { sessionId, content, attachments, blobs, params } }
+  );
 
-  handleGraphQLError(res);
-
-  return res.body.data.createCopilotMessage;
+  return res.createCopilotMessage;
 }
 
 export async function chatWithText(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   sessionId: string,
   messageId?: string,
   prefix = ''
 ): Promise<string> {
   const query = messageId ? `?messageId=${messageId}` : '';
-  const res = await request(app.getHttpServer())
-    .get(`/api/copilot/chat/${sessionId}${prefix}${query}`)
-    .auth(userToken, { type: 'bearer' })
+  const res = await app
+    .GET(`/api/copilot/chat/${sessionId}${prefix}${query}`)
     .expect(200);
 
   return res.text;
 }
 
 export async function chatWithTextStream(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   sessionId: string,
   messageId?: string
 ) {
-  return chatWithText(app, userToken, sessionId, messageId, '/stream');
+  return chatWithText(app, sessionId, messageId, '/stream');
 }
 
 export async function chatWithWorkflow(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   sessionId: string,
   messageId?: string
 ) {
-  return chatWithText(app, userToken, sessionId, messageId, '/workflow');
+  return chatWithText(app, sessionId, messageId, '/workflow');
 }
 
 export async function chatWithImages(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   sessionId: string,
   messageId?: string
 ) {
-  return chatWithText(app, userToken, sessionId, messageId, '/images');
+  return chatWithText(app, sessionId, messageId, '/images');
 }
 
 export async function unsplashSearch(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   params: Record<string, string> = {}
 ) {
   const query = new URLSearchParams(params);
-  const res = await request(app.getHttpServer())
-    .get(`/api/copilot/unsplash/photos?${query}`)
-    .auth(userToken, { type: 'bearer' });
+  const res = await app.GET(`/api/copilot/unsplash/photos?${query}`);
   return res;
 }
 
@@ -378,8 +331,7 @@ type History = {
 };
 
 export async function getHistories(
-  app: INestApplication,
-  userToken: string,
+  app: TestingApp,
   variables: {
     workspaceId: string;
     docId?: string;
@@ -394,43 +346,36 @@ export async function getHistories(
     };
   }
 ): Promise<History[]> {
-  const res = await request(app.getHttpServer())
-    .post(gql)
-    .auth(userToken, { type: 'bearer' })
-    .set({ 'x-request-id': 'test', 'x-operation-name': 'test' })
-    .send({
-      query: `
-      query getCopilotHistories(
-        $workspaceId: String!
-        $docId: String
-        $options: QueryChatHistoriesInput
-      ) {
-        currentUser {
-          copilot(workspaceId: $workspaceId) {
-            histories(docId: $docId, options: $options) {
-              sessionId
-              tokens
-              action
+  const res = await app.gql(
+    `
+    query getCopilotHistories(
+      $workspaceId: String!
+      $docId: String
+      $options: QueryChatHistoriesInput
+    ) {
+      currentUser {
+        copilot(workspaceId: $workspaceId) {
+          histories(docId: $docId, options: $options) {
+            sessionId
+            tokens
+            action
+            createdAt
+            messages {
+              id
+              role
+              content
+              attachments
               createdAt
-              messages {
-                id
-                role
-                content
-                attachments
-                createdAt
-              }
             }
           }
         }
       }
+    }
     `,
-      variables,
-    })
-    .expect(200);
+    variables
+  );
 
-  handleGraphQLError(res);
-
-  return res.body.data.currentUser?.copilot?.histories || [];
+  return res.currentUser?.copilot?.histories || [];
 }
 
 type Prompt = {

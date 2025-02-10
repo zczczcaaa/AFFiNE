@@ -17,7 +17,7 @@ const test = ava as TestFn<{
 }>;
 
 test.before(async t => {
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     imports: [ConfigModule.forRoot(), AppModule],
   });
 

@@ -4,7 +4,6 @@ import { HttpStatus } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
-import request from 'supertest';
 
 import { AppModule } from '../../app.module';
 import { URLHelper } from '../../base';
@@ -15,7 +14,7 @@ import { Models } from '../../models';
 import { OAuthProviderName } from '../../plugins/oauth/config';
 import { GoogleOAuthProvider } from '../../plugins/oauth/providers/google';
 import { OAuthService } from '../../plugins/oauth/service';
-import { createTestingApp, getSession, TestingApp } from '../utils';
+import { createTestingApp, currentUser, TestingApp } from '../utils';
 
 const test = ava as TestFn<{
   auth: AuthService;
@@ -27,7 +26,7 @@ const test = ava as TestFn<{
 }>;
 
 test.before(async t => {
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     imports: [
       ConfigModule.forRoot({
         plugins: {
@@ -65,8 +64,8 @@ test.after.always(async t => {
 test("should be able to redirect to oauth provider's login page", async t => {
   const { app } = t.context;
 
-  const res = await request(app.getHttpServer())
-    .post('/api/oauth/preflight')
+  const res = await app
+    .POST('/api/oauth/preflight')
     .send({ provider: 'Google' })
     .expect(HttpStatus.OK);
 
@@ -89,8 +88,8 @@ test("should be able to redirect to oauth provider's login page", async t => {
 test('should throw if provider is invalid', async t => {
   const { app } = t.context;
 
-  await request(app.getHttpServer())
-    .post('/api/oauth/preflight')
+  await app
+    .POST('/api/oauth/preflight')
     .send({ provider: 'Invalid' })
     .expect(HttpStatus.BAD_REQUEST)
     .expect({
@@ -129,8 +128,8 @@ test('should be able to get registered oauth providers', async t => {
 test('should throw if code is missing in callback uri', async t => {
   const { app } = t.context;
 
-  await request(app.getHttpServer())
-    .post('/api/oauth/callback')
+  await app
+    .POST('/api/oauth/callback')
     .send({})
     .expect(HttpStatus.BAD_REQUEST)
     .expect({
@@ -148,8 +147,8 @@ test('should throw if code is missing in callback uri', async t => {
 test('should throw if state is missing in callback uri', async t => {
   const { app } = t.context;
 
-  await request(app.getHttpServer())
-    .post('/api/oauth/callback')
+  await app
+    .POST('/api/oauth/callback')
     .send({ code: '1' })
     .expect(HttpStatus.BAD_REQUEST)
     .expect({
@@ -168,8 +167,8 @@ test('should throw if state is expired', async t => {
   const { app, oauth } = t.context;
   Sinon.stub(oauth, 'isValidState').resolves(true);
 
-  await request(app.getHttpServer())
-    .post('/api/oauth/callback')
+  await app
+    .POST('/api/oauth/callback')
     .send({ code: '1', state: '1' })
     .expect(HttpStatus.BAD_REQUEST)
     .expect({
@@ -186,8 +185,8 @@ test('should throw if state is expired', async t => {
 test('should throw if state is invalid', async t => {
   const { app } = t.context;
 
-  await request(app.getHttpServer())
-    .post('/api/oauth/callback')
+  await app
+    .POST('/api/oauth/callback')
     .send({ code: '1', state: '1' })
     .expect(HttpStatus.BAD_REQUEST)
     .expect({
@@ -208,8 +207,8 @@ test('should throw if provider is missing in state', async t => {
   Sinon.stub(oauth, 'getOAuthState').resolves({});
   Sinon.stub(oauth, 'isValidState').resolves(true);
 
-  await request(app.getHttpServer())
-    .post('/api/oauth/callback')
+  await app
+    .POST('/api/oauth/callback')
     .send({ code: '1', state: '1' })
     .expect(HttpStatus.BAD_REQUEST)
     .expect({
@@ -231,8 +230,8 @@ test('should throw if provider is invalid in callback uri', async t => {
   Sinon.stub(oauth, 'getOAuthState').resolves({ provider: 'Invalid' });
   Sinon.stub(oauth, 'isValidState').resolves(true);
 
-  await request(app.getHttpServer())
-    .post('/api/oauth/callback')
+  await app
+    .POST('/api/oauth/callback')
     .send({ code: '1', state: '1' })
     .expect(HttpStatus.BAD_REQUEST)
     .expect({
@@ -270,15 +269,15 @@ test('should be able to sign up with oauth', async t => {
 
   mockOAuthProvider(app, 'u2@affine.pro');
 
-  const res = await request(app.getHttpServer())
-    .post(`/api/oauth/callback`)
+  await app
+    .POST('/api/oauth/callback')
     .send({ code: '1', state: '1' })
     .expect(HttpStatus.OK);
 
-  const session = await getSession(app, res);
+  const sessionUser = await currentUser(app);
 
-  t.truthy(session.user);
-  t.is(session.user!.email, 'u2@affine.pro');
+  t.truthy(sessionUser);
+  t.is(sessionUser!.email, 'u2@affine.pro');
 
   const user = await db.user.findFirst({
     select: {
@@ -300,8 +299,8 @@ test('should not throw if account registered', async t => {
 
   mockOAuthProvider(app, u1.email);
 
-  const res = await request(app.getHttpServer())
-    .post(`/api/oauth/callback`)
+  const res = await app
+    .POST('/api/oauth/callback')
     .send({ code: '1', state: '1' })
     .expect(HttpStatus.OK);
 
@@ -309,25 +308,18 @@ test('should not throw if account registered', async t => {
 });
 
 test('should be able to fullfil user with oauth sign in', async t => {
-  const { app, models, db } = t.context;
+  const { app, db } = t.context;
 
-  const u3 = await models.user.create({
-    name: 'u3',
-    email: 'u3@affine.pro',
-    registered: false,
-  });
+  const u3 = await app.createUser('u3@affine.pro');
 
   mockOAuthProvider(app, u3.email);
 
-  const res = await request(app.getHttpServer())
-    .post('/api/oauth/callback')
-    .send({ code: '1', state: '1' })
-    .expect(HttpStatus.OK);
+  await app.POST('/api/oauth/callback').send({ code: '1', state: '1' });
 
-  const session = await getSession(app, res);
+  const sessionUser = await currentUser(app);
 
-  t.truthy(session.user);
-  t.is(session.user!.email, u3.email);
+  t.truthy(sessionUser);
+  t.is(sessionUser!.email, u3.email);
 
   const account = await db.connectedAccount.findFirst({
     where: {

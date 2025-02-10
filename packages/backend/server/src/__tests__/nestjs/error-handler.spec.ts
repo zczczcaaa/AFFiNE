@@ -106,7 +106,7 @@ function gql(app: INestApplication, query: string) {
 }
 
 test.before(async ({ context }) => {
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     providers: [TestResolver, TestGateway],
     controllers: [TestController],
   });

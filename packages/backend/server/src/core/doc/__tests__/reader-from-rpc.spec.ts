@@ -20,7 +20,7 @@ const test = ava as TestFn<{
 }>;
 
 test.before(async t => {
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     imports: [
       ConfigModule.forRoot({
         flavor: {
@@ -44,7 +44,7 @@ let user: User;
 let workspace: Workspace;
 
 test.beforeEach(async t => {
-  t.context.config.docService.endpoint = t.context.app.getHttpServerUrl();
+  t.context.config.docService.endpoint = t.context.app.url();
   await t.context.app.initTestingDB();
   user = await t.context.models.user.create({
     email: 'test@affine.pro',

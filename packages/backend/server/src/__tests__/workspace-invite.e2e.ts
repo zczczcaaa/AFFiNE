@@ -6,7 +6,6 @@ import { PrismaClient } from '@prisma/client';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 
-import { AppModule } from '../app.module';
 import { MailService } from '../base/mailer';
 import { AuthService } from '../core/auth/service';
 import { Models } from '../models';
@@ -18,7 +17,6 @@ import {
   inviteUser,
   leaveWorkspace,
   revokeUser,
-  signUp,
   TestingApp,
 } from './utils';
 
@@ -31,9 +29,7 @@ const test = ava as TestFn<{
 }>;
 
 test.before(async t => {
-  const { app } = await createTestingApp({
-    imports: [AppModule],
-  });
+  const app = await createTestingApp();
   t.context.app = app;
   t.context.client = app.get(PrismaClient);
   t.context.auth = app.get(AuthService);
@@ -51,52 +47,53 @@ test.after.always(async t => {
 
 test('should invite a user', async t => {
   const { app } = t.context;
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
-  const u2 = await signUp(app, 'u2', 'u2@affine.pro', '1');
+  const u2 = await app.signup('u2@affine.pro');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
+  const workspace = await createWorkspace(app);
 
-  const invite = await inviteUser(app, u1.token.token, workspace.id, u2.email);
+  const invite = await inviteUser(app, workspace.id, u2.email);
   t.truthy(invite, 'failed to invite user');
 });
 
 test('should leave a workspace', async t => {
   const { app } = t.context;
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
-  const u2 = await signUp(app, 'u2', 'u2@affine.pro', '1');
+  const u2 = await app.signup('u2@affine.pro');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
-  const id = await inviteUser(app, u1.token.token, workspace.id, u2.email);
-  await acceptInviteById(app, workspace.id, id, false);
+  const workspace = await createWorkspace(app);
+  const invite = await inviteUser(app, workspace.id, u2.email);
 
-  const leave = await leaveWorkspace(app, u2.token.token, workspace.id);
+  app.switchUser(u2.id);
+  await acceptInviteById(app, workspace.id, invite);
 
-  t.pass();
+  const leave = await leaveWorkspace(app, workspace.id);
+
   t.true(leave, 'failed to leave workspace');
 });
 
 test('should revoke a user', async t => {
   const { app } = t.context;
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
-  const u2 = await signUp(app, 'u2', 'u2@affine.pro', '1');
+  const u2 = await app.signup('u2@affine.pro');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
-  await inviteUser(app, u1.token.token, workspace.id, u2.email);
+  const workspace = await createWorkspace(app);
+  await inviteUser(app, workspace.id, u2.email);
 
-  const currWorkspace = await getWorkspace(app, u1.token.token, workspace.id);
+  const currWorkspace = await getWorkspace(app, workspace.id);
   t.is(currWorkspace.members.length, 2, 'failed to invite user');
 
-  const revoke = await revokeUser(app, u1.token.token, workspace.id, u2.id);
+  const revoke = await revokeUser(app, workspace.id, u2.id);
   t.true(revoke, 'failed to revoke user');
 });
 
 test('should create user if not exist', async t => {
   const { app, models } = t.context;
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
+  const workspace = await createWorkspace(app);
 
-  await inviteUser(app, u1.token.token, workspace.id, 'u2@affine.pro');
+  await inviteUser(app, workspace.id, 'u2@affine.pro');
 
   const u2 = await models.user.getUserByEmail('u2@affine.pro');
   t.not(u2, undefined, 'failed to create user');
@@ -105,21 +102,23 @@ test('should create user if not exist', async t => {
 
 test('should invite a user by link', async t => {
   const { app } = t.context;
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
-  const u2 = await signUp(app, 'u2', 'u2@affine.pro', '1');
+  const u2 = await app.signup('u2@affine.pro');
+  const u1 = await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
+  const workspace = await createWorkspace(app);
 
-  const invite = await inviteUser(app, u1.token.token, workspace.id, u2.email);
+  const invite = await inviteUser(app, workspace.id, u2.email);
 
+  app.switchUser(u2.id);
   const accept = await acceptInviteById(app, workspace.id, invite);
   t.true(accept, 'failed to accept invite');
 
-  const invite1 = await inviteUser(app, u1.token.token, workspace.id, u2.email);
+  app.switchUser(u1.id);
+  const invite1 = await inviteUser(app, workspace.id, u2.email);
 
   t.is(invite, invite1, 'repeat the invitation must return same id');
 
-  const currWorkspace = await getWorkspace(app, u1.token.token, workspace.id);
+  const currWorkspace = await getWorkspace(app, workspace.id);
   const currMember = currWorkspace.members.find(u => u.email === u2.email);
   t.not(currMember, undefined, 'failed to invite user');
   t.is(currMember?.inviteId, invite, 'failed to check invite id');
@@ -128,19 +127,13 @@ test('should invite a user by link', async t => {
 test('should send email', async t => {
   const { mail, app } = t.context;
   if (mail.hasConfigured()) {
-    const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
-    const u2 = await signUp(app, 'test', 'production@toeverything.info', '1');
+    const u2 = await app.signup('u2@affine.pro');
+    await app.signup('u1@affine.pro');
 
-    const workspace = await createWorkspace(app, u1.token.token);
+    const workspace = await createWorkspace(app);
     const primitiveMailCount = await getCurrentMailMessageCount();
 
-    const invite = await inviteUser(
-      app,
-      u1.token.token,
-      workspace.id,
-      u2.email,
-      true
-    );
+    const invite = await inviteUser(app, workspace.id, u2.email, true);
 
     const afterInviteMailCount = await getCurrentMailMessageCount();
     t.is(
@@ -152,12 +145,13 @@ test('should send email', async t => {
 
     t.not(
       inviteEmailContent.To.find((item: any) => {
-        return item.Mailbox === 'production';
+        return item.Mailbox === 'u2';
       }),
       undefined,
       'invite email address was incorrectly sent'
     );
 
+    app.switchUser(u2.id);
     const accept = await acceptInviteById(app, workspace.id, invite, true);
     t.true(accept, 'failed to accept invite');
 
@@ -176,7 +170,7 @@ test('should send email', async t => {
       'accept email address was incorrectly sent'
     );
 
-    await leaveWorkspace(app, u2.token.token, workspace.id, true);
+    await leaveWorkspace(app, workspace.id, true);
 
     // TODO(@darkskygit): enable this after cluster event system is ready
     // const afterLeaveMailCount = await getCurrentMailMessageCount();
@@ -199,44 +193,28 @@ test('should send email', async t => {
 
 test('should support pagination for member', async t => {
   const { app } = t.context;
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
-  const u2 = await signUp(app, 'u2', 'u2@affine.pro', '1');
-  const u3 = await signUp(app, 'u3', 'u3@affine.pro', '1');
+  await app.signup('u1@affine.pro');
 
-  const workspace = await createWorkspace(app, u1.token.token);
-  const invite1 = await inviteUser(app, u1.token.token, workspace.id, u2.email);
-  const invite2 = await inviteUser(app, u1.token.token, workspace.id, u3.email);
+  const workspace = await createWorkspace(app);
+  await inviteUser(app, workspace.id, 'u2@affine.pro');
+  await inviteUser(app, workspace.id, 'u3@affine.pro');
 
-  await acceptInviteById(app, workspace.id, invite1, false);
-  await acceptInviteById(app, workspace.id, invite2, false);
-
-  const firstPageWorkspace = await getWorkspace(
-    app,
-    u1.token.token,
-    workspace.id,
-    0,
-    2
-  );
+  const firstPageWorkspace = await getWorkspace(app, workspace.id, 0, 2);
   t.is(firstPageWorkspace.members.length, 2, 'failed to check invite id');
-  const secondPageWorkspace = await getWorkspace(
-    app,
-    u1.token.token,
-    workspace.id,
-    2,
-    2
-  );
+  const secondPageWorkspace = await getWorkspace(app, workspace.id, 2, 2);
   t.is(secondPageWorkspace.members.length, 1, 'failed to check invite id');
 });
 
 test('should limit member count correctly', async t => {
   const { app } = t.context;
-  const u1 = await signUp(app, 'u1', 'u1@affine.pro', '1');
-  const workspace = await createWorkspace(app, u1.token.token);
+  await app.signup('u1@affine.pro');
+
+  const workspace = await createWorkspace(app);
   await Promise.allSettled(
     Array.from({ length: 10 }).map(async (_, i) =>
-      inviteUser(app, u1.token.token, workspace.id, `u${i}@affine.pro`)
+      inviteUser(app, workspace.id, `u${i}@affine.pro`)
     )
   );
-  const ws = await getWorkspace(app, u1.token.token, workspace.id);
+  const ws = await getWorkspace(app, workspace.id);
   t.assert(ws.members.length <= 3, 'failed to check member list');
 });

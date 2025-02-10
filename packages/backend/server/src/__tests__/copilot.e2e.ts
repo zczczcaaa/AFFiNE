@@ -1,5 +1,3 @@
-/// <reference types="../global.d.ts" />
-
 import { randomUUID } from 'node:crypto';
 
 import type { TestFn } from 'ava';
@@ -25,8 +23,8 @@ import {
   createTestingApp,
   createWorkspace,
   inviteUser,
-  signUp,
   TestingApp,
+  TestUser,
 } from './utils';
 import {
   array2sse,
@@ -51,10 +49,11 @@ const test = ava as TestFn<{
   prompt: PromptService;
   provider: CopilotProviderService;
   storage: CopilotStorage;
+  u1: TestUser;
 }>;
 
-test.beforeEach(async t => {
-  const { app } = await createTestingApp({
+test.before(async t => {
+  const app = await createTestingApp({
     imports: [
       ConfigModule.forRoot({
         plugins: {
@@ -87,12 +86,13 @@ test.beforeEach(async t => {
   t.context.storage = storage;
 });
 
-let token: string;
 const promptName = 'prompt';
 test.beforeEach(async t => {
+  Sinon.restore();
   const { app, prompt } = t.context;
-  const user = await signUp(app, 'test', 'darksky@affine.pro', '123456');
-  token = user.token.token;
+  await app.initTestingDB();
+  await prompt.onModuleInit();
+  t.context.u1 = await app.signup('u1@affine.pro');
 
   unregisterCopilotProvider(OpenAIProvider.type);
   unregisterCopilotProvider(FalProvider.type);
@@ -104,14 +104,14 @@ test.beforeEach(async t => {
   ]);
 });
 
-test.afterEach.always(async t => {
+test.after.always(async t => {
   await t.context.app.close();
 });
 
 // ==================== session ====================
 
 test('should create session correctly', async t => {
-  const { app } = t.context;
+  const { app, u1 } = t.context;
 
   const assertCreateSession = async (
     workspaceId: string,
@@ -121,12 +121,12 @@ test('should create session correctly', async t => {
     }
   ) => {
     await asserter(
-      createCopilotSession(app, token, workspaceId, randomUUID(), promptName)
+      createCopilotSession(app, workspaceId, randomUUID(), promptName)
     );
   };
 
   {
-    const { id } = await createWorkspace(app, token);
+    const { id } = await createWorkspace(app);
     await assertCreateSession(
       id,
       'should be able to create session with cloud workspace that user can access'
@@ -141,10 +141,9 @@ test('should create session correctly', async t => {
   }
 
   {
-    const {
-      token: { token },
-    } = await signUp(app, 'test', 'test@affine.pro', '123456');
-    const { id } = await createWorkspace(app, token);
+    const u2 = await app.createUser('u2@affine.pro');
+    const { id } = await createWorkspace(app);
+    await app.login(u2);
     await assertCreateSession(id, '', async x => {
       await t.throwsAsync(
         x,
@@ -153,7 +152,9 @@ test('should create session correctly', async t => {
       );
     });
 
-    const inviteId = await inviteUser(app, token, id, 'darksky@affine.pro');
+    app.switchUser(u1);
+    const inviteId = await inviteUser(app, id, u2.email);
+    await app.login(u2);
     await acceptInviteById(app, id, inviteId, false);
     await assertCreateSession(
       id,
@@ -172,15 +173,14 @@ test('should update session correctly', async t => {
       t.truthy(await x, error);
     }
   ) => {
-    await asserter(updateCopilotSession(app, token, sessionId, promptName));
+    await asserter(updateCopilotSession(app, sessionId, promptName));
   };
 
   {
-    const { id: workspaceId } = await createWorkspace(app, token);
+    const { id: workspaceId } = await createWorkspace(app);
     const docId = randomUUID();
     const sessionId = await createCopilotSession(
       app,
-      token,
       workspaceId,
       docId,
       promptName
@@ -194,7 +194,6 @@ test('should update session correctly', async t => {
   {
     const sessionId = await createCopilotSession(
       app,
-      token,
       randomUUID(),
       randomUUID(),
       promptName
@@ -206,19 +205,14 @@ test('should update session correctly', async t => {
   }
 
   {
-    const aToken = (await signUp(app, 'test', 'test@affine.pro', '123456'))
-      .token.token;
-    const { id: workspaceId } = await createWorkspace(app, aToken);
-    const inviteId = await inviteUser(
-      app,
-      aToken,
-      workspaceId,
-      'darksky@affine.pro'
-    );
+    await app.signup('test@affine.pro');
+    const u2 = await app.createUser('u2@affine.pro');
+    const { id: workspaceId } = await createWorkspace(app);
+    const inviteId = await inviteUser(app, workspaceId, u2.email);
+    await app.login(u2);
     await acceptInviteById(app, workspaceId, inviteId, false);
     const sessionId = await createCopilotSession(
       app,
-      token,
       workspaceId,
       randomUUID(),
       promptName
@@ -242,10 +236,9 @@ test('should update session correctly', async t => {
 });
 
 test('should fork session correctly', async t => {
-  const { app } = t.context;
+  const { app, u1 } = t.context;
 
   const assertForkSession = async (
-    token: string,
     workspaceId: string,
     sessionId: string,
     lastMessageId: string,
@@ -259,7 +252,6 @@ test('should fork session correctly', async t => {
     await asserter(
       forkCopilotSession(
         app,
-        token,
         workspaceId,
         randomUUID(),
         sessionId,
@@ -268,10 +260,9 @@ test('should fork session correctly', async t => {
     );
 
   // prepare session
-  const { id } = await createWorkspace(app, token);
+  const { id } = await createWorkspace(app);
   const sessionId = await createCopilotSession(
     app,
-    token,
     id,
     randomUUID(),
     promptName
@@ -281,10 +272,10 @@ test('should fork session correctly', async t => {
   // should be able to fork session
   {
     for (let i = 0; i < 3; i++) {
-      const messageId = await createCopilotMessage(app, token, sessionId);
-      await chatWithText(app, token, sessionId, messageId);
+      const messageId = await createCopilotMessage(app, sessionId);
+      await chatWithText(app, sessionId, messageId);
     }
-    const histories = await getHistories(app, token, { workspaceId: id });
+    const histories = await getHistories(app, { workspaceId: id });
     const latestMessageId = histories[0].messages.findLast(
       m => m.role === 'assistant'
     )?.id;
@@ -292,7 +283,6 @@ test('should fork session correctly', async t => {
 
     // should be able to fork session
     forkedSessionId = await assertForkSession(
-      token,
       id,
       sessionId,
       latestMessageId!,
@@ -301,49 +291,36 @@ test('should fork session correctly', async t => {
   }
 
   {
-    const {
-      token: { token: newToken },
-    } = await signUp(app, 'test', 'test@affine.pro', '123456');
-    await assertForkSession(
-      newToken,
-      id,
-      sessionId,
-      randomUUID(),
-      '',
-      async x => {
-        await t.throwsAsync(
-          x,
-          { instanceOf: Error },
-          'should not able to fork session with cloud workspace that user cannot access'
-        );
-      }
-    );
+    const u2 = await app.signup('u2@affine.pro');
+    await assertForkSession(id, sessionId, randomUUID(), '', async x => {
+      await t.throwsAsync(
+        x,
+        { instanceOf: Error },
+        'should not able to fork session with cloud workspace that user cannot access'
+      );
+    });
 
-    const inviteId = await inviteUser(app, token, id, 'test@affine.pro');
+    app.switchUser(u1);
+    const inviteId = await inviteUser(app, id, u2.email);
+    app.switchUser(u2);
     await acceptInviteById(app, id, inviteId, false);
-    await assertForkSession(
-      newToken,
-      id,
-      sessionId,
-      randomUUID(),
-      '',
-      async x => {
-        await t.throwsAsync(
-          x,
-          { instanceOf: Error },
-          'should not able to fork a root session from other user'
-        );
-      }
-    );
+    await assertForkSession(id, sessionId, randomUUID(), '', async x => {
+      await t.throwsAsync(
+        x,
+        { instanceOf: Error },
+        'should not able to fork a root session from other user'
+      );
+    });
 
-    const histories = await getHistories(app, token, { workspaceId: id });
+    app.switchUser(u1);
+    const histories = await getHistories(app, { workspaceId: id });
     const latestMessageId = histories
       .find(h => h.sessionId === forkedSessionId)
       ?.messages.findLast(m => m.role === 'assistant')?.id;
     t.truthy(latestMessageId, 'should find latest message id');
 
+    app.switchUser(u2);
     await assertForkSession(
-      newToken,
       id,
       forkedSessionId,
       latestMessageId!,
@@ -355,9 +332,9 @@ test('should fork session correctly', async t => {
 test('should be able to use test provider', async t => {
   const { app } = t.context;
 
-  const { id } = await createWorkspace(app, token);
+  const { id } = await createWorkspace(app);
   t.truthy(
-    await createCopilotSession(app, token, id, randomUUID(), promptName),
+    await createCopilotSession(app, id, randomUUID(), promptName),
     'failed to create session'
   );
 });
@@ -368,21 +345,20 @@ test('should create message correctly', async t => {
   const { app } = t.context;
 
   {
-    const { id } = await createWorkspace(app, token);
+    const { id } = await createWorkspace(app);
     const sessionId = await createCopilotSession(
       app,
-      token,
       id,
       randomUUID(),
       promptName
     );
-    const messageId = await createCopilotMessage(app, token, sessionId);
+    const messageId = await createCopilotMessage(app, sessionId);
     t.truthy(messageId, 'should be able to create message with valid session');
   }
 
   {
     await t.throwsAsync(
-      createCopilotMessage(app, token, randomUUID()),
+      createCopilotMessage(app, randomUUID()),
       { instanceOf: Error },
       'should not able to create message with invalid session'
     );
@@ -396,26 +372,25 @@ test('should be able to chat with api', async t => {
 
   Sinon.stub(storage, 'handleRemoteLink').resolvesArg(2);
 
-  const { id } = await createWorkspace(app, token);
+  const { id } = await createWorkspace(app);
   const sessionId = await createCopilotSession(
     app,
-    token,
     id,
     randomUUID(),
     promptName
   );
-  const messageId = await createCopilotMessage(app, token, sessionId);
-  const ret = await chatWithText(app, token, sessionId, messageId);
+  const messageId = await createCopilotMessage(app, sessionId);
+  const ret = await chatWithText(app, sessionId, messageId);
   t.is(ret, 'generate text to text', 'should be able to chat with text');
 
-  const ret2 = await chatWithTextStream(app, token, sessionId, messageId);
+  const ret2 = await chatWithTextStream(app, sessionId, messageId);
   t.is(
     ret2,
     textToEventStream('generate text to text stream', messageId),
     'should be able to chat with text stream'
   );
 
-  const ret3 = await chatWithImages(app, token, sessionId, messageId);
+  const ret3 = await chatWithImages(app, sessionId, messageId);
   t.is(
     array2sse(sse2array(ret3).filter(e => e.event !== 'event')),
     textToEventStream(
@@ -432,21 +407,15 @@ test('should be able to chat with api', async t => {
 test('should be able to chat with api by workflow', async t => {
   const { app } = t.context;
 
-  const { id } = await createWorkspace(app, token);
+  const { id } = await createWorkspace(app);
   const sessionId = await createCopilotSession(
     app,
-    token,
     id,
     randomUUID(),
     'workflow:presentation'
   );
-  const messageId = await createCopilotMessage(
-    app,
-    token,
-    sessionId,
-    'apple company'
-  );
-  const ret = await chatWithWorkflow(app, token, sessionId, messageId);
+  const messageId = await createCopilotMessage(app, sessionId, 'apple company');
+  const ret = await chatWithWorkflow(app, sessionId, messageId);
   t.is(
     array2sse(sse2array(ret).filter(e => e.event !== 'event')),
     textToEventStream(['generate text to text stream'], messageId),
@@ -459,25 +428,20 @@ test('should be able to chat with special image model', async t => {
 
   Sinon.stub(storage, 'handleRemoteLink').resolvesArg(2);
 
-  const { id } = await createWorkspace(app, token);
+  const { id } = await createWorkspace(app);
 
   const testWithModel = async (promptName: string, finalPrompt: string) => {
     const model = prompts.find(p => p.name === promptName)?.model;
     const sessionId = await createCopilotSession(
       app,
-      token,
       id,
       randomUUID(),
       promptName
     );
-    const messageId = await createCopilotMessage(
-      app,
-      token,
-      sessionId,
-      'some-tag',
-      [`https://example.com/${promptName}.jpg`]
-    );
-    const ret3 = await chatWithImages(app, token, sessionId, messageId);
+    const messageId = await createCopilotMessage(app, sessionId, 'some-tag', [
+      `https://example.com/${promptName}.jpg`,
+    ]);
+    const ret3 = await chatWithImages(app, sessionId, messageId);
     t.is(
       ret3,
       textToEventStream(
@@ -506,20 +470,19 @@ test('should be able to retry with api', async t => {
 
   // normal chat
   {
-    const { id } = await createWorkspace(app, token);
+    const { id } = await createWorkspace(app);
     const sessionId = await createCopilotSession(
       app,
-      token,
       id,
       randomUUID(),
       promptName
     );
-    const messageId = await createCopilotMessage(app, token, sessionId);
+    const messageId = await createCopilotMessage(app, sessionId);
     // chat 2 times
-    await chatWithText(app, token, sessionId, messageId);
-    await chatWithText(app, token, sessionId, messageId);
+    await chatWithText(app, sessionId, messageId);
+    await chatWithText(app, sessionId, messageId);
 
-    const histories = await getHistories(app, token, { workspaceId: id });
+    const histories = await getHistories(app, { workspaceId: id });
     t.deepEqual(
       histories.map(h => h.messages.map(m => m.content)),
       [['generate text to text', 'generate text to text']],
@@ -529,21 +492,20 @@ test('should be able to retry with api', async t => {
 
   // retry chat
   {
-    const { id } = await createWorkspace(app, token);
+    const { id } = await createWorkspace(app);
     const sessionId = await createCopilotSession(
       app,
-      token,
       id,
       randomUUID(),
       promptName
     );
-    const messageId = await createCopilotMessage(app, token, sessionId);
-    await chatWithText(app, token, sessionId, messageId);
+    const messageId = await createCopilotMessage(app, sessionId);
+    await chatWithText(app, sessionId, messageId);
     // retry without message id
-    await chatWithText(app, token, sessionId);
+    await chatWithText(app, sessionId);
 
     // should only have 1 message
-    const histories = await getHistories(app, token, { workspaceId: id });
+    const histories = await getHistories(app, { workspaceId: id });
     t.deepEqual(
       histories.map(h => h.messages.map(m => m.content)),
       [['generate text to text']],
@@ -557,40 +519,34 @@ test('should be able to retry with api', async t => {
 test('should reject message from different session', async t => {
   const { app } = t.context;
 
-  const { id } = await createWorkspace(app, token);
+  const { id } = await createWorkspace(app);
   const sessionId = await createCopilotSession(
     app,
-    token,
     id,
     randomUUID(),
     promptName
   );
   const anotherSessionId = await createCopilotSession(
     app,
-    token,
     id,
     randomUUID(),
     promptName
   );
-  const anotherMessageId = await createCopilotMessage(
-    app,
-    token,
-    anotherSessionId
-  );
+  const anotherMessageId = await createCopilotMessage(app, anotherSessionId);
   await t.throwsAsync(
-    chatWithText(app, token, sessionId, anotherMessageId),
+    chatWithText(app, sessionId, anotherMessageId),
     { instanceOf: Error },
     'should reject message from different session'
   );
 });
 
 test('should reject request from different user', async t => {
-  const { app } = t.context;
+  const { app, u1 } = t.context;
 
-  const { id } = await createWorkspace(app, token);
+  const u2 = await app.createUser('u2@affine.pro');
+  const { id } = await createWorkspace(app);
   const sessionId = await createCopilotSession(
     app,
-    token,
     id,
     randomUUID(),
     promptName
@@ -598,9 +554,9 @@ test('should reject request from different user', async t => {
 
   // should reject message from different user
   {
-    const { token } = await signUp(app, 'a1', 'a1@affine.pro', '123456');
+    await app.login(u2);
     await t.throwsAsync(
-      createCopilotMessage(app, token.token, sessionId),
+      createCopilotMessage(app, sessionId),
       { instanceOf: Error },
       'should reject message from different user'
     );
@@ -608,11 +564,12 @@ test('should reject request from different user', async t => {
 
   // should reject chat from different user
   {
-    const messageId = await createCopilotMessage(app, token, sessionId);
+    app.switchUser(u1);
+    const messageId = await createCopilotMessage(app, sessionId);
     {
-      const { token } = await signUp(app, 'a2', 'a2@affine.pro', '123456');
+      app.switchUser(u2);
       await t.throwsAsync(
-        chatWithText(app, token.token, sessionId, messageId),
+        chatWithText(app, sessionId, messageId),
         { instanceOf: Error },
         'should reject chat from different user'
       );
@@ -625,20 +582,19 @@ test('should reject request from different user', async t => {
 test('should be able to list history', async t => {
   const { app } = t.context;
 
-  const { id: workspaceId } = await createWorkspace(app, token);
+  const { id: workspaceId } = await createWorkspace(app);
   const sessionId = await createCopilotSession(
     app,
-    token,
     workspaceId,
     randomUUID(),
     promptName
   );
 
-  const messageId = await createCopilotMessage(app, token, sessionId, 'hello');
-  await chatWithText(app, token, sessionId, messageId);
+  const messageId = await createCopilotMessage(app, sessionId, 'hello');
+  await chatWithText(app, sessionId, messageId);
 
   {
-    const histories = await getHistories(app, token, { workspaceId });
+    const histories = await getHistories(app, { workspaceId });
     t.deepEqual(
       histories.map(h => h.messages.map(m => m.content)),
       [['hello', 'generate text to text']],
@@ -647,7 +603,7 @@ test('should be able to list history', async t => {
   }
 
   {
-    const histories = await getHistories(app, token, {
+    const histories = await getHistories(app, {
       workspaceId,
       options: { messageOrder: 'desc' },
     });
@@ -660,17 +616,16 @@ test('should be able to list history', async t => {
 });
 
 test('should reject request that user have not permission', async t => {
-  const { app } = t.context;
+  const { app, u1 } = t.context;
 
-  const {
-    token: { token: anotherToken },
-  } = await signUp(app, 'a1', 'a1@affine.pro', '123456');
-  const { id: workspaceId } = await createWorkspace(app, anotherToken);
+  const u2 = await app.createUser('u2@affine.pro');
+  const { id: workspaceId } = await createWorkspace(app);
 
   // should reject request that user have not permission
   {
+    await app.login(u2);
     await t.throwsAsync(
-      getHistories(app, token, { workspaceId }),
+      getHistories(app, { workspaceId }),
       { instanceOf: Error },
       'should reject request that user have not permission'
     );
@@ -678,16 +633,13 @@ test('should reject request that user have not permission', async t => {
 
   // should able to list history after user have permission
   {
-    const inviteId = await inviteUser(
-      app,
-      anotherToken,
-      workspaceId,
-      'darksky@affine.pro'
-    );
+    app.switchUser(u1);
+    const inviteId = await inviteUser(app, workspaceId, u2.email);
+    app.switchUser(u2);
     await acceptInviteById(app, workspaceId, inviteId, false);
 
     t.deepEqual(
-      await getHistories(app, token, { workspaceId }),
+      await getHistories(app, { workspaceId }),
       [],
       'should able to list history after user have permission'
     );
@@ -696,24 +648,24 @@ test('should reject request that user have not permission', async t => {
   {
     const sessionId = await createCopilotSession(
       app,
-      anotherToken,
       workspaceId,
       randomUUID(),
       promptName
     );
 
-    const messageId = await createCopilotMessage(app, anotherToken, sessionId);
-    await chatWithText(app, anotherToken, sessionId, messageId);
+    const messageId = await createCopilotMessage(app, sessionId);
+    await chatWithText(app, sessionId, messageId);
 
-    const histories = await getHistories(app, anotherToken, { workspaceId });
+    const histories = await getHistories(app, { workspaceId });
     t.deepEqual(
       histories.map(h => h.messages.map(m => m.content)),
       [['generate text to text']],
       'should able to list history'
     );
 
+    app.switchUser(u1);
     t.deepEqual(
-      await getHistories(app, token, { workspaceId }),
+      await getHistories(app, { workspaceId }),
       [],
       'should not list history created by another user'
     );
@@ -723,6 +675,6 @@ test('should reject request that user have not permission', async t => {
 test('should be able to search image from unsplash', async t => {
   const { app } = t.context;
 
-  const resp = await unsplashSearch(app, token);
+  const resp = await unsplashSearch(app);
   t.not(resp.status, 404, 'route should be exists');
 });

@@ -1,5 +1,3 @@
-/// <reference types="../global.d.ts" />
-
 import type { ExecutionContext, TestFn } from 'ava';
 import ava from 'ava';
 

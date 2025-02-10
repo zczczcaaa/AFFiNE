@@ -182,7 +182,7 @@ function getLastCheckoutPrice(checkoutStub: Sinon.SinonStub) {
 }
 
 test.before(async t => {
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     imports: [
       ConfigModule.forRoot({
         plugins: {

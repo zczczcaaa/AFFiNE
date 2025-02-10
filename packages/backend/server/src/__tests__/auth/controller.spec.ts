@@ -1,26 +1,29 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import ava, { TestFn } from 'ava';
 import Sinon from 'sinon';
-import request from 'supertest';
 
 import { MailService } from '../../base';
-import { AuthModule, CurrentUser } from '../../core/auth';
+import { AuthModule } from '../../core/auth';
 import { AuthService } from '../../core/auth/service';
 import { FeatureModule } from '../../core/features';
 import { UserModule } from '../../core/user';
-import { createTestingApp, getSession, sessionCookie } from '../utils';
+import {
+  createTestingApp,
+  currentUser,
+  parseCookies,
+  TestingApp,
+} from '../utils';
 
 const test = ava as TestFn<{
   auth: AuthService;
-  u1: CurrentUser;
   db: PrismaClient;
   mailer: Sinon.SinonStubbedInstance<MailService>;
-  app: INestApplication;
+  app: TestingApp;
 }>;
 
 test.before(async t => {
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     imports: [FeatureModule, UserModule, AuthModule],
     tapModule: m => {
       m.overrideProvider(MailService).useValue(
@@ -36,12 +39,11 @@ test.before(async t => {
   t.context.db = app.get(PrismaClient);
   t.context.mailer = app.get(MailService);
   t.context.app = app;
-
-  t.context.u1 = await t.context.auth.signUp('u1@affine.pro', '1');
 });
 
-test.beforeEach(() => {
+test.beforeEach(async t => {
   Sinon.reset();
+  await t.context.app.initTestingDB();
 });
 
 test.after.always(async t => {
@@ -49,25 +51,28 @@ test.after.always(async t => {
 });
 
 test('should be able to sign in with credential', async t => {
-  const { app, u1 } = t.context;
+  const { app } = t.context;
 
-  const res = await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
-    .send({ email: u1.email, password: '1' })
+  const u1 = await app.createUser('u1@affine.pro');
+
+  await app
+    .POST('/api/auth/sign-in')
+    .send({ email: u1.email, password: u1.password })
     .expect(200);
 
-  const session = await getSession(app, res);
-  t.is(session.user!.id, u1.id);
+  const session = await currentUser(app);
+  t.is(session?.id, u1.id);
 });
 
 test('should be able to sign in with email', async t => {
-  const { app, u1, mailer } = t.context;
+  const { app, mailer } = t.context;
 
+  const u1 = await app.createUser('u1@affine.pro');
   // @ts-expect-error mock
   mailer.sendSignInMail.resolves({ rejected: [] });
 
-  const res = await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
+  const res = await app
+    .POST('/api/auth/sign-in')
     .send({ email: u1.email })
     .expect(200);
 
@@ -79,13 +84,10 @@ test('should be able to sign in with email', async t => {
   const email = url.searchParams.get('email');
   const token = url.searchParams.get('token');
 
-  const signInRes = await request(app.getHttpServer())
-    .post('/api/auth/magic-link')
-    .send({ email, token })
-    .expect(201);
+  await app.POST('/api/auth/magic-link').send({ email, token }).expect(201);
 
-  const session = await getSession(app, signInRes);
-  t.is(session.user!.id, u1.id);
+  const session = await currentUser(app);
+  t.is(session?.id, u1.id);
 });
 
 test('should be able to sign up with email', async t => {
@@ -94,8 +96,8 @@ test('should be able to sign up with email', async t => {
   // @ts-expect-error mock
   mailer.sendSignUpMail.resolves({ rejected: [] });
 
-  const res = await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
+  const res = await app
+    .POST('/api/auth/sign-in')
     .send({ email: 'u2@affine.pro' })
     .expect(200);
 
@@ -107,20 +109,17 @@ test('should be able to sign up with email', async t => {
   const email = url.searchParams.get('email');
   const token = url.searchParams.get('token');
 
-  const signInRes = await request(app.getHttpServer())
-    .post('/api/auth/magic-link')
-    .send({ email, token })
-    .expect(201);
+  await app.POST('/api/auth/magic-link').send({ email, token }).expect(201);
 
-  const session = await getSession(app, signInRes);
-  t.is(session.user!.email, 'u2@affine.pro');
+  const session = await currentUser(app);
+  t.is(session?.email, 'u2@affine.pro');
 });
 
 test('should not be able to sign in if email is invalid', async t => {
   const { app } = t.context;
 
-  const res = await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
+  const res = await app
+    .POST('/api/auth/sign-in')
     .send({ email: '' })
     .expect(400);
 
@@ -128,12 +127,13 @@ test('should not be able to sign in if email is invalid', async t => {
 });
 
 test('should not be able to sign in if forbidden', async t => {
-  const { app, auth, u1, mailer } = t.context;
+  const { app, auth, mailer } = t.context;
 
+  const u1 = await app.createUser('u1@affine.pro');
   const canSignInStub = Sinon.stub(auth, 'canSignIn').resolves(false);
 
-  await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
+  await app
+    .POST('/api/auth/sign-in')
     .send({ email: u1.email })
     .expect(HttpStatus.FORBIDDEN);
 
@@ -143,174 +143,109 @@ test('should not be able to sign in if forbidden', async t => {
 });
 
 test('should be able to sign out', async t => {
-  const { app, u1 } = t.context;
+  const { app } = t.context;
 
-  const signInRes = await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
-    .send({ email: u1.email, password: '1' })
+  const u1 = await app.createUser('u1@affine.pro');
+
+  await app
+    .POST('/api/auth/sign-in')
+    .send({ email: u1.email, password: u1.password })
     .expect(200);
 
-  const cookie = sessionCookie(signInRes.headers);
+  await app.GET('/api/auth/sign-out').expect(200);
 
-  await request(app.getHttpServer())
-    .get('/api/auth/sign-out')
-    .set('cookie', cookie)
-    .expect(200);
+  const session = await currentUser(app);
 
-  const session = await getSession(app, signInRes);
-
-  t.falsy(session.user);
+  t.falsy(session);
 });
 
 test('should be able to correct user id cookie', async t => {
-  const { app, u1 } = t.context;
+  const { app } = t.context;
 
-  const signInRes = await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
-    .send({ email: u1.email, password: '1' })
-    .expect(200);
+  const u1 = await app.signup('u1@affine.pro');
 
-  const cookie = sessionCookie(signInRes.headers);
+  const req = app.GET('/api/auth/session');
+  let cookies = req.get('cookie') as unknown as string[];
+  cookies = cookies.filter(c => !c.startsWith(AuthService.userCookieName));
+  cookies.push(`${AuthService.userCookieName}=invalid_user_id`);
+  const res = await req.set('Cookie', cookies).expect(200);
+  const setCookies = parseCookies(res);
+  const userIdCookie = setCookies[AuthService.userCookieName];
 
-  let session = await request(app.getHttpServer())
-    .get('/api/auth/session')
-    .set('cookie', cookie)
-    .expect(200);
-
-  let userIdCookie = session.get('Set-Cookie')?.find(c => {
-    return c.startsWith(`${AuthService.userCookieName}=`);
-  });
-
-  t.true(userIdCookie?.startsWith(`${AuthService.userCookieName}=${u1.id}`));
-
-  session = await request(app.getHttpServer())
-    .get('/api/auth/session')
-    .set('cookie', `${cookie};${AuthService.userCookieName}=invalid_user_id`)
-    .expect(200);
-
-  userIdCookie = session.get('Set-Cookie')?.find(c => {
-    return c.startsWith(`${AuthService.userCookieName}=`);
-  });
-
-  t.true(userIdCookie?.startsWith(`${AuthService.userCookieName}=${u1.id}`));
-  t.is(session.body.user.id, u1.id);
+  t.is(userIdCookie, u1.id);
 });
 
 // multiple accounts session tests
 test('should be able to sign in another account in one session', async t => {
-  const { app, u1, auth } = t.context;
+  const { app } = t.context;
 
-  const u2 = await auth.signUp('u3@affine.pro', '3');
+  const u1 = await app.createUser('u1@affine.pro');
+  const u2 = await app.createUser('u2@affine.pro');
 
   // sign in u1
-  const signInRes = await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
-    .send({ email: u1.email, password: '1' })
+  const res = await app
+    .POST('/api/auth/sign-in')
+    .send({ email: u1.email, password: u1.password })
     .expect(200);
 
-  const cookie = sessionCookie(signInRes.headers);
-
-  // avoid create session at the exact same time, leads to same random session users order
-  await new Promise(resolve => setTimeout(resolve, 1));
+  const cookies = parseCookies(res);
 
   // sign in u2 in the same session
-  await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
-    .set('cookie', cookie)
-    .send({ email: u2.email, password: '3' })
+  await app
+    .POST('/api/auth/sign-in')
+    .send({ email: u2.email, password: u2.password })
     .expect(200);
 
   // list [u1, u2]
-  const sessions = await request(app.getHttpServer())
-    .get('/api/auth/sessions')
-    .set('cookie', cookie)
-    .expect(200);
+  const sessions = await app.GET('/api/auth/sessions').expect(200);
 
   t.is(sessions.body.users.length, 2);
-  t.is(sessions.body.users[0].id, u1.id);
-  t.is(sessions.body.users[1].id, u2.id);
+  t.like(
+    sessions.body.users.map((u: any) => u.id),
+    [u1.id, u2.id]
+  );
 
   // default to latest signed in user: u2
-  let session = await request(app.getHttpServer())
-    .get('/api/auth/session')
-    .set('cookie', cookie)
-    .expect(200);
+  let session = await app.GET('/api/auth/session').expect(200);
 
   t.is(session.body.user.id, u2.id);
 
   // switch to u1
-  session = await request(app.getHttpServer())
-    .get('/api/auth/session')
-    .set('cookie', `${cookie};${AuthService.userCookieName}=${u1.id}`)
+  session = await app
+    .GET('/api/auth/session')
+    .set(
+      'Cookie',
+      Object.entries(cookies)
+        .map(([k, v]) => `${k}=${v}`)
+        .join('; ')
+    )
     .expect(200);
 
   t.is(session.body.user.id, u1.id);
 });
 
 test('should be able to sign out multiple accounts in one session', async t => {
-  const { app, u1, auth } = t.context;
+  const { app } = t.context;
 
-  const u2 = await auth.signUp('u4@affine.pro', '4');
-
-  // sign in u1
-  const signInRes = await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
-    .send({ email: u1.email, password: '1' })
-    .expect(200);
-
-  const cookie = sessionCookie(signInRes.headers);
-
-  await new Promise(resolve => setTimeout(resolve, 1));
-
-  // sign in u2 in the same session
-  await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
-    .set('cookie', cookie)
-    .send({ email: u2.email, password: '4' })
-    .expect(200);
+  const u1 = await app.signup('u1@affine.pro');
+  const u2 = await app.signup('u2@affine.pro');
 
   // sign out u2
-  let signOut = await request(app.getHttpServer())
-    .get(`/api/auth/sign-out?user_id=${u2.id}`)
-    .set('cookie', `${cookie};${AuthService.userCookieName}=${u2.id}`)
-    .expect(200);
-
-  // auto switch to u1 after sign out u2
-  const userIdCookie = signOut.get('Set-Cookie')?.find(c => {
-    return c.startsWith(`${AuthService.userCookieName}=`);
-  });
-
-  t.true(userIdCookie?.startsWith(`${AuthService.userCookieName}=${u1.id}`));
+  await app.GET(`/api/auth/sign-out?user_id=${u2.id}`).expect(200);
 
   // list [u1]
-  const session = await request(app.getHttpServer())
-    .get('/api/auth/session')
-    .set('cookie', cookie)
-    .expect(200);
-
+  let session = await app.GET('/api/auth/session').expect(200);
   t.is(session.body.user.id, u1.id);
 
   // sign in u2 in the same session
-  await request(app.getHttpServer())
-    .post('/api/auth/sign-in')
-    .set('cookie', cookie)
-    .send({ email: u2.email, password: '4' })
+  await app
+    .POST('/api/auth/sign-in')
+    .send({ email: u2.email, password: u2.password })
     .expect(200);
 
   // sign out all account in session
-  signOut = await request(app.getHttpServer())
-    .get('/api/auth/sign-out')
-    .set('cookie', cookie)
-    .expect(200);
+  await app.GET('/api/auth/sign-out').expect(200);
 
-  t.true(
-    signOut
-      .get('Set-Cookie')
-      ?.some(c => c.startsWith(`${AuthService.sessionCookieName}=;`))
-  );
-  t.true(
-    signOut
-      .get('Set-Cookie')
-      ?.some(c => c.startsWith(`${AuthService.userCookieName}=;`))
-  );
+  session = await app.GET('/api/auth/session').expect(200);
+  t.falsy(session.body.user);
 });

@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto';
 
 import { User, Workspace } from '@prisma/client';
 import ava, { TestFn } from 'ava';
-import request from 'supertest';
 
 import { createTestingApp, type TestingApp } from '../../../__tests__/utils';
 import { AppModule } from '../../../app.module';
@@ -17,7 +16,7 @@ const test = ava as TestFn<{
 }>;
 
 test.before(async t => {
-  const { app } = await createTestingApp({
+  const app = await createTestingApp({
     imports: [ConfigModule.forRoot(), AppModule],
   });
 
@@ -44,8 +43,8 @@ test.after.always(async t => {
 test('should forbid access to rpc api without access token', async t => {
   const { app } = t.context;
 
-  await request(app.getHttpServer())
-    .get('/rpc/workspaces/123/docs/123')
+  await app
+    .GET('/rpc/workspaces/123/docs/123')
     .expect({
       status: 403,
       code: 'Forbidden',
@@ -60,8 +59,8 @@ test('should forbid access to rpc api without access token', async t => {
 test('should forbid access to rpc api with invalid access token', async t => {
   const { app } = t.context;
 
-  await request(app.getHttpServer())
-    .get('/rpc/workspaces/123/docs/123')
+  await app
+    .GET('/rpc/workspaces/123/docs/123')
     .set('x-access-token', 'invalid,wrong-signature')
     .expect({
       status: 403,
@@ -79,8 +78,8 @@ test('should 404 when doc not found', async t => {
 
   const workspaceId = '123';
   const docId = '123';
-  await request(app.getHttpServer())
-    .get(`/rpc/workspaces/${workspaceId}/docs/${docId}`)
+  await app
+    .GET(`/rpc/workspaces/${workspaceId}/docs/${docId}`)
     .set('x-access-token', t.context.crypto.sign(docId))
     .expect({
       status: 404,
@@ -108,8 +107,8 @@ test('should return doc when found', async t => {
     },
   ]);
 
-  const res = await request(app.getHttpServer())
-    .get(`/rpc/workspaces/${workspace.id}/docs/${docId}`)
+  const res = await app
+    .GET(`/rpc/workspaces/${workspace.id}/docs/${docId}`)
     .set('x-access-token', t.context.crypto.sign(docId))
     .set('x-rpc-trace-id', 'test-trace-id')
     .expect(200)
