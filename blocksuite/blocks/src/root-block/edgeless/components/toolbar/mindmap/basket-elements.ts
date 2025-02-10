@@ -51,9 +51,9 @@ export const mindmapConfig: ToolConfig = {
   next: { y: 64, r: 0 },
 };
 export const mediaConfig: ToolConfig = {
-  default: { x: -20, y: -8, r: -1, s: 0.92, z: 1 },
-  active: { x: -20, y: -14, r: -9, s: 1 },
-  hover: { x: -20, y: -14, r: -9, s: 1.16, z: 2 },
+  default: { x: -20, y: -15, r: 23, s: 1.2, z: 1 },
+  active: { x: -25, y: -20, r: -9, s: 1.2 },
+  hover: { x: -25, y: -20, r: -9, s: 1.5, z: 2 },
   next: { y: 64, r: 0 },
 };
 
