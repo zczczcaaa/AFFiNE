@@ -8773,27 +8773,27 @@ __metadata:
   linkType: hard
 
 "@nestjs-cls/transactional-adapter-prisma@npm:^1.2.7":
-  version: 1.2.9
-  resolution: "@nestjs-cls/transactional-adapter-prisma@npm:1.2.9"
+  version: 1.2.12
+  resolution: "@nestjs-cls/transactional-adapter-prisma@npm:1.2.12"
   peerDependencies:
-    "@nestjs-cls/transactional": ^2.4.6
+    "@nestjs-cls/transactional": ^2.4.9
     "@prisma/client": "> 4 < 7"
-    nestjs-cls: ^5.0.1
+    nestjs-cls: ^5.1.2
     prisma: "> 4 < 7"
-  checksum: 10/b33d3ed504b1ecb5b41ee93bfe65f8e94df4eb81041354bbadffc6ff7e75504e39db4ba5f81765c8ffce839431a439ad8f0baec7ea34f95332798416fd1cc329
+  checksum: 10/269d9364943176dc78fb8698959c96dcc702d2852fd8fdbeb53c92572a52752cc644cdc634a3ccbc19aa7ca8f96c107202ca288fb16d6394da144e144e759ebd
   languageName: node
   linkType: hard
 
 "@nestjs-cls/transactional@npm:^2.4.4":
-  version: 2.4.6
-  resolution: "@nestjs-cls/transactional@npm:2.4.6"
+  version: 2.4.9
+  resolution: "@nestjs-cls/transactional@npm:2.4.9"
   peerDependencies:
     "@nestjs/common": ">= 11 < 12"
     "@nestjs/core": ">= 11 < 12"
-    nestjs-cls: ^5.0.1
+    nestjs-cls: ^5.1.2
     reflect-metadata: "*"
     rxjs: ">= 7"
-  checksum: 10/8c8000588140366e98db6aee0bbc0a196584492fe2eb14fc40b83da26b0f8f825de5b16988f21c734bb3e8edbd064f06d6bb7597d743d92e57ff0f7c4dd56cbe
+  checksum: 10/c5a3baaa6e02c910349baec371c32ab51486d381c1f99eebe2d44124ed983de7cf1be065246facbd88e592b71b76c19daed4f0c0c737306430901d1eb3bd9d29
   languageName: node
   linkType: hard
 
