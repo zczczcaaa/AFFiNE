@@ -7,11 +7,14 @@ import type { TableAreaSelection } from './selection-schema';
 
 export class TableDataManager {
   constructor(private readonly model: TableBlockModel) {}
-
+  ui = {
+    columnIndicatorIndex$: signal<number>(),
+    rowIndicatorIndex$: signal<number>(),
+  };
   hoverColumnIndex$ = signal<number>();
   hoverRowIndex$ = signal<number>();
   hoverDragHandleColumnId$ = signal<string>();
-  draggingColumnId$ = signal<string>();
+  widthAdjustColumnId$ = signal<string>();
   virtualColumnCount$ = signal<number>(0);
   virtualRowCount$ = signal<number>(0);
   virtualWidth$ = signal<{ columnId: string; width: number } | undefined>();
