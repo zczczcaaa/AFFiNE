@@ -94,13 +94,15 @@ export class CanvasRenderer {
       sectionMinX,
       sectionMinY,
     ]);
+    const w = (sectionMaxX - sectionMinX) / zoom / viewport.viewScale;
+    const h = (sectionMaxY - sectionMinY) / zoom / viewport.viewScale;
     const section: SectionLayout = {
       paragraphs,
       rect: {
         x: sectionModelCoord[0],
         y: sectionModelCoord[1],
-        w: (sectionMaxX - sectionMinX) / zoom / viewport.viewScale,
-        h: (sectionMaxY - sectionMinY) / zoom / viewport.viewScale,
+        w: Math.max(w, 0),
+        h: Math.max(h, 0),
       },
     };
 

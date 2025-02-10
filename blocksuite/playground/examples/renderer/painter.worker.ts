@@ -65,6 +65,10 @@ class SectionPainter {
   paint(section: SectionLayout) {
     const { canvas, ctx } = this;
     if (!canvas || !ctx) return;
+    if (section.rect.w === 0 || section.rect.h === 0) {
+      console.warn('empty section rect');
+      return;
+    }
 
     ctx.scale(this.zoom, this.zoom);
 
