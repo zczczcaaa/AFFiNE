@@ -24,7 +24,8 @@ export type DocName =
   | 'flow'
   | 'text'
   | 'connector'
-  | 'mindmap';
+  | 'mindmap'
+  | 'frame';
 
 const docMap = new Map<DocName, Promise<Store | undefined>>();
 
@@ -38,6 +39,10 @@ async function loadPen() {
 
 async function loadShape() {
   return (await import('./shape.json')).default;
+}
+
+async function loadFrame() {
+  return (await import('./frame.json')).default;
 }
 
 async function loadFlow() {
@@ -60,6 +65,7 @@ const loaders = {
   note: loadNote,
   pen: loadPen,
   shape: loadShape,
+  frame: loadFrame,
   flow: loadFlow,
   text: loadText,
   connector: loadConnector,

@@ -1,5 +1,7 @@
 import type { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
 import { Overlay } from '@blocksuite/affine-block-surface';
+import type { FrameBlockModel, NoteBlockModel } from '@blocksuite/affine-model';
+import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import {
   generateKeyBetweenV2,
   getTopElements,
@@ -23,7 +25,6 @@ import type { Store } from '@blocksuite/store';
 import { Text } from '@blocksuite/store';
 import * as Y from 'yjs';
 
-import type { FrameBlockModel, NoteBlockModel } from '../../index.js';
 import { areSetsEqual } from './utils/misc.js';
 import { isFrameBlock } from './utils/query.js';
 
@@ -194,16 +195,16 @@ export class EdgelessFrameManager extends GfxExtension {
 
   private _addFrameBlock(bound: Bound) {
     const surfaceModel = this.gfx.surface as SurfaceBlockModel;
-    const id = this.gfx.doc.addBlock(
-      'affine:frame',
-      {
+    const props = this.gfx.std
+      .get(EditPropsStore)
+      .applyLastProps('affine:frame', {
         title: new Text(new Y.Text(`Frame ${this.frames.length + 1}`)),
         xywh: bound.serialize(),
         index: this.gfx.layer.generateIndex(true),
         presentationIndex: this.generatePresentationIndex(),
-      },
-      surfaceModel
-    );
+      });
+
+    const id = this.gfx.doc.addBlock('affine:frame', props, surfaceModel);
     const frameModel = this.gfx.getElementById(id);
 
     if (!frameModel || !isFrameBlock(frameModel)) {

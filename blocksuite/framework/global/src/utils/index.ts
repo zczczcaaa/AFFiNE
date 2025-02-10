@@ -16,5 +16,4 @@ export * from './slot.js';
 export * from './types.js';
 export * from './with-disposable.js';
 export type { SerializedXYWH, XYWH } from './xywh.js';
-export { SerializedXYWHZodSchema } from './xywh.js';
 export { deserializeXYWH, serializeXYWH } from './xywh.js';

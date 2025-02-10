@@ -1,5 +1,6 @@
 import type {
   GfxBlockElementModel,
+  GfxCompatibleProps,
   GfxElementGeometry,
   GfxGroupCompatibleInterface,
   GfxModel,
@@ -10,7 +11,6 @@ import {
   descendantElementsImpl,
   generateKeyBetweenV2,
   GfxCompatible,
-  GfxCompatibleZodSchema,
   gfxGroupCompatibleSymbol,
   hasDescendantElementImpl,
 } from '@blocksuite/block-std/gfx';
@@ -18,33 +18,33 @@ import { Bound } from '@blocksuite/global/utils';
 import { BlockModel, defineBlockSchema, type Text } from '@blocksuite/store';
 import { z } from 'zod';
 
-import { ColorSchema, DefaultTheme } from '../../themes/index.js';
+import { type Color, ColorSchema, DefaultTheme } from '../../themes/index.js';
+
+export type FrameBlockProps = {
+  title: Text;
+  background: Color;
+  childElementIds?: Record<string, boolean>;
+  presentationIndex?: string;
+} & GfxCompatibleProps;
 
 export const FrameZodSchema = z
   .object({
     background: ColorSchema,
-    childElementIds: z.record(z.boolean()),
-    presentationIndex: z.string(),
   })
-  .and(GfxCompatibleZodSchema)
   .default({
     background: DefaultTheme.transparent,
-    xywh: `[0,0,100,100]`,
-    index: 'a0',
-    childElementIds: Object.create(null),
-    presentationIndex: generateKeyBetweenV2(null, null),
-    lockedBySelf: false,
   });
-
-export type FrameBlockProps = z.infer<typeof FrameZodSchema> & {
-  title: Text;
-};
 
 export const FrameBlockSchema = defineBlockSchema({
   flavour: 'affine:frame',
   props: (internal): FrameBlockProps => ({
     title: internal.Text(),
-    ...FrameZodSchema.parse(undefined),
+    background: 'transparent',
+    xywh: `[0,0,100,100]`,
+    index: 'a0',
+    childElementIds: Object.create(null),
+    presentationIndex: generateKeyBetweenV2(null, null),
+    lockedBySelf: false,
   }),
   metadata: {
     version: 1,
