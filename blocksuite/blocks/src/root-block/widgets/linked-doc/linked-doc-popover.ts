@@ -5,6 +5,7 @@ import {
   cleanSpecifiedTail,
   getTextContentFromInlineRange,
 } from '@blocksuite/affine-components/rich-text';
+import { unsafeCSSVar } from '@blocksuite/affine-shared/theme';
 import {
   createKeydownObserver,
   getCurrentNativeRange,
@@ -16,7 +17,7 @@ import {
   throttle,
   WithDisposable,
 } from '@blocksuite/global/utils';
-import { html, LitElement, nothing } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { property, query, queryAll, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
@@ -241,7 +242,13 @@ export class LinkedDocPopover extends SignalWatcher(
                 accIdx++;
                 const curIdx = accIdx - 1;
                 const tooltip = this._showTooltip
-                  ? html`<affine-tooltip tip-position=${'right'}
+                  ? html`<affine-tooltip
+                      tip-position=${'right'}
+                      .tooltipStyle=${css`
+                        * {
+                          color: ${unsafeCSSVar('white')} !important;
+                        }
+                      `}
                       >${name}</affine-tooltip
                     >`
                   : nothing;
