@@ -17,6 +17,7 @@ import {
   throttle,
   WithDisposable,
 } from '@blocksuite/global/utils';
+import { effect } from '@preact/signals-core';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, queryAll, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -47,6 +48,8 @@ export class LinkedDocPopover extends SignalWatcher(
 
   private readonly _expanded = new Map<string, boolean>();
 
+  private _menusItemsEffectCleanup: () => void = () => {};
+
   private readonly _updateLinkedDocGroup = async () => {
     const query = this._query;
     if (this._updateLinkedDocGroupAbortController) {
@@ -65,6 +68,30 @@ export class LinkedDocPopover extends SignalWatcher(
       this.context.inlineEditor,
       this._updateLinkedDocGroupAbortController.signal
     );
+
+    this._menusItemsEffectCleanup();
+
+    // need to rebind the effect because this._linkedDocGroup has changed.
+    this._menusItemsEffectCleanup = effect(() => {
+      this._updateAutoFocusedItem();
+    });
+  };
+
+  private readonly _updateAutoFocusedItem = () => {
+    if (!this._query) {
+      return;
+    }
+    const autoFocusedItem = this.context.config.autoFocusedItem?.(
+      this._linkedDocGroup,
+      this._query,
+      this.context.std.host,
+      this.context.inlineEditor
+    );
+    if (autoFocusedItem) {
+      this._activatedItemIndex = this._flattenActionList.findIndex(
+        item => item.key === autoFocusedItem.key
+      );
+    }
   };
 
   private _updateLinkedDocGroupAbortController: AbortController | null = null;
@@ -215,6 +242,11 @@ export class LinkedDocPopover extends SignalWatcher(
         this.context.close();
       },
     });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this._menusItemsEffectCleanup();
   }
 
   override render() {
