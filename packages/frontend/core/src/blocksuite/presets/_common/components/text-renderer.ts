@@ -181,6 +181,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
     match: [
       'affine:page',
       'affine:note',
+      'affine:table',
       'affine:surface',
       'affine:paragraph',
       'affine:code',
