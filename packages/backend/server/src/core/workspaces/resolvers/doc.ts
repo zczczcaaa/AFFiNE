@@ -280,11 +280,9 @@ export class WorkspaceDocResolver {
       user.id
     );
 
-    this.logger.log('Publish page', {
-      workspaceId,
-      docId: rawDocId,
-      mode,
-    });
+    this.logger.log(
+      `Publish page ${rawDocId} with mode ${mode} in workspace ${workspaceId}`
+    );
 
     return this.permission.publishPage(docId.workspace, docId.guid, mode);
   }
