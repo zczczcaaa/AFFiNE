@@ -7,6 +7,7 @@ import {
   EdgelessCRUDIdentifier,
   getSurfaceBlock,
   NotificationProvider,
+  type SpecBuilder,
   TelemetryProvider,
 } from '@blocksuite/affine/blocks';
 import { html, LitElement, nothing } from 'lit';
@@ -19,6 +20,7 @@ import {
   type ChatMessage,
   ChatMessagesSchema,
 } from '../../../blocks';
+import type { TextRendererOptions } from '../../_common/components/text-renderer';
 import {
   ChatBlockPeekViewActions,
   constructUserInfoWithMessages,
@@ -384,6 +386,9 @@ export class AIChatBlockPeekView extends LitElement {
         userName: message.userName,
         avatarUrl: message.avatarUrl,
       };
+      const textRendererOptions: TextRendererOptions = {
+        extensions: this.previewSpecBuilder.value,
+      };
 
       return html`<div class=${messageClasses}>
         <ai-chat-message
@@ -393,6 +398,7 @@ export class AIChatBlockPeekView extends LitElement {
           .attachments=${attachments}
           .messageRole=${role}
           .userInfo=${userInfo}
+          .textRendererOptions=${textRendererOptions}
         ></ai-chat-message>
         ${shouldRenderError ? AIChatErrorRenderer(host, error) : nothing}
         ${shouldRenderCopyMore
@@ -473,12 +479,16 @@ export class AIChatBlockPeekView extends LitElement {
     } = this;
 
     const { messages: currentChatMessages } = chatContext;
+    const textRendererOptions: TextRendererOptions = {
+      extensions: this.previewSpecBuilder.value,
+    };
 
     return html`<div class="ai-chat-block-peek-view-container">
       <div class="ai-chat-messages-container">
         <ai-chat-messages
           .host=${host}
           .messages=${_historyMessages}
+          .textRendererOptions=${textRendererOptions}
         ></ai-chat-messages>
         <date-time .date=${latestMessageCreatedAt}></date-time>
         <div class="new-chat-messages-container">
@@ -511,6 +521,9 @@ export class AIChatBlockPeekView extends LitElement {
   @property({ attribute: false })
   accessor host!: EditorHost;
 
+  @property({ attribute: false })
+  accessor previewSpecBuilder!: SpecBuilder;
+
   @state()
   accessor _historyMessages: ChatMessage[] = [];
 
@@ -534,10 +547,12 @@ declare global {
 
 export const AIChatBlockPeekViewTemplate = (
   parentModel: AIChatBlockModel,
-  host: EditorHost
+  host: EditorHost,
+  previewSpecBuilder: SpecBuilder
 ) => {
   return html`<ai-chat-block-peek-view
     .parentModel=${parentModel}
     .host=${host}
+    .previewSpecBuilder=${previewSpecBuilder}
   ></ai-chat-block-peek-view>`;
 };
