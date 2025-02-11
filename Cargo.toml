@@ -38,7 +38,7 @@ sqlx             = { version = "0.8", default-features = false, features = ["chr
 thiserror        = "2"
 tiktoken-rs      = "0.6"
 tokio            = "1.37"
-uniffi           = "0.28"
+uniffi           = "0.29"
 uuid             = "1.8"
 v_htmlescape     = "0.15"
 y-octo           = { git = "https://github.com/y-crdt/y-octo.git", branch = "main" }
