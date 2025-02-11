@@ -280,11 +280,14 @@ export class PermissionService {
       if (count > 0) {
         return true;
       } else {
-        this.logger.log("User's WorkspaceRole is lower than required", {
+        const info = {
           workspaceId: ws,
           userId: user,
           requiredRole: WorkspaceRole[permission],
-        });
+        };
+        this.logger.log(
+          `User's WorkspaceRole is lower than required (${JSON.stringify(info)})`
+        );
       }
     }
 
@@ -627,7 +630,7 @@ export class PermissionService {
       ) {
         return true;
       }
-      this.logger.log("User's role is lower than required", {
+      const info = {
         workspaceId: ws,
         docId: doc,
         userId: user,
@@ -640,7 +643,10 @@ export class PermissionService {
           : undefined,
         requiredRole: DocRole[role],
         action,
-      });
+      };
+      this.logger.log(
+        `User's role is lower than required (${JSON.stringify(info)})`
+      );
     }
 
     // check whether user has workspace related permission

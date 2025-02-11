@@ -326,18 +326,18 @@ export class WorkspaceDocResolver {
       docId.guid
     );
 
+    const info = {
+      workspaceId,
+      docId: rawDocId,
+    };
     if (!isPublic) {
-      this.logger.log('Expect to revoke public doc, but it is not public', {
-        workspaceId,
-        docId: rawDocId,
-      });
+      this.logger.log(
+        `Expect to revoke public doc, but it is not public (${JSON.stringify(info)})`
+      );
       throw new DocIsNotPublic('Doc is not public');
     }
 
-    this.logger.log('Revoke public doc', {
-      workspaceId,
-      docId: rawDocId,
-    });
+    this.logger.log(`Revoke public doc (${JSON.stringify(info)})`);
 
     return this.permission.revokePublicPage(docId.workspace, docId.guid);
   }
@@ -487,11 +487,12 @@ export class DocResolver {
       input.userIds,
       input.role
     );
-    this.logger.log('Grant doc user roles', {
+    const info = {
       ...pairs,
       userIds: input.userIds,
       role: input.role,
-    });
+    };
+    this.logger.log(`Grant doc user roles (${JSON.stringify(info)})`);
     return true;
   }
 
@@ -522,10 +523,11 @@ export class DocResolver {
       user.id
     );
     await this.permission.revokePage(doc.workspace, doc.guid, input.userId);
-    this.logger.log('Revoke doc user roles', {
+    const info = {
       ...pairs,
       userId: input.userId,
-    });
+    };
+    this.logger.log(`Revoke doc user roles (${JSON.stringify(info)})`);
     return true;
   }
 
@@ -564,18 +566,15 @@ export class DocResolver {
       input.role
     );
 
+    const info = {
+      ...pairs,
+      userId: input.userId,
+      role: input.role,
+    };
     if (input.role === DocRole.Owner) {
-      this.logger.log('Transfer doc owner', {
-        ...pairs,
-        userId: input.userId,
-        role: input.role,
-      });
+      this.logger.log(`Transfer doc owner (${JSON.stringify(info)})`);
     } else {
-      this.logger.log('Update doc user role', {
-        ...pairs,
-        userId: input.userId,
-        role: input.role,
-      });
+      this.logger.log(`Update doc user role (${JSON.stringify(info)})`);
     }
 
     return true;
@@ -587,7 +586,9 @@ export class DocResolver {
     @Args('input') input: UpdateDocDefaultRoleInput
   ) {
     if (input.role === DocRole.Owner) {
-      this.logger.log('Doc default role can not be owner', input);
+      this.logger.log(
+        `Doc default role can not be owner (${JSON.stringify(input)})`
+      );
       throw new DocDefaultRoleCanNotBeOwner();
     }
     const doc = new DocID(input.docId, input.workspaceId);
@@ -615,11 +616,12 @@ export class DocResolver {
     } catch (error) {
       if (error instanceof DocAccessDenied) {
         this.logger.log(
-          'User does not have permission to update page default role',
-          {
-            ...pairs,
-            userId: user.id,
-          }
+          `User does not have permission to update page default role (${JSON.stringify(
+            {
+              ...pairs,
+              userId: user.id,
+            }
+          )})`
         );
       }
       throw error;
