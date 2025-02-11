@@ -1,3 +1,4 @@
+import { ListBlockModel } from '@blocksuite/affine-model';
 import {
   getNextContentBlock,
   matchFlavours,
@@ -25,7 +26,7 @@ export function forwardDelete(std: BlockStdScope): true | undefined {
   const isCollapsed = text.isCollapsed();
   const doc = std.store;
   const model = doc.getBlock(text.from.blockId)?.model;
-  if (!model || !matchFlavours(model, ['affine:list'])) return;
+  if (!model || !matchFlavours(model, [ListBlockModel])) return;
   const isEnd = isCollapsed && text.from.index === model.text.length;
   if (!isEnd) return;
   // Has children in list

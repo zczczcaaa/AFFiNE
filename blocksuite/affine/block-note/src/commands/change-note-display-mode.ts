@@ -1,4 +1,4 @@
-import { NoteDisplayMode } from '@blocksuite/affine-model';
+import { NoteBlockModel, NoteDisplayMode } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import type { Command } from '@blocksuite/block-std';
 
@@ -10,7 +10,7 @@ export const changeNoteDisplayMode: Command<{
   const { std, noteId, mode, stopCapture } = ctx;
 
   const noteBlockModel = std.store.getBlock(noteId)?.model;
-  if (!noteBlockModel || !matchFlavours(noteBlockModel, ['affine:note']))
+  if (!noteBlockModel || !matchFlavours(noteBlockModel, [NoteBlockModel]))
     return;
 
   const currentMode = noteBlockModel.displayMode;
@@ -27,7 +27,7 @@ export const changeNoteDisplayMode: Command<{
   const parent = std.store.getParent(noteBlockModel);
   if (parent) {
     const notes = parent.children.filter(child =>
-      matchFlavours(child, ['affine:note'])
+      matchFlavours(child, [NoteBlockModel])
     );
     const firstEdgelessOnlyNote = notes.find(
       note => note.displayMode === NoteDisplayMode.EdgelessOnly

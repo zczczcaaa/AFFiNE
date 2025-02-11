@@ -122,7 +122,7 @@ export class OutlineBlockPreview extends SignalWatcher(
 
     const showPreviewIcon = this._context.showIcons$.value;
 
-    switch (block.flavour as keyof BlockSuite.BlockModels) {
+    switch (block.flavour) {
       case 'affine:page':
         assertType<RootBlockModel>(block);
         return block.title.length > 0

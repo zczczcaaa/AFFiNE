@@ -51,7 +51,7 @@ export const PPTBuilder = (host: EditorHost) => {
       );
     }
     await job.insertTemplate(content);
-    getSurfaceElementFromEditor(host).refresh();
+    getSurfaceElementFromEditor(host)?.refresh();
   };
 
   return {

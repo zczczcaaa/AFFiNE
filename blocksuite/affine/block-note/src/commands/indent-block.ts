@@ -1,4 +1,4 @@
-import type { ListBlockModel } from '@blocksuite/affine-model';
+import { ListBlockModel, ParagraphBlockModel } from '@blocksuite/affine-model';
 import {
   calculateCollapsedSiblings,
   matchFlavours,
@@ -50,7 +50,7 @@ export const indentBlock: Command<{
   if (stopCapture) store.captureSync();
 
   if (
-    matchFlavours(model, ['affine:paragraph']) &&
+    matchFlavours(model, [ParagraphBlockModel]) &&
     model.type.startsWith('h') &&
     model.collapsed
   ) {
@@ -62,12 +62,12 @@ export const indentBlock: Command<{
 
   // update collapsed state of affine list
   if (
-    matchFlavours(previousSibling, ['affine:list']) &&
+    matchFlavours(previousSibling, [ListBlockModel]) &&
     previousSibling.collapsed
   ) {
     store.updateBlock(previousSibling, {
       collapsed: false,
-    } as Partial<ListBlockModel>);
+    });
   }
 
   return next();

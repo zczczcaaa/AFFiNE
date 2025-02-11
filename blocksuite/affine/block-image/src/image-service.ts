@@ -1,3 +1,4 @@
+import { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
 import { FileDropConfigExtension } from '@blocksuite/affine-components/drop-indicator';
 import { ImageBlockSchema, MAX_IMAGE_WIDTH } from '@blocksuite/affine-model';
 import {
@@ -25,7 +26,7 @@ export const ImageDropOption = FileDropConfigExtension({
 
     const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
 
-    if (targetModel && !matchFlavours(targetModel, ['affine:surface'])) {
+    if (targetModel && !matchFlavours(targetModel, [SurfaceBlockModel])) {
       addSiblingImageBlock(
         std.host,
         imageFiles,

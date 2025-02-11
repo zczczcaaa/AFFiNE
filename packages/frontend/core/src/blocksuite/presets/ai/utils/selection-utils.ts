@@ -3,6 +3,7 @@ import type { GfxModel } from '@blocksuite/affine/block-std/gfx';
 import {
   BlocksUtils,
   type CopilotTool,
+  DatabaseBlockModel,
   EdgelessRootService,
   type FrameBlockModel,
   getBlockSelectionsCommand,
@@ -13,7 +14,6 @@ import {
   ImageBlockModel,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine/blocks';
-import { assertExists } from '@blocksuite/affine/global/utils';
 import {
   type BlockModel,
   type DraftModel,
@@ -134,7 +134,7 @@ export async function getTextContentFromBlockModels(
   // Currently only filter out images and databases
   const selectedTextModels = models.filter(
     model =>
-      !BlocksUtils.matchFlavours(model, ['affine:image', 'affine:database'])
+      !BlocksUtils.matchFlavours(model, [ImageBlockModel, DatabaseBlockModel])
   );
   const drafts = selectedTextModels.map(toDraftModel);
   drafts.forEach(draft => traverse(draft, drafts));
@@ -147,13 +147,13 @@ export async function getSelectedTextContent(
   type: 'markdown' | 'plain-text' = 'markdown'
 ) {
   const selectedModels = getSelectedModels(editorHost);
-  assertExists(selectedModels);
+  if (!selectedModels) return '';
   return getTextContentFromBlockModels(editorHost, selectedModels, type);
 }
 
 export async function selectAboveBlocks(editorHost: EditorHost, num = 10) {
   let selectedModels = getSelectedModels(editorHost);
-  assertExists(selectedModels);
+  if (!selectedModels) return '';
 
   const lastLeafModel = selectedModels[selectedModels.length - 1];
 
@@ -163,8 +163,7 @@ export async function selectAboveBlocks(editorHost: EditorHost, num = 10) {
     lastRootModel = noteModel;
     noteModel = editorHost.doc.getParent(noteModel);
   }
-  assertExists(noteModel);
-  assertExists(lastRootModel);
+  if (!noteModel || !lastRootModel) return '';
 
   const endIndex = noteModel.children.indexOf(lastRootModel) + 1;
   const startIndex = Math.max(0, endIndex - num);
@@ -212,13 +211,13 @@ export const stopPropagation = (e: Event) => {
 export function getSurfaceElementFromEditor(editor: EditorHost) {
   const { doc } = editor;
   const surfaceModel = doc.getBlockByFlavour('affine:surface')[0];
-  assertExists(surfaceModel);
+  if (!surfaceModel) return null;
 
   const surfaceId = surfaceModel.id;
   const surfaceElement = editor.querySelector(
     `affine-surface[data-block-id="${surfaceId}"]`
   ) as SurfaceBlockComponent;
-  assertExists(surfaceElement);
+  if (!surfaceElement) return null;
 
   return surfaceElement;
 }

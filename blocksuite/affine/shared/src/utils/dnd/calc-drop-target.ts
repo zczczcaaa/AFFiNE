@@ -1,3 +1,4 @@
+import { DatabaseBlockModel, ListBlockModel } from '@blocksuite/affine-model';
 import type { BlockComponent } from '@blocksuite/block-std';
 import { type Point, Rect } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
@@ -55,7 +56,7 @@ export function calcDropTarget(
       .every(m => children.includes(m.flavour));
   }
 
-  if (!shouldAppendToDatabase && !matchFlavours(model, ['affine:database'])) {
+  if (!shouldAppendToDatabase && !matchFlavours(model, [DatabaseBlockModel])) {
     const databaseBlockComponent =
       element.closest<BlockComponent>('affine-database');
     if (databaseBlockComponent) {
@@ -149,7 +150,7 @@ export function calcDropTarget(
     const hasChild = (element as BlockComponent).childBlocks.length;
     if (
       allowSublist &&
-      matchFlavours(model, ['affine:list']) &&
+      matchFlavours(model, [ListBlockModel]) &&
       !hasChild &&
       point.x > domRect.x + BLOCK_CHILDREN_CONTAINER_PADDING_LEFT
     ) {

@@ -1,3 +1,4 @@
+import { CodeBlockModel, ParagraphBlockModel } from '@blocksuite/affine-model';
 import {
   isMarkdownPrefix,
   matchFlavours,
@@ -31,10 +32,10 @@ export function markdownInput(
   const prefixText = getPrefixText(inline);
   if (!isMarkdownPrefix(prefixText)) return;
 
-  const isParagraph = matchFlavours(model, ['affine:paragraph']);
+  const isParagraph = matchFlavours(model, [ParagraphBlockModel]);
   const isHeading = isParagraph && model.type.startsWith('h');
   const isParagraphQuoteBlock = isParagraph && model.type === 'quote';
-  const isCodeBlock = matchFlavours(model, ['affine:code']);
+  const isCodeBlock = matchFlavours(model, [CodeBlockModel]);
   if (isHeading || isParagraphQuoteBlock || isCodeBlock) return;
 
   const lineInfo = inline.getLine(range.index);

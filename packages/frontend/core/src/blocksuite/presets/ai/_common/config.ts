@@ -2,8 +2,12 @@ import type { Chain, InitCommandCtx } from '@blocksuite/affine/block-std';
 import {
   type AIItemGroupConfig,
   type AISubItemConfig,
+  CodeBlockModel,
   getSelectedModelsCommand,
+  ImageBlockModel,
+  ListBlockModel,
   matchFlavours,
+  ParagraphBlockModel,
 } from '@blocksuite/affine/blocks';
 
 import { actionToHandler } from '../actions/doc-handler';
@@ -103,7 +107,7 @@ const textBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
   if (!selectedModels || selectedModels.length === 0) return false;
 
   return selectedModels.some(model =>
-    matchFlavours(model, ['affine:paragraph', 'affine:list'])
+    matchFlavours(model, [ParagraphBlockModel, ListBlockModel])
   );
 };
 
@@ -117,7 +121,7 @@ const codeBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
   if (!selectedModels || selectedModels.length > 1) return false;
 
   const model = selectedModels[0];
-  return matchFlavours(model, ['affine:code']);
+  return matchFlavours(model, [CodeBlockModel]);
 };
 
 const imageBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
@@ -130,7 +134,7 @@ const imageBlockShowWhen = (chain: Chain<InitCommandCtx>) => {
   if (!selectedModels || selectedModels.length > 1) return false;
 
   const model = selectedModels[0];
-  return matchFlavours(model, ['affine:image']);
+  return matchFlavours(model, [ImageBlockModel]);
 };
 
 const EditAIGroup: AIItemGroupConfig = {
@@ -278,7 +282,7 @@ const GenerateWithAIGroup: AIItemGroupConfig = {
 
         return selectedModels.every(
           model =>
-            matchFlavours(model, ['affine:paragraph', 'affine:list']) &&
+            matchFlavours(model, [ParagraphBlockModel, ListBlockModel]) &&
             !model.type.startsWith('h')
         );
       },

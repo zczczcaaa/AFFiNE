@@ -1,6 +1,8 @@
 import {
   DefaultTheme,
+  ListBlockModel,
   NoteBlockModel,
+  ParagraphBlockModel,
   StrokeStyle,
 } from '@blocksuite/affine-model';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
@@ -98,10 +100,10 @@ export class EdgelessNoteBackground extends SignalWatcher(
 
     if (
       (!nearestModel.text ||
-        !matchFlavours(nearestModel, ['affine:paragraph', 'affine:list'])) &&
+        !matchFlavours(nearestModel, [ParagraphBlockModel, ListBlockModel])) &&
       (!siblingModel ||
         !siblingModel.text ||
-        !matchFlavours(siblingModel, ['affine:paragraph', 'affine:list']))
+        !matchFlavours(siblingModel, [ParagraphBlockModel, ListBlockModel]))
     ) {
       const [pId] = this.doc.addSiblingBlocks(
         nearestModel,

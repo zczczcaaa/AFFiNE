@@ -175,7 +175,7 @@ export class AIChatBlockPeekView extends LitElement {
     const edgelessService = this._rootService as EdgelessRootService;
     const bound = calcChildBound(this.parentModel, edgelessService);
     const aiChatBlockId = edgelessService.crud.addBlock(
-      'affine:embed-ai-chat' as keyof BlockSuite.BlockModels,
+      'affine:embed-ai-chat',
       {
         xywh: bound.serialize(),
         messages: JSON.stringify(messages),

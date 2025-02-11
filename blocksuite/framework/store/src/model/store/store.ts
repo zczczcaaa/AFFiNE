@@ -451,20 +451,6 @@ export class Store {
     }
   }
 
-  addBlock<Key extends BlockSuite.Flavour>(
-    flavour: Key,
-    blockProps?: BlockSuite.ModelProps<BlockSuite.BlockModels[Key]>,
-    parent?: BlockModel | string | null,
-    parentIndex?: number
-  ): string;
-
-  addBlock(
-    flavour: never,
-    blockProps?: Partial<BlockProps & Omit<BlockProps, 'flavour'>>,
-    parent?: BlockModel | string | null,
-    parentIndex?: number
-  ): string;
-
   addBlock(
     flavour: string,
     blockProps: Partial<BlockProps & Omit<BlockProps, 'flavour'>> = {},

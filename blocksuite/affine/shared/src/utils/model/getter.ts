@@ -1,4 +1,4 @@
-import { type NoteBlockModel, NoteDisplayMode } from '@blocksuite/affine-model';
+import { NoteBlockModel, NoteDisplayMode } from '@blocksuite/affine-model';
 import type { BlockComponent, EditorHost } from '@blocksuite/block-std';
 import type { BlockModel, Store } from '@blocksuite/store';
 
@@ -37,7 +37,7 @@ export async function asyncGetBlockComponent(
 
 export function findNoteBlockModel(model: BlockModel) {
   return findAncestorModel(model, m =>
-    matchFlavours(m, ['affine:note'])
+    matchFlavours(m, [NoteBlockModel])
   ) as NoteBlockModel | null;
 }
 
@@ -48,7 +48,7 @@ export function getLastNoteBlock(doc: Store) {
   for (let i = children.length - 1; i >= 0; i--) {
     const child = children[i];
     if (
-      matchFlavours(child, ['affine:note']) &&
+      matchFlavours(child, [NoteBlockModel]) &&
       child.displayMode !== NoteDisplayMode.EdgelessOnly
     ) {
       note = child as NoteBlockModel;

@@ -9,6 +9,7 @@ import {
   GroupElementModel,
   LayoutType,
   MindmapElementModel,
+  NoteBlockModel,
   NoteDisplayMode,
   type ShapeElementModel,
 } from '@blocksuite/affine-model';
@@ -134,7 +135,7 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
             selection.selectedElements.length === 1 &&
             selection.firstElement instanceof GfxBlockElementModel &&
             matchFlavours(selection.firstElement as GfxBlockElementModel, [
-              'affine:note',
+              NoteBlockModel,
             ])
           ) {
             rootComponent.slots.toggleNoteSlicer.emit();
@@ -259,7 +260,7 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
                   block =>
                     block.group === null &&
                     !(
-                      matchFlavours(block, ['affine:note']) &&
+                      matchFlavours(block, [NoteBlockModel]) &&
                       block.displayMode === NoteDisplayMode.DocOnly
                     )
                 )

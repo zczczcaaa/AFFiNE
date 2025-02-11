@@ -2,9 +2,17 @@ import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
 import {
   addNoteAtPoint,
   getSurfaceBlock,
+  SurfaceBlockModel,
 } from '@blocksuite/affine-block-surface';
 import { DropIndicator } from '@blocksuite/affine-components/drop-indicator';
-import type { EmbedCardStyle, NoteBlockModel } from '@blocksuite/affine-model';
+import {
+  AttachmentBlockModel,
+  BookmarkBlockModel,
+  DatabaseBlockModel,
+  type EmbedCardStyle,
+  ListBlockModel,
+  NoteBlockModel,
+} from '@blocksuite/affine-model';
 import {
   BLOCK_CHILDREN_CONTAINER_PADDING_LEFT,
   EMBED_CARD_HEIGHT,
@@ -153,17 +161,17 @@ export class DragEventWatcher {
       !snapshot ||
       snapshot.content.length === 0 ||
       !dragPayload?.from ||
-      matchFlavours(model, ['affine:database'])
+      matchFlavours(model, [DatabaseBlockModel])
     )
       return null;
 
-    const isDropOnNoteBlock = matchFlavours(model, ['affine:note']);
+    const isDropOnNoteBlock = matchFlavours(model, [NoteBlockModel]);
 
     const edge = dropPayload.edge;
     const scale = this.widget.scale.peek();
     let result: DropResult;
 
-    if (edge === 'right' && matchFlavours(dropBlock.model, ['affine:list'])) {
+    if (edge === 'right' && matchFlavours(dropBlock.model, [ListBlockModel])) {
       const domRect = getRectByBlockComponent(dropBlock);
       const placement = 'in';
       const rect = Rect.fromLWTH(
@@ -365,7 +373,7 @@ export class DragEventWatcher {
       result.placement === 'in' ? model : this.std.store.getParent(model);
 
     if (!parent) return;
-    if (matchFlavours(parent, ['affine:surface'])) {
+    if (matchFlavours(parent, [SurfaceBlockModel])) {
       return;
     }
 
@@ -375,7 +383,7 @@ export class DragEventWatcher {
         : parent.children.indexOf(model) +
           (result.placement === 'before' ? 0 : 1);
 
-    if (matchFlavours(parent, ['affine:note'])) {
+    if (matchFlavours(parent, [NoteBlockModel])) {
       const [first] = snapshot.content;
       if (first.flavour === 'affine:note') {
         if (parent.id !== first.id) {
@@ -677,7 +685,7 @@ export class DragEventWatcher {
       })
     );
 
-    if (matchFlavours(view.model, ['affine:attachment', 'affine:bookmark'])) {
+    if (matchFlavours(view.model, [AttachmentBlockModel, BookmarkBlockModel])) {
       cleanups.push(this._makeDraggable(view));
     }
 

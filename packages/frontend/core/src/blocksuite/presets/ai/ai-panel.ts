@@ -7,6 +7,7 @@ import {
   ImageBlockModel,
   isInsideEdgelessEditor,
   matchFlavours,
+  NoteBlockModel,
   NoteDisplayMode,
 } from '@blocksuite/affine/blocks';
 import { assertExists, Bound } from '@blocksuite/affine/global/utils';
@@ -115,7 +116,7 @@ function createNewNote(host: EditorHost): AIItemConfig {
 
             // set the viewport to show the new note block and original note block
             const newNote = doc.getBlock(noteBlockId)?.model;
-            if (!newNote || !matchFlavours(newNote, ['affine:note'])) return;
+            if (!newNote || !matchFlavours(newNote, [NoteBlockModel])) return;
             const newNoteBound = Bound.deserialize(newNote.xywh);
             const bounds = [bound, newNoteBound];
             service.gfx.fitToScreen({

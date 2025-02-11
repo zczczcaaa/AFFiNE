@@ -2,10 +2,7 @@ import {
   type AffineInlineEditor,
   getInlineEditorByModel,
 } from '@blocksuite/affine-components/rich-text';
-import {
-  getCurrentNativeRange,
-  matchFlavours,
-} from '@blocksuite/affine-shared/utils';
+import { getCurrentNativeRange } from '@blocksuite/affine-shared/utils';
 import type { UIEventStateContext } from '@blocksuite/block-std';
 import { TextSelection, WidgetComponent } from '@blocksuite/block-std';
 import {
@@ -155,7 +152,7 @@ export class AffineSlashMenuWidget extends WidgetComponent {
       const model = this.host.doc.getBlock(textSelection.blockId)?.model;
       if (!model) return;
 
-      if (matchFlavours(model, this.config.ignoreBlockTypes)) return;
+      if (this.config.ignoreBlockTypes.includes(model.flavour)) return;
 
       const inlineRange = inlineEditor.getInlineRange();
       if (!inlineRange) return;

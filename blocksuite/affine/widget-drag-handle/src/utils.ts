@@ -3,7 +3,11 @@ import {
   type EdgelessNoteBlockComponent,
 } from '@blocksuite/affine-block-note';
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
-import type { ParagraphBlockModel } from '@blocksuite/affine-model';
+import {
+  DatabaseBlockModel,
+  ListBlockModel,
+  type ParagraphBlockModel,
+} from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import {
   calcDropTarget,
@@ -216,7 +220,7 @@ export const getDropResult = (
 
   const model = closestBlock.model;
 
-  const isDatabase = matchFlavours(model, ['affine:database']);
+  const isDatabase = matchFlavours(model, [DatabaseBlockModel]);
   if (isDatabase) {
     return dropIndicator;
   }
@@ -232,7 +236,7 @@ export const getDropResult = (
 export function getDragHandleLeftPadding(blocks: BlockComponent[]) {
   const hasToggleList = blocks.some(
     block =>
-      (matchFlavours(block.model, ['affine:list']) &&
+      (matchFlavours(block.model, [ListBlockModel]) &&
         block.model.children.length > 0) ||
       (block instanceof ParagraphBlockComponent &&
         block.model.type.startsWith('h') &&

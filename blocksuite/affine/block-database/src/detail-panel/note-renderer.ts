@@ -1,6 +1,9 @@
-import type {
-  DatabaseBlockModel,
-  RootBlockModel,
+import {
+  CodeBlockModel,
+  type DatabaseBlockModel,
+  ListBlockModel,
+  ParagraphBlockModel,
+  type RootBlockModel,
 } from '@blocksuite/affine-model';
 import { REFERENCE_NODE } from '@blocksuite/affine-shared/consts';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
@@ -73,9 +76,9 @@ export class NoteRenderer
           .find(child => child.flavour === 'affine:note')
           ?.children.find(block =>
             matchFlavours(block, [
-              'affine:paragraph',
-              'affine:list',
-              'affine:code',
+              ParagraphBlockModel,
+              ListBlockModel,
+              CodeBlockModel,
             ])
           );
       }

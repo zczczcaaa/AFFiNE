@@ -1,11 +1,12 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
   BlocksUtils,
+  DatabaseBlockModel,
   DocModeProvider,
   embedSyncedDocMiddleware,
   getImageSelectionsCommand,
   getSelectedBlocksCommand,
-  type ImageBlockModel,
+  ImageBlockModel,
   isInsideEdgelessEditor,
   MarkdownAdapter,
   type NoteBlockModel,
@@ -163,7 +164,7 @@ export async function extractMarkdownFromDoc(
   const blockModels = getNoteBlockModels(doc);
   const textModels = blockModels.filter(
     model =>
-      !BlocksUtils.matchFlavours(model, ['affine:image', 'affine:database'])
+      !BlocksUtils.matchFlavours(model, [ImageBlockModel, DatabaseBlockModel])
   );
   const drafts = textModels.map(toDraftModel);
   const slice = Slice.fromModels(doc, drafts);

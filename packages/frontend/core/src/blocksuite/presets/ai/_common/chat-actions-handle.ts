@@ -17,6 +17,7 @@ import {
   getSelectedBlocksCommand,
   NoteDisplayMode,
   NotificationProvider,
+  ParagraphBlockModel,
   RefNodeSlotsProvider,
   TelemetryProvider,
 } from '@blocksuite/affine/blocks';
@@ -166,7 +167,7 @@ function addAIChatBlock(
   const y = viewportCenter.y - height / 2;
   const bound = new Bound(x, y, width, height);
   const aiChatBlockId = doc.addBlock(
-    'affine:embed-ai-chat' as keyof BlockSuite.BlockModels,
+    'affine:embed-ai-chat',
     {
       xywh: bound.serialize(),
       messages: JSON.stringify(messages),
@@ -231,7 +232,7 @@ const REPLACE_SELECTION = {
     if (currentTextSelection) {
       const { doc } = host;
       const block = doc.getBlock(currentTextSelection.blockId);
-      if (matchFlavours(block?.model ?? null, ['affine:paragraph'])) {
+      if (matchFlavours(block?.model ?? null, [ParagraphBlockModel])) {
         block?.model.text?.replace(
           currentTextSelection.from.index,
           currentTextSelection.from.length,

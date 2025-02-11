@@ -1,6 +1,11 @@
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { PropTypes, requiredProperties } from '@blocksuite/block-std';
-import { matchFlavours, NoteDisplayMode } from '@blocksuite/blocks';
+import {
+  matchFlavours,
+  NoteDisplayMode,
+  ParagraphBlockModel,
+  RootBlockModel,
+} from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 import { signal } from '@preact/signals-core';
@@ -129,11 +134,11 @@ export class MobileOutlineMenu extends SignalWatcher(
   renderItem = (item: BlockModel) => {
     let className = '';
     let text = '';
-    if (matchFlavours(item, ['affine:page'])) {
+    if (matchFlavours(item, [RootBlockModel])) {
       className = 'title';
       text = item.title$.value.toString();
     } else if (
-      matchFlavours(item, ['affine:paragraph']) &&
+      matchFlavours(item, [ParagraphBlockModel]) &&
       ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(item.type$.value)
     ) {
       className = item.type$.value;

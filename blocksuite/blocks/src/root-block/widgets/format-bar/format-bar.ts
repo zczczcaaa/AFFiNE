@@ -11,6 +11,12 @@ import {
   type MenuItemGroup,
 } from '@blocksuite/affine-components/toolbar';
 import {
+  CodeBlockModel,
+  ImageBlockModel,
+  ListBlockModel,
+  ParagraphBlockModel,
+} from '@blocksuite/affine-model';
+import {
   getSelectedBlocksCommand,
   getTextSelectionCommand,
 } from '@blocksuite/affine-shared/commands';
@@ -355,10 +361,10 @@ export class AffineFormatBarWidget extends WidgetComponent {
       const selectedBlock = this._selectedBlocks[0];
       if (
         !matchFlavours(selectedBlock.model, [
-          'affine:paragraph',
-          'affine:list',
-          'affine:code',
-          'affine:image',
+          ParagraphBlockModel,
+          ListBlockModel,
+          CodeBlockModel,
+          ImageBlockModel,
         ])
       ) {
         return false;

@@ -1,6 +1,9 @@
 import {
-  type NoteBlockModel,
+  CodeBlockModel,
+  ListBlockModel,
+  NoteBlockModel,
   NoteDisplayMode,
+  ParagraphBlockModel,
   type RootBlockModel,
 } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
@@ -69,7 +72,7 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
   private _getOrCreateFirstPageVisibleNote() {
     const note = this._rootModel.children.find(
       (child): child is NoteBlockModel =>
-        matchFlavours(child, ['affine:note']) &&
+        matchFlavours(child, [NoteBlockModel]) &&
         child.displayMode !== NoteDisplayMode.EdgelessOnly
     );
     if (note) return note;
@@ -102,7 +105,11 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
 
       const note = this._getOrCreateFirstPageVisibleNote();
       const firstText = note?.children.find(block =>
-        matchFlavours(block, ['affine:paragraph', 'affine:list', 'affine:code'])
+        matchFlavours(block, [
+          ParagraphBlockModel,
+          ListBlockModel,
+          CodeBlockModel,
+        ])
       );
       if (firstText) {
         if (this._std) focusTextModel(this._std, firstText.id);

@@ -1,3 +1,4 @@
+import { DatabaseBlockModel } from '@blocksuite/affine-model';
 import { BLOCK_ID_ATTR } from '@blocksuite/block-std';
 import type { Point } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
@@ -24,7 +25,7 @@ export function getDropRectByPoint(
     flag: DropFlags.Normal,
   };
 
-  const isDatabase = matchFlavours(model, ['affine:database']);
+  const isDatabase = matchFlavours(model, [DatabaseBlockModel]);
 
   if (isDatabase) {
     const table = getDatabaseBlockTableElement(element);

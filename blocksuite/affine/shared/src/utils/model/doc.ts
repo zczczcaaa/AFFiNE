@@ -16,7 +16,6 @@ export function createDefaultDoc(
     title,
   });
 
-  // @ts-expect-error FIXME: will be fixed when surface model migrated to affine-model
   doc.addBlock('affine:surface', {}, rootId);
   const noteId = doc.addBlock('affine:note', {}, rootId);
   doc.addBlock('affine:paragraph', {}, noteId);

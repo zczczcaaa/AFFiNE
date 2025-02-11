@@ -1,3 +1,4 @@
+import { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
 import { FileDropConfigExtension } from '@blocksuite/affine-components/drop-indicator';
 import { AttachmentBlockSchema } from '@blocksuite/affine-model';
 import {
@@ -23,7 +24,7 @@ export const AttachmentDropOption = FileDropConfigExtension({
 
     const maxFileSize = std.store.get(FileSizeLimitService).maxFileSize;
 
-    if (targetModel && !matchFlavours(targetModel, ['affine:surface'])) {
+    if (targetModel && !matchFlavours(targetModel, [SurfaceBlockModel])) {
       addSiblingAttachmentBlocks(
         std.host,
         attachmentFiles,

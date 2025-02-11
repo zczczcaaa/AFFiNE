@@ -51,18 +51,6 @@ export type PropsGetter<Props> = (
   internalPrimitives: InternalPrimitives
 ) => Props;
 
-export type SchemaToModel<
-  Schema extends {
-    model: {
-      props: PropsGetter<object>;
-      flavour: string;
-    };
-  },
-> = BlockModel<ReturnType<Schema['model']['props']>> &
-  ReturnType<Schema['model']['props']> & {
-    flavour: Schema['model']['flavour'];
-  };
-
 export function defineBlockSchema<
   Flavour extends string,
   Role extends RoleType,

@@ -1,4 +1,14 @@
-import { EMBED_BLOCK_FLAVOUR_LIST } from '@blocksuite/affine-shared/consts';
+import {
+  AttachmentBlockModel,
+  BookmarkBlockModel,
+  CodeBlockModel,
+  DatabaseBlockModel,
+  DividerBlockModel,
+  ImageBlockModel,
+  ListBlockModel,
+  ParagraphBlockModel,
+} from '@blocksuite/affine-model';
+import { EMBED_BLOCK_MODEL_LIST } from '@blocksuite/affine-shared/consts';
 import {
   getNextContentBlock,
   matchFlavours,
@@ -15,31 +25,32 @@ export function forwardDelete(std: BlockStdScope) {
   if (!text) return;
   const isCollapsed = text.isCollapsed();
   const model = store.getBlock(text.from.blockId)?.model;
-  if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
+  if (!model || !matchFlavours(model, [ParagraphBlockModel])) return;
   const isEnd = isCollapsed && text.from.index === model.text.length;
   if (!isEnd) return;
   const parent = store.getParent(model);
   if (!parent) return;
 
   const nextSibling = store.getNext(model);
-  const ignoreForwardDeleteFlavourList: BlockSuite.Flavour[] = [
-    'affine:attachment',
-    'affine:bookmark',
-    'affine:database',
-    'affine:code',
-    'affine:image',
-    'affine:divider',
-    ...EMBED_BLOCK_FLAVOUR_LIST,
-  ];
 
-  if (matchFlavours(nextSibling, ignoreForwardDeleteFlavourList)) {
+  if (
+    matchFlavours(nextSibling, [
+      AttachmentBlockModel,
+      BookmarkBlockModel,
+      DatabaseBlockModel,
+      CodeBlockModel,
+      ImageBlockModel,
+      DividerBlockModel,
+      ...EMBED_BLOCK_MODEL_LIST,
+    ] as const)
+  ) {
     std.selection.setGroup('note', [
       std.selection.create(BlockSelection, { blockId: nextSibling.id }),
     ]);
     return true;
   }
 
-  if (nextSibling?.text) {
+  if (matchFlavours(nextSibling, [ParagraphBlockModel, ListBlockModel])) {
     model.text.join(nextSibling.text);
     if (nextSibling.children) {
       const parent = store.getParent(nextSibling);

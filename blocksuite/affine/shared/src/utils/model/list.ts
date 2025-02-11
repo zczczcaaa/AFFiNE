@@ -1,4 +1,4 @@
-import type { ListBlockModel } from '@blocksuite/affine-model';
+import { ListBlockModel } from '@blocksuite/affine-model';
 import type { BlockStdScope } from '@blocksuite/block-std';
 import type { BlockModel, Store } from '@blocksuite/store';
 
@@ -23,7 +23,7 @@ export function getNextContinuousNumberedLists(
   const firstNotNumberedListIndex = parent.children.findIndex(
     (model, i) =>
       i > modelIndex &&
-      (!matchFlavours(model, ['affine:list']) || model.type !== 'numbered')
+      (!matchFlavours(model, [ListBlockModel]) || model.type !== 'numbered')
   );
   const newContinuousLists = parent.children.slice(
     modelIndex + 1,
@@ -32,7 +32,7 @@ export function getNextContinuousNumberedLists(
   if (
     !newContinuousLists.every(
       model =>
-        matchFlavours(model, ['affine:list']) && model.type === 'numbered'
+        matchFlavours(model, [ListBlockModel]) && model.type === 'numbered'
     )
   )
     return [];
@@ -56,7 +56,7 @@ export function toNumberedList(
   // if there is a numbered list before, the order continues from the previous list
   if (
     prevSibling &&
-    matchFlavours(prevSibling, ['affine:list']) &&
+    matchFlavours(prevSibling, [ListBlockModel]) &&
     prevSibling.type === 'numbered'
   ) {
     doc.transact(() => {

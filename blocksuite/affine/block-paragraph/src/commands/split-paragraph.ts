@@ -2,6 +2,7 @@ import {
   focusTextModel,
   getInlineEditorByModel,
 } from '@blocksuite/affine-components/rich-text';
+import { ParagraphBlockModel } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import { type Command, TextSelection } from '@blocksuite/block-std';
 
@@ -23,7 +24,7 @@ export const splitParagraphCommand: Command<
   if (!blockId) return;
 
   const model = store.getBlock(blockId)?.model;
-  if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
+  if (!model || !matchFlavours(model, [ParagraphBlockModel])) return;
 
   const inlineEditor = getInlineEditorByModel(host, model);
   const range = inlineEditor?.getInlineRange();

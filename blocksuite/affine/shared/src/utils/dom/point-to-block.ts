@@ -1,4 +1,6 @@
+import { NoteBlockModel, RootBlockModel } from '@blocksuite/affine-model';
 import { BLOCK_ID_ATTR, type BlockComponent } from '@blocksuite/block-std';
+import { SurfaceBlockModel } from '@blocksuite/block-std/gfx';
 import type { Point, Rect } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
@@ -35,10 +37,9 @@ function hasBlockId(element: Element): element is BlockComponent {
  */
 function isRootOrNoteOrSurface(element: BlockComponent) {
   return matchFlavours(element.model, [
-    'affine:page',
-    'affine:note',
-    // @ts-expect-error TODO: migrate surface model to @blocksuite/affine-model
-    'affine:surface',
+    RootBlockModel,
+    NoteBlockModel,
+    SurfaceBlockModel,
   ]);
 }
 

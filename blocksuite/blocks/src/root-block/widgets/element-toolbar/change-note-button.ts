@@ -24,7 +24,7 @@ import {
 import {
   type ColorScheme,
   DefaultTheme,
-  type NoteBlockModel,
+  NoteBlockModel,
   NoteDisplayMode,
   resolveColor,
   type StrokeStyle,
@@ -158,7 +158,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
       this._pageBlockEnabled &&
       this.notes.length === 1 &&
       this.notes[0].parent?.children.find(child =>
-        matchFlavours(child, ['affine:note'])
+        matchFlavours(child, [NoteBlockModel])
       ) === this.notes[0]
     );
   }
@@ -340,7 +340,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     const isFirstNote =
       onlyOne &&
       note.parent?.children.find(child =>
-        matchFlavours(child, ['affine:note'])
+        matchFlavours(child, [NoteBlockModel])
       ) === note;
     const theme = this.edgeless.std.get(ThemeProvider).theme;
     const buttons = [

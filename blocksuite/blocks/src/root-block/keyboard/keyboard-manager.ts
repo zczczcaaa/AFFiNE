@@ -5,6 +5,7 @@ import {
   promptDocTitle,
 } from '@blocksuite/affine-block-embed';
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
+import { NoteBlockModel, ParagraphBlockModel } from '@blocksuite/affine-model';
 import {
   draftSelectedModelsCommand,
   getSelectedModelsCommand,
@@ -37,7 +38,7 @@ export class PageKeyboardManager {
       const model = block.model;
 
       if (
-        matchFlavours(model, ['affine:paragraph']) &&
+        matchFlavours(model, [ParagraphBlockModel]) &&
         model.type.startsWith('h') &&
         model.collapsed
       ) {
@@ -133,7 +134,7 @@ export class PageKeyboardManager {
     const selectedModels = ctx.selectedModels?.filter(
       block =>
         !block.flavour.startsWith('affine:embed-') &&
-        matchFlavours(doc.getParent(block), ['affine:note'])
+        matchFlavours(doc.getParent(block), [NoteBlockModel])
     );
 
     const draftedModels = ctx.draftedModels;

@@ -7,7 +7,7 @@ import {
   normalizeWheelDeltaY,
 } from '@blocksuite/affine-block-surface';
 import {
-  type NoteBlockModel,
+  NoteBlockModel,
   NoteDisplayMode,
   type RootBlockModel,
   type ShapeElementModel,
@@ -350,7 +350,7 @@ export class EdgelessRootBlockComponent extends BlockComponent<
       const primaryMode = std.get(DocModeProvider).getPrimaryMode(this.doc.id);
       const note = this.model.children.find(
         (child): child is NoteBlockModel =>
-          matchFlavours(child, ['affine:note']) &&
+          matchFlavours(child, [NoteBlockModel]) &&
           child.displayMode !== NoteDisplayMode.EdgelessOnly
       );
 

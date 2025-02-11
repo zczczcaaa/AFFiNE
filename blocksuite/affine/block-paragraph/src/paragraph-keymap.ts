@@ -4,7 +4,10 @@ import {
   markdownInput,
   textKeymap,
 } from '@blocksuite/affine-components/rich-text';
-import { ParagraphBlockSchema } from '@blocksuite/affine-model';
+import {
+  ParagraphBlockModel,
+  ParagraphBlockSchema,
+} from '@blocksuite/affine-model';
 import {
   calculateCollapsedSiblings,
   matchFlavours,
@@ -37,7 +40,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
 
         const { store } = std;
         const model = store.getBlock(text.from.blockId)?.model;
-        if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
+        if (!model || !matchFlavours(model, [ParagraphBlockModel])) return;
 
         const event = ctx.get('keyboardState').raw;
         event.preventDefault();
@@ -68,7 +71,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
         const text = std.selection.find(TextSelection);
         if (!text) return;
         const model = store.getBlock(text.from.blockId)?.model;
-        if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
+        if (!model || !matchFlavours(model, [ParagraphBlockModel])) return;
         const inlineEditor = getInlineEditorByModel(
           std.host,
           text.from.blockId
@@ -95,7 +98,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
         const text = std.selection.find(TextSelection);
         if (!text) return;
         const model = store.getBlock(text.from.blockId)?.model;
-        if (!model || !matchFlavours(model, ['affine:paragraph'])) return;
+        if (!model || !matchFlavours(model, [ParagraphBlockModel])) return;
         const inlineEditor = getInlineEditorByModel(
           std.host,
           text.from.blockId

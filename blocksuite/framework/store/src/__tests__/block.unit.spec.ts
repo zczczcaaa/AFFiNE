@@ -4,9 +4,9 @@ import * as Y from 'yjs';
 
 import {
   Block,
+  BlockModel,
   defineBlockSchema,
   internalPrimitives,
-  type SchemaToModel,
 } from '../model/block/index.js';
 import type { YBlock } from '../model/block/types.js';
 import { Schema } from '../schema/index.js';
@@ -54,9 +54,15 @@ const flatTableSchema = defineBlockSchema({
     isFlatData: true,
   },
 });
-type RootModel = SchemaToModel<typeof pageSchema>;
-type TableModel = SchemaToModel<typeof tableSchema>;
-type FlatTableModel = SchemaToModel<typeof flatTableSchema>;
+class RootModel extends BlockModel<
+  ReturnType<(typeof pageSchema)['model']['props']>
+> {}
+class TableModel extends BlockModel<
+  ReturnType<(typeof tableSchema)['model']['props']>
+> {}
+class FlatTableModel extends BlockModel<
+  ReturnType<(typeof flatTableSchema)['model']['props']>
+> {}
 
 function createTestOptions() {
   const idGenerator = createAutoIncrementIdGenerator();

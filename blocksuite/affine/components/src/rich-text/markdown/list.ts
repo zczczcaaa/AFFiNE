@@ -1,4 +1,8 @@
-import type { ListProps, ListType } from '@blocksuite/affine-model';
+import {
+  type ListProps,
+  type ListType,
+  ParagraphBlockModel,
+} from '@blocksuite/affine-model';
 import { matchFlavours, toNumberedList } from '@blocksuite/affine-shared/utils';
 import type { BlockStdScope } from '@blocksuite/block-std';
 import type { BlockModel } from '@blocksuite/store';
@@ -13,7 +17,7 @@ export function toList(
   prefix: string,
   otherProperties?: Partial<ListProps>
 ) {
-  if (!matchFlavours(model, ['affine:paragraph'])) {
+  if (!matchFlavours(model, [ParagraphBlockModel])) {
     return;
   }
   const { store: doc } = std;

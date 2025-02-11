@@ -1,6 +1,12 @@
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
-import type { NoteBlockModel, RootBlockModel } from '@blocksuite/affine-model';
-import { NoteDisplayMode } from '@blocksuite/affine-model';
+import {
+  CodeBlockModel,
+  ListBlockModel,
+  NoteBlockModel,
+  NoteDisplayMode,
+  ParagraphBlockModel,
+  type RootBlockModel,
+} from '@blocksuite/affine-model';
 import { PageViewportService } from '@blocksuite/affine-shared/services';
 import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
@@ -122,7 +128,11 @@ export class PageRootBlockComponent extends BlockComponent<
   focusFirstParagraph = (): { id: string; created: boolean } => {
     const defaultNote = this._getDefaultNoteBlock();
     const firstText = defaultNote?.children.find(block =>
-      matchFlavours(block, ['affine:paragraph', 'affine:list', 'affine:code'])
+      matchFlavours(block, [
+        ParagraphBlockModel,
+        ListBlockModel,
+        CodeBlockModel,
+      ])
     );
     if (firstText) {
       focusTextModel(this.std, firstText.id);
@@ -238,9 +248,8 @@ export class PageRootBlockComponent extends BlockComponent<
       'Mod-a': () => {
         const blocks = this.model.children
           .filter(model => {
-            if (matchFlavours(model, ['affine:note'])) {
-              const note = model as NoteBlockModel;
-              if (note.displayMode === NoteDisplayMode.EdgelessOnly)
+            if (matchFlavours(model, [NoteBlockModel])) {
+              if (model.displayMode === NoteDisplayMode.EdgelessOnly)
                 return false;
 
               return true;
@@ -385,12 +394,11 @@ export class PageRootBlockComponent extends BlockComponent<
         .slice()
         .reverse()
         .find(child => {
-          const isNote = matchFlavours(child, ['affine:note']);
+          const isNote = matchFlavours(child, [NoteBlockModel]);
           if (!isNote) return false;
-          const note = child as NoteBlockModel;
           const displayOnDoc =
-            !!note.displayMode &&
-            note.displayMode !== NoteDisplayMode.EdgelessOnly;
+            !!child.displayMode &&
+            child.displayMode !== NoteDisplayMode.EdgelessOnly;
           return displayOnDoc;
         });
       if (!lastNote) {
@@ -402,7 +410,9 @@ export class PageRootBlockComponent extends BlockComponent<
         const last = lastNote.children.at(-1);
         if (
           !last ||
-          !(matchFlavours(last, ['affine:paragraph']) && last.text.length === 0)
+          !(
+            matchFlavours(last, [ParagraphBlockModel]) && last.text.length === 0
+          )
         ) {
           if (readonly) return;
           const paragraphId = this.doc.addBlock(
@@ -442,7 +452,7 @@ export class PageRootBlockComponent extends BlockComponent<
   override firstUpdated() {
     this._initViewportResizeEffect();
     const noteModels = this.model.children.filter(model =>
-      matchFlavours(model, ['affine:note'])
+      matchFlavours(model, [NoteBlockModel])
     );
     noteModels.forEach(note => {
       this.disposables.add(
@@ -463,7 +473,7 @@ export class PageRootBlockComponent extends BlockComponent<
     )}`;
 
     const children = this.renderChildren(this.model, child => {
-      const isNote = matchFlavours(child, ['affine:note']);
+      const isNote = matchFlavours(child, [NoteBlockModel]);
       const note = child as NoteBlockModel;
       const displayOnEdgeless =
         !!note.displayMode && note.displayMode === NoteDisplayMode.EdgelessOnly;

@@ -4,6 +4,11 @@ import {
   onModelTextUpdated,
 } from '@blocksuite/affine-components/rich-text';
 import {
+  CodeBlockModel,
+  ListBlockModel,
+  ParagraphBlockModel,
+} from '@blocksuite/affine-model';
+import {
   getBlockSelectionsCommand,
   getSelectedBlocksCommand,
   getTextSelectionCommand,
@@ -196,9 +201,9 @@ export const updateBlockType: Command<
         blockModels.forEach(model => {
           if (
             !matchFlavours(model, [
-              'affine:paragraph',
-              'affine:list',
-              'affine:code',
+              ParagraphBlockModel,
+              ListBlockModel,
+              CodeBlockModel,
             ])
           ) {
             return;

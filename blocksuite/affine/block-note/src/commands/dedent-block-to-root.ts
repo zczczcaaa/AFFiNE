@@ -1,3 +1,4 @@
+import { NoteBlockModel } from '@blocksuite/affine-model';
 import { matchFlavours } from '@blocksuite/affine-shared/utils';
 import type { Command } from '@blocksuite/block-std';
 
@@ -20,7 +21,7 @@ export const dedentBlockToRoot: Command<{
 
   let parent = store.getParent(model);
   let changed = false;
-  while (parent && !matchFlavours(parent, ['affine:note'])) {
+  while (parent && !matchFlavours(parent, [NoteBlockModel])) {
     if (!changed) {
       if (stopCapture) store.captureSync();
       changed = true;

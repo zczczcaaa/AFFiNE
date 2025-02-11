@@ -11,6 +11,7 @@ import {
   BookmarkStyles,
   DEFAULT_NOTE_HEIGHT,
   DEFAULT_NOTE_WIDTH,
+  FrameBlockModel,
   MAX_IMAGE_WIDTH,
   ReferenceInfoSchema,
 } from '@blocksuite/affine-model';
@@ -994,7 +995,7 @@ export class EdgelessClipboardController extends PageClipboard {
     for (const nodeElement of nodeElements) {
       await _drawTopLevelBlock(nodeElement);
 
-      if (matchFlavours(nodeElement, ['affine:frame'])) {
+      if (matchFlavours(nodeElement, [FrameBlockModel])) {
         const blocksInsideFrame: BlockSuite.EdgelessBlockModelType[] = [];
         this.edgeless.service.frame
           .getElementsInFrameBound(nodeElement, false)

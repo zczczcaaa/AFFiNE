@@ -84,7 +84,7 @@ import {
 
 export type SlashMenuConfig = {
   triggerKeys: string[];
-  ignoreBlockTypes: BlockSuite.Flavour[];
+  ignoreBlockTypes: string[];
   items: SlashMenuItem[];
   maxHeight: number;
   tooltipTimeout: number;

@@ -20,9 +20,7 @@ type SignaledProps<Props> = Props & {
  * myBlock.foo = 'bar';
  * ```
  */
-function MagicProps(): {
-  new <Props>(): Props;
-} {
+function MagicProps(): { new <Props>(): Props } {
   return class {} as never;
 }
 

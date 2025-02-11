@@ -11,7 +11,7 @@ import { track } from '@affine/track';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import {
   matchFlavours,
-  type NoteBlockModel,
+  NoteBlockModel,
   NoteDisplayMode,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
@@ -176,7 +176,7 @@ export const EdgelessNoteHeader = ({ note }: { note: NoteBlockModel }) => {
   const isFirstVisibleNote =
     note.parent?.children.find(
       child =>
-        matchFlavours(child, ['affine:note']) &&
+        matchFlavours(child, [NoteBlockModel]) &&
         child.displayMode === NoteDisplayMode.DocAndEdgeless
     ) === note;
 

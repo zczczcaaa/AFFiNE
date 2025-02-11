@@ -1,6 +1,8 @@
 import {
+  CodeBlockModel,
   type DocMode,
   DocModes,
+  ImageBlockModel,
   type ParagraphBlockModel,
   type ReferenceInfo,
 } from '@blocksuite/affine-model';
@@ -291,7 +293,7 @@ class PasteTr {
           return;
         }
         if (!cursorModel.text) {
-          if (matchFlavours(cursorModel, ['affine:image'])) {
+          if (matchFlavours(cursorModel, [ImageBlockModel])) {
             const selection = this.std.selection.create(ImageSelection, {
               blockId: target.blockId,
             });
@@ -356,7 +358,7 @@ class PasteTr {
     if (
       this.firstSnapshot !== this.lastSnapshot &&
       this.lastSnapshot.props.text &&
-      !matchFlavours(this.pointState.model, ['affine:code'])
+      !matchFlavours(this.pointState.model, [CodeBlockModel])
     ) {
       const text = fromJSON(this.lastSnapshot.props.text) as Text;
       const doc = new Y.Doc();

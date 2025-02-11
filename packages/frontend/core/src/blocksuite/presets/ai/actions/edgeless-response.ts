@@ -527,7 +527,7 @@ async function responseToCreateSlides(host: EditorHost, ctx: AIContext) {
       await job.insertTemplate(content);
     }
 
-    getSurfaceElementFromEditor(host).refresh();
+    getSurfaceElementFromEditor(host)?.refresh();
   } catch (error) {
     console.error('Error creating slides:', error);
   }
