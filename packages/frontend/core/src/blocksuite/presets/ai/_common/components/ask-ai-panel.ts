@@ -1,15 +1,13 @@
 import { type EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AIItemGroupConfig,
-  EdgelessRootService,
+  DocModeProvider,
   scrollbarStyle,
 } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-
-import { getRootService } from '../../utils/selection-utils';
 
 export class AskAIPanel extends WithDisposable(LitElement) {
   static override styles = css`
@@ -50,12 +48,8 @@ export class AskAIPanel extends WithDisposable(LitElement) {
   @property({ attribute: false })
   accessor minWidth = 330;
 
-  get _edgeless() {
-    const rootService = getRootService(this.host);
-    if (rootService instanceof EdgelessRootService) {
-      return rootService;
-    }
-    return null;
+  get _isEdgelessMode() {
+    return this.host.std.get(DocModeProvider).getEditorMode() === 'edgeless';
   }
 
   get _actionGroups() {
@@ -66,7 +60,7 @@ export class AskAIPanel extends WithDisposable(LitElement) {
           item.showWhen
             ? item.showWhen(
                 this.host.command.chain(),
-                this._edgeless ? 'edgeless' : 'page',
+                this._isEdgelessMode ? 'edgeless' : 'page',
                 this.host
               )
             : true

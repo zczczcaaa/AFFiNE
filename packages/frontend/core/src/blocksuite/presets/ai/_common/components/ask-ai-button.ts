@@ -4,7 +4,6 @@ import { type EditorHost } from '@blocksuite/affine/block-std';
 import {
   type AIItemGroupConfig,
   createLitPortal,
-  EdgelessRootService,
   HoverController,
 } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
@@ -14,7 +13,6 @@ import { property, query } from 'lit/decorators.js';
 import { ref } from 'lit/directives/ref.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { getRootService } from '../../utils/selection-utils';
 import type { ButtonSize } from './ask-ai-icon';
 
 type toggleType = 'hover' | 'click';
@@ -27,14 +25,6 @@ export type AskAIButtonOptions = {
 };
 
 export class AskAIButton extends WithDisposable(LitElement) {
-  get _edgeless() {
-    const rootService = getRootService(this.host);
-    if (rootService instanceof EdgelessRootService) {
-      return rootService;
-    }
-    return null;
-  }
-
   static override styles = css`
     .ask-ai-button {
       border-radius: 4px;

@@ -13,7 +13,10 @@ import { query } from 'lit/decorators.js';
 
 import { ConnectorElementModel } from './element-model/index.js';
 import { CanvasRenderer } from './renderer/canvas-renderer.js';
-import type { ElementRenderer } from './renderer/elements/index.js';
+import {
+  type ElementRenderer,
+  elementRenderers,
+} from './renderer/elements/index.js';
 import { OverlayIdentifier } from './renderer/overlay.js';
 import type { SurfaceBlockModel } from './surface-model.js';
 import type { SurfaceBlockService } from './surface-service.js';
@@ -126,10 +129,6 @@ export class SurfaceBlockComponent extends BlockComponent<
     this._renderer?.refresh();
   };
 
-  private get _edgelessService() {
-    return this.std.getService('affine:page') as unknown as SurfaceContext;
-  }
-
   private get _gfx() {
     return this.std.get(GfxControllerIdentifier);
   }
@@ -179,12 +178,12 @@ export class SurfaceBlockComponent extends BlockComponent<
             property,
             themeService.edgelessTheme
           ),
-        selectedElements: () => this._edgelessService.selection.selectedIds,
+        selectedElements: () => gfx.selection.selectedIds,
       },
       onStackingCanvasCreated(canvas) {
         canvas.className = 'indexable-canvas';
       },
-      elementRenderers: this._edgelessService.elementRenderers,
+      elementRenderers,
       surfaceModel: this.model,
     });
 
@@ -205,7 +204,7 @@ export class SurfaceBlockComponent extends BlockComponent<
       })
     );
     this._disposables.add(
-      this._edgelessService.selection.slots.updated.on(() => {
+      gfx.selection.slots.updated.on(() => {
         this._renderer.refresh();
       })
     );

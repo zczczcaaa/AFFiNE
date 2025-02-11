@@ -1,4 +1,5 @@
 import type { CodeBlockConfig } from '@blocksuite/affine-block-code';
+import { ParagraphBlockService } from '@blocksuite/affine-block-paragraph';
 import {
   type ReferenceNodeConfig,
   ReferenceNodeConfigIdentifier,
@@ -100,7 +101,7 @@ export class MobileSpecsPatches extends LifeCycleWatcher {
   override mounted() {
     // remove slash placeholder for mobile: `type / ...`
     {
-      const paragraphService = this.std.getService('affine:paragraph');
+      const paragraphService = this.std.get(ParagraphBlockService);
       if (!paragraphService) return;
 
       paragraphService.placeholderGenerator = model => {

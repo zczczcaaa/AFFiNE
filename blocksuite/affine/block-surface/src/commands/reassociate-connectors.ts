@@ -1,5 +1,7 @@
 import type { Command } from '@blocksuite/block-std';
 
+import { SurfaceBlockService } from '../surface-service';
+
 /**
  * Re-associate bindings for block that have been converted.
  *
@@ -11,7 +13,7 @@ export const reassociateConnectorsCommand: Command<{
   newId: string;
 }> = (ctx, next) => {
   const { oldId, newId } = ctx;
-  const service = ctx.std.getService('affine:surface');
+  const service = ctx.std.get(SurfaceBlockService);
   if (!oldId || !newId || !service) {
     next();
     return;

@@ -74,10 +74,6 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
     }
   `;
 
-  private get _rootService() {
-    return this.host.std.getService('affine:page');
-  }
-
   private get _selectionValue() {
     return this.host.selection.value;
   }
@@ -130,7 +126,6 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
   }
 
   private readonly _notifySuccess = (title: string) => {
-    if (!this._rootService) return;
     const notificationService = this.host.std.getOptional(NotificationProvider);
     notificationService?.notify({
       title: title,

@@ -4,7 +4,8 @@ import {
   CanvasElementType,
   ConnectorMode,
   DocModeProvider,
-  type EdgelessRootService,
+  EdgelessCRUDIdentifier,
+  getSurfaceBlock,
   NotificationProvider,
   TelemetryProvider,
 } from '@blocksuite/affine/blocks';
@@ -32,10 +33,6 @@ import { calcChildBound } from './utils';
 
 export class AIChatBlockPeekView extends LitElement {
   static override styles = PeekViewStyles;
-
-  private get _rootService() {
-    return this.host.std.getService('affine:page');
-  }
 
   private get _modeService() {
     return this.host.std.get(DocModeProvider);
@@ -172,9 +169,10 @@ export class AIChatBlockPeekView extends LitElement {
       return;
     }
 
-    const edgelessService = this._rootService as EdgelessRootService;
-    const bound = calcChildBound(this.parentModel, edgelessService);
-    const aiChatBlockId = edgelessService.crud.addBlock(
+    const bound = calcChildBound(this.parentModel, this.host.std);
+
+    const crud = this.host.std.get(EdgelessCRUDIdentifier);
+    const aiChatBlockId = crud.addBlock(
       'affine:embed-ai-chat',
       {
         xywh: bound.serialize(),
@@ -193,7 +191,7 @@ export class AIChatBlockPeekView extends LitElement {
     this.updateContext({ currentChatBlockId: aiChatBlockId });
 
     // Connect the parent chat block to the AI chat block
-    edgelessService.crud.addElement(CanvasElementType.CONNECTOR, {
+    crud.addElement(CanvasElementType.CONNECTOR, {
       mode: ConnectorMode.Curve,
       controllers: [],
       source: { id: this.parentChatBlockId },
@@ -249,7 +247,6 @@ export class AIChatBlockPeekView extends LitElement {
    * Clean current chat messages and delete the newly created AI chat block
    */
   cleanCurrentChatHistories = async () => {
-    if (!this._rootService) return;
     const notificationService = this.host.std.getOptional(NotificationProvider);
     if (!notificationService) return;
 
@@ -275,18 +272,17 @@ export class AIChatBlockPeekView extends LitElement {
       }
 
       if (currentChatBlockId) {
-        const edgelessService = this._rootService as EdgelessRootService;
+        const surface = getSurfaceBlock(doc);
+        const crud = this.host.std.get(EdgelessCRUDIdentifier);
         const chatBlock = doc.getBlock(currentChatBlockId)?.model;
         if (chatBlock) {
-          const connectors = edgelessService.getConnectors(
-            chatBlock as AIChatBlockModel
-          );
+          const connectors = surface?.getConnectors(chatBlock.id);
           doc.transact(() => {
             // Delete the AI chat block
-            edgelessService.removeElement(currentChatBlockId);
+            crud.removeElement(currentChatBlockId);
             // Delete the connectors
-            connectors.forEach(connector => {
-              edgelessService.removeElement(connector.id);
+            connectors?.forEach(connector => {
+              crud.removeElement(connector.id);
             });
           });
         }

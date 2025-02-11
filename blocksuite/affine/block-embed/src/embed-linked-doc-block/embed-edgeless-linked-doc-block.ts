@@ -36,12 +36,6 @@ export class EmbedEdgelessLinkedDocBlockComponent extends toEdgelessEmbedBlock(
     bound.w = EMBED_CARD_WIDTH[style];
     bound.h = EMBED_CARD_HEIGHT[style];
 
-    const edgelessService = this.rootService;
-
-    if (!edgelessService) {
-      return;
-    }
-
     const { addBlock } = this.std.get(EdgelessCRUDIdentifier);
     const surface = this.gfx.surface ?? undefined;
     const newId = addBlock(
@@ -66,10 +60,6 @@ export class EmbedEdgelessLinkedDocBlockComponent extends toEdgelessEmbedBlock(
 
     doc.deleteBlock(this.model);
   };
-
-  get rootService() {
-    return this.std.getService('affine:page');
-  }
 
   protected override _handleClick(evt: MouseEvent): void {
     if (isNewTabTrigger(evt)) {

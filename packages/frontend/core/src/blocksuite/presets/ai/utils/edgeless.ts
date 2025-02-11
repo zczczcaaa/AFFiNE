@@ -3,7 +3,6 @@ import type { GfxModel } from '@blocksuite/affine/block-std/gfx';
 import {
   AFFINE_EDGELESS_COPILOT_WIDGET,
   type EdgelessCopilotWidget,
-  type EdgelessRootService,
   matchModels,
   MindmapElementModel,
   NoteBlockModel,
@@ -41,14 +40,6 @@ export function isMindMapRoot(ele: GfxModel) {
 
 export function isMindmapChild(ele: GfxModel) {
   return ele?.group instanceof MindmapElementModel && !isMindMapRoot(ele);
-}
-
-export function getService(host: EditorHost) {
-  const edgelessService = host.std.getService(
-    'affine:page'
-  ) as EdgelessRootService;
-
-  return edgelessService;
 }
 
 export function getEdgelessCopilotWidget(

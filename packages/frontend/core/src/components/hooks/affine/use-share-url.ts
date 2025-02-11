@@ -5,10 +5,12 @@ import { copyTextToClipboard } from '@affine/core/utils/clipboard';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { type EditorHost } from '@blocksuite/affine/block-std';
-import { GfxBlockElementModel } from '@blocksuite/affine/block-std/gfx';
+import {
+  GfxBlockElementModel,
+  GfxControllerIdentifier,
+} from '@blocksuite/affine/block-std/gfx';
 import {
   type DocMode,
-  type EdgelessRootService,
   getBlockSelectionsCommand,
   getImageSelectionsCommand,
   getSelectedModelsCommand,
@@ -87,10 +89,9 @@ export const getSelectedNodes = (
   }
 
   if (mode === 'edgeless') {
-    const service = std.getService<EdgelessRootService>('affine:page');
-    if (!service) return result;
+    const { selection } = std.get(GfxControllerIdentifier);
 
-    for (const element of service.selection.selectedElements) {
+    for (const element of selection.selectedElements) {
       if (element instanceof GfxBlockElementModel) {
         blockIds.push(element.id);
       } else {

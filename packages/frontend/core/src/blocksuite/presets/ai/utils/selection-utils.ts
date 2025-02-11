@@ -1,10 +1,12 @@
 import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
-import type { GfxModel } from '@blocksuite/affine/block-std/gfx';
+import {
+  GfxControllerIdentifier,
+  type GfxModel,
+} from '@blocksuite/affine/block-std/gfx';
 import {
   BlocksUtils,
   type CopilotTool,
   DatabaseBlockModel,
-  EdgelessRootService,
   type FrameBlockModel,
   getBlockSelectionsCommand,
   getImageSelectionsCommand,
@@ -22,11 +24,7 @@ import {
 } from '@blocksuite/affine/store';
 
 import { getContentFromSlice } from '../../_common';
-import { getEdgelessCopilotWidget, getService } from './edgeless';
-
-export const getRootService = (host: EditorHost) => {
-  return host.std.getService('affine:page');
-};
+import { getEdgelessCopilotWidget } from './edgeless';
 
 export function getEdgelessRootFromEditor(editor: EditorHost) {
   const edgelessRoot = editor.getElementsByTagName('affine-edgeless-root')[0];
@@ -35,14 +33,6 @@ export function getEdgelessRootFromEditor(editor: EditorHost) {
     throw new Error('Please open switch to edgeless mode');
   }
   return edgelessRoot;
-}
-export function getEdgelessService(editor: EditorHost) {
-  const rootService = editor.std.getService('affine:page');
-  if (rootService instanceof EdgelessRootService) {
-    return rootService;
-  }
-  alert('Please switch to edgeless mode');
-  throw new Error('Please open switch to edgeless mode');
 }
 
 export async function selectedToCanvas(host: EditorHost) {
@@ -287,15 +277,15 @@ export const getSelectedNoteAnchor = (host: EditorHost, id: string) => {
 };
 
 export function getCopilotSelectedElems(host: EditorHost): GfxModel[] {
-  const service = getService(host);
+  const gfx = host.std.get(GfxControllerIdentifier);
   const copilotWidget = getEdgelessCopilotWidget(host);
 
   if (copilotWidget.visible) {
-    const currentTool = service.gfx.tool.currentTool$.peek() as CopilotTool;
+    const currentTool = gfx.tool.currentTool$.peek() as CopilotTool;
     return currentTool?.selectedElements ?? [];
   }
 
-  return service.selection.selectedElements;
+  return gfx.selection.selectedElements;
 }
 
 export const imageCustomInput = async (host: EditorHost) => {

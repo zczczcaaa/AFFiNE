@@ -123,15 +123,10 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
   override convertToCard = (aliasInfo?: AliasInfo) => {
     const { id, doc, caption, xywh } = this.model;
 
-    const edgelessService = this.rootService;
     const style = 'vertical';
     const bound = Bound.deserialize(xywh);
     bound.w = EMBED_CARD_WIDTH[style];
     bound.h = EMBED_CARD_HEIGHT[style];
-
-    if (!edgelessService) {
-      return;
-    }
 
     const { addBlock } = this.std.get(EdgelessCRUDIdentifier);
     const surface = this.gfx.surface ?? undefined;
@@ -158,10 +153,6 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
     });
     doc.deleteBlock(this.model);
   };
-
-  get rootService() {
-    return this.std.getService('affine:page');
-  }
 
   override renderGfxBlock() {
     const { style, xywh } = this.model;

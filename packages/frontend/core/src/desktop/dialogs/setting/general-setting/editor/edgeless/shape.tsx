@@ -9,13 +9,10 @@ import { SettingRow } from '@affine/component/setting-components';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { useI18n } from '@affine/i18n';
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import type {
-  EdgelessRootService,
-  ShapeElementModel,
-  ShapeName,
-} from '@blocksuite/affine/blocks';
+import type { ShapeElementModel, ShapeName } from '@blocksuite/affine/blocks';
 import {
   DefaultTheme,
+  EdgelessCRUDIdentifier,
   FontFamily,
   FontFamilyMap,
   FontStyle,
@@ -354,18 +351,16 @@ export const ShapeSettings = () => {
 
   const firstUpdate = useCallback(
     (doc: Store, editorHost: EditorHost) => {
-      const edgelessService = editorHost.std.getService(
-        'affine:page'
-      ) as EdgelessRootService;
       const surface = getSurfaceBlock(doc);
       if (!surface) return;
+      const crud = editorHost.std.get(EdgelessCRUDIdentifier);
       doc.readonly = false;
       surface.getElementsByType('shape').forEach(node => {
         const shape = node as ShapeElementModel;
         const { shapeType, radius } = shape;
         const shapeName = getShapeName(shapeType, radius);
         const props = editorSetting.get(`shape:${shapeName}`);
-        edgelessService.crud.updateElement(shape.id, props);
+        crud.updateElement(shape.id, props);
       });
       doc.readonly = true;
     },

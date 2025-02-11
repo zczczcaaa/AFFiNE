@@ -1016,7 +1016,7 @@ export async function deleteAllConnectors(page: Page) {
     const container = document.querySelector('affine-edgeless-root');
     if (!container) throw new Error('container not found');
     container.service.crud.getElementsByType('connector').forEach(c => {
-      container.service.removeElement(c.id);
+      container.service.crud.removeElement(c.id);
     });
   });
 }

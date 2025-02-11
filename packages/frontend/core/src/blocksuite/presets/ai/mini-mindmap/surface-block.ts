@@ -16,7 +16,7 @@ import type { Bound } from '@blocksuite/affine/global/utils';
 import { html } from 'lit';
 import { query } from 'lit/decorators.js';
 
-import type { MindmapService } from './mindmap-service.js';
+import { MindmapService } from './mindmap-service.js';
 
 export class MindmapSurfaceBlock extends BlockComponent<SurfaceBlockModel> {
   renderer?: CanvasRenderer;
@@ -30,7 +30,7 @@ export class MindmapSurfaceBlock extends BlockComponent<SurfaceBlockModel> {
   }
 
   get mindmapService() {
-    return this.std.getService('affine:page') as unknown as MindmapService;
+    return this.std.get(MindmapService);
   }
 
   get viewport() {

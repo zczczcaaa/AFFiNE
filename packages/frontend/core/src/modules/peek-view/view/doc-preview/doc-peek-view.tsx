@@ -10,10 +10,8 @@ import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-
 import { PageNotFound } from '@affine/core/desktop/pages/404';
 import { EditorService } from '@affine/core/modules/editor';
 import { DebugLogger } from '@affine/debug';
-import {
-  type EdgelessRootService,
-  RefNodeSlotsProvider,
-} from '@blocksuite/affine/blocks';
+import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
+import { RefNodeSlotsProvider } from '@blocksuite/affine/blocks';
 import {
   Bound,
   type Disposable,
@@ -46,25 +44,22 @@ function fitViewport(
       throw new Error('editor host is not ready');
     }
 
-    const rootService =
-      editor.host.std.getService<EdgelessRootService>('affine:page');
-    if (!rootService) {
-      return;
-    }
-    rootService.viewport.onResize();
+    const gfx = editor.host.std.get(GfxControllerIdentifier);
+    const viewport = gfx.viewport;
+    viewport.onResize();
 
     if (xywh) {
-      const viewport = {
+      const newViewport = {
         xywh: xywh,
         padding: [60, 20, 20, 20] as [number, number, number, number],
       };
-      rootService.viewport.setViewportByBound(
-        Bound.deserialize(viewport.xywh),
-        viewport.padding,
+      viewport.setViewportByBound(
+        Bound.deserialize(newViewport.xywh),
+        newViewport.padding,
         false
       );
     } else {
-      rootService.gfx.fitToScreen({
+      gfx.fitToScreen({
         smooth: false,
       });
     }

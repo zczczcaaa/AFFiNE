@@ -123,10 +123,6 @@ abstract class BaseTextCell extends BaseCellRenderer<Text> {
     return this.host?.std.get(DefaultInlineManagerExtension.identifier);
   }
 
-  get service() {
-    return this.host?.std.getService('affine:database');
-  }
-
   get topContenteditableElement() {
     const databaseBlock =
       this.closest<DatabaseBlockComponent>('affine-database');

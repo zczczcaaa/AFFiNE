@@ -351,10 +351,6 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       .title(pageId, { params, referenced: true });
   });
 
-  private get _rootService() {
-    return this.std.getService('affine:page');
-  }
-
   get blockState() {
     return {
       isLoading: this._loading,
@@ -504,8 +500,8 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       })
     );
 
-    if (this._rootService && !this.linkedMode) {
-      const docMode = this._rootService.std.get(DocModeProvider);
+    if (!this.linkedMode) {
+      const docMode = this.std.get(DocModeProvider);
       this.syncedDocMode = docMode.getPrimaryMode(this.model.pageId);
       this._isEmptySyncedDoc = isEmptyDoc(this.syncedDoc, this.editorMode);
       this.disposables.add(

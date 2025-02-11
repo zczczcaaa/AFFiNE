@@ -1,5 +1,6 @@
 import type { AIError } from '@blocksuite/affine-components/ai-item';
 import {
+  DocModeProvider,
   NotificationProvider,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
@@ -8,6 +9,7 @@ import {
   stopPropagation,
 } from '@blocksuite/affine-shared/utils';
 import { WidgetComponent } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { assertExists } from '@blocksuite/global/utils';
 import type { BaseSelection } from '@blocksuite/store';
 import {
@@ -24,8 +26,6 @@ import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 
-import type { EdgelessRootService } from '../../edgeless/edgeless-root-service.js';
-import { PageRootService } from '../../page/page-root-service.js';
 import { AFFINE_FORMAT_BAR_WIDGET } from '../format-bar/format-bar.js';
 import {
   AFFINE_VIEWPORT_OVERLAY_WIDGET,
@@ -363,12 +363,13 @@ export class AffineAIPanelWidget extends WidgetComponent {
   ): Partial<ComputePositionConfig> {
     let rootBoundary: Rect | undefined;
     {
-      const rootService = this.host.std.getService('affine:page');
-      if (rootService instanceof PageRootService) {
+      const docModeProvider = this.host.std.get(DocModeProvider);
+      if (docModeProvider.getEditorMode() === 'page') {
         rootBoundary = undefined;
       } else {
+        const gfx = this.host.std.get(GfxControllerIdentifier);
         // TODO circular dependency: instanceof EdgelessRootService
-        const viewport = (rootService as EdgelessRootService).viewport;
+        const viewport = gfx.viewport;
         rootBoundary = {
           x: viewport.left,
           y: viewport.top,

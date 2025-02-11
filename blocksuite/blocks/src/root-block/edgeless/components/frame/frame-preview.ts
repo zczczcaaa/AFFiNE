@@ -5,6 +5,7 @@ import {
   type EditorHost,
   ShadowlessElement,
 } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import {
   Bound,
   debounce,
@@ -19,7 +20,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 
 import { SpecProvider } from '../../../../_specs/index.js';
 import type { EdgelessRootPreviewBlockComponent } from '../../edgeless-root-preview-block.js';
-import type { EdgelessRootService } from '../../edgeless-root-service.js';
 
 const DEFAULT_PREVIEW_CONTAINER_WIDTH = 280;
 const DEFAULT_PREVIEW_CONTAINER_HEIGHT = 166;
@@ -144,12 +144,9 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
 
     if (!previewEditorHost) return;
 
-    const edgelessService = previewEditorHost.std.getService(
-      'affine:page'
-    ) as EdgelessRootService;
-
+    const { viewport } = previewEditorHost.std.get(GfxControllerIdentifier);
     const frameBound = Bound.deserialize(this.frame.xywh);
-    edgelessService.viewport.setViewportByBound(frameBound);
+    viewport.setViewportByBound(frameBound);
   }
 
   private _renderSurfaceContent() {

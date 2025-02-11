@@ -9,14 +9,12 @@ import { I18n } from '@affine/i18n';
 import type { BlockStdScope } from '@blocksuite/affine/block-std';
 import {
   type GfxBlockElementModel,
+  GfxControllerIdentifier,
   type GfxModel,
   GfxPrimitiveElementModel,
   isGfxGroupCompatibleModel,
 } from '@blocksuite/affine/block-std/gfx';
-import type {
-  EdgelessRootService,
-  MenuContext,
-} from '@blocksuite/affine/blocks';
+import type { MenuContext } from '@blocksuite/affine/blocks';
 import { Bound, getCommonBound } from '@blocksuite/affine/global/utils';
 import { CopyAsImgaeIcon } from '@blocksuite/icons/lit';
 import type { FrameworkProvider } from '@toeverything/infra';
@@ -135,11 +133,9 @@ export function createCopyAsPngMenuItem(framework: FrameworkProvider) {
         return;
       }
 
-      const service =
-        ctx.host.std.getService<EdgelessRootService>('affine:page');
-      if (!service) return;
+      const gfx = ctx.host.std.get(GfxControllerIdentifier);
 
-      let selected = service.selection.selectedElements;
+      let selected = gfx.selection.selectedElements;
       // select mindmap if root node selected
       const maybeMindmap = selected[0];
       const mindmapId = maybeMindmap.group?.id;
@@ -148,31 +144,31 @@ export function createCopyAsPngMenuItem(framework: FrameworkProvider) {
         mindmapId &&
         (isMindMapRoot(maybeMindmap) || isMindmapChild(maybeMindmap))
       ) {
-        service.gfx.selection.set({ elements: [mindmapId] });
+        gfx.selection.set({ elements: [mindmapId] });
       }
 
       // select bound
-      selected = service.selection.selectedElements;
+      selected = gfx.selection.selectedElements;
       const elements = withDescendantElements(selected);
       const bounds = elements.map(element => Bound.deserialize(element.xywh));
       const bound = getCommonBound(bounds);
       if (!bound) return;
-      const { zoom } = service.viewport;
+      const { zoom } = gfx.viewport;
       const exBound = expandBound(bound, MARGIN * zoom);
 
       // fit to screen
       if (
-        !isInside(service.viewport.viewportBounds, exBound) ||
-        service.viewport.zoom < 1
+        !isInside(gfx.viewport.viewportBounds, exBound) ||
+        gfx.viewport.zoom < 1
       ) {
-        service.viewport.setViewportByBound(bound, [20, 20, 20, 20], false);
-        if (service.viewport.zoom > 1) {
-          service.viewport.setZoom(1);
+        gfx.viewport.setViewportByBound(bound, [20, 20, 20, 20], false);
+        if (gfx.viewport.zoom > 1) {
+          gfx.viewport.setZoom(1);
         }
       }
 
       // hide unselected overlap elements
-      const overlapElements = service.gfx.gfxElements.filter(ele => {
+      const overlapElements = gfx.gfxElements.filter(ele => {
         const eleBound = Bound.deserialize(ele.xywh);
         const exEleBound = expandBound(eleBound, MARGIN * zoom);
         const isSelected = elements.includes(ele);
@@ -190,14 +186,14 @@ export function createCopyAsPngMenuItem(framework: FrameworkProvider) {
         if (!apis) return;
         try {
           const domRect = getSelectedRect();
-          const { zoom } = service.viewport;
+          const { zoom } = gfx.viewport;
           const isFrameSelected =
             selected.length === 1 &&
             (selected[0] as GfxBlockElementModel).flavour === 'affine:frame';
           const margin = isFrameSelected ? -2 : MARGIN * zoom;
 
-          service.selection.clear();
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          gfx.selection.clear();
+
           apis.ui
             .captureArea({
               x: domRect.left - margin,

@@ -1,4 +1,8 @@
-import type { EdgelessRootService } from '@blocksuite/affine/blocks';
+import type { BlockStdScope } from '@blocksuite/affine/block-std';
+import {
+  EdgelessCRUDIdentifier,
+  getSurfaceBlock,
+} from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
 
 import {
@@ -19,18 +23,19 @@ import {
  */
 export function calcChildBound(
   parentModel: AIChatBlockModel,
-  service: EdgelessRootService
+  std: BlockStdScope
 ) {
+  const surface = getSurfaceBlock(std.store);
+  const crud = std.get(EdgelessCRUDIdentifier);
   const parentXYWH = Bound.deserialize(parentModel.xywh);
   const { x: parentX, y: parentY, w: parentWidth } = parentXYWH;
 
-  const connectors = service.getConnectors(parentModel.id);
+  const connectors = surface?.getConnectors(parentModel.id);
   const gapX = CHAT_BLOCK_WIDTH;
   const gapY = 60;
   const defaultX = parentX + parentWidth + gapX;
   const defaultY = parentY;
-
-  if (!connectors.length) {
+  if (!connectors?.length) {
     return new Bound(defaultX, defaultY, CHAT_BLOCK_WIDTH, CHAT_BLOCK_HEIGHT);
   } else {
     // Filter out the connectors which source is the parent block
@@ -41,7 +46,7 @@ export function calcChildBound(
     const targetBlocks = childConnectors
       .map(connector => connector.target.id)
       .filter(id => id !== undefined)
-      .map(id => service.crud.getElementById(id))
+      .map(id => crud.getElementById(id))
       .filter(block => !!block);
 
     if (targetBlocks.length) {

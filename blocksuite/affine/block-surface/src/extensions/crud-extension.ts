@@ -2,8 +2,10 @@ import type { SurfaceElementModelMap } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
 import {
+  GfxBlockElementModel,
   GfxControllerIdentifier,
   type GfxModel,
+  isGfxGroupCompatibleModel,
 } from '@blocksuite/block-std/gfx';
 import { type Container, createIdentifier } from '@blocksuite/global/di';
 import { type BlockModel, Extension } from '@blocksuite/store';
@@ -154,5 +156,26 @@ export class EdgelessCRUDExtension extends Extension {
       return [];
     }
     return this._surface.getElementsByType(type);
+  }
+
+  removeElement(id: string | GfxModel) {
+    id = typeof id === 'string' ? id : id.id;
+
+    const el = this.getElementById(id);
+    if (isGfxGroupCompatibleModel(el)) {
+      el.childIds.forEach(childId => {
+        this.removeElement(childId);
+      });
+    }
+
+    if (el instanceof GfxBlockElementModel) {
+      this.std.store.deleteBlock(el);
+      return;
+    }
+
+    if (this._surface?.hasElementById(id)) {
+      this._surface.deleteElement(id);
+      return;
+    }
   }
 }

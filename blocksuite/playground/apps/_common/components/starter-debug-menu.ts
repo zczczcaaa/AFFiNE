@@ -19,6 +19,7 @@ import './left-side-panel.js';
 import { NotionHtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
 import { ShadowlessElement } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import {
   ColorScheme,
   ColorVariables,
@@ -28,7 +29,6 @@ import {
   type DocMode,
   DocModeProvider,
   download,
-  EdgelessRootService,
   ExportManager,
   FontFamilyVariables,
   HtmlAdapterFactoryIdentifier,
@@ -208,10 +208,6 @@ export class StarterDebugMenu extends ShadowlessElement {
 
   set mode(value: DocMode) {
     this.editor.mode = value;
-  }
-
-  get rootService() {
-    return this.editor.std?.getService('affine:page');
   }
 
   private _addNote() {
@@ -544,18 +540,8 @@ export class StarterDebugMenu extends ShadowlessElement {
 
   private _present() {
     if (!this.editor.std || !this.editor.host) return;
-    const rootService = this.editor.std.getService('affine:page');
-    if (!(rootService instanceof EdgelessRootService)) {
-      toast(
-        this.editor.host,
-        'The presentation mode is only available on edgeless mode.',
-        3000
-      );
-      return;
-    }
-
-    const edgelessRootService = rootService as EdgelessRootService;
-    edgelessRootService?.gfx.tool.setTool('frameNavigator', {
+    const gfx = this.editor.std.get(GfxControllerIdentifier);
+    gfx.tool.setTool('frameNavigator', {
       mode: 'fit',
     });
   }

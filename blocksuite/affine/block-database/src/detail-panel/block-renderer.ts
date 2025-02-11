@@ -76,10 +76,6 @@ export class BlockRenderer
     return this.host?.doc.getBlock(this.rowId)?.model;
   }
 
-  get service() {
-    return this.host.std.getService('affine:database');
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     if (this.model && this.model.text) {

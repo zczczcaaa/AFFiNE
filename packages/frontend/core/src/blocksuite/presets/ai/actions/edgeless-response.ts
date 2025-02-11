@@ -1,10 +1,10 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type {
   AffineAIPanelWidget,
   AIItemConfig,
   EdgelessCopilotWidget,
   EdgelessElementToolbarWidget,
-  EdgelessRootService,
   MindmapElementModel,
   ShapeElementModel,
 } from '@blocksuite/affine/blocks';
@@ -35,17 +35,12 @@ import { AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { getAIPanelWidget } from '../utils/ai-widgets';
 import type { AIContext } from '../utils/context';
-import {
-  getEdgelessCopilotWidget,
-  getService,
-  isMindMapRoot,
-} from '../utils/edgeless';
+import { getEdgelessCopilotWidget, isMindMapRoot } from '../utils/edgeless';
 import { preprocessHtml } from '../utils/html';
 import { fetchImageToFile } from '../utils/image';
 import {
   getCopilotSelectedElems,
   getEdgelessRootFromEditor,
-  getEdgelessService,
   getSurfaceElementFromEditor,
 } from '../utils/selection-utils';
 import { createTemplateJob } from '../utils/template-job';
@@ -222,9 +217,9 @@ function insertBelow(
 ) {
   insertFromMarkdown(host, markdown, host.doc, parentId, index)
     .then(() => {
-      const service = getService(host);
+      const gfx = host.std.get(GfxControllerIdentifier);
 
-      service.selection.set({
+      gfx.selection.set({
         elements: [parentId],
         editing: false,
       });
@@ -398,9 +393,8 @@ export function responseToExpandMindmap(host: EditorHost, ctx: AIContext) {
     });
 
     setTimeout(() => {
-      const edgelessService = getEdgelessService(host);
-
-      edgelessService.selection.set({
+      const gfx = host.std.get(GfxControllerIdentifier);
+      gfx.selection.set({
         elements: [subtree.element.id],
         editing: false,
       });
@@ -410,7 +404,7 @@ export function responseToExpandMindmap(host: EditorHost, ctx: AIContext) {
 
 function responseToBrainstormMindmap(host: EditorHost, ctx: AIContext) {
   const aiPanel = getAIPanelWidget(host);
-  const edgelessService = getEdgelessService(host);
+  const gfx = host.std.get(GfxControllerIdentifier);
   const edgelessCopilot = getEdgelessCopilotWidget(host);
   const selectionRect = edgelessCopilot.selectionModelRect;
   const surface = getSurfaceBlock(host.doc);
@@ -456,13 +450,13 @@ function responseToBrainstormMindmap(host: EditorHost, ctx: AIContext) {
 
   // This is a workaround to make sure mindmap and other microtask are done
   setTimeout(() => {
-    edgelessService.viewport.setViewportByBound(
+    gfx.viewport.setViewportByBound(
       mindmap.elementBound,
       [20, 20, 20, 20],
       true
     );
 
-    edgelessService.selection.set({
+    gfx.selection.set({
       elements: [mindmap.tree.element.id],
       editing: false,
     });
@@ -507,9 +501,6 @@ async function responseToCreateSlides(host: EditorHost, ctx: AIContext) {
   const data = ctx.get();
   const { contents = [], images = [] } = data;
   if (contents.length === 0) return;
-
-  const service = host.std.getService<EdgelessRootService>('affine:page');
-  if (!service) return;
 
   try {
     for (let i = 0; i < contents.length; i++) {

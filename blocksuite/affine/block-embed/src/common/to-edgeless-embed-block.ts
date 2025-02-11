@@ -40,10 +40,6 @@ export function toEdgelessEmbedBlock<
       return Bound.deserialize(this.model.xywh);
     }
 
-    get rootService() {
-      return this.std.getService('affine:page');
-    }
-
     _handleClick(_: MouseEvent): void {
       return;
     }

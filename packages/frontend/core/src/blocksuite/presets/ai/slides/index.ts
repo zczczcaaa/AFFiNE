@@ -1,5 +1,5 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import type { EdgelessRootService } from '@blocksuite/affine/blocks';
+import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type { BlockSnapshot } from '@blocksuite/affine/store';
 
 import { markdownToSnapshot } from '../../_common';
@@ -13,11 +13,10 @@ import {
 } from './template';
 
 export const PPTBuilder = (host: EditorHost) => {
-  const service = host.std.getService<EdgelessRootService>('affine:page');
+  const gfx = host.std.get(GfxControllerIdentifier);
   const docs: PPTDoc[] = [];
   const contents: unknown[] = [];
   const allImages: TemplateImage[][] = [];
-  if (!service) return;
 
   const addDoc = async (block: BlockSnapshot) => {
     const sections = block.children.map(v => {
@@ -62,7 +61,7 @@ export const PPTBuilder = (host: EditorHost) => {
         const block = snapshot.snapshot.content[0];
         for (const child of block.children) {
           await addDoc(child);
-          service.gfx.fitToScreen();
+          gfx.fitToScreen();
         }
       } catch (e) {
         console.error(e);

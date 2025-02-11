@@ -34,10 +34,6 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
     return this.gfx.viewport.zoom;
   }
 
-  get rootService() {
-    return this.std.getService('affine:page');
-  }
-
   private _collapsedContent() {
     if (!this._isShowCollapsedContent) {
       return nothing;
