@@ -31,7 +31,6 @@ const font = new FontFace(
 );
 // @ts-expect-error worker env
 self.fonts && self.fonts.add(font);
-font.load().catch(console.error);
 
 function getBaseline() {
   const fontSize = 15;
@@ -57,9 +56,15 @@ class SectionPainter {
     this.canvas = new OffscreenCanvas(width, height);
     this.ctx = this.canvas.getContext('2d')!;
     this.ctx.scale(dpr, dpr);
-    this.ctx.fillStyle = 'lightgrey';
-    this.ctx.fillRect(0, 0, width, height);
     this.zoom = zoom;
+    this.clearBackground();
+  }
+
+  private clearBackground() {
+    if (!this.canvas || !this.ctx) return;
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   paint(section: SectionLayout) {
@@ -69,6 +74,8 @@ class SectionPainter {
       console.warn('empty section rect');
       return;
     }
+
+    this.clearBackground();
 
     ctx.scale(this.zoom, this.zoom);
 
@@ -105,9 +112,23 @@ class SectionPainter {
 }
 
 const painter = new SectionPainter();
+let fontLoaded = false;
+
+font
+  .load()
+  .then(() => {
+    fontLoaded = true;
+  })
+  .catch(console.error);
 
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   const { type, data } = e.data;
+
+  if (!fontLoaded) {
+    await font.load();
+    fontLoaded = true;
+  }
+
   switch (type) {
     case 'initSection': {
       const { width, height, dpr, zoom } = data;
@@ -115,7 +136,6 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
       break;
     }
     case 'paintSection': {
-      await font.load();
       const { section } = data;
       painter.paint(section);
       break;

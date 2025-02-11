@@ -6,6 +6,7 @@ import {
 } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { type Container, type ServiceIdentifier } from '@blocksuite/global/di';
+import { Pane } from 'tweakpane';
 
 import { getSentenceRects, segmentSentences } from './text-utils.js';
 import { type ParagraphLayout, type SectionLayout } from './types.js';
@@ -24,6 +25,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   private lastZoom: number | null = null;
   private lastSection: SectionLayout | null = null;
   private lastBitmap: ImageBitmap | null = null;
+  private debugPane: Pane | null = null;
 
   constructor(std: BlockStdScope) {
     super(std);
@@ -33,18 +35,55 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   override mounted() {
-    const targetContainer = document.querySelector('#right-column')!;
-    if (!targetContainer.querySelector('canvas')) {
-      targetContainer.append(this.canvas);
+    const viewportElement = document.querySelector('.affine-edgeless-viewport');
+    if (viewportElement) {
+      viewportElement.append(this.canvas);
+      this.debugPane = new Pane({ container: viewportElement as HTMLElement });
+      this.initTweakpane();
     }
+    this.viewport.viewportUpdated.on(async () => {
+      await this.render();
+    });
+
+    document.fonts.load('15px Inter').then(async () => {
+      await this.render();
+    });
   }
 
   override unmounted() {
     if (this.lastBitmap) {
       this.lastBitmap.close();
     }
+    if (this.debugPane) {
+      this.debugPane.dispose();
+      this.debugPane = null;
+    }
     this.worker.terminate();
     this.canvas.remove();
+  }
+
+  private initTweakpane() {
+    if (!this.debugPane) return;
+
+    const paneElement = this.debugPane.element;
+    paneElement.style.position = 'absolute';
+    paneElement.style.top = '10px';
+    paneElement.style.left = '10px';
+    paneElement.style.width = '250px';
+
+    this.debugPane.title = 'Viewport Turbo Renderer';
+
+    const params = {
+      enabled: true,
+    };
+
+    this.debugPane
+      .addBinding(params, 'enabled', {
+        label: 'Enable',
+      })
+      .on('change', ({ value }) => {
+        this.canvas.style.display = value ? 'block' : 'none';
+      });
   }
 
   get viewport() {
@@ -56,6 +95,8 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   getHostLayout() {
+    if (!document.fonts.check('15px Inter')) return null;
+
     const paragraphBlocks = this.std.host.querySelectorAll(
       '.affine-paragraph-rich-text-wrapper [data-v-text="true"]'
     );
@@ -169,10 +210,14 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   private syncCanvasSize() {
     const hostRect = this.getHostRect();
     const dpr = window.devicePixelRatio;
-    this.canvas.style.width = `${hostRect.width}px`;
-    this.canvas.style.height = `${hostRect.height}px`;
+    this.canvas.style.position = 'absolute';
+    this.canvas.style.left = '0px';
+    this.canvas.style.top = '0px';
+    this.canvas.style.width = '100%';
+    this.canvas.style.height = '100%';
     this.canvas.width = hostRect.width * dpr;
     this.canvas.height = hostRect.height * dpr;
+    this.canvas.style.pointerEvents = 'none';
   }
 
   private updateCacheState(section: SectionLayout, bitmapCopy: ImageBitmap) {
@@ -225,7 +270,6 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
 
   public async render(): Promise<void> {
     const hostLayout = this.getHostLayout();
-
     if (!hostLayout) return;
 
     const { section } = hostLayout;

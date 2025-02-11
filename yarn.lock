@@ -3754,6 +3754,7 @@ __metadata:
     remark-math: "npm:^6.0.0"
     remark-parse: "npm:^11.0.0"
     remark-stringify: "npm:^11.0.0"
+    tweakpane: "npm:^4.0.5"
     unified: "npm:^11.0.5"
     vitest: "npm:3.0.5"
     yjs: "npm:^13.6.21"
@@ -32935,7 +32936,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tweakpane@npm:^4.0.4":
+"tweakpane@npm:^4.0.4, tweakpane@npm:^4.0.5":
   version: 4.0.5
   resolution: "tweakpane@npm:4.0.5"
   checksum: 10/7719a15ce96dd2b936b277239ccb18ee6a75ed2416a6bdacfc537515d909da6edd50161b12e91441ace5243efad3a14a98fe6e5475cae2617d7647a197117e64

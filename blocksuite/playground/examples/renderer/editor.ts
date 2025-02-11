@@ -12,10 +12,11 @@ presetsEffects();
 
 export const doc = createEmptyDoc().init();
 export const editor = new AffineEditorContainer();
-editor.pageSpecs = editor.pageSpecs.concat([ViewportTurboRendererExtension]);
-editor.edgelessSpecs = editor.edgelessSpecs.concat([
+editor.pageSpecs = [...editor.pageSpecs, ViewportTurboRendererExtension];
+editor.edgelessSpecs = [
+  ...editor.edgelessSpecs,
   ViewportTurboRendererExtension,
-]);
+];
 
 editor.doc = doc;
 editor.mode = 'edgeless';
