@@ -631,15 +631,7 @@ export class TableCell extends SignalWatcher(
         @mouseenter=${mouseEnter}
         @mouseleave=${mouseLeave}
         style=${style(showWidthAdjustIndicator || showIndicator === 'right')}
-        data
-        -
-        width
-        -
-        adjust
-        -
-        column
-        -
-        id=${this.column?.columnId}
+        data-width-adjust-column-id=${this.column?.columnId}
         class=${columnRightIndicatorStyle}
       ></div>`;
   }
