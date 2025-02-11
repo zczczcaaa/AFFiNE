@@ -1,21 +1,30 @@
+import { ViewportTurboRenderer } from '@blocksuite/affine-shared/viewport-renderer';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
+import { nextTick } from '@blocksuite/global/utils';
 import { Text } from '@blocksuite/store';
 import { Pane } from 'tweakpane';
 
-import { CanvasRenderer } from './canvas-renderer.js';
 import { doc, editor } from './editor.js';
 
 type DocMode = 'page' | 'edgeless';
 
-const container = document.querySelector('#right-column') as HTMLElement;
-const renderer = new CanvasRenderer(editor, container);
+const rightColumn = document.querySelector('#right-column') as HTMLElement;
+const renderer = new ViewportTurboRenderer(rightColumn);
 
 async function handleToCanvasClick() {
+  renderer.setHost(editor.host!);
   await renderer.render();
   const viewport = editor.std.get(GfxControllerIdentifier).viewport;
   viewport.viewportUpdated.on(async () => {
     await renderer.render();
   });
+}
+
+async function handleModeChange(mode: DocMode) {
+  editor.mode = mode;
+  await nextTick();
+  renderer.setHost(editor.host!);
+  await renderer.render();
 }
 
 function initUI() {
@@ -34,7 +43,6 @@ function initUI() {
     .on('click', () => {
       handleToCanvasClick().catch(console.error);
     });
-
   pane
     .addBinding(params, 'mode', {
       label: 'Editor Mode',
@@ -44,10 +52,8 @@ function initUI() {
       },
     })
     .on('change', ({ value }) => {
-      editor.mode = value as DocMode;
+      handleModeChange(value as DocMode).catch(console.error);
     });
-
-  document.querySelector('#left-column')?.append(editor);
 }
 
 function addParagraph(content: string) {
@@ -61,6 +67,7 @@ function addParagraph(content: string) {
 function main() {
   initUI();
 
+  document.querySelector('#left-column')?.append(editor);
   const firstParagraph = doc.getBlockByFlavour('affine:paragraph')[0];
   doc.updateBlock(firstParagraph, { text: new Text('Renderer') });
 

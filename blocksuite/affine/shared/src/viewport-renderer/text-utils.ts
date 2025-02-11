@@ -1,4 +1,4 @@
-import type { TextRect } from './types';
+import type { TextRect } from './types.js';
 
 interface WordSegment {
   text: string;

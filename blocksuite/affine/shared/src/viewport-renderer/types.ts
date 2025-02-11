@@ -23,12 +23,12 @@ export interface ParagraphLayout {
   zoom: number;
 }
 
-export interface TextRect {
-  rect: Rect;
-  text: string;
-}
-
 export interface SectionLayout {
   paragraphs: ParagraphLayout[];
   rect: Rect;
+}
+
+export interface TextRect {
+  rect: Rect;
+  text: string;
 }
