@@ -1980,6 +1980,7 @@ describe('html to snapshot', () => {
           flavour: 'affine:code',
           props: {
             language: 'python',
+            wrap: false,
             text: {
               '$blocksuite:internal:text$': true,
               delta: [

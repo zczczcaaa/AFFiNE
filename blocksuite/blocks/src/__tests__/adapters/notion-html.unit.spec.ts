@@ -51,6 +51,7 @@ describe('notion html to snapshot', () => {
           flavour: 'affine:code',
           props: {
             language: 'Plain Text',
+            wrap: false,
             text: {
               '$blocksuite:internal:text$': true,
               delta: [

@@ -7,6 +7,7 @@ import {
 } from '@blocksuite/affine/block-std';
 import type { AffineAIPanelWidget } from '@blocksuite/affine/blocks';
 import {
+  defaultImageProxyMiddleware,
   deleteTextCommand,
   isInsideEdgelessEditor,
 } from '@blocksuite/affine/blocks';
@@ -151,7 +152,8 @@ export const copyText = async (host: EditorHost, text: string) => {
   const previewDoc = await markDownToDoc(
     host.std.provider,
     host.std.store.schema,
-    text
+    text,
+    [defaultImageProxyMiddleware]
   );
   const models = previewDoc
     .getBlocksByFlavour('affine:note')

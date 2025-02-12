@@ -102,6 +102,7 @@ export {
   AttachmentAdapter,
   AttachmentAdapterFactoryExtension,
   AttachmentAdapterFactoryIdentifier,
+  codeBlockWrapMiddleware,
   FetchUtils,
   HtmlAdapter,
   HtmlAdapterFactoryExtension,

@@ -2,6 +2,7 @@ import { CodeBlockSchema } from '@blocksuite/affine-model';
 import {
   BlockMarkdownAdapterExtension,
   type BlockMarkdownAdapterMatcher,
+  CODE_BLOCK_WRAP_KEY,
   type MarkdownAST,
 } from '@blocksuite/affine-shared/adapters';
 import type { DeltaInsert } from '@blocksuite/inline';
@@ -19,7 +20,8 @@ export const codeBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher = {
       if (!isCodeNode(o.node)) {
         return;
       }
-      const { walkerContext } = context;
+      const { walkerContext, configs } = context;
+      const wrap = configs.get(CODE_BLOCK_WRAP_KEY) === 'true';
       walkerContext
         .openNode(
           {
@@ -28,6 +30,7 @@ export const codeBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher = {
             flavour: 'affine:code',
             props: {
               language: o.node.lang ?? 'Plain Text',
+              wrap,
               text: {
                 '$blocksuite:internal:text$': true,
                 delta: [

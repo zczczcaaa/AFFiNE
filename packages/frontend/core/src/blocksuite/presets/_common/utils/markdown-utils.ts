@@ -206,17 +206,13 @@ export async function markDownToDoc(
   provider: ServiceProvider,
   schema: Schema,
   answer: string,
-  additionalMiddlewares?: TransformerMiddleware[]
+  middlewares?: TransformerMiddleware[]
 ) {
   // Should not create a new doc in the original collection
   const collection = new WorkspaceImpl({
     schema,
   });
   collection.meta.initialize();
-  const middlewares = [defaultImageProxyMiddleware];
-  if (additionalMiddlewares) {
-    middlewares.push(...additionalMiddlewares);
-  }
   const transformer = new Transformer({
     schema: collection.schema,
     blobCRUD: collection.blobSync,
