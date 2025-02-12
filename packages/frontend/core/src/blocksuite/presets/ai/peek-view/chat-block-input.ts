@@ -202,6 +202,7 @@ export class ChatBlockInput extends LitElement {
               }
             }
           }}
+          data-testid="chat-block-input"
         ></textarea>
         <div class="chat-panel-input-actions">
           <div
