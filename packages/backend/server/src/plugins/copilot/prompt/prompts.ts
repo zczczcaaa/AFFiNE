@@ -979,7 +979,7 @@ When referencing information from the provided documents in your response:
   },
   {
     name: 'Search With AFFiNE AI',
-    model: 'llama-3.1-sonar-small-128k-online',
+    model: 'sonar',
     messages: [],
   },
   // use for believer plan
