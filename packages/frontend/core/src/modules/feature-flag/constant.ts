@@ -22,8 +22,9 @@ export const AFFINE_FLAGS = {
       'com.affine.settings.workspace.experimental-features.enable-ai-network-search.name',
     description:
       'com.affine.settings.workspace.experimental-features.enable-ai-network-search.description',
-    configurable: true,
-    defaultState: false,
+    hide: true,
+    configurable: false,
+    defaultState: true,
   },
   enable_database_full_width: {
     category: 'blocksuite',
