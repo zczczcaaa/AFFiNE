@@ -4,7 +4,7 @@ import type {
   EmbedFigmaStyles,
 } from '@blocksuite/affine-model';
 import { BlockSelection } from '@blocksuite/block-std';
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -57,11 +57,10 @@ export class EmbedFigmaBlockComponent extends EmbedBlockComponent<
     super.connectedCallback();
     this._cardStyle = this.model.style;
 
-    if (!this.model.description && !this.model.title) {
+    if (!this.model.title) {
       this.doc.withoutTransact(() => {
         this.doc.updateBlock(this.model, {
           title: 'Figma',
-          description: this.model.url,
         });
       });
     }
@@ -97,7 +96,6 @@ export class EmbedFigmaBlockComponent extends EmbedBlockComponent<
   override renderBlock() {
     const { title, description, url } = this.model;
     const titleText = title ?? 'Figma';
-    const descriptionText = description ?? url;
 
     return this.renderEmbed(
       () => html`
@@ -140,9 +138,11 @@ export class EmbedFigmaBlockComponent extends EmbedBlockComponent<
               </div>
             </div>
 
-            <div class="affine-embed-figma-content-description">
-              ${descriptionText}
-            </div>
+            ${description
+              ? html`<div class="affine-embed-figma-content-description">
+                  ${description}
+                </div>`
+              : nothing}
 
             <div class="affine-embed-figma-content-url" @click=${this.open}>
               <span>www.figma.com</span>
