@@ -89,4 +89,7 @@ if (AFFiNE.deploy) {
   };
 
   AFFiNE.use('gcloud');
+} else {
+  // only enable dev mode
+  AFFiNE.use('worker');
 }

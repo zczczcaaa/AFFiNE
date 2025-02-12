@@ -161,3 +161,8 @@ AFFiNE.server.port = 3010;
 //     bucket: 'copilot',
 //   }
 // })
+//
+// /* AFFiNE Link Preview & Image Proxy API */
+// AFFiNE.use('worker', {
+//   allowedOrigin: ['example.com'],
+// });
