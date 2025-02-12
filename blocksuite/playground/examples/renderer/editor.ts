@@ -10,9 +10,9 @@ import { createEmptyDoc } from '../../apps/_common/helper';
 blocksEffects();
 presetsEffects();
 
-export const doc = createEmptyDoc().init();
+export const { doc } = createEmptyDoc();
 export const editor = new AffineEditorContainer();
-editor.pageSpecs = [...editor.pageSpecs, ViewportTurboRendererExtension];
+
 editor.edgelessSpecs = [
   ...editor.edgelessSpecs,
   ViewportTurboRendererExtension,
