@@ -5,7 +5,7 @@ import { EmailAlreadyUsed, EventBus } from '../../base';
 import { WorkspaceRole } from '../../core/permission';
 import { UserModel } from '../../models/user';
 import { WorkspaceMemberStatus } from '../../models/workspace';
-import { createTestingModule, type TestingModule } from '../utils';
+import { createTestingModule, sleep, type TestingModule } from '../utils';
 
 interface Context {
   module: TestingModule;
@@ -272,6 +272,9 @@ test('should trigger user.deleted event', async t => {
   t.true(
     spy.calledOnceWithExactly({ ...user, ownedWorkspaces: ['test-workspace'] })
   );
+  // await for 'user.deleted' event to be emitted and executed
+  // avoid race condition cause database dead lock
+  await sleep(100);
 });
 
 test('should paginate users', async t => {

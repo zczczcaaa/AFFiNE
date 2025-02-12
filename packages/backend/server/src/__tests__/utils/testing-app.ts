@@ -156,8 +156,15 @@ export class TestingApp extends ApplyType<INestApplication>() {
       .send({
         query,
         variables,
-      })
-      .expect(200);
+      });
+
+    if (res.status !== 200) {
+      throw new Error(
+        `Failed to execute gql: ${query}, status: ${res.status}, body: ${JSON.stringify(
+          res.body
+        )}`
+      );
+    }
 
     if (res.body.errors?.length) {
       throw new Error(res.body.errors[0].message);
