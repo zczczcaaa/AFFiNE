@@ -279,6 +279,7 @@ export class SubscriptionResolver {
       session = await this.service.checkout(input, {
         plan: input.plan as any,
         quantity: input.args?.quantity ?? 10,
+        user,
       });
     } else {
       if (!user) {

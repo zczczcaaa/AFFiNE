@@ -29,6 +29,13 @@ import {
 
 export const SelfhostTeamCheckoutArgs = z.object({
   quantity: z.number(),
+  user: z
+    .object({
+      id: z.string(),
+      email: z.string(),
+    })
+    .optional()
+    .nullable(),
 });
 
 export const SelfhostTeamSubscriptionIdentity = z.object({

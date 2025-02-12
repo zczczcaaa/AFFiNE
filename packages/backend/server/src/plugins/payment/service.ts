@@ -134,7 +134,8 @@ export class SubscriptionService implements OnApplicationBootstrap {
     if (
       this.config.deploy &&
       this.config.affine.canary &&
-      (!('user' in args) || !this.feature.isStaff(args.user.email))
+      args.user &&
+      !this.feature.isStaff(args.user.email)
     ) {
       throw new ActionForbidden();
     }
