@@ -1,7 +1,3 @@
-import type * as SurfaceEffects from '@blocksuite/affine-block-surface/effects';
-
-declare type _GLOBAL_ = typeof SurfaceEffects;
-
 export * from './adapters/notion-html';
 export * from './attachment-block';
 export * from './attachment-service';

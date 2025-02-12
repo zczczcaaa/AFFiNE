@@ -11,6 +11,7 @@ import { html } from 'lit/static-html.js';
 
 import type { EventName, UIEventHandler } from '../../event/index.js';
 import type { BlockService } from '../../extension/index.js';
+import { BlockServiceIdentifier } from '../../identifier.js';
 import type { BlockStdScope } from '../../scope/index.js';
 import { BlockSelection } from '../../selection/index.js';
 import { PropTypes, requiredProperties } from '../decorators/index.js';
@@ -146,9 +147,11 @@ export class BlockComponent<
     if (this._service) {
       return this._service;
     }
-    const service = this.std.getService(this.model.flavour) as Service;
-    this._service = service;
-    return service;
+    const service = this.std.getOptional(
+      BlockServiceIdentifier(this.model.flavour)
+    );
+    this._service = service as Service;
+    return service as Service;
   }
 
   get topContenteditableElement(): BlockComponent | null {

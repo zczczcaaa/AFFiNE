@@ -12,13 +12,11 @@ import { Clipboard } from '../clipboard/index.js';
 import { CommandManager } from '../command/index.js';
 import { UIEventDispatcher } from '../event/index.js';
 import { DndController } from '../extension/dnd/index.js';
-import type { BlockService } from '../extension/index.js';
 import { GfxController } from '../gfx/controller.js';
 import { GfxSelectionManager } from '../gfx/selection.js';
 import { SurfaceMiddlewareExtension } from '../gfx/surface-middleware.js';
 import { ViewManager } from '../gfx/view/view-manager.js';
 import {
-  BlockServiceIdentifier,
   BlockViewIdentifier,
   ConfigIdentifier,
   LifeCycleWatcherIdentifier,
@@ -152,18 +150,6 @@ export class BlockStdScope {
     return config;
   }
 
-  /**
-   * @deprecated
-   * BlockService will be removed in the future.
-   */
-  getService<Key extends BlockSuite.ServiceKeys>(
-    flavour: Key
-  ): BlockSuite.BlockServices[Key] | null;
-  getService<Service extends BlockService>(flavour: string): Service | null;
-  getService(flavour: string): BlockService | null {
-    return this.getOptional(BlockServiceIdentifier(flavour));
-  }
-
   getView(flavour: string) {
     return this.getOptional(BlockViewIdentifier(flavour));
   }
@@ -208,10 +194,8 @@ export class BlockStdScope {
 
 declare global {
   namespace BlockSuite {
-    interface BlockServices {}
     interface BlockConfigs {}
 
-    type ServiceKeys = string & keyof BlockServices;
     type ConfigKeys = string & keyof BlockConfigs;
   }
 }

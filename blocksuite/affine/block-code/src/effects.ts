@@ -1,5 +1,3 @@
-import type * as CommandsType from '@blocksuite/affine-shared/commands';
-
 import { CodeBlockComponent } from './code-block';
 import type { CodeBlockConfig } from './code-block-config';
 import {
@@ -17,8 +15,6 @@ export function effects() {
   customElements.define('affine-code-unit', AffineCodeUnit);
   customElements.define('affine-code', CodeBlockComponent);
 }
-
-declare type _GLOBAL_ = typeof CommandsType;
 
 declare global {
   namespace BlockSuite {

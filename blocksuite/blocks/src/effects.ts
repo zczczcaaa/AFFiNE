@@ -143,7 +143,6 @@ import {
   PageRootBlockComponent,
   PreviewRootBlockComponent,
   type RootBlockConfig,
-  type RootService,
 } from './root-block/index.js';
 import { AIFinishTip } from './root-block/widgets/ai-panel/components/finish-tip.js';
 import { GeneratingPlaceholder } from './root-block/widgets/ai-panel/components/generating-placeholder.js';
@@ -399,9 +398,6 @@ declare global {
   namespace BlockSuite {
     interface BlockConfigs {
       'affine:page': RootBlockConfig;
-    }
-    interface BlockServices {
-      'affine:page': RootService;
     }
   }
 }

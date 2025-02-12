@@ -1,4 +1,5 @@
-import type { SurfaceBlockModel } from '@blocksuite/blocks';
+import { BlockServiceIdentifier } from '@blocksuite/block-std';
+import type { PageRootService, SurfaceBlockModel } from '@blocksuite/blocks';
 import type { PointLocation } from '@blocksuite/global/utils';
 import { beforeEach, expect, test } from 'vitest';
 
@@ -24,7 +25,9 @@ const fieldChecker: Record<string, (value: any) => boolean> = {
 const skipFields = new Set(['_lastXYWH']);
 
 const snapshotTest = async (snapshotUrl: string, elementsCount: number) => {
-  const pageService = window.editor.host!.std.getService('affine:page');
+  const pageService = window.editor.host!.std.getOptional(
+    BlockServiceIdentifier('affine:page')
+  ) as PageRootService;
   if (!pageService) {
     throw new Error('page service not found');
   }

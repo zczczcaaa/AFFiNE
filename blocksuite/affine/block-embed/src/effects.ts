@@ -1,30 +1,18 @@
-import type * as SurfaceEffects from '@blocksuite/affine-block-surface/effects';
-
 import { EmbedFigmaBlockComponent } from './embed-figma-block';
 import { EmbedEdgelessBlockComponent } from './embed-figma-block/embed-edgeless-figma-block';
-import type { EmbedFigmaBlockService } from './embed-figma-block/embed-figma-service';
-import {
-  EmbedGithubBlockComponent,
-  type EmbedGithubBlockService,
-} from './embed-github-block';
+import { EmbedGithubBlockComponent } from './embed-github-block';
 import { EmbedEdgelessGithubBlockComponent } from './embed-github-block/embed-edgeless-github-block';
 import { EmbedHtmlBlockComponent } from './embed-html-block';
 import { EmbedHtmlFullscreenToolbar } from './embed-html-block/components/fullscreen-toolbar';
 import { EmbedEdgelessHtmlBlockComponent } from './embed-html-block/embed-edgeless-html-block';
 import { EmbedLinkedDocBlockComponent } from './embed-linked-doc-block';
 import { EmbedEdgelessLinkedDocBlockComponent } from './embed-linked-doc-block/embed-edgeless-linked-doc-block';
-import {
-  EmbedLoomBlockComponent,
-  type EmbedLoomBlockService,
-} from './embed-loom-block';
+import { EmbedLoomBlockComponent } from './embed-loom-block';
 import { EmbedEdgelessLoomBlockComponent } from './embed-loom-block/embed-edgeless-loom-bock';
 import { EmbedSyncedDocBlockComponent } from './embed-synced-doc-block';
 import { EmbedSyncedDocCard } from './embed-synced-doc-block/components/embed-synced-doc-card';
 import { EmbedEdgelessSyncedDocBlockComponent } from './embed-synced-doc-block/embed-edgeless-synced-doc-block';
-import {
-  EmbedYoutubeBlockComponent,
-  type EmbedYoutubeBlockService,
-} from './embed-youtube-block';
+import { EmbedYoutubeBlockComponent } from './embed-youtube-block';
 import { EmbedEdgelessYoutubeBlockComponent } from './embed-youtube-block/embed-edgeless-youtube-block';
 
 export function effects() {
@@ -86,8 +74,6 @@ export function effects() {
   );
 }
 
-declare type _GLOBAL = typeof SurfaceEffects;
-
 declare global {
   interface HTMLElementTagNameMap {
     'affine-embed-figma-block': EmbedFigmaBlockComponent;
@@ -106,14 +92,5 @@ declare global {
     'affine-embed-edgeless-synced-doc-block': EmbedEdgelessSyncedDocBlockComponent;
     'affine-embed-linked-doc-block': EmbedLinkedDocBlockComponent;
     'affine-embed-edgeless-linked-doc-block': EmbedEdgelessLinkedDocBlockComponent;
-  }
-
-  namespace BlockSuite {
-    interface BlockServices {
-      'affine:embed-figma': EmbedFigmaBlockService;
-      'affine:embed-github': EmbedGithubBlockService;
-      'affine:embed-loom': EmbedLoomBlockService;
-      'affine:embed-youtube': EmbedYoutubeBlockService;
-    }
   }
 }

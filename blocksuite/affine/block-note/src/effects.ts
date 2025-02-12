@@ -7,7 +7,6 @@ import {
   AFFINE_EDGELESS_NOTE,
   EdgelessNoteBlockComponent,
 } from './note-edgeless-block';
-import type { NoteBlockService } from './note-service';
 
 export function effects() {
   customElements.define('affine-note', NoteBlockComponent);
@@ -19,9 +18,6 @@ export function effects() {
 
 declare global {
   namespace BlockSuite {
-    interface BlockServices {
-      'affine:note': NoteBlockService;
-    }
     interface BlockConfigs {
       'affine:note': NoteConfig;
     }
