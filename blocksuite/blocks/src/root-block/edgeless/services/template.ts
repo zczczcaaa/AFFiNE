@@ -322,8 +322,9 @@ export class TemplateJob {
   ) {
     const schema =
       this.model.doc.workspace.schema.flavourSchemaMap.get('affine:surface');
-    const surfaceTransformer =
-      schema?.transformer?.() as SurfaceBlockTransformer;
+    const surfaceTransformer = schema?.transformer?.(
+      new Map()
+    ) as SurfaceBlockTransformer;
 
     this.model.doc.transact(() => {
       const defered: [string, Record<string, unknown>][] = [];

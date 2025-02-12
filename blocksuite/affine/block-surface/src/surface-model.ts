@@ -31,7 +31,8 @@ export const SurfaceBlockSchema = defineBlockSchema({
       'affine:edgeless-text',
     ],
   },
-  transformer: () => new SurfaceBlockTransformer(),
+  transformer: transformerConfigs =>
+    new SurfaceBlockTransformer(transformerConfigs),
   toModel: () => new SurfaceBlockModel(),
 });
 

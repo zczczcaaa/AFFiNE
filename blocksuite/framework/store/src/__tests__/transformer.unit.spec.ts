@@ -50,7 +50,7 @@ function createTestOptions() {
   return { id: 'test-collection', idGenerator, schema };
 }
 
-const transformer = new BaseBlockTransformer();
+const transformer = new BaseBlockTransformer(new Map());
 const blobCRUD = new MemoryBlobCRUD();
 const assets = new AssetsManager({ blob: blobCRUD });
 

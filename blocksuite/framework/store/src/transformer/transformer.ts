@@ -56,6 +56,8 @@ const BATCH_SIZE = 100;
 export class Transformer {
   private readonly _adapterConfigs = new Map<string, string>();
 
+  private readonly _transformerConfigs = new Map<string, unknown>();
+
   private readonly _assetsManager: AssetsManager;
 
   private readonly _schema: Schema;
@@ -72,6 +74,11 @@ export class Transformer {
   blockToSnapshot = (model: DraftModel): BlockSnapshot | undefined => {
     try {
       const snapshot = this._blockToSnapshot(model);
+
+      if (!snapshot) {
+        return;
+      }
+
       BlockSnapshotSchema.parse(snapshot);
 
       return snapshot;
@@ -354,24 +361,28 @@ export class Transformer {
         docCRUD: this._docCRUD,
         assetsManager: this._assetsManager,
         adapterConfigs: this._adapterConfigs,
+        transformerConfigs: this._transformerConfigs,
       });
     });
   }
 
-  private _blockToSnapshot(model: DraftModel): BlockSnapshot {
+  private _blockToSnapshot(model: DraftModel): BlockSnapshot | null {
     this._slots.beforeExport.emit({
       type: 'block',
       model,
     });
+
     const schema = this._getSchema(model.flavour);
     const transformer = this._getTransformer(schema);
     const snapshotLeaf = transformer.toSnapshot({
       model,
       assets: this._assetsManager,
     });
-    const children = model.children.map(child => {
-      return this._blockToSnapshot(child);
-    });
+    const children = model.children
+      .map(child => {
+        return this._blockToSnapshot(child);
+      })
+      .filter(Boolean) as BlockSnapshot[];
     const snapshot: BlockSnapshot = {
       type: 'block',
       ...snapshotLeaf,
@@ -489,7 +500,10 @@ export class Transformer {
   }
 
   private _getTransformer(schema: BlockSchemaType) {
-    return schema.transformer?.() ?? new BaseBlockTransformer();
+    return (
+      schema.transformer?.(this._transformerConfigs) ??
+      new BaseBlockTransformer(this._transformerConfigs)
+    );
   }
 
   private async _insertBlockTree(

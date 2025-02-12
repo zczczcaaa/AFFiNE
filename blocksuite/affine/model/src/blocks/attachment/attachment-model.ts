@@ -81,7 +81,8 @@ export const AttachmentBlockSchema = defineBlockSchema({
       'affine:list',
     ],
   },
-  transformer: () => new AttachmentBlockTransformer(),
+  transformer: transformerConfigs =>
+    new AttachmentBlockTransformer(transformerConfigs),
   toModel: () => new AttachmentBlockModel(),
 });
 

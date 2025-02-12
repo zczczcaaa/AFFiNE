@@ -82,7 +82,8 @@ type TransformerMiddlewareOptions = {
   assetsManager: AssetsManager;
   slots: TransformerSlots;
   docCRUD: DocCRUD;
-  adapterConfigs: Map<string, string>;
+  adapterConfigs: Map<string, unknown>;
+  transformerConfigs: Map<string, unknown>;
 };
 
 export type TransformerMiddleware = (

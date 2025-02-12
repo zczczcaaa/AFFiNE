@@ -51,6 +51,8 @@ export class BaseBlockTransformer<Props extends object = object> {
     );
   }
 
+  constructor(public readonly transformerConfigs: Map<string, unknown>) {}
+
   fromSnapshot({
     json,
   }: FromSnapshotPayload): Promise<SnapshotNode<Props>> | SnapshotNode<Props> {

@@ -92,9 +92,18 @@ export class SurfaceBlockTransformer extends BaseBlockTransformer<SurfaceBlockPr
     const snapshot = super.toSnapshot(payload);
     const elementsValue = payload.model.elements.getValue();
     const value: Record<string, unknown> = {};
+    /**
+     * When the selectedElements is defined, only the selected elements will be serialized.
+     */
+    const selectedElements = this.transformerConfigs.get(
+      'selectedElements'
+    ) as Set<string>;
+
     if (elementsValue) {
       elementsValue.forEach((element, key) => {
-        value[key] = this._elementToJSON(element as Y.Map<unknown>);
+        if (selectedElements?.has(key) || !selectedElements) {
+          value[key] = this._elementToJSON(element as Y.Map<unknown>);
+        }
       });
     }
     snapshot.props = {

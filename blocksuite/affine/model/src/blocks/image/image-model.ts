@@ -35,7 +35,8 @@ export const ImageBlockSchema = defineBlockSchema({
     version: 1,
     role: 'content',
   },
-  transformer: () => new ImageBlockTransformer(),
+  transformer: transformerConfigs =>
+    new ImageBlockTransformer(transformerConfigs),
   toModel: () => new ImageBlockModel(),
 });
 
