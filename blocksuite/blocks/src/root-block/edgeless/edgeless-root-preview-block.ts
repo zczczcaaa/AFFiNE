@@ -110,7 +110,7 @@ export class EdgelessRootPreviewBlockComponent
     this.std
       .get(FontLoaderService)
       .ready.then(() => {
-        this.surface.refresh();
+        this.surface?.refresh();
       })
       .catch(console.error);
   }
@@ -173,7 +173,9 @@ export class EdgelessRootPreviewBlockComponent
 
   private _initSlotEffects() {
     this.disposables.add(
-      this.std.get(ThemeProvider).theme$.subscribe(() => this.surface.refresh())
+      this.std
+        .get(ThemeProvider)
+        .theme$.subscribe(() => this.surface?.refresh())
     );
   }
 

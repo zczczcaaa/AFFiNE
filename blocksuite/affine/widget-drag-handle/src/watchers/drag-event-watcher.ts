@@ -70,6 +70,7 @@ import {
   containBlock,
   extractIdsFromSnapshot,
   getParentNoteBlock,
+  getSnapshotRect,
   includeTextSelection,
   isOutOfNoteBlock,
 } from '../utils.js';
@@ -878,38 +879,6 @@ export class DragEventWatcher {
     return idRemap;
   };
 
-  private readonly _getSnapshotRect = (
-    snapshot: SliceSnapshot
-  ): Bound | null => {
-    let bound: Bound | null = null;
-
-    const getBound = (block: BlockSnapshot) => {
-      if (block.flavour === 'affine:surface') {
-        if (block.props.elements) {
-          Object.values(
-            block.props.elements as Record<string, { xywh: SerializedXYWH }>
-          ).forEach(elem => {
-            if (elem.xywh) {
-              bound = bound
-                ? bound.unite(Bound.deserialize(elem.xywh))
-                : Bound.deserialize(elem.xywh);
-            }
-          });
-        }
-
-        block.children.forEach(getBound);
-      } else if (block.props.xywh) {
-        bound = bound
-          ? bound.unite(Bound.deserialize(block.props.xywh as SerializedXYWH))
-          : Bound.deserialize(block.props.xywh as SerializedXYWH);
-      }
-    };
-
-    snapshot.content.forEach(getBound);
-
-    return bound;
-  };
-
   /**
    * Rewrite the xywh of the snapshot to make the top left corner of the snapshot align with the point
    * @param snapshot
@@ -921,7 +890,7 @@ export class DragEventWatcher {
     point: Point,
     ignoreOriginalPos: boolean = false
   ) => {
-    const rect = this._getSnapshotRect(snapshot);
+    const rect = getSnapshotRect(snapshot);
 
     if (!rect) return;
     const { x: modelX, y: modelY } = point;
@@ -1204,14 +1173,21 @@ export class DragEventWatcher {
         this._cleanup();
       },
       setDragPreview: ({ source, container }) => {
-        if (!source.data?.bsEntity?.modelIds.length) {
+        if (
+          !source.data?.bsEntity?.modelIds.length ||
+          !source.data.bsEntity.snapshot
+        ) {
           return;
         }
 
-        this.previewHelper.renderDragPreview(
-          source.data?.bsEntity?.modelIds,
-          container
-        );
+        const { snapshot } = source.data.bsEntity;
+
+        this.previewHelper.renderDragPreview({
+          blockIds: source.data?.bsEntity?.modelIds,
+          snapshot,
+          container,
+          mode: this.mode ?? 'page',
+        });
       },
       setDragData: () => {
         const { fromMode, snapshot } = this._getDraggedSnapshot();

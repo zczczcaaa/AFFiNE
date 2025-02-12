@@ -184,7 +184,7 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
       x: bound.x,
       y: bound.y,
       w: width,
-      h: collapse ? height : 'inherit',
+      h: collapse ? height : 'unset',
       zIndex: this.toZIndex(),
     };
   }

@@ -5,11 +5,17 @@ import {
   EditorSettingProvider,
 } from '@blocksuite/affine-shared/services';
 import { SpecProvider } from '@blocksuite/affine-shared/utils';
-import { BlockStdScope } from '@blocksuite/block-std';
-import { type BlockViewType, type Query } from '@blocksuite/store';
+import { BlockStdScope, LifeCycleWatcher } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
+import {
+  type BlockViewType,
+  type Query,
+  type SliceSnapshot,
+} from '@blocksuite/store';
 import { signal } from '@preact/signals-core';
 
 import type { AffineDragHandleWidget } from '../drag-handle.js';
+import { getSnapshotRect } from '../utils.js';
 
 export class PreviewHelper {
   private readonly _calculateQuery = (selectedIds: string[]): Query => {
@@ -47,19 +53,56 @@ export class PreviewHelper {
     };
   };
 
-  renderDragPreview = (blockIds: string[], container: HTMLElement): void => {
+  getPreviewStd = (
+    blockIds: string[],
+    snapshot: SliceSnapshot,
+    mode: 'edgeless' | 'page'
+  ) => {
     const widget = this.widget;
     const std = widget.std;
+    const sourceGfx = std.get(GfxControllerIdentifier);
     const docModeService = std.get(DocModeProvider);
     const editorSetting = std.get(EditorSettingProvider).peek();
     const query = this._calculateQuery(blockIds as string[]);
     const store = widget.doc.doc.getStore({ query });
-    const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
+    const previewSpec = SpecProvider.getInstance().getSpec(
+      mode === 'edgeless' ? 'edgeless:preview' : 'page:preview'
+    );
     const settingSignal = signal({ ...editorSetting });
-    previewSpec.extend([
+    const extensions = [
       DocModeExtension(docModeService),
       EditorSettingExtension(settingSignal),
-    ]);
+    ];
+
+    if (mode === 'edgeless') {
+      if (!blockIds.includes(sourceGfx.surface!.id)) {
+        blockIds.push(sourceGfx.surface!.id);
+      }
+      class PreviewViewportInitializer extends LifeCycleWatcher {
+        static override key = 'preview-viewport-initializer';
+
+        override mounted(): void {
+          const rect = getSnapshotRect(snapshot);
+          if (!rect) {
+            return;
+          }
+
+          this.std.view.viewUpdated.on(payload => {
+            if (payload.view.model.flavour === 'affine:page') {
+              const gfx = this.std.get(GfxControllerIdentifier);
+
+              queueMicrotask(() => {
+                gfx.viewport.setViewportByBound(rect);
+              });
+            }
+          });
+        }
+      }
+
+      extensions.push(PreviewViewportInitializer);
+    }
+
+    previewSpec.extend(extensions);
 
     settingSignal.value = {
       ...settingSignal.value,
@@ -70,10 +113,48 @@ export class PreviewHelper {
       store,
       extensions: previewSpec.value,
     });
-    const previewTemplate = previewStd.render();
-    const noteBlock = this.widget.host.querySelector('affine-note');
 
-    container.style.width = `${noteBlock?.offsetWidth ?? noteBlock?.clientWidth ?? 500}px`;
+    let width: number = 500;
+    let height;
+
+    if (mode === 'page') {
+      const noteBlock = this.widget.host.querySelector('affine-note');
+      width = noteBlock?.offsetWidth ?? noteBlock?.clientWidth ?? 500;
+    } else {
+      const rect = getSnapshotRect(snapshot);
+      if (rect) {
+        width = rect.w;
+        height = rect.h;
+      } else {
+        height = 500;
+      }
+    }
+
+    return {
+      previewStd,
+      width,
+      height,
+    };
+  };
+
+  renderDragPreview = (options: {
+    blockIds: string[];
+    snapshot: SliceSnapshot;
+    container: HTMLElement;
+    mode: 'page' | 'edgeless';
+  }): void => {
+    const { blockIds, snapshot, container, mode } = options;
+    const { previewStd, width, height } = this.getPreviewStd(
+      blockIds,
+      snapshot,
+      mode
+    );
+    const previewTemplate = previewStd.render();
+
+    container.style.width = `${width}px`;
+    if (height) {
+      container.style.height = `${height}px`;
+    }
     container.append(previewTemplate);
   };
 

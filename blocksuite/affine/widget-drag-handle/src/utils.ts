@@ -18,7 +18,12 @@ import {
   matchModels,
 } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent, EditorHost } from '@blocksuite/block-std';
-import { Point, Rect } from '@blocksuite/global/utils';
+import {
+  Bound,
+  Point,
+  Rect,
+  type SerializedXYWH,
+} from '@blocksuite/global/utils';
 import type {
   BaseSelection,
   BlockModel,
@@ -276,4 +281,34 @@ function getHoveringNote(point: Point) {
           e.tagName.toLowerCase() === AFFINE_EDGELESS_NOTE
       ) || null
   );
+}
+
+export function getSnapshotRect(snapshot: SliceSnapshot): Bound | null {
+  let bound: Bound | null = null;
+
+  const getBound = (block: BlockSnapshot) => {
+    if (block.flavour === 'affine:surface') {
+      if (block.props.elements) {
+        Object.values(
+          block.props.elements as Record<string, { xywh: SerializedXYWH }>
+        ).forEach(elem => {
+          if (elem.xywh) {
+            bound = bound
+              ? bound.unite(Bound.deserialize(elem.xywh))
+              : Bound.deserialize(elem.xywh);
+          }
+        });
+      }
+
+      block.children.forEach(getBound);
+    } else if (block.props.xywh) {
+      bound = bound
+        ? bound.unite(Bound.deserialize(block.props.xywh as SerializedXYWH))
+        : Bound.deserialize(block.props.xywh as SerializedXYWH);
+    }
+  };
+
+  snapshot.content.forEach(getBound);
+
+  return bound;
 }
