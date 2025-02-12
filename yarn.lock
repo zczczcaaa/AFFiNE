@@ -230,7 +230,8 @@ __metadata:
     "@capacitor/app": "npm:^7.0.0"
     "@capacitor/cli": "npm:^7.0.0"
     "@capacitor/core": "npm:^7.0.0"
-    "@capgo/inappbrowser": "npm:^7.0.0"
+    "@capacitor/keyboard": "npm:^7.0.0"
+    "@capgo/inappbrowser": "npm:^7.1.0"
     "@sentry/react": "npm:^8.44.0"
     "@toeverything/infra": "workspace:*"
     "@types/react": "npm:^19.0.1"
@@ -4269,12 +4270,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@capgo/inappbrowser@npm:^7.0.0":
-  version: 7.2.16
-  resolution: "@capgo/inappbrowser@npm:7.2.16"
+"@capgo/inappbrowser@npm:^7.1.0":
+  version: 7.1.6
+  resolution: "@capgo/inappbrowser@npm:7.1.6"
   peerDependencies:
     "@capacitor/core": ">=7.0.0"
-  checksum: 10/3a28379f1d52a880f60355093f6d672730d3716e351c993a0d755218909f91ffad9d2126b34bfcfa9d3b1db28053ca607ecc698983717610dab22fd2cf207d69
+  checksum: 10/3c3062626ef511937682ee170514f5335841c1ee12c7a743ed6a908a1325dad31ed68294999204e500978fc5a06b501193e66410f3d3dc09da3d42ad09320f09
   languageName: node
   linkType: hard
 

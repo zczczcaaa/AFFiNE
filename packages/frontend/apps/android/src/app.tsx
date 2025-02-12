@@ -1,6 +1,7 @@
 import { AffineContext } from '@affine/core/components/context';
 import { AppFallback } from '@affine/core/mobile/components/app-fallback';
 import { configureMobileModules } from '@affine/core/mobile/modules';
+import { VirtualKeyboardProvider } from '@affine/core/mobile/modules/virtual-keyboard';
 import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
 import { AuthService, DefaultServerService } from '@affine/core/modules/cloud';
@@ -16,6 +17,7 @@ import { configureBrowserWorkbenchModule } from '@affine/core/modules/workbench'
 import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspace-engine';
 import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { App as CapacitorApp } from '@capacitor/app';
+import { Keyboard } from '@capacitor/keyboard';
 import { InAppBrowser } from '@capgo/inappbrowser';
 import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { OpClient } from '@toeverything/infra/op';
@@ -67,6 +69,19 @@ framework.impl(PopupWindowProvider, {
 framework.impl(ClientSchemeProvider, {
   getClientScheme() {
     return 'affine';
+  },
+});
+
+framework.impl(VirtualKeyboardProvider, {
+  addEventListener: (event, callback) => {
+    Keyboard.addListener(event as any, callback as any).catch(e => {
+      console.error(e);
+    });
+  },
+  removeAllListeners: () => {
+    Keyboard.removeAllListeners().catch(e => {
+      console.error(e);
+    });
   },
 });
 
