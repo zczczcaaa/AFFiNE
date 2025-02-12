@@ -2,6 +2,7 @@ import { notify } from '@affine/component';
 import { AffineOtherPageLayout } from '@affine/component/affine-other-page-layout';
 import { SignInPageContainer } from '@affine/component/auth-components';
 import { SignInPanel } from '@affine/core/components/sign-in';
+import { SignInBackgroundArts } from '@affine/core/components/sign-in/background-arts';
 import type { AuthSessionStatus } from '@affine/core/modules/cloud/entities/session';
 import { useI18n } from '@affine/i18n';
 import { useCallback, useEffect } from 'react';
@@ -75,9 +76,8 @@ export const SignIn = ({
 export const Component = () => {
   return (
     <AffineOtherPageLayout>
-      <div style={{ padding: '0 20px' }}>
-        <SignIn />
-      </div>
+      <SignInBackgroundArts />
+      <SignIn />
     </AffineOtherPageLayout>
   );
 };

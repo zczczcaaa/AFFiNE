@@ -2,16 +2,12 @@ import { cssVar } from '@toeverything/theme';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { globalStyle, style } from '@vanilla-extract/css';
 
-export const authModalContent = style({
-  marginTop: '30px',
-});
-
 export const authMessage = style({
-  marginTop: '30px',
   color: cssVar('textSecondaryColor'),
   fontSize: cssVar('fontXs'),
-  lineHeight: 1.5,
+  lineHeight: '20px',
 });
+
 globalStyle(`${authMessage} a`, {
   color: cssVar('linkColor'),
 });
@@ -42,14 +38,7 @@ export const linkButton = style({
   userSelect: 'none',
 });
 
-export const resendButtonWrapper = style({
-  marginTop: 20,
-});
-
 export const addSelfhostedButton = style({
-  marginTop: 10,
-  marginLeft: -5,
-  marginBottom: 16,
   color: cssVarV2('text/link'),
 });
 
@@ -62,8 +51,6 @@ export const skipDivider = style({
   gap: 12,
   alignItems: 'center',
   height: 20,
-  marginTop: 12,
-  marginBottom: 12,
 });
 
 export const skipDividerLine = style({

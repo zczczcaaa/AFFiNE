@@ -24,7 +24,7 @@ export const SignInDialog = ({
       open
       onOpenChange={() => close()}
       width={400}
-      minHeight={500}
+      height={550}
       contentOptions={{
         ['data-testid' as string]: 'auth-modal',
         style: { padding: '44px 40px 20px' },

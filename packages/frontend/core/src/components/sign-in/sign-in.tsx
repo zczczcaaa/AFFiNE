@@ -1,5 +1,10 @@
 import { Button, notify } from '@affine/component';
-import { AuthInput, ModalHeader } from '@affine/component/auth-components';
+import {
+  AuthContainer,
+  AuthContent,
+  AuthHeader,
+  AuthInput,
+} from '@affine/component/auth-components';
 import { OAuth } from '@affine/core/components/affine/auth/oauth';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { AuthService, ServerService } from '@affine/core/modules/cloud';
@@ -7,7 +12,11 @@ import type { AuthSessionStatus } from '@affine/core/modules/cloud/entities/sess
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { ServerDeploymentType } from '@affine/graphql';
 import { Trans, useI18n } from '@affine/i18n';
-import { ArrowRightBigIcon, PublishIcon } from '@blocksuite/icons/rc';
+import {
+  ArrowRightBigIcon,
+  LocalWorkspaceIcon,
+  PublishIcon,
+} from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
 import {
@@ -93,6 +102,7 @@ export const SignInStep = ({
             ...prev,
             email,
             step: 'signInWithPassword',
+            hasPassword: true,
           }));
         } else {
           if (magicLink) {
@@ -100,6 +110,7 @@ export const SignInStep = ({
               ...prev,
               email,
               step: 'signInWithEmail',
+              hasPassword: false,
             }));
           } else {
             notify.error({
@@ -113,6 +124,7 @@ export const SignInStep = ({
             ...prev,
             email,
             step: 'signInWithEmail',
+            hasPassword: false,
           }));
         } else {
           notify.error({
@@ -140,15 +152,15 @@ export const SignInStep = ({
   }, [changeState]);
 
   return (
-    <>
-      <ModalHeader
+    <AuthContainer>
+      <AuthHeader
         title={t['com.affine.auth.sign.in']()}
         subTitle={serverName}
       />
 
-      <OAuth redirectUrl={state.redirectUrl} />
+      <AuthContent>
+        <OAuth redirectUrl={state.redirectUrl} />
 
-      <div className={style.authModalContent}>
         <AuthInput
           label={t['com.affine.settings.email']()}
           placeholder={t['com.affine.auth.sign.email.placeholder']()}
@@ -190,32 +202,33 @@ export const SignInStep = ({
         </div>
         <div className={style.skipSection}>
           {!isSelfhosted &&
-            BUILD_CONFIG.isElectron &&
-            enableMultipleCloudServers && (
-              <Button
-                variant="plain"
-                className={style.addSelfhostedButton}
-                prefix={
-                  <PublishIcon className={style.addSelfhostedButtonPrefix} />
-                }
-                onClick={onAddSelfhosted}
-              >
-                {t['com.affine.auth.sign.add-selfhosted']()}
-              </Button>
-            )}
-          <div className={style.skipText}>
-            {t['com.affine.mobile.sign-in.skip.hint']()}
-          </div>
+          BUILD_CONFIG.isElectron &&
+          enableMultipleCloudServers ? (
+            <Button
+              variant="plain"
+              className={style.addSelfhostedButton}
+              prefix={
+                <PublishIcon className={style.addSelfhostedButtonPrefix} />
+              }
+              onClick={onAddSelfhosted}
+            >
+              {t['com.affine.auth.sign.add-selfhosted']()}
+            </Button>
+          ) : (
+            <div className={style.skipText}>
+              {t['com.affine.mobile.sign-in.skip.hint']()}
+            </div>
+          )}
           <Button
             variant="plain"
             onClick={onSkip}
             className={style.skipLink}
-            suffix={<ArrowRightBigIcon className={style.skipLinkIcon} />}
+            prefix={<LocalWorkspaceIcon className={style.skipLinkIcon} />}
           >
             {t['com.affine.mobile.sign-in.skip.link']()}
           </Button>
         </div>
-      </div>
-    </>
+      </AuthContent>
+    </AuthContainer>
   );
 };

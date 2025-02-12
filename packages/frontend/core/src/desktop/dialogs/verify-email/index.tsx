@@ -1,8 +1,8 @@
-import { Button, Modal, notify, Wrapper } from '@affine/component';
+import { Button, Modal, notify } from '@affine/component';
 import {
   AuthContent,
+  AuthHeader,
   AuthInput,
-  ModalHeader,
 } from '@affine/component/auth-components';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import {
@@ -106,28 +106,18 @@ export const VerifyEmailDialog = ({
         style: { padding: '44px 40px 20px' },
       }}
     >
-      <ModalHeader
+      <AuthHeader
         title={serverName}
         subTitle={t['com.affine.settings.email.action.change']()}
       />
       <AuthContent>
-        {t['com.affine.auth.verify.email.message']({ email })}
-      </AuthContent>
-
-      <Wrapper
-        marginTop={30}
-        marginBottom={50}
-        style={{
-          position: 'relative',
-        }}
-      >
+        <p>{t['com.affine.auth.verify.email.message']({ email })}</p>
         <AuthInput
           label={t['com.affine.settings.email']()}
           disabled={true}
           value={email}
         />
-      </Wrapper>
-
+      </AuthContent>
       <Button
         variant="primary"
         size="extraLarge"

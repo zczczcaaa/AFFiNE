@@ -96,7 +96,7 @@ function OAuthProvider({
       variant="primary"
       block
       size="extraLarge"
-      style={{ marginTop: 30, width: '100%' }}
+      style={{ width: '100%' }}
       prefix={icon}
       onClick={onClick}
     >

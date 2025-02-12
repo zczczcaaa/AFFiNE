@@ -1,15 +1,15 @@
 import { Logo1Icon } from '@blocksuite/icons/rc';
 import type { FC } from 'react';
 
-import { modalHeaderWrapper } from './share.css';
-export const ModalHeader: FC<{
+import { authHeaderWrapper } from './share.css';
+export const AuthHeader: FC<{
   title: string;
   subTitle?: string;
 }> = ({ title, subTitle }) => {
   return (
-    <div className={modalHeaderWrapper}>
+    <div className={authHeaderWrapper}>
       <p>
-        {title === 'AFFiNE Cloud' && <Logo1Icon className="logo" />}
+        <Logo1Icon className="logo" />
         {title}
       </p>
       <p>{subTitle}</p>
