@@ -15,7 +15,7 @@ export class ChatPanelFileChip extends SignalWatcher(
 
   override render() {
     const { state, fileName, fileType } = this.chip;
-    const isLoading = state === 'embedding' || state === 'uploading';
+    const isLoading = state === 'processing';
     const tooltip = getChipTooltip(state, fileName, this.chip.tooltip);
     const fileIcon = getAttachmentFileIcon(fileType);
     const icon = getChipIcon(state, fileIcon);

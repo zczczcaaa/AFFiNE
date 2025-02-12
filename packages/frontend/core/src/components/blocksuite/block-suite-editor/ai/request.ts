@@ -31,22 +31,29 @@ export type ToImageOptions = TextToTextOptions & {
   seed?: string;
 };
 
-export function createChatSession({
+export async function createChatSession({
   client,
   workspaceId,
   docId,
-  promptName,
+  promptName = 'Chat With AFFiNE AI',
 }: {
   client: CopilotClient;
   workspaceId: string;
   docId: string;
-  promptName: string;
+  promptName?: string;
 }) {
-  return client.createSession({
+  const sessionId = await client.createSession({
     workspaceId,
     docId,
     promptName,
   });
+  // always update the prompt name
+  await updateChatSession({
+    sessionId,
+    client,
+    promptName,
+  });
+  return sessionId;
 }
 
 export function updateChatSession({
@@ -119,7 +126,8 @@ async function createSessionMessage({
   }
   const hasAttachments = attachments && attachments.length > 0;
   const sessionId = await (providedSessionId ??
-    client.createSession({
+    createChatSession({
+      client,
       workspaceId,
       docId,
       promptName: promptName as string,

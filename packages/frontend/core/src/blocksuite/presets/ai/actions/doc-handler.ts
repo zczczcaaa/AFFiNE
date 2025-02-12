@@ -236,9 +236,14 @@ export function handleInlineAskAIAction(
     host.selection.set([selection]);
 
     selectAboveBlocks(host)
-      .then(context => {
-        assertExists(AIProvider.actions.chat);
+      .then(async context => {
+        if (!AIProvider.session || !AIProvider.actions.chat) return;
+        const sessionId = await AIProvider.session.createSession(
+          host.doc.workspace.id,
+          host.doc.id
+        );
         const stream = AIProvider.actions.chat({
+          sessionId,
           input: `${context}\n${input}`,
           stream: true,
           host,

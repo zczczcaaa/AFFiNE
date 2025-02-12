@@ -713,7 +713,7 @@ type Mutation {
   removeAvatar: RemoveAvatar!
 
   """remove a doc from context"""
-  removeContextDoc(options: RemoveContextFileInput!): Boolean!
+  removeContextDoc(options: RemoveContextDocInput!): Boolean!
   removeWorkspaceFeature(feature: FeatureType!, workspaceId: String!): Boolean!
   resumeSubscription(idempotencyKey: String @deprecated(reason: "use header `Idempotency-Key`"), plan: SubscriptionPlan = Pro, workspaceId: String): SubscriptionType!
   revoke(userId: String!, workspaceId: String!): Boolean!
@@ -891,9 +891,9 @@ type RemoveAvatar {
   success: Boolean!
 }
 
-input RemoveContextFileInput {
+input RemoveContextDocInput {
   contextId: String!
-  fileId: String!
+  docId: String!
 }
 
 input RevokeDocUserRoleInput {

@@ -25,6 +25,9 @@ export class ChatPanelDocChip extends SignalWatcher(
   accessor chip!: DocChip;
 
   @property({ attribute: false })
+  accessor addChip!: (chip: ChatChip) => void;
+
+  @property({ attribute: false })
   accessor updateChip!: (chip: ChatChip, options: Partial<BaseChip>) => void;
 
   @property({ attribute: false })
@@ -61,9 +64,9 @@ export class ChatPanelDocChip extends SignalWatcher(
     if (
       changedProperties.has('chip') &&
       changedProperties.get('chip')?.state === 'candidate' &&
-      this.chip.state === 'embedding'
+      this.chip.state === 'processing'
     ) {
-      this.embedDocChip().catch(console.error);
+      this.processDocChip().catch(console.error);
     }
   }
 
@@ -74,8 +77,9 @@ export class ChatPanelDocChip extends SignalWatcher(
 
   private readonly onChipClick = async () => {
     if (this.chip.state === 'candidate') {
-      this.updateChip(this.chip, {
-        state: 'embedding',
+      this.addChip({
+        ...this.chip,
+        state: 'processing',
       });
     }
   };
@@ -86,11 +90,11 @@ export class ChatPanelDocChip extends SignalWatcher(
 
   private readonly autoUpdateChip = () => {
     if (this.chip.state !== 'candidate') {
-      this.embedDocChip().catch(console.error);
+      this.processDocChip().catch(console.error);
     }
   };
 
-  private readonly embedDocChip = async () => {
+  private readonly processDocChip = async () => {
     try {
       const doc = this.docDisplayConfig.getDoc(this.chip.docId);
       if (!doc) {
@@ -111,14 +115,14 @@ export class ChatPanelDocChip extends SignalWatcher(
     } catch (e) {
       this.updateChip(this.chip, {
         state: 'failed',
-        tooltip: e instanceof Error ? e.message : 'Failed to embed document',
+        tooltip: e instanceof Error ? e.message : 'Failed to process document',
       });
     }
   };
 
   override render() {
     const { state, docId } = this.chip;
-    const isLoading = state === 'embedding' || state === 'uploading';
+    const isLoading = state === 'processing';
     const getIcon = this.docDisplayConfig.getIcon(docId);
     const docIcon = typeof getIcon === 'function' ? getIcon() : getIcon;
     const icon = getChipIcon(state, docIcon);

@@ -259,6 +259,9 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
   accessor chatContextValue!: ChatContextValue;
 
   @property({ attribute: false })
+  accessor chatSessionId!: string | undefined;
+
+  @property({ attribute: false })
   accessor updateContext!: (context: Partial<ChatContextValue>) => void;
 
   @property({ attribute: false })
@@ -266,6 +269,44 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
 
   @property({ attribute: false })
   accessor networkSearchConfig!: AINetworkSearchConfig;
+
+  private _lastPromptName: string | null = null;
+
+  private get _isNetworkActive() {
+    return (
+      !!this.networkSearchConfig.visible.value &&
+      !!this.networkSearchConfig.enabled.value
+    );
+  }
+
+  private get _isNetworkDisabled() {
+    return (
+      !!this.chatContextValue.images.length ||
+      !!this.chatContextValue.chips.filter(chip => chip.state !== 'candidate')
+        .length
+    );
+  }
+
+  private get _promptName() {
+    if (this._isNetworkDisabled) {
+      return 'Chat With AFFiNE AI';
+    }
+    return this._isNetworkActive
+      ? 'Search With AFFiNE AI'
+      : 'Chat With AFFiNE AI';
+  }
+
+  private async _updatePromptName() {
+    if (this._lastPromptName !== this._promptName) {
+      this._lastPromptName = this._promptName;
+      if (this.chatSessionId) {
+        await AIProvider.session?.updateSession(
+          this.chatSessionId,
+          this._promptName
+        );
+      }
+    }
+  }
 
   private _addImages(images: File[]) {
     const oldImages = this.chatContextValue.images;
@@ -363,12 +404,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
     const { images, status } = this.chatContextValue;
     const hasImages = images.length > 0;
     const maxHeight = hasImages ? 272 + 2 : 200 + 2;
-    const networkDisabled =
-      !!this.chatContextValue.images.length ||
-      !!this.chatContextValue.chips.filter(chip => chip.state !== 'candidate')
-        .length;
-    const networkActive = !!this.networkSearchConfig.enabled.value;
-    const uploadDisabled = networkActive && !networkDisabled;
+    const uploadDisabled = this._isNetworkActive && !this._isNetworkDisabled;
     return html`<style>
         .chat-panel-input {
           border-color: ${this.focused
@@ -461,9 +497,9 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
                 <div
                   class="chat-network-search"
                   data-testid="chat-network-search"
-                  aria-disabled=${networkDisabled}
-                  data-active=${networkActive}
-                  @click=${networkDisabled
+                  aria-disabled=${this._isNetworkDisabled}
+                  data-active=${this._isNetworkActive}
+                  @click=${this._isNetworkDisabled
                     ? undefined
                     : this._toggleNetworkSearch}
                   @pointerdown=${stopPropagation}
@@ -520,11 +556,9 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
   send = async (text: string) => {
     const { status, markdown, chips } = this.chatContextValue;
     if (status === 'loading' || status === 'transmitting') return;
+    if (!text) return;
 
     const { images } = this.chatContextValue;
-    if (!text) {
-      return;
-    }
     const { doc } = this.host;
 
     this.updateContext({
@@ -534,6 +568,8 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       quote: '',
       markdown: '',
     });
+
+    await this._updatePromptName();
 
     const attachments = await Promise.all(
       images?.map(image => readBlobAsURL(image))
@@ -569,6 +605,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
           markdown: chip.markdown?.value || '',
         }));
       const stream = AIProvider.actions.chat?.({
+        sessionId: this.chatSessionId,
         input: userInput,
         docs: docs,
         docId: doc.id,
@@ -594,19 +631,13 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
 
         this.updateContext({ status: 'success' });
 
-        if (!this.chatContextValue.chatSessionId) {
-          this.updateContext({
-            chatSessionId: AIProvider.LAST_ROOT_SESSION_ID,
-          });
-        }
-
         const { items } = this.chatContextValue;
         const last = items[items.length - 1] as ChatMessage;
         if (!last.id) {
           const historyIds = await AIProvider.histories?.ids(
             doc.workspace.id,
             doc.id,
-            { sessionId: this.chatContextValue.chatSessionId }
+            { sessionId: this.chatSessionId }
           );
           if (!historyIds || !historyIds[0]) return;
           last.id = historyIds[0].messages.at(-1)?.id ?? '';

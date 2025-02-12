@@ -1,6 +1,8 @@
 import { showAILoginRequiredAtom } from '@affine/core/components/affine/auth/ai-login-required';
 import {
+  addContextDocMutation,
   cleanupCopilotSessionMutation,
+  createCopilotContextMutation,
   createCopilotMessageMutation,
   createCopilotSessionMutation,
   forkCopilotSessionMutation,
@@ -9,8 +11,11 @@ import {
   getCopilotSessionsQuery,
   GraphQLError,
   type GraphQLQuery,
+  listContextDocsAndFilesQuery,
+  listContextQuery,
   type QueryOptions,
   type QueryResponse,
+  removeContextDocMutation,
   type RequestOptions,
   updateCopilotSessionMutation,
   UserFriendlyError,
@@ -207,6 +212,74 @@ export class CopilotClient {
     } catch (err) {
       throw resolveError(err);
     }
+  }
+
+  async createContext(workspaceId: string, sessionId: string) {
+    const res = await this.gql({
+      query: createCopilotContextMutation,
+      variables: {
+        workspaceId,
+        sessionId,
+      },
+    });
+    return res.createCopilotContext;
+  }
+
+  async getContextId(workspaceId: string, sessionId: string) {
+    const res = await this.gql({
+      query: listContextQuery,
+      variables: {
+        workspaceId,
+        sessionId,
+      },
+    });
+    return res.currentUser?.copilot?.contexts?.[0]?.id;
+  }
+
+  async addContextDoc(options: OptionsField<typeof addContextDocMutation>) {
+    const res = await this.gql({
+      query: addContextDocMutation,
+      variables: {
+        options,
+      },
+    });
+    return res.addContextDoc;
+  }
+
+  async removeContextDoc(
+    options: OptionsField<typeof removeContextDocMutation>
+  ) {
+    const res = await this.gql({
+      query: removeContextDocMutation,
+      variables: {
+        options,
+      },
+    });
+    return res.removeContextDoc;
+  }
+
+  async addContextFile() {
+    return;
+  }
+
+  async removeContextFile() {
+    return;
+  }
+
+  async getContextDocsAndFiles(
+    workspaceId: string,
+    sessionId: string,
+    contextId: string
+  ) {
+    const res = await this.gql({
+      query: listContextDocsAndFilesQuery,
+      variables: {
+        workspaceId,
+        sessionId,
+        contextId,
+      },
+    });
+    return res.currentUser?.copilot?.contexts?.[0];
   }
 
   async chatText({

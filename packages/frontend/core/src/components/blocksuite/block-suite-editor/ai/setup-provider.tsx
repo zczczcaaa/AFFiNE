@@ -1,12 +1,10 @@
 import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import { toggleGeneralAIOnboarding } from '@affine/core/components/affine/ai-onboarding/apis';
-import type { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import type { GlobalDialogService } from '@affine/core/modules/dialogs';
 import {
   type getCopilotHistoriesQuery,
   type RequestOptions,
 } from '@affine/graphql';
-import { UnauthorizedError } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
 import { z } from 'zod';
 
@@ -39,80 +37,19 @@ const processTypeToPromptName = new Map(
   })
 );
 
-// a single workspace should have only a single chat session
-// user-id:workspace-id:doc-id -> chat session id
-const chatSessions = new Map<
-  string,
-  { getSessionId: Promise<string>; promptName: string }
->();
-
 export function setupAIProvider(
   client: CopilotClient,
-  globalDialogService: GlobalDialogService,
-  networkSearchService: AINetworkSearchService
+  globalDialogService: GlobalDialogService
 ) {
-  function getChatPrompt(options: BlockSuitePresets.ChatOptions) {
-    const { attachments, docs } = options;
-    if (attachments?.length || docs?.length) {
-      return 'Chat With AFFiNE AI';
-    }
-    const { enabled, visible } = networkSearchService;
-    return visible.value && enabled.value
-      ? 'Search With AFFiNE AI'
-      : 'Chat With AFFiNE AI';
-  }
-  async function getChatSessionId(options: BlockSuitePresets.ChatOptions) {
-    const userId = (await AIProvider.userInfo)?.id;
-
-    if (!userId) {
-      throw new UnauthorizedError();
-    }
-
-    const { workspaceId, docId } = options;
-    const storeKey = `${userId}:${workspaceId}:${docId}`;
-    const promptName = getChatPrompt(options);
-    if (!chatSessions.has(storeKey)) {
-      chatSessions.set(storeKey, {
-        getSessionId: createChatSession({
-          client,
-          workspaceId,
-          docId,
-          promptName,
-        }).then(sessionId => {
-          return updateChatSession({
-            sessionId,
-            client,
-            promptName,
-          });
-        }),
-        promptName,
-      });
-    }
-    try {
-      /* oxlint-disable @typescript-eslint/no-non-null-assertion */
-      const { getSessionId, promptName: prevName } =
-        chatSessions.get(storeKey)!;
-      const sessionId = await getSessionId;
-      //update prompt name
-      if (prevName !== promptName) {
-        await updateChatSession({
-          sessionId,
-          client,
-          promptName,
-        });
-        chatSessions.set(storeKey, { getSessionId, promptName });
-      }
-      return sessionId;
-    } catch (err) {
-      // do not cache the error
-      chatSessions.delete(storeKey);
-      throw err;
-    }
-  }
-
   //#region actions
   AIProvider.provide('chat', options => {
-    const sessionId = options.sessionId ?? getChatSessionId(options);
+    const sessionId =
+      options.sessionId ??
+      createChatSession({
+        client,
+        workspaceId: options.workspaceId,
+        docId: options.docId,
+      });
     const { input, docs, ...rest } = options;
     const params = docs?.length
       ? {
@@ -472,6 +409,56 @@ Could you make a new website based on these notes and send back just the html fi
     });
   });
   //#endregion
+
+  AIProvider.provide('session', {
+    createSession: async (
+      workspaceId: string,
+      docId: string,
+      promptName?: string
+    ) => {
+      return createChatSession({
+        client,
+        workspaceId,
+        docId,
+        promptName,
+      });
+    },
+    updateSession: async (sessionId: string, promptName: string) => {
+      return updateChatSession({
+        client,
+        sessionId,
+        promptName,
+      });
+    },
+  });
+
+  AIProvider.provide('context', {
+    createContext: async (workspaceId: string, sessionId: string) => {
+      return client.createContext(workspaceId, sessionId);
+    },
+    getContextId: async (workspaceId: string, sessionId: string) => {
+      return client.getContextId(workspaceId, sessionId);
+    },
+    addContextDoc: async (options: { contextId: string; docId: string }) => {
+      return client.addContextDoc(options);
+    },
+    removeContextDoc: async (options: { contextId: string; docId: string }) => {
+      return client.removeContextDoc(options);
+    },
+    addContextFile: async () => {
+      return client.addContextFile();
+    },
+    removeContextFile: async () => {
+      return client.removeContextFile();
+    },
+    getContextDocsAndFiles: async (
+      workspaceId: string,
+      sessionId: string,
+      contextId: string
+    ) => {
+      return client.getContextDocsAndFiles(workspaceId, sessionId, contextId);
+    },
+  });
 
   AIProvider.provide('histories', {
     actions: async (

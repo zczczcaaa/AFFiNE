@@ -128,6 +128,9 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   accessor chatContextValue!: ChatContextValue;
 
   @property({ attribute: false })
+  accessor chatSessionId!: string | undefined;
+
+  @property({ attribute: false })
   accessor updateContext!: (context: Partial<ChatContextValue>) => void;
 
   @property({ attribute: false })
@@ -397,8 +400,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   retry = async () => {
     const { doc } = this.host;
     try {
-      const { chatSessionId } = this.chatContextValue;
-      if (!chatSessionId) return;
+      if (!this.chatSessionId) return;
 
       const abortController = new AbortController();
       const items = [...this.chatContextValue.items];
@@ -410,7 +412,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
       this.updateContext({ items, status: 'loading', error: null });
 
       const stream = AIProvider.actions.chat?.({
-        sessionId: chatSessionId,
+        sessionId: this.chatSessionId,
         retry: true,
         docId: doc.id,
         workspaceId: doc.workspace.id,
@@ -441,7 +443,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   };
 
   renderEditorActions(item: ChatMessage, isLast: boolean) {
-    const { status, chatSessionId } = this.chatContextValue;
+    const { status } = this.chatContextValue;
 
     if (item.role !== 'assistant') return nothing;
 
@@ -465,7 +467,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         .actions=${actions}
         .content=${content}
         .isLast=${isLast}
-        .chatSessionId=${chatSessionId ?? undefined}
+        .chatSessionId=${this.chatSessionId}
         .messageId=${messageId}
         .withMargin=${true}
         .retry=${() => this.retry()}
@@ -475,7 +477,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
             .actions=${actions}
             .host=${host}
             .content=${content}
-            .chatSessionId=${chatSessionId ?? undefined}
+            .chatSessionId=${this.chatSessionId}
             .messageId=${messageId ?? undefined}
             .withMargin=${true}
           ></chat-action-list>`

@@ -10,10 +10,7 @@ import {
   getBlockSuiteEditorTitle,
   waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
-import {
-  clickSideBarAllPageButton,
-  clickSideBarUseAvatar,
-} from '@affine-test/kit/utils/sidebar';
+import { clickSideBarAllPageButton } from '@affine-test/kit/utils/sidebar';
 import { createLocalWorkspace } from '@affine-test/kit/utils/workspace';
 import { expect, type Page } from '@playwright/test';
 
@@ -394,20 +391,12 @@ test.describe('chat panel', () => {
     await page.waitForTimeout(200);
     await createLocalWorkspace({ name: 'test' }, page);
     await clickNewPageButton(page);
-    await clickSideBarUseAvatar(page);
-    await page.getByTestId('workspace-modal-account-settings-option').click();
-    await page.getByTestId('experimental-features-trigger').click();
-    await page
-      .getByTestId('experimental-prompt')
-      .getByTestId('affine-checkbox')
-      .click();
-    await page.getByTestId('experimental-confirm-button').click();
-    await page.getByTestId('enable_ai_network_search').click();
-    await page.getByTestId('modal-close-button').click();
+
     await openChat(page);
     await page.getByTestId('chat-network-search').click();
     await typeChatSequentially(page, 'What is the weather in Shanghai today?');
     await page.keyboard.press('Enter');
+    await page.waitForTimeout(3000);
     let history = await collectChat(page);
     expect(history[0]).toEqual({
       name: 'You',
@@ -423,6 +412,7 @@ test.describe('chat panel', () => {
     await page.getByTestId('chat-network-search').click();
     await typeChatSequentially(page, 'What is the weather in Shanghai today?');
     await page.keyboard.press('Enter');
+    await page.waitForTimeout(3000);
     history = await collectChat(page);
     expect(history[0]).toEqual({
       name: 'You',
@@ -770,11 +760,13 @@ test.describe('chat with doc', () => {
     // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
     expect(await chip.getAttribute('data-state')).toBe('candidate');
     await chip.click();
+    await page.waitForTimeout(1000);
     // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
     expect(await chip.getAttribute('data-state')).toBe('success');
 
     await typeChatSequentially(page, 'What is AFFiNE AI?');
     await page.keyboard.press('Enter');
+    await page.waitForTimeout(3000);
     const history = await collectChat(page);
     expect(history[0]).toEqual({
       name: 'You',
@@ -786,5 +778,13 @@ test.describe('chat with doc', () => {
     ).toBeGreaterThan(0);
     await clearChat(page);
     expect((await collectChat(page)).length).toBe(0);
+
+    await page.reload();
+    await page.waitForTimeout(1000);
+    await openChat(page);
+    expect(await chipTitle.textContent()).toBe('AFFiNE AI');
+    const chip2 = await page.getByTestId('chat-panel-chip');
+    // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
+    expect(await chip2.getAttribute('data-state')).toBe('success');
   });
 });

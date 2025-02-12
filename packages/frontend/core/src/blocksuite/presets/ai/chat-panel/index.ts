@@ -7,7 +7,7 @@ import {
   NotificationProvider,
   type SpecBuilder,
 } from '@blocksuite/affine/blocks';
-import { debounce, WithDisposable } from '@blocksuite/affine/global/utils';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import type { Store } from '@blocksuite/affine/store';
 import { css, html, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
@@ -31,8 +31,10 @@ import type {
   ChatContextValue,
   ChatItem,
   DocChip,
+  FileChip,
 } from './chat-context';
 import type { ChatPanelMessages } from './chat-panel-messages';
+import { isDocContext } from './components/utils';
 
 export class ChatPanel extends WithDisposable(ShadowlessElement) {
   static override styles = css`
@@ -113,52 +115,89 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   private readonly _chatMessages: Ref<ChatPanelMessages> =
     createRef<ChatPanelMessages>();
 
-  private _resettingCounter = 0;
+  // request counter to track the latest request
+  private _updateHistoryCounter = 0;
 
-  private readonly _resetItems = debounce(() => {
-    const counter = ++this._resettingCounter;
+  private readonly _updateHistory = async () => {
+    const { doc } = this;
     this.isLoading = true;
-    (async () => {
-      const { doc } = this;
 
-      const [histories, actions] = await Promise.all([
-        AIProvider.histories?.chats(doc.workspace.id, doc.id, { fork: false }),
-        AIProvider.histories?.actions(doc.workspace.id, doc.id),
-      ]);
+    const currentRequest = ++this._updateHistoryCounter;
 
-      if (counter !== this._resettingCounter) return;
+    const [histories, actions] = await Promise.all([
+      AIProvider.histories?.chats(doc.workspace.id, doc.id, { fork: false }),
+      AIProvider.histories?.actions(doc.workspace.id, doc.id),
+    ]);
 
-      const items: ChatItem[] = actions ? [...actions] : [];
+    // Check if this is still the latest request
+    if (currentRequest !== this._updateHistoryCounter) {
+      return;
+    }
 
-      if (histories?.at(-1)) {
-        const history = histories.at(-1);
-        if (!history) return;
-        this.chatContextValue.chatSessionId = history.sessionId;
-        items.push(...history.messages);
-        AIProvider.LAST_ROOT_SESSION_ID = history.sessionId;
-      }
+    const items: ChatItem[] = actions ? [...actions] : [];
 
-      const { chips } = this.chatContextValue;
-      const defaultChip: DocChip = {
-        docId: this.doc.id,
-        state: 'candidate',
-      };
-      const nextChips =
-        items.length === 0 && chips.length === 0 ? [defaultChip] : chips;
-      this.chatContextValue = {
-        ...this.chatContextValue,
-        items: items.sort((a, b) => {
-          return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
-        }),
-        chips: nextChips,
-      };
+    if (histories?.at(-1)) {
+      const history = histories.at(-1);
+      if (!history) return;
+      items.push(...history.messages);
+      AIProvider.LAST_ROOT_SESSION_ID = history.sessionId;
+    }
 
-      this.isLoading = false;
-      this._scrollToEnd();
-    })().catch(console.error);
-  }, 200);
+    this.chatContextValue = {
+      ...this.chatContextValue,
+      items: items.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      ),
+    };
+
+    this.isLoading = false;
+    this._scrollToEnd();
+  };
+
+  private readonly _updateChips = async () => {
+    if (!this._chatSessionId || !this._chatContextId) return;
+
+    const candidateChip: DocChip = {
+      docId: this.doc.id,
+      state: 'candidate',
+    };
+    let chips: (DocChip | FileChip)[] = [];
+    if (this._chatContextId) {
+      const { docs = [], files = [] } =
+        (await AIProvider.context?.getContextDocsAndFiles(
+          this.doc.workspace.id,
+          this._chatSessionId,
+          this._chatContextId
+        )) || {};
+      const list = [...docs, ...files].sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+      chips = list.map(item => {
+        let chip: DocChip | FileChip;
+        if (isDocContext(item)) {
+          chip = {
+            docId: item.id,
+            state: 'processing',
+          };
+        } else {
+          chip = {
+            fileId: item.id,
+            state: item.status === 'finished' ? 'success' : item.status,
+            fileName: item.name,
+            fileType: '',
+          };
+        }
+        return chip;
+      });
+    }
+
+    this.chatContextValue = {
+      ...this.chatContextValue,
+      chips: chips.length === 0 ? [candidateChip] : chips,
+    };
+  };
 
   @property({ attribute: false })
   accessor host!: EditorHost;
@@ -191,8 +230,11 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     status: 'idle',
     error: null,
     markdown: '',
-    chatSessionId: null,
   };
+
+  private _chatSessionId: string | undefined;
+
+  private _chatContextId: string | undefined;
 
   private readonly _scrollToEnd = () => {
     this._chatMessages.value?.scrollToEnd();
@@ -214,26 +256,40 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       })
     ) {
       await AIProvider.histories?.cleanup(this.doc.workspace.id, this.doc.id, [
-        this.chatContextValue.chatSessionId ?? '',
+        this._chatSessionId ?? '',
         ...(
           this.chatContextValue.items.filter(
             item => 'sessionId' in item
           ) as ChatAction[]
         ).map(item => item.sessionId),
       ]);
-      this.chatContextValue.chatSessionId = null;
       notification.toast('History cleared');
-      this._resetItems();
+      await this._updateHistory();
     }
+  };
+
+  private readonly _initPanel = async () => {
+    const userId = (await AIProvider.userInfo)?.id;
+    if (!userId) return;
+
+    this._chatSessionId = await AIProvider.session?.createSession(
+      this.doc.workspace.id,
+      this.doc.id
+    );
+    if (this._chatSessionId) {
+      this._chatContextId = await AIProvider.context?.createContext(
+        this.doc.workspace.id,
+        this._chatSessionId
+      );
+    }
+    await this._updateHistory();
+    await this._updateChips();
   };
 
   protected override updated(_changedProperties: PropertyValues) {
     if (_changedProperties.has('doc')) {
-      requestAnimationFrame(() => {
-        this.chatContextValue.chatSessionId = null;
-        // TODO get from CopilotContext
-        this.chatContextValue.chips = [];
-        this._resetItems();
+      requestAnimationFrame(async () => {
+        await this._initPanel();
       });
     }
 
@@ -266,15 +322,13 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
           event === 'finished' &&
           (status === 'idle' || status === 'success')
         ) {
-          this._resetItems();
+          this._updateHistory().catch(console.error);
         }
       })
     );
     this._disposables.add(
-      AIProvider.slots.userInfo.on(userInfo => {
-        if (userInfo) {
-          this._resetItems();
-        }
+      AIProvider.slots.userInfo.on(async () => {
+        await this._initPanel();
       })
     );
     this._disposables.add(
@@ -318,6 +372,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       <chat-panel-messages
         ${ref(this._chatMessages)}
         .chatContextValue=${this.chatContextValue}
+        .chatSessionId=${this._chatSessionId}
         .updateContext=${this.updateContext}
         .host=${this.host}
         .isLoading=${this.isLoading}
@@ -326,12 +381,14 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       <chat-panel-chips
         .host=${this.host}
         .chatContextValue=${this.chatContextValue}
+        .chatContextId=${this._chatContextId}
         .updateContext=${this.updateContext}
         .docDisplayConfig=${this.docDisplayConfig}
         .docSearchMenuConfig=${this.docSearchMenuConfig}
       ></chat-panel-chips>
       <chat-panel-input
         .chatContextValue=${this.chatContextValue}
+        .chatSessionId=${this._chatSessionId}
         .networkSearchConfig=${this.networkSearchConfig}
         .updateContext=${this.updateContext}
         .host=${this.host}

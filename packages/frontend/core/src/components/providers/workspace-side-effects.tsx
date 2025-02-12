@@ -8,7 +8,6 @@ import { SyncAwareness } from '@affine/core/components/affine/awareness';
 import { useRegisterFindInPageCommands } from '@affine/core/components/hooks/affine/use-register-find-in-page-commands';
 import { useRegisterWorkspaceCommands } from '@affine/core/components/hooks/use-register-workspace-commands';
 import { OverCapacityNotification } from '@affine/core/components/over-capacity';
-import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import {
   EventSourceService,
   FetchService,
@@ -144,7 +143,6 @@ export const WorkspaceSideEffects = () => {
   const graphqlService = useService(GraphQLService);
   const eventSourceService = useService(EventSourceService);
   const fetchService = useService(FetchService);
-  const networkSearchService = useService(AINetworkSearchService);
 
   useEffect(() => {
     const dispose = setupAIProvider(
@@ -153,8 +151,7 @@ export const WorkspaceSideEffects = () => {
         fetchService.fetch,
         eventSourceService.eventSource
       ),
-      globalDialogService,
-      networkSearchService
+      globalDialogService
     );
     return () => {
       dispose();
@@ -164,7 +161,6 @@ export const WorkspaceSideEffects = () => {
     fetchService,
     workspaceDialogService,
     graphqlService,
-    networkSearchService,
     globalDialogService,
   ]);
 

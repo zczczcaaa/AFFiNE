@@ -42,6 +42,11 @@ export interface AddContextDocInput {
   docId: Scalars['String']['input'];
 }
 
+export interface RemoveContextDocInput {
+  contextId: Scalars['String']['input'];
+  docId: Scalars['String']['input'];
+}
+
 export interface AlreadyInSpaceDataType {
   __typename?: 'AlreadyInSpaceDataType';
   spaceId: Scalars['String']['output'];
@@ -1013,7 +1018,7 @@ export interface MutationReleaseDeletedBlobsArgs {
 }
 
 export interface MutationRemoveContextDocArgs {
-  options: RemoveContextFileInput;
+  options: RemoveContextDocInput;
 }
 
 export interface MutationRemoveWorkspaceFeatureArgs {
@@ -1308,11 +1313,6 @@ export interface QueryTooLongDataType {
 export interface RemoveAvatar {
   __typename?: 'RemoveAvatar';
   success: Scalars['Boolean']['output'];
-}
-
-export interface RemoveContextFileInput {
-  contextId: Scalars['String']['input'];
-  fileId: Scalars['String']['input'];
 }
 
 export interface RevokeDocUserRoleInput {
@@ -1952,26 +1952,54 @@ export type AddContextDocMutationVariables = Exact<{
   options: AddContextDocInput;
 }>;
 
+export type RemoveContextDocMutationVariables = Exact<{
+  options: RemoveContextDocInput;
+}>;
+
 export type AddContextDocMutation = {
   __typename?: 'Mutation';
   addContextDoc: Array<{
     __typename?: 'CopilotContextListItem';
     id: string;
-    createdAt: number;
-    name: string | null;
-    chunkSize: number | null;
-    status: ContextFileStatus | null;
-    blobId: string | null;
   }>;
 };
-
-export type RemoveContextDocMutationVariables = Exact<{
-  options: RemoveContextFileInput;
-}>;
 
 export type RemoveContextDocMutation = {
   __typename?: 'Mutation';
   removeContextDoc: boolean;
+};
+
+export type ListContextDocsAndFilesQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  sessionId: Scalars['String']['input'];
+  contextId: Scalars['String']['input'];
+}>;
+
+export type ListContextDocsAndFilesQuery = {
+  __typename?: 'Query';
+  currentUser: {
+    __typename?: 'UserType';
+    copilot: {
+      __typename?: 'Copilot';
+      contexts: Array<{
+        __typename?: 'CopilotContext';
+        docs: Array<{
+          __typename?: 'CopilotContextDoc';
+          id: string;
+          createdAt: number;
+        }>;
+        files: Array<{
+          __typename?: 'CopilotContextFile';
+          id: string;
+          name: string;
+          blobId: string;
+          chunkSize: number;
+          status: ContextFileStatus;
+          createdAt: number;
+        }>;
+      }>;
+    };
+  } | null;
 };
 
 export type ListContextQueryVariables = Exact<{
@@ -3371,6 +3399,11 @@ export type Queries =
       name: 'listBlobsQuery';
       variables: ListBlobsQueryVariables;
       response: ListBlobsQuery;
+    }
+  | {
+      name: 'listContextDocsAndFilesQuery';
+      variables: ListContextDocsAndFilesQueryVariables;
+      response: ListContextDocsAndFilesQuery;
     }
   | {
       name: 'listContextQuery';
