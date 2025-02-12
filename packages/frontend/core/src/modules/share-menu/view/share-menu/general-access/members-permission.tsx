@@ -1,12 +1,16 @@
 import { Menu, MenuItem, MenuTrigger } from '@affine/component';
+import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
+import { DocGrantedUsersService } from '@affine/core/modules/permissions';
+import { ShareInfoService } from '@affine/core/modules/share-doc';
 import { DocRole } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
-import { useCallback, useMemo, useState } from 'react';
+import { useLiveData, useService } from '@toeverything/infra';
+import { useCallback, useMemo } from 'react';
 
 import { PlanTag } from '../plan-tag';
 import * as styles from './styles.css';
 
-const getRoleName = (role: DocRole, t: ReturnType<typeof useI18n>) => {
+const getRoleName = (t: ReturnType<typeof useI18n>, role?: DocRole) => {
   switch (role) {
     case DocRole.Manager:
       return t['com.affine.share-menu.option.permission.can-manage']();
@@ -18,7 +22,7 @@ const getRoleName = (role: DocRole, t: ReturnType<typeof useI18n>) => {
       return '';
   }
 };
-// TODO(@JimmFly): impl the real permission
+
 export const MembersPermission = ({
   openPaywallModal,
   hittingPaywall,
@@ -29,32 +33,44 @@ export const MembersPermission = ({
   disabled?: boolean;
 }) => {
   const t = useI18n();
-  const [docRole, setDocRole] = useState<DocRole>(DocRole.Manager);
-  const currentRoleName = useMemo(() => getRoleName(docRole, t), [docRole, t]);
+  const shareInfoService = useService(ShareInfoService);
+  const docGrantedUsersService = useService(DocGrantedUsersService);
+  const docDefaultRole = useLiveData(
+    shareInfoService.shareInfo.info$
+  )?.defaultRole;
+  const currentRoleName = useMemo(
+    () => getRoleName(t, docDefaultRole),
+    [docDefaultRole, t]
+  );
 
-  const changePermission = useCallback((newPermission: DocRole) => {
-    setDocRole(newPermission);
-  }, []);
+  const changePermission = useCallback(
+    async (docRole: DocRole) => {
+      await docGrantedUsersService.updateDocDefaultRole(docRole);
+      shareInfoService.shareInfo.revalidate();
+    },
+    [docGrantedUsersService, shareInfoService.shareInfo]
+  );
 
-  const selectManage = useCallback(() => {
-    changePermission(DocRole.Manager);
+  const selectManage = useAsyncCallback(async () => {
+    await changePermission(DocRole.Manager);
   }, [changePermission]);
 
-  const selectEdit = useCallback(() => {
+  const selectEdit = useAsyncCallback(async () => {
     if (hittingPaywall) {
       openPaywallModal?.();
       return;
     }
-    changePermission(DocRole.Editor);
+    await changePermission(DocRole.Editor);
   }, [changePermission, hittingPaywall, openPaywallModal]);
 
-  const selectRead = useCallback(() => {
+  const selectRead = useAsyncCallback(async () => {
     if (hittingPaywall) {
       openPaywallModal?.();
       return;
     }
-    changePermission(DocRole.Reader);
+    await changePermission(DocRole.Reader);
   }, [changePermission, hittingPaywall, openPaywallModal]);
+
   return (
     <div className={styles.rowContainerStyle}>
       <div className={styles.labelStyle}>
@@ -69,7 +85,7 @@ export const MembersPermission = ({
             <>
               <MenuItem
                 onSelect={selectManage}
-                selected={docRole === DocRole.Manager}
+                selected={docDefaultRole === DocRole.Manager}
               >
                 <div className={styles.publicItemRowStyle}>
                   {t['com.affine.share-menu.option.permission.can-manage']()}
@@ -77,7 +93,7 @@ export const MembersPermission = ({
               </MenuItem>
               <MenuItem
                 onSelect={selectEdit}
-                selected={docRole === DocRole.Editor}
+                selected={docDefaultRole === DocRole.Editor}
               >
                 <div className={styles.publicItemRowStyle}>
                   <div className={styles.tagContainerStyle}>
@@ -88,7 +104,7 @@ export const MembersPermission = ({
               </MenuItem>
               <MenuItem
                 onSelect={selectRead}
-                selected={docRole === DocRole.Reader}
+                selected={docDefaultRole === DocRole.Reader}
               >
                 <div className={styles.publicItemRowStyle}>
                   <div className={styles.tagContainerStyle}>

@@ -6,6 +6,8 @@ import {
   grantDocUserRolesMutation,
   type PaginationInput,
   revokeDocUserRolesMutation,
+  type UpdateDocDefaultRoleInput,
+  updateDocDefaultRoleMutation,
   updateDocUserRoleMutation,
 } from '@affine/graphql';
 import { Store } from '@toeverything/infra';
@@ -91,5 +93,19 @@ export class DocGrantedUsersStore extends Store {
     });
 
     return res.updateDocUserRole;
+  }
+
+  async updateDocDefaultRole(input: UpdateDocDefaultRoleInput) {
+    if (!this.workspaceServerService.server) {
+      throw new Error('No Server');
+    }
+    const res = await this.workspaceServerService.server.gql({
+      query: updateDocDefaultRoleMutation,
+      variables: {
+        input,
+      },
+    });
+
+    return res.updateDocDefaultRole;
   }
 }

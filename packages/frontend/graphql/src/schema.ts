@@ -359,6 +359,7 @@ export enum DocRole {
 
 export interface DocType {
   __typename?: 'DocType';
+  defaultRole: DocRole;
   /** paginated doc granted users list */
   grantedUsersList: PaginatedGrantedDocUserType;
   id: Scalars['String']['output'];
@@ -1747,13 +1748,11 @@ export interface WorkspaceType {
   pageMeta: WorkspacePageMeta;
   /** is Public workspace */
   public: Scalars['Boolean']['output'];
-  /** Get public page of a workspace by page id. */
-  publicDoc: Maybe<DocType>;
   /** Get public docs of a workspace */
   publicDocs: Array<DocType>;
   /**
    * Get public page of a workspace by page id.
-   * @deprecated use [WorkspaceType.publicDoc] instead
+   * @deprecated use [WorkspaceType.doc] instead
    */
   publicPage: Maybe<DocType>;
   /** @deprecated use [WorkspaceType.publicDocs] instead */
@@ -1791,10 +1790,6 @@ export interface WorkspaceTypeMembersArgs {
 
 export interface WorkspaceTypePageMetaArgs {
   pageId: Scalars['String']['input'];
-}
-
-export interface WorkspaceTypePublicDocArgs {
-  docId: Scalars['String']['input'];
 }
 
 export interface WorkspaceTypePublicPageArgs {
@@ -2354,6 +2349,19 @@ export type GetCurrentUserQuery = {
   } | null;
 };
 
+export type GetDocDefaultRoleQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  docId: Scalars['String']['input'];
+}>;
+
+export type GetDocDefaultRoleQuery = {
+  __typename?: 'Query';
+  workspace: {
+    __typename?: 'WorkspaceType';
+    doc: { __typename?: 'DocType'; defaultRole: DocRole };
+  };
+};
+
 export type GetInviteInfoQueryVariables = Exact<{
   inviteId: Scalars['String']['input'];
 }>;
@@ -2601,6 +2609,25 @@ export type GetWorkspaceInfoQuery = {
   workspace: { __typename?: 'WorkspaceType'; team: boolean };
 };
 
+export type GetWorkspacePageByIdQueryVariables = Exact<{
+  workspaceId: Scalars['String']['input'];
+  pageId: Scalars['String']['input'];
+}>;
+
+export type GetWorkspacePageByIdQuery = {
+  __typename?: 'Query';
+  workspace: {
+    __typename?: 'WorkspaceType';
+    doc: {
+      __typename?: 'DocType';
+      id: string;
+      mode: PublicDocMode;
+      defaultRole: DocRole;
+      public: boolean;
+    };
+  };
+};
+
 export type GetWorkspacePageMetaByIdQueryVariables = Exact<{
   id: Scalars['String']['input'];
   pageId: Scalars['String']['input'];
@@ -2635,23 +2662,6 @@ export type GetWorkspacePublicByIdQueryVariables = Exact<{
 export type GetWorkspacePublicByIdQuery = {
   __typename?: 'Query';
   workspace: { __typename?: 'WorkspaceType'; public: boolean };
-};
-
-export type GetWorkspacePublicPageByIdQueryVariables = Exact<{
-  workspaceId: Scalars['String']['input'];
-  pageId: Scalars['String']['input'];
-}>;
-
-export type GetWorkspacePublicPageByIdQuery = {
-  __typename?: 'Query';
-  workspace: {
-    __typename?: 'WorkspaceType';
-    publicDoc: {
-      __typename?: 'DocType';
-      id: string;
-      mode: PublicDocMode;
-    } | null;
-  };
 };
 
 export type GetWorkspacePublicPagesQueryVariables = Exact<{
@@ -3056,6 +3066,15 @@ export type UpdateAccountMutation = {
   };
 };
 
+export type UpdateDocDefaultRoleMutationVariables = Exact<{
+  input: UpdateDocDefaultRoleInput;
+}>;
+
+export type UpdateDocDefaultRoleMutation = {
+  __typename?: 'Mutation';
+  updateDocDefaultRole: boolean;
+};
+
 export type UpdateDocUserRoleMutationVariables = Exact<{
   input: UpdateDocUserRoleInput;
 }>;
@@ -3399,6 +3418,11 @@ export type Queries =
       response: GetCurrentUserQuery;
     }
   | {
+      name: 'getDocDefaultRoleQuery';
+      variables: GetDocDefaultRoleQueryVariables;
+      response: GetDocDefaultRoleQuery;
+    }
+  | {
       name: 'getInviteInfoQuery';
       variables: GetInviteInfoQueryVariables;
       response: GetInviteInfoQuery;
@@ -3474,6 +3498,11 @@ export type Queries =
       response: GetWorkspaceInfoQuery;
     }
   | {
+      name: 'getWorkspacePageByIdQuery';
+      variables: GetWorkspacePageByIdQueryVariables;
+      response: GetWorkspacePageByIdQuery;
+    }
+  | {
       name: 'getWorkspacePageMetaByIdQuery';
       variables: GetWorkspacePageMetaByIdQueryVariables;
       response: GetWorkspacePageMetaByIdQuery;
@@ -3482,11 +3511,6 @@ export type Queries =
       name: 'getWorkspacePublicByIdQuery';
       variables: GetWorkspacePublicByIdQueryVariables;
       response: GetWorkspacePublicByIdQuery;
-    }
-  | {
-      name: 'getWorkspacePublicPageByIdQuery';
-      variables: GetWorkspacePublicPageByIdQueryVariables;
-      response: GetWorkspacePublicPageByIdQuery;
     }
   | {
       name: 'getWorkspacePublicPagesQuery';
@@ -3789,6 +3813,11 @@ export type Mutations =
       name: 'updateAccountMutation';
       variables: UpdateAccountMutationVariables;
       response: UpdateAccountMutation;
+    }
+  | {
+      name: 'updateDocDefaultRoleMutation';
+      variables: UpdateDocDefaultRoleMutationVariables;
+      response: UpdateDocDefaultRoleMutation;
     }
   | {
       name: 'updateDocUserRoleMutation';

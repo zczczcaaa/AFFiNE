@@ -117,6 +117,9 @@ export class DocGrantedUsersService extends Service {
     this.grantedUsers$.next(
       this.grantedUsers$.value.filter(user => user.user.id !== userId)
     );
+    if (this.grantedUserCount$.value > 0) {
+      this.grantedUserCount$.next(this.grantedUserCount$.value - 1);
+    }
   }
 
   async updateUserRole(userId: string, role: DocRole) {
@@ -134,6 +137,14 @@ export class DocGrantedUsersService extends Service {
         return user;
       })
     );
+  }
+
+  async updateDocDefaultRole(role: DocRole) {
+    return await this.store.updateDocDefaultRole({
+      docId: this.docService.doc.id,
+      workspaceId: this.workspaceService.workspace.id,
+      role,
+    });
   }
 
   override dispose(): void {

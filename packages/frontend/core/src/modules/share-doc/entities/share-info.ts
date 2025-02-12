@@ -1,7 +1,4 @@
-import type {
-  GetWorkspacePublicPageByIdQuery,
-  PublicDocMode,
-} from '@affine/graphql';
+import type { GetWorkspacePageByIdQuery, PublicDocMode } from '@affine/graphql';
 import {
   backoffRetry,
   catchErrorInto,
@@ -20,14 +17,11 @@ import type { DocService } from '../../doc';
 import type { WorkspaceService } from '../../workspace';
 import type { ShareStore } from '../stores/share';
 
-type ShareInfoType = GetWorkspacePublicPageByIdQuery['workspace']['publicDoc'];
+type ShareInfoType = GetWorkspacePageByIdQuery['workspace']['doc'];
 
 export class ShareInfo extends Entity {
   info$ = new LiveData<ShareInfoType | undefined | null>(null);
-  isShared$ = this.info$.map(info =>
-    // null means not loaded yet, undefined means not shared
-    info !== null ? info !== undefined : null
-  );
+  isShared$ = this.info$.map(info => info?.public);
   sharedMode$ = this.info$.map(info => (info !== null ? info?.mode : null));
 
   error$ = new LiveData<any>(null);
