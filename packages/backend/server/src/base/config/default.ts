@@ -13,12 +13,15 @@ import {
 import { readEnv } from './env';
 import { defaultStartupConfig } from './register';
 
+function expectFlavor(flavor: ServerFlavor, expected: ServerFlavor) {
+  return flavor === expected || flavor === 'allinone';
+}
+
 function getPredefinedAFFiNEConfig(): PreDefinedAFFiNEConfig {
   const NODE_ENV = readEnv<NODE_ENV>('NODE_ENV', 'production', [
     'development',
     'test',
     'production',
-    'script',
   ]);
   const AFFINE_ENV = readEnv<AFFINE_ENV>('AFFINE_ENV', 'production', [
     'dev',
@@ -31,6 +34,7 @@ function getPredefinedAFFiNEConfig(): PreDefinedAFFiNEConfig {
     'sync',
     'renderer',
     'doc',
+    'script',
   ]);
   const deploymentType = readEnv<DeploymentType>(
     'DEPLOYMENT_TYPE',
@@ -49,7 +53,6 @@ function getPredefinedAFFiNEConfig(): PreDefinedAFFiNEConfig {
     prod: NODE_ENV === 'production',
     dev: NODE_ENV === 'development',
     test: NODE_ENV === 'test',
-    script: NODE_ENV === 'script',
   };
 
   return {
@@ -64,10 +67,11 @@ function getPredefinedAFFiNEConfig(): PreDefinedAFFiNEConfig {
     flavor: {
       type: flavor,
       allinone: flavor === 'allinone',
-      graphql: flavor === 'graphql' || flavor === 'allinone',
-      sync: flavor === 'sync' || flavor === 'allinone',
-      renderer: flavor === 'renderer' || flavor === 'allinone',
-      doc: flavor === 'doc' || flavor === 'allinone',
+      graphql: expectFlavor(flavor, 'graphql'),
+      sync: expectFlavor(flavor, 'sync'),
+      renderer: expectFlavor(flavor, 'renderer'),
+      doc: expectFlavor(flavor, 'doc'),
+      script: expectFlavor(flavor, 'script'),
     },
     affine,
     node,
