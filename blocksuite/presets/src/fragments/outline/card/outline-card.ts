@@ -7,8 +7,9 @@ import {
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { ArrowDownSmallIcon, InvisibleIcon } from '@blocksuite/icons/lit';
 import type { BlockModel } from '@blocksuite/store';
-import { consume } from '@lit/context';
+import { consume, ContextProvider } from '@lit/context';
 import { signal } from '@preact/signals-core';
+import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -110,6 +111,27 @@ export class OutlineNoteCard extends SignalWatcher(
           type: 'toc-card',
           noteId: this.note.id,
         }),
+        setDragPreview: ({ container, setOffset, location }) => {
+          const preview = document.createElement(AFFINE_OUTLINE_NOTE_CARD);
+          preview.note = this.note;
+          preview.index = this.index;
+          preview._context = this._context;
+
+          const { clientX, clientY } = location.current.input;
+          const { left, top } = this.getBoundingClientRect();
+          setOffset({ x: clientX - left, y: clientY - top });
+
+          container.style.width = `${this.parentElement?.clientWidth ?? 0}px`;
+          container.style.backgroundColor = cssVarV2(
+            'layer/background/primary'
+          );
+          container.append(preview);
+          const provider = new ContextProvider(container, {
+            context: tocContext,
+            initialValue: this._context,
+          });
+          provider.hostConnected();
+        },
       })
     );
 
