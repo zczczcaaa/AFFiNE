@@ -23,7 +23,7 @@ export const LIT_REACT_PORTAL = 'lit-react-portal';
 @customElement(LIT_REACT_PORTAL)
 class LitReactPortal extends LitElement {
   portalId!: string;
-  notify!: PortalListener;
+  notify?: PortalListener;
 
   static override get properties() {
     return {
@@ -34,7 +34,7 @@ class LitReactPortal extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.notify({
+    this.notify?.({
       name: 'connectedCallback',
       target: this,
     });
@@ -47,7 +47,7 @@ class LitReactPortal extends LitElement {
   ) {
     super.attributeChangedCallback(name, oldVal, newVal);
     if (name.toLowerCase() === 'portalid') {
-      this.notify({
+      this.notify?.({
         name: 'willUpdate',
         target: this,
       });
@@ -61,7 +61,7 @@ class LitReactPortal extends LitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.notify({
+    this.notify?.({
       name: 'disconnectedCallback',
       target: this,
     });

@@ -50,39 +50,35 @@ export async function allToCanvas(host: EditorHost) {
 
 export async function elementsToCanvas(host: EditorHost, elements: GfxModel[]) {
   const edgelessRoot = getEdgelessRootFromEditor(host);
-  const { notes, frames, shapes, images } = BlocksUtils.splitElements(elements);
-  if (notes.length + frames.length + images.length + shapes.length === 0) {
-    return;
-  }
-  const canvas = await edgelessRoot.clipboardController.toCanvas(
-    [...notes, ...frames, ...images],
-    shapes
-  );
-  if (!canvas) {
-    return;
-  }
-  return canvas;
-}
+  const { notes, frames, shapes, images, edgelessTexts, embedSyncedDocs } =
+    BlocksUtils.splitElements(elements);
 
-export async function frameToCanvas(
-  frame: FrameBlockModel,
-  editor: EditorHost
-) {
-  const edgelessRoot = getEdgelessRootFromEditor(editor);
-  const { notes, frames, shapes, images } = BlocksUtils.splitElements(
-    edgelessRoot.service.frame.getElementsInFrameBound(frame, true)
-  );
-  if (notes.length + frames.length + images.length + shapes.length === 0) {
+  const blockElements = [
+    ...notes,
+    ...frames,
+    ...images,
+    ...edgelessTexts,
+    ...embedSyncedDocs,
+  ];
+
+  const hasElements = blockElements.length > 0 || shapes.length > 0;
+  if (!hasElements) {
     return;
   }
-  const canvas = await edgelessRoot.clipboardController.toCanvas(
-    [...notes, ...frames, ...images],
-    shapes
-  );
-  if (!canvas) {
+
+  try {
+    const canvas = await edgelessRoot.clipboardController.toCanvas(
+      blockElements,
+      shapes
+    );
+    if (!canvas) {
+      return;
+    }
+    return canvas;
+  } catch (e) {
+    console.error('elementsToCanvas error', e);
     return;
   }
-  return canvas;
 }
 
 export async function selectedToPng(editor: EditorHost) {

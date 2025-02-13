@@ -272,15 +272,19 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     const userId = (await AIProvider.userInfo)?.id;
     if (!userId) return;
 
-    this._chatSessionId = await AIProvider.session?.createSession(
-      this.doc.workspace.id,
-      this.doc.id
-    );
-    if (this._chatSessionId) {
-      this._chatContextId = await AIProvider.context?.createContext(
+    try {
+      this._chatSessionId = await AIProvider.session?.createSession(
         this.doc.workspace.id,
-        this._chatSessionId
+        this.doc.id
       );
+      if (this._chatSessionId) {
+        this._chatContextId = await AIProvider.context?.createContext(
+          this.doc.workspace.id,
+          this._chatSessionId
+        );
+      }
+    } catch (e) {
+      console.error('init panel error', e);
     }
     await this._updateHistory();
     await this._updateChips();
