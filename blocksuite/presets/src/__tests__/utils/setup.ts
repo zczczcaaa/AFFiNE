@@ -2,7 +2,7 @@ import '@toeverything/theme/style.css';
 import '@toeverything/theme/fonts.css';
 
 import { effects as blocksEffects } from '@blocksuite/blocks/effects';
-import type { Store, Transformer } from '@blocksuite/store';
+import type { ExtensionType, Store, Transformer } from '@blocksuite/store';
 
 import { effects } from '../../effects.js';
 
@@ -59,7 +59,11 @@ function initCollection(collection: TestWorkspace) {
   doc.resetHistory();
 }
 
-async function createEditor(collection: TestWorkspace, mode: DocMode = 'page') {
+async function createEditor(
+  collection: TestWorkspace,
+  mode: DocMode = 'page',
+  extensions: ExtensionType[] = []
+) {
   const app = document.createElement('div');
   const blockCollection = collection.docs.values().next().value;
   assertExists(blockCollection, 'Need to create a doc first');
@@ -69,9 +73,11 @@ async function createEditor(collection: TestWorkspace, mode: DocMode = 'page') {
   editor.mode = mode;
   editor.pageSpecs = editor.pageSpecs.concat([
     FontConfigExtension(CommunityCanvasTextFonts),
+    ...extensions,
   ]);
   editor.edgelessSpecs = editor.edgelessSpecs.concat([
     FontConfigExtension(CommunityCanvasTextFonts),
+    ...extensions,
   ]);
   app.append(editor);
 
@@ -87,7 +93,10 @@ async function createEditor(collection: TestWorkspace, mode: DocMode = 'page') {
   return app;
 }
 
-export async function setupEditor(mode: DocMode = 'page') {
+export async function setupEditor(
+  mode: DocMode = 'page',
+  extensions: ExtensionType[] = []
+) {
   const collection = new TestWorkspace(createCollectionOptions());
   collection.storeExtensions = StoreExtensions;
   collection.meta.initialize();
@@ -95,7 +104,7 @@ export async function setupEditor(mode: DocMode = 'page') {
   window.collection = collection;
 
   initCollection(collection);
-  const appElement = await createEditor(collection, mode);
+  const appElement = await createEditor(collection, mode, extensions);
 
   return () => {
     appElement.remove();

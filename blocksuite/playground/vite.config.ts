@@ -120,10 +120,6 @@ export default defineConfig(({ mode }) => {
             'examples/multiple-editors/edgeless-edgeless/index.html'
           ),
           'examples/inline': resolve(__dirname, 'examples/inline/index.html'),
-          'examples/renderer': resolve(
-            __dirname,
-            'examples/renderer/index.html'
-          ),
         },
         treeshake: true,
         output: {

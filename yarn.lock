@@ -4106,6 +4106,9 @@ __metadata:
     "@vanilla-extract/css": "npm:^1.17.0"
     "@vanilla-extract/vite-plugin": "npm:^5.0.0"
     lit: "npm:^3.2.0"
+    vite: "npm:^6.1.0"
+    vite-plugin-istanbul: "npm:^6.0.2"
+    vite-plugin-wasm: "npm:^3.4.1"
     vitest: "npm:^3.0.0"
     yjs: "npm:^13.6.21"
     zod: "npm:^3.23.8"
@@ -33794,7 +33797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-wasm@npm:^3.3.0":
+"vite-plugin-wasm@npm:^3.3.0, vite-plugin-wasm@npm:^3.4.1":
   version: 3.4.1
   resolution: "vite-plugin-wasm@npm:3.4.1"
   peerDependencies:
@@ -33818,7 +33821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^5.0.0 || ^6.0.0, vite@npm:^6.0.3":
+"vite@npm:^5.0.0 || ^6.0.0, vite@npm:^6.0.3, vite@npm:^6.1.0":
   version: 6.1.0
   resolution: "vite@npm:6.1.0"
   dependencies:
