@@ -15,7 +15,7 @@ import { type Framework } from '@toeverything/infra';
 
 import { DesktopApiService } from '../desktop-api';
 import { PeekViewService } from '../peek-view';
-import { GlobalStateService } from '../storage';
+import { GlobalState, GlobalStateService } from '../storage';
 import { WorkspaceScope } from '../workspace';
 import { SidebarTab } from './entities/sidebar-tab';
 import { View } from './entities/view';
@@ -39,7 +39,11 @@ export function configureWorkbenchCommonModule(services: Framework) {
   services
     .scope(WorkspaceScope)
     .service(WorkbenchService)
-    .entity(Workbench, [WorkbenchDefaultState, WorkbenchNewTabHandler])
+    .entity(Workbench, [
+      WorkbenchDefaultState,
+      WorkbenchNewTabHandler,
+      GlobalState,
+    ])
     .entity(View)
     .scope(ViewScope)
     .service(ViewService, [ViewScope])
