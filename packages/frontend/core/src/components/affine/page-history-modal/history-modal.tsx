@@ -139,6 +139,7 @@ const HistoryEditorPreview = ({
                     className={styles.editor}
                     mode={mode}
                     page={snapshotPage}
+                    readonly={true}
                   />
                 </CustomEditorWrapper>
               </Scrollable.Viewport>
