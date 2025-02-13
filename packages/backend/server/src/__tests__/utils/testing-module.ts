@@ -8,7 +8,7 @@ import {
 } from '@nestjs/testing';
 
 import { AppModule, FunctionalityModules } from '../../app.module';
-import { Runtime } from '../../base';
+import { AFFiNELogger, Runtime } from '../../base';
 import { GqlModule } from '../../base/graphql';
 import { AuthGuard, AuthModule } from '../../core/auth';
 import { ModelsModule } from '../../models';
@@ -95,16 +95,15 @@ export async function createTestingModule(
     await module.close();
   };
 
+  const logger = new AFFiNELogger();
+  // we got a lot smoking tests try to break nestjs
+  // can't tolerate the noisy logs
+  logger.setLogLevels([TEST_LOG_LEVEL]);
+  module.useLogger(logger);
+
   if (autoInitialize) {
-    // we got a lot smoking tests try to break nestjs
-    // can't tolerate the noisy logs
-    // @ts-expect-error private
-    module.applyLogger({
-      logger: [TEST_LOG_LEVEL],
-    });
     await testingModule.initTestingDB();
     await testingModule.init();
   }
-
   return testingModule;
 }

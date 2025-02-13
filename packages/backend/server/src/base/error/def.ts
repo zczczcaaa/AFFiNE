@@ -152,11 +152,7 @@ export class UserFriendlyError extends Error {
     if (debugInfo) {
       message += ` (${JSON.stringify(debugInfo)})`;
     }
-    let stack = this.stack ?? '';
-    if (this.cause) {
-      stack += `\n\nCaused by:\n\n${(this.cause as any).stack ?? this.cause}`;
-    }
-    fn.call(logger, message, stack);
+    fn.call(logger, message, this);
   }
 }
 
