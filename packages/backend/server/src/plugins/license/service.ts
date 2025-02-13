@@ -330,18 +330,17 @@ export class LicenseService implements OnModuleInit {
     path: string,
     init?: RequestInit
   ): Promise<T & { res: Response }> {
+    const endpoint =
+      process.env.AFFINE_PRO_SERVER_ENDPOINT ?? 'https://app.affine.pro';
+
     try {
-      const res = await fetch(
-        process.env.AFFINE_PRO_SERVER_ENDPOINT ??
-          'https://app.affine.pro' + path,
-        {
-          ...init,
-          headers: {
-            'Content-Type': 'application/json',
-            ...init?.headers,
-          },
-        }
-      );
+      const res = await fetch(endpoint + path, {
+        ...init,
+        headers: {
+          'Content-Type': 'application/json',
+          ...init?.headers,
+        },
+      });
 
       if (!res.ok) {
         const body = (await res.json()) as UserFriendlyError;

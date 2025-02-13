@@ -215,7 +215,7 @@ export const DEFAULT_PRICES = new Map([
   // team
   [
     `${SubscriptionPlan.Team}_${SubscriptionRecurring.Monthly}`,
-    { product: 'AFFiNE Team(per seat)', price: 1440 },
+    { product: 'AFFiNE Team(per seat)', price: 1200 },
   ],
   [
     `${SubscriptionPlan.Team}_${SubscriptionRecurring.Yearly}`,
@@ -225,7 +225,7 @@ export const DEFAULT_PRICES = new Map([
   // selfhost team
   [
     `${SubscriptionPlan.SelfHostedTeam}_${SubscriptionRecurring.Monthly}`,
-    { product: 'AFFiNE Self-hosted Team(per seat)', price: 1440 },
+    { product: 'AFFiNE Self-hosted Team(per seat)', price: 1200 },
   ],
   [
     `${SubscriptionPlan.SelfHostedTeam}_${SubscriptionRecurring.Yearly}`,
