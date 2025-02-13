@@ -99,6 +99,8 @@ export class DragEventWatcher {
 
   dropTargetCleanUps: Map<string, (() => void)[]> = new Map();
 
+  resetOpacityCallbacks: (() => void)[] = [];
+
   get host() {
     return this.widget.host;
   }
@@ -133,6 +135,7 @@ export class DragEventWatcher {
     this._clearDropIndicator();
     this.widget.hide(true);
     this.std.selection.setGroup('gfx', []);
+    this.resetOpacityCallbacks.forEach(callback => callback());
   };
 
   private readonly _onDragMove = (
@@ -1091,6 +1094,50 @@ export class DragEventWatcher {
     });
   };
 
+  private readonly _setOpacityOfDraggedBlocks = (snapshot: SliceSnapshot) => {
+    const OPACITY = 0.7;
+    const gfx = this.gfx;
+    const resetCallbacks: (() => void)[] = [];
+
+    const traverse = (block: BlockSnapshot) => {
+      if (block.flavour === 'affine:surface') {
+        block.children.forEach(traverse);
+        Object.keys(block.props.elements as Record<string, unknown>).forEach(
+          elemId => {
+            const element = gfx.getElementById(
+              elemId
+            ) as GfxPrimitiveElementModel;
+
+            if (element) {
+              const originalOpacity = element.opacity;
+              element.opacity = OPACITY;
+              resetCallbacks.push(() => {
+                element.opacity = originalOpacity;
+              });
+            }
+          }
+        );
+      } else {
+        const blockView = this.std.view.getBlock(block.id);
+
+        if (blockView) {
+          const originalOpacity = blockView.style.opacity;
+          blockView.style.opacity = `${OPACITY}`;
+          resetCallbacks.push(() => {
+            if (originalOpacity) {
+              blockView.style.opacity = originalOpacity;
+            } else {
+              blockView.style.removeProperty('opacity');
+            }
+          });
+        }
+      }
+    };
+
+    snapshot.content.forEach(traverse);
+    this.resetOpacityCallbacks = resetCallbacks;
+  };
+
   constructor(readonly widget: AffineDragHandleWidget) {}
 
   private async _dropToModel(
@@ -1191,6 +1238,8 @@ export class DragEventWatcher {
       },
       setDragData: () => {
         const { fromMode, snapshot } = this._getDraggedSnapshot();
+
+        snapshot && this._setOpacityOfDraggedBlocks(snapshot);
 
         return {
           type: 'blocks',
