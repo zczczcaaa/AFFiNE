@@ -151,6 +151,9 @@ class QueryChatHistoriesInput implements Partial<ListHistoriesOptions> {
 
   @Field(() => String, { nullable: true })
   sessionId: string | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  withPrompt: boolean | undefined;
 }
 
 // ================== Return Types ==================
@@ -346,8 +349,7 @@ export class CopilotResolver {
       user.id,
       workspaceId,
       docId,
-      options,
-      true
+      options
     );
 
     return histories.map(h => ({

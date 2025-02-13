@@ -1123,6 +1123,8 @@ input QueryChatHistoriesInput {
   sessionOrder: ChatHistoryOrder
 
   skip: Int
+
+  withPrompt: Boolean
 }
 
 type QuotaQueryType {

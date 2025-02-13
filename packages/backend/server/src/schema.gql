@@ -881,6 +881,7 @@ input QueryChatHistoriesInput {
   sessionId: String
   sessionOrder: ChatHistoryOrder
   skip: Int
+  withPrompt: Boolean
 }
 
 type QueryTooLongDataType {

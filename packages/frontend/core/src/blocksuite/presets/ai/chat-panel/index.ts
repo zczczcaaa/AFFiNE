@@ -125,7 +125,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     const currentRequest = ++this._updateHistoryCounter;
 
     const [histories, actions] = await Promise.all([
-      AIProvider.histories?.chats(doc.workspace.id, doc.id, { fork: false }),
+      AIProvider.histories?.chats(doc.workspace.id, doc.id),
       AIProvider.histories?.actions(doc.workspace.id, doc.id),
     ]);
 

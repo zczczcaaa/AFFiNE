@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 
 import { Injectable, Logger } from '@nestjs/common';
 import { AiPromptRole, Prisma, PrismaClient } from '@prisma/client';
+import { omit } from 'lodash-es';
 
 import {
   CopilotActionTaken,
@@ -255,7 +256,7 @@ export class ChatSessionService {
             data: state.messages.map(m => ({
               ...m,
               attachments: m.attachments || undefined,
-              params: m.params || undefined,
+              params: omit(m.params, ['docs']) || undefined,
               sessionId,
             })),
           });
@@ -415,8 +416,7 @@ export class ChatSessionService {
     userId: string,
     workspaceId?: string,
     docId?: string,
-    options?: ListHistoriesOptions,
-    withPrompt = false
+    options?: ListHistoriesOptions
   ): Promise<ChatHistory[]> {
     const extraCondition = [];
 
@@ -505,7 +505,7 @@ export class ChatSessionService {
                 const ret = ChatMessageSchema.array().safeParse(messages);
                 if (ret.success) {
                   // render system prompt
-                  const preload = withPrompt
+                  const preload = options?.withPrompt
                     ? prompt
                         .finish(ret.data[0]?.params || {}, id)
                         .filter(({ role }) => role !== 'system')

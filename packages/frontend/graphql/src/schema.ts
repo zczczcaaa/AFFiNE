@@ -1298,6 +1298,7 @@ export interface QueryChatHistoriesInput {
   sessionId?: InputMaybe<Scalars['String']['input']>;
   sessionOrder?: InputMaybe<ChatHistoryOrder>;
   skip?: InputMaybe<Scalars['Int']['input']>;
+  withPrompt?: InputMaybe<Scalars['Boolean']['input']>;
 }
 
 export interface QueryTooLongDataType {

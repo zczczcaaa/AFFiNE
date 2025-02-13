@@ -149,6 +149,7 @@ export type ListHistoriesOptions = {
   sessionOrder: 'asc' | 'desc' | undefined;
   messageOrder: 'asc' | 'desc' | undefined;
   sessionId: string | undefined;
+  withPrompt: boolean | undefined;
 };
 
 // ======== Provider Interface ========

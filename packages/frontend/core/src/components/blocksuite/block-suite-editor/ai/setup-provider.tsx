@@ -2,6 +2,7 @@ import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import { toggleGeneralAIOnboarding } from '@affine/core/components/affine/ai-onboarding/apis';
 import type { GlobalDialogService } from '@affine/core/modules/dialogs';
 import {
+  type ChatHistoryOrder,
   type getCopilotHistoriesQuery,
   type RequestOptions,
 } from '@affine/graphql';
@@ -469,15 +470,17 @@ Could you make a new website based on these notes and send back just the html fi
       return (
         (await client.getHistories(workspaceId, docId, {
           action: true,
+          withPrompt: true,
         })) ?? []
       );
     },
     chats: async (
       workspaceId: string,
       docId?: string,
-      options?: RequestOptions<
-        typeof getCopilotHistoriesQuery
-      >['variables']['options']
+      options?: {
+        sessionId?: string;
+        messageOrder?: ChatHistoryOrder;
+      }
     ): Promise<BlockSuitePresets.AIHistory[]> => {
       // @ts-expect-error - 'action' is missing in server impl
       return (await client.getHistories(workspaceId, docId, options)) ?? [];

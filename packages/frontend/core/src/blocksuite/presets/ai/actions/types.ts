@@ -1,4 +1,5 @@
 import type {
+  ChatHistoryOrder,
   CopilotContextDoc,
   CopilotContextFile,
   getCopilotHistoriesQuery,
@@ -312,9 +313,10 @@ declare global {
       chats: (
         workspaceId: string,
         docId?: string,
-        options?: RequestOptions<
-          typeof getCopilotHistoriesQuery
-        >['variables']['options']
+        options?: {
+          sessionId?: string;
+          messageOrder?: ChatHistoryOrder;
+        }
       ) => Promise<AIHistory[] | undefined>;
       cleanup: (
         workspaceId: string,
