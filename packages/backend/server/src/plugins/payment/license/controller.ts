@@ -228,24 +228,24 @@ export class LicenseController {
 
   @Post('/:license/create-customer-portal')
   async createCustomerPortal(@Param('license') key: string) {
-    const invoice = await this.db.invoice.findFirst({
+    const subscription = await this.db.subscription.findFirst({
       where: {
         targetId: key,
       },
     });
 
-    if (!invoice) {
+    if (!subscription || !subscription.stripeSubscriptionId) {
       throw new LicenseNotFound();
     }
 
-    const invoiceData = await this.stripe.invoices.retrieve(
-      invoice.stripeInvoiceId,
+    const subscriptionData = await this.stripe.subscriptions.retrieve(
+      subscription.stripeSubscriptionId,
       {
         expand: ['customer'],
       }
     );
 
-    const customer = invoiceData.customer as Stripe.Customer;
+    const customer = subscriptionData.customer as Stripe.Customer;
     try {
       const portal = await this.stripe.billingPortal.sessions.create({
         customer: customer.id,

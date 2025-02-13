@@ -222,11 +222,8 @@ export class LicenseService implements OnModuleInit {
     await this.fetchAffinePro(`/api/team/licenses/${license.key}/seats`, {
       method: 'POST',
       body: JSON.stringify({
-        quantity: count,
+        seats: count,
       }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
 
     // stripe payment is async, we can't directly the charge result in update calling
