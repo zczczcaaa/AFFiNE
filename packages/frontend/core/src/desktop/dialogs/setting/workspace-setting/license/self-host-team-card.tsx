@@ -163,8 +163,9 @@ export const SelfHostTeamCard = () => {
               ]()}
             </span>
             <span>
-              {workspaceQuota?.memberCount}
-              {isTeam ? '' : `/${workspaceQuota?.memberLimit}`}
+              {isTeam
+                ? license?.quantity || ''
+                : `${workspaceQuota?.memberCount}/${workspaceQuota?.memberLimit}`}
             </span>
           </div>
         </div>
