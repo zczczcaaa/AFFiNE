@@ -157,6 +157,14 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
 
 export const StarterBar = ({ doc }: { doc: Store }) => {
   const [isEmpty, setIsEmpty] = useState(doc.isEmpty);
+  const templateDocService = useService(TemplateDocService);
+
+  const isTemplate = useLiveData(
+    useMemo(
+      () => templateDocService.list.isTemplate$(doc.id),
+      [doc.id, templateDocService.list]
+    )
+  );
 
   useEffect(() => {
     const disposable = doc.slots.blockUpdated.on(() => {
@@ -167,7 +175,7 @@ export const StarterBar = ({ doc }: { doc: Store }) => {
     };
   }, [doc]);
 
-  if (!isEmpty) return null;
+  if (!isEmpty || isTemplate) return null;
 
   return <StarterBarNotEmpty doc={doc} />;
 };
