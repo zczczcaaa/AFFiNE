@@ -260,6 +260,13 @@ export const AFFINE_FLAGS = {
     configurable: isCanaryBuild,
     defaultState: false,
   },
+  enable_ios_ai_button: {
+    category: 'affine',
+    displayName: 'Enable AI Button',
+    description: 'Enable AI Button on iOS',
+    configurable: BUILD_CONFIG.isIOS,
+    defaultState: false,
+  },
 } satisfies { [key in string]: FlagInfo };
 
 // oxlint-disable-next-line no-redeclare
