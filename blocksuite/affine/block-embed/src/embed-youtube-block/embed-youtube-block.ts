@@ -132,7 +132,7 @@ export class EmbedYoutubeBlockComponent extends EmbedBlockComponent<
     const { LoadingIcon, EmbedCardBannerIcon } = getEmbedCardIcons(theme);
     const titleIcon = loading ? LoadingIcon : YoutubeIcon;
     const titleText = loading ? 'Loading...' : title;
-    const descriptionText = loading ? '' : description;
+    const descriptionText = loading ? null : description;
     const bannerImage =
       !loading && image
         ? html`<object type="image/webp" data=${image} draggable="false">
@@ -216,9 +216,15 @@ export class EmbedYoutubeBlockComponent extends EmbedBlockComponent<
               </div>
             </div>
 
-            <div class="affine-embed-youtube-content-description">
-              ${descriptionText}
-            </div>
+            ${loading
+              ? html`<div
+                  class="affine-embed-youtube-content-description"
+                ></div>`
+              : descriptionText
+                ? html`<div class="affine-embed-youtube-content-description">
+                    ${descriptionText}
+                  </div>`
+                : nothing}
 
             <div class="affine-embed-youtube-content-url" @click=${this.open}>
               <span>www.youtube.com</span>

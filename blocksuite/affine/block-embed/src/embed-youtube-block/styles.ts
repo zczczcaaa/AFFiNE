@@ -2,6 +2,7 @@ import {
   EMBED_CARD_HEIGHT,
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
+import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { css, html } from 'lit';
 
 export const styles = css`
@@ -194,7 +195,7 @@ export const styles = css`
     white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--affine-text-secondary-color);
+    color: ${unsafeCSSVarV2('icon/primary')};
 
     font-family: var(--affine-font-family);
     font-size: var(--affine-font-xs);
@@ -216,10 +217,10 @@ export const styles = css`
     width: 12px;
     height: 12px;
   }
-  .affine-embed-youtube-content-url-icon .open-icon {
+  .affine-embed-youtube-content-url-icon svg {
     height: 12px;
     width: 12px;
-    fill: var(--affine-text-secondary-color);
+    fill: ${unsafeCSSVarV2('icon/primary')};
   }
 
   .affine-embed-youtube-block.loading {
