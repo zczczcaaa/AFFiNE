@@ -18,10 +18,12 @@ import { configureBrowserWorkspaceFlavours } from '@affine/core/modules/workspac
 import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Keyboard } from '@capacitor/keyboard';
+import { StatusBar, Style } from '@capacitor/status-bar';
 import { InAppBrowser } from '@capgo/inappbrowser';
 import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { OpClient } from '@toeverything/infra/op';
-import { Suspense } from 'react';
+import { useTheme } from 'next-themes';
+import { Suspense, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
 const storeManagerClient = new StoreManagerClient(
@@ -127,12 +129,32 @@ CapacitorApp.addListener('appUrlOpen', ({ url }) => {
   console.error(e);
 });
 
+const StatusBarProvider = () => {
+  const { resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    StatusBar.setStyle({
+      style:
+        resolvedTheme === 'dark'
+          ? Style.Dark
+          : resolvedTheme === 'light'
+            ? Style.Light
+            : Style.Default,
+    }).catch(e => {
+      console.error(`Failed to set status bar style: ${e}`);
+    });
+  }, [resolvedTheme]);
+
+  return null;
+};
+
 export function App() {
   return (
     <Suspense>
       <FrameworkRoot framework={frameworkProvider}>
         <I18nProvider>
           <AffineContext store={getCurrentStore()}>
+            <StatusBarProvider />
             <RouterProvider
               fallbackElement={<AppFallback />}
               router={router}

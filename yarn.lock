@@ -231,12 +231,14 @@ __metadata:
     "@capacitor/cli": "npm:^7.0.0"
     "@capacitor/core": "npm:^7.0.0"
     "@capacitor/keyboard": "npm:^7.0.0"
+    "@capacitor/status-bar": "npm:^7.0.0"
     "@capgo/inappbrowser": "npm:^7.1.0"
     "@sentry/react": "npm:^8.44.0"
     "@toeverything/infra": "workspace:*"
     "@types/react": "npm:^19.0.1"
     "@types/react-dom": "npm:^19.0.2"
     cross-env: "npm:^7.0.3"
+    next-themes: "npm:^0.4.4"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
     react-router-dom: "npm:^6.28.0"
@@ -4270,6 +4272,15 @@ __metadata:
   peerDependencies:
     "@capacitor/core": ">=7.0.0"
   checksum: 10/14df1267c7ff4fc050c0ce5c587030426d466dde09954f50965fb441a4dd27ad40281152604329ef6bc7b54195b34a9bfe368b4c23035355ca54e64503c371c8
+  languageName: node
+  linkType: hard
+
+"@capacitor/status-bar@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@capacitor/status-bar@npm:7.0.0"
+  peerDependencies:
+    "@capacitor/core": ">=7.0.0"
+  checksum: 10/c04cca182271792d20d353fe530ffa10c246bf815176711930f8db4cc67d18709a15e8ae5d298c87028f67da66bf40ead9fbc437c53b295bf4634f2cb4c5bf1b
   languageName: node
   linkType: hard
 
