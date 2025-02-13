@@ -14,7 +14,7 @@ import {
   TextSelection,
   WidgetComponent,
 } from '@blocksuite/block-std';
-import { GfxController } from '@blocksuite/block-std/gfx';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { throttle } from '@blocksuite/global/utils';
 import type { BaseSelection, UserInfo } from '@blocksuite/store';
 import { computed, effect } from '@preact/signals-core';
@@ -308,8 +308,7 @@ export class AffineDocRemoteSelectionWidget extends WidgetComponent {
       })
     );
 
-    const gfx = this.std.getOptional(GfxController);
-    if (!gfx) return;
+    const gfx = this.std.get(GfxControllerIdentifier);
     this.disposables.add(
       gfx.viewport.viewportUpdated.on(() => {
         const selections = this._remoteSelections.peek();

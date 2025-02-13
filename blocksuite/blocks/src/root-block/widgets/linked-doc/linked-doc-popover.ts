@@ -12,7 +12,7 @@ import {
   getViewportElement,
 } from '@blocksuite/affine-shared/utils';
 import { PropTypes, requiredProperties } from '@blocksuite/block-std';
-import { GfxController } from '@blocksuite/block-std/gfx';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import {
   SignalWatcher,
   throttle,
@@ -341,10 +341,8 @@ export class LinkedDocPopover extends SignalWatcher(
         );
       }
 
-      const gfx = this.context.std.getOptional(GfxController);
-      if (gfx) {
-        this.disposables.add(gfx.viewport.viewportUpdated.on(updatePosition));
-      }
+      const gfx = this.context.std.get(GfxControllerIdentifier);
+      this.disposables.add(gfx.viewport.viewportUpdated.on(updatePosition));
 
       updatePosition();
     }

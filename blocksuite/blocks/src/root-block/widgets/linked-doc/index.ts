@@ -7,7 +7,7 @@ import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import { getViewportElement } from '@blocksuite/affine-shared/utils';
 import type { BlockComponent } from '@blocksuite/block-std';
 import { BLOCK_ID_ATTR, WidgetComponent } from '@blocksuite/block-std';
-import { GfxController } from '@blocksuite/block-std/gfx';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { IS_MOBILE } from '@blocksuite/global/env';
 import {
   INLINE_ROOT_ATTR,
@@ -197,8 +197,7 @@ export class AffineLinkedDocWidget extends WidgetComponent<
   }
 
   private _watchViewportChange() {
-    const gfx = this.std.getOptional(GfxController);
-    if (!gfx) return;
+    const gfx = this.std.get(GfxControllerIdentifier);
     this.disposables.add(
       gfx.viewport.viewportUpdated.on(() => {
         this._updateInputRects();

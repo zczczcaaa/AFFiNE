@@ -68,9 +68,7 @@ export class AffineScrollAnchoringWidget extends WidgetComponent {
   );
 
   #getBoundsInEdgeless() {
-    const controller = this.std.getOptional(GfxControllerIdentifier);
-    if (!controller) return;
-
+    const controller = this.std.get(GfxControllerIdentifier);
     const bounds = this.anchorBounds$.peek();
     if (!bounds) return;
 
@@ -96,9 +94,7 @@ export class AffineScrollAnchoringWidget extends WidgetComponent {
   }
 
   #moveToAnchorInEdgeless(id: string) {
-    const controller = this.std.getOptional(GfxControllerIdentifier);
-    if (!controller) return;
-
+    const controller = this.std.get(GfxControllerIdentifier);
     const surface = controller.surface;
     if (!surface) return;
 
@@ -194,12 +190,10 @@ export class AffineScrollAnchoringWidget extends WidgetComponent {
     });
 
     // In edgeless
-    const controler = this.std.getOptional(GfxControllerIdentifier);
-    if (controler) {
-      this.disposables.add(
-        controler.viewport.viewportUpdated.on(this.#requestUpdateFn)
-      );
-    }
+    const controler = this.std.get(GfxControllerIdentifier);
+    this.disposables.add(
+      controler.viewport.viewportUpdated.on(this.#requestUpdateFn)
+    );
 
     this.disposables.add(
       this.anchor$.subscribe(anchor => {
