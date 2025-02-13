@@ -134,9 +134,9 @@ export const GatewayErrorWrapper = (event: string): MethodDecorator => {
   };
 };
 
-export function mapSseError(originalError: any) {
+export function mapSseError(originalError: any, info: object) {
   const error = mapAnyError(originalError);
-  error.log('Sse');
+  error.log('Sse', info);
   metrics.sse.counter('error').add(1, { status: error.status });
   return of({
     type: 'error' as const,
