@@ -12,6 +12,7 @@ import {
   getViewportElement,
 } from '@blocksuite/affine-shared/utils';
 import { PropTypes, requiredProperties } from '@blocksuite/block-std';
+import { GfxController } from '@blocksuite/block-std/gfx';
 import {
   SignalWatcher,
   throttle,
@@ -317,18 +318,13 @@ export class LinkedDocPopover extends SignalWatcher(
     </div>`;
   }
 
-  updatePosition(position: { height: number; x: string; y: string }) {
-    this._position = position;
-  }
-
   override willUpdate() {
     if (!this.hasUpdated) {
       const curRange = getCurrentNativeRange();
       if (!curRange) return;
 
       const updatePosition = throttle(() => {
-        const position = getPopperPosition(this, curRange);
-        this.updatePosition(position);
+        this._position = getPopperPosition(this, curRange);
       }, 10);
 
       this.disposables.addFromEvent(window, 'resize', updatePosition);
@@ -344,6 +340,12 @@ export class LinkedDocPopover extends SignalWatcher(
           }
         );
       }
+
+      const gfx = this.context.std.getOptional(GfxController);
+      if (gfx) {
+        this.disposables.add(gfx.viewport.viewportUpdated.on(updatePosition));
+      }
+
       updatePosition();
     }
   }

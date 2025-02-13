@@ -8,17 +8,23 @@ import {
 } from '@blocksuite/affine-components/rich-text';
 import {
   createKeydownObserver,
+  getCurrentNativeRange,
   isControlledKeyboardEvent,
   isFuzzyMatch,
   substringMatchScore,
 } from '@blocksuite/affine-shared/utils';
-import { assertExists, WithDisposable } from '@blocksuite/global/utils';
+import {
+  assertExists,
+  throttle,
+  WithDisposable,
+} from '@blocksuite/global/utils';
 import { autoPlacement, offset } from '@floating-ui/dom';
 import { html, LitElement, nothing, type PropertyValues } from 'lit';
-import { property, query, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
+import { getPopperPosition } from '../../utils/position.js';
 import type {
   SlashMenuActionItem,
   SlashMenuContext,
@@ -139,10 +145,6 @@ export class SlashMenu extends WithDisposable(LitElement) {
     this._queryState = this._filteredItems.length === 0 ? 'no_result' : 'on';
   };
 
-  updatePosition = (position: { x: string; y: string; height: number }) => {
-    this._position = position;
-  };
-
   private get _query() {
     return getTextContentFromInlineRange(this.inlineEditor, this._startRange);
   }
@@ -247,6 +249,24 @@ export class SlashMenu extends WithDisposable(LitElement) {
     });
   }
 
+  protected override willUpdate() {
+    if (!this.hasUpdated) {
+      const currRage = getCurrentNativeRange();
+      if (!currRage) {
+        this.abortController.abort();
+        return;
+      }
+
+      // Handle position
+      const updatePosition = throttle(() => {
+        this._position = getPopperPosition(this, currRage);
+      }, 10);
+
+      this.disposables.addFromEvent(window, 'resize', updatePosition);
+      updatePosition();
+    }
+  }
+
   override render() {
     const slashMenuStyles = this._position
       ? {
@@ -290,9 +310,6 @@ export class SlashMenu extends WithDisposable(LitElement) {
 
   @property({ attribute: false })
   accessor context!: SlashMenuContext;
-
-  @query('inner-slash-menu')
-  accessor slashMenuElement!: HTMLElement;
 
   @property({ attribute: false })
   accessor triggerKey!: string;

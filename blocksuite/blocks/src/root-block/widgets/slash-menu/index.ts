@@ -2,20 +2,16 @@ import {
   type AffineInlineEditor,
   getInlineEditorByModel,
 } from '@blocksuite/affine-components/rich-text';
-import { getCurrentNativeRange } from '@blocksuite/affine-shared/utils';
 import type { UIEventStateContext } from '@blocksuite/block-std';
 import { TextSelection, WidgetComponent } from '@blocksuite/block-std';
 import {
-  assertExists,
   assertType,
   debounce,
   DisposableGroup,
-  throttle,
 } from '@blocksuite/global/utils';
 import { InlineEditor } from '@blocksuite/inline';
 
 import type { RootBlockComponent } from '../../types.js';
-import { getPopperPosition } from '../../utils/position.js';
 import {
   defaultSlashMenuConfig,
   type SlashMenuActionItem,
@@ -56,9 +52,6 @@ const showSlashMenu = debounce(
     config: SlashMenuStaticConfig;
     triggerKey: string;
   }) => {
-    const curRange = getCurrentNativeRange();
-    if (!curRange) return;
-
     globalAbortController = abortController;
     const disposables = new DisposableGroup();
     abortController.signal.addEventListener('abort', () =>
@@ -76,25 +69,10 @@ const showSlashMenu = debounce(
     slashMenu.config = config;
     slashMenu.triggerKey = triggerKey;
 
-    // Handle position
-    const updatePosition = throttle(() => {
-      const slashMenuElement = slashMenu.slashMenuElement;
-      assertExists(
-        slashMenuElement,
-        'You should render the slash menu node even if no position'
-      );
-      const position = getPopperPosition(slashMenuElement, curRange);
-      slashMenu.updatePosition(position);
-    }, 10);
-
-    disposables.addFromEvent(window, 'resize', updatePosition);
-
     // FIXME(Flrande): It is not a best practice,
     // but merely a temporary measure for reusing previous components.
     // Mount
     container.append(slashMenu);
-    // Wait for the Node to be mounted
-    setTimeout(updatePosition);
     return slashMenu;
   },
   100

@@ -70,6 +70,7 @@ export function compareTopAndBottomSpace(
 
 /**
  * Get the position of the popper element with flip.
+ * return null if the reference rect is all zero.
  */
 export function getPopperPosition(
   popper: {
@@ -93,6 +94,14 @@ export function getPopperPosition(
   );
 
   const referenceRect = reference.getBoundingClientRect();
+  if (
+    referenceRect.x === 0 &&
+    referenceRect.y === 0 &&
+    referenceRect.width === 0 &&
+    referenceRect.height === 0
+  )
+    return null;
+
   const positioningPoint = {
     x: referenceRect.x,
     y: referenceRect.y + (placement === 'bottom' ? referenceRect.height : 0),
