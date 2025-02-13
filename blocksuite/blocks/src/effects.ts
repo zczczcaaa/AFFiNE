@@ -142,7 +142,6 @@ import {
   FramePreview,
   PageRootBlockComponent,
   PreviewRootBlockComponent,
-  type RootBlockConfig,
 } from './root-block/index.js';
 import { AIFinishTip } from './root-block/widgets/ai-panel/components/finish-tip.js';
 import { GeneratingPlaceholder } from './root-block/widgets/ai-panel/components/generating-placeholder.js';
@@ -392,12 +391,4 @@ export function effects() {
   );
   customElements.define(AFFINE_SURFACE_REF_TOOLBAR, AffineSurfaceRefToolbar);
   customElements.define(AFFINE_FORMAT_BAR_WIDGET, AffineFormatBarWidget);
-}
-
-declare global {
-  namespace BlockSuite {
-    interface BlockConfigs {
-      'affine:page': RootBlockConfig;
-    }
-  }
 }

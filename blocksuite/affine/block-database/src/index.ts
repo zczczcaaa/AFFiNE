@@ -1,6 +1,6 @@
 export * from './adapters';
 export * from './commands';
-export type { DatabaseOptionsConfig } from './config';
+export * from './config';
 export * from './data-source';
 export * from './database-block';
 export * from './database-spec';

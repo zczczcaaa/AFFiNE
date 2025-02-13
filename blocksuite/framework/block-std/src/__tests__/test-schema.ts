@@ -50,13 +50,3 @@ export const HeadingBlockSchema = defineBlockSchema({
 export class HeadingBlockModel extends BlockModel<
   ReturnType<(typeof HeadingBlockSchema)['model']['props']>
 > {}
-
-declare global {
-  namespace BlockSuite {
-    interface BlockModels {
-      'test:page': RootBlockModel;
-      'test:note': NoteBlockModel;
-      'test:heading': HeadingBlockModel;
-    }
-  }
-}

@@ -23,7 +23,7 @@ import { AFFINE_EMBED_CARD_TOOLBAR_WIDGET } from '../widgets/embed-card-toolbar/
 import { AFFINE_FORMAT_BAR_WIDGET } from '../widgets/format-bar/format-bar.js';
 import { AFFINE_INNER_MODAL_WIDGET } from '../widgets/inner-modal/inner-modal.js';
 import { AFFINE_KEYBOARD_TOOLBAR_WIDGET } from '../widgets/keyboard-toolbar/index.js';
-import { AFFINE_LINKED_DOC_WIDGET } from '../widgets/linked-doc/index.js';
+import { AFFINE_LINKED_DOC_WIDGET } from '../widgets/linked-doc/config.js';
 import { AFFINE_MODAL_WIDGET } from '../widgets/modal/modal.js';
 import { AFFINE_PAGE_DRAGGING_AREA_WIDGET } from '../widgets/page-dragging-area/page-dragging-area.js';
 import { AFFINE_SLASH_MENU_WIDGET } from '../widgets/slash-menu/index.js';

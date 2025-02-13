@@ -20,16 +20,18 @@ import { choose } from 'lit/directives/choose.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { PageRootBlockComponent } from '../../index.js';
 import {
+  type PageRootBlockComponent,
+  RootBlockConfigExtension,
+} from '../../index.js';
+import {
+  type AFFINE_LINKED_DOC_WIDGET,
   getMenus,
   type LinkedDocContext,
   type LinkedWidgetConfig,
 } from './config.js';
 import { linkedDocWidgetStyles } from './styles.js';
 export { type LinkedWidgetConfig } from './config.js';
-
-export const AFFINE_LINKED_DOC_WIDGET = 'affine-linked-doc-widget';
 
 export class AffineLinkedDocWidget extends WidgetComponent<
   RootBlockModel,
@@ -218,7 +220,8 @@ export class AffineLinkedDocWidget extends WidgetComponent<
         scrollContainer: getViewportElement(this.std.host) ?? window,
         scrollTopOffset: 46,
       },
-      ...this.std.getConfig('affine:page')?.linkedWidget,
+      ...this.std.getOptional(RootBlockConfigExtension.identifier)
+        ?.linkedWidget,
     };
   }
 

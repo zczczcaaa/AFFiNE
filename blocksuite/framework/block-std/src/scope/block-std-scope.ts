@@ -18,7 +18,6 @@ import { SurfaceMiddlewareExtension } from '../gfx/surface-middleware.js';
 import { ViewManager } from '../gfx/view/view-manager.js';
 import {
   BlockViewIdentifier,
-  ConfigIdentifier,
   LifeCycleWatcherIdentifier,
   StdIdentifier,
 } from '../identifier.js';
@@ -137,19 +136,6 @@ export class BlockStdScope {
     });
   }
 
-  getConfig<Key extends BlockSuite.ConfigKeys>(
-    flavour: Key
-  ): BlockSuite.BlockConfigs[Key] | null;
-
-  getConfig(flavour: string) {
-    const config = this.provider.getOptional(ConfigIdentifier(flavour));
-    if (!config) {
-      return null;
-    }
-
-    return config;
-  }
-
   getView(flavour: string) {
     return this.getOptional(BlockViewIdentifier(flavour));
   }
@@ -189,13 +175,5 @@ export class BlockStdScope {
     this._lifeCycleWatchers.forEach(watcher => {
       watcher.unmounted();
     });
-  }
-}
-
-declare global {
-  namespace BlockSuite {
-    interface BlockConfigs {}
-
-    type ConfigKeys = string & keyof BlockConfigs;
   }
 }

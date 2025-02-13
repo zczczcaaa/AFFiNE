@@ -32,6 +32,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import type { ThemedToken } from 'shiki';
 
 import { CodeClipboardController } from './clipboard/index.js';
+import { CodeBlockConfigExtension } from './code-block-config.js';
 import { CodeBlockInlineManagerExtension } from './code-block-inline.js';
 import type { CodeBlockService } from './code-block-service.js';
 import { codeBlockStyles } from './styles.js';
@@ -383,7 +384,8 @@ export class CodeBlockComponent extends CaptionedBlockComponent<
 
   override renderBlock(): TemplateResult<1> {
     const showLineNumbers =
-      this.std.getConfig('affine:code')?.showLineNumbers ?? true;
+      this.std.getOptional(CodeBlockConfigExtension.identifier)
+        ?.showLineNumbers ?? true;
 
     return html`
       <div

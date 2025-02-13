@@ -1,3 +1,4 @@
+import { ConfigExtensionFactory } from '@blocksuite/block-std';
 import type { BundledLanguageInfo, ThemeInput } from 'shiki';
 
 export interface CodeBlockConfig {
@@ -13,3 +14,6 @@ export interface CodeBlockConfig {
    */
   showLineNumbers?: boolean;
 }
+
+export const CodeBlockConfigExtension =
+  ConfigExtensionFactory<CodeBlockConfig>('affine:code');

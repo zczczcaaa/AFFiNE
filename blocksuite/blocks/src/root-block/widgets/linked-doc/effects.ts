@@ -1,5 +1,6 @@
+import { AFFINE_LINKED_DOC_WIDGET } from './config.js';
 import { ImportDoc } from './import-doc/import-doc.js';
-import { AFFINE_LINKED_DOC_WIDGET, AffineLinkedDocWidget } from './index.js';
+import { AffineLinkedDocWidget } from './index.js';
 import { LinkedDocPopover } from './linked-doc-popover.js';
 import { AffineMobileLinkedDocMenu } from './mobile-linked-doc-menu.js';
 

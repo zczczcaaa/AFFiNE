@@ -48,7 +48,10 @@ import { computed, signal } from '@preact/signals-core';
 import { css, html, nothing, unsafeCSS } from 'lit';
 
 import { popSideDetail } from './components/layout.js';
-import type { DatabaseOptionsConfig } from './config.js';
+import {
+  DatabaseConfigExtension,
+  type DatabaseOptionsConfig,
+} from './config.js';
 import { HostContextKey } from './context/host-context.js';
 import { DatabaseBlockDataSource } from './data-source.js';
 import { BlockRenderer } from './detail-panel/block-renderer.js';
@@ -343,7 +346,7 @@ export class DatabaseBlockComponent extends CaptionedBlockComponent<DatabaseBloc
   get optionsConfig(): DatabaseOptionsConfig {
     return {
       configure: (_model, options) => options,
-      ...this.std.getConfig('affine:database'),
+      ...this.std.getOptional(DatabaseConfigExtension.identifier),
     };
   }
 

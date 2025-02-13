@@ -9,15 +9,10 @@ import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { AppThemeService } from '@affine/core/modules/theme';
 import { mixpanel } from '@affine/track';
-import {
-  ConfigExtension,
-  LifeCycleWatcher,
-  StdIdentifier,
-} from '@blocksuite/affine/block-std';
+import { LifeCycleWatcher, StdIdentifier } from '@blocksuite/affine/block-std';
 import type {
   DocDisplayMetaExtension,
   DocDisplayMetaParams,
-  RootBlockConfig,
   Signal,
   SpecBuilder,
   TelemetryEventMap,
@@ -27,14 +22,17 @@ import {
   CodeBlockSpec,
   ColorScheme,
   createSignalFromObservable,
+  DatabaseConfigExtension,
   DocDisplayMetaProvider,
   EditorSettingExtension,
   ImageBlockSpec,
   ParagraphBlockSpec,
   referenceToNode,
+  RootBlockConfigExtension,
   SpecProvider,
   TelemetryProvider,
   ThemeExtensionIdentifier,
+  ToolbarMoreMenuConfigExtension,
 } from '@blocksuite/affine/blocks';
 import type { Container } from '@blocksuite/affine/global/di';
 import type { ExtensionType } from '@blocksuite/affine/store';
@@ -231,11 +229,11 @@ function getEditorConfigExtension(
   const editorSettingService = framework.get(EditorSettingService);
   return [
     EditorSettingExtension(editorSettingService.editorSetting.settingSignal),
-    ConfigExtension('affine:database', createDatabaseOptionsConfig(framework)),
-    ConfigExtension('affine:page', {
+    DatabaseConfigExtension(createDatabaseOptionsConfig(framework)),
+    RootBlockConfigExtension({
       linkedWidget: createLinkedWidgetConfig(framework),
-      toolbarMoreMenu: createToolbarMoreMenuConfig(framework),
-    } satisfies RootBlockConfig),
+    }),
+    ToolbarMoreMenuConfigExtension(createToolbarMoreMenuConfig(framework)),
   ];
 }
 

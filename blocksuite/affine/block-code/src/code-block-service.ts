@@ -12,6 +12,7 @@ import {
 } from 'shiki';
 import getWasm from 'shiki/wasm';
 
+import { CodeBlockConfigExtension } from './code-block-config.js';
 import {
   CODE_BLOCK_DEFAULT_DARK_THEME,
   CODE_BLOCK_DEFAULT_LIGHT_THEME,
@@ -27,7 +28,10 @@ export class CodeBlockService extends BlockService {
   highlighter$: Signal<HighlighterCore | null> = signal(null);
 
   get langs() {
-    return this.std.getConfig('affine:code')?.langs ?? bundledLanguagesInfo;
+    return (
+      this.std.getOptional(CodeBlockConfigExtension.identifier)?.langs ??
+      bundledLanguagesInfo
+    );
   }
 
   get themeKey() {
@@ -46,7 +50,9 @@ export class CodeBlockService extends BlockService {
       engine: createOnigurumaEngine(() => getWasm),
     })
       .then(async highlighter => {
-        const config = this.std.getConfig('affine:code');
+        const config = this.std.getOptional(
+          CodeBlockConfigExtension.identifier
+        );
         const darkTheme = config?.theme?.dark ?? CODE_BLOCK_DEFAULT_DARK_THEME;
         const lightTheme =
           config?.theme?.light ?? CODE_BLOCK_DEFAULT_LIGHT_THEME;

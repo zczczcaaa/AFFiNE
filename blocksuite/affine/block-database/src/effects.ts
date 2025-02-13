@@ -1,6 +1,5 @@
 import { CenterPeek } from './components/layout';
 import { DatabaseTitle } from './components/title';
-import type { DatabaseOptionsConfig } from './config';
 import { DatabaseBlockComponent } from './database-block';
 import { BlockRenderer } from './detail-panel/block-renderer';
 import { NoteRenderer } from './detail-panel/note-renderer';
@@ -36,12 +35,4 @@ export function effects() {
   customElements.define('database-datasource-block-renderer', BlockRenderer);
   customElements.define('affine-database-link-node', LinkNode);
   customElements.define('affine-database', DatabaseBlockComponent);
-}
-
-declare global {
-  namespace BlockSuite {
-    interface BlockConfigs {
-      'affine:database': Partial<DatabaseOptionsConfig>;
-    }
-  }
 }

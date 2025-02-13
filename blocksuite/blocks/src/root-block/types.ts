@@ -13,7 +13,7 @@ import type { AFFINE_EMBED_CARD_TOOLBAR_WIDGET } from './widgets/embed-card-tool
 import type { AFFINE_FORMAT_BAR_WIDGET } from './widgets/format-bar/format-bar.js';
 import type { AFFINE_KEYBOARD_TOOLBAR_WIDGET } from './widgets/index.js';
 import type { AFFINE_INNER_MODAL_WIDGET } from './widgets/inner-modal/inner-modal.js';
-import type { AFFINE_LINKED_DOC_WIDGET } from './widgets/linked-doc/index.js';
+import type { AFFINE_LINKED_DOC_WIDGET } from './widgets/linked-doc/config.js';
 import type { AFFINE_MODAL_WIDGET } from './widgets/modal/modal.js';
 import type { AFFINE_PAGE_DRAGGING_AREA_WIDGET } from './widgets/page-dragging-area/page-dragging-area.js';
 import type { AFFINE_SLASH_MENU_WIDGET } from './widgets/slash-menu/index.js';

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
-import { assertImageOption } from 'utils/asserts.js';
 
+import { assertImageOption } from '../asserts.js';
 import { getIndexCoordinate, waitNextFrame } from './misc.js';
 
 export async function dragBetweenCoords(

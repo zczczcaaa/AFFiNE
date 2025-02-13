@@ -4,6 +4,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
+import { ToolbarMoreMenuConfigExtension } from './config.js';
 import type { MenuContext } from './menu-context.js';
 import type {
   FatMenuItems,
@@ -112,10 +113,6 @@ export function renderToolbarSeparator() {
 export function getMoreMenuConfig(std: BlockStdScope): ToolbarMoreMenuConfig {
   return {
     configure: <T extends MenuContext>(groups: MenuItemGroup<T>[]) => groups,
-    ...(
-      std.getConfig('affine:page' as BlockSuite.ConfigKeys) as null | {
-        toolbarMoreMenu: Partial<ToolbarMoreMenuConfig>;
-      }
-    )?.toolbarMoreMenu,
+    ...std.getOptional(ToolbarMoreMenuConfigExtension.identifier),
   };
 }

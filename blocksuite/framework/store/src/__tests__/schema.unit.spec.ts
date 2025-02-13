@@ -1,7 +1,6 @@
 import { literal } from 'lit/static-html.js';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { BlockModel } from '../model/block/block-model.js';
 import { defineBlockSchema } from '../model/block/zod.js';
 // import some blocks
 import { SchemaValidateError } from '../schema/error.js';
@@ -124,12 +123,3 @@ describe('schema', () => {
     });
   });
 });
-
-declare global {
-  namespace BlockSuite {
-    interface BlockModels {
-      'affine:note-block-video': BlockModel;
-      'affine:note-invalid-block-video': BlockModel;
-    }
-  }
-}

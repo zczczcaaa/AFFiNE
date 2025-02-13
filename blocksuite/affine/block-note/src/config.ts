@@ -1,5 +1,8 @@
 import type { NoteBlockModel } from '@blocksuite/affine-model';
-import { type BlockStdScope, ConfigExtension } from '@blocksuite/block-std';
+import {
+  type BlockStdScope,
+  ConfigExtensionFactory,
+} from '@blocksuite/block-std';
 import type { TemplateResult } from 'lit';
 
 type NoteBlockContext = {
@@ -12,6 +15,5 @@ export type NoteConfig = {
   pageBlockTitle: (context: NoteBlockContext) => TemplateResult;
 };
 
-export function NoteConfigExtension(config: NoteConfig) {
-  return ConfigExtension('affine:note', config);
-}
+export const NoteConfigExtension =
+  ConfigExtensionFactory<NoteConfig>('affine:note');

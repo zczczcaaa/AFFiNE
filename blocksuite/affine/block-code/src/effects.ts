@@ -1,5 +1,4 @@
 import { CodeBlockComponent } from './code-block';
-import type { CodeBlockConfig } from './code-block-config';
 import {
   AFFINE_CODE_TOOLBAR_WIDGET,
   AffineCodeToolbarWidget,
@@ -17,12 +16,6 @@ export function effects() {
 }
 
 declare global {
-  namespace BlockSuite {
-    interface BlockConfigs {
-      'affine:code': CodeBlockConfig;
-    }
-  }
-
   interface HTMLElementTagNameMap {
     'language-list-button': LanguageListButton;
     'affine-code-toolbar': AffineCodeToolbar;

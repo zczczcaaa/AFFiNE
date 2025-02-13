@@ -7,6 +7,7 @@ import { signal } from '@preact/signals-core';
 import { html, nothing } from 'lit';
 
 import type { PageRootBlockComponent } from '../../page/page-root-block.js';
+import { RootBlockConfigExtension } from '../../root-config.js';
 import { defaultKeyboardToolbarConfig } from './config.js';
 
 export * from './config.js';
@@ -41,7 +42,8 @@ export class AffineKeyboardToolbarWidget extends WidgetComponent<
   get config() {
     return {
       ...defaultKeyboardToolbarConfig,
-      ...this.std.getConfig('affine:page')?.keyboardToolbar,
+      ...this.std.getOptional(RootBlockConfigExtension.identifier)
+        ?.keyboardToolbar,
     };
   }
 

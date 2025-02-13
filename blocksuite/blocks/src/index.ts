@@ -95,6 +95,7 @@ export {
   renderActions,
   renderGroups,
   renderToolbarSeparator,
+  ToolbarMoreMenuConfigExtension,
   Tooltip,
 } from '@blocksuite/affine-components/toolbar';
 export * from '@blocksuite/affine-model';

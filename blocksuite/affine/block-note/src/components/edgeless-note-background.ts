@@ -35,6 +35,7 @@ import { html, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
+import { NoteConfigExtension } from '../config';
 import { isPageBlock } from '../utils';
 import * as styles from './edgeless-note-background.css';
 
@@ -148,7 +149,7 @@ export class EdgelessNoteBackground extends SignalWatcher(
 
   private _renderHeader() {
     const header = this.std
-      .getConfig('affine:note')
+      .getOptional(NoteConfigExtension.identifier)
       ?.edgelessNoteHeader({ note: this.note, std: this.std });
 
     return header;

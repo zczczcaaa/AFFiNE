@@ -259,3 +259,5 @@ export const LinkedWidgetUtils = {
   createNewDocMenuGroup,
   insertLinkedNode,
 };
+
+export const AFFINE_LINKED_DOC_WIDGET = 'affine-linked-doc-widget';

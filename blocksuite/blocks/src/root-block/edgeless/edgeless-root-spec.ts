@@ -31,7 +31,7 @@ import { EDGELESS_ELEMENT_TOOLBAR_WIDGET } from '../widgets/element-toolbar/inde
 import { AFFINE_EMBED_CARD_TOOLBAR_WIDGET } from '../widgets/embed-card-toolbar/embed-card-toolbar.js';
 import { AFFINE_FORMAT_BAR_WIDGET } from '../widgets/format-bar/format-bar.js';
 import { AFFINE_INNER_MODAL_WIDGET } from '../widgets/inner-modal/inner-modal.js';
-import { AFFINE_LINKED_DOC_WIDGET } from '../widgets/linked-doc/index.js';
+import { AFFINE_LINKED_DOC_WIDGET } from '../widgets/linked-doc/config.js';
 import { AFFINE_MODAL_WIDGET } from '../widgets/modal/modal.js';
 import { AFFINE_SLASH_MENU_WIDGET } from '../widgets/slash-menu/index.js';
 import { AFFINE_VIEWPORT_OVERLAY_WIDGET } from '../widgets/viewport-overlay/viewport-overlay.js';

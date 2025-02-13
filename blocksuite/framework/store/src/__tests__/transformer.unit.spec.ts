@@ -133,11 +133,3 @@ test('snapshot to model', async () => {
     expect(item.content.toString()).toBe(`item ${index + 1}`);
   });
 });
-
-declare global {
-  namespace BlockSuite {
-    interface BlockModels {
-      page: BlockModel;
-    }
-  }
-}
