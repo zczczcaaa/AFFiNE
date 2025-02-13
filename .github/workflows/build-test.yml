@@ -394,6 +394,11 @@ jobs:
       - optimize_ci
       - build-server-native
     if: needs.optimize_ci.outputs.skip == 'false'
+    strategy:
+      fail-fast: false
+      matrix:
+        node_index: [0, 1, 2]
+        total_nodes: [3]
     env:
       NODE_ENV: test
       DISTRIBUTION: web
@@ -443,6 +448,8 @@ jobs:
         env:
           CARGO_TARGET_DIR: '${{ github.workspace }}/target'
           COPILOT_OPENAI_API_KEY: 'use_fake_openai_api_key'
+          CI_NODE_INDEX: ${{ matrix.node_index }}
+          CI_NODE_TOTAL: ${{ matrix.total_nodes }}
 
       - name: Upload server test coverage results
         uses: codecov/codecov-action@v5
