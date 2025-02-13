@@ -70,9 +70,16 @@ export class S3StorageProvider implements StorageProvider {
 
       this.logger.verbose(`Object \`${key}\` put`);
     } catch (e) {
-      throw new Error(`Failed to put object \`${key}\``, {
-        cause: e,
-      });
+      throw new Error(
+        `Failed to put object (${JSON.stringify({
+          key,
+          bucket: this.bucket,
+          metadata,
+        })})`,
+        {
+          cause: e,
+        }
+      );
     }
   }
 

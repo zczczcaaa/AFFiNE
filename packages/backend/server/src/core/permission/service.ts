@@ -645,7 +645,7 @@ export class PermissionService {
         action,
       };
       this.logger.log(
-        `User's role is lower than required (${JSON.stringify(info)})`
+        `Page role is lower than required, continue to check workspace permission (${JSON.stringify(info)})`
       );
     }
 

@@ -93,7 +93,7 @@ export class QuotaService {
           this.logger.error(`Workspace size is invalid: ${size.value}`);
         }
       } else {
-        this.logger.error(`Failed to get workspace size: ${size.reason}`);
+        this.logger.error(`Failed to get workspace size`, size.reason);
       }
       return total;
     }, 0);
