@@ -865,7 +865,7 @@ test.describe('chat with doc', () => {
       name: 'You',
       content: 'What is AFFiNE AI?',
     });
-    expect(history[1].name).toBe('AFFiNE AI');
+    expect(history[1].name).toBe(`AFFiNE AI\nwith your docs`);
     expect(
       await page.locator('chat-panel affine-footnote-node').count()
     ).toBeGreaterThan(0);

@@ -71,6 +71,12 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
       user-select: none;
     }
 
+    .message-info {
+      color: var(--affine-placeholder-color);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
     .avatar-container {
       width: 24px;
       height: 24px;
@@ -370,6 +376,12 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
 
   renderAvatar(item: ChatItem) {
     const isUser = 'role' in item && item.role === 'user';
+    const isAssistant = 'role' in item && item.role === 'assistant';
+    const isWithDocs =
+      isAssistant &&
+      item.content &&
+      item.content.includes('[^') &&
+      /\[\^\d+\]:{"type":"doc","docId":"[^"]+"}/.test(item.content);
 
     return html`<div class="user-info">
       ${isUser
@@ -380,6 +392,9 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
           </div>`
         : AffineAvatarIcon}
       ${isUser ? 'You' : 'AFFiNE AI'}
+      ${isWithDocs
+        ? html`<span class="message-info">with your docs</span>`
+        : nothing}
     </div>`;
   }
 
