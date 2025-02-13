@@ -37,6 +37,7 @@ import {
   type DropPayload,
 } from '@blocksuite/block-std';
 import {
+  GfxBlockElementModel,
   GfxControllerIdentifier,
   GfxGroupLikeElementModel,
   type GfxModel,
@@ -55,6 +56,7 @@ import {
 import {
   type BlockModel,
   type BlockSnapshot,
+  internalPrimitives,
   Slice,
   type SliceSnapshot,
   toDraftModel,
@@ -893,9 +895,7 @@ export class DragEventWatcher {
     point: Point,
     ignoreOriginalPos: boolean = false
   ) => {
-    const rect = getSnapshotRect(snapshot);
-
-    if (!rect) return;
+    const rect = getSnapshotRect(snapshot) ?? new Bound(0, 0, 0, 0);
     const { x: modelX, y: modelY } = point;
 
     const rewrite = (block: BlockSnapshot) => {
@@ -920,10 +920,23 @@ export class DragEventWatcher {
           });
         }
         block.children.forEach(rewrite);
-      } else if (block.props.xywh) {
-        const blockBound = Bound.deserialize(
-          block.props.xywh as SerializedXYWH
-        );
+      } else {
+        const schema = this.std.store.schema.get(block.flavour);
+        const isGfxModel =
+          schema?.model.toModel?.() instanceof GfxBlockElementModel;
+
+        if (!isGfxModel) {
+          return;
+        }
+
+        if (!block.props.xywh) {
+          block.props.xywh =
+            schema?.model.props?.(internalPrimitives).xywh ?? '[0,0,100,100]';
+        }
+
+        const blockBound =
+          Bound.deserialize(block.props.xywh as SerializedXYWH) ??
+          new Bound(0, 0, 0, 0);
 
         if (
           block.flavour === 'affine:attachment' ||
