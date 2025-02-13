@@ -1145,7 +1145,7 @@ export class EdgelessSelectedRectWidget extends WidgetComponent<
     this._isWidthLimit = bound.w === NOTE_MIN_WIDTH * scale;
     this._isHeightLimit = bound.h === NOTE_MIN_HEIGHT * scale;
 
-    if (bound.h >= NOTE_MIN_HEIGHT * scale) {
+    if (bound.h > NOTE_MIN_HEIGHT * scale) {
       this.doc.updateBlock(element, () => {
         element.edgeless.collapse = true;
         element.edgeless.collapsedHeight = bound.h / scale;

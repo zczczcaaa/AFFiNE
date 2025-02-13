@@ -126,6 +126,10 @@ export const paragraphBlockStyles = css`
   .affine-paragraph-placeholder {
     position: absolute;
     display: none;
+    max-width: 100%;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     left: 0;
     bottom: 0;
     pointer-events: none;

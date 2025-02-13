@@ -2,11 +2,11 @@ import { expect } from '@playwright/test';
 
 import {
   activeNoteInEdgeless,
-  dragBetweenCoords,
   enterPlaygroundRoom,
   getNoteRect,
   initEmptyEdgelessState,
   redoByClick,
+  resizeElementByHandle,
   selectNoteInEdgeless,
   setEdgelessTool,
   switchEditorMode,
@@ -44,15 +44,8 @@ test('resize note in edgeless mode', async ({ page }) => {
   await selectNoteInEdgeless(page, noteId);
 
   const initRect = await getNoteRect(page, noteId);
-  const leftHandle = page.locator('.handle[aria-label="left"] .resize');
-  const box = await leftHandle.boundingBox();
-  if (box === null) throw new Error();
+  await resizeElementByHandle(page, { x: -100, y: 0 }, 'bottom-left');
 
-  await dragBetweenCoords(
-    page,
-    { x: box.x + 5, y: box.y + 5 },
-    { x: box.x - 95, y: box.y + 5 }
-  );
   const draggedRect = await getNoteRect(page, noteId);
   assertRectEqual(draggedRect, {
     x: initRect.x - 100,
@@ -84,15 +77,8 @@ test('resize note then collapse note', async ({ page }) => {
   await selectNoteInEdgeless(page, noteId);
 
   const initRect = await getNoteRect(page, noteId);
-  const leftHandle = page.locator('.handle[aria-label="left"] .resize');
-  let box = await leftHandle.boundingBox();
-  if (box === null) throw new Error();
 
-  await dragBetweenCoords(
-    page,
-    { x: box.x + 50, y: box.y + box.height },
-    { x: box.x + 50, y: box.y + box.height + 100 }
-  );
+  await resizeElementByHandle(page, { x: 0, y: 100 }, 'bottom-right');
   let noteRect = await getNoteRect(page, noteId);
   await expect(page.getByTestId('edgeless-note-collapse-button')).toBeVisible();
   assertRectEqual(noteRect, {
@@ -111,17 +97,9 @@ test('resize note then collapse note', async ({ page }) => {
   expect(domRect!.height).toBeCloseTo(initRect.h + 100);
 
   await selectNoteInEdgeless(page, noteId);
-  box = await leftHandle.boundingBox();
-  if (box === null) throw new Error();
-  await dragBetweenCoords(
-    page,
-    { x: box.x + 50, y: box.y + box.height },
-    { x: box.x + 50, y: box.y + box.height - 150 }
-  );
+  await resizeElementByHandle(page, { x: 0, y: -150 }, 'bottom-right');
+
   noteRect = await getNoteRect(page, noteId);
-  await expect(
-    page.getByTestId('edgeless-note-collapse-button')
-  ).not.toBeVisible();
   assertRectEqual(noteRect, {
     x: initRect.x,
     y: initRect.y,
@@ -149,17 +127,8 @@ test('resize note then auto size and custom size', async ({ page }) => {
   await selectNoteInEdgeless(page, noteId);
 
   const initRect = await getNoteRect(page, noteId);
-  const bottomRightResize = page.locator(
-    '.handle[aria-label="bottom-right"] .resize'
-  );
-  const box = await bottomRightResize.boundingBox();
-  if (box === null) throw new Error();
 
-  await dragBetweenCoords(
-    page,
-    { x: box.x + 5, y: box.y + 5 },
-    { x: box.x + 5, y: box.y + 105 }
-  );
+  await resizeElementByHandle(page, { x: 0, y: 100 }, 'bottom-right');
 
   const draggedRect = await getNoteRect(page, noteId);
   assertRectEqual(draggedRect, {

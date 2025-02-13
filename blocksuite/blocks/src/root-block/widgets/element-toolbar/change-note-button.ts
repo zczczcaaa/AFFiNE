@@ -1,4 +1,7 @@
-import { changeNoteDisplayMode } from '@blocksuite/affine-block-note';
+import {
+  changeNoteDisplayMode,
+  isPageBlock,
+} from '@blocksuite/affine-block-note';
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type {
   EdgelessColorPickerButton,
@@ -24,7 +27,7 @@ import {
 import {
   type ColorScheme,
   DefaultTheme,
-  NoteBlockModel,
+  type NoteBlockModel,
   NoteDisplayMode,
   resolveColor,
   type StrokeStyle,
@@ -35,7 +38,6 @@ import {
   SidebarExtensionIdentifier,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
-import { matchModels } from '@blocksuite/affine-shared/utils';
 import {
   Bound,
   countBy,
@@ -154,16 +156,6 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     return this.edgeless.doc;
   }
 
-  private get _enableAutoHeight() {
-    return !(
-      this._pageBlockEnabled &&
-      this.notes.length === 1 &&
-      this.notes[0].parent?.children.find(child =>
-        matchModels(child, [NoteBlockModel])
-      ) === this.notes[0]
-    );
-  }
-
   private _getScaleLabel(scale: number) {
     return Math.round(scale * 100) + '%';
   }
@@ -176,6 +168,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
   }
 
   private _setCollapse() {
+    this.doc.captureSync();
     this.notes.forEach(note => {
       const { collapse, collapsedHeight } = note.edgeless;
 
@@ -341,11 +334,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     const currentMode = DisplayModeMap[displayMode];
     const onlyOne = len === 1;
     const isDocOnly = displayMode === NoteDisplayMode.DocOnly;
-    const isFirstNote =
-      onlyOne &&
-      note.parent?.children.find(child =>
-        matchModels(child, [NoteBlockModel])
-      ) === note;
+
     const theme = this.edgeless.std.get(ThemeProvider).theme;
     const buttons = [
       onlyOne && this._advancedVisibilityEnabled
@@ -376,7 +365,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
         : nothing,
 
       onlyOne &&
-      !isFirstNote &&
+      !isPageBlock(this.edgeless.std, note) &&
       this._pageBlockEnabled &&
       !this._advancedVisibilityEnabled
         ? html`<editor-icon-button
@@ -532,7 +521,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
 
       onlyOne ? this.quickConnectButton : nothing,
 
-      this._enableAutoHeight
+      !isPageBlock(this.edgeless.std, this.notes[0])
         ? html`<editor-icon-button
             aria-label="Size"
             data-testid="edgeless-note-auto-height"
