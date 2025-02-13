@@ -2,9 +2,5 @@ mutation addContextDoc($options: AddContextDocInput!) {
   addContextDoc(options: $options) {
     id
     createdAt
-    name
-    chunkSize
-    status
-    blobId
   }
 }

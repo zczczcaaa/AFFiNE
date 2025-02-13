@@ -179,10 +179,6 @@ mutation addContextDoc($options: AddContextDocInput!) {
   addContextDoc(options: $options) {
     id
     createdAt
-    name
-    chunkSize
-    status
-    blobId
   }
 }`,
 };
@@ -210,6 +206,14 @@ query listContextDocsAndFiles($workspaceId: String!, $sessionId: String!, $conte
       contexts(sessionId: $sessionId, contextId: $contextId) {
         docs {
           id
+          createdAt
+        }
+        files {
+          id
+          name
+          blobId
+          chunkSize
+          status
           createdAt
         }
       }
