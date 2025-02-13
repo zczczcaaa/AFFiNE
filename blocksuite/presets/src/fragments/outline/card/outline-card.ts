@@ -119,6 +119,9 @@ export class OutlineNoteCard extends SignalWatcher(
         setDropData: () => ({
           noteId: this.note.id,
         }),
+        canDrop: () => {
+          return this.note.displayMode !== NoteDisplayMode.EdgelessOnly;
+        },
       })
     );
   }
