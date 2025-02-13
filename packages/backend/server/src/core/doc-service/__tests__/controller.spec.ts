@@ -110,7 +110,7 @@ test('should return doc when found', async t => {
   const res = await app
     .GET(`/rpc/workspaces/${workspace.id}/docs/${docId}`)
     .set('x-access-token', t.context.crypto.sign(docId))
-    .set('x-cloud-trace-context', 'test-trace-id')
+    .set('x-cloud-trace-context', 'test-trace-id/span-id')
     .expect(200)
     .expect('x-request-id', 'test-trace-id')
     .expect('Content-Type', 'application/octet-stream');

@@ -170,7 +170,13 @@ test('should be able to handle unknown internal error in http request', async t 
     .expect(HttpStatus.INTERNAL_SERVER_ERROR);
   t.is(res.body.message, 'An internal error occurred.');
   t.is(res.body.name, 'INTERNAL_SERVER_ERROR');
-  t.true(t.context.logger.error.calledOnceWith('internal_server_error'));
+  t.true(
+    t.context.logger.error.calledOnceWith(
+      `internal_server_error (${JSON.stringify({
+        requestId: res.body.requestId,
+      })})`
+    )
+  );
 });
 
 // Hard to test through websocket, will call event handler directly

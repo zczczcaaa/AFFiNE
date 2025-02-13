@@ -1,5 +1,6 @@
 import {
   DynamicModule,
+  ExecutionContext,
   ForwardReference,
   Logger,
   Module,
@@ -13,7 +14,11 @@ import { get } from 'lodash-es';
 import { ClsModule } from 'nestjs-cls';
 
 import { AppController } from './app.controller';
-import { genRequestId, getOptionalModuleMetadata } from './base';
+import {
+  getOptionalModuleMetadata,
+  getRequestIdFromHost,
+  getRequestIdFromRequest,
+} from './base';
 import { CacheModule } from './base/cache';
 import { AFFiNEConfig, ConfigModule, mergeConfigOverride } from './base/config';
 import { ErrorModule } from './base/error';
@@ -57,7 +62,7 @@ export const FunctionalityModules = [
       generateId: true,
       idGenerator(req: Request) {
         // make every request has a unique id to tracing
-        return req.get('x-cloud-trace-context') ?? genRequestId('req');
+        return getRequestIdFromRequest(req, 'http');
       },
       setup(cls, _req, res: Response) {
         res.setHeader('X-Request-Id', cls.getId());
@@ -68,9 +73,9 @@ export const FunctionalityModules = [
     interceptor: {
       mount: true,
       generateId: true,
-      idGenerator() {
+      idGenerator(context: ExecutionContext) {
         // make every request has a unique id to tracing
-        return genRequestId('ws');
+        return getRequestIdFromHost(context);
       },
     },
     plugins: [
