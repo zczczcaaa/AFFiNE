@@ -28,6 +28,7 @@ const buttonPadding = 4;
 export const button = style({
   padding: buttonPadding,
   pointerEvents: 'auto',
+  color: cssVarV2('icon/transparentBlack'),
 });
 
 export const headerHeight = 2 * headerPadding + iconSize + 2 * buttonPadding;

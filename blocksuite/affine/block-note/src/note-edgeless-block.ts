@@ -26,12 +26,13 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
     return (
       this.model.edgeless.collapse &&
       this.gfx.selection.has(this.model.id) &&
+      !this._dragging &&
       (this._isResizing || this._isHover)
     );
   }
 
-  get _zoom() {
-    return this.gfx.viewport.zoom;
+  private get _dragging() {
+    return this._isHover && this.gfx.tool.dragging$.value;
   }
 
   private _collapsedContent() {
@@ -236,6 +237,7 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
         ></edgeless-note-background>
 
         <div
+          data-testid="edgeless-note-clip-container"
           class=${styles.clipContainer}
           style=${styleMap({
             'overflow-y': this._isShowCollapsedContent ? 'initial' : 'clip',

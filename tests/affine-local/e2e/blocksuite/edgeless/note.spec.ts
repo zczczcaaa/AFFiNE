@@ -5,14 +5,19 @@ import {
   createEdgelessNoteBlock,
   getEdgelessSelectedIds,
   getPageMode,
+  getSelectedXYWH,
   locateEditorContainer,
   locateElementToolbar,
   locateModeSwitchButton,
+  moveToView,
+  resizeElementByHandle,
+  toViewCoord,
 } from '@affine-test/kit/utils/editor';
 import {
   pasteByKeyboard,
   pressBackspace,
   pressEnter,
+  pressEscape,
   selectAllByKeyboard,
   undoByKeyboard,
 } from '@affine-test/kit/utils/keyboard';
@@ -27,6 +32,7 @@ import type {
   EdgelessRootBlockComponent,
   NoteBlockModel,
 } from '@blocksuite/blocks';
+import type { IVec } from '@blocksuite/global/utils';
 import { expect, type Page } from '@playwright/test';
 
 const title = 'Edgeless Note Header Test';
@@ -368,5 +374,56 @@ test.describe('edgeless note element toolbar', () => {
         shadowType: '--affine-note-shadow-film',
       },
     });
+  });
+});
+
+test.describe('note block rendering', () => {
+  test('collapsed content rendering', async ({ page }) => {
+    await createEdgelessNoteBlock(page, [50, 50]);
+
+    await type(page, 'paragraph 1');
+    for (let i = 0; i < 5; i++) {
+      await pressEnter(page);
+    }
+    await type(page, 'paragraph 2');
+    await pressEscape(page, 3);
+    await clickView(page, [50, 50]);
+    await resizeElementByHandle(page, [0, -50], 'bottom-right');
+    const xywh = await getSelectedXYWH(page);
+    const center: IVec = [xywh[0] + xywh[2] / 2, xywh[1] + xywh[3] / 2];
+
+    const note = page
+      .locator('affine-edgeless-note')
+      .getByTestId('edgeless-note-clip-container')
+      .nth(1);
+
+    await expect(note, 'should hide collapsed content').toHaveCSS(
+      'overflow-y',
+      'clip'
+    );
+    await moveToView(page, center);
+    await expect(note, 'should show collapsed content when hover').toHaveCSS(
+      'overflow-y',
+      'visible'
+    );
+
+    const [x1, y1] = await toViewCoord(page, center);
+    const [x2, y2] = await toViewCoord(page, [center[0], center[1] + 25]);
+    const [x3, y3] = await toViewCoord(page, [center[0], center[1] + 50]);
+    await page.mouse.move(x1, y1);
+    await page.mouse.down();
+
+    await page.mouse.move(x2, y2, { steps: 10 });
+    await expect(
+      note,
+      'should hide collapsed content during dragging'
+    ).toHaveCSS('overflow-y', 'clip');
+    await page.mouse.move(x3, y3, { steps: 10 });
+    await page.mouse.up();
+    await page.mouse.move(x3, y3);
+    await expect(
+      note,
+      'should show collapsed content when dragging is finished'
+    ).toHaveCSS('overflow-y', 'visible');
   });
 });

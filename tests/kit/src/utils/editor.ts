@@ -82,6 +82,22 @@ export async function getEdgelessSelectedIds(page: Page, editorIndex = 0) {
   });
 }
 
+export async function getSelectedXYWH(
+  page: Page,
+  index = 0,
+  editorIndex = 0
+): Promise<[number, number, number, number]> {
+  const container = locateEditorContainer(page, editorIndex);
+  return container.evaluate((container, index) => {
+    const root = container.querySelector('affine-edgeless-root');
+    if (!root) {
+      throw new Error('Edgeless root not found');
+    }
+    const selected = root.service.selection.selectedElements[index];
+    return selected.elementBound.toXYWH();
+  }, index);
+}
+
 export async function getViewportCenter(page: Page, editorIndex = 0) {
   const container = locateEditorContainer(page, editorIndex);
   return container.evaluate((container: AffineEditorContainer) => {
@@ -108,6 +124,17 @@ export async function setViewportCenter(
   }, center);
 }
 
+export async function setViewportZoom(page: Page, zoom = 1, editorIndex = 0) {
+  const container = locateEditorContainer(page, editorIndex);
+  return container.evaluate((container: AffineEditorContainer, zoom) => {
+    const root = container.querySelector('affine-edgeless-root');
+    if (!root) {
+      throw new Error('Edgeless root not found');
+    }
+    root.gfx.viewport.setZoom(zoom);
+  }, zoom);
+}
+
 /**
  * Convert a canvas point to view coordinate
  * @param point the coordinate on the canvas
@@ -119,8 +146,34 @@ export async function toViewCoord(page: Page, point: IVec, editorIndex = 0) {
     if (!root) {
       throw new Error('Edgeless root not found');
     }
-    return root.gfx.viewport.toViewCoord(point[0], point[1]);
+    const coord = root.gfx.viewport.toViewCoord(point[0], point[1]);
+    coord[0] += root.gfx.viewport.left;
+    coord[1] += root.gfx.viewport.top;
+    return coord;
   }, point);
+}
+
+/**
+ * Convert a view coordinate to canvas point
+ * @param point the coordinate on the view
+ */
+export async function toModelCoord(page: Page, point: IVec, editorIndex = 0) {
+  const container = locateEditorContainer(page, editorIndex);
+  return container.evaluate((container: AffineEditorContainer, point) => {
+    const root = container.querySelector('affine-edgeless-root');
+    if (!root) {
+      throw new Error('Edgeless root not found');
+    }
+    return root.gfx.viewport.toModelCoordFromClientCoord(point);
+  }, point);
+}
+
+/**
+ * Move to a point on the canvas
+ */
+export async function moveToView(page: Page, point: IVec, editorIndex = 0) {
+  const [x, y] = await toViewCoord(page, point, editorIndex);
+  await page.mouse.move(x, y);
 }
 
 /**
@@ -329,6 +382,28 @@ export async function setEdgelessTool(
       break;
     }
   }
+}
+
+export async function resizeElementByHandle(
+  page: Page,
+  delta: IVec,
+  corner:
+    | 'top-left'
+    | 'top-right'
+    | 'bottom-right'
+    | 'bottom-left' = 'top-left',
+  editorIndex = 0
+) {
+  const handle = page.locator(`.handle[aria-label="${corner}"] .resize`);
+  const box = await handle.boundingBox();
+  if (box === null) throw new Error();
+  const from = await toModelCoord(
+    page,
+    [box.x + box.width / 2, box.y + box.height / 2],
+    editorIndex
+  );
+  const to: IVec = [from[0] + delta[0], from[1] + delta[1]];
+  await dragView(page, from, to, editorIndex);
 }
 
 export function locateElementToolbar(page: Page, editorIndex = 0) {
