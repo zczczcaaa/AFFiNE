@@ -120,8 +120,19 @@ export class DragEventWatcher {
   }
 
   private readonly _createDropIndicator = () => {
+    let topElement: HTMLElement = this.widget;
+    const body = this.widget.ownerDocument.body;
+
+    while (topElement && topElement.parentElement !== body) {
+      topElement = topElement.parentElement!;
+    }
+    const zIndex = topElement
+      ? (parseInt(window.getComputedStyle(topElement).zIndex) || 1) + 1
+      : 2;
+
     if (!this.dropIndicator) {
       this.dropIndicator = new DropIndicator();
+      this.dropIndicator.zIndex = zIndex;
       this.widget.ownerDocument.body.append(this.dropIndicator);
     }
   };
@@ -1232,7 +1243,7 @@ export class DragEventWatcher {
       onDrop: () => {
         this._cleanup();
       },
-      setDragPreview: ({ source, container }) => {
+      setDragPreview: ({ source, container, setOffset }) => {
         if (
           !source.data?.bsEntity?.modelIds.length ||
           !source.data.bsEntity.snapshot
@@ -1248,6 +1259,8 @@ export class DragEventWatcher {
           container,
           mode: this.mode ?? 'page',
         });
+
+        setOffset({ x: 0, y: 0 });
       },
       setDragData: () => {
         const { fromMode, snapshot } = this._getDraggedSnapshot();
