@@ -21,7 +21,11 @@ import { WorkspaceShareSettingService } from '@affine/core/modules/share-setting
 import { copyTextToClipboard } from '@affine/core/utils/clipboard';
 import { emailRegex } from '@affine/core/utils/email-regex';
 import type { WorkspaceInviteLinkExpireTime } from '@affine/graphql';
-import { SubscriptionPlan, UserFriendlyError } from '@affine/graphql';
+import {
+  ServerDeploymentType,
+  SubscriptionPlan,
+  UserFriendlyError,
+} from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { ExportIcon } from '@blocksuite/icons/rc';
@@ -65,8 +69,14 @@ export const CloudWorkspaceMembersPanel = ({
   const hasPaymentFeature = useLiveData(
     serverService.server.features$.map(f => f?.payment)
   );
+  const isSelfhosted = useLiveData(
+    serverService.server.config$.selector(
+      c => c.type === ServerDeploymentType.Selfhosted
+    )
+  );
   const membersService = useService(WorkspaceMembersService);
   const permissionService = useService(WorkspacePermissionService);
+
   const isOwner = useLiveData(permissionService.permission.isOwner$);
   const isAdmin = useLiveData(permissionService.permission.isAdmin$);
   const isOwnerOrAdmin = isOwner || isAdmin;
@@ -99,9 +109,9 @@ export const CloudWorkspaceMembersPanel = ({
   const { openConfirmModal, closeConfirmModal } = useConfirmModal();
   const goToTeamBilling = useCallback(() => {
     onChangeSettingState({
-      activeTab: 'workspace:billing',
+      activeTab: isSelfhosted ? 'workspace:license' : 'workspace:billing',
     });
-  }, [onChangeSettingState]);
+  }, [isSelfhosted, onChangeSettingState]);
   const [idempotencyKey, setIdempotencyKey] = useState(nanoid());
   const resume = useAsyncCallback(async () => {
     try {
