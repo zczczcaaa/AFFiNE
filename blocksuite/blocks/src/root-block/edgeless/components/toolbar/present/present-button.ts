@@ -1,5 +1,5 @@
-import { FrameNavigatorIcon } from '@blocksuite/affine-components/icons';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
+import { PresentationIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
 
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
@@ -16,12 +16,6 @@ export class EdgelessPresentButton extends QuickToolMixin(
       display: flex;
       position: relative;
     }
-    .arrow-up-icon {
-      position: absolute;
-      top: 4px;
-      right: 2px;
-      font-size: 0;
-    }
   `;
 
   override type: GfxToolsFullOptionValue['type'] = 'frameNavigator';
@@ -32,13 +26,14 @@ export class EdgelessPresentButton extends QuickToolMixin(
     .tooltip=${'Present'}
     .tooltipOffset=${17}
     .iconContainerPadding=${6}
+    .iconSize=${'24px'}
     @click=${() => {
       this.setEdgelessTool({
         type: 'frameNavigator',
       });
     }}
   >
-    ${FrameNavigatorIcon}
+    ${PresentationIcon()}
     </edgeless-tool-icon-button>
   </div>`;
   }

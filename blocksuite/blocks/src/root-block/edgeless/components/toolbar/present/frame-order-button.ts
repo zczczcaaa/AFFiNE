@@ -1,7 +1,7 @@
-import { FrameOrderAdjustmentIcon } from '@blocksuite/affine-components/icons';
 import type { FrameBlockModel } from '@blocksuite/affine-model';
 import { createButtonPopper } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { LayerIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
 import { property, query } from 'lit/decorators.js';
 
@@ -49,6 +49,7 @@ export class EdgelessFrameOrderButton extends WithDisposable(LitElement) {
       </style>
       <edgeless-tool-icon-button
         class="edgeless-frame-order-button"
+        .iconSize=${'24px'}
         .tooltip=${this.popperShow ? '' : 'Frame Order'}
         @click=${() => {
           if (readonly) return;
@@ -56,7 +57,7 @@ export class EdgelessFrameOrderButton extends WithDisposable(LitElement) {
         }}
         .iconContainerPadding=${0}
       >
-        ${FrameOrderAdjustmentIcon}
+        ${LayerIcon()}
       </edgeless-tool-icon-button>
       <edgeless-frame-order-menu .edgeless=${this.edgeless}>
       </edgeless-frame-order-menu>

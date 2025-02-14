@@ -5,11 +5,6 @@ import {
   popupTargetFromElement,
 } from '@blocksuite/affine-components/context-menu';
 import {
-  ArrowLeftSmallIcon,
-  ArrowRightSmallIcon,
-  MoreHorizontalIcon,
-} from '@blocksuite/affine-components/icons';
-import {
   darkToolbarStyles,
   lightToolbarStyles,
 } from '@blocksuite/affine-components/toolbar';
@@ -22,6 +17,11 @@ import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { WidgetComponent } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { debounce, Slot } from '@blocksuite/global/utils';
+import {
+  ArrowLeftSmallIcon,
+  ArrowRightSmallIcon,
+  MoreHorizontalIcon,
+} from '@blocksuite/icons/lit';
 import { autoPlacement, offset } from '@floating-ui/dom';
 import { ContextProvider } from '@lit/context';
 import { computed } from '@preact/signals-core';
@@ -499,7 +499,7 @@ export class EdgelessToolbarWidget extends WidgetComponent<
             .slice(this._visibleQuickToolSize)
             .some(tool => tool.type === this.edgelessTool?.type)}
         >
-          ${MoreHorizontalIcon}
+          ${MoreHorizontalIcon({ width: '20px', height: '20px' })}
           <affine-tooltip tip-position="top" .offset=${25}>
             More Tools
           </affine-tooltip>
@@ -513,7 +513,7 @@ export class EdgelessToolbarWidget extends WidgetComponent<
           ?disabled=${this._seniorScrollPrevDisabled}
           @click=${this._onSeniorNavPrev}
         >
-          ${ArrowLeftSmallIcon}
+          ${ArrowLeftSmallIcon({ width: '20px', height: '20px' })}
           ${cache(
             this._seniorPrevTooltip
               ? html` <affine-tooltip tip-position="top" .offset=${4}>
@@ -540,7 +540,7 @@ export class EdgelessToolbarWidget extends WidgetComponent<
           ?disabled=${this._seniorScrollNextDisabled}
           @click=${this._onSeniorNavNext}
         >
-          ${ArrowRightSmallIcon}
+          ${ArrowRightSmallIcon({ width: '20px', height: '20px' })}
           ${cache(
             this._seniorNextTooltip
               ? html` <affine-tooltip tip-position="top" .offset=${4}>

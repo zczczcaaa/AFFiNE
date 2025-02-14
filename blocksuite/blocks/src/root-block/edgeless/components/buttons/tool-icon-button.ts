@@ -42,6 +42,7 @@ export class EdgelessToolIconButton extends LitElement {
 
     ::slotted(svg) {
       flex-shrink: 0;
+      width: var(--icon-size, unset);
       height: var(--icon-size, unset);
     }
 

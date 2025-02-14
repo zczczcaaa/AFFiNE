@@ -8,12 +8,6 @@ import {
   OverlayIdentifier,
   type RoughCanvas,
 } from '@blocksuite/affine-block-surface';
-import {
-  AutoCompleteArrowIcon,
-  MindMapChildIcon,
-  MindMapSiblingIcon,
-  NoteAutoCompleteIcon,
-} from '@blocksuite/affine-components/icons';
 import type {
   Connection,
   ConnectorElementModel,
@@ -38,6 +32,12 @@ import {
   Vec,
   WithDisposable,
 } from '@blocksuite/global/utils';
+import {
+  ArrowUpBigIcon,
+  PlusIcon,
+  SiblingNodeIcon,
+  SubNodeIcon,
+} from '@blocksuite/icons/lit';
 import { consume } from '@lit/context';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
@@ -490,7 +490,8 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
     const Arrows = arrowDirections.map(type => {
       let transform = '';
 
-      const icon = isShape ? AutoCompleteArrowIcon : NoteAutoCompleteIcon;
+      const iconSize = { width: '16px', height: '16px' };
+      const icon = (isShape ? ArrowUpBigIcon : PlusIcon)(iconSize);
 
       switch (type) {
         case Direction.Top:
@@ -583,7 +584,10 @@ export class EdgelessAutoComplete extends WithDisposable(LitElement) {
 
       const [position, target, layout] = type;
       const isLeftLayout = layout === LayoutType.LEFT;
-      const icon = target === 'child' ? MindMapChildIcon : MindMapSiblingIcon;
+      const icon = (target === 'child' ? SubNodeIcon : SiblingNodeIcon)({
+        width: '16px',
+        height: '16px',
+      });
 
       switch (position) {
         case Direction.Bottom:

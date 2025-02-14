@@ -1,5 +1,4 @@
 import { isNoteBlock } from '@blocksuite/affine-block-surface';
-import { SmallScissorsIcon } from '@blocksuite/affine-components/icons';
 import { DEFAULT_NOTE_HEIGHT } from '@blocksuite/affine-model';
 import { EDGELESS_BLOCK_CHILD_PADDING } from '@blocksuite/affine-shared/consts';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
@@ -12,6 +11,7 @@ import {
   Point,
   serializeXYWH,
 } from '@blocksuite/global/utils';
+import { ScissorsIcon } from '@blocksuite/icons/lit';
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -387,7 +387,7 @@ export class NoteSlicer extends WidgetComponent<
           transform: 'translateY(-50%)',
         })}
       >
-        ${SmallScissorsIcon}
+        ${ScissorsIcon({ width: '16px', height: '16px' })}
       </div>
       ${this._divingLinePositions.map((pos, idx) => {
         const dividingLineClasses = classMap({

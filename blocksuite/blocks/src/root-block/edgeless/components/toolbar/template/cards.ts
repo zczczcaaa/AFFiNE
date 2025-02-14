@@ -1,6 +1,6 @@
 import { html, svg } from 'lit';
 
-export const ArrowIcon = html`
+export const Triangle = html`
   <svg
     width="24"
     height="18"

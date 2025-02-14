@@ -14,7 +14,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
-import { TemplateCard1, TemplateCard2, TemplateCard3 } from './icon.js';
+import { TemplateCard1, TemplateCard2, TemplateCard3 } from './cards.js';
 import type { EdgelessTemplatePanel } from './template-panel.js';
 
 export class EdgelessTemplateButton extends EdgelessToolbarToolMixin(

@@ -7,11 +7,6 @@ import {
   packColor,
   packColorsWithColorScheme,
 } from '@blocksuite/affine-components/color-picker';
-import {
-  NoteIcon,
-  RenameIcon,
-  UngroupButtonIcon,
-} from '@blocksuite/affine-components/icons';
 import { toast } from '@blocksuite/affine-components/toast';
 import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
 import {
@@ -34,6 +29,7 @@ import {
   serializeXYWH,
   WithDisposable,
 } from '@blocksuite/global/utils';
+import { EditIcon, PageIcon, UngroupIcon } from '@blocksuite/icons/lit';
 import { html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
@@ -148,7 +144,7 @@ export class EdgelessChangeFrameButton extends WithDisposable(LitElement) {
                 .labelHeight=${'20px'}
                 @click=${this._insertIntoPage}
               >
-                ${NoteIcon}
+                ${PageIcon()}
                 <span class="label">Insert into Page</span>
               </editor-icon-button>
             `
@@ -163,7 +159,7 @@ export class EdgelessChangeFrameButton extends WithDisposable(LitElement) {
                 @click=${() =>
                   mountFrameTitleEditor(this.frames[0], this.edgeless)}
               >
-                ${RenameIcon}
+                ${EditIcon()}
               </editor-icon-button>
             `
           : nothing,
@@ -187,7 +183,7 @@ export class EdgelessChangeFrameButton extends WithDisposable(LitElement) {
               this.edgeless.service.selection.clear();
             }}
           >
-            ${UngroupButtonIcon}
+            ${UngroupIcon()}
           </editor-icon-button>
         `,
 

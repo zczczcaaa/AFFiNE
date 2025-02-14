@@ -1,9 +1,5 @@
-import {
-  BanIcon,
-  DashLineIcon,
-  StraightLineIcon,
-} from '@blocksuite/affine-components/icons';
 import { LineWidth, StrokeStyle } from '@blocksuite/affine-model';
+import { BanIcon, DashLineIcon, StraightLineIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -31,17 +27,17 @@ const LINE_STYLE_LIST = [
   {
     name: 'Solid',
     value: StrokeStyle.Solid,
-    icon: StraightLineIcon,
+    icon: StraightLineIcon(),
   },
   {
     name: 'Dash',
     value: StrokeStyle.Dash,
-    icon: DashLineIcon,
+    icon: DashLineIcon(),
   },
   {
     name: 'None',
     value: StrokeStyle.None,
-    icon: BanIcon,
+    icon: BanIcon(),
   },
 ];
 
@@ -81,6 +77,7 @@ export function LineStylesPanel({
           .active=${active}
           .activeMode=${'background'}
           .tooltip=${name}
+          .iconSize=${'24px'}
           @click=${() =>
             onClick?.({
               type: 'lineStyle',

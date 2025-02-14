@@ -74,7 +74,6 @@ export {
   DocIcon,
   DualLinkIcon16,
   LinkedDocIcon,
-  PlusIcon,
   TagsIcon,
 } from '@blocksuite/affine-components/icons';
 export * from '@blocksuite/affine-components/icons';

@@ -1,8 +1,8 @@
-import { FrameIcon } from '@blocksuite/affine-components/icons';
 import { MindmapElementModel } from '@blocksuite/affine-model';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import type { GfxModel } from '@blocksuite/block-std/gfx';
 import { Bound, WithDisposable } from '@blocksuite/global/utils';
+import { FrameIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
@@ -36,9 +36,10 @@ export class EdgelessAddFrameButton extends WithDisposable(LitElement) {
         aria-label="Frame"
         .tooltip=${'Frame'}
         .labelHeight=${'20px'}
+        .iconSize=${'20px'}
         @click=${this._createFrame}
       >
-        ${FrameIcon}<span class="label medium">Frame</span>
+        ${FrameIcon()}<span class="label medium">Frame</span>
       </editor-icon-button>
     `;
   }

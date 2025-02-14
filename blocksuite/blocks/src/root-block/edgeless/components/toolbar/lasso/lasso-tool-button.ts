@@ -1,17 +1,12 @@
-import {
-  ArrowUpIcon,
-  LassoFreeHandIcon,
-  LassoPolygonalIcon,
-} from '@blocksuite/affine-components/icons';
 import { LassoMode } from '@blocksuite/affine-shared/types';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { query, state } from 'lit/decorators.js';
-import { styleMap } from 'lit/directives/style-map.js';
 
 import { getTooltipWithShortcut } from '../../utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
+import { LassoFreeHandIcon, LassoPolygonalIcon } from './icons.js';
 
 export class EdgelessLassoToolButton extends QuickToolMixin(
   WithDisposable(LitElement)
@@ -24,12 +19,6 @@ export class EdgelessLassoToolButton extends QuickToolMixin(
     }
     .current-icon > svg {
       display: block;
-    }
-    .arrow-up-icon {
-      position: absolute;
-      top: 4px;
-      right: 2px;
-      font-size: 0;
     }
   `;
 
@@ -80,8 +69,6 @@ export class EdgelessLassoToolButton extends QuickToolMixin(
     const type = this.edgelessTool?.type;
     const mode = this.curMode === LassoMode.FreeHand ? 'freehand' : 'polygonal';
 
-    const arrowColor =
-      type === 'lasso' ? 'currentColor' : 'var(--affine-icon-secondary)';
     return html`
       <edgeless-tool-icon-button
         class="edgeless-lasso-button ${mode}"
@@ -89,6 +76,7 @@ export class EdgelessLassoToolButton extends QuickToolMixin(
         .tooltipOffset=${17}
         .active=${type === 'lasso'}
         .iconContainerPadding=${6}
+        .iconSize=${'24px'}
         @click=${this._changeTool}
       >
         <span class="current-icon">
@@ -96,9 +84,7 @@ export class EdgelessLassoToolButton extends QuickToolMixin(
             ? LassoFreeHandIcon
             : LassoPolygonalIcon}
         </span>
-        <span class="arrow-up-icon" style=${styleMap({ color: arrowColor })}>
-          ${ArrowUpIcon}
-        </span>
+        <toolbar-arrow-up-icon></toolbar-arrow-up-icon>
       </edgeless-tool-icon-button>
     `;
   }

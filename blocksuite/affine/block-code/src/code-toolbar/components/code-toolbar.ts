@@ -1,4 +1,3 @@
-import { MoreVerticalIcon } from '@blocksuite/affine-components/icons';
 import { createLitPortal } from '@blocksuite/affine-components/portal';
 import type {
   EditorIconButton,
@@ -6,6 +5,7 @@ import type {
 } from '@blocksuite/affine-components/toolbar';
 import { renderGroups } from '@blocksuite/affine-components/toolbar';
 import { noop, WithDisposable } from '@blocksuite/global/utils';
+import { MoreVerticalIcon } from '@blocksuite/icons/lit';
 import { flip, offset } from '@floating-ui/dom';
 import { css, html, LitElement } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -132,7 +132,7 @@ export class AffineCodeToolbar extends WithDisposable(LitElement) {
           ?disabled=${this.context.doc.readonly}
           @click=${() => this._toggleMoreMenu()}
         >
-          ${MoreVerticalIcon}
+          ${MoreVerticalIcon()}
         </editor-icon-button>
       </editor-toolbar>
     `;

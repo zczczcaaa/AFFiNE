@@ -1,12 +1,11 @@
 import {
-  BookmarkIcon,
   CaptionIcon,
   CopyIcon,
   DeleteIcon,
   DownloadIcon,
-  DuplicateIcon,
 } from '@blocksuite/affine-components/icons';
 import type { MenuItemGroup } from '@blocksuite/affine-components/toolbar';
+import { BookmarkIcon, DuplicateIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
@@ -90,7 +89,7 @@ export const clipboardGroup: MenuItemGroup<ImageToolbarContext> = {
     {
       type: 'duplicate',
       label: 'Duplicate',
-      icon: DuplicateIcon,
+      icon: DuplicateIcon(),
       when: ({ doc }) => !doc.readonly,
       action: ({ blockComponent, abortController }) => {
         duplicate(blockComponent, abortController);
@@ -106,7 +105,7 @@ export const conversionsGroup: MenuItemGroup<ImageToolbarContext> = {
     {
       label: 'Turn into card view',
       type: 'turn-into-card-view',
-      icon: BookmarkIcon,
+      icon: BookmarkIcon(),
       when: ({ doc, blockComponent }) => {
         const supportAttachment =
           doc.schema.flavourSchemaMap.has('affine:attachment');

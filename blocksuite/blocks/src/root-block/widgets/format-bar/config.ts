@@ -26,7 +26,6 @@ import {
   ItalicIcon,
   LinkedDocIcon,
   LinkIcon,
-  MoreVerticalIcon,
   NumberedListIcon,
   QuoteIcon,
   StrikethroughIcon,
@@ -64,6 +63,7 @@ import type {
 } from '@blocksuite/block-std';
 import { tableViewMeta } from '@blocksuite/data-view/view-presets';
 import { assertExists } from '@blocksuite/global/utils';
+import { MoreVerticalIcon } from '@blocksuite/icons/lit';
 import { Slice } from '@blocksuite/store';
 import { html, type TemplateResult } from 'lit';
 
@@ -460,8 +460,12 @@ export function toolbarMoreButton(toolbar: AffineFormatBarWidget) {
     <editor-menu-button
       .contentPadding="${'8px'}"
       .button="${html`
-        <editor-icon-button aria-label="More" .tooltip=${'More'}>
-          ${MoreVerticalIcon}
+        <editor-icon-button
+          aria-label="More"
+          .tooltip=${'More'}
+          .iconSize=${'20px'}
+        >
+          ${MoreVerticalIcon()}
         </editor-icon-button>
       `}"
     >

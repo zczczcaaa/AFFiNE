@@ -1,13 +1,6 @@
 import type { SurfaceRefBlockComponent } from '@blocksuite/affine-block-surface-ref';
 import { HoverController } from '@blocksuite/affine-components/hover';
-import {
-  CaptionIcon,
-  CenterPeekIcon,
-  EdgelessModeIcon,
-  MoreVerticalIcon,
-  OpenIcon,
-  SmallArrowDownIcon,
-} from '@blocksuite/affine-components/icons';
+import { CaptionIcon, OpenIcon } from '@blocksuite/affine-components/icons';
 import { isPeekable, peek } from '@blocksuite/affine-components/peek';
 import {
   cloneGroups,
@@ -24,6 +17,12 @@ import {
   TextSelection,
   WidgetComponent,
 } from '@blocksuite/block-std';
+import {
+  ArrowDownSmallIcon,
+  CenterPeekIcon,
+  EdgelessIcon,
+  MoreVerticalIcon,
+} from '@blocksuite/icons/lit';
 import { offset, shift } from '@floating-ui/dom';
 import { html, nothing } from 'lit';
 import { ifDefined } from 'lit/directives/if-defined.js';
@@ -123,11 +122,13 @@ function SurfaceRefToolbarOptions({
   const hasValidReference = !!blockComponent.referenceModel;
 
   const openMenuActions: MenuItem[] = [];
+
+  const iconSize = { width: '20px', height: '20px' };
   if (hasValidReference) {
     openMenuActions.push({
       type: 'open-in-edgeless',
       label: 'Open in edgeless',
-      icon: EdgelessModeIcon,
+      icon: EdgelessIcon(iconSize),
       action: () => blockComponent.viewInEdgeless(),
       disabled: readonly,
     });
@@ -136,7 +137,7 @@ function SurfaceRefToolbarOptions({
       openMenuActions.push({
         type: 'open-in-center-peek',
         label: 'Open in center peek',
-        icon: CenterPeekIcon,
+        icon: CenterPeekIcon(iconSize),
         action: () => peek(blockComponent),
       });
     }
@@ -155,7 +156,10 @@ function SurfaceRefToolbarOptions({
                 .justify=${'space-between'}
                 .labelHeight=${'20px'}
               >
-                ${OpenIcon}${SmallArrowDownIcon}
+                ${OpenIcon}${ArrowDownSmallIcon({
+                  width: '16px',
+                  height: '16px',
+                })}
               </editor-icon-button>
             `}
           >
@@ -197,8 +201,12 @@ function SurfaceRefToolbarOptions({
       <editor-menu-button
         .contentPadding=${'8px'}
         .button=${html`
-          <editor-icon-button aria-label="More" .tooltip=${'More'}>
-            ${MoreVerticalIcon}
+          <editor-icon-button
+            aria-label="More"
+            .tooltip=${'More'}
+            .iconSize=${'20px'}
+          >
+            ${MoreVerticalIcon()}
           </editor-icon-button>
         `}
       >

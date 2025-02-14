@@ -1,8 +1,3 @@
-import {
-  ConnectorCWithArrowIcon,
-  ConnectorLWithArrowIcon,
-  ConnectorXWithArrowIcon,
-} from '@blocksuite/affine-components/icons';
 import { ConnectorMode, DefaultTheme } from '@blocksuite/affine-model';
 import {
   EditPropsStore,
@@ -12,6 +7,11 @@ import {
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { SignalWatcher } from '@blocksuite/global/utils';
+import {
+  ConnectorCIcon,
+  ConnectorEIcon,
+  ConnectorLIcon,
+} from '@blocksuite/icons/lit';
 import { computed } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -34,25 +34,28 @@ function ConnectorModeButtonGroup(
         .active=${mode === ConnectorMode.Curve}
         .activeMode=${'background'}
         .tooltip=${'Curve'}
+        .iconSize=${'20px'}
         @click=${() => setConnectorMode({ mode: ConnectorMode.Curve })}
       >
-        ${ConnectorCWithArrowIcon}
+        ${ConnectorCIcon()}
       </edgeless-tool-icon-button>
       <edgeless-tool-icon-button
         .active=${mode === ConnectorMode.Orthogonal}
         .activeMode=${'background'}
         .tooltip=${'Elbowed'}
+        .iconSize=${'20px'}
         @click=${() => setConnectorMode({ mode: ConnectorMode.Orthogonal })}
       >
-        ${ConnectorXWithArrowIcon}
+        ${ConnectorEIcon()}
       </edgeless-tool-icon-button>
       <edgeless-tool-icon-button
         .active=${mode === ConnectorMode.Straight}
         .activeMode=${'background'}
         .tooltip=${'Straight'}
+        .iconSize=${'20px'}
         @click=${() => setConnectorMode({ mode: ConnectorMode.Straight })}
       >
-        ${ConnectorLWithArrowIcon}
+        ${ConnectorLIcon()}
       </edgeless-tool-icon-button>
     </div>
   `;

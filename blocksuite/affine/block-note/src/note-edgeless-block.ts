@@ -1,6 +1,5 @@
 import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import type { DocTitle } from '@blocksuite/affine-components/doc-title';
-import { MoreIndicatorIcon } from '@blocksuite/affine-components/icons';
 import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { EDGELESS_BLOCK_CHILD_PADDING } from '@blocksuite/affine-shared/consts';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
@@ -12,6 +11,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
+import { MoreIndicator } from './components/more-indicator';
 import { NoteBlockComponent } from './note-block';
 import { ACTIVE_NOTE_EXTRA_PADDING } from './note-edgeless-block.css';
 import * as styles from './note-edgeless-block.css';
@@ -274,7 +274,7 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
               @mouseup=${stopPropagation}
               @click=${this._setCollapse}
             >
-              ${MoreIndicatorIcon}
+              ${MoreIndicator}
             </div>`
           : nothing}
         ${this._collapsedContent()}

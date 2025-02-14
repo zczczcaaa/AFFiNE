@@ -12,15 +12,6 @@ import {
   packColorsWithColorScheme,
 } from '@blocksuite/affine-components/color-picker';
 import {
-  ExpandIcon,
-  LineStyleIcon,
-  NoteCornerIcon,
-  NoteShadowIcon,
-  ScissorsIcon,
-  ShrinkIcon,
-  SmallArrowDownIcon,
-} from '@blocksuite/affine-components/icons';
-import {
   type EditorMenuButton,
   renderToolbarSeparator,
 } from '@blocksuite/affine-components/toolbar';
@@ -44,7 +35,15 @@ import {
   maxBy,
   WithDisposable,
 } from '@blocksuite/global/utils';
-import { LinkedPageIcon } from '@blocksuite/icons/lit';
+import {
+  AutoHeightIcon,
+  CornerIcon,
+  CustomizedHeightIcon,
+  LineStyleIcon,
+  LinkedPageIcon,
+  NoteShadowDuotoneIcon,
+  ScissorsIcon,
+} from '@blocksuite/icons/lit';
 import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
@@ -57,6 +56,7 @@ import {
 } from '../../edgeless/components/panel/line-styles-panel.js';
 import { getTooltipWithShortcut } from '../../edgeless/components/utils.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
+import { SmallArrowDownIcon } from './icons.js';
 import * as styles from './styles.css';
 
 const SIZE_LIST = [
@@ -336,6 +336,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     const isDocOnly = displayMode === NoteDisplayMode.DocOnly;
 
     const theme = this.edgeless.std.get(ThemeProvider).theme;
+    const buttonIconSize = { width: '20px', height: '20px' };
     const buttons = [
       onlyOne && this._advancedVisibilityEnabled
         ? html`
@@ -381,7 +382,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
                   : NoteDisplayMode.EdgelessOnly
               )}
           >
-            ${LinkedPageIcon({ width: '20px', height: '20px' })}
+            ${LinkedPageIcon(buttonIconSize)}
             <span class="label"
               >${displayMode === NoteDisplayMode.EdgelessOnly
                 ? 'Display In Page'
@@ -454,7 +455,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
                   aria-label="Shadow style"
                   .tooltip=${'Shadow style'}
                 >
-                  ${NoteShadowIcon}${SmallArrowDownIcon}
+                  ${NoteShadowDuotoneIcon(buttonIconSize)}${SmallArrowDownIcon}
                 </editor-icon-button>
               `}
             >
@@ -473,7 +474,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
                   aria-label="Border style"
                   .tooltip=${'Border style'}
                 >
-                  ${LineStyleIcon}${SmallArrowDownIcon}
+                  ${LineStyleIcon(buttonIconSize)}${SmallArrowDownIcon}
                 </editor-icon-button>
               `}
             >
@@ -491,7 +492,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
               .contentPadding=${'8px'}
               .button=${html`
                 <editor-icon-button aria-label="Corners" .tooltip=${'Corners'}>
-                  ${NoteCornerIcon}${SmallArrowDownIcon}
+                  ${CornerIcon(buttonIconSize)}${SmallArrowDownIcon}
                 </editor-icon-button>
               `}
             >
@@ -512,9 +513,10 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
               aria-label="Slicer"
               .tooltip=${getTooltipWithShortcut('Cutting mode', '-')}
               .active=${this.enableNoteSlicer}
+              .iconSize=${'20px'}
               @click=${() => this._handleNoteSlicerButtonClick()}
             >
-              ${ScissorsIcon}
+              ${ScissorsIcon()}
             </editor-icon-button>
           `
         : nothing,
@@ -526,9 +528,10 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
             aria-label="Size"
             data-testid="edgeless-note-auto-height"
             .tooltip=${collapse ? 'Auto height' : 'Customized height'}
+            .iconSize=${'20px'}
             @click=${() => this._setCollapse()}
           >
-            ${collapse ? ExpandIcon : ShrinkIcon}
+            ${collapse ? AutoHeightIcon() : CustomizedHeightIcon()}
           </editor-icon-button>`
         : nothing,
 

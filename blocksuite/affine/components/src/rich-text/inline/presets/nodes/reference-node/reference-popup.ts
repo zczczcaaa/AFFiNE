@@ -18,6 +18,7 @@ import {
   type BlockStdScope,
 } from '@blocksuite/block-std';
 import { assertExists, WithDisposable } from '@blocksuite/global/utils';
+import { ArrowDownSmallIcon, MoreVerticalIcon } from '@blocksuite/icons/lit';
 import type { InlineRange } from '@blocksuite/inline';
 import { computePosition, inline, offset, shift } from '@floating-ui/dom';
 import { effect } from '@preact/signals-core';
@@ -31,9 +32,7 @@ import {
   CopyIcon,
   DeleteIcon,
   EditIcon,
-  MoreVerticalIcon,
   OpenIcon,
-  SmallArrowDownIcon,
 } from '../../../../../icons/index.js';
 import { notifyLinkedDocSwitchedToEmbed } from '../../../../../notification/index.js';
 import { isPeekable, peek } from '../../../../../peek/index.js';
@@ -297,7 +296,7 @@ export class ReferencePopup extends WithDisposable(LitElement) {
             .justify=${'space-between'}
             .labelHeight=${'20px'}
           >
-            ${OpenIcon}${SmallArrowDownIcon}
+            ${OpenIcon} ${ArrowDownSmallIcon({ width: '16px', height: '16px' })}
           </editor-icon-button>
         `}
       >
@@ -362,7 +361,7 @@ export class ReferencePopup extends WithDisposable(LitElement) {
             .iconContainerWidth=${'110px'}
           >
             <span class="label">Inline view</span>
-            ${SmallArrowDownIcon}
+            ${ArrowDownSmallIcon({ width: '16px', height: '16px' })}
           </editor-icon-button>
         `}
         @toggle=${this._toggleViewSelector}
@@ -458,8 +457,12 @@ export class ReferencePopup extends WithDisposable(LitElement) {
         <editor-menu-button
           .contentPadding=${'8px'}
           .button=${html`
-            <editor-icon-button aria-label="More" .tooltip=${'More'}>
-              ${MoreVerticalIcon}
+            <editor-icon-button
+              aria-label="More"
+              .tooltip=${'More'}
+              .iconSize=${'20px'}
+            >
+              ${MoreVerticalIcon()}
             </editor-icon-button>
           `}
         >

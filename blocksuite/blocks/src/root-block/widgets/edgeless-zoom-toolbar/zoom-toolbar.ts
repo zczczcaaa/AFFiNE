@@ -1,11 +1,7 @@
-import {
-  MinusIcon,
-  PlusIcon,
-  ViewBarIcon,
-} from '@blocksuite/affine-components/icons';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { ZOOM_STEP } from '@blocksuite/block-std/gfx';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { MinusIcon, PlusIcon, ViewBarIcon } from '@blocksuite/icons/lit';
 import { effect } from '@preact/signals-core';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
@@ -168,9 +164,10 @@ export class EdgelessZoomToolbar extends WithDisposable(LitElement) {
           .arrow=${!this._isVerticalBar()}
           @click=${() => this.gfx.fitToScreen()}
           .iconContainerPadding=${4}
+          .iconSize=${'24px'}
           .disabled=${locked}
         >
-          ${ViewBarIcon}
+          ${ViewBarIcon()}
         </edgeless-tool-icon-button>
         <edgeless-tool-icon-button
           .tooltip=${'Zoom out'}
@@ -178,9 +175,10 @@ export class EdgelessZoomToolbar extends WithDisposable(LitElement) {
           .arrow=${!this._isVerticalBar()}
           @click=${() => this.edgelessService.setZoomByStep(-ZOOM_STEP)}
           .iconContainerPadding=${4}
+          .iconSize=${'24px'}
           .disabled=${locked}
         >
-          ${MinusIcon}
+          ${MinusIcon()}
         </edgeless-tool-icon-button>
         <button
           class="zoom-percent"
@@ -195,9 +193,10 @@ export class EdgelessZoomToolbar extends WithDisposable(LitElement) {
           .arrow=${!this._isVerticalBar()}
           @click=${() => this.edgelessService.setZoomByStep(ZOOM_STEP)}
           .iconContainerPadding=${4}
+          .iconSize=${'24px'}
           .disabled=${locked}
         >
-          ${PlusIcon}
+          ${PlusIcon()}
         </edgeless-tool-icon-button>
       </div>
     `;

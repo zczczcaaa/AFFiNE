@@ -88,6 +88,7 @@ import { EdgelessTextEditor } from './root-block/edgeless/components/text/edgele
 import { EdgelessBrushMenu } from './root-block/edgeless/components/toolbar/brush/brush-menu.js';
 import { EdgelessBrushToolButton } from './root-block/edgeless/components/toolbar/brush/brush-tool-button.js';
 import { EdgelessSlideMenu } from './root-block/edgeless/components/toolbar/common/slide-menu.js';
+import { ToolbarArrowUpIcon } from './root-block/edgeless/components/toolbar/common/toolbar-arrow-up-icon.js';
 import { EdgelessConnectorMenu } from './root-block/edgeless/components/toolbar/connector/connector-menu.js';
 import { EdgelessConnectorToolButton } from './root-block/edgeless/components/toolbar/connector/connector-tool-button.js';
 import { EdgelessDefaultToolButton } from './root-block/edgeless/components/toolbar/default/default-tool-button.js';
@@ -368,6 +369,7 @@ export function effects() {
     'edgeless-toolbar-shape-draggable',
     EdgelessToolbarShapeDraggable
   );
+  customElements.define('toolbar-arrow-up-icon', ToolbarArrowUpIcon);
 
   customElements.define(AFFINE_AI_PANEL_WIDGET, AffineAIPanelWidget);
   customElements.define(AFFINE_EMBED_CARD_TOOLBAR_WIDGET, EmbedCardToolbar);

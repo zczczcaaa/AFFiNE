@@ -9,11 +9,7 @@ import {
   popMenu,
   popupTargetFromElement,
 } from '@blocksuite/affine-components/context-menu';
-import {
-  CopyIcon,
-  DeleteIcon,
-  MoreHorizontalIcon,
-} from '@blocksuite/affine-components/icons';
+import { CopyIcon, DeleteIcon } from '@blocksuite/affine-components/icons';
 import { PeekViewProvider } from '@blocksuite/affine-components/peek';
 import { toast } from '@blocksuite/affine-components/toast';
 import { NOTE_SELECTOR } from '@blocksuite/affine-shared/consts';
@@ -42,6 +38,7 @@ import {
   uniMap,
 } from '@blocksuite/data-view';
 import { widgetPresets } from '@blocksuite/data-view/widget-presets';
+import { MoreHorizontalIcon } from '@blocksuite/icons/lit';
 import { Slice } from '@blocksuite/store';
 import { computed, signal } from '@preact/signals-core';
 import { css, nothing, unsafeCSS } from 'lit';
@@ -244,7 +241,7 @@ export class DataViewBlockComponent extends CaptionedBlockComponent<DataViewBloc
       return nothing;
     }
     return html` <div class="database-ops" @click="${this._clickDatabaseOps}">
-      ${MoreHorizontalIcon}
+      ${MoreHorizontalIcon()}
     </div>`;
   }
 

@@ -1,6 +1,5 @@
 import { LoadingIcon } from '@blocksuite/affine-block-image';
 import type { IconButton } from '@blocksuite/affine-components/icon-button';
-import { MoreHorizontalIcon } from '@blocksuite/affine-components/icons';
 import {
   cleanSpecifiedTail,
   getTextContentFromInlineRange,
@@ -18,6 +17,7 @@ import {
   throttle,
   WithDisposable,
 } from '@blocksuite/global/utils';
+import { MoreHorizontalIcon } from '@blocksuite/icons/lit';
 import { effect } from '@preact/signals-core';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, queryAll, state } from 'lit/decorators.js';
@@ -143,7 +143,7 @@ export class LinkedDocPopover extends SignalWatcher(
       items = items.concat({
         key: `${group.name} More`,
         name: resolveSignal(group.overflowText) || 'more',
-        icon: MoreHorizontalIcon,
+        icon: MoreHorizontalIcon({ width: '24px', height: '24px' }),
         action: () => {
           this._expanded.set(group.name, true);
           this.requestUpdate();

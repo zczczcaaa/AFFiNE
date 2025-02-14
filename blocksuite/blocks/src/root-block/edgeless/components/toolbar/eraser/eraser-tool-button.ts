@@ -1,13 +1,10 @@
-import {
-  EdgelessEraserDarkIcon,
-  EdgelessEraserLightIcon,
-} from '@blocksuite/affine-components/icons';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { css, html, LitElement } from 'lit';
 
 import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
+import { EdgelessEraserDarkIcon, EdgelessEraserLightIcon } from './icons.js';
 
 export class EdgelessEraserToolButton extends EdgelessToolbarToolMixin(
   LitElement

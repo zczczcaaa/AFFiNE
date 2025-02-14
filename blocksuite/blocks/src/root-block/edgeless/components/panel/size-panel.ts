@@ -1,5 +1,5 @@
-import { CheckIcon } from '@blocksuite/affine-components/icons';
 import { clamp, stopPropagation } from '@blocksuite/affine-shared/utils';
+import { DoneIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -81,9 +81,10 @@ export class EdgelessSizePanel extends LitElement {
         .iconContainerPadding=${[4, 8]}
         .justify=${'space-between'}
         .active=${active}
+        .iconSize=${'20px'}
         @click=${() => this._onSelect(value)}
       >
-        ${name ?? value} ${active ? CheckIcon : nothing}
+        ${name ?? value} ${active ? DoneIcon() : nothing}
       </edgeless-tool-icon-button>
     `;
   };

@@ -1,7 +1,7 @@
-import { EdgelessIcon, PageIcon } from '@blocksuite/affine-components/icons';
 import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { EdgelessIcon, PageIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -36,6 +36,11 @@ export class NoteDisplayModePanel extends WithDisposable(LitElement) {
       align-items: center;
       gap: 4px;
       color: var(--affine-icon-color);
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
     }
     .item:hover,
     .item.selected {
@@ -46,11 +51,11 @@ export class NoteDisplayModePanel extends WithDisposable(LitElement) {
   private _DisplayModeIcon(mode: NoteDisplayMode) {
     switch (mode) {
       case NoteDisplayMode.DocAndEdgeless:
-        return html`${PageIcon} ${EdgelessIcon}`;
+        return html`${PageIcon()} ${EdgelessIcon()}`;
       case NoteDisplayMode.DocOnly:
-        return html`${PageIcon}`;
+        return html`${PageIcon()}`;
       case NoteDisplayMode.EdgelessOnly:
-        return html`${EdgelessIcon}`;
+        return html`${EdgelessIcon()}`;
     }
   }
 

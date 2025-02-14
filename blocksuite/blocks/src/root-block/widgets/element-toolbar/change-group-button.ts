@@ -1,8 +1,3 @@
-import {
-  NoteIcon,
-  RenameIcon,
-  UngroupButtonIcon,
-} from '@blocksuite/affine-components/icons';
 import { toast } from '@blocksuite/affine-components/toast';
 import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
 import type { GroupElementModel } from '@blocksuite/affine-model';
@@ -17,6 +12,7 @@ import {
   serializeXYWH,
   WithDisposable,
 } from '@blocksuite/global/utils';
+import { EditIcon, PageIcon, UngroupIcon } from '@blocksuite/icons/lit';
 import { html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
@@ -83,7 +79,7 @@ export class EdgelessChangeGroupButton extends WithDisposable(LitElement) {
                 .labelHeight=${'20px'}
                 @click=${this._insertIntoPage}
               >
-                ${NoteIcon}
+                ${PageIcon()}
                 <span class="label">Insert into Page</span>
               </editor-icon-button>
             `
@@ -97,7 +93,7 @@ export class EdgelessChangeGroupButton extends WithDisposable(LitElement) {
                 .iconSize=${'20px'}
                 @click=${() => mountGroupTitleEditor(groups[0], this.edgeless)}
               >
-                ${RenameIcon}
+                ${EditIcon()}
               </editor-icon-button>
             `
           : nothing,
@@ -110,7 +106,7 @@ export class EdgelessChangeGroupButton extends WithDisposable(LitElement) {
             @click=${() =>
               groups.forEach(group => this.edgeless.service.ungroup(group))}
           >
-            ${UngroupButtonIcon}
+            ${UngroupIcon()}
           </editor-icon-button>
         `,
       ].filter(button => button !== nothing),

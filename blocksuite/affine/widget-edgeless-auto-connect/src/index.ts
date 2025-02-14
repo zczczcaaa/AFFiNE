@@ -3,12 +3,7 @@ import {
   EdgelessLegacySlotIdentifier,
   isNoteBlock,
 } from '@blocksuite/affine-block-surface';
-import {
-  AutoConnectLeftIcon,
-  AutoConnectRightIcon,
-  HiddenIcon,
-  SmallDocIcon,
-} from '@blocksuite/affine-components/icons';
+import { SmallDocIcon } from '@blocksuite/affine-components/icons';
 import {
   FrameBlockModel,
   NoteBlockModel,
@@ -24,6 +19,11 @@ import {
   GfxControllerIdentifier,
 } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
+import {
+  ArrowLeftSmallIcon,
+  ArrowRightSmallIcon,
+  InvisibleIcon,
+} from '@blocksuite/icons/lit';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -259,7 +259,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<RootBlockModel> {
         });
 
         return html`<div style=${style} class="edgeless-only-index-label">
-          ${HiddenIcon}
+          ${InvisibleIcon({ width: '20px', height: '20px' })}
           <affine-tooltip tip-position="bottom">
             ${getIndexLabelTooltip(SmallDocIcon, 'Hidden on page')}
           </affine-tooltip>
@@ -391,6 +391,12 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<RootBlockModel> {
       }px)`,
     });
 
+    const iconStyle = {
+      width: '16px',
+      height: '16px',
+      style: 'color:#77757D;',
+    };
+
     return html`<div class=${className} style=${navigatorStyle}>
       <div
         role="button"
@@ -400,7 +406,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<RootBlockModel> {
           this._navigateToPrev();
         }}
       >
-        ${AutoConnectLeftIcon}
+        ${ArrowLeftSmallIcon(iconStyle)}
       </div>
       <span></span>
       <div
@@ -411,7 +417,7 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<RootBlockModel> {
           this._navigateToNext();
         }}
       >
-        ${AutoConnectRightIcon}
+        ${ArrowRightSmallIcon(iconStyle)}
       </div>
     </div> `;
   }

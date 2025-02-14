@@ -1,5 +1,4 @@
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
-import { RemoteCursor } from '@blocksuite/affine-components/icons';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import {
   getSelectedRect,
@@ -12,6 +11,7 @@ import {
   type GfxModel,
 } from '@blocksuite/block-std/gfx';
 import { pickValues } from '@blocksuite/global/utils';
+import { MultiCursorDuotoneIcon } from '@blocksuite/icons/lit';
 import type { UserInfo } from '@blocksuite/store';
 import { css, html, nothing } from 'lit';
 import { state } from 'lit/decorators.js';
@@ -247,7 +247,10 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<RootBlockMode
             color: _remoteColorManager.get(id),
           })}
         >
-          ${RemoteCursor}
+          ${MultiCursorDuotoneIcon({
+            width: '24px',
+            height: '24px',
+          })}
           <div
             class="remote-username"
             style=${styleMap({

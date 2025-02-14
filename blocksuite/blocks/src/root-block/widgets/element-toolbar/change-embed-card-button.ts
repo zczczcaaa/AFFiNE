@@ -17,7 +17,6 @@ import {
   ExpandFullSmallIcon,
   OpenIcon,
   PaletteIcon,
-  SmallArrowDownIcon,
 } from '@blocksuite/affine-components/icons';
 import {
   notifyLinkedDocClearedAliases,
@@ -72,6 +71,7 @@ import {
   isEmbedSyncedDocBlock,
 } from '../../edgeless/utils/query.js';
 import type { BuiltInEmbedBlockComponent } from '../../utils/types';
+import { SmallArrowDownIcon } from './icons.js';
 
 export class EdgelessChangeEmbedCardButton extends WithDisposable(LitElement) {
   static override styles = css`

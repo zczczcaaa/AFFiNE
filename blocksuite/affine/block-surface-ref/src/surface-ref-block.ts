@@ -5,11 +5,6 @@ import {
   SurfaceElementModel,
 } from '@blocksuite/affine-block-surface';
 import type { BlockCaptionEditor } from '@blocksuite/affine-components/caption';
-import {
-  EdgelessModeIcon,
-  FrameIcon,
-  MoreDeleteIcon,
-} from '@blocksuite/affine-components/icons';
 import { Peekable } from '@blocksuite/affine-components/peek';
 import {
   FrameBlockModel,
@@ -48,6 +43,7 @@ import {
   DisposableGroup,
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
+import { DeleteIcon, EdgelessIcon, FrameIcon } from '@blocksuite/icons/lit';
 import type { BaseSelection, Store } from '@blocksuite/store';
 import { css, html, nothing, type TemplateResult } from 'lit';
 import { query, state } from 'lit/decorators.js';
@@ -55,9 +51,10 @@ import { styleMap } from 'lit/directives/style-map.js';
 
 import { noContentPlaceholder } from './utils.js';
 
+const iconSize = { width: '20px', height: '20px' };
 const REF_LABEL_ICON = {
-  'affine:frame': FrameIcon,
-  DEFAULT_NOTE_HEIGHT: EdgelessModeIcon,
+  'affine:frame': FrameIcon(iconSize),
+  DEFAULT_NOTE_HEIGHT: EdgelessIcon(iconSize),
 } as Record<string, TemplateResult>;
 
 const NO_CONTENT_TITLE = {
@@ -570,7 +567,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
       </div>
       <div class="placeholder-action">
         <button class="delete-button" type="button" @click=${this._deleteThis}>
-          <span class="icon">${MoreDeleteIcon}</span
+          <span class="icon">${DeleteIcon()}</span
           ><span>Delete this block</span>
         </button>
       </div>

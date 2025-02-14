@@ -1,10 +1,6 @@
-import {
-  ArrowUpIcon,
-  LargeFrameIcon,
-} from '@blocksuite/affine-components/icons';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
+import { FrameIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
-import { styleMap } from 'lit/directives/style-map.js';
 
 import { getTooltipWithShortcut } from '../../../components/utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
@@ -13,13 +9,6 @@ export class EdgelessFrameToolButton extends QuickToolMixin(LitElement) {
   static override styles = css`
     :host {
       display: flex;
-    }
-
-    .arrow-up-icon {
-      position: absolute;
-      top: 4px;
-      right: 2px;
-      font-size: 0;
     }
   `;
 
@@ -34,13 +23,12 @@ export class EdgelessFrameToolButton extends QuickToolMixin(LitElement) {
 
   override render() {
     const type = this.edgelessTool?.type;
-    const arrowColor =
-      type === 'frame' ? 'currentColor' : 'var(--affine-icon-secondary)';
     return html`
       <edgeless-tool-icon-button
         class="edgeless-frame-button"
         .tooltip=${this.popper ? '' : getTooltipWithShortcut('Frame', 'F')}
         .tooltipOffset=${17}
+        .iconSize=${'24px'}
         .active=${type === 'frame'}
         .iconContainerPadding=${6}
         @click=${() => {
@@ -49,10 +37,8 @@ export class EdgelessFrameToolButton extends QuickToolMixin(LitElement) {
           this.setEdgelessTool({ type: 'frame' });
         }}
       >
-        ${LargeFrameIcon}
-        <span class="arrow-up-icon" style=${styleMap({ color: arrowColor })}>
-          ${ArrowUpIcon}
-        </span>
+        ${FrameIcon()}
+        <toolbar-arrow-up-icon></toolbar-arrow-up-icon>
       </edgeless-tool-icon-button>
     `;
   }

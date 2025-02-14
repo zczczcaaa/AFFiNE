@@ -1,15 +1,9 @@
-/* oxlint-disable @typescript-eslint/no-non-null-assertion */
 import {
-  MindmapBalanceLayoutIcon,
-  MindmapLeftLayoutIcon,
-  MindmapRightLayoutIcon,
   MindmapStyleFour,
-  MindmapStyleIcon,
   MindmapStyleOne,
   MindmapStyleThree,
   MindmapStyleTwo,
-  SmallArrowDownIcon,
-} from '@blocksuite/affine-components/icons';
+} from '@blocksuite/affine-block-surface';
 import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
 import type {
   MindmapElementModel,
@@ -18,12 +12,16 @@ import type {
 import { LayoutType, MindmapStyle } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import { countBy, maxBy, WithDisposable } from '@blocksuite/global/utils';
+import { RadiantIcon, RightLayoutIcon, StyleIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
+import { SmallArrowDownIcon } from './icons.js';
+
+const iconSize = { width: '20', height: '20' };
 
 const MINDMAP_STYLE_LIST = [
   {
@@ -54,17 +52,20 @@ const MINDMAP_LAYOUT_LIST: LayoutItem[] = [
   {
     name: 'Left',
     value: LayoutType.LEFT,
-    icon: MindmapLeftLayoutIcon,
+    icon: RightLayoutIcon({
+      ...iconSize,
+      style: 'transform: rotate(0.5turn); transform-origin: center;',
+    }),
   },
   {
     name: 'Radial',
     value: LayoutType.BALANCE,
-    icon: MindmapBalanceLayoutIcon,
+    icon: RadiantIcon(iconSize),
   },
   {
     name: 'Right',
     value: LayoutType.RIGHT,
-    icon: MindmapRightLayoutIcon,
+    icon: RightLayoutIcon(iconSize),
   },
 ] as const;
 
@@ -214,7 +215,7 @@ export class EdgelessChangeMindmapButton extends WithDisposable(LitElement) {
             .contentPadding=${'8px'}
             .button=${html`
               <editor-icon-button aria-label="Style" .tooltip=${'Style'}>
-                ${MindmapStyleIcon}${SmallArrowDownIcon}
+                ${StyleIcon(iconSize)}${SmallArrowDownIcon}
               </editor-icon-button>
             `}
           >

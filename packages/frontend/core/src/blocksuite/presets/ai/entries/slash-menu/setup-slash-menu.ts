@@ -9,9 +9,9 @@ import {
   type AIItemConfig,
   AIStarIcon,
   DocModeProvider,
-  MoreHorizontalIcon,
 } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
+import { MoreHorizontalIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 
 import { pageAIGroups } from '../../_common/config';
@@ -107,7 +107,7 @@ export function setupSlashMenuAIEntry(slashMenu: AffineSlashMenuWidget) {
 
     {
       name: 'Action with above',
-      icon: iconWrapper(MoreHorizontalIcon),
+      icon: iconWrapper(MoreHorizontalIcon({ width: '24px', height: '24px' })),
       subMenu: [
         { groupName: 'Action with above' },
         ...AIItems.filter(({ name }) =>

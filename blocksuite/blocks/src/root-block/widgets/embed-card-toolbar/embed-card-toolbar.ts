@@ -12,10 +12,8 @@ import {
   CaptionIcon,
   CopyIcon,
   EditIcon,
-  MoreVerticalIcon,
   OpenIcon,
   PaletteIcon,
-  SmallArrowDownIcon,
 } from '@blocksuite/affine-components/icons';
 import {
   notifyLinkedDocClearedAliases,
@@ -62,6 +60,7 @@ import {
   TextSelection,
   WidgetComponent,
 } from '@blocksuite/block-std';
+import { ArrowDownSmallIcon, MoreVerticalIcon } from '@blocksuite/icons/lit';
 import { type BlockModel, Text } from '@blocksuite/store';
 import { autoUpdate, computePosition, flip, offset } from '@floating-ui/dom';
 import { html, nothing, type TemplateResult } from 'lit';
@@ -588,7 +587,7 @@ export class EmbedCardToolbar extends WidgetComponent<
             .justify=${'space-between'}
             .labelHeight=${'20px'}
           >
-            ${OpenIcon}${SmallArrowDownIcon}
+            ${OpenIcon}${ArrowDownSmallIcon({ width: '16px', height: '16px' })}
           </editor-icon-button>
         `}
       >
@@ -721,7 +720,7 @@ export class EmbedCardToolbar extends WidgetComponent<
               <span style="text-transform: capitalize">${this._viewType}</span>
               view
             </div>
-            ${SmallArrowDownIcon}
+            ${ArrowDownSmallIcon({ width: '16px', height: '16px' })}
           </editor-icon-button>
         `}
         @toggle=${this._toggleViewSelector}
@@ -869,8 +868,12 @@ export class EmbedCardToolbar extends WidgetComponent<
         <editor-menu-button
           .contentPadding=${'8px'}
           .button=${html`
-            <editor-icon-button aria-label="More" .tooltip=${'More'}>
-              ${MoreVerticalIcon}
+            <editor-icon-button
+              aria-label="More"
+              .tooltip=${'More'}
+              .iconSize=${'20px'}
+            >
+              ${MoreVerticalIcon()}
             </editor-icon-button>
           `}
         >

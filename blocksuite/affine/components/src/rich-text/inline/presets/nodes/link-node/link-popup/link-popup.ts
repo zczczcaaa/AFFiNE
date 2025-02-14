@@ -18,6 +18,7 @@ import {
   TextSelection,
 } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { ArrowDownSmallIcon, MoreVerticalIcon } from '@blocksuite/icons/lit';
 import type { InlineRange } from '@blocksuite/inline/types';
 import { computePosition, inline, offset, shift } from '@floating-ui/dom';
 import { html, LitElement, nothing } from 'lit';
@@ -31,9 +32,7 @@ import {
   CopyIcon,
   DeleteIcon,
   EditIcon,
-  MoreVerticalIcon,
   OpenIcon,
-  SmallArrowDownIcon,
   UnlinkIcon,
 } from '../../../../../../icons/index.js';
 import { toast } from '../../../../../../toast/index.js';
@@ -227,8 +226,12 @@ export class LinkPopup extends WithDisposable(LitElement) {
         <editor-menu-button
           .contentPadding=${'8px'}
           .button=${html`
-            <editor-icon-button aria-label="More" .tooltip=${'More'}>
-              ${MoreVerticalIcon}
+            <editor-icon-button
+              aria-label="More"
+              .tooltip=${'More'}
+              .iconSize=${'20px'}
+            >
+              ${MoreVerticalIcon()}
             </editor-icon-button>
           `}
         >
@@ -514,9 +517,10 @@ export class LinkPopup extends WithDisposable(LitElement) {
             .justify=${'space-between'}
             .labelHeight=${'20px'}
             .iconContainerWidth=${'110px'}
+            .iconSize=${'16px'}
           >
             <div class="label">Inline view</div>
-            ${SmallArrowDownIcon}
+            ${ArrowDownSmallIcon()}
           </editor-icon-button>
         `}
         @toggle=${this._toggleViewSelector}

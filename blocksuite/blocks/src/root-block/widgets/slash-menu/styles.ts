@@ -70,6 +70,8 @@ export const styles = css`
 
   .slash-menu-item-icon svg {
     display: block;
+    width: 100%;
+    height: 100%;
   }
 
   .slash-menu-item.ask-ai {

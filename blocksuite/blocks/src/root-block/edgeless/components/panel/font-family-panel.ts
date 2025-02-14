@@ -1,6 +1,6 @@
 import { TextUtils } from '@blocksuite/affine-block-surface';
-import { CheckIcon } from '@blocksuite/affine-components/icons';
 import { FontFamily, FontFamilyList } from '@blocksuite/affine-model';
+import { DoneIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -39,9 +39,10 @@ export class EdgelessFontFamilyPanel extends LitElement {
             .iconContainerPadding=${[4, 8]}
             .justify=${'space-between'}
             .active=${active}
+            .iconSize=${'20px'}
             @click=${() => this._onSelect(font)}
           >
-            ${name} ${active ? CheckIcon : nothing}
+            ${name} ${active ? DoneIcon() : nothing}
           </edgeless-tool-icon-button>
         `;
       }

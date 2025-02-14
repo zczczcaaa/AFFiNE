@@ -1,6 +1,6 @@
-import { ReleaseFromGroupButtonIcon } from '@blocksuite/affine-components/icons';
 import { GroupElementModel } from '@blocksuite/affine-model';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { ReleaseFromGroupIcon } from '@blocksuite/icons/lit';
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
@@ -15,7 +15,7 @@ export class EdgelessReleaseFromGroupButton extends WithDisposable(LitElement) {
 
     const group = element.group;
 
-    // eslint-disable-next-line
+    // oxlint-disable-next-line unicorn/prefer-dom-node-remove
     group.removeChild(element);
 
     element.index = service.layer.generateIndex();
@@ -34,7 +34,7 @@ export class EdgelessReleaseFromGroupButton extends WithDisposable(LitElement) {
         .iconSize=${'20px'}
         @click=${() => this._releaseFromGroup()}
       >
-        ${ReleaseFromGroupButtonIcon}
+        ${ReleaseFromGroupIcon()}
       </editor-icon-button>
     `;
   }

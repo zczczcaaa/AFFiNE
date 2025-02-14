@@ -1,8 +1,4 @@
 import {
-  GeneralStyleIcon,
-  ScribbledStyleIcon,
-} from '@blocksuite/affine-components/icons';
-import {
   DefaultTheme,
   isTransparent,
   type Palette,
@@ -17,6 +13,7 @@ import {
 } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
+import { StyleGeneralIcon, StyleScribbleIcon } from '@blocksuite/icons/lit';
 import { computed, effect, type Signal, signal } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -132,21 +129,23 @@ export class EdgelessShapeMenu extends SignalWatcher(
               .tooltip=${'General'}
               .active=${shapeStyle === ShapeStyle.General}
               .activeMode=${'background'}
+              .iconSize=${'20px'}
               @click=${() => {
                 this._setShapeStyle(ShapeStyle.General);
               }}
             >
-              ${GeneralStyleIcon}
+              ${StyleGeneralIcon()}
             </edgeless-tool-icon-button>
             <edgeless-tool-icon-button
               .tooltip=${'Scribbled'}
               .active=${shapeStyle === ShapeStyle.Scribbled}
               .activeMode=${'background'}
+              .iconSize=${'20px'}
               @click=${() => {
                 this._setShapeStyle(ShapeStyle.Scribbled);
               }}
             >
-              ${ScribbledStyleIcon}
+              ${StyleScribbleIcon()}
             </edgeless-tool-icon-button>
           </div>
           <menu-divider .vertical=${true}></menu-divider>
@@ -158,6 +157,7 @@ export class EdgelessShapeMenu extends SignalWatcher(
                     .tooltip=${tooltip}
                     .active=${shapeName === name}
                     .activeMode=${'background'}
+                    .iconSize=${'20px'}
                     @click=${() => this.onChange(name)}
                   >
                     ${shapeStyle === ShapeStyle.General

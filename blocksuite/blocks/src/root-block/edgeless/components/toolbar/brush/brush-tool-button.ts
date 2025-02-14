@@ -1,8 +1,4 @@
 import {
-  EdgelessPenDarkIcon,
-  EdgelessPenLightIcon,
-} from '@blocksuite/affine-components/icons';
-import {
   EditPropsStore,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
@@ -13,6 +9,7 @@ import { styleMap } from 'lit/directives/style-map.js';
 
 import { getTooltipWithShortcut } from '../../utils.js';
 import { EdgelessToolbarToolMixin } from '../mixins/tool.mixin.js';
+import { EdgelessPenDarkIcon, EdgelessPenLightIcon } from './icons.js';
 
 export class EdgelessBrushToolButton extends EdgelessToolbarToolMixin(
   SignalWatcher(LitElement)

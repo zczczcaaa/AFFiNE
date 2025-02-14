@@ -1,12 +1,11 @@
 import { menu } from '@blocksuite/affine-components/context-menu';
-import {
-  ConnectorCWithArrowIcon,
-  ConnectorIcon,
-  ConnectorLWithArrowIcon,
-  ConnectorXWithArrowIcon,
-} from '@blocksuite/affine-components/icons';
 import { ConnectorMode } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
+import {
+  ConnectorCIcon,
+  ConnectorEIcon,
+  ConnectorLIcon,
+} from '@blocksuite/icons/lit';
 
 import type { DenseMenuBuilder } from '../common/type.js';
 
@@ -26,28 +25,29 @@ export const buildConnectorDenseMenu: DenseMenuBuilder = edgeless => {
         edgeless.std.get(EditPropsStore).recordLastProps('connector', { mode });
     };
 
+  const iconSize = { width: '20', height: '20' };
   return menu.subMenu({
     name: 'Connector',
-    prefix: ConnectorIcon,
+    prefix: ConnectorCIcon(iconSize),
     select: createSelect(prevMode, false),
     isSelected,
     options: {
       items: [
         menu.action({
           name: 'Curve',
-          prefix: ConnectorCWithArrowIcon,
+          prefix: ConnectorCIcon(iconSize),
           select: createSelect(ConnectorMode.Curve),
           isSelected: isSelected && prevMode === ConnectorMode.Curve,
         }),
         menu.action({
           name: 'Elbowed',
-          prefix: ConnectorXWithArrowIcon,
+          prefix: ConnectorEIcon(iconSize),
           select: createSelect(ConnectorMode.Orthogonal),
           isSelected: isSelected && prevMode === ConnectorMode.Orthogonal,
         }),
         menu.action({
           name: 'Straight',
-          prefix: ConnectorLWithArrowIcon,
+          prefix: ConnectorLIcon(iconSize),
           select: createSelect(ConnectorMode.Straight),
           isSelected: isSelected && prevMode === ConnectorMode.Straight,
         }),

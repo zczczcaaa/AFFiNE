@@ -1,7 +1,7 @@
-import { MoreIcon } from '@blocksuite/affine-components/icons';
 import { createLitPortal } from '@blocksuite/affine-components/portal';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { MoreHorizontalIcon } from '@blocksuite/icons/lit';
 import { offset } from '@floating-ui/dom';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -89,9 +89,10 @@ export class ZoomBarToggleButton extends WithDisposable(LitElement) {
           .arrow=${false}
           .activeMode=${'background'}
           .iconContainerPadding=${6}
+          .iconSize=${'24px'}
           @click=${() => this._toggleZoomMenu()}
         >
-          ${MoreIcon}
+          ${MoreHorizontalIcon()}
         </edgeless-tool-icon-button>
       </div>
     `;

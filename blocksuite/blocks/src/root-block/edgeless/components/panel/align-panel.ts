@@ -1,9 +1,9 @@
+import { TextAlign } from '@blocksuite/affine-model';
 import {
   TextAlignCenterIcon,
   TextAlignLeftIcon,
   TextAlignRightIcon,
-} from '@blocksuite/affine-components/icons';
-import { TextAlign } from '@blocksuite/affine-model';
+} from '@blocksuite/icons/lit';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -12,17 +12,17 @@ const TEXT_ALIGN_LIST = [
   {
     name: 'Left',
     value: TextAlign.Left,
-    icon: TextAlignLeftIcon,
+    icon: TextAlignLeftIcon(),
   },
   {
     name: 'Center',
     value: TextAlign.Center,
-    icon: TextAlignCenterIcon,
+    icon: TextAlignCenterIcon(),
   },
   {
     name: 'Right',
     value: TextAlign.Right,
-    icon: TextAlignRightIcon,
+    icon: TextAlignRightIcon(),
   },
 ];
 
@@ -53,6 +53,7 @@ export class EdgelessAlignPanel extends LitElement {
           aria-label=${name}
           .tooltip=${name}
           .active=${this.value === value}
+          .iconSize=${'20px'}
           @click=${() => this._onSelect(value)}
         >
           ${icon}

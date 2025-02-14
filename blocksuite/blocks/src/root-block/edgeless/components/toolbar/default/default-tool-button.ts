@@ -1,35 +1,20 @@
-import {
-  ArrowUpIcon,
-  HandIcon,
-  SelectIcon,
-} from '@blocksuite/affine-components/icons';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
+import { HandIcon, SelectIcon } from '@blocksuite/icons/lit';
 import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { query } from 'lit/decorators.js';
 
 import { getTooltipWithShortcut } from '../../utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
-
 export class EdgelessDefaultToolButton extends QuickToolMixin(LitElement) {
   static override styles = css`
     .current-icon {
       transition: 100ms;
-      width: 24px;
-      height: 24px;
     }
     .current-icon > svg {
       display: block;
-    }
-    .arrow-up-icon {
-      position: absolute;
-      top: 4px;
-      right: 2px;
-      font-size: 0;
-      color: var(--affine-icon-secondary);
-    }
-    .active .arrow-up-icon {
-      color: inherit;
+      width: 24px;
+      height: 24px;
     }
   `;
 
@@ -91,19 +76,20 @@ export class EdgelessDefaultToolButton extends QuickToolMixin(LitElement) {
     const { active } = this;
     return html`
       <edgeless-tool-icon-button
-        class="edgeless-default-button ${type} ${active ? 'active' : ''}"
+        class="edgeless-default-button ${type}"
         .tooltip=${type === 'pan'
           ? getTooltipWithShortcut('Hand', 'H')
           : getTooltipWithShortcut('Select', 'V')}
         .tooltipOffset=${17}
         .active=${active}
         .iconContainerPadding=${6}
+        .iconSize=${'24px'}
         @click=${this._changeTool}
       >
-        <span class="current-icon">
-          ${localStorage.defaultTool === 'default' ? SelectIcon : HandIcon}
-        </span>
-        <span class="arrow-up-icon">${ArrowUpIcon}</span>
+        <div class="current-icon">
+          ${localStorage.defaultTool === 'default' ? SelectIcon() : HandIcon()}
+        </div>
+        <toolbar-arrow-up-icon></toolbar-arrow-up-icon>
       </edgeless-tool-icon-button>
     `;
   }

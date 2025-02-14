@@ -1,11 +1,11 @@
 import { TextUtils } from '@blocksuite/affine-block-surface';
-import { CheckIcon } from '@blocksuite/affine-components/icons';
 import {
   FontFamily,
   FontFamilyMap,
   FontStyle,
   FontWeight,
 } from '@blocksuite/affine-model';
+import { DoneIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
@@ -95,11 +95,12 @@ export class EdgelessFontWeightAndStylePanel extends LitElement {
                     .justify=${'space-between'}
                     .disabled=${this._isDisabled(fontFace.weight as FontWeight)}
                     .active=${active}
+                    .iconSize=${'20px'}
                     @click=${() =>
                       this._onSelect(fontFace.weight as FontWeight)}
                   >
                     ${choose(fontFace.weight, FONT_WEIGHT_CHOOSE)}
-                    ${active ? CheckIcon : nothing}
+                    ${active ? DoneIcon() : nothing}
                   </edgeless-tool-icon-button>
                 `;
               }
@@ -131,7 +132,7 @@ export class EdgelessFontWeightAndStylePanel extends LitElement {
                       )}
                   >
                     ${choose(fontFace.weight, FONT_WEIGHT_CHOOSE)} Italic
-                    ${active ? CheckIcon : nothing}
+                    ${active ? DoneIcon() : nothing}
                   </edgeless-tool-icon-button>
                 `;
               }

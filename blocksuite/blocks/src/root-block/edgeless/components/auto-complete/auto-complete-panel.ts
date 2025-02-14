@@ -3,11 +3,7 @@ import {
   CanvasElementType,
   EdgelessCRUDIdentifier,
 } from '@blocksuite/affine-block-surface';
-import {
-  FontFamilyIcon,
-  FrameIcon,
-  SmallNoteIcon,
-} from '@blocksuite/affine-components/icons';
+import { FontFamilyIcon } from '@blocksuite/affine-components/icons';
 import type {
   Connection,
   ConnectorElementModel,
@@ -44,6 +40,7 @@ import {
   Vec,
   WithDisposable,
 } from '@blocksuite/global/utils';
+import { FrameIcon, PageIcon } from '@blocksuite/icons/lit';
 import { consume } from '@lit/context';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
@@ -589,6 +586,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       ({ name, generalIcon, scribbledIcon, tooltip }) => html`
         <edgeless-tool-icon-button
           .tooltip=${tooltip}
+          .iconSize=${'20px'}
           @pointerenter=${() => this._showOverlay(name)}
           @pointerleave=${() => this._removeOverlay()}
           @click=${() => this._autoComplete(name)}
@@ -603,6 +601,7 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
 
       <edgeless-tool-icon-button
         .tooltip=${'Text'}
+        .iconSize=${'20px'}
         @pointerenter=${() => this._showOverlay('text')}
         @pointerleave=${() => this._removeOverlay()}
         @click=${() => this._autoComplete('text')}
@@ -611,19 +610,21 @@ export class EdgelessAutoCompletePanel extends WithDisposable(LitElement) {
       </edgeless-tool-icon-button>
       <edgeless-tool-icon-button
         .tooltip=${'Note'}
+        .iconSize=${'20px'}
         @pointerenter=${() => this._showOverlay('note')}
         @pointerleave=${() => this._removeOverlay()}
         @click=${() => this._autoComplete('note')}
       >
-        ${SmallNoteIcon}
+        ${PageIcon()}
       </edgeless-tool-icon-button>
       <edgeless-tool-icon-button
         .tooltip=${'Frame'}
+        .iconSize=${'20px'}
         @pointerenter=${() => this._showOverlay('frame')}
         @pointerleave=${() => this._removeOverlay()}
         @click=${() => this._autoComplete('frame')}
       >
-        ${FrameIcon}
+        ${FrameIcon()}
       </edgeless-tool-icon-button>
 
       <edgeless-tool-icon-button

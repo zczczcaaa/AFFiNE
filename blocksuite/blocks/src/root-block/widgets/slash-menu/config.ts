@@ -21,9 +21,7 @@ import {
   DatabaseTableViewIcon20,
   DeleteIcon,
   FileIcon,
-  FrameIcon,
   HeadingIcon,
-  ImageIcon20,
   LinkedDocIcon,
   LinkIcon,
   NewDocIcon,
@@ -63,7 +61,9 @@ import { assertType } from '@blocksuite/global/utils';
 import {
   DualLinkIcon,
   ExportToPdfIcon,
+  FrameIcon,
   GroupingIcon,
+  ImageIcon,
   TableIcon,
   TeXIcon,
 } from '@blocksuite/icons/lit';
@@ -174,10 +174,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Inline equation',
       description: 'Create a equation block.',
-      icon: TeXIcon({
-        width: '20',
-        height: '20',
-      }),
+      icon: TeXIcon(),
       alias: ['inlineMath, inlineEquation', 'inlineLatex'],
       action: ({ rootComponent }) => {
         rootComponent.std.command
@@ -266,10 +263,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Table',
       description: 'Create a simple table.',
-      icon: TableIcon({
-        width: '20',
-        height: '20',
-      }),
+      icon: TableIcon(),
       tooltip: slashMenuToolTips['Table View'],
       showWhen: ({ model }) => !insideEdgelessText(model),
       action: ({ rootComponent }) => {
@@ -286,7 +280,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Image',
       description: 'Insert an image.',
-      icon: ImageIcon20,
+      icon: ImageIcon(),
       tooltip: slashMenuToolTips['Image'],
       showWhen: ({ model }) =>
         model.doc.schema.flavourSchemaMap.has('affine:image'),
@@ -464,10 +458,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Equation',
       description: 'Create a equation block.',
-      icon: TeXIcon({
-        width: '20',
-        height: '20',
-      }),
+      icon: TeXIcon(),
       alias: ['mathBlock, equationBlock', 'latexBlock'],
       action: ({ rootComponent }) => {
         rootComponent.std.command
@@ -499,7 +490,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
 
       const frameItems = frameModels.map<SlashMenuActionItem>(frameModel => ({
         name: 'Frame: ' + frameModel.title,
-        icon: FrameIcon,
+        icon: FrameIcon(),
         action: ({ rootComponent }) => {
           rootComponent.std.command
             .chain()
@@ -748,7 +739,7 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
     {
       name: 'Duplicate',
       description: 'Create a duplicate of this line.',
-      icon: DualLinkIcon({ width: '20', height: '20' }),
+      icon: DualLinkIcon(),
       tooltip: slashMenuToolTips['Copy'],
       action: ({ rootComponent, model }) => {
         if (!model.text || !(model.text instanceof Text)) {

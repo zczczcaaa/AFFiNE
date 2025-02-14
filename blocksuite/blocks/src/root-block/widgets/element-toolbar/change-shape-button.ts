@@ -7,13 +7,6 @@ import {
   packColor,
   packColorsWithColorScheme,
 } from '@blocksuite/affine-components/color-picker';
-import {
-  AddTextIcon,
-  ChangeShapeIcon,
-  GeneralStyleIcon,
-  ScribbledStyleIcon,
-  SmallArrowDownIcon,
-} from '@blocksuite/affine-components/icons';
 import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
 import type {
   Color,
@@ -37,6 +30,12 @@ import {
 import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { countBy, maxBy, WithDisposable } from '@blocksuite/global/utils';
+import {
+  AddTextIcon,
+  ShapeIcon,
+  StyleGeneralIcon,
+  StyleScribbleIcon,
+} from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { cache } from 'lit/directives/cache.js';
@@ -54,6 +53,7 @@ import type { EdgelessShapePanel } from '../../edgeless/components/panel/shape-p
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import type { ShapeToolOption } from '../../edgeless/gfx-tool/shape-tool.js';
 import { mountShapeTextEditor } from '../../edgeless/utils/text.js';
+import { SmallArrowDownIcon } from './icons.js';
 
 const changeShapeButtonStyles = [
   css`
@@ -274,6 +274,7 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
     const selectedLineSize = getMostCommonLineSize(elements);
     const selectedLineStyle = getMostCommonLineStyle(elements);
     const selectedShapeStyle = getMostCommonShapeStyle(elements);
+    const iconSize = { width: '20px', height: '20px' };
 
     return join(
       [
@@ -284,7 +285,7 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
                 aria-label="Switch type"
                 .tooltip=${'Switch type'}
               >
-                ${ChangeShapeIcon}${SmallArrowDownIcon}
+                ${ShapeIcon(iconSize)}${SmallArrowDownIcon}
               </editor-icon-button>
             `}
           >
@@ -302,8 +303,8 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
               <editor-icon-button aria-label="Style" .tooltip=${'Style'}>
                 ${cache(
                   selectedShapeStyle === ShapeStyle.General
-                    ? GeneralStyleIcon
-                    : ScribbledStyleIcon
+                    ? StyleGeneralIcon(iconSize)
+                    : StyleScribbleIcon(iconSize)
                 )}
                 ${SmallArrowDownIcon}
               </editor-icon-button>
@@ -453,9 +454,10 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
                 <editor-icon-button
                   aria-label="Add text"
                   .tooltip=${'Add text'}
+                  .iconSize=${'20px'}
                   @click=${this._addText}
                 >
-                  ${AddTextIcon}
+                  ${AddTextIcon()}
                 </editor-icon-button>
               `,
             ],

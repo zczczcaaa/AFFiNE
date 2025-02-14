@@ -7,25 +7,6 @@ import {
   packColor,
   packColorsWithColorScheme,
 } from '@blocksuite/affine-components/color-picker';
-import {
-  AddTextIcon,
-  ConnectorCWithArrowIcon,
-  ConnectorEndpointNoneIcon,
-  ConnectorLWithArrowIcon,
-  ConnectorXWithArrowIcon,
-  FlipDirectionIcon,
-  FrontEndpointArrowIcon,
-  FrontEndpointCircleIcon,
-  FrontEndpointDiamondIcon,
-  FrontEndpointTriangleIcon,
-  GeneralStyleIcon,
-  RearEndpointArrowIcon,
-  RearEndpointCircleIcon,
-  RearEndpointDiamondIcon,
-  RearEndpointTriangleIcon,
-  ScribbledStyleIcon,
-  SmallArrowDownIcon,
-} from '@blocksuite/affine-components/icons';
 import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
 import {
   type ColorScheme,
@@ -45,6 +26,24 @@ import {
 import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { countBy, maxBy, WithDisposable } from '@blocksuite/global/utils';
+import {
+  AddTextIcon,
+  ConnectorCIcon,
+  ConnectorEIcon,
+  ConnectorLIcon,
+  EndPointArrowIcon,
+  EndPointCircleIcon,
+  EndPointDiamondIcon,
+  EndPointTriangleIcon,
+  FlipDirectionIcon,
+  StartPointArrowIcon,
+  StartPointCircleIcon,
+  StartPointDiamondIcon,
+  StartPointIcon,
+  StartPointTriangleIcon,
+  StyleGeneralIcon,
+  StyleScribbleIcon,
+} from '@blocksuite/icons/lit';
 import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
@@ -59,6 +58,7 @@ import {
 } from '../../edgeless/components/panel/line-styles-panel.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import { mountConnectorLabelEditor } from '../../edgeless/utils/text.js';
+import { SmallArrowDownIcon } from './icons.js';
 
 function getMostCommonColor(
   elements: ConnectorElementModel[],
@@ -136,92 +136,93 @@ interface EndpointStyle {
   icon: TemplateResult<1>;
 }
 
+const iconSize = { width: '20px', height: '20px' };
 const STYLE_LIST = [
   {
     name: 'General',
     value: false,
-    icon: GeneralStyleIcon,
+    icon: StyleGeneralIcon(iconSize),
   },
   {
     name: 'Scribbled',
     value: true,
-    icon: ScribbledStyleIcon,
+    icon: StyleScribbleIcon(iconSize),
   },
 ] as const;
 
 const STYLE_CHOOSE: [boolean, () => TemplateResult<1>][] = [
-  [false, () => GeneralStyleIcon],
-  [true, () => ScribbledStyleIcon],
+  [false, () => StyleGeneralIcon(iconSize)],
+  [true, () => StyleScribbleIcon(iconSize)],
 ] as const;
 
 const FRONT_ENDPOINT_STYLE_LIST: EndpointStyle[] = [
   {
     value: PointStyle.None,
-    icon: ConnectorEndpointNoneIcon,
+    icon: StartPointIcon(),
   },
   {
     value: PointStyle.Arrow,
-    icon: FrontEndpointArrowIcon,
+    icon: StartPointArrowIcon(),
   },
   {
     value: PointStyle.Triangle,
-    icon: FrontEndpointTriangleIcon,
+    icon: StartPointTriangleIcon(),
   },
   {
     value: PointStyle.Circle,
-    icon: FrontEndpointCircleIcon,
+    icon: StartPointCircleIcon(),
   },
   {
     value: PointStyle.Diamond,
-    icon: FrontEndpointDiamondIcon,
+    icon: StartPointDiamondIcon(),
   },
 ] as const;
 
 const REAR_ENDPOINT_STYLE_LIST: EndpointStyle[] = [
   {
     value: PointStyle.Diamond,
-    icon: RearEndpointDiamondIcon,
+    icon: EndPointDiamondIcon(),
   },
   {
     value: PointStyle.Circle,
-    icon: RearEndpointCircleIcon,
+    icon: EndPointCircleIcon(),
   },
   {
     value: PointStyle.Triangle,
-    icon: RearEndpointTriangleIcon,
+    icon: EndPointTriangleIcon(),
   },
   {
     value: PointStyle.Arrow,
-    icon: RearEndpointArrowIcon,
+    icon: EndPointArrowIcon(),
   },
   {
     value: PointStyle.None,
-    icon: ConnectorEndpointNoneIcon,
+    icon: StartPointIcon(),
   },
 ] as const;
 
 const MODE_LIST = [
   {
     name: 'Curve',
-    icon: ConnectorCWithArrowIcon,
+    icon: ConnectorCIcon(),
     value: ConnectorMode.Curve,
   },
   {
     name: 'Elbowed',
-    icon: ConnectorXWithArrowIcon,
+    icon: ConnectorEIcon(),
     value: ConnectorMode.Orthogonal,
   },
   {
     name: 'Straight',
-    icon: ConnectorLWithArrowIcon,
+    icon: ConnectorLIcon(),
     value: ConnectorMode.Straight,
   },
 ] as const;
 
 const MODE_CHOOSE: [ConnectorMode, () => TemplateResult<1>][] = [
-  [ConnectorMode.Curve, () => ConnectorCWithArrowIcon],
-  [ConnectorMode.Orthogonal, () => ConnectorXWithArrowIcon],
-  [ConnectorMode.Straight, () => ConnectorLWithArrowIcon],
+  [ConnectorMode.Curve, () => ConnectorCIcon()],
+  [ConnectorMode.Orthogonal, () => ConnectorEIcon()],
+  [ConnectorMode.Straight, () => ConnectorLIcon()],
 ] as const;
 
 export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
@@ -286,10 +287,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
   }
 
   private _getEndpointIcon(list: EndpointStyle[], style: PointStyle) {
-    return (
-      list.find(({ value }) => value === style)?.icon ||
-      ConnectorEndpointNoneIcon
-    );
+    return list.find(({ value }) => value === style)?.icon || StartPointIcon();
   }
 
   private _setConnectorMode(mode: ConnectorMode) {
@@ -414,6 +412,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
                 <editor-icon-button
                   aria-label="Stroke style"
                   .tooltip=${'Stroke style'}
+                  .iconSize=${'20px'}
                 >
                   <edgeless-color-button
                     .color=${selectedColor}
@@ -437,7 +436,11 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
         html`
           <editor-menu-button
             .button=${html`
-              <editor-icon-button aria-label="Style" .tooltip=${'Style'}>
+              <editor-icon-button
+                aria-label="Style"
+                .tooltip=${'Style'}
+                .iconSize=${'20px'}
+              >
                 ${choose(selectedRough, STYLE_CHOOSE)}${SmallArrowDownIcon}
               </editor-icon-button>
             `}
@@ -452,6 +455,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
                     .tooltip=${name}
                     .active=${selectedRough === value}
                     .activeMode=${'background'}
+                    .iconSize=${'20px'}
                     @click=${() => this._setConnectorRough(value)}
                   >
                     ${icon}
@@ -468,6 +472,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
               <editor-icon-button
                 aria-label="Start point style"
                 .tooltip=${'Start point style'}
+                .iconSize=${'20px'}
               >
                 ${this._getEndpointIcon(
                   FRONT_ENDPOINT_STYLE_LIST,
@@ -486,6 +491,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
                     .tooltip=${value}
                     .active=${selectedStartPointStyle === value}
                     .activeMode=${'background'}
+                    .iconSize=${'20px'}
                     @click=${() =>
                       this._setConnectorPointStyle(
                         ConnectorEndpoint.Front,
@@ -503,13 +509,14 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
             aria-label="Flip direction"
             .tooltip=${'Flip direction'}
             .disabled=${false}
+            .iconSize=${'20px'}
             @click=${() =>
               this._flipEndpointStyle(
                 selectedStartPointStyle,
                 selectedEndPointStyle
               )}
           >
-            ${FlipDirectionIcon}
+            ${FlipDirectionIcon()}
           </editor-icon-button>
 
           <editor-menu-button
@@ -517,6 +524,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
               <editor-icon-button
                 aria-label="End point style"
                 .tooltip=${'End point style'}
+                .iconSize=${'20px'}
               >
                 ${this._getEndpointIcon(
                   REAR_ENDPOINT_STYLE_LIST,
@@ -535,6 +543,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
                     .tooltip=${value}
                     .active=${selectedEndPointStyle === value}
                     .activeMode=${'background'}
+                    .iconSize=${'20px'}
                     @click=${() =>
                       this._setConnectorPointStyle(
                         ConnectorEndpoint.Rear,
@@ -553,6 +562,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
               <editor-icon-button
                 aria-label="Shape"
                 .tooltip=${'Connector shape'}
+                .iconSize=${'20px'}
               >
                 ${choose(selectedMode, MODE_CHOOSE)}${SmallArrowDownIcon}
               </editor-icon-button>
@@ -568,6 +578,7 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
                     .tooltip=${name}
                     .active=${selectedMode === value}
                     .activeMode=${'background'}
+                    .iconSize=${'20px'}
                     @click=${() => this._setConnectorMode(value)}
                   >
                     ${icon}
@@ -587,9 +598,10 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
                 <editor-icon-button
                   aria-label="Add text"
                   .tooltip=${'Add text'}
+                  .iconSize=${'20px'}
                   @click=${this._addLabel}
                 >
-                  ${AddTextIcon}
+                  ${AddTextIcon()}
                 </editor-icon-button>
               `,
             ],

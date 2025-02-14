@@ -21,7 +21,7 @@ import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import type { EdgelessRootBlockComponent } from '../../../edgeless-root-block.js';
 import { EdgelessDraggableElementController } from '../common/draggable/draggable-element.controller.js';
 import { builtInTemplates } from './builtin-templates.js';
-import { ArrowIcon, defaultPreview } from './icon.js';
+import { defaultPreview, Triangle } from './cards.js';
 import type { Template } from './template-type.js';
 import { cloneDeep } from './utils.js';
 
@@ -482,7 +482,7 @@ export class EdgelessTemplatePanel extends WithDisposable(LitElement) {
           </div>
           <overlay-scrollbar></overlay-scrollbar>
         </div>
-        <div class="arrow">${ArrowIcon}</div>
+        <div class="arrow">${Triangle}</div>
       </div>
     `;
   }

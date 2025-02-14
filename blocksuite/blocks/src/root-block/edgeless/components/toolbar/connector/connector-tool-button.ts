@@ -1,23 +1,21 @@
-import {
-  ArrowUpIcon,
-  ConnectorCWithArrowIcon,
-  ConnectorLWithArrowIcon,
-  ConnectorXWithArrowIcon,
-} from '@blocksuite/affine-components/icons';
 import { ConnectorMode, getConnectorModeName } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import { SignalWatcher } from '@blocksuite/global/utils';
+import {
+  ConnectorCIcon,
+  ConnectorEIcon,
+  ConnectorLIcon,
+} from '@blocksuite/icons/lit';
 import { computed } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
-import { styleMap } from 'lit/directives/style-map.js';
 
 import { getTooltipWithShortcut } from '../../utils.js';
 import { QuickToolMixin } from '../mixins/quick-tool.mixin.js';
 
 const IcomMap = {
-  [ConnectorMode.Straight]: ConnectorLWithArrowIcon,
-  [ConnectorMode.Orthogonal]: ConnectorXWithArrowIcon,
-  [ConnectorMode.Curve]: ConnectorCWithArrowIcon,
+  [ConnectorMode.Straight]: ConnectorLIcon(),
+  [ConnectorMode.Orthogonal]: ConnectorEIcon(),
+  [ConnectorMode.Curve]: ConnectorCIcon(),
 };
 
 export class EdgelessConnectorToolButton extends QuickToolMixin(
@@ -26,16 +24,6 @@ export class EdgelessConnectorToolButton extends QuickToolMixin(
   static override styles = css`
     :host {
       display: flex;
-    }
-    .edgeless-connector-button {
-      display: flex;
-      position: relative;
-    }
-    .arrow-up-icon {
-      position: absolute;
-      top: 4px;
-      right: 2px;
-      font-size: 0;
     }
   `;
 
@@ -62,16 +50,16 @@ export class EdgelessConnectorToolButton extends QuickToolMixin(
   override render() {
     const { active } = this;
     const mode = this._mode$.value;
-    const arrowColor = active ? 'currentColor' : 'var(--affine-icon-secondary)';
     return html`
       <edgeless-tool-icon-button
+        class="edgeless-connector-button"
         .tooltip=${this.popper
           ? ''
           : getTooltipWithShortcut(getConnectorModeName(mode), 'C')}
         .tooltipOffset=${17}
         .active=${active}
         .iconContainerPadding=${6}
-        class="edgeless-connector-button"
+        .iconSize=${'24px'}
         @click=${() => {
           // don't update tool before toggling menu
           this._toggleMenu();
@@ -81,9 +69,7 @@ export class EdgelessConnectorToolButton extends QuickToolMixin(
         }}
       >
         ${IcomMap[mode]}
-        <span class="arrow-up-icon" style=${styleMap({ color: arrowColor })}>
-          ${ArrowUpIcon}
-        </span>
+        <toolbar-arrow-up-icon></toolbar-arrow-up-icon>
       </edgeless-tool-icon-button>
     `;
   }

@@ -1,11 +1,8 @@
 import { menu } from '@blocksuite/affine-components/context-menu';
-import {
-  LassoFreeHandIcon,
-  LassoPolygonalIcon,
-} from '@blocksuite/affine-components/icons';
 import { LassoMode } from '@blocksuite/affine-shared/types';
 
 import type { DenseMenuBuilder } from '../common/type.js';
+import { LassoFreeHandIcon, LassoPolygonalIcon } from './icons.js';
 
 export const buildLassoDenseMenu: DenseMenuBuilder = edgeless => {
   // TODO: active state

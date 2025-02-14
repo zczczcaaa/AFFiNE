@@ -12,12 +12,6 @@ import {
   packColor,
   packColorsWithColorScheme,
 } from '@blocksuite/affine-components/color-picker';
-import {
-  SmallArrowDownIcon,
-  TextAlignCenterIcon,
-  TextAlignLeftIcon,
-  TextAlignRightIcon,
-} from '@blocksuite/affine-components/icons';
 import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
 import {
   type ColorScheme,
@@ -43,6 +37,11 @@ import {
   maxBy,
   WithDisposable,
 } from '@blocksuite/global/utils';
+import {
+  TextAlignCenterIcon,
+  TextAlignLeftIcon,
+  TextAlignRightIcon,
+} from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
@@ -50,6 +49,7 @@ import { join } from 'lit/directives/join.js';
 import { when } from 'lit/directives/when.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
+import { SmallArrowDownIcon } from './icons.js';
 
 const FONT_SIZE_LIST = [
   { value: 16 },
@@ -71,10 +71,11 @@ const FONT_STYLE_CHOOSE: [FontStyle, () => string | typeof nothing][] = [
   [FontStyle.Italic, () => 'Italic'],
 ] as const;
 
+const iconSize = { width: '20px', height: '20px' };
 const TEXT_ALIGN_CHOOSE: [TextAlign, () => TemplateResult<1>][] = [
-  [TextAlign.Left, () => TextAlignLeftIcon],
-  [TextAlign.Center, () => TextAlignCenterIcon],
-  [TextAlign.Right, () => TextAlignRightIcon],
+  [TextAlign.Left, () => TextAlignLeftIcon(iconSize)],
+  [TextAlign.Center, () => TextAlignCenterIcon(iconSize)],
+  [TextAlign.Right, () => TextAlignRightIcon(iconSize)],
 ] as const;
 
 function countByField<K extends keyof Omit<TextStyleProps, 'color'>>(

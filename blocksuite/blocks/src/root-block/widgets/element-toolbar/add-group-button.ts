@@ -1,10 +1,10 @@
-import { GroupIcon } from '@blocksuite/affine-components/icons';
 import {
   GroupElementModel,
   MindmapElementModel,
 } from '@blocksuite/affine-model';
 import type { GfxModel } from '@blocksuite/block-std/gfx';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { GroupingIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
@@ -27,9 +27,10 @@ export class EdgelessAddGroupButton extends WithDisposable(LitElement) {
         aria-label="Group"
         .tooltip=${'Group'}
         .labelHeight=${'20px'}
+        .iconSize=${'20px'}
         @click=${this._createGroup}
       >
-        ${GroupIcon}<span class="label medium">Group</span>
+        ${GroupingIcon()}<span class="label medium">Group</span>
       </editor-icon-button>
     `;
   }

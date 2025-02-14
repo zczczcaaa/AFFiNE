@@ -1,7 +1,7 @@
-import { NavigatorSettingsIcon } from '@blocksuite/affine-components/icons';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import { createButtonPopper } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { SettingsIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 
@@ -111,12 +111,13 @@ export class EdgelessNavigatorSettingButton extends WithDisposable(LitElement) {
       <edgeless-tool-icon-button
         class="navigator-setting-button"
         .tooltip=${this.popperShow ? '' : 'Settings'}
+        .iconSize=${'24px'}
         @click=${() => {
           this._navigatorSettingPopper?.toggle();
         }}
         .iconContainerPadding=${0}
       >
-        ${NavigatorSettingsIcon}
+        ${SettingsIcon()}
       </edgeless-tool-icon-button>
 
       <div

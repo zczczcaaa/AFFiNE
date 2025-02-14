@@ -1,15 +1,15 @@
-import {
-  FrameNavigatorNextIcon,
-  FrameNavigatorPrevIcon,
-  NavigatorExitFullScreenIcon,
-  NavigatorFullScreenIcon,
-  StopAIIcon,
-} from '@blocksuite/affine-components/icons';
 import { toast } from '@blocksuite/affine-components/toast';
 import type { FrameBlockModel } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
 import { Bound, clamp, SignalWatcher } from '@blocksuite/global/utils';
+import {
+  EndPointArrowIcon,
+  ExpandCloseIcon,
+  ExpandFullIcon,
+  StartPointArrowIcon,
+  StopAiIcon,
+} from '@blocksuite/icons/lit';
 import { effect } from '@preact/signals-core';
 import { cssVar } from '@toeverything/theme';
 import { css, html, LitElement, nothing, type PropertyValues } from 'lit';
@@ -83,6 +83,9 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
 
       svg {
         display: block;
+        width: 24px;
+        height: 24px;
+        color: white;
       }
     }
     .edgeless-frame-navigator-stop::before {
@@ -325,9 +328,10 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
       <edgeless-tool-icon-button
         .iconContainerPadding=${0}
         .tooltip=${'Previous'}
+        .iconSize=${'24px'}
         @click=${() => this._previousFrame()}
       >
-        ${FrameNavigatorPrevIcon}
+        ${StartPointArrowIcon()}
       </edgeless-tool-icon-button>
 
       <div class="edgeless-frame-navigator ${this.dense ? 'dense' : ''}">
@@ -350,8 +354,9 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
         .tooltip=${'Next'}
         @click=${() => this._nextFrame()}
         .iconContainerPadding=${0}
+        .iconSize=${'24px'}
       >
-        ${FrameNavigatorNextIcon}
+        ${EndPointArrowIcon()}
       </edgeless-tool-icon-button>
 
       <div class="full-divider"></div>
@@ -364,10 +369,9 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
           @click=${() => this._toggleFullScreen()}
           .iconContainerPadding=${0}
           .iconContainerWidth=${'24px'}
+          .iconSize=${'24px'}
         >
-          ${document.fullscreenElement
-            ? NavigatorExitFullScreenIcon
-            : NavigatorFullScreenIcon}
+          ${document.fullscreenElement ? ExpandCloseIcon() : ExpandFullIcon()}
         </edgeless-tool-icon-button>
 
         ${this.dense
@@ -399,7 +403,7 @@ export class PresentationToolbar extends EdgelessToolbarToolMixin(
         @click=${this._exitPresentation}
         style="background: ${cssVar('warningColor')}"
       >
-        ${StopAIIcon}
+        ${StopAiIcon()}
       </button>
     `;
   }

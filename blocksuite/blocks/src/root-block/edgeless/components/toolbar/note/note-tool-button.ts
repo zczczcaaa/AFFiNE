@@ -1,9 +1,8 @@
-import { ArrowUpIcon, NoteIcon } from '@blocksuite/affine-components/icons';
 import type { GfxToolsFullOptionValue } from '@blocksuite/block-std/gfx';
+import { PageIcon } from '@blocksuite/icons/lit';
 import { effect } from '@preact/signals-core';
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
-import { styleMap } from 'lit/directives/style-map.js';
 
 import { getTooltipWithShortcut } from '../../../components/utils.js';
 import type { NoteToolOption } from '../../../gfx-tool/note-tool.js';
@@ -15,13 +14,6 @@ export class EdgelessNoteToolButton extends QuickToolMixin(LitElement) {
   static override styles = css`
     :host {
       display: flex;
-    }
-
-    .arrow-up-icon {
-      position: absolute;
-      top: 4px;
-      right: 2px;
-      font-size: 0;
     }
   `;
 
@@ -93,7 +85,6 @@ export class EdgelessNoteToolButton extends QuickToolMixin(LitElement) {
 
   override render() {
     const { active } = this;
-    const arrowColor = active ? 'currentColor' : 'var(--affine-icon-secondary)';
     return html`
       <edgeless-tool-icon-button
         class="edgeless-note-button"
@@ -101,14 +92,13 @@ export class EdgelessNoteToolButton extends QuickToolMixin(LitElement) {
         .tooltipOffset=${17}
         .active=${active}
         .iconContainerPadding=${6}
+        .iconSize=${'24px'}
         @click=${() => {
           this._toggleNoteMenu();
         }}
       >
-        ${NoteIcon}
-        <span class="arrow-up-icon" style=${styleMap({ color: arrowColor })}>
-          ${ArrowUpIcon}
-        </span>
+        ${PageIcon()}
+        <toolbar-arrow-up-icon></toolbar-arrow-up-icon>
       </edgeless-tool-icon-button>
     `;
   }

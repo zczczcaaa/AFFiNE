@@ -41,6 +41,7 @@ export class EdgelessShapePanel extends LitElement {
           .tooltip=${tooltip}
           .active=${this.selectedShape === name}
           .activeMode=${'background'}
+          .iconSize=${'20px'}
           @click=${() => {
             if (disabled) return;
             this._onSelect(name);

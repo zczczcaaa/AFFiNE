@@ -1,5 +1,4 @@
 import { isNoteBlock } from '@blocksuite/affine-block-surface';
-import { ConnectorCWithArrowIcon } from '@blocksuite/affine-components/icons';
 import {
   cloneGroups,
   darkToolbarStyles,
@@ -37,6 +36,7 @@ import {
   groupBy,
   pickValues,
 } from '@blocksuite/global/utils';
+import { ConnectorCIcon } from '@blocksuite/icons/lit';
 import { css, html, nothing, type TemplateResult, unsafeCSS } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { join } from 'lit/directives/join.js';
@@ -354,9 +354,10 @@ export class EdgelessElementToolbarWidget extends WidgetComponent<
           aria-label="Draw connector"
           .tooltip=${'Draw connector'}
           .activeMode=${'background'}
+          .iconSize=${'20px'}
           @click=${this._quickConnect}
         >
-          ${ConnectorCWithArrowIcon}
+          ${ConnectorCIcon()}
         </editor-icon-button>
       `,
     ];

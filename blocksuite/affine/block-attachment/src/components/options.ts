@@ -2,8 +2,6 @@ import {
   CaptionIcon,
   DownloadIcon,
   EditIcon,
-  MoreVerticalIcon,
-  SmallArrowDownIcon,
 } from '@blocksuite/affine-components/icons';
 import { createLitPortal } from '@blocksuite/affine-components/portal';
 import {
@@ -21,6 +19,7 @@ import {
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import { Bound } from '@blocksuite/global/utils';
+import { ArrowDownSmallIcon, MoreVerticalIcon } from '@blocksuite/icons/lit';
 import { flip, offset } from '@floating-ui/dom';
 import { html, nothing } from 'lit';
 import { join } from 'lit/directives/join.js';
@@ -88,7 +87,7 @@ export function attachmentViewToggleMenu({
             <span style="text-transform: capitalize">${viewType}</span>
             view
           </div>
-          ${SmallArrowDownIcon}
+          ${ArrowDownSmallIcon({ width: '16px', height: '16px' })}
         </editor-icon-button>
       `}
     >
@@ -200,8 +199,12 @@ export function AttachmentOptionsTemplate({
       <editor-menu-button
         .contentPadding=${'8px'}
         .button=${html`
-          <editor-icon-button aria-label="More" .tooltip=${'More'}>
-            ${MoreVerticalIcon}
+          <editor-icon-button
+            aria-label="More"
+            .tooltip=${'More'}
+            .iconSize=${'20px'}
+          >
+            ${MoreVerticalIcon()}
           </editor-icon-button>
         `}
       >

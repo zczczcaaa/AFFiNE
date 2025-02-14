@@ -1,19 +1,21 @@
+import { ShapeType } from '@blocksuite/affine-model';
 import {
   DiamondIcon,
   EllipseIcon,
   RoundedRectangleIcon,
+  SquareIcon,
+  TriangleIcon,
+} from '@blocksuite/icons/lit';
+import type { TemplateResult } from 'lit';
+
+import type { ShapeToolOption } from '../../../gfx-tool/shape-tool';
+import {
   ScribbledDiamondIcon,
   ScribbledEllipseIcon,
   ScribbledRoundedRectangleIcon,
   ScribbledSquareIcon,
   ScribbledTriangleIcon,
-  SquareIcon,
-  TriangleIcon,
-} from '@blocksuite/affine-components/icons';
-import { ShapeType } from '@blocksuite/affine-model';
-import type { TemplateResult } from 'lit';
-
-import type { ShapeToolOption } from '../../../gfx-tool/shape-tool.js';
+} from './icons';
 
 type Config = {
   name: ShapeToolOption['shapeName'];
@@ -26,35 +28,35 @@ type Config = {
 export const ShapeComponentConfig: Config[] = [
   {
     name: ShapeType.Rect,
-    generalIcon: SquareIcon,
+    generalIcon: SquareIcon(),
     scribbledIcon: ScribbledSquareIcon,
     tooltip: 'Square',
     disabled: false,
   },
   {
     name: ShapeType.Ellipse,
-    generalIcon: EllipseIcon,
+    generalIcon: EllipseIcon(),
     scribbledIcon: ScribbledEllipseIcon,
     tooltip: 'Ellipse',
     disabled: false,
   },
   {
     name: ShapeType.Diamond,
-    generalIcon: DiamondIcon,
+    generalIcon: DiamondIcon(),
     scribbledIcon: ScribbledDiamondIcon,
     tooltip: 'Diamond',
     disabled: false,
   },
   {
     name: ShapeType.Triangle,
-    generalIcon: TriangleIcon,
+    generalIcon: TriangleIcon(),
     scribbledIcon: ScribbledTriangleIcon,
     tooltip: 'Triangle',
     disabled: false,
   },
   {
     name: 'roundedRect',
-    generalIcon: RoundedRectangleIcon,
+    generalIcon: RoundedRectangleIcon(),
     scribbledIcon: ScribbledRoundedRectangleIcon,
     tooltip: 'Rounded rectangle',
     disabled: false,

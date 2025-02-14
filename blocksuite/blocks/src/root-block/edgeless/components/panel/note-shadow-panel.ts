@@ -1,13 +1,11 @@
-import {
-  NoteNoShadowIcon,
-  NoteShadowSampleIcon,
-} from '@blocksuite/affine-components/icons';
 import { ColorScheme, NoteShadow } from '@blocksuite/affine-model';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
+
+import { NoteNoShadowIcon, NoteShadowSampleIcon } from './icons';
 
 const SHADOWS = [
   {

@@ -1,5 +1,5 @@
-import { ArrowRightSmallIcon } from '@blocksuite/affine-components/icons';
 import { WithDisposable } from '@blocksuite/global/utils';
+import { ArrowRightSmallIcon } from '@blocksuite/icons/lit';
 import { consume } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { property, query } from 'lit/decorators.js';
@@ -126,6 +126,8 @@ export class EdgelessSlideMenu extends WithDisposable(LitElement) {
   }
 
   override render() {
+    const iconSize = { width: '32px', height: '32px' };
+
     return html`
       <div class="slide-menu-wrapper">
         <div
@@ -133,7 +135,7 @@ export class EdgelessSlideMenu extends WithDisposable(LitElement) {
           @click=${() => this._handleSlideButtonClick('left')}
           style=${styleMap({ opacity: this.showPrevious ? '1' : '0' })}
         >
-          ${ArrowRightSmallIcon}
+          ${ArrowRightSmallIcon(iconSize)}
         </div>
         <div
           class="menu-container"
@@ -148,7 +150,7 @@ export class EdgelessSlideMenu extends WithDisposable(LitElement) {
           class="next-slide-button"
           @click=${() => this._handleSlideButtonClick('right')}
         >
-          ${ArrowRightSmallIcon}
+          ${ArrowRightSmallIcon(iconSize)}
         </div>
       </div>
     `;

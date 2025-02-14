@@ -4,26 +4,27 @@ import {
   EdgelessCRUDIdentifier,
   updateXYWH,
 } from '@blocksuite/affine-block-surface';
-import {
-  AlignBottomIcon,
-  AlignDistributeHorizontallyIcon,
-  AlignDistributeVerticallyIcon,
-  AlignHorizontallyIcon,
-  AlignLeftIcon,
-  AlignRightIcon,
-  AlignTopIcon,
-  AlignVerticallyIcon,
-  SmallArrowDownIcon,
-} from '@blocksuite/affine-components/icons';
 import { MindmapElementModel } from '@blocksuite/affine-model';
 import type { GfxModel } from '@blocksuite/block-std/gfx';
 import { Bound, WithDisposable } from '@blocksuite/global/utils';
-import { AutoTidyUpIcon, ResizeTidyUpIcon } from '@blocksuite/icons/lit';
+import {
+  AlignBottomIcon,
+  AlignHorizontalCenterIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+  AlignTopIcon,
+  AlignVerticalCenterIcon,
+  AutoTidyUpIcon,
+  DistributeHorizontalIcon,
+  DistributeVerticalIcon,
+  ResizeTidyUpIcon,
+} from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
+import { SmallArrowDownIcon } from './icons.js';
 
 const enum Alignment {
   AutoArrange = 'Auto arrange',
@@ -43,41 +44,42 @@ interface AlignmentIcon {
   content: TemplateResult<1>;
 }
 
+const iconSize = { width: '20px', height: '20px' };
 const HORIZONTAL_ALIGNMENT: AlignmentIcon[] = [
   {
     name: Alignment.Left,
-    content: AlignLeftIcon,
+    content: AlignLeftIcon(iconSize),
   },
   {
     name: Alignment.Horizontally,
-    content: AlignHorizontallyIcon,
+    content: AlignHorizontalCenterIcon(iconSize),
   },
   {
     name: Alignment.Right,
-    content: AlignRightIcon,
+    content: AlignRightIcon(iconSize),
   },
   {
     name: Alignment.DistributeHorizontally,
-    content: AlignDistributeHorizontallyIcon,
+    content: DistributeHorizontalIcon(iconSize),
   },
 ];
 
 const VERTICAL_ALIGNMENT: AlignmentIcon[] = [
   {
     name: Alignment.Top,
-    content: AlignTopIcon,
+    content: AlignTopIcon(iconSize),
   },
   {
     name: Alignment.Vertically,
-    content: AlignVerticallyIcon,
+    content: AlignVerticalCenterIcon(iconSize),
   },
   {
     name: Alignment.Bottom,
-    content: AlignBottomIcon,
+    content: AlignBottomIcon(iconSize),
   },
   {
     name: Alignment.DistributeVertically,
-    content: AlignDistributeVerticallyIcon,
+    content: DistributeVerticalIcon(iconSize),
   },
 ];
 
@@ -288,6 +290,7 @@ export class EdgelessAlignButton extends WithDisposable(LitElement) {
             <editor-icon-button
               aria-label=${name}
               .tooltip=${name}
+              .iconSize=${'20px'}
               @click=${() => this._align(name)}
             >
               ${content}
@@ -314,7 +317,7 @@ export class EdgelessAlignButton extends WithDisposable(LitElement) {
             aria-label="Align objects"
             .tooltip=${'Align objects'}
           >
-            ${AlignLeftIcon}${SmallArrowDownIcon}
+            ${AlignLeftIcon(iconSize)}${SmallArrowDownIcon}
           </editor-icon-button>
         `}
       >
