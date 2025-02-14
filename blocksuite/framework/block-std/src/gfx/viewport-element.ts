@@ -46,7 +46,7 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
     }
   `;
 
-  private readonly _hideOutsideBlock = requestThrottledConnectedFrame(() => {
+  private readonly _hideOutsideBlock = () => {
     if (this.getModelsInViewport && this.host) {
       const host = this.host;
       const modelsInViewport = this.getModelsInViewport();
@@ -73,7 +73,7 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
 
       this._lastVisibleModels = modelsInViewport;
     }
-  }, this);
+  };
 
   private _lastVisibleModels?: Set<GfxBlockElementModel>;
 
@@ -95,14 +95,13 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
 
     const viewportUpdateCallback = () => {
       this._refreshViewport();
-      this._hideOutsideBlock();
     };
 
     if (!this.enableChildrenSchedule) {
       delete this.scheduleUpdateChildren;
     }
 
-    viewportUpdateCallback();
+    this._hideOutsideBlock();
     this.disposables.add(
       this.viewport.viewportUpdated.on(() => viewportUpdateCallback())
     );

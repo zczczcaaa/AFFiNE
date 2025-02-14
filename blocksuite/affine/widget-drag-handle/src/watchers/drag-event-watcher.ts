@@ -349,11 +349,12 @@ export class DragEventWatcher {
 
       return selectedElements;
     };
-    const toSnapshotRequiredBlocks = (models: string[]) => {
+    const toSnapshotRequiredBlocks = (selectedModels: string[]) => {
       let surfaceAdded = false;
       const blocks: BlockModel[] = [];
+      const blocksUnderSurface: BlockModel[] = [];
 
-      models.forEach(id => {
+      selectedModels.forEach(id => {
         const model = this.gfx.getElementById(id);
 
         if (!model) {
@@ -368,16 +369,19 @@ export class DragEventWatcher {
           const parentModel = this.std.store.getParent(model);
 
           if (matchModels(parentModel, [SurfaceBlockModel])) {
-            if (surfaceAdded) return;
-            surfaceAdded = true;
-            blocks.push(this.gfx.surface!);
+            blocksUnderSurface.push(model);
           } else {
             blocks.push(model);
           }
         }
       });
 
-      return blocks;
+      if (surfaceAdded) {
+        // surface children are included, so no need to add the blocksUnderSurface
+        return blocks;
+      } else {
+        return blocks.concat(blocksUnderSurface);
+      }
     };
 
     const selectedElements = getElementsInContainer(
@@ -953,11 +957,17 @@ export class DragEventWatcher {
           block.flavour === 'affine:attachment' ||
           block.flavour.startsWith('affine:embed-')
         ) {
-          const style = (block.props.style ?? 'vertical') as EmbedCardStyle;
+          const style = 'vertical' as EmbedCardStyle;
           block.props.style = style;
 
           blockBound.w = EMBED_CARD_WIDTH[style];
           blockBound.h = EMBED_CARD_HEIGHT[style];
+        }
+
+        if (block.flavour === 'affine:image') {
+          assertType<{ width: number; height: number }>(block.props);
+          blockBound.w = blockBound.w || block.props.width || 100;
+          blockBound.h = blockBound.h || block.props.height || 100;
         }
 
         if (ignoreOriginalPos) {
@@ -1013,8 +1023,10 @@ export class DragEventWatcher {
           .then(slices => {
             slices?.content.forEach((block, idx) => {
               if (
-                block.flavour === 'affine:attachment' ||
-                block.flavour.startsWith('affine:embed-')
+                block.id === content[idx].id &&
+                (block.flavour === 'affine:image' ||
+                  block.flavour === 'affine:attachment' ||
+                  block.flavour.startsWith('affine:embed-'))
               ) {
                 store.updateBlock(block as BlockModel, {
                   xywh: content[idx].props.xywh,

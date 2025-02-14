@@ -68,15 +68,30 @@ export async function uploadBlobForImage(
     setImageUploaded(blockId);
 
     const imageModel = doc.getBlockById(blockId) as ImageBlockModel | null;
-
-    doc.withoutTransact(() => {
-      if (!imageModel) {
-        return;
-      }
-      doc.updateBlock(imageModel, {
+    if (sourceId && imageModel) {
+      const props: Partial<ImageBlockProps> = {
         sourceId,
-      } satisfies Partial<ImageBlockProps>);
-    });
+        // Assign a default size to make sure the image can be displayed correctly.
+        width: 100,
+        height: 100,
+      };
+
+      const blob = await doc.blobSync.get(sourceId);
+      if (blob) {
+        try {
+          const size = await readImageSize(blob);
+          props.width = size.width;
+          props.height = size.height;
+        } catch {
+          // Ignore the error
+          console.warn('Failed to read image size');
+        }
+      }
+
+      doc.withoutTransact(() => {
+        doc.updateBlock(imageModel, props);
+      });
+    }
   }
 }
 
@@ -198,10 +213,19 @@ export async function resetImageSize(
 
   const file = new File([blob], 'image.png', { type: blob.type });
   const size = await readImageSize(file);
-  block.doc.updateBlock(model, {
+  const bound = model.elementBound;
+  const props: Partial<ImageBlockProps> = {
     width: size.width,
     height: size.height,
-  });
+  };
+
+  if (!bound.w || !bound.h) {
+    bound.w = size.width;
+    bound.h = size.height;
+    props.xywh = bound.serialize();
+  }
+
+  block.doc.updateBlock(model, props);
 }
 
 function convertToPng(blob: Blob): Promise<Blob | null> {
@@ -401,7 +425,7 @@ export async function turnImageIntoCardView(
   transformModel(model, 'affine:attachment', attachmentProp);
 }
 
-export function readImageSize(file: File) {
+export function readImageSize(file: File | Blob) {
   return new Promise<{ width: number; height: number }>(resolve => {
     const size = { width: 0, height: 0 };
     const img = new Image();

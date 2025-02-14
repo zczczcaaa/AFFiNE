@@ -27,7 +27,7 @@ export class EdgelessWatcher {
   private readonly _handleEdgelessToolUpdated = (
     newTool: GfxToolsFullOptionValue
   ) => {
-    // @ts-expect-error FIXME: resolve after gfx tool refactor
+    // @ts-expect-error GfxToolsFullOptionValue is extended in other packages
     if (newTool.type === 'default') {
       this.updateAnchorElement();
     } else {

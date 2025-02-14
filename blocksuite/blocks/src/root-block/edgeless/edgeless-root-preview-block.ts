@@ -19,6 +19,7 @@ import type { GfxViewportElement } from '@blocksuite/block-std/gfx';
 import { assertExists } from '@blocksuite/global/utils';
 import { css, html } from 'lit';
 import { query, state } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 import type { EdgelessRootBlockWidgetName } from '../types.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
@@ -229,8 +230,12 @@ export class EdgelessRootPreviewBlockComponent
   }
 
   override renderBlock() {
+    const background = styleMap({
+      background: this.overrideBackground,
+    });
+
     return html`
-      <div class="edgeless-background edgeless-container">
+      <div class="edgeless-background edgeless-container" style=${background}>
         <gfx-viewport
           .enableChildrenSchedule=${!this._disableScheduleUpdate}
           .viewport=${this.service.viewport}
@@ -259,6 +264,9 @@ export class EdgelessRootPreviewBlockComponent
       this._initResizeEffect();
     }
   }
+
+  @state()
+  accessor overrideBackground: string | undefined = undefined;
 
   @state()
   accessor editorViewportSelector = '.affine-edgeless-viewport';
