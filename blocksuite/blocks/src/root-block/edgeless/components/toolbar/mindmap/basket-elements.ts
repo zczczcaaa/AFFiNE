@@ -39,13 +39,13 @@ export type DraggableTool = {
 
 const unitMap = { x: 'px', y: 'px', r: 'deg', s: '', z: '', o: '' };
 export const textConfig: ToolConfig = {
-  default: { x: -20, y: -8, r: 7.74, s: 0.92, z: 2 },
+  default: { x: -20, y: -8, r: 7.74, s: 0.92, z: 3 },
   active: { x: -22, y: -9, r: -8, s: 0.92 },
   hover: { x: -22, y: -9, r: -8, s: 1, z: 3 },
   next: { x: -22, y: 64, r: 0 },
 };
 export const mindmapConfig: ToolConfig = {
-  default: { x: 4, y: -4, s: 1, z: 2, r: -7 },
+  default: { x: 4, y: -4, s: 1, r: -7, z: 2 },
   active: { x: 11, y: -14, r: 9, s: 1 },
   hover: { x: 11, y: -14, r: 9, s: 1.16, z: 3 },
   next: { y: 64, r: 0 },
@@ -53,7 +53,7 @@ export const mindmapConfig: ToolConfig = {
 export const mediaConfig: ToolConfig = {
   default: { x: -20, y: -15, r: 23, s: 1.2, z: 1 },
   active: { x: -25, y: -20, r: -9, s: 1.2 },
-  hover: { x: -25, y: -20, r: -9, s: 1.5, z: 2 },
+  hover: { x: -25, y: -20, r: -9, s: 1.5, z: 3 },
   next: { y: 64, r: 0 },
 };
 
