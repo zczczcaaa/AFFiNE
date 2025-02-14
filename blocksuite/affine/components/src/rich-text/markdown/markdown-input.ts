@@ -1,5 +1,9 @@
 import { CodeBlockModel, ParagraphBlockModel } from '@blocksuite/affine-model';
-import { isMarkdownPrefix, matchModels } from '@blocksuite/affine-shared/utils';
+import {
+  isHorizontalRuleMarkdown,
+  isMarkdownPrefix,
+  matchModels,
+} from '@blocksuite/affine-shared/utils';
 import { type BlockStdScope, TextSelection } from '@blocksuite/block-std';
 
 import { getInlineEditorByModel } from '../dom.js';
@@ -47,6 +51,10 @@ export function markdownInput(
     return toCode(std, model, prefixText, codeMatch[0].slice(3));
   }
 
+  if (isHorizontalRuleMarkdown(prefixText.trim())) {
+    return toDivider(std, model, prefixText);
+  }
+
   switch (prefixText.trim()) {
     case '[]':
     case '[ ]':
@@ -60,9 +68,6 @@ export function markdownInput(
     case '-':
     case '*':
       return toList(std, model, 'bulleted', prefixText);
-    case '***':
-    case '---':
-      return toDivider(std, model, prefixText);
     case '#':
       return toParagraph(std, model, 'h1', prefixText);
     case '##':

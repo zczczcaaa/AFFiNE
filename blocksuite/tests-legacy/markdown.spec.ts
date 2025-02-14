@@ -175,16 +175,46 @@ test('markdown shortcut', async ({ page }) => {
   await undoByClick(page);
   await assertRichTexts(page, ['']);
 
+  // testing various horizontal dividers
   await waitNextFrame(page);
   await type(page, '--- ');
   await undoByClick(page);
   await assertRichTexts(page, ['--- ']);
   await undoByClick(page);
   await assertRichTexts(page, ['']);
+
   await waitNextFrame(page);
   await type(page, '*** ');
   await undoByClick(page);
   await assertRichTexts(page, ['*** ']);
+  await undoByClick(page);
+  await assertRichTexts(page, ['']);
+
+  await waitNextFrame(page);
+  await type(page, '___ ');
+  await undoByClick(page);
+  await assertRichTexts(page, ['___ ']);
+  await undoByClick(page);
+  await assertRichTexts(page, ['']);
+
+  await waitNextFrame(page);
+  await type(page, '------ ');
+  await undoByClick(page);
+  await assertRichTexts(page, ['------ ']);
+  await undoByClick(page);
+  await assertRichTexts(page, ['']);
+
+  await waitNextFrame(page);
+  await type(page, '****** ');
+  await undoByClick(page);
+  await assertRichTexts(page, ['****** ']);
+  await undoByClick(page);
+  await assertRichTexts(page, ['']);
+
+  await waitNextFrame(page);
+  await type(page, '______ ');
+  await undoByClick(page);
+  await assertRichTexts(page, ['______ ']);
   await undoByClick(page);
   await assertRichTexts(page, ['']);
 });
