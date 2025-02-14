@@ -63,8 +63,8 @@ export class ChatPanelDocChip extends SignalWatcher(
     super.updated(changedProperties);
     if (
       changedProperties.has('chip') &&
-      changedProperties.get('chip')?.state === 'candidate' &&
-      this.chip.state === 'processing'
+      this.chip.state === 'processing' &&
+      !this.chip.markdown
     ) {
       this.processDocChip().catch(console.error);
     }

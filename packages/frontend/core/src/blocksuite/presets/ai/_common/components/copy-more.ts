@@ -115,7 +115,7 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
   accessor content!: string;
 
   @property({ attribute: false })
-  accessor chatSessionId: string | undefined = undefined;
+  accessor getSessionId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
   accessor messageId: string | undefined = undefined;
@@ -162,7 +162,7 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
   }
 
   override render() {
-    const { host, content, isLast, messageId, chatSessionId, actions } = this;
+    const { host, content, isLast, messageId, actions } = this;
     return html`<style>
         .copy-more {
           margin-top: ${this.withMargin ? '8px' : '0px'};
@@ -217,11 +217,12 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
                 };
                 return html`<div
                   @click=${async () => {
+                    const sessionId = await this.getSessionId();
                     const success = await action.handler(
                       host,
                       content,
                       currentSelections,
-                      chatSessionId,
+                      sessionId,
                       messageId
                     );
 

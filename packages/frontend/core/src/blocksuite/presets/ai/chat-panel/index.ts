@@ -36,6 +36,17 @@ import type {
 import type { ChatPanelMessages } from './chat-panel-messages';
 import { isDocContext } from './components/utils';
 
+const DEFAULT_CHAT_CONTEXT_VALUE: ChatContextValue = {
+  quote: '',
+  images: [],
+  abortController: null,
+  items: [],
+  chips: [],
+  status: 'idle',
+  error: null,
+  markdown: '',
+};
+
 export class ChatPanel extends WithDisposable(ShadowlessElement) {
   static override styles = css`
     chat-panel {
@@ -156,47 +167,78 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   };
 
   private readonly _updateChips = async () => {
-    if (!this._chatSessionId || !this._chatContextId) return;
-
     const candidateChip: DocChip = {
       docId: this.doc.id,
       state: 'candidate',
     };
-    let chips: (DocChip | FileChip)[] = [];
-    if (this._chatContextId) {
-      const { docs = [], files = [] } =
-        (await AIProvider.context?.getContextDocsAndFiles(
-          this.doc.workspace.id,
-          this._chatSessionId,
-          this._chatContextId
-        )) || {};
-      const list = [...docs, ...files].sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
-      chips = list.map(item => {
-        let chip: DocChip | FileChip;
-        if (isDocContext(item)) {
-          chip = {
-            docId: item.id,
-            state: 'processing',
-          };
-        } else {
-          chip = {
-            fileId: item.id,
-            state: item.status === 'finished' ? 'success' : item.status,
-            fileName: item.name,
-            fileType: '',
-          };
-        }
-        return chip;
-      });
+
+    // context not initialized, show candidate chip
+    if (!this._chatSessionId || !this._chatContextId) {
+      this.chatContextValue = {
+        ...this.chatContextValue,
+        chips: [candidateChip],
+      };
+      return;
     }
 
+    // context initialized, show the chips
+    let chips: (DocChip | FileChip)[] = [];
+    const { docs = [], files = [] } =
+      (await AIProvider.context?.getContextDocsAndFiles(
+        this.doc.workspace.id,
+        this._chatSessionId,
+        this._chatContextId
+      )) || {};
+    const list = [...docs, ...files].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    chips = list.map(item => {
+      let chip: DocChip | FileChip;
+      if (isDocContext(item)) {
+        chip = {
+          docId: item.id,
+          state: 'processing',
+        };
+      } else {
+        chip = {
+          fileId: item.id,
+          state: item.status === 'finished' ? 'success' : item.status,
+          fileName: item.name,
+          fileType: '',
+        };
+      }
+      return chip;
+    });
     this.chatContextValue = {
       ...this.chatContextValue,
       chips: chips.length === 0 ? [candidateChip] : chips,
     };
+  };
+
+  private readonly _getSessionId = async () => {
+    if (this._chatSessionId) {
+      return this._chatSessionId;
+    }
+    this._chatSessionId = await AIProvider.session?.createSession(
+      this.doc.workspace.id,
+      this.doc.id
+    );
+    return this._chatSessionId;
+  };
+
+  private readonly _getContextId = async () => {
+    if (this._chatContextId) {
+      return this._chatContextId;
+    }
+    const sessionId = await this._getSessionId();
+    if (sessionId) {
+      this._chatContextId = await AIProvider.context?.createContext(
+        this.doc.workspace.id,
+        sessionId
+      );
+    }
+    return this._chatContextId;
   };
 
   @property({ attribute: false })
@@ -221,20 +263,11 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   accessor isLoading = false;
 
   @state()
-  accessor chatContextValue: ChatContextValue = {
-    quote: '',
-    images: [],
-    abortController: null,
-    items: [],
-    chips: [],
-    status: 'idle',
-    error: null,
-    markdown: '',
-  };
+  accessor chatContextValue: ChatContextValue = DEFAULT_CHAT_CONTEXT_VALUE;
 
-  private _chatSessionId: string | undefined;
+  private _chatSessionId: string | null | undefined = null;
 
-  private _chatContextId: string | undefined;
+  private _chatContextId: string | null | undefined = null;
 
   private readonly _scrollToEnd = () => {
     this._chatMessages.value?.scrollToEnd();
@@ -272,26 +305,29 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     const userId = (await AIProvider.userInfo)?.id;
     if (!userId) return;
 
-    try {
-      this._chatSessionId = await AIProvider.session?.createSession(
-        this.doc.workspace.id,
-        this.doc.id
-      );
-      if (this._chatSessionId) {
-        this._chatContextId = await AIProvider.context?.createContext(
-          this.doc.workspace.id,
-          this._chatSessionId
-        );
-      }
-    } catch (e) {
-      console.error('init panel error', e);
+    const sessionIds = await AIProvider.session?.getSessionIds(
+      this.doc.workspace.id,
+      this.doc.id
+    );
+    if (sessionIds?.length) {
+      this._chatSessionId = sessionIds[0];
+      await this._updateHistory();
     }
-    await this._updateHistory();
+    if (this._chatSessionId) {
+      this._chatContextId = await AIProvider.context?.getContextId(
+        this.doc.workspace.id,
+        this._chatSessionId
+      );
+    }
     await this._updateChips();
   };
 
   protected override updated(_changedProperties: PropertyValues) {
     if (_changedProperties.has('doc')) {
+      this._chatSessionId = null;
+      this._chatContextId = null;
+      this.chatContextValue = DEFAULT_CHAT_CONTEXT_VALUE;
+
       requestAnimationFrame(async () => {
         await this._initPanel();
       });
@@ -376,7 +412,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       <chat-panel-messages
         ${ref(this._chatMessages)}
         .chatContextValue=${this.chatContextValue}
-        .chatSessionId=${this._chatSessionId}
+        .getSessionId=${this._getSessionId}
         .updateContext=${this.updateContext}
         .host=${this.host}
         .isLoading=${this.isLoading}
@@ -385,14 +421,14 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       <chat-panel-chips
         .host=${this.host}
         .chatContextValue=${this.chatContextValue}
-        .chatContextId=${this._chatContextId}
+        .getContextId=${this._getContextId}
         .updateContext=${this.updateContext}
         .docDisplayConfig=${this.docDisplayConfig}
         .docSearchMenuConfig=${this.docSearchMenuConfig}
       ></chat-panel-chips>
       <chat-panel-input
         .chatContextValue=${this.chatContextValue}
-        .chatSessionId=${this._chatSessionId}
+        .getSessionId=${this._getSessionId}
         .networkSearchConfig=${this.networkSearchConfig}
         .updateContext=${this.updateContext}
         .host=${this.host}

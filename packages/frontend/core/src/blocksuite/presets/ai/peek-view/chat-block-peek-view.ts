@@ -131,6 +131,10 @@ export class AIChatBlockPeekView extends LitElement {
     });
   };
 
+  private readonly _getSessionId = async () => {
+    return this.chatContext.currentSessionId ?? undefined;
+  };
+
   /**
    * Create a new AI chat block based on the current session and history messages
    */
@@ -408,7 +412,7 @@ export class AIChatBlockPeekView extends LitElement {
                 .actions=${actions}
                 .content=${message.content}
                 .isLast=${isLastReply}
-                .chatSessionId=${this.chatContext.currentSessionId ?? undefined}
+                .getSessionId=${this._getSessionId}
                 .messageId=${message.id ?? undefined}
                 .retry=${() => this.retry()}
               ></chat-copy-more>`
@@ -418,7 +422,7 @@ export class AIChatBlockPeekView extends LitElement {
                 .host=${host}
                 .actions=${actions}
                 .content=${message.content}
-                .chatSessionId=${this.chatContext.currentSessionId ?? undefined}
+                .getSessionId=${this._getSessionId}
                 .messageId=${message.id ?? undefined}
                 .layoutDirection=${'horizontal'}
               ></chat-action-list>`

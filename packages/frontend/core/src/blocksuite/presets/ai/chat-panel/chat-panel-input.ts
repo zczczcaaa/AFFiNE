@@ -260,7 +260,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
   accessor chatContextValue!: ChatContextValue;
 
   @property({ attribute: false })
-  accessor chatSessionId!: string | undefined;
+  accessor getSessionId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
   accessor updateContext!: (context: Partial<ChatContextValue>) => void;
@@ -300,11 +300,9 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
   private async _updatePromptName() {
     if (this._lastPromptName !== this._promptName) {
       this._lastPromptName = this._promptName;
-      if (this.chatSessionId) {
-        await AIProvider.session?.updateSession(
-          this.chatSessionId,
-          this._promptName
-        );
+      const sessionId = await this.getSessionId();
+      if (sessionId) {
+        await AIProvider.session?.updateSession(sessionId, this._promptName);
       }
     }
   }
@@ -559,45 +557,46 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
     if (status === 'loading' || status === 'transmitting') return;
     if (!text) return;
 
-    const { images } = this.chatContextValue;
-    const { doc } = this.host;
-
-    this.updateContext({
-      images: [],
-      status: 'loading',
-      error: null,
-      quote: '',
-      markdown: '',
-    });
-
-    await this._updatePromptName();
-
-    const attachments = await Promise.all(
-      images?.map(image => readBlobAsURL(image))
-    );
-
-    const userInput = (markdown ? `${markdown}\n` : '') + text;
-    this.updateContext({
-      items: [
-        ...this.chatContextValue.items,
-        {
-          id: '',
-          role: 'user',
-          content: userInput,
-          createdAt: new Date().toISOString(),
-          attachments,
-        },
-        {
-          id: '',
-          role: 'assistant',
-          content: '',
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    });
-
     try {
+      const { images } = this.chatContextValue;
+      const { doc } = this.host;
+
+      this.updateContext({
+        images: [],
+        status: 'loading',
+        error: null,
+        quote: '',
+        markdown: '',
+      });
+
+      const attachments = await Promise.all(
+        images?.map(image => readBlobAsURL(image))
+      );
+
+      const userInput = (markdown ? `${markdown}\n` : '') + text;
+      this.updateContext({
+        items: [
+          ...this.chatContextValue.items,
+          {
+            id: '',
+            role: 'user',
+            content: userInput,
+            createdAt: new Date().toISOString(),
+            attachments,
+          },
+          {
+            id: '',
+            role: 'assistant',
+            content: '',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      });
+
+      await this._updatePromptName();
+
       const abortController = new AbortController();
+      const sessionId = await this.getSessionId();
       const docs: DocContext[] = chips
         .filter(isDocChip)
         .filter(chip => !!chip.markdown?.value && chip.state === 'success')
@@ -606,7 +605,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
           markdown: chip.markdown?.value || '',
         }));
       const stream = AIProvider.actions.chat?.({
-        sessionId: this.chatSessionId,
+        sessionId,
         input: userInput,
         docs: docs,
         docId: doc.id,
@@ -638,7 +637,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
           const historyIds = await AIProvider.histories?.ids(
             doc.workspace.id,
             doc.id,
-            { sessionId: this.chatSessionId }
+            { sessionId }
           );
           if (!historyIds || !historyIds[0]) return;
           last.id = historyIds[0].messages.at(-1)?.id ?? '';

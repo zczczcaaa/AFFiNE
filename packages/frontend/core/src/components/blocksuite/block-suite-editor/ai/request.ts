@@ -30,30 +30,6 @@ export type ToImageOptions = TextToTextOptions & {
   seed?: string;
 };
 
-export async function createChatSession({
-  client,
-  workspaceId,
-  docId,
-  promptName = 'Chat With AFFiNE AI',
-}: {
-  client: CopilotClient;
-  workspaceId: string;
-  docId: string;
-  promptName?: string;
-}) {
-  const sessionId = await client.createSession({
-    workspaceId,
-    docId,
-    promptName,
-  });
-  // always update the prompt name
-  await client.updateSession({
-    sessionId,
-    promptName,
-  });
-  return sessionId;
-}
-
 async function resizeImage(blob: Blob | File): Promise<Blob | null> {
   let src = '';
   try {
@@ -90,7 +66,7 @@ async function createSessionMessage({
   client,
   docId,
   workspaceId,
-  promptName,
+  promptName = 'Chat With AFFiNE AI',
   content,
   sessionId: providedSessionId,
   attachments,
@@ -102,11 +78,10 @@ async function createSessionMessage({
   }
   const hasAttachments = attachments && attachments.length > 0;
   const sessionId = await (providedSessionId ??
-    createChatSession({
-      client,
+    client.createSession({
       workspaceId,
       docId,
-      promptName: promptName as string,
+      promptName,
     }));
 
   const options: Parameters<CopilotClient['createMessage']>[0] = {

@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 import type { CopilotClient } from './copilot-client';
 import type { PromptKey } from './prompt';
-import { createChatSession, textToText, toImage } from './request';
+import { textToText, toImage } from './request';
 import { setupTracker } from './tracker';
 
 const filterStyleToPromptName = new Map(
@@ -37,13 +37,6 @@ export function setupAIProvider(
 ) {
   //#region actions
   AIProvider.provide('chat', options => {
-    const sessionId =
-      options.sessionId ??
-      createChatSession({
-        client,
-        workspaceId: options.workspaceId,
-        docId: options.docId,
-      });
     const { input, docs, ...rest } = options;
     const params = docs?.length
       ? {
@@ -58,7 +51,6 @@ export function setupAIProvider(
       ...rest,
       client,
       content: input,
-      sessionId,
       params,
     });
   });
@@ -408,10 +400,9 @@ Could you make a new website based on these notes and send back just the html fi
     createSession: async (
       workspaceId: string,
       docId: string,
-      promptName?: string
+      promptName = 'Chat With AFFiNE AI'
     ) => {
-      return createChatSession({
-        client,
+      return client.createSession({
         workspaceId,
         docId,
         promptName,

@@ -83,7 +83,7 @@ export class ChatActionList extends LitElement {
   accessor content: string = '';
 
   @property({ attribute: false })
-  accessor chatSessionId: string | undefined = undefined;
+  accessor getSessionId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
   accessor messageId: string | undefined = undefined;
@@ -100,7 +100,7 @@ export class ChatActionList extends LitElement {
       return nothing;
     }
 
-    const { host, content, chatSessionId, messageId, layoutDirection } = this;
+    const { host, content, messageId, layoutDirection } = this;
     const classes = classMap({
       'actions-container': true,
       horizontal: layoutDirection === 'horizontal',
@@ -138,11 +138,12 @@ export class ChatActionList extends LitElement {
                     blocks: this._currentBlockSelections,
                     images: this._currentImageSelections,
                   };
+                  const sessionId = await this.getSessionId();
                   const success = await action.handler(
                     host,
                     content,
                     currentSelections,
-                    chatSessionId,
+                    sessionId,
                     messageId
                   );
                   if (success) {

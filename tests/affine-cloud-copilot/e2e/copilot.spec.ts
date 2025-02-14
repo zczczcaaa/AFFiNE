@@ -104,12 +104,14 @@ const clearChat = async (page: Page) => {
 };
 
 const collectChat = async (page: Page) => {
+  await page.waitForTimeout(ONE_SECOND);
   const chatPanel = await page.waitForSelector('.chat-panel-messages');
   if (await chatPanel.$('.chat-panel-messages-placeholder')) {
     return [];
   }
   // wait ai response
   await page.waitForSelector('.chat-panel-messages .message chat-copy-more');
+  await page.waitForTimeout(ONE_SECOND);
   const lastMessage = await chatPanel.$$('.message').then(m => m[m.length - 1]);
   await lastMessage.waitForSelector('chat-copy-more');
   await page.waitForTimeout(ONE_SECOND);
@@ -489,7 +491,6 @@ test.describe('chat panel', () => {
     await page.getByTestId('chat-network-search').click();
     await typeChatSequentially(page, 'What is the weather in Shanghai today?');
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(3000);
     let history = await collectChat(page);
     expect(history[0]).toEqual({
       name: 'You',
@@ -505,7 +506,6 @@ test.describe('chat panel', () => {
     await page.getByTestId('chat-network-search').click();
     await typeChatSequentially(page, 'What is the weather in Shanghai today?');
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(3000);
     history = await collectChat(page);
     expect(history[0]).toEqual({
       name: 'You',
@@ -859,7 +859,6 @@ test.describe('chat with doc', () => {
 
     await typeChatSequentially(page, 'What is AFFiNE AI?');
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(3000);
     const history = await collectChat(page);
     expect(history[0]).toEqual({
       name: 'You',

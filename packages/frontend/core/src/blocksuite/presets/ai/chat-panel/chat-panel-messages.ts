@@ -134,7 +134,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   accessor chatContextValue!: ChatContextValue;
 
   @property({ attribute: false })
-  accessor chatSessionId!: string | undefined;
+  accessor getSessionId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
   accessor updateContext!: (context: Partial<ChatContextValue>) => void;
@@ -415,7 +415,8 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   retry = async () => {
     const { doc } = this.host;
     try {
-      if (!this.chatSessionId) return;
+      const sessionId = await this.getSessionId();
+      if (!sessionId) return;
 
       const abortController = new AbortController();
       const items = [...this.chatContextValue.items];
@@ -427,7 +428,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
       this.updateContext({ items, status: 'loading', error: null });
 
       const stream = AIProvider.actions.chat?.({
-        sessionId: this.chatSessionId,
+        sessionId,
         retry: true,
         docId: doc.id,
         workspaceId: doc.workspace.id,
@@ -482,7 +483,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
         .actions=${actions}
         .content=${content}
         .isLast=${isLast}
-        .chatSessionId=${this.chatSessionId}
+        .getSessionId=${this.getSessionId}
         .messageId=${messageId}
         .withMargin=${true}
         .retry=${() => this.retry()}
@@ -492,7 +493,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
             .actions=${actions}
             .host=${host}
             .content=${content}
-            .chatSessionId=${this.chatSessionId}
+            .getSessionId=${this.getSessionId}
             .messageId=${messageId ?? undefined}
             .withMargin=${true}
           ></chat-action-list>`

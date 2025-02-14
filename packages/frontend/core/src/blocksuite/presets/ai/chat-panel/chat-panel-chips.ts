@@ -47,7 +47,7 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
   accessor chatContextValue!: ChatContextValue;
 
   @property({ attribute: false })
-  accessor chatContextId!: string | undefined;
+  accessor getContextId!: () => Promise<string | undefined>;
 
   @property({ attribute: false })
   accessor updateContext!: (context: Partial<ChatContextValue>) => void;
@@ -196,34 +196,36 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
   };
 
   private readonly _addToContext = async (chip: ChatChip) => {
-    if (!AIProvider.context || !this.chatContextId) {
+    const contextId = await this.getContextId();
+    if (!contextId || !AIProvider.context) {
       return;
     }
     if (isDocChip(chip)) {
       await AIProvider.context.addContextDoc({
-        contextId: this.chatContextId,
+        contextId,
         docId: chip.docId,
       });
     } else {
       await AIProvider.context.addContextFile({
-        contextId: this.chatContextId,
+        contextId,
         fileId: chip.fileId,
       });
     }
   };
 
   private readonly _removeFromContext = async (chip: ChatChip) => {
-    if (!AIProvider.context || !this.chatContextId) {
+    const contextId = await this.getContextId();
+    if (!contextId || !AIProvider.context) {
       return;
     }
     if (isDocChip(chip)) {
       await AIProvider.context.removeContextDoc({
-        contextId: this.chatContextId,
+        contextId,
         docId: chip.docId,
       });
     } else {
       await AIProvider.context.removeContextFile({
-        contextId: this.chatContextId,
+        contextId,
         fileId: chip.fileId,
       });
     }
