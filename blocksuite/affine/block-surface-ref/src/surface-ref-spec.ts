@@ -1,17 +1,21 @@
 import {
   BlockViewExtension,
   FlavourExtension,
-  WidgetViewMapExtension,
+  WidgetViewExtension,
 } from '@blocksuite/block-std';
 import type { ExtensionType } from '@blocksuite/store';
 import { literal } from 'lit/static-html.js';
 
+export const surfaceRefToolbarWidget = WidgetViewExtension(
+  'affine:surface-ref',
+  'surfaceToolbar',
+  literal`affine-surface-ref-toolbar`
+);
+
 export const PageSurfaceRefBlockSpec: ExtensionType[] = [
   FlavourExtension('affine:surface-ref'),
   BlockViewExtension('affine:surface-ref', literal`affine-surface-ref`),
-  WidgetViewMapExtension('affine:surface-ref', {
-    surfaceToolbar: literal`affine-surface-ref-toolbar`,
-  }),
+  surfaceRefToolbarWidget,
 ];
 
 export const EdgelessSurfaceRefBlockSpec: ExtensionType[] = [

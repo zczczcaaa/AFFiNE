@@ -17,7 +17,7 @@ import { html, type StaticValue, unsafeStatic } from 'lit/static-html.js';
 
 import type { CommandManager } from '../../command/index.js';
 import type { UIEventDispatcher } from '../../event/index.js';
-import { WidgetViewMapIdentifier } from '../../identifier.js';
+import { WidgetViewIdentifier } from '../../identifier.js';
 import type { RangeManager } from '../../range/index.js';
 import type { BlockStdScope } from '../../scope/block-std-scope.js';
 import { PropTypes, requiredProperties } from '../decorators/index.js';
@@ -56,22 +56,21 @@ export class EditorHost extends SignalWatcher(
       console.warn(`Cannot find render flavour ${flavour}.`);
       return html`${nothing}`;
     }
-    const widgetViewMap = this.std.getOptional(
-      WidgetViewMapIdentifier(flavour)
+
+    const widgetViews = this.std.provider.getAll(WidgetViewIdentifier);
+    const widgets = widgetViews.entries().reduce(
+      (mapping, [key, tag]) => {
+        const [widgetFlavour, id] = key.split('|');
+        if (widgetFlavour === flavour) {
+          const template = html`<${tag} ${unsafeStatic(WIDGET_ID_ATTR)}=${id}></${tag}>`;
+          mapping[id] = template;
+        }
+        return mapping;
+      },
+      {} as Record<string, TemplateResult>
     );
 
     const tag = typeof view === 'function' ? view(model) : view;
-    const widgets: Record<string, TemplateResult> = widgetViewMap
-      ? Object.entries(widgetViewMap).reduce((mapping, [key, tag]) => {
-          const template = html`<${tag} ${unsafeStatic(WIDGET_ID_ATTR)}=${key}></${tag}>`;
-
-          return {
-            ...mapping,
-            [key]: template,
-          };
-        }, {})
-      : {};
-
     return html`<${tag}
       ${unsafeStatic(BLOCK_ID_ATTR)}=${model.id}
       .widgets=${widgets}
@@ -144,13 +143,22 @@ export class EditorHost extends SignalWatcher(
       const view = this.std.getView(rootModel.flavour);
       if (!view) return result;
 
-      const widgetViewMap = this.std.getOptional(
-        WidgetViewMapIdentifier(rootModel.flavour)
+      const widgetViews = this.std.provider.getAll(
+        WidgetViewIdentifier(rootModel.flavour)
       );
-      const widgetTags = Object.values(widgetViewMap ?? {});
+      const widgetTags = Object.entries(widgetViews).reduce(
+        (mapping, [key, tag]) => {
+          const [widgetFlavour, id] = key.split('|');
+          if (widgetFlavour === rootModel.flavour) {
+            mapping[id] = tag;
+          }
+          return mapping;
+        },
+        {} as Record<string, StaticValue>
+      );
       const elementsTags: StaticValue[] = [
         typeof view === 'function' ? view(rootModel) : view,
-        ...widgetTags,
+        ...Object.values(widgetTags),
       ];
       await Promise.all(
         elementsTags.map(tag => {

@@ -5,11 +5,7 @@ import type {
   QuickSearchProvider,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
-import type {
-  EditorHost,
-  WidgetViewMapExtension,
-  WidgetViewMapIdentifier,
-} from '@blocksuite/block-std';
+import type { EditorHost } from '@blocksuite/block-std';
 import type { RefNodeSlotsProvider, TestUtils } from '@blocksuite/blocks';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import type {
@@ -32,8 +28,8 @@ declare global {
         utils: typeof import('@blocksuite/global/utils');
       };
       editor: typeof import('@blocksuite/presets');
+      blockStd: typeof import('@blocksuite/block-std');
       identifiers: {
-        WidgetViewMapIdentifier: typeof WidgetViewMapIdentifier;
         QuickSearchProvider: typeof QuickSearchProvider;
         DocModeProvider: typeof DocModeProvider;
         ThemeProvider: typeof ThemeProvider;
@@ -41,9 +37,6 @@ declare global {
         ParseDocUrlService: typeof ParseDocUrlProvider;
       };
       defaultExtensions: () => ExtensionType[];
-      extensions: {
-        WidgetViewMapExtension: typeof WidgetViewMapExtension;
-      };
       mockServices: {
         mockDocModeService: typeof DocModeService;
       };

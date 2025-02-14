@@ -794,13 +794,11 @@ test.describe('slash menu with customize menu', () => {
         {
           setup: di => {
             di.override(
-              window.$blocksuite.identifiers.WidgetViewMapIdentifier(
-                'affine:page'
+              window.$blocksuite.blockStd.WidgetViewIdentifier(
+                'affine:page|affine-slash-menu-widget'
               ),
               // @ts-ignore
-              () => ({
-                'affine-slash-menu-widget': fakeLiteral`affine-custom-slash-menu`,
-              })
+              fakeLiteral`affine-custom-slash-menu`
             );
           },
         },
@@ -869,13 +867,11 @@ test.describe('slash menu with customize menu', () => {
         {
           setup: di =>
             di.override(
-              window.$blocksuite.identifiers.WidgetViewMapIdentifier(
-                'affine:page'
+              window.$blocksuite.blockStd.WidgetViewIdentifier(
+                'affine:page|affine-slash-menu-widget'
               ),
               // @ts-ignore
-              () => ({
-                'affine-slash-menu-widget': fakeLiteral`affine-custom-slash-menu`,
-              })
+              fakeLiteral`affine-custom-slash-menu`
             ),
         },
       ];

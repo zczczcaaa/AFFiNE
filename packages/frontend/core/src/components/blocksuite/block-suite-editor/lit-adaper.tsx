@@ -17,7 +17,15 @@ import { toURLSearchParams } from '@affine/core/modules/navigation';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import track from '@affine/track';
-import type { DocMode } from '@blocksuite/affine/blocks';
+import {
+  codeToolbarWidget,
+  type DocMode,
+  embedCardToolbarWidget,
+  formatBarWidget,
+  imageToolbarWidget,
+  slashMenuWidget,
+  surfaceRefToolbarWidget,
+} from '@blocksuite/affine/blocks';
 import {
   DocTitle,
   EdgelessEditor,
@@ -173,6 +181,12 @@ const usePatchSpecs = (mode: DocMode) => {
       builder.extend([patchForAttachmentEmbedViews(reactToLit)]);
     }
     if (BUILD_CONFIG.isMobileEdition) {
+      builder.omit(formatBarWidget);
+      builder.omit(embedCardToolbarWidget);
+      builder.omit(slashMenuWidget);
+      builder.omit(codeToolbarWidget);
+      builder.omit(imageToolbarWidget);
+      builder.omit(surfaceRefToolbarWidget);
       builder.extend([patchForMobile()].flat());
     }
     if (BUILD_CONFIG.isElectron) {

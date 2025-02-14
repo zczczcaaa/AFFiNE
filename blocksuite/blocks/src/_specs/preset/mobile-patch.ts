@@ -9,14 +9,8 @@ import {
   type BlockStdScope,
   ConfigIdentifier,
   LifeCycleWatcher,
-  WidgetViewMapIdentifier,
-  type WidgetViewMapType,
 } from '@blocksuite/block-std';
 import type { Container } from '@blocksuite/global/di';
-
-import { AFFINE_EMBED_CARD_TOOLBAR_WIDGET } from '../../root-block/widgets/embed-card-toolbar/embed-card-toolbar.js';
-import { AFFINE_FORMAT_BAR_WIDGET } from '../../root-block/widgets/format-bar/format-bar.js';
-import { AFFINE_SLASH_MENU_WIDGET } from '../../root-block/widgets/slash-menu/index.js';
 
 export class MobileSpecsPatches extends LifeCycleWatcher {
   static override key = 'mobile-patches';
@@ -53,48 +47,6 @@ export class MobileSpecsPatches extends LifeCycleWatcher {
           showLineNumbers: false,
         } satisfies CodeBlockConfig;
       });
-    }
-
-    // Disable root level widgets for mobile.
-    {
-      const rootWidgetViewMapIdentifier =
-        WidgetViewMapIdentifier('affine:page');
-
-      const prev = di.getFactory(rootWidgetViewMapIdentifier);
-
-      di.override(rootWidgetViewMapIdentifier, provider => {
-        const ignoreWidgets = [
-          AFFINE_FORMAT_BAR_WIDGET,
-          AFFINE_EMBED_CARD_TOOLBAR_WIDGET,
-          AFFINE_SLASH_MENU_WIDGET,
-        ];
-
-        const newMap = { ...prev?.(provider) };
-
-        ignoreWidgets.forEach(widget => {
-          if (widget in newMap) delete newMap[widget];
-        });
-
-        return newMap;
-      });
-    }
-
-    // Disable block level toolbar widgets for mobile.
-    {
-      di.override(
-        WidgetViewMapIdentifier('affine:code'),
-        (): WidgetViewMapType => ({})
-      );
-
-      di.override(
-        WidgetViewMapIdentifier('affine:image'),
-        (): WidgetViewMapType => ({})
-      );
-
-      di.override(
-        WidgetViewMapIdentifier('affine:surface-ref'),
-        (): WidgetViewMapType => ({})
-      );
     }
   }
 

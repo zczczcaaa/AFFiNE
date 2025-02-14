@@ -1,9 +1,6 @@
 import '../../style.css';
 
-import {
-  WidgetViewMapExtension,
-  WidgetViewMapIdentifier,
-} from '@blocksuite/block-std';
+import * as blockStd from '@blocksuite/block-std';
 import * as blocks from '@blocksuite/blocks';
 import {
   CommunityCanvasTextFonts,
@@ -52,8 +49,8 @@ async function main() {
         blocks,
         global: { utils: globalUtils },
         editor,
+        blockStd: blockStd,
         identifiers: {
-          WidgetViewMapIdentifier,
           QuickSearchProvider,
           DocModeProvider,
           RefNodeSlotsProvider,
@@ -65,7 +62,6 @@ async function main() {
         ],
         extensions: {
           FontConfigExtension: FontConfigExtension(CommunityCanvasTextFonts),
-          WidgetViewMapExtension,
         },
         mockServices: {
           mockDocModeService,

@@ -1,6 +1,6 @@
 import {
   BlockServiceWatcher,
-  WidgetViewMapIdentifier,
+  WidgetViewExtension,
 } from '@blocksuite/affine/block-std';
 import {
   AFFINE_AI_PANEL_WIDGET,
@@ -14,10 +14,8 @@ import {
   EdgelessCopilotWidget,
   EdgelessElementToolbarWidget,
   EdgelessRootBlockSpec,
-  edgelessRootWidgetViewMap,
   ImageBlockSpec,
   PageRootBlockSpec,
-  pageRootWidgetViewMap,
   ParagraphBlockService,
   ParagraphBlockSpec,
 } from '@blocksuite/affine/blocks';
@@ -63,25 +61,22 @@ function getAIPageRootWatcher(framework: FrameworkProvider) {
   return AIPageRootWatcher;
 }
 
+const aiPanelWidget = WidgetViewExtension(
+  'affine:page',
+  AFFINE_AI_PANEL_WIDGET,
+  literal`${unsafeStatic(AFFINE_AI_PANEL_WIDGET)}`
+);
+
+const edgelessCopilotWidget = WidgetViewExtension(
+  'affine:page',
+  AFFINE_EDGELESS_COPILOT_WIDGET,
+  literal`${unsafeStatic(AFFINE_EDGELESS_COPILOT_WIDGET)}`
+);
+
 export function createAIPageRootBlockSpec(
   framework: FrameworkProvider
 ): ExtensionType[] {
-  return [
-    ...PageRootBlockSpec,
-    getAIPageRootWatcher(framework),
-    {
-      setup: di => {
-        di.override(WidgetViewMapIdentifier('affine:page'), () => {
-          return {
-            ...pageRootWidgetViewMap,
-            [AFFINE_AI_PANEL_WIDGET]: literal`${unsafeStatic(
-              AFFINE_AI_PANEL_WIDGET
-            )}`,
-          };
-        });
-      },
-    },
-  ];
+  return [...PageRootBlockSpec, aiPanelWidget, getAIPageRootWatcher(framework)];
 }
 
 function getAIEdgelessRootWatcher(framework: FrameworkProvider) {
@@ -123,22 +118,9 @@ export function createAIEdgelessRootBlockSpec(
 ): ExtensionType[] {
   return [
     ...EdgelessRootBlockSpec,
+    aiPanelWidget,
+    edgelessCopilotWidget,
     getAIEdgelessRootWatcher(framework),
-    {
-      setup: di => {
-        di.override(WidgetViewMapIdentifier('affine:page'), () => {
-          return {
-            ...edgelessRootWidgetViewMap,
-            [AFFINE_EDGELESS_COPILOT_WIDGET]: literal`${unsafeStatic(
-              AFFINE_EDGELESS_COPILOT_WIDGET
-            )}`,
-            [AFFINE_AI_PANEL_WIDGET]: literal`${unsafeStatic(
-              AFFINE_AI_PANEL_WIDGET
-            )}`,
-          };
-        });
-      },
-    },
   ];
 }
 
