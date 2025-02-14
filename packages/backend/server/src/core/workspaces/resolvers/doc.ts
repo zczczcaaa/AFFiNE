@@ -369,7 +369,10 @@ export class DocResolver {
 
     return mapPermissionToGraphqlPermissions(
       mapDocRoleToPermissions(
-        fixupDocRole(workspacePermission?.type, permission?.type)
+        fixupDocRole(
+          workspacePermission?.type,
+          permission?.type ?? doc.defaultRole
+        )
       )
     );
   }
