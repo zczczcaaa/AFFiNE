@@ -1,4 +1,4 @@
-import type { DocRole, GetPageGrantedUsersListQuery } from '@affine/graphql';
+import { DocRole, type GetPageGrantedUsersListQuery } from '@affine/graphql';
 import {
   backoffRetry,
   catchErrorInto,
@@ -123,20 +123,29 @@ export class DocGrantedUsersService extends Service {
   }
 
   async updateUserRole(userId: string, role: DocRole) {
-    await this.store.updateDocUserRole(
+    const res = await this.store.updateDocUserRole(
       this.workspaceService.workspace.id,
       this.docService.doc.id,
       userId,
       role
     );
-    this.grantedUsers$.next(
-      this.grantedUsers$.value.map(user => {
-        if (user.user.id === userId) {
-          return { ...user, role };
-        }
-        return user;
-      })
-    );
+    if (res) {
+      if (role === DocRole.Owner) {
+        this.reset();
+        this.loadMore();
+        return res;
+      }
+      this.grantedUsers$.next(
+        this.grantedUsers$.value.map(user => {
+          if (user.user.id === userId) {
+            return { ...user, role };
+          }
+          return user;
+        })
+      );
+    }
+
+    return res;
   }
 
   async updateDocDefaultRole(role: DocRole) {

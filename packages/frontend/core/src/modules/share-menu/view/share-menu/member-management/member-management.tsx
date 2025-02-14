@@ -111,14 +111,27 @@ const MemberList = ({
     [hittingPaywall, openPaywallModal]
   );
   return (
-    <Virtuoso
-      components={{
-        Scroller,
-      }}
-      data={grantedUserList}
-      itemContent={itemContentRenderer}
-      totalCount={grantedUserCount}
-      endReached={loadMore}
-    />
+    <div className={styles.memberListStyle}>
+      {grantedUserList.length < 8 ? (
+        grantedUserList.map(item => (
+          <MemberItem
+            key={item.user.id}
+            grantedUser={item}
+            openPaywallModal={openPaywallModal}
+            hittingPaywall={hittingPaywall}
+          />
+        ))
+      ) : (
+        <Virtuoso
+          components={{
+            Scroller,
+          }}
+          data={grantedUserList}
+          itemContent={itemContentRenderer}
+          totalCount={grantedUserCount}
+          endReached={loadMore}
+        />
+      )}
+    </div>
   );
 };

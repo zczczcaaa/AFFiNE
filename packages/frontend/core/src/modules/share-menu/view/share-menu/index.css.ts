@@ -1,14 +1,14 @@
 import { cssVar } from '@toeverything/theme';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { globalStyle, style } from '@vanilla-extract/css';
-export const headerStyle = style({
+
+export const tabList = style({
   display: 'flex',
-  alignItems: 'center',
-  fontSize: cssVar('fontSm'),
-  fontWeight: 600,
-  lineHeight: '22px',
-  padding: '0 4px',
-  gap: '4px',
+  gap: '12px',
+  height: '28px',
+});
+export const tab = style({
+  padding: '0px 4px 6px',
 });
 export const content = style({
   display: 'flex',
@@ -17,7 +17,6 @@ export const content = style({
 });
 export const menuStyle = style({
   width: '390px',
-  minHeight: '310px',
   maxHeight: '562px',
   padding: '12px',
 });

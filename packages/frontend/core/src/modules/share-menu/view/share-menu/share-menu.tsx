@@ -149,12 +149,13 @@ export const ShareMenuContent = (props: ShareMenuProps) => {
         value={currentTab}
         onValueChange={onValueChange}
       >
-        <Tabs.List>
-          <Tabs.Trigger value={ShareMenuTab.Share}>
+        <Tabs.List className={styles.tabList}>
+          <Tabs.Trigger value={ShareMenuTab.Share} className={styles.tab}>
             {t['com.affine.share-menu.shareButton']()}
           </Tabs.Trigger>
           <Tabs.Trigger
             value={ShareMenuTab.Export}
+            className={styles.tab}
             style={{
               display: BUILD_CONFIG.isMobileEdition ? 'none' : undefined,
             }}

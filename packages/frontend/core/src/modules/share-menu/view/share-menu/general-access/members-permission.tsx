@@ -1,10 +1,12 @@
-import { Menu, MenuItem, MenuTrigger } from '@affine/component';
+import { Menu, MenuItem, MenuTrigger, Tooltip } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { DocGrantedUsersService } from '@affine/core/modules/permissions';
 import { ShareInfoService } from '@affine/core/modules/share-doc';
 import { DocRole } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
+import { InformationIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
+import clsx from 'clsx';
 import { useCallback, useMemo } from 'react';
 
 import { PlanTag } from '../plan-tag';
@@ -42,7 +44,8 @@ export const MembersPermission = ({
     () => getRoleName(t, docDefaultRole),
     [docDefaultRole, t]
   );
-
+  const showTips =
+    docDefaultRole === DocRole.Reader || docDefaultRole === DocRole.Editor;
   const changePermission = useCallback(
     async (docRole: DocRole) => {
       await docGrantedUsersService.updateDocDefaultRole(docRole);
@@ -76,12 +79,16 @@ export const MembersPermission = ({
       <div className={styles.labelStyle}>
         {t['com.affine.share-menu.option.permission.label']()}
       </div>
-      <Menu
-        contentOptions={{
-          align: 'end',
-        }}
-        items={
-          disabled ? null : (
+      {disabled ? (
+        <div className={clsx(styles.menuTriggerStyle, 'disable')}>
+          {showTips ? <Tips disable={disabled} /> : null} {currentRoleName}
+        </div>
+      ) : (
+        <Menu
+          contentOptions={{
+            align: 'end',
+          }}
+          items={
             <>
               <MenuItem
                 onSelect={selectManage}
@@ -98,7 +105,7 @@ export const MembersPermission = ({
                 <div className={styles.publicItemRowStyle}>
                   <div className={styles.tagContainerStyle}>
                     {t['com.affine.share-menu.option.permission.can-edit']()}
-                    <PlanTag />
+                    {hittingPaywall ? <PlanTag /> : null}
                   </div>
                 </div>
               </MenuItem>
@@ -109,25 +116,39 @@ export const MembersPermission = ({
                 <div className={styles.publicItemRowStyle}>
                   <div className={styles.tagContainerStyle}>
                     {t['com.affine.share-menu.option.permission.can-read']()}
-                    <PlanTag />
+                    {hittingPaywall ? <PlanTag /> : null}
                   </div>
                 </div>
               </MenuItem>
             </>
-          )
-        }
-      >
-        <MenuTrigger
-          className={styles.menuTriggerStyle}
-          variant="plain"
-          contentStyle={{
-            width: '100%',
-          }}
-          disabled={disabled}
+          }
         >
-          {currentRoleName}
-        </MenuTrigger>
-      </Menu>
+          <MenuTrigger
+            className={styles.menuTriggerStyle}
+            variant="plain"
+            contentStyle={{
+              width: '100%',
+            }}
+            prefix={showTips ? <Tips /> : undefined}
+          >
+            {currentRoleName}
+          </MenuTrigger>
+        </Menu>
+      )}
     </div>
+  );
+};
+
+export const Tips = ({ disable }: { disable?: boolean }) => {
+  const t = useI18n();
+
+  return (
+    <Tooltip content={t['com.affine.share-menu.option.permission.tips']()}>
+      <InformationIcon
+        className={clsx(styles.informationIcon, {
+          disable: disable,
+        })}
+      />
+    </Tooltip>
   );
 };

@@ -6,6 +6,7 @@ import {
   MenuTrigger,
   notify,
   Tooltip,
+  useConfirmModal,
 } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { AuthService } from '@affine/core/modules/cloud';
@@ -14,12 +15,13 @@ import {
   DocGrantedUsersService,
   type GrantedUser,
   GuardService,
+  WorkspacePermissionService,
 } from '@affine/core/modules/permissions';
 import { DocRole, UserFriendlyError } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { PlanTag } from '../plan-tag';
 import * as styles from './member-item.css';
@@ -130,65 +132,86 @@ const Options = ({
   const docGrantedUsersService = useService(DocGrantedUsersService);
   const docService = useService(DocService);
   const guardService = useService(GuardService);
-
-  const canTransferOwner = useLiveData(
-    guardService.can$('Doc_TransferOwner', docService.doc.id)
+  const workspacePermissionService = useService(WorkspacePermissionService);
+  const isWorkspaceOwner = useLiveData(
+    workspacePermissionService.permission.isOwner$
   );
+
+  const { openConfirmModal } = useConfirmModal();
+
+  const canTransferOwner =
+    useLiveData(guardService.can$('Doc_TransferOwner', docService.doc.id)) &&
+    !!isWorkspaceOwner;
   const canManageUsers = useLiveData(
     guardService.can$('Doc_Users_Manage', docService.doc.id)
   );
 
+  const updateUserRole = useCallback(
+    async (userId: string, role: DocRole) => {
+      try {
+        const res = await docGrantedUsersService.updateUserRole(userId, role);
+        if (res) {
+          notify.success({
+            title:
+              t['com.affine.share-menu.member-management.update-success'](),
+          });
+        } else {
+          notify.error({
+            title: t['com.affine.share-menu.member-management.update-fail'](),
+          });
+        }
+      } catch (error) {
+        const err = UserFriendlyError.fromAnyError(error);
+        notify.error({
+          title: t[`error.${err.name}`](err.data),
+        });
+      }
+    },
+    [docGrantedUsersService, t]
+  );
+
   const changeToManager = useAsyncCallback(async () => {
-    try {
-      await docGrantedUsersService.updateUserRole(userId, DocRole.Manager);
-    } catch (error) {
-      const err = UserFriendlyError.fromAnyError(error);
-      notify.error({
-        title: t[`error.${err.name}`](err.data),
-      });
-    }
-  }, [docGrantedUsersService, userId, t]);
+    await updateUserRole(userId, DocRole.Manager);
+  }, [updateUserRole, userId]);
 
   const changeToEditor = useAsyncCallback(async () => {
     if (hittingPaywall) {
       openPaywallModal();
       return;
     }
-    try {
-      await docGrantedUsersService.updateUserRole(userId, DocRole.Editor);
-    } catch (error) {
-      const err = UserFriendlyError.fromAnyError(error);
-      notify.error({
-        title: t[`error.${err.name}`](err.data),
-      });
-    }
-  }, [docGrantedUsersService, hittingPaywall, openPaywallModal, userId, t]);
+    await updateUserRole(userId, DocRole.Editor);
+  }, [hittingPaywall, updateUserRole, userId, openPaywallModal]);
 
   const changeToReader = useAsyncCallback(async () => {
     if (hittingPaywall) {
       openPaywallModal();
       return;
     }
-    try {
-      await docGrantedUsersService.updateUserRole(userId, DocRole.Reader);
-    } catch (error) {
-      const err = UserFriendlyError.fromAnyError(error);
-      notify.error({
-        title: t[`error.${err.name}`](err.data),
-      });
-    }
-  }, [docGrantedUsersService, hittingPaywall, openPaywallModal, userId, t]);
+    await updateUserRole(userId, DocRole.Reader);
+  }, [hittingPaywall, updateUserRole, userId, openPaywallModal]);
 
   const changeToOwner = useAsyncCallback(async () => {
-    try {
-      await docGrantedUsersService.updateUserRole(userId, DocRole.Owner);
-    } catch (error) {
-      const err = UserFriendlyError.fromAnyError(error);
-      notify.error({
-        title: t[`error.${err.name}`](err.data),
-      });
-    }
-  }, [docGrantedUsersService, userId, t]);
+    await updateUserRole(userId, DocRole.Owner);
+  }, [updateUserRole, userId]);
+
+  const openTransferOwnerModal = useCallback(() => {
+    openConfirmModal({
+      title:
+        t[
+          'com.affine.share-menu.member-management.set-as-owner.confirm.title'
+        ](),
+      description:
+        t[
+          'com.affine.share-menu.member-management.set-as-owner.confirm.description'
+        ](),
+      onConfirm: changeToOwner,
+      confirmText: t['Confirm'](),
+      confirmButtonOptions: {
+        variant: 'primary',
+      },
+      cancelText: t['Cancel'](),
+    });
+  }, [changeToOwner, openConfirmModal, t]);
 
   const removeMember = useAsyncCallback(async () => {
     try {
@@ -213,16 +236,16 @@ const Options = ({
         label: t['com.affine.share-menu.option.permission.can-edit'](),
         onClick: changeToEditor,
         role: DocRole.Editor,
-        showPlanTag: true,
+        showPlanTag: hittingPaywall,
       },
       {
         label: t['com.affine.share-menu.option.permission.can-read'](),
         onClick: changeToReader,
         role: DocRole.Reader,
-        showPlanTag: true,
+        showPlanTag: hittingPaywall,
       },
     ];
-  }, [changeToEditor, changeToManager, changeToReader, t]);
+  }, [changeToEditor, changeToManager, changeToReader, hittingPaywall, t]);
 
   return (
     <>
@@ -238,7 +261,7 @@ const Options = ({
           </div>
         </MenuItem>
       ))}
-      <MenuItem onSelect={changeToOwner} disabled={!canTransferOwner}>
+      <MenuItem onSelect={openTransferOwnerModal} disabled={!canTransferOwner}>
         {t['com.affine.share-menu.member-management.set-as-owner']()}
       </MenuItem>
       <MenuSeparator />

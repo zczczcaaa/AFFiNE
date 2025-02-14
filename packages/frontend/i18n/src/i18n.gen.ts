@@ -3587,6 +3587,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.payment.cloud.pro.benefit.g1-8"](): string;
     /**
+      * `Granular edit access to docs.`
+      */
+    ["com.affine.payment.cloud.pro.benefit.g1-9"](): string;
+    /**
       * `For family and small teams.`
       */
     ["com.affine.payment.cloud.pro.description"](): string;
@@ -5887,6 +5891,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.share-menu.option.permission.label"](): string;
     /**
+      * `Workspace admins and owner automatically have Can manage permissions.`
+      */
+    ["com.affine.share-menu.option.permission.tips"](): string;
+    /**
       * `Publish to web`
       */
     ["com.affine.share-menu.publish-to-web"](): string;
@@ -5933,6 +5941,22 @@ export function useAFFiNEI18N(): {
       * `Set as owner`
       */
     ["com.affine.share-menu.member-management.set-as-owner"](): string;
+    /**
+      * `Make this person the owner?`
+      */
+    ["com.affine.share-menu.member-management.set-as-owner.confirm.title"](): string;
+    /**
+      * `The new owner will be effective immediately, and you might lose access to this doc if other users remove you, please confirm.`
+      */
+    ["com.affine.share-menu.member-management.set-as-owner.confirm.description"](): string;
+    /**
+      * `Permission updated`
+      */
+    ["com.affine.share-menu.member-management.update-success"](): string;
+    /**
+      * `Failed to update permission`
+      */
+    ["com.affine.share-menu.member-management.update-fail"](): string;
     /**
       * `{{memberCount}} collaborators in the doc`
       */

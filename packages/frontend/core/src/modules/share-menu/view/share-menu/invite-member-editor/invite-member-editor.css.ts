@@ -16,10 +16,11 @@ export const headerStyle = style({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  borderBottom: `1px solid ${cssVarV2('tab/divider/divider')}`,
+  borderBottom: `1px solid ${cssVarV2('layer/insideBorder/border')}`,
   cursor: 'pointer',
   gap: '4px',
-  padding: '4px 4px 6px',
+  padding: '0px 4px 6px',
+  height: '28px',
   color: cssVarV2('text/secondary'),
 });
 export const iconStyle = style({
@@ -54,7 +55,7 @@ export const searchInput = style({
   flexGrow: 1,
   border: 'none',
   outline: 'none',
-  fontSize: '14px',
+  fontSize: cssVar('fontSm'),
   fontFamily: 'inherit',
   color: 'inherit',
   backgroundColor: 'transparent',
@@ -70,6 +71,7 @@ export const InputContainer = style({
   padding: '4px',
   flexWrap: 'wrap',
   width: '100%',
+  margin: '6px 0px',
   border: `1px solid ${cssVarV2('input/border/default')}`,
 
   selectors: {
@@ -133,6 +135,12 @@ export const sentEmail = style({
 export const checkbox = style({
   fontSize: 20,
   color: cssVarV2('icon/primary'),
+});
+
+export const resultContainer = style({
+  minHeight: '155px',
+  maxHeight: '394px',
+  overflow: 'hidden',
 });
 
 export const noFound = style({

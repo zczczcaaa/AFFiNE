@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
 export const result = style({
-  minHeight: '200px',
+  minHeight: '342px',
   maxHeight: '342px',
 });

@@ -1,4 +1,5 @@
 import { cssVar } from '@toeverything/theme';
+import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 export const menuTriggerStyle = style({
@@ -8,6 +9,13 @@ export const menuTriggerStyle = style({
   display: 'flex',
   fontSize: cssVar('fontSm'),
   fontWeight: 400,
+  selectors: {
+    '&.disable': {
+      alignItems: 'center',
+      gap: '4px',
+      color: cssVarV2('text/disable'),
+    },
+  },
 });
 
 export const rowContainerStyle = style({
@@ -35,4 +43,14 @@ export const tagContainerStyle = style({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
+});
+
+export const informationIcon = style({
+  color: cssVarV2('icon/primary'),
+  fontSize: '20px',
+  selectors: {
+    '&.disable': {
+      color: cssVarV2('icon/disable'),
+    },
+  },
 });

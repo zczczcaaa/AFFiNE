@@ -11,6 +11,7 @@ import {
 } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { cssVar } from '@toeverything/theme';
+import clsx from 'clsx';
 import { useEffect } from 'react';
 
 import * as styles from './styles.css';
@@ -92,13 +93,18 @@ export const PublicDoc = ({ disabled }: { disabled?: boolean }) => {
       <div className={styles.labelStyle}>
         {t['com.affine.share-menu.option.link.label']()}
       </div>
-
-      <Menu
-        contentOptions={{
-          align: 'end',
-        }}
-        items={
-          disabled ? null : (
+      {disabled ? (
+        <div className={clsx(styles.menuTriggerStyle, 'disable')}>
+          {isSharedPage
+            ? t['com.affine.share-menu.option.link.readonly']()
+            : t['com.affine.share-menu.option.link.no-access']()}
+        </div>
+      ) : (
+        <Menu
+          contentOptions={{
+            align: 'end',
+          }}
+          items={
             <>
               <MenuItem
                 prefixIcon={<LockIcon />}
@@ -122,23 +128,22 @@ export const PublicDoc = ({ disabled }: { disabled?: boolean }) => {
                 </div>
               </MenuItem>
             </>
-          )
-        }
-      >
-        <MenuTrigger
-          className={styles.menuTriggerStyle}
-          data-testid="share-link-menu-trigger"
-          variant="plain"
-          contentStyle={{
-            width: '100%',
-          }}
-          disabled={disabled}
+          }
         >
-          {isSharedPage
-            ? t['com.affine.share-menu.option.link.readonly']()
-            : t['com.affine.share-menu.option.link.no-access']()}
-        </MenuTrigger>
-      </Menu>
+          <MenuTrigger
+            className={styles.menuTriggerStyle}
+            data-testid="share-link-menu-trigger"
+            variant="plain"
+            contentStyle={{
+              width: '100%',
+            }}
+          >
+            {isSharedPage
+              ? t['com.affine.share-menu.option.link.readonly']()
+              : t['com.affine.share-menu.option.link.no-access']()}
+          </MenuTrigger>
+        </Menu>
+      )}
     </div>
   );
 };

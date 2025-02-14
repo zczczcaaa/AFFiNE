@@ -16,10 +16,11 @@ export const headerStyle = style({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  borderBottom: `1px solid ${cssVarV2('tab/divider/divider')}`,
+  borderBottom: `1px solid ${cssVarV2('layer/insideBorder/border')}`,
   cursor: 'pointer',
   gap: '4px',
-  padding: '4px 4px 6px',
+  padding: '0px 4px 6px',
+  height: '28px',
   color: cssVarV2('text/secondary'),
 });
 export const iconStyle = style({
@@ -46,7 +47,9 @@ export const memberListStyle = style({
   flexDirection: 'column',
   flex: 1,
   paddingTop: '6px',
-  maxHeight: '455px',
+  height: '100%',
+  minHeight: '206px',
+  maxHeight: '394px',
 });
 
 export const scrollableRootStyle = style({

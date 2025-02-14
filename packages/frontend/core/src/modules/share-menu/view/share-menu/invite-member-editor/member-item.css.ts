@@ -62,7 +62,3 @@ export const memberRoleStyle = style({
     },
   },
 });
-
-export const tooltipContentStyle = style({
-  wordBreak: 'break-word',
-});

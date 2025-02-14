@@ -1,11 +1,21 @@
-import { Avatar, Tooltip } from '@affine/component';
+import { Avatar } from '@affine/component';
 import type { Member } from '@affine/core/modules/permissions';
+import { useCallback } from 'react';
 
 import * as styles from './member-item.css';
 
-export const MemberItem = ({ member }: { member: Member }) => {
+export const MemberItem = ({
+  member,
+  onSelect,
+}: {
+  member: Member;
+  onSelect: (item: Member) => void;
+}) => {
+  const handleSelect = useCallback(() => {
+    onSelect(member);
+  }, [member, onSelect]);
   return (
-    <div className={styles.memberItemStyle}>
+    <div className={styles.memberItemStyle} onClick={handleSelect}>
       <div className={styles.memberContainerStyle}>
         <Avatar
           key={member.id}
@@ -14,24 +24,8 @@ export const MemberItem = ({ member }: { member: Member }) => {
           size={36}
         />
         <div className={styles.memberInfoStyle}>
-          <Tooltip
-            content={member.name}
-            rootOptions={{ delayDuration: 1000 }}
-            options={{
-              className: styles.tooltipContentStyle,
-            }}
-          >
-            <div className={styles.memberNameStyle}>{member.name}</div>
-          </Tooltip>
-          <Tooltip
-            content={member.email}
-            rootOptions={{ delayDuration: 1000 }}
-            options={{
-              className: styles.tooltipContentStyle,
-            }}
-          >
-            <div className={styles.memberEmailStyle}>{member.email}</div>
-          </Tooltip>
+          <div className={styles.memberNameStyle}>{member.name}</div>
+          <div className={styles.memberEmailStyle}>{member.email}</div>
         </div>
       </div>
     </div>

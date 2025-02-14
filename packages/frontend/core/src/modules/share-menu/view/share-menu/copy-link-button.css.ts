@@ -2,7 +2,6 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { globalStyle, style } from '@vanilla-extract/css';
 
 export const copyLinkContainerStyle = style({
-  padding: '4px',
   display: 'flex',
   alignItems: 'center',
   width: '100%',
@@ -18,6 +17,7 @@ export const copyLinkButtonStyle = style({
   flex: 1,
   padding: '4px 12px',
   paddingRight: '6px',
+  borderRadius: '4px',
   borderRight: 'none',
   borderTopRightRadius: '0',
   borderBottomRightRadius: '0',
@@ -35,6 +35,7 @@ export const copyLinkButtonStyle = style({
 export const copyLinkLabelContainerStyle = style({
   width: '100%',
   borderRight: 'none',
+  borderRadius: '4px',
   borderTopRightRadius: '0',
   borderBottomRightRadius: '0',
   position: 'relative',
@@ -70,6 +71,7 @@ export const copyLinkShortcutStyle = style({
 });
 export const copyLinkTriggerStyle = style({
   padding: '4px 12px 4px 8px',
+  borderRadius: '4px',
   borderLeft: 'none',
   borderTopLeftRadius: '0',
   borderBottomLeftRadius: '0',

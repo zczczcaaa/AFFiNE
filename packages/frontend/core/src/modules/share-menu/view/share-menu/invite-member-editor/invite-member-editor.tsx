@@ -152,19 +152,23 @@ export const InviteMemberEditor = ({
 
   const switchToMemberManagementTab = useCallback(() => {
     workspaceDialogService.open('setting', {
-      activeTab: 'workspace:preference',
+      activeTab: 'workspace:members',
     });
   }, [workspaceDialogService]);
 
-  const handleClickMember = useCallback((member: Member) => {
-    setSelectedMembers(prev => {
-      if (prev.some(m => m.id === member.id)) {
-        // if the member is already in the list, just return
-        return prev;
-      }
-      return [...prev, member];
-    });
-  }, []);
+  const handleClickMember = useCallback(
+    (member: Member) => {
+      setSelectedMembers(prev => {
+        if (prev.some(m => m.id === member.id)) {
+          // if the member is already in the list, just return
+          return prev;
+        }
+        return [...prev, member];
+      });
+      focusInput();
+    },
+    [focusInput]
+  );
 
   const handleRoleChange = useCallback((role: DocRole) => {
     setInviteDocRoleType(role);
@@ -221,16 +225,20 @@ export const InviteMemberEditor = ({
             />
           )}
         </div>
-        <div className={styles.sentEmail}>
-          <Checkbox
-            className={styles.checkbox}
-            checked={false}
-            disabled // TODO(@JimmFly): implement this
-          />
-          {t['com.affine.share-menu.invite-editor.sent-email']()}
-          {` (coming soon)`}
+        {selectedMembers.length ? (
+          <div className={styles.sentEmail}>
+            <Checkbox
+              className={styles.checkbox}
+              checked={false}
+              disabled // TODO(@JimmFly): implement this
+            />
+            {t['com.affine.share-menu.invite-editor.sent-email']()}
+            {` (coming soon)`}
+          </div>
+        ) : null}
+        <div className={styles.resultContainer}>
+          <Result onClickMember={handleClickMember} />
         </div>
-        <Result onClickMember={handleClickMember} />
       </div>
       <div className={styles.footerStyle}>
         <span
@@ -263,6 +271,7 @@ const Result = ({
   onClickMember: (member: Member) => void;
 }) => {
   const memberSearchService = useService(MemberSearchService);
+  const searchText = useLiveData(memberSearchService.searchText$);
   const result = useLiveData(memberSearchService.result$);
   const isLoading = useLiveData(memberSearchService.isLoading$);
 
@@ -274,14 +283,7 @@ const Result = ({
 
   const itemContentRenderer = useCallback(
     (_index: number, data: Member) => {
-      const handleSelect = () => {
-        onClickMember(data);
-      };
-      return (
-        <div onClick={handleSelect}>
-          <MemberItem member={data} />
-        </div>
-      );
+      return <MemberItem member={data} onSelect={onClickMember} />;
     },
     [onClickMember]
   );
@@ -291,6 +293,10 @@ const Result = ({
   const loadMore = useCallback(() => {
     memberSearchService.loadMore();
   }, [memberSearchService]);
+
+  if (!searchText) {
+    return null;
+  }
 
   if (!activeMembers || activeMembers.length === 0) {
     if (isLoading) {
@@ -303,7 +309,13 @@ const Result = ({
     );
   }
 
-  return (
+  return activeMembers.length < 8 ? (
+    <div>
+      {activeMembers.map(member => (
+        <MemberItem key={member.id} member={member} onSelect={onClickMember} />
+      ))}
+    </div>
+  ) : (
     <Virtuoso
       components={{
         Scroller,
@@ -370,7 +382,7 @@ const RoleSelector = ({
             >
               <div className={styles.planTagContainer}>
                 {t['com.affine.share-menu.option.permission.can-edit']()}
-                <PlanTag />
+                {hittingPaywall ? <PlanTag /> : null}
               </div>
             </MenuItem>
             <MenuItem
@@ -379,7 +391,7 @@ const RoleSelector = ({
             >
               <div className={styles.planTagContainer}>
                 {t['com.affine.share-menu.option.permission.can-read']()}
-                <PlanTag />
+                {hittingPaywall ? <PlanTag /> : null}
               </div>
             </MenuItem>
           </>
