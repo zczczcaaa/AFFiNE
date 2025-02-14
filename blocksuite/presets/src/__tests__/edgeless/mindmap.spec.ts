@@ -218,7 +218,7 @@ describe('mindmap', () => {
       const rootButton = mindmapView().getCollapseButton(mindmap().tree)!;
 
       moveAndClick(gfx.viewport.toViewBound(rootButton.elementBound));
-      await wait();
+      await wait(500);
 
       expect(rootButton.hidden).toBe(false);
       expect(rootButton.opacity).toBe(1);
@@ -247,7 +247,7 @@ describe('mindmap', () => {
       const childButton = mindmapView().getCollapseButton(node)!;
 
       moveAndClick(gfx.viewport.toViewBound(childButton.elementBound));
-      await wait();
+      await wait(500);
 
       expect(childButton.hidden).toBe(false);
       expect(childButton.opacity).toBe(1);
@@ -273,6 +273,7 @@ describe('mindmap', () => {
       )!;
       // collapse child node
       moveAndClick(gfx.viewport.toViewBound(childButton.elementBound));
+      await wait(500);
 
       doc.captureSync();
       await wait();
@@ -280,7 +281,7 @@ describe('mindmap', () => {
       const rootButton = mindmapView().getCollapseButton(mindmap().tree)!;
       // collapse root node
       moveAndClick(gfx.viewport.toViewBound(rootButton.elementBound));
-      await wait();
+      await wait(500);
 
       // child button should be hidden
       expect(childButton.hidden).toBe(true);
