@@ -171,4 +171,56 @@ test('should preview link', async t => {
 
     fetchSpy.restore();
   }
+
+  {
+    const encoded = [
+      {
+        content: 'xOO6w6OsysC956Gj',
+        charset: 'gb2312',
+      },
+      {
+        content: 'grGC8YLJgr+CzYFBkKKKRYFC',
+        charset: 'shift-jis',
+      },
+      {
+        content: 'p0GmbqFBpUCsyaFD',
+        charset: 'big5',
+      },
+      {
+        content: 'vsiz58fPvLy/5CwgvLyw6C4=',
+        charset: 'euc-kr',
+      },
+    ];
+
+    for (const { content, charset } of encoded) {
+      const before = Buffer.from(`<html>
+          <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=${charset}" />
+            <meta property="og:title" content="`);
+      const encoded = Buffer.from(content, 'base64');
+      const after = Buffer.from(`" />
+          </head>
+        </html>
+      `);
+      const fakeHTML = new Response(Buffer.concat([before, encoded, after]));
+
+      Object.defineProperty(fakeHTML, 'url', {
+        value: `http://example.com/${charset}`,
+      });
+
+      const fetchSpy = Sinon.stub(global, 'fetch').resolves(fakeHTML);
+
+      await assertAndSnapshot(
+        '/api/worker/link-preview',
+        'should decode HTML content with charset',
+        {
+          status: 200,
+          method: 'POST',
+          body: { url: `http://example.com/${charset}` },
+        }
+      );
+
+      fetchSpy.restore();
+    }
+  }
 });

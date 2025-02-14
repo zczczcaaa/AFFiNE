@@ -24,6 +24,10 @@ import {
   parseJson,
   reduceUrls,
 } from './utils';
+import { decodeWithCharset } from './utils/encoding';
+
+// cache for 30 minutes
+const CACHE_TTL = 1000 * 60 * 30;
 
 @Public()
 @Controller('/api/worker')
@@ -67,6 +71,25 @@ export class WorkerController {
       throw new BadRequest(`Invalid URL`);
     }
 
+    const cachedUrl = `image-proxy:${targetURL.toString()}`;
+    const cachedResponse = await this.cache.get<string>(cachedUrl);
+    if (cachedResponse) {
+      const buffer = Buffer.from(cachedResponse, 'base64');
+      // if cached response is empty, it means the request is rejected by server previously
+      if (buffer.length === 0) {
+        return resp.status(404).header(getCorsHeaders(origin)).send();
+      }
+      return resp
+        .status(200)
+        .header({
+          'Access-Control-Allow-Origin': origin,
+          Vary: 'Origin',
+          'Access-Control-Allow-Methods': 'GET',
+          'Content-Type': 'image/*',
+        })
+        .send(buffer);
+    }
+
     const response = await fetch(
       new Request(targetURL.toString(), {
         method: 'GET',
@@ -75,8 +98,12 @@ export class WorkerController {
     );
     if (response.ok) {
       const contentType = response.headers.get('Content-Type');
-      const contentDisposition = response.headers.get('Content-Disposition');
       if (contentType?.startsWith('image/')) {
+        const buffer = Buffer.from(await response.arrayBuffer());
+        await this.cache.set(cachedUrl, buffer.toString('base64'), {
+          ttl: CACHE_TTL,
+        });
+        const contentDisposition = response.headers.get('Content-Disposition');
         return resp
           .status(200)
           .header({
@@ -86,11 +113,17 @@ export class WorkerController {
             'Content-Type': contentType,
             'Content-Disposition': contentDisposition,
           })
-          .send(Buffer.from(await response.arrayBuffer()));
+          .send(buffer);
       } else {
         throw new BadRequest('Invalid content type');
       }
     } else {
+      if (response.status >= 400 && response.status < 500) {
+        // rejected by server, cache a empty response
+        await this.cache.set(cachedUrl, Buffer.from([]).toString('base64'), {
+          ttl: CACHE_TTL,
+        });
+      }
       this.logger.error('Failed to fetch image', {
         origin,
         url: imageURL,
@@ -130,18 +163,19 @@ export class WorkerController {
 
     this.logger.debug('Received request', { origin, method: request.method });
 
-    const targetBody = parseJson<LinkPreviewRequest>(request.body);
-    const targetURL = fixUrl(targetBody?.url);
+    const requestBody = parseJson<LinkPreviewRequest>(request.body);
+    const targetURL = fixUrl(requestBody?.url);
     // not allow same site preview
     if (!targetURL || isOriginAllowed(targetURL.origin, this.allowedOrigin)) {
-      this.logger.error('Invalid URL', { origin, url: targetBody?.url });
+      this.logger.error('Invalid URL', { origin, url: requestBody?.url });
       throw new BadRequest('Invalid URL');
     }
 
     this.logger.debug('Processing request', { origin, url: targetURL });
 
     try {
-      const cachedResponse = await this.cache.get<string>(targetURL.toString());
+      const cachedUrl = `link-preview:${targetURL.toString()}`;
+      const cachedResponse = await this.cache.get<string>(cachedUrl);
       if (cachedResponse) {
         return resp
           .status(200)
@@ -155,11 +189,22 @@ export class WorkerController {
       const response = await fetch(targetURL, {
         headers: cloneHeader(request.headers),
       });
-      this.logger.error('Fetched URL', {
+      this.logger.debug('Fetched URL', {
         origin,
         url: targetURL,
         status: response.status,
       });
+
+      if (requestBody?.head) {
+        return resp
+          .status(
+            response.status >= 200 && response.status < 400
+              ? 204
+              : response.status
+          )
+          .header(getCorsHeaders(origin))
+          .send();
+      }
 
       const res: LinkPreviewResponse = {
         url: response.url,
@@ -170,6 +215,8 @@ export class WorkerController {
       const baseUrl = new URL(request.url, this.url.baseUrl).toString();
 
       if (response.body) {
+        const resp = await decodeWithCharset(response, res);
+
         const rewriter = new HTMLRewriter()
           .on('meta', {
             element(element) {
@@ -230,11 +277,11 @@ export class WorkerController {
             },
           });
 
-        await rewriter.transform(response).text();
+        await rewriter.transform(resp).text();
 
         res.images = await reduceUrls(baseUrl, res.images);
 
-        this.logger.error('Processed response with HTMLRewriter', {
+        this.logger.debug('Processed response with HTMLRewriter', {
           origin,
           url: response.url,
         });
@@ -259,7 +306,7 @@ export class WorkerController {
         responseSize: json.length,
       });
 
-      await this.cache.set(targetURL.toString(), res);
+      await this.cache.set(cachedUrl, res, { ttl: CACHE_TTL });
       return resp
         .status(200)
         .header({

@@ -1,5 +1,6 @@
 export type LinkPreviewRequest = {
   url: string;
+  head?: boolean;
 };
 
 export type LinkPreviewResponse = {
