@@ -136,15 +136,23 @@ export class CopilotClient {
     }
   }
 
-  async getSessions(workspaceId: string) {
+  async getSessionIds(
+    workspaceId: string,
+    docId?: string,
+    options?: RequestOptions<
+      typeof getCopilotSessionsQuery
+    >['variables']['options']
+  ) {
     try {
       const res = await this.gql({
         query: getCopilotSessionsQuery,
         variables: {
           workspaceId,
+          docId,
+          options,
         },
       });
-      return res.currentUser?.copilot;
+      return res.currentUser?.copilot?.sessionIds;
     } catch (err) {
       throw resolveError(err);
     }

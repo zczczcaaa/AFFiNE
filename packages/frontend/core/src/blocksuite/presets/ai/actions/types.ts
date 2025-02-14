@@ -301,6 +301,11 @@ declare global {
         docId: string,
         promptName?: string
       ) => Promise<string>;
+      getSessionIds: (
+        workspaceId: string,
+        docId?: string,
+        options?: { action?: boolean }
+      ) => Promise<string[] | undefined>;
       updateSession: (sessionId: string, promptName: string) => Promise<string>;
     }
 

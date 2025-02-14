@@ -76,15 +76,14 @@ export enum ContextFileStatus {
 
 export interface Copilot {
   __typename?: 'Copilot';
-  /** Get the session list of actions in the workspace */
-  actions: Array<Scalars['String']['output']>;
-  /** Get the session list of chats in the workspace */
-  chats: Array<Scalars['String']['output']>;
   /** Get the context list of a session */
   contexts: Array<CopilotContext>;
+  docId: Maybe<Scalars['ID']['output']>;
   histories: Array<CopilotHistories>;
   /** Get the quota of the user in the workspace */
   quota: CopilotQuota;
+  /** Get the session list in the workspace */
+  sessionIds: Array<Scalars['String']['output']>;
   workspaceId: Maybe<Scalars['ID']['output']>;
 }
 
@@ -96,6 +95,11 @@ export interface CopilotContextsArgs {
 export interface CopilotHistoriesArgs {
   docId?: InputMaybe<Scalars['String']['input']>;
   options?: InputMaybe<QueryChatHistoriesInput>;
+}
+
+export interface CopilotSessionIdsArgs {
+  docId?: InputMaybe<Scalars['String']['input']>;
+  options?: InputMaybe<QueryChatSessionsInput>;
 }
 
 export interface CopilotContext {
@@ -1301,6 +1305,10 @@ export interface QueryChatHistoriesInput {
   withPrompt?: InputMaybe<Scalars['Boolean']['input']>;
 }
 
+export interface QueryChatSessionsInput {
+  action?: InputMaybe<Scalars['Boolean']['input']>;
+}
+
 export interface QueryTooLongDataType {
   __typename?: 'QueryTooLongDataType';
   max: Scalars['Int']['output'];
@@ -2196,17 +2204,15 @@ export type UpdateCopilotSessionMutation = {
 
 export type GetCopilotSessionsQueryVariables = Exact<{
   workspaceId: Scalars['String']['input'];
+  docId?: InputMaybe<Scalars['String']['input']>;
+  options?: InputMaybe<QueryChatSessionsInput>;
 }>;
 
 export type GetCopilotSessionsQuery = {
   __typename?: 'Query';
   currentUser: {
     __typename?: 'UserType';
-    copilot: {
-      __typename?: 'Copilot';
-      actions: Array<string>;
-      chats: Array<string>;
-    };
+    copilot: { __typename?: 'Copilot'; sessionIds: Array<string> };
   } | null;
 };
 

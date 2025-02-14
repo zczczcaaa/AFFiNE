@@ -1,5 +1,4 @@
 import { AIProvider } from '@affine/core/blocksuite/presets/ai';
-import type { ForkChatSessionInput } from '@affine/graphql';
 import { assertExists } from '@blocksuite/affine/global/utils';
 import { partition } from 'lodash-es';
 
@@ -48,34 +47,11 @@ export async function createChatSession({
     promptName,
   });
   // always update the prompt name
-  await updateChatSession({
+  await client.updateSession({
     sessionId,
-    client,
     promptName,
   });
   return sessionId;
-}
-
-export function updateChatSession({
-  client,
-  sessionId,
-  promptName,
-}: {
-  client: CopilotClient;
-  sessionId: string;
-  promptName: string;
-}) {
-  return client.updateSession({
-    sessionId,
-    promptName,
-  });
-}
-
-export function forkCopilotSession(
-  client: CopilotClient,
-  forkChatSessionInput: ForkChatSessionInput
-) {
-  return client.forkSession(forkChatSessionInput);
 }
 
 async function resizeImage(blob: Blob | File): Promise<Blob | null> {
@@ -359,18 +335,4 @@ export function toImage({
       }
     },
   };
-}
-
-export function cleanupSessions({
-  workspaceId,
-  docId,
-  sessionIds,
-  client,
-}: {
-  workspaceId: string;
-  docId: string;
-  sessionIds: string[];
-  client: CopilotClient;
-}) {
-  return client.cleanupSessions({ workspaceId, docId, sessionIds });
 }

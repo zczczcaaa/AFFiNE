@@ -391,17 +391,18 @@ export class ChatSessionService {
       .reduce((prev, cost) => prev + cost, 0);
   }
 
-  async listSessions(
+  async listSessionIds(
     userId: string,
     workspaceId: string,
-    options?: { docId?: string; action?: boolean }
+    docId?: string,
+    options?: { action?: boolean }
   ): Promise<string[]> {
     return await this.db.aiSession
       .findMany({
         where: {
           userId,
           workspaceId,
-          docId: workspaceId === options?.docId ? undefined : options?.docId,
+          docId,
           prompt: {
             action: options?.action ? { not: null } : null,
           },

@@ -421,11 +421,10 @@ export const getCopilotSessionsQuery = {
   definitionName: 'currentUser',
   containsFile: false,
   query: `
-query getCopilotSessions($workspaceId: String!) {
+query getCopilotSessions($workspaceId: String!, $docId: String, $options: QueryChatSessionsInput) {
   currentUser {
     copilot(workspaceId: $workspaceId) {
-      actions
-      chats
+      sessionIds(docId: $docId, options: $options)
     }
   }
 }`,

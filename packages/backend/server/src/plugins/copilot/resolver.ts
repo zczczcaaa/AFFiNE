@@ -130,6 +130,12 @@ enum ChatHistoryOrder {
 registerEnumType(ChatHistoryOrder, { name: 'ChatHistoryOrder' });
 
 @InputType()
+class QueryChatSessionsInput {
+  @Field(() => Boolean, { nullable: true })
+  action: boolean | undefined;
+}
+
+@InputType()
 class QueryChatHistoriesInput implements Partial<ListHistoriesOptions> {
   @Field(() => Boolean, { nullable: true })
   action: boolean | undefined;
@@ -274,6 +280,9 @@ class CopilotPromptType {
 export class CopilotType {
   @Field(() => ID, { nullable: true })
   workspaceId!: string | undefined;
+
+  @Field(() => ID, { nullable: true })
+  docId!: string | undefined;
 }
 
 @Throttle()
@@ -296,31 +305,23 @@ export class CopilotResolver {
   }
 
   @ResolveField(() => [String], {
-    description: 'Get the session list of chats in the workspace',
+    description: 'Get the session list in the workspace',
     complexity: 2,
   })
-  async chats(
+  async sessionIds(
     @Parent() copilot: CopilotType,
-    @CurrentUser() user: CurrentUser
+    @CurrentUser() user: CurrentUser,
+    @Args('docId', { nullable: true }) docId?: string,
+    @Args('options', { nullable: true }) options?: QueryChatSessionsInput
   ) {
     if (!copilot.workspaceId) return [];
     await this.permissions.checkCloudWorkspace(copilot.workspaceId, user.id);
-    return await this.chatSession.listSessions(user.id, copilot.workspaceId);
-  }
-
-  @ResolveField(() => [String], {
-    description: 'Get the session list of actions in the workspace',
-    complexity: 2,
-  })
-  async actions(
-    @Parent() copilot: CopilotType,
-    @CurrentUser() user: CurrentUser
-  ) {
-    if (!copilot.workspaceId) return [];
-    await this.permissions.checkCloudWorkspace(copilot.workspaceId, user.id);
-    return await this.chatSession.listSessions(user.id, copilot.workspaceId, {
-      action: true,
-    });
+    return await this.chatSession.listSessionIds(
+      user.id,
+      copilot.workspaceId,
+      docId,
+      options
+    );
   }
 
   @ResolveField(() => [CopilotHistoriesType], {})

@@ -37,18 +37,16 @@ enum ContextFileStatus {
 }
 
 type Copilot {
-  """Get the session list of actions in the workspace"""
-  actions: [String!]!
-
-  """Get the session list of chats in the workspace"""
-  chats: [String!]!
-
   """Get the context list of a session"""
   contexts(contextId: String, sessionId: String!): [CopilotContext!]!
+  docId: ID
   histories(docId: String, options: QueryChatHistoriesInput): [CopilotHistories!]!
 
   """Get the quota of the user in the workspace"""
   quota: CopilotQuota!
+
+  """Get the session list in the workspace"""
+  sessionIds(docId: String, options: QueryChatSessionsInput): [String!]!
   workspaceId: ID
 }
 
@@ -882,6 +880,10 @@ input QueryChatHistoriesInput {
   sessionOrder: ChatHistoryOrder
   skip: Int
   withPrompt: Boolean
+}
+
+input QueryChatSessionsInput {
+  action: Boolean
 }
 
 type QueryTooLongDataType {
