@@ -27,6 +27,7 @@ import {
   queryHistoryMessages,
 } from '../_common/chat-actions-handle';
 import { SmallHintIcon } from '../_common/icons';
+import type { AINetworkSearchConfig } from '../chat-panel/chat-config';
 import { AIChatErrorRenderer } from '../messages/error';
 import { AIProvider } from '../provider';
 import { PeekViewStyles } from './styles';
@@ -59,6 +60,8 @@ export class AIChatBlockPeekView extends LitElement {
   private get parentRootWorkspaceId() {
     return this.parentModel.rootWorkspaceId;
   }
+
+  private _textRendererOptions: TextRendererOptions = {};
 
   private readonly _deserializeHistoryChatMessages = (
     historyMessagesString: string
@@ -360,74 +363,76 @@ export class AIChatBlockPeekView extends LitElement {
     const { host } = this;
     const actions = ChatBlockPeekViewActions;
 
-    return html`${repeat(currentMessages, (message, idx) => {
-      const { status, error } = this.chatContext;
-      const isAssistantMessage = message.role === 'assistant';
-      const isLastReply =
-        idx === currentMessages.length - 1 && isAssistantMessage;
-      const messageState =
-        isLastReply && (status === 'transmitting' || status === 'loading')
-          ? 'generating'
-          : 'finished';
-      const shouldRenderError = isLastReply && status === 'error' && !!error;
-      const isNotReady = status === 'transmitting' || status === 'loading';
-      const shouldRenderCopyMore =
-        isAssistantMessage && !(isLastReply && isNotReady);
-      const shouldRenderActions =
-        isLastReply && !!message.content && !isNotReady;
+    return html`${repeat(
+      currentMessages,
+      message => message.id || message.createdAt,
+      (message, idx) => {
+        const { status, error } = this.chatContext;
+        const isAssistantMessage = message.role === 'assistant';
+        const isLastReply =
+          idx === currentMessages.length - 1 && isAssistantMessage;
+        const messageState =
+          isLastReply && (status === 'transmitting' || status === 'loading')
+            ? 'generating'
+            : 'finished';
+        const shouldRenderError = isLastReply && status === 'error' && !!error;
+        const isNotReady = status === 'transmitting' || status === 'loading';
+        const shouldRenderCopyMore =
+          isAssistantMessage && !(isLastReply && isNotReady);
+        const shouldRenderActions =
+          isLastReply && !!message.content && !isNotReady;
 
-      const messageClasses = classMap({
-        'assistant-message-container': isAssistantMessage,
-      });
+        const messageClasses = classMap({
+          'assistant-message-container': isAssistantMessage,
+        });
 
-      const { attachments, role, content } = message;
-      const userInfo = {
-        userId: message.userId,
-        userName: message.userName,
-        avatarUrl: message.avatarUrl,
-      };
-      const textRendererOptions: TextRendererOptions = {
-        extensions: this.previewSpecBuilder.value,
-      };
+        const { attachments, role, content, userId, userName, avatarUrl } =
+          message;
 
-      return html`<div class=${messageClasses}>
-        <ai-chat-message
-          .host=${host}
-          .state=${messageState}
-          .content=${content}
-          .attachments=${attachments}
-          .messageRole=${role}
-          .userInfo=${userInfo}
-          .textRendererOptions=${textRendererOptions}
-        ></ai-chat-message>
-        ${shouldRenderError ? AIChatErrorRenderer(host, error) : nothing}
-        ${shouldRenderCopyMore
-          ? html` <chat-copy-more
-              .host=${host}
-              .actions=${actions}
-              .content=${message.content}
-              .isLast=${isLastReply}
-              .chatSessionId=${this.chatContext.currentSessionId ?? undefined}
-              .messageId=${message.id ?? undefined}
-              .retry=${() => this.retry()}
-            ></chat-copy-more>`
-          : nothing}
-        ${shouldRenderActions
-          ? html`<chat-action-list
-              .host=${host}
-              .actions=${actions}
-              .content=${message.content}
-              .chatSessionId=${this.chatContext.currentSessionId ?? undefined}
-              .messageId=${message.id ?? undefined}
-              .layoutDirection=${'horizontal'}
-            ></chat-action-list>`
-          : nothing}
-      </div>`;
-    })}`;
+        return html`<div class=${messageClasses}>
+          <ai-chat-message
+            .host=${host}
+            .state=${messageState}
+            .content=${content}
+            .attachments=${attachments}
+            .messageRole=${role}
+            .userId=${userId}
+            .userName=${userName}
+            .avatarUrl=${avatarUrl}
+            .textRendererOptions=${this._textRendererOptions}
+          ></ai-chat-message>
+          ${shouldRenderError ? AIChatErrorRenderer(host, error) : nothing}
+          ${shouldRenderCopyMore
+            ? html` <chat-copy-more
+                .host=${host}
+                .actions=${actions}
+                .content=${message.content}
+                .isLast=${isLastReply}
+                .chatSessionId=${this.chatContext.currentSessionId ?? undefined}
+                .messageId=${message.id ?? undefined}
+                .retry=${() => this.retry()}
+              ></chat-copy-more>`
+            : nothing}
+          ${shouldRenderActions
+            ? html`<chat-action-list
+                .host=${host}
+                .actions=${actions}
+                .content=${message.content}
+                .chatSessionId=${this.chatContext.currentSessionId ?? undefined}
+                .messageId=${message.id ?? undefined}
+                .layoutDirection=${'horizontal'}
+              ></chat-action-list>`
+            : nothing}
+        </div>`;
+      }
+    )}`;
   };
 
   override connectedCallback() {
     super.connectedCallback();
+    this._textRendererOptions = {
+      extensions: this.previewSpecBuilder.value,
+    };
     this._historyMessages = this._deserializeHistoryChatMessages(
       this.historyMessagesString
     );
@@ -476,19 +481,18 @@ export class AIChatBlockPeekView extends LitElement {
       cleanCurrentChatHistories,
       chatContext,
       updateContext,
+      networkSearchConfig,
+      _textRendererOptions,
     } = this;
 
     const { messages: currentChatMessages } = chatContext;
-    const textRendererOptions: TextRendererOptions = {
-      extensions: this.previewSpecBuilder.value,
-    };
 
     return html`<div class="ai-chat-block-peek-view-container">
       <div class="ai-chat-messages-container">
         <ai-chat-messages
           .host=${host}
           .messages=${_historyMessages}
-          .textRendererOptions=${textRendererOptions}
+          .textRendererOptions=${_textRendererOptions}
         ></ai-chat-messages>
         <date-time .date=${latestMessageCreatedAt}></date-time>
         <div class="new-chat-messages-container">
@@ -504,6 +508,7 @@ export class AIChatBlockPeekView extends LitElement {
         .cleanupHistories=${cleanCurrentChatHistories}
         .chatContext=${chatContext}
         .updateContext=${updateContext}
+        .networkSearchConfig=${networkSearchConfig}
       ></chat-block-input>
       <div class="peek-view-footer">
         ${SmallHintIcon}
@@ -523,6 +528,9 @@ export class AIChatBlockPeekView extends LitElement {
 
   @property({ attribute: false })
   accessor previewSpecBuilder!: SpecBuilder;
+
+  @property({ attribute: false })
+  accessor networkSearchConfig!: AINetworkSearchConfig;
 
   @state()
   accessor _historyMessages: ChatMessage[] = [];
@@ -548,11 +556,13 @@ declare global {
 export const AIChatBlockPeekViewTemplate = (
   parentModel: AIChatBlockModel,
   host: EditorHost,
-  previewSpecBuilder: SpecBuilder
+  previewSpecBuilder: SpecBuilder,
+  networkSearchConfig: AINetworkSearchConfig
 ) => {
   return html`<ai-chat-block-peek-view
     .parentModel=${parentModel}
     .host=${host}
     .previewSpecBuilder=${previewSpecBuilder}
+    .networkSearchConfig=${networkSearchConfig}
   ></ai-chat-block-peek-view>`;
 };

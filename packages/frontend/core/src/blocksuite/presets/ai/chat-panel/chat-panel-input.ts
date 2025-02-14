@@ -27,6 +27,7 @@ import { readBlobAsURL } from '../utils/image';
 import type { AINetworkSearchConfig } from './chat-config';
 import type { ChatContextValue, ChatMessage, DocContext } from './chat-context';
 import { isDocChip } from './components/utils';
+import { PROMPT_NAME_AFFINE_AI, PROMPT_NAME_NETWORK_SEARCH } from './const';
 
 const MaximumImageCount = 32;
 
@@ -289,11 +290,11 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
 
   private get _promptName() {
     if (this._isNetworkDisabled) {
-      return 'Chat With AFFiNE AI';
+      return PROMPT_NAME_AFFINE_AI;
     }
     return this._isNetworkActive
-      ? 'Search With AFFiNE AI'
-      : 'Chat With AFFiNE AI';
+      ? PROMPT_NAME_NETWORK_SEARCH
+      : PROMPT_NAME_AFFINE_AI;
   }
 
   private async _updatePromptName() {

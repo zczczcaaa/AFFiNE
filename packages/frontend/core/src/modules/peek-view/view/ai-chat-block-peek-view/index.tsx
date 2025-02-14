@@ -1,5 +1,6 @@
 import { toReactNode } from '@affine/component';
 import { AIChatBlockPeekViewTemplate } from '@affine/core/blocksuite/presets/ai';
+import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { useFramework } from '@toeverything/infra';
 import { useMemo } from 'react';
@@ -17,13 +18,20 @@ export const AIChatBlockPeekView = ({
   host,
 }: AIChatBlockPeekViewProps) => {
   const framework = useFramework();
+  const searchService = framework.get(AINetworkSearchService);
   return useMemo(() => {
     const previewSpecBuilder = createPageModePreviewSpecs(framework);
+    const networkSearchConfig = {
+      visible: searchService.visible,
+      enabled: searchService.enabled,
+      setEnabled: searchService.setEnabled,
+    };
     const template = AIChatBlockPeekViewTemplate(
       model,
       host,
-      previewSpecBuilder
+      previewSpecBuilder,
+      networkSearchConfig
     );
     return toReactNode(template);
-  }, [framework, model, host]);
+  }, [framework, model, host, searchService]);
 };

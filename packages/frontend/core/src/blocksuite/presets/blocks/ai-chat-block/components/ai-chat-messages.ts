@@ -5,11 +5,7 @@ import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type {
-  ChatMessage,
-  MessageRole,
-  MessageUserInfo,
-} from '../../../../blocks';
+import type { ChatMessage, MessageRole } from '../../../../blocks';
 import type { TextRendererOptions } from '../../../_common/components/text-renderer';
 import { UserInfoTemplate } from './user-info';
 
@@ -43,7 +39,9 @@ export class AIChatMessage extends LitElement {
       content,
       attachments,
       messageRole,
-      userInfo,
+      userId,
+      userName,
+      avatarUrl,
     } = this;
     const withAttachments = !!attachments && attachments.length > 0;
 
@@ -53,7 +51,7 @@ export class AIChatMessage extends LitElement {
 
     return html`
       <div class="ai-chat-message">
-        ${UserInfoTemplate(userInfo, messageRole)}
+        ${UserInfoTemplate({ userId, userName, avatarUrl }, messageRole)}
         <div class="ai-chat-content">
           <chat-images .attachments=${attachments}></chat-images>
           <div class=${messageClasses}>
@@ -88,7 +86,13 @@ export class AIChatMessage extends LitElement {
   accessor textRendererOptions: TextRendererOptions = {};
 
   @property({ attribute: false })
-  accessor userInfo: MessageUserInfo = {};
+  accessor userId: string | undefined = undefined;
+
+  @property({ attribute: false })
+  accessor userName: string | undefined = undefined;
+
+  @property({ attribute: false })
+  accessor avatarUrl: string | undefined = undefined;
 }
 
 export class AIChatMessages extends LitElement {
@@ -112,14 +116,10 @@ export class AIChatMessages extends LitElement {
     return html`<div class="ai-chat-messages">
       ${repeat(
         this.messages,
-        message => message.id,
+        message => message.id || message.createdAt,
         message => {
-          const { attachments, role, content } = message;
-          const userInfo = {
-            userId: message.userId,
-            userName: message.userName,
-            avatarUrl: message.avatarUrl,
-          };
+          const { attachments, role, content, userId, userName, avatarUrl } =
+            message;
           return html`
             <ai-chat-message
               .host=${this.host}
@@ -127,7 +127,9 @@ export class AIChatMessages extends LitElement {
               .content=${content}
               .attachments=${attachments}
               .messageRole=${role}
-              .userInfo=${userInfo}
+              .userId=${userId}
+              .userName=${userName}
+              .avatarUrl=${avatarUrl}
             ></ai-chat-message>
           `;
         }
