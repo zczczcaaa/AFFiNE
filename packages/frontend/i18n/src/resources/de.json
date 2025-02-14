@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "Sobald aktiviert, kann ein Emoji als Seitensymbol verwendet werden. Wenn das erste Zeichen des Seitennamens ein Emoji ist, wird es extrahiert und als deren Symbol verwendet.",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "Editor-Einstellungen",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "Aktiviert Editor-Einstellungen.",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "Offline-Modus",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "Internetverbindung trennen. Auch mit AFFiNE Cloud wird durch Aktivieren dieses Schalters die Internetverbindung getrennt und alles lokal gehalten, aber die Synchronisierung wird deaktiviert.",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "Theme-Editor",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "Aktiviert den Theme-Editor.",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "Erstellen eines lokalen Workspaces zulassen",

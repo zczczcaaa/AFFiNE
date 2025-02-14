@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "启用后，您可以使用表情符号作为文档图标。当文档名称的第一个字符是表情符号时，它将被提取并用作其图标。",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "编辑器设置",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "启用编辑器设置。",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "离线模式",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "停止连接互联网。即使使用 AFFiNE Cloud，启用此开关也将断开互联网连接并保持所有内容本地化，但同步功能将被禁用。",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "主题编辑器",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "启用主题编辑器功能。",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "允许创建本地工作区",

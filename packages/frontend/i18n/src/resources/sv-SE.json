@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "När det är aktiverat kan du använda en emoji som dokumentikon. När det första tecknet i dokumentnamnet är en emoji kommer det att extraheras och användas som ikon.",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "Editor Inställningar",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "Aktiverar redaktörsinställningar.",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "Offline-läge",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "Stoppa anslutning till Internet. Även med AFFiNE Cloud kommer denna växelspak att stoppa internetanslutningen och hålla allting lokalt, men synkronisering kommer att inaktiveras.",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "Temaeditor",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "Aktiverar temaeditorn.",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "Tillåt skapande av lokal arbetsyta",

@@ -147,15 +147,6 @@ export const AFFINE_FLAGS = {
     configurable: false,
     defaultState: true,
   },
-  enable_offline_mode: {
-    category: 'affine',
-    displayName:
-      'com.affine.settings.workspace.experimental-features.enable-offline-mode.name',
-    description:
-      'com.affine.settings.workspace.experimental-features.enable-offline-mode.description',
-    configurable: isDesktopEnvironment,
-    defaultState: false,
-  },
   enable_theme_editor: {
     category: 'affine',
     displayName:

@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "Po włączeniu możesz użyć emotikonu jako ikony dokumentu. Kiedy pierwszym znakiem nazwy dokumentu jest emotikon, zostanie on wyodrębniony i użyty jako jego ikona.",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "Ustawienia edytora",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "Umożliwia ustawienia edytora.",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "Tryb offline",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "Przestań łączyć się z Internetem. Nawet z AFFiNE Cloud, włączenie tego przełącznika wyłącza połączenie z internetem i zachowuje wszystko lokalnie, ale synchronizacja zostanie wyłączona.",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "Edytor motywów",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "Umożliwia edytor motywów.",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "Zezwól na utworzenie lokalnego miejsca pracy",

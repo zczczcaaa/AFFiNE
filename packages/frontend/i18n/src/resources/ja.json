@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "一度有効にすると、絵文字をドキュメントのアイコンとして使用できるようになります。ドキュメント名の最初の文字が絵文字の場合、その文字が抽出され、アイコンとして使用されます。",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "エディター設定",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "エディター設定を有効にします。",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "オフラインモード",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "インターネットへの接続を停止します。AFFiNE Cloudを使用していても、このトグルを有効にすると、インターネット接続が停止し、すべてがローカルに保持されますが、同期は無効になります。",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "テーマエディター",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "テーマエディタを有効にします。",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "ローカルワークスペースを作成します",

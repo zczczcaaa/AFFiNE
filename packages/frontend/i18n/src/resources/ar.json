@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "بمجرد التمكين، يمكنك استخدام إيموجي كأيقونة للوثيقة. عندما يكون الحرف الأول من اسم الوثيقة إيموجي، سيتم استخراجه واستخدامه كأيقونته.",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "إعدادات المحرر",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "تمكين إعدادات المحرر.",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "وضع عدم الاتصال",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "إيقاف الاتصال بالإنترنت. حتى مع AFFiNE Cloud، فإن تفعيل هذا الخيار يوقف اتصال الإنترنت ويحتفظ بكل شيء محليًا، لكن المزامنة ستتوقف.",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "محرر الثيمات",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "تمكين محرر الثيمات.",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "السماح بإنشاء مساحة عمل محلية",

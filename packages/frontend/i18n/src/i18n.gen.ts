@@ -5358,14 +5358,6 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.experimental-features.enable-editor-settings.description"](): string;
     /**
-      * `Offline Mode`
-      */
-    ["com.affine.settings.workspace.experimental-features.enable-offline-mode.name"](): string;
-    /**
-      * `Stop Connecting to the Internet. Even with AFFiNE Cloud, enabling this toggle stops internet connection and keeps everything local, but syncing will be disabled.`
-      */
-    ["com.affine.settings.workspace.experimental-features.enable-offline-mode.description"](): string;
-    /**
       * `Theme Editor`
       */
     ["com.affine.settings.workspace.experimental-features.enable-theme-editor.name"](): string;
@@ -7010,6 +7002,10 @@ export function useAFFiNEI18N(): {
       */
     ["error.NOT_FOUND"](): string;
     /**
+      * `Bad request.`
+      */
+    ["error.BAD_REQUEST"](): string;
+    /**
       * `Query is too long, max length is {{max}}.`
       */
     ["error.QUERY_TOO_LONG"](options: {
@@ -7375,6 +7371,33 @@ export function useAFFiNEI18N(): {
     ["error.COPILOT_PROVIDER_SIDE_ERROR"](options: Readonly<{
         provider: string;
         kind: string;
+        message: string;
+    }>): string;
+    /**
+      * `Invalid copilot context {{contextId}}.`
+      */
+    ["error.COPILOT_INVALID_CONTEXT"](options: {
+        readonly contextId: string;
+    }): string;
+    /**
+      * `File {{fileName}} is not supported to use as context: {{message}}`
+      */
+    ["error.COPILOT_CONTEXT_FILE_NOT_SUPPORTED"](options: Readonly<{
+        fileName: string;
+        message: string;
+    }>): string;
+    /**
+      * `Failed to modify context {{contextId}}: {{message}}`
+      */
+    ["error.COPILOT_FAILED_TO_MODIFY_CONTEXT"](options: Readonly<{
+        contextId: string;
+        message: string;
+    }>): string;
+    /**
+      * `Failed to match context {{contextId}} with "%7B%7Bcontent%7D%7D": {{message}}`
+      */
+    ["error.COPILOT_FAILED_TO_MATCH_CONTEXT"](options: Readonly<{
+        contextId: string;
         message: string;
     }>): string;
     /**

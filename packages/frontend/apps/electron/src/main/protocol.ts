@@ -4,7 +4,6 @@ import { net, protocol, session } from 'electron';
 import cookieParser from 'set-cookie-parser';
 
 import { logger } from './logger';
-import { isOfflineModeEnabled } from './utils';
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -141,36 +140,6 @@ export function registerProtocol() {
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
     const url = new URL(details.url);
     const pathname = url.pathname;
-    const protocol = url.protocol;
-    const origin = url.origin;
-
-    // offline whitelist
-    // 1. do not block non-api request for http://localhost || file:// (local dev assets)
-    // 2. do not block devtools
-    // 3. block all other requests
-    const blocked = (() => {
-      if (!isOfflineModeEnabled()) {
-        return false;
-      }
-      if (
-        (protocol === 'file:' || origin.startsWith('http://localhost')) &&
-        !isNetworkResource(pathname)
-      ) {
-        return false;
-      }
-      if ('devtools:' === protocol) {
-        return false;
-      }
-      return true;
-    })();
-
-    if (blocked) {
-      logger.debug('blocked request', details.url);
-      callback({
-        cancel: true,
-      });
-      return;
-    }
 
     (async () => {
       // session cookies are set to file:// on production

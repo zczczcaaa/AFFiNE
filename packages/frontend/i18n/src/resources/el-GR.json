@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "Μόλις ενεργοποιηθεί, μπορείτε να χρησιμοποιήσετε ένα emoji ως το εικονίδιο του εγγράφου. Όταν ο πρώτος χαρακτήρας του ονόματος εγγράφου είναι emoji, θα εξαχθεί και θα χρησιμοποιηθεί ως το εικονίδιο του.",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "Ρυθμίσεις Επεξεργαστή",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "Ενεργοποιεί τις ρυθμίσεις του επεξεργαστή.",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "Λειτουργία Εκτός Σύνδεσης",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "Σταματήστε τη σύνδεση στο Διαδίκτυο. Ακόμα και με το AFFiNE Cloud, η ενεργοποίηση αυτής της επιλογής σταματάει τη σύνδεση στο διαδίκτυο και διατηρεί τα πάντα τοπικά, αλλά ο συγχρονισμός θα απενεργοποιηθεί.",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "Επεξεργαστής Θέματος",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "Ενεργοποιεί τον επεξεργαστή θέματος.",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "Επιτρέπεται η δημιουργία τοπικού χώρου εργασίας",

@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "Una vez habilitado, puede usar un emoji como ícono del documento. Cuando el primer carácter del nombre del documento es un emoji, se extraerá y utilizará como su icono.",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "Configuraciones del Editor",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "Habilita configuraciones del editor.",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "Modo Offline",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "Dejar de conectarse a Internet. Incluso con AFFiNE Cloud, habilitar este interruptor detiene la conexión a Internet y mantiene todo local, pero la sincronización se desactivará.",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "Editor de Temas",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "Habilita el editor de temas.",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "Permitir crear espacio de trabajo local",

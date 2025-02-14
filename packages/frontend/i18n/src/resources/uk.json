@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "Після увімкнення ви можете використовувати емодзі як значок документа. Коли перший символ назви документа є емодзі, він буде витягнутий і використаний як його значок.",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "Налаштування редактора",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "Увімкнення налаштувань редактора.",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "Офлайн режим",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "Зупинити підключення до Інтернету. Навіть при підключенні до AFFiNE Cloud, увімкнення цього перемикача зупиняє з'єднання з Інтернетом і зберігає все локально, але синхронізація буде відключена.",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "Редактор теми",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "Увімкнення редактора теми.",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "Дозволити створення локального робочого простору",

@@ -1298,8 +1298,6 @@
   "com.affine.settings.workspace.experimental-features.enable-emoji-doc-icon.description": "پس از فعال‌سازی، می‌توانید از یک ایموجی به عنوان آیکون سند استفاده کنید. وقتی اولین کاراکتر نام سند یک ایموجی باشد، آن استخراج شده و به عنوان آیکون آن استفاده می‌شود.",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.name": "تنظیمات ویرایشگر",
   "com.affine.settings.workspace.experimental-features.enable-editor-settings.description": "تنظیمات ویرایشگر را فعال می‌کند.",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.name": "حالت آفلاین",
-  "com.affine.settings.workspace.experimental-features.enable-offline-mode.description": "اتصال به اینترنت را متوقف کنید. حتی با AFFiNE Cloud، فعال‌سازی این گزینه اتصال به اینترنت را متوقف کرده و همه چیز را محلی نگه می‌دارد، اما همگام‌سازی غیرفعال خواهد شد.",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.name": "ویرایشگر تم",
   "com.affine.settings.workspace.experimental-features.enable-theme-editor.description": "ویرایشگر تم را فعال می‌کند.",
   "com.affine.settings.workspace.experimental-features.enable-local-workspace.name": "اجازه ایجاد فضای کاری محلی",
