@@ -35,7 +35,7 @@ export const tableBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher = {
           },
           'children'
         );
-        walkerContext.skipChildren();
+        walkerContext.skipAllChildren();
       }
     },
     leave: (o, context) => {

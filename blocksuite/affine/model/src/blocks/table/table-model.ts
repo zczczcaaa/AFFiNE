@@ -39,7 +39,7 @@ export interface TableBlockPropsSerialized {
 }
 
 export class TableBlockModel extends BlockModel<TableBlockProps> {}
-export const TableModelFlavour = 'affine:table-test1-flavour';
+export const TableModelFlavour = 'affine:table';
 export const TableBlockSchema = defineBlockSchema({
   flavour: TableModelFlavour,
   props: (): TableBlockProps => ({

@@ -41,7 +41,7 @@ export const tableBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
           },
           'children'
         );
-        walkerContext.skipChildren();
+        walkerContext.skipAllChildren();
       }
     },
     leave: (o, context) => {

@@ -91,7 +91,7 @@ export const processTable = (
 };
 const getTextFromElement = (element: ElementContent): string => {
   if (element.type === 'text') {
-    return element.value;
+    return element.value.trim();
   }
   if (element.type === 'element') {
     return element.children.map(child => getTextFromElement(child)).join('');
