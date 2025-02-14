@@ -590,6 +590,11 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'action_forbidden',
     message: `Action has been taken, no more messages allowed.`,
   },
+  copilot_doc_not_found: {
+    type: 'resource_not_found',
+    args: { docId: 'string' },
+    message: ({ docId }) => `Doc ${docId} not found.`,
+  },
   copilot_message_not_found: {
     type: 'resource_not_found',
     args: { messageId: 'string' },

@@ -88,6 +88,10 @@ type CopilotContextListItem {
   status: ContextFileStatus
 }
 
+type CopilotDocNotFoundDataType {
+  docId: String!
+}
+
 type CopilotFailedToMatchContextDataType {
   content: String!
   contextId: String!
@@ -311,7 +315,7 @@ type EditorType {
   name: String!
 }
 
-union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotContextFileNotSupportedDataType | CopilotFailedToMatchContextDataType | CopilotFailedToModifyContextDataType | CopilotInvalidContextDataType | CopilotMessageNotFoundDataType | CopilotPromptNotFoundDataType | CopilotProviderSideErrorDataType | DocAccessDeniedDataType | DocHistoryNotFoundDataType | DocNotFoundDataType | ExpectToGrantDocUserRolesDataType | ExpectToRevokeDocUserRolesDataType | ExpectToUpdateDocUserRoleDataType | InvalidEmailDataType | InvalidHistoryTimestampDataType | InvalidLicenseUpdateParamsDataType | InvalidPasswordLengthDataType | InvalidRuntimeConfigTypeDataType | MemberNotFoundInSpaceDataType | MissingOauthQueryParameterDataType | NotInSpaceDataType | QueryTooLongDataType | RuntimeConfigNotFoundDataType | SameSubscriptionRecurringDataType | SpaceAccessDeniedDataType | SpaceNotFoundDataType | SpaceOwnerNotFoundDataType | SpaceShouldHaveOnlyOneOwnerDataType | SubscriptionAlreadyExistsDataType | SubscriptionNotExistsDataType | SubscriptionPlanNotFoundDataType | UnknownOauthProviderDataType | UnsupportedSubscriptionPlanDataType | VersionRejectedDataType | WorkspaceMembersExceedLimitToDowngradeDataType | WorkspacePermissionNotFoundDataType | WrongSignInCredentialsDataType
+union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotContextFileNotSupportedDataType | CopilotDocNotFoundDataType | CopilotFailedToMatchContextDataType | CopilotFailedToModifyContextDataType | CopilotInvalidContextDataType | CopilotMessageNotFoundDataType | CopilotPromptNotFoundDataType | CopilotProviderSideErrorDataType | DocAccessDeniedDataType | DocHistoryNotFoundDataType | DocNotFoundDataType | ExpectToGrantDocUserRolesDataType | ExpectToRevokeDocUserRolesDataType | ExpectToUpdateDocUserRoleDataType | InvalidEmailDataType | InvalidHistoryTimestampDataType | InvalidLicenseUpdateParamsDataType | InvalidPasswordLengthDataType | InvalidRuntimeConfigTypeDataType | MemberNotFoundInSpaceDataType | MissingOauthQueryParameterDataType | NotInSpaceDataType | QueryTooLongDataType | RuntimeConfigNotFoundDataType | SameSubscriptionRecurringDataType | SpaceAccessDeniedDataType | SpaceNotFoundDataType | SpaceOwnerNotFoundDataType | SpaceShouldHaveOnlyOneOwnerDataType | SubscriptionAlreadyExistsDataType | SubscriptionNotExistsDataType | SubscriptionPlanNotFoundDataType | UnknownOauthProviderDataType | UnsupportedSubscriptionPlanDataType | VersionRejectedDataType | WorkspaceMembersExceedLimitToDowngradeDataType | WorkspacePermissionNotFoundDataType | WrongSignInCredentialsDataType
 
 enum ErrorNames {
   ACCESS_DENIED
@@ -329,6 +333,7 @@ enum ErrorNames {
   CAPTCHA_VERIFICATION_FAILED
   COPILOT_ACTION_TAKEN
   COPILOT_CONTEXT_FILE_NOT_SUPPORTED
+  COPILOT_DOC_NOT_FOUND
   COPILOT_FAILED_TO_CREATE_MESSAGE
   COPILOT_FAILED_TO_GENERATE_TEXT
   COPILOT_FAILED_TO_MATCH_CONTEXT

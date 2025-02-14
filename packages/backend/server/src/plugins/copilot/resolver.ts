@@ -21,6 +21,7 @@ import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
 import {
   CallMetric,
+  CopilotDocNotFound,
   CopilotFailedToCreateMessage,
   CopilotSessionNotFound,
   type FileUpload,
@@ -381,6 +382,11 @@ export class CopilotResolver {
       return new TooManyRequest('Server is busy');
     }
 
+    if (options.workspaceId === options.docId) {
+      // filter out session create request for root doc
+      throw new CopilotDocNotFound({ docId: options.docId });
+    }
+
     await this.chatSession.checkQuota(user.id);
 
     return await this.chatSession.create({
@@ -441,6 +447,11 @@ export class CopilotResolver {
     await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
+    }
+
+    if (options.workspaceId === options.docId) {
+      // filter out session create request for root doc
+      throw new CopilotDocNotFound({ docId: options.docId });
     }
 
     await this.chatSession.checkQuota(user.id);
