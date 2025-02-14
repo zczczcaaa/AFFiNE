@@ -44,13 +44,13 @@
             "name": "test-card-1.png",
             "size": 45801,
             "type": "image/png",
-            "embed": false,
             "style": "horizontalThin",
             "index": "a0",
             "xywh": "[0,0,0,0]",
             "lockedBySelf": false,
             "rotate": 0,
-            "sourceId": "ejImogf-Tb7AuKY-v94uz1zuOJbClqK-tWBxVr_ksGA="
+            "sourceId": "ejImogf-Tb7AuKY-v94uz1zuOJbClqK-tWBxVr_ksGA=",
+            "embed": false
           },
           "children": []
         }

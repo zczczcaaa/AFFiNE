@@ -26,6 +26,7 @@ import { MoveUpTooltip } from './move-up.js';
 import { NewDocTooltip } from './new-doc.js';
 import { NowTooltip } from './now.js';
 import { NumberedListTooltip } from './numbered-list.js';
+import { PDFTooltip } from './pdf.js';
 import { PhotoTooltip } from './photo.js';
 import { QuoteTooltip } from './quote.js';
 import { StrikethroughTooltip } from './strikethrough.js';
@@ -148,6 +149,11 @@ export const slashMenuToolTips: Record<string, SlashMenuTooltip> = {
   Attachment: {
     figure: AttachmentTooltip,
     caption: 'Attachment',
+  },
+
+  PDF: {
+    figure: PDFTooltip,
+    caption: 'PDF',
   },
 
   Github: {

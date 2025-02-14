@@ -215,7 +215,8 @@ export async function addSiblingAttachmentBlocks(
   files: File[],
   maxFileSize: number,
   targetModel: BlockModel,
-  place: 'before' | 'after' = 'after'
+  place: 'before' | 'after' = 'after',
+  isEmbed?: boolean
 ) {
   if (!files.length) {
     return;
@@ -245,6 +246,7 @@ export async function addSiblingAttachmentBlocks(
     name: file.name,
     size: file.size,
     type: types[index],
+    embed: isEmbed,
   }));
 
   const blockIds = doc.addSiblingBlocks(
