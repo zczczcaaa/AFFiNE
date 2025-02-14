@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaClient } from '@prisma/client';
 
-import { EventBus } from '../../base';
+import { EventBus, OnEvent } from '../../base';
 import {
   SubscriptionPlan,
   SubscriptionRecurring,

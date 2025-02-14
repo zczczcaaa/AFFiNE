@@ -786,7 +786,6 @@ __metadata:
     "@nestjs/apollo": "npm:^12.2.2"
     "@nestjs/common": "npm:^10.4.15"
     "@nestjs/core": "npm:^10.4.15"
-    "@nestjs/event-emitter": "npm:^2.1.1"
     "@nestjs/graphql": "npm:^12.2.2"
     "@nestjs/platform-express": "npm:^10.4.15"
     "@nestjs/platform-socket.io": "npm:^10.4.15"
@@ -834,6 +833,7 @@ __metadata:
     cookie-parser: "npm:^1.4.7"
     cross-env: "npm:^7.0.3"
     dotenv: "npm:^16.4.7"
+    eventemitter2: "npm:^6.4.9"
     eventsource-parser: "npm:^3.0.0"
     express: "npm:^4.21.2"
     fast-xml-parser: "npm:^4.5.0"
@@ -8849,18 +8849,6 @@ __metadata:
     "@nestjs/websockets":
       optional: true
   checksum: 10/671720fbb5cf5d477e4f57cb892079d4fd2a2f6e90c4eb6063c2c623bcb2256ba1b776cfcc4b817f32b3a87767a854bba345e7c52945a469b85068a31f23eec7
-  languageName: node
-  linkType: hard
-
-"@nestjs/event-emitter@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "@nestjs/event-emitter@npm:2.1.1"
-  dependencies:
-    eventemitter2: "npm:6.4.9"
-  peerDependencies:
-    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
-    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
-  checksum: 10/79b1ae873515a11b577d9e57b2c605b6aa9830ba60017cc54097c49e543dc23abcfe625425e375fa3525998b87319b1b1c0437a75deabdedf7ebeb02ab487e0c
   languageName: node
   linkType: hard
 
@@ -21181,7 +21169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventemitter2@npm:6.4.9, eventemitter2@npm:^6.4.9":
+"eventemitter2@npm:^6.4.9":
   version: 6.4.9
   resolution: "eventemitter2@npm:6.4.9"
   checksum: 10/b829b1c6b11e15926b635092b5ad62b4463d1c928859831dcae606e988cf41893059e3541f5a8209d21d2f15314422ddd4d84d20830b4bf44978608d15b06b08

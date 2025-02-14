@@ -1,5 +1,6 @@
 import { TestingModule } from '@nestjs/testing';
 import ava, { TestFn } from 'ava';
+import { CLS_ID, ClsServiceManager } from 'nestjs-cls';
 import Sinon from 'sinon';
 
 import { EventBus, metrics } from '../../base';
@@ -9,7 +10,7 @@ import { Listeners } from './provider';
 export const test = ava as TestFn<{
   module: TestingModule;
   eventbus: EventBus;
-  listener: Sinon.SinonSpy;
+  listeners: Sinon.SinonSpiedInstance<Listeners>;
 }>;
 
 test.before(async t => {
@@ -19,30 +20,20 @@ test.before(async t => {
   const eventbus = m.get(EventBus);
   t.context.module = m;
   t.context.eventbus = eventbus;
-  t.context.listener = Sinon.spy(m.get(Listeners), 'onTestEvent');
 });
 
-test.afterEach(() => {
-  Sinon.reset();
+test.beforeEach(t => {
+  Sinon.restore();
+  const { module } = t.context;
+  t.context.listeners = Sinon.spy(module.get(Listeners));
 });
 
 test.after(async t => {
   await t.context.module.close();
 });
 
-test('should register event listener', t => {
-  const { eventbus } = t.context;
-
-  // @ts-expect-error private member
-  t.true(eventbus.emitter.eventNames().includes('__test__.event'));
-
-  eventbus.on('__test__.event2', () => {});
-  // @ts-expect-error private member
-  t.true(eventbus.emitter.eventNames().includes('__test__.event2'));
-});
-
 test('should dispatch event listener', t => {
-  const { eventbus, listener } = t.context;
+  const { eventbus, listeners } = t.context;
 
   const runtimeListener = Sinon.stub();
   const off = eventbus.on('__test__.event', runtimeListener);
@@ -50,27 +41,51 @@ test('should dispatch event listener', t => {
   const payload = { count: 0 };
   eventbus.emit('__test__.event', payload);
 
-  t.true(listener.calledOnceWithExactly(payload));
+  t.true(listeners.onTestEvent.calledOnceWithExactly(payload));
   t.true(runtimeListener.calledOnceWithExactly(payload));
 
   off();
 });
 
 test('should dispatch async event listener', async t => {
-  const { eventbus, listener } = t.context;
+  const { eventbus, listeners } = t.context;
 
-  const runtimeListener = Sinon.stub().returns({ count: 2 });
+  const runtimeListener = Sinon.stub().returnsArg(0);
   const off = eventbus.on('__test__.event', runtimeListener);
 
   const payload = { count: 0 };
   const returns = await eventbus.emitAsync('__test__.event', payload);
 
-  t.true(listener.calledOnceWithExactly(payload));
+  t.true(listeners.onTestEvent.calledOnceWithExactly(payload));
+  t.true(listeners.onTestEventAndEvent2.calledOnceWithExactly(payload));
   t.true(runtimeListener.calledOnceWithExactly(payload));
 
-  t.deepEqual(returns, [{ count: 1 }, { count: 2 }]);
+  t.deepEqual(returns, [payload, payload, payload]);
 
   off();
+});
+
+test('should dispatch multiple event handlers with same name', async t => {
+  const { eventbus, listeners } = t.context;
+
+  const payload = { count: 0 };
+  await eventbus.emitAsync('__test__.event', payload);
+
+  t.true(listeners.onTestEvent.calledOnceWithExactly(payload));
+  t.true(listeners.onTestEventAndEvent2.calledOnceWithExactly(payload));
+});
+
+test('should dispatch event listener with multiple event names', async t => {
+  const { eventbus, listeners } = t.context;
+
+  const payload = { count: 0 };
+  await eventbus.emitAsync('__test__.event', payload);
+
+  t.like(listeners.onTestEventAndEvent2.lastCall.args[0], payload);
+
+  await eventbus.emitAsync('__test__.event2', payload);
+
+  t.like(listeners.onTestEventAndEvent2.lastCall.args[0], payload);
 });
 
 test('should record event handler call metrics', async t => {
@@ -86,26 +101,103 @@ test('should record event handler call metrics', async t => {
 
   await eventbus.emitAsync('__test__.event', { count: 0 });
 
-  t.deepEqual(timerStub.getCall(0).args[1], {
+  t.true(timerStub.calledTwice);
+  t.deepEqual(timerStub.firstCall.args[1], {
     name: 'event_handler',
     event: '__test__.event',
     namespace: '__test__',
+    handler: 'Listeners.onTestEvent',
+    error: false,
+  });
+  t.deepEqual(timerStub.lastCall.args[1], {
+    name: 'event_handler',
+    event: '__test__.event',
+    namespace: '__test__',
+    handler: 'Listeners.onTestEventAndEvent2',
     error: false,
   });
 
-  t.deepEqual(counterStub.getCall(0).args[1], {
+  t.true(counterStub.calledTwice);
+  t.deepEqual(counterStub.firstCall.args[1], {
+    name: 'event_handler',
     event: '__test__.event',
     namespace: '__test__',
+    handler: 'Listeners.onTestEvent',
+    error: false,
+  });
+  t.deepEqual(counterStub.lastCall.args[1], {
+    name: 'event_handler',
+    event: '__test__.event',
+    namespace: '__test__',
+    handler: 'Listeners.onTestEventAndEvent2',
+    error: false,
   });
 
-  Sinon.reset();
+  timerStub.reset();
+  counterStub.reset();
+  await eventbus.emitAsync('__test__.event2', { count: 0 });
 
-  await eventbus.emitAsync('__test__.throw', { count: 0 });
+  t.true(timerStub.calledOnce);
+  t.deepEqual(timerStub.firstCall.args[1], {
+    name: 'event_handler',
+    event: '__test__.event2',
+    namespace: '__test__',
+    handler: 'Listeners.onTestEventAndEvent2',
+    error: false,
+  });
 
-  t.deepEqual(timerStub.getCall(0).args[1], {
+  t.true(counterStub.calledOnce);
+  t.deepEqual(counterStub.firstCall.args[1], {
+    name: 'event_handler',
+    event: '__test__.event2',
+    namespace: '__test__',
+    handler: 'Listeners.onTestEventAndEvent2',
+    error: false,
+  });
+
+  timerStub.reset();
+  counterStub.reset();
+  try {
+    await eventbus.emitAsync('__test__.throw', { count: 0 });
+  } catch {
+    // noop
+  }
+
+  t.true(timerStub.calledOnce);
+  t.deepEqual(timerStub.firstCall.args[1], {
     name: 'event_handler',
     event: '__test__.throw',
     namespace: '__test__',
+    handler: 'Listeners.onThrow',
     error: true,
   });
+
+  t.true(counterStub.calledOnce);
+  t.deepEqual(counterStub.firstCall.args[1], {
+    name: 'event_handler',
+    event: '__test__.throw',
+    namespace: '__test__',
+    handler: 'Listeners.onThrow',
+    error: true,
+  });
+});
+
+test('should generate request id for event', async t => {
+  const { eventbus, listeners } = t.context;
+
+  await eventbus.emitAsync('__test__.requestId', {});
+
+  t.true(listeners.onRequestId.lastCall.returnValue.includes(':event/'));
+});
+
+test('should continuously use the same request id', async t => {
+  const { eventbus, listeners } = t.context;
+
+  const cls = ClsServiceManager.getClsService();
+  await cls.run(async () => {
+    cls.set(CLS_ID, 'test-request-id');
+    await eventbus.emitAsync('__test__.requestId', {});
+  });
+
+  t.true(listeners.onRequestId.lastCall.returned('test-request-id'));
 });

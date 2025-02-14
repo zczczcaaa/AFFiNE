@@ -87,11 +87,11 @@ export function parseCookies(
  * - `graphql`: graphql request
  * - `http`: http request
  * - `ws`: websocket request
- * - `se`: server event
+ * - `event`: event
  * - `job`: cron job
  * - `rpc`: rpc request
  */
-export type RequestType = GqlContextType | 'se' | 'job';
+export type RequestType = GqlContextType | 'event' | 'job';
 
 export function genRequestId(type: RequestType) {
   return `${AFFiNE.flavor.type}:${type}/${randomUUID()}`;

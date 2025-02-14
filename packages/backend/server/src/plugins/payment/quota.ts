@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
 
+import { OnEvent } from '../../base';
 import { PermissionService } from '../../core/permission';
 import { WorkspaceService } from '../../core/workspaces/resolvers';
 import { Models } from '../../models';

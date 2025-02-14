@@ -8,6 +8,7 @@ import { QuotaModule } from '../quota';
 import { StorageModule } from '../storage';
 import { UserModule } from '../user';
 import { WorkspacesController } from './controller';
+import { WorkspaceEvents } from './event';
 import {
   DocHistoryResolver,
   DocResolver,
@@ -37,6 +38,7 @@ import {
     DocHistoryResolver,
     WorkspaceBlobResolver,
     WorkspaceService,
+    WorkspaceEvents,
   ],
   exports: [WorkspaceService],
 })
