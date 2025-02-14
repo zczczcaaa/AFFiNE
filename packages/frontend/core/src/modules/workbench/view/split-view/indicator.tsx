@@ -41,9 +41,11 @@ export const SplitViewDragHandle = memo(
           {...attrs}
         >
           <div className={styles.indicatorGradient} />
-          <div data-idx={0} className={styles.indicatorDot} />
-          <div data-idx={1} className={styles.indicatorDot} />
-          <div data-idx={2} className={styles.indicatorDot} />
+          <div className={styles.indicatorInnerWrapper}>
+            <div data-idx={0} className={styles.indicatorDot} />
+            <div data-idx={1} className={styles.indicatorDot} />
+            <div data-idx={2} className={styles.indicatorDot} />
+          </div>
         </div>
       );
     }
