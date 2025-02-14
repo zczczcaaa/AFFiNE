@@ -221,3 +221,9 @@ export const splitViewRoot = style({
     },
   },
 });
+
+export const folderWarningMessage = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
