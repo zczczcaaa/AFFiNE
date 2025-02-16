@@ -67,4 +67,5 @@ export const badgeIcon = style({
 export const badgeText = style({
   fontSize: 15,
   lineHeight: '24px',
+  whiteSpace: 'nowrap',
 });
