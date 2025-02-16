@@ -22,6 +22,7 @@ export const SignInDialog = ({
   return (
     <Modal
       open
+      persistent
       onOpenChange={() => close()}
       width={400}
       height={550}
