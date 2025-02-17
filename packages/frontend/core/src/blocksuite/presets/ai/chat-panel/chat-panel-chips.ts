@@ -6,8 +6,8 @@ import { createLitPortal } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { PlusIcon } from '@blocksuite/icons/lit';
 import { flip, offset } from '@floating-ui/dom';
-import { css, html } from 'lit';
-import { property, query } from 'lit/decorators.js';
+import { css, html, nothing, type PropertyValues } from 'lit';
+import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import { AIProvider } from '../provider';
@@ -21,7 +21,8 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
       display: flex;
       flex-wrap: wrap;
     }
-    .add-button {
+    .add-button,
+    .collapse-button {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -32,8 +33,10 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
       margin: 4px 0;
       box-sizing: border-box;
       cursor: pointer;
+      font-size: 12px;
     }
-    .add-button:hover {
+    .add-button:hover,
+    .collapse-button:hover {
       background-color: var(--affine-hover-color);
     }
   `;
@@ -61,13 +64,25 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
   @query('.add-button')
   accessor addButton!: HTMLDivElement;
 
+  @state()
+  accessor isCollapsed = false;
+
   override render() {
+    const isCollapsed =
+      this.isCollapsed &&
+      this.chatContextValue.chips.filter(c => c.state !== 'candidate').length >
+        1;
+
+    const chips = isCollapsed
+      ? this.chatContextValue.chips.slice(0, 1)
+      : this.chatContextValue.chips;
+
     return html` <div class="chips-wrapper">
       <div class="add-button" @click=${this._toggleAddDocMenu}>
         ${PlusIcon()}
       </div>
       ${repeat(
-        this.chatContextValue.chips,
+        chips,
         chip => getChipKey(chip),
         chip => {
           if (isDocChip(chip)) {
@@ -88,8 +103,27 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
           return null;
         }
       )}
+      ${isCollapsed
+        ? html`<div class="collapse-button" @click=${this._toggleCollapse}>
+            +${this.chatContextValue.chips.length - 1}
+          </div>`
+        : nothing}
     </div>`;
   }
+
+  protected override updated(_changedProperties: PropertyValues): void {
+    if (
+      _changedProperties.has('chatContextValue') &&
+      _changedProperties.get('chatContextValue')?.status === 'loading' &&
+      this.isCollapsed === false
+    ) {
+      this.isCollapsed = true;
+    }
+  }
+
+  private readonly _toggleCollapse = () => {
+    this.isCollapsed = !this.isCollapsed;
+  };
 
   private readonly _toggleAddDocMenu = () => {
     if (this._abortController) {

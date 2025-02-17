@@ -24,7 +24,12 @@ import {
 import { AffineAvatarIcon, AffineIcon, DownArrowIcon } from '../_common/icons';
 import { AIChatErrorRenderer } from '../messages/error';
 import { AIProvider } from '../provider';
-import type { ChatContextValue, ChatItem, ChatMessage } from './chat-context';
+import {
+  type ChatContextValue,
+  type ChatItem,
+  type ChatMessage,
+  isChatMessage,
+} from './chat-context';
 import { HISTORY_IMAGE_ACTIONS } from './const';
 import { AIPreloadConfig } from './preload-config';
 
@@ -207,7 +212,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
     const { isLoading } = this;
     const filteredItems = items.filter(item => {
       return (
-        'role' in item ||
+        isChatMessage(item) ||
         item.messages?.length === 3 ||
         (HISTORY_IMAGE_ACTIONS.includes(item.action) &&
           item.messages?.length === 2)
@@ -244,7 +249,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
             </div> `
           : repeat(
               filteredItems,
-              item => ('role' in item ? item.id : item.sessionId),
+              item => (isChatMessage(item) ? item.id : item.sessionId),
               (item, index) => {
                 const isLast = index === filteredItems.length - 1;
                 return html`<div class="message">
@@ -317,7 +322,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
       return AIChatErrorRenderer(host, error);
     }
 
-    if ('role' in item) {
+    if (isChatMessage(item)) {
       const state = isLast
         ? status !== 'loading' && status !== 'transmitting'
           ? 'finished'
@@ -375,8 +380,8 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   }
 
   renderAvatar(item: ChatItem) {
-    const isUser = 'role' in item && item.role === 'user';
-    const isAssistant = 'role' in item && item.role === 'assistant';
+    const isUser = isChatMessage(item) && item.role === 'user';
+    const isAssistant = isChatMessage(item) && item.role === 'assistant';
     const isWithDocs =
       isAssistant &&
       item.content &&
