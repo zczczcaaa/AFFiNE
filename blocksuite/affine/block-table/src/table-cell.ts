@@ -68,8 +68,9 @@ export class TableCell extends SignalWatcher(
   @property({ attribute: false })
   accessor text: Text | undefined = undefined;
 
-  @property({ type: Boolean })
-  accessor readonly = false;
+  get readonly() {
+    return this.dataManager.readonly$.value;
+  }
 
   @property({ attribute: false })
   accessor dataManager!: TableDataManager;
@@ -644,6 +645,9 @@ export class TableCell extends SignalWatcher(
 
   override connectedCallback() {
     super.connectedCallback();
+    if (this.readonly) {
+      return;
+    }
     const selectAll = (e: KeyboardEvent) => {
       if (e.key === 'a' && (IS_MAC ? e.metaKey : e.ctrlKey)) {
         e.stopPropagation();
@@ -666,6 +670,9 @@ export class TableCell extends SignalWatcher(
   }
 
   override firstUpdated() {
+    if (this.readonly) {
+      return;
+    }
     this.richText$.value?.updateComplete
       .then(() => {
         this.disposables.add(

@@ -171,7 +171,7 @@ export class TableBlockComponent extends CaptionedBlockComponent<TableBlockModel
                 }
               )}
             </tbody>
-            ${IS_MOBILE
+            ${IS_MOBILE || this.dataManager.readonly$.value
               ? nothing
               : html`<affine-table-add-button
                   style="display: contents;"

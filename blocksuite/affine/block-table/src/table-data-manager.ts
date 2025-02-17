@@ -1,40 +1,45 @@
 import type { TableBlockModel, TableCell } from '@blocksuite/affine-model';
 import { generateFractionalIndexingKeyBetween } from '@blocksuite/affine-shared/utils';
 import { nanoid, Text } from '@blocksuite/store';
-import { computed, signal } from '@preact/signals-core';
+import { computed, type ReadonlySignal, signal } from '@preact/signals-core';
 
 import type { TableAreaSelection } from './selection-schema';
 
 export class TableDataManager {
   constructor(private readonly model: TableBlockModel) {}
-  ui = {
+  readonly readonly$: ReadonlySignal<boolean> = computed(() => {
+    return this.model.doc.readonly;
+  });
+  readonly ui = {
     columnIndicatorIndex$: signal<number>(),
     rowIndicatorIndex$: signal<number>(),
   };
-  hoverColumnIndex$ = signal<number>();
-  hoverRowIndex$ = signal<number>();
-  hoverDragHandleColumnId$ = signal<string>();
-  widthAdjustColumnId$ = signal<string>();
-  virtualColumnCount$ = signal<number>(0);
-  virtualRowCount$ = signal<number>(0);
-  virtualWidth$ = signal<{ columnId: string; width: number } | undefined>();
-  cellCountTips$ = computed(
+  readonly hoverColumnIndex$ = signal<number>();
+  readonly hoverRowIndex$ = signal<number>();
+  readonly hoverDragHandleColumnId$ = signal<string>();
+  readonly widthAdjustColumnId$ = signal<string>();
+  readonly virtualColumnCount$ = signal<number>(0);
+  readonly virtualRowCount$ = signal<number>(0);
+  readonly virtualWidth$ = signal<
+    { columnId: string; width: number } | undefined
+  >();
+  readonly cellCountTips$ = computed(
     () =>
       `${this.virtualRowCount$.value + this.rows$.value.length} x ${this.virtualColumnCount$.value + this.columns$.value.length}`
   );
-  rows$ = computed(() => {
+  readonly rows$ = computed(() => {
     return Object.values(this.model.props.rows$.value).sort((a, b) =>
       a.order > b.order ? 1 : -1
     );
   });
 
-  columns$ = computed(() => {
+  readonly columns$ = computed(() => {
     return Object.values(this.model.props.columns$.value).sort((a, b) =>
       a.order > b.order ? 1 : -1
     );
   });
 
-  uiRows$ = computed(() => {
+  readonly uiRows$ = computed(() => {
     const virtualRowCount = this.virtualRowCount$.value;
     const rows = this.rows$.value;
     if (virtualRowCount === 0) {
@@ -52,7 +57,7 @@ export class TableDataManager {
     return rows.slice(0, rows.length + virtualRowCount);
   });
 
-  uiColumns$ = computed(() => {
+  readonly uiColumns$ = computed(() => {
     const virtualColumnCount = this.virtualColumnCount$.value;
     const columns = this.columns$.value;
     if (virtualColumnCount === 0) {

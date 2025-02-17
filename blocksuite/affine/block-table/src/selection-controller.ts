@@ -29,6 +29,9 @@ export class SelectionController implements ReactiveController {
     this.host.addController(this);
   }
   hostConnected() {
+    if (this.dataManager.readonly$.value) {
+      return;
+    }
     this.dragListener();
     this.host.handleEvent('copy', this.onCopy);
     this.host.handleEvent('cut', this.onCut);
@@ -340,7 +343,6 @@ export class SelectionController implements ReactiveController {
   };
   onCopy = () => {
     const selection = this.getSelected();
-    console.log('selection', selection);
     if (!selection || selection.type !== 'area') {
       return false;
     }
