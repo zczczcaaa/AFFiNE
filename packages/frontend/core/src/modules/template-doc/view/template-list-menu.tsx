@@ -1,7 +1,13 @@
-import { Menu, MenuItem, type MenuProps, Scrollable } from '@affine/component';
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  type MenuProps,
+  Scrollable,
+} from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { useI18n } from '@affine/i18n';
-import { InformationIcon } from '@blocksuite/icons/rc';
+import { DualLinkIcon, InformationIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useState } from 'react';
 
@@ -47,12 +53,21 @@ const DocItem = ({ doc, onSelect, asLink }: DocItemProps) => {
 const Empty = () => {
   const t = useI18n();
   return (
-    <MenuItem
-      disabled
-      prefixIcon={<InformationIcon className={styles.emptyIcon} />}
-    >
-      {t['com.affine.template-list.empty']()}
-    </MenuItem>
+    <div className={styles.empty}>
+      <InformationIcon className={styles.emptyIcon} />
+      <span className={styles.emptyText}>
+        {t['com.affine.template-list.empty']()}
+      </span>
+      <div className={styles.space} />
+      <a
+        href="https://affine.pro/blog/how-to-use-template"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.link}
+      >
+        <IconButton icon={<DualLinkIcon />} />
+      </a>
+    </div>
   );
 };
 
