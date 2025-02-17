@@ -27,6 +27,7 @@ import {
   FeatureFlagService,
   NotificationProvider,
   SidebarExtensionIdentifier,
+  TelemetryProvider,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import {
@@ -190,6 +191,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
   }
 
   private _setDisplayMode(note: NoteBlockModel, newMode: NoteDisplayMode) {
+    const oldMode = note.displayMode;
     this.edgeless.std.command.exec(changeNoteDisplayMode, {
       noteId: note.id,
       mode: newMode,
@@ -263,6 +265,17 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
         clear();
       },
     });
+
+    this.edgeless.std
+      .getOptional(TelemetryProvider)
+      ?.track('NoteDisplayModeChanged', {
+        page: 'whiteboard editor',
+        segment: 'element toolbar',
+        module: 'element toolbar',
+        control: 'display mode',
+        type: 'note',
+        other: `from ${oldMode} to ${newMode}`,
+      });
   }
 
   private _setShadowType(shadowType: string) {

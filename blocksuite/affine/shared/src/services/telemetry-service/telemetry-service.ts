@@ -2,6 +2,7 @@ import { createIdentifier } from '@blocksuite/global/di';
 
 import type { OutDatabaseAllEvents } from './database.js';
 import type { LinkToolbarEvents } from './link.js';
+import type { NoteEvents } from './note.js';
 import type {
   AttachmentUploadedEvent,
   DocCreatedEvent,
@@ -13,7 +14,8 @@ import type {
 } from './types.js';
 
 export type TelemetryEventMap = OutDatabaseAllEvents &
-  LinkToolbarEvents & {
+  LinkToolbarEvents &
+  NoteEvents & {
     DocCreated: DocCreatedEvent;
     Link: TelemetryEvent;
     LinkedDocCreated: LinkedDocCreatedEvent;
