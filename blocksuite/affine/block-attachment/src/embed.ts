@@ -151,7 +151,13 @@ const embedConfig: AttachmentEmbedConfig[] = [
     check: (model, maxFileSize) =>
       model.type.startsWith('video/') && model.size <= maxFileSize,
     template: (_, blobUrl) =>
-      html`<video width="100%;" height="480" controls src=${blobUrl}></video>`,
+      html`<video
+        style="max-height: max-content;"
+        width="100%;"
+        height="480"
+        controls
+        src=${blobUrl}
+      ></video>`,
   },
   {
     name: 'audio',
