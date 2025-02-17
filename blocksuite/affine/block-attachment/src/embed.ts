@@ -71,10 +71,11 @@ export class AttachmentEmbedService extends Extension {
     return this.configs.values();
   }
 
-  constructor(
-    private readonly std: BlockStdScope,
-    private readonly configs: Map<string, AttachmentEmbedConfig>
-  ) {
+  get configs(): Map<string, AttachmentEmbedConfig> {
+    return this.std.get(AttachmentEmbedConfigMapIdentifier);
+  }
+
+  constructor(private readonly std: BlockStdScope) {
     super();
   }
 
@@ -82,10 +83,7 @@ export class AttachmentEmbedService extends Extension {
     di.addImpl(AttachmentEmbedConfigMapIdentifier, provider =>
       provider.getAll(AttachmentEmbedConfigIdentifier)
     );
-    di.addImpl(AttachmentEmbedProvider, AttachmentEmbedService, [
-      StdIdentifier,
-      AttachmentEmbedConfigMapIdentifier,
-    ]);
+    di.addImpl(AttachmentEmbedProvider, this, [StdIdentifier]);
   }
 
   // Converts to embed view.
