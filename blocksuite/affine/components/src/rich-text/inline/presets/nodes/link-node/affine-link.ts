@@ -1,7 +1,7 @@
 import type { ReferenceInfo } from '@blocksuite/affine-model';
 import { ParseDocUrlProvider } from '@blocksuite/affine-shared/services';
 import type { AffineTextAttributes } from '@blocksuite/affine-shared/types';
-import type { BlockComponent } from '@blocksuite/block-std';
+import type { BlockComponent, BlockStdScope } from '@blocksuite/block-std';
 import {
   BLOCK_ID_ATTR,
   BlockSelection,
@@ -55,8 +55,8 @@ export class AffineLink extends ShadowlessElement {
     const referenceInfo = this._referenceInfo;
     if (!referenceInfo) return;
 
-    const refNodeSlotsProvider = this.std?.getOptional(RefNodeSlotsProvider);
-    if (!refNodeSlotsProvider || !this.std) return;
+    const refNodeSlotsProvider = this.std.getOptional(RefNodeSlotsProvider);
+    if (!refNodeSlotsProvider) return;
 
     e?.preventDefault();
 
@@ -76,7 +76,7 @@ export class AffineLink extends ShadowlessElement {
         return null;
       }
 
-      const selection = this.std?.selection;
+      const selection = this.std.selection;
       const textSelection = selection?.find(TextSelection);
       if (!!textSelection && !textSelection.isCollapsed()) {
         return null;
@@ -134,19 +134,12 @@ export class AffineLink extends ShadowlessElement {
     return selfInlineRange;
   }
 
-  get std() {
-    const std = this.block?.std;
-    return std;
-  }
-
   // Identify if url is an internal link
   private _identify() {
     const link = this.link;
     if (!link) return;
 
-    const result = this.std
-      ?.getOptional(ParseDocUrlProvider)
-      ?.parseDocUrl(link);
+    const result = this.std.getOptional(ParseDocUrlProvider)?.parseDocUrl(link);
     if (!result) return;
 
     const { docId: pageId, ...params } = result;
@@ -193,4 +186,7 @@ export class AffineLink extends ShadowlessElement {
   accessor delta: DeltaInsert<AffineTextAttributes> = {
     insert: ZERO_WIDTH_SPACE,
   };
+
+  @property({ attribute: false })
+  accessor std!: BlockStdScope;
 }

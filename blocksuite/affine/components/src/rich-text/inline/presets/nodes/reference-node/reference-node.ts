@@ -13,10 +13,10 @@ import {
   BLOCK_ID_ATTR,
   type BlockComponent,
   BlockSelection,
+  type BlockStdScope,
   ShadowlessElement,
   TextSelection,
 } from '@blocksuite/block-std';
-import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { LinkedPageIcon } from '@blocksuite/icons/lit';
 import {
@@ -106,7 +106,7 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
         return null;
       }
 
-      const selection = this.std?.selection;
+      const selection = this.std.selection;
       if (!selection) {
         return null;
       }
@@ -137,16 +137,16 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
 
   get _icon() {
     const { pageId, params, title } = this.referenceInfo;
-    return this.block?.std
-      ?.get(DocDisplayMetaProvider)
+    return this.std
+      .get(DocDisplayMetaProvider)
       .icon(pageId, { params, title, referenced: true }).value;
   }
 
   get _title() {
     const { pageId, params, title } = this.referenceInfo;
     return (
-      this.block?.std
-        ?.get(DocDisplayMetaProvider)
+      this.std
+        .get(DocDisplayMetaProvider)
         .title(pageId, { params, title, referenced: true }).value || title
     );
   }
@@ -185,17 +185,6 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
   get selfInlineRange() {
     const selfInlineRange = this.inlineEditor?.getInlineRangeFromElement(this);
     return selfInlineRange;
-  }
-
-  get std() {
-    const std = this.block?.std;
-    if (!std) {
-      throw new BlockSuiteError(
-        ErrorCode.ValueNotExists,
-        'std not found in reference node'
-      );
-    }
-    return std;
   }
 
   private _onClick() {
@@ -321,4 +310,7 @@ export class AffineReference extends WithDisposable(ShadowlessElement) {
 
   @property({ type: Boolean })
   accessor selected = false;
+
+  @property({ attribute: false })
+  accessor std!: BlockStdScope;
 }

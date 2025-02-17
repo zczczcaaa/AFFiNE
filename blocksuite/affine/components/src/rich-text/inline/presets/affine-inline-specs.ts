@@ -149,6 +149,7 @@ export const ReferenceInlineSpecExtension = InlineSpecExtension(
       },
       renderer: ({ delta, selected }) => {
         return html`<affine-reference
+          .std=${std}
           .delta=${delta}
           .selected=${selected}
           .config=${configProvider}
@@ -159,15 +160,18 @@ export const ReferenceInlineSpecExtension = InlineSpecExtension(
   }
 );
 
-export const LinkInlineSpecExtension = InlineSpecExtension({
-  name: 'link',
-  schema: z.string().optional().nullable().catch(undefined),
-  match: delta => {
-    return !!delta.attributes?.link;
-  },
-  renderer: ({ delta }) => {
-    return html`<affine-link .delta=${delta}></affine-link>`;
-  },
+export const LinkInlineSpecExtension = InlineSpecExtension('link', provider => {
+  const std = provider.get(StdIdentifier);
+  return {
+    name: 'link',
+    schema: z.string().optional().nullable().catch(undefined),
+    match: delta => {
+      return !!delta.attributes?.link;
+    },
+    renderer: ({ delta }) => {
+      return html`<affine-link .std=${std} .delta=${delta}></affine-link>`;
+    },
+  };
 });
 
 export const LatexEditorUnitSpecExtension = InlineSpecExtension({
