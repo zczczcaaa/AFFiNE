@@ -19,6 +19,7 @@ import { StoreManagerClient } from '@affine/nbstore/worker/client';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Keyboard } from '@capacitor/keyboard';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { EdgeToEdge } from '@capawesome/capacitor-android-edge-to-edge-support';
 import { InAppBrowser } from '@capgo/inappbrowser';
 import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { OpClient } from '@toeverything/infra/op';
@@ -129,7 +130,7 @@ CapacitorApp.addListener('appUrlOpen', ({ url }) => {
   console.error(e);
 });
 
-const StatusBarProvider = () => {
+const EdgeToEdgeCompatibilityProvider = () => {
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
@@ -140,9 +141,10 @@ const StatusBarProvider = () => {
           : resolvedTheme === 'light'
             ? Style.Light
             : Style.Default,
-    }).catch(e => {
-      console.error(`Failed to set status bar style: ${e}`);
-    });
+    }).catch(console.error);
+    EdgeToEdge.setBackgroundColor({
+      color: resolvedTheme === 'dark' ? '#000000' : '#F5F5F5',
+    }).catch(console.error);
   }, [resolvedTheme]);
 
   return null;
@@ -154,7 +156,7 @@ export function App() {
       <FrameworkRoot framework={frameworkProvider}>
         <I18nProvider>
           <AffineContext store={getCurrentStore()}>
-            <StatusBarProvider />
+            <EdgeToEdgeCompatibilityProvider />
             <RouterProvider
               fallbackElement={<AppFallback />}
               router={router}
