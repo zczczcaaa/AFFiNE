@@ -9,6 +9,7 @@ import {
 import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
 import { PageNotFound } from '@affine/core/desktop/pages/404';
 import { EditorService } from '@affine/core/modules/editor';
+import { GuardService } from '@affine/core/modules/permissions';
 import { DebugLogger } from '@affine/debug';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import { RefNodeSlotsProvider } from '@blocksuite/affine/blocks';
@@ -83,7 +84,10 @@ function DocPeekPreviewEditor({
   const defaultOpenProperty = useLiveData(editor.defaultOpenProperty$);
   const workbench = useService(WorkbenchService).workbench;
   const peekView = useService(PeekViewService).peekView;
+  const guardService = useService(GuardService);
   const editorElement = useLiveData(editor.editorContainer$);
+
+  const isInTrash = useLiveData(doc.record.trash$);
 
   const handleOnEditorReady = useCallback(
     (editorContainer: AffineEditorContainer) => {
@@ -145,6 +149,10 @@ function DocPeekPreviewEditor({
     peekView.close();
   }, [doc, peekView, workbench]);
 
+  const canEdit = useLiveData(guardService.can$('Doc_Update', doc.id));
+
+  const readonly = !canEdit || isInTrash;
+
   return (
     <AffineErrorBoundary>
       <Scrollable.Root>
@@ -156,6 +164,7 @@ function DocPeekPreviewEditor({
               className={styles.editor}
               mode={mode}
               page={doc.blockSuiteDoc}
+              readonly={readonly}
               onEditorReady={handleOnEditorReady}
               defaultOpenProperty={defaultOpenProperty}
             />
