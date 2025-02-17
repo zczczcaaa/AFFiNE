@@ -1,7 +1,3 @@
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '@blocksuite/affine-shared/consts';
 import { css } from 'lit';
 
 export const styles = css`
@@ -12,7 +8,7 @@ export const styles = css`
     gap: 12px;
 
     width: 100%;
-    height: ${EMBED_CARD_HEIGHT.horizontalThin}px;
+    height: 100%;
 
     padding: 12px;
     border-radius: 8px;
@@ -121,9 +117,6 @@ export const styles = css`
   }
 
   .affine-attachment-card.cubeThick {
-    width: ${EMBED_CARD_WIDTH.cubeThick}px;
-    height: ${EMBED_CARD_HEIGHT.cubeThick}px;
-
     flex-direction: column-reverse;
 
     .affine-attachment-content {

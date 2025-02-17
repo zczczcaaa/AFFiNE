@@ -1,8 +1,3 @@
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_MIN_WIDTH,
-  EMBED_CARD_WIDTH,
-} from '@blocksuite/affine-shared/consts';
 import { css, html } from 'lit';
 
 import { embedNoteContentStyles } from '../common/embed-note-content-styles.js';
@@ -11,18 +6,14 @@ export const styles = css`
   .affine-embed-linked-doc-block {
     box-sizing: border-box;
     display: flex;
-    width: ${EMBED_CARD_WIDTH.horizontal}px;
+    width: 100%;
+    height: 100%;
     border-radius: 8px;
     border: 1px solid var(--affine-background-tertiary-color);
     opacity: var(--add, 1);
     background: var(--affine-background-primary-color);
     user-select: none;
     position: relative;
-  }
-
-  .affine-embed-linked-doc-block.horizontal {
-    width: ${EMBED_CARD_WIDTH.horizontal}px;
-    height: ${EMBED_CARD_HEIGHT.horizontal}px;
   }
 
   .affine-embed-linked-doc-content {
@@ -184,11 +175,6 @@ export const styles = css`
     border-radius: 4px 4px var(--1, 0px) var(--1, 0px);
   }
 
-  .affine-embed-linked-doc-block:not(.in-canvas) {
-    width: 100%;
-    min-width: calc(min(${EMBED_CARD_MIN_WIDTH}px, 100%));
-  }
-
   .affine-embed-linked-doc-block.loading {
     .affine-embed-linked-doc-content-date {
       display: none;
@@ -243,8 +229,6 @@ export const styles = css`
     }
   }
   .affine-embed-linked-doc-block.horizontalThin {
-    height: ${EMBED_CARD_HEIGHT.horizontalThin}px;
-
     .affine-embed-linked-doc-banner {
       height: 66px;
     }
@@ -260,7 +244,6 @@ export const styles = css`
     }
   }
   .affine-embed-linked-doc-block.list {
-    height: ${EMBED_CARD_HEIGHT.list}px;
     .affine-embed-linked-doc-content {
       width: 100%;
       flex-direction: row;
@@ -286,8 +269,6 @@ export const styles = css`
     }
   }
   .affine-embed-linked-doc-block.vertical {
-    width: ${EMBED_CARD_WIDTH.vertical}px;
-    height: ${EMBED_CARD_HEIGHT.vertical}px;
     flex-direction: column-reverse;
 
     .affine-embed-linked-doc-content {
@@ -329,9 +310,6 @@ export const styles = css`
     }
   }
   .affine-embed-linked-doc-block.cube {
-    width: ${EMBED_CARD_WIDTH.cube}px;
-    height: ${EMBED_CARD_HEIGHT.cube}px;
-
     .affine-embed-linked-doc-content {
       width: 100%;
       flex-direction: column;

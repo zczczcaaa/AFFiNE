@@ -3,7 +3,7 @@ import {
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import { toGfxBlockComponent } from '@blocksuite/block-std';
-import { styleMap } from 'lit/directives/style-map.js';
+import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
 
 import { BookmarkBlockComponent } from './bookmark-block.js';
 
@@ -43,7 +43,9 @@ export class BookmarkEdgelessBlockComponent extends toGfxBlockComponent(
     return this.renderPageContent();
   }
 
-  protected override accessor blockContainerStyles = {};
+  protected override accessor blockContainerStyles: StyleInfo = {
+    height: '100%',
+  };
 }
 
 declare global {

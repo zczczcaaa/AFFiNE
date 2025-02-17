@@ -1,19 +1,20 @@
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '@blocksuite/affine-shared/consts';
 import { unsafeCSSVar } from '@blocksuite/affine-shared/theme';
 import { baseTheme } from '@toeverything/theme';
 import { css, unsafeCSS } from 'lit';
 
 export const styles = css`
+  bookmark-card {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+
   .affine-bookmark-card {
     container: affine-bookmark-card / inline-size;
     margin: 0 auto;
     box-sizing: border-box;
     display: flex;
     width: 100%;
-    height: ${EMBED_CARD_HEIGHT.horizontal}px;
 
     border-radius: 8px;
     border: 1px solid var(--affine-background-tertiary-color);
@@ -187,8 +188,6 @@ export const styles = css`
   }
 
   .affine-bookmark-card.list {
-    height: ${EMBED_CARD_HEIGHT.list}px;
-
     .affine-bookmark-content {
       width: 100%;
       flex-direction: row;
@@ -215,9 +214,8 @@ export const styles = css`
   }
 
   .affine-bookmark-card.vertical {
-    width: ${EMBED_CARD_WIDTH.vertical}px;
-    height: ${EMBED_CARD_HEIGHT.vertical}px;
     flex-direction: column-reverse;
+    height: 100%;
 
     .affine-bookmark-content {
       width: 100%;
@@ -248,9 +246,6 @@ export const styles = css`
   }
 
   .affine-bookmark-card.cube {
-    width: ${EMBED_CARD_WIDTH.cube}px;
-    height: ${EMBED_CARD_HEIGHT.cube}px;
-
     .affine-bookmark-content {
       width: 100%;
       flex-direction: column;

@@ -1,15 +1,11 @@
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '@blocksuite/affine-shared/consts';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { css, html } from 'lit';
 
 export const styles = css`
   .affine-embed-youtube-block {
     box-sizing: border-box;
-    width: ${EMBED_CARD_WIDTH.video}px;
-    max-width: 100%;
+    width: 100%;
+    height: 100%;
 
     display: flex;
     flex-direction: column;
@@ -22,8 +18,6 @@ export const styles = css`
     opacity: var(--add, 1);
     background: var(--affine-background-primary-color);
     user-select: none;
-
-    aspect-ratio: ${EMBED_CARD_WIDTH.video} / ${EMBED_CARD_HEIGHT.video};
   }
 
   .affine-embed-youtube-video {

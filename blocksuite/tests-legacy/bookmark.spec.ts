@@ -263,7 +263,7 @@ test.describe('embed card toolbar', () => {
     const listStyleBookmarkBox = await bookmark.boundingBox();
     assertExists(listStyleBookmarkBox);
     assertAlmostEqual(listStyleBookmarkBox.width, 752, 2);
-    assertAlmostEqual(listStyleBookmarkBox.height, 46, 2);
+    assertAlmostEqual(listStyleBookmarkBox.height, 48, 2);
 
     await openCardStyleMenu();
     await cardStyleHorizontalButton.click();

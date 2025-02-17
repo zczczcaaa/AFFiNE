@@ -1,17 +1,15 @@
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '@blocksuite/affine-shared/consts';
 import { css, html } from 'lit';
 
 export const styles = css`
   .affine-embed-loom-block {
     box-sizing: border-box;
-    width: ${EMBED_CARD_WIDTH.video}px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     padding: 12px;
+
+    width: 100%;
+    height: 100%;
 
     border-radius: 8px;
     border: 1px solid var(--affine-background-tertiary-color);
@@ -19,8 +17,6 @@ export const styles = css`
     opacity: var(--add, 1);
     background: var(--affine-background-primary-color);
     user-select: none;
-
-    aspect-ratio: ${EMBED_CARD_WIDTH.video} / ${EMBED_CARD_HEIGHT.video};
   }
 
   .affine-embed-loom-video {

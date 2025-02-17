@@ -1,7 +1,3 @@
-import {
-  EMBED_CARD_HEIGHT,
-  EMBED_CARD_WIDTH,
-} from '@blocksuite/affine-shared/consts';
 import { css, html } from 'lit';
 
 export const styles = css`
@@ -9,7 +5,7 @@ export const styles = css`
     box-sizing: border-box;
     display: flex;
     width: 100%;
-    height: ${EMBED_CARD_HEIGHT.horizontal}px;
+    height: 100%;
 
     border-radius: 8px;
     border: 1px solid var(--affine-background-tertiary-color);
@@ -243,9 +239,6 @@ export const styles = css`
   }
 
   .affine-embed-github-block.list {
-    height: ${EMBED_CARD_HEIGHT.list}px;
-    width: ${EMBED_CARD_WIDTH.list}px;
-
     .affine-embed-github-content {
       width: 100%;
       flex-direction: row;
@@ -279,14 +272,7 @@ export const styles = css`
     }
   }
 
-  .affine-embed-github-block.horizontal {
-    width: ${EMBED_CARD_WIDTH.horizontal}px;
-    height: ${EMBED_CARD_HEIGHT.horizontal}px;
-  }
-
   .affine-embed-github-block.vertical {
-    width: ${EMBED_CARD_WIDTH.vertical}px;
-    height: ${EMBED_CARD_HEIGHT.vertical}px;
     flex-direction: column;
 
     .affine-embed-github-content {
@@ -357,9 +343,6 @@ export const styles = css`
   }
 
   .affine-embed-github-block.cube {
-    width: ${EMBED_CARD_WIDTH.cube}px;
-    height: ${EMBED_CARD_HEIGHT.cube}px;
-
     .affine-embed-github-content {
       width: 100%;
       flex-direction: column;
