@@ -180,6 +180,9 @@ export class SyncController {
           }
 
           const yValue = native2Y(value);
+          if (this.yBlock.get(`prop:${p}`) === yValue) {
+            return Reflect.set(target, p, value, receiver);
+          }
           this.yBlock.set(`prop:${p}`, yValue);
           const proxy = this._getPropsProxy(p, yValue);
           setValue(target, p, value);

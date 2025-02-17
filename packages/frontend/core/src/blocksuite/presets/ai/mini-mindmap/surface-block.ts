@@ -22,11 +22,11 @@ export class MindmapSurfaceBlock extends BlockComponent<SurfaceBlockModel> {
   renderer?: CanvasRenderer;
 
   private get _grid() {
-    return this.std.get(GfxControllerIdentifier).grid;
+    return this.gfx.grid;
   }
 
   private get _layer() {
-    return this.std.get(GfxControllerIdentifier).layer;
+    return this.gfx.layer;
   }
 
   get mindmapService() {
@@ -34,7 +34,11 @@ export class MindmapSurfaceBlock extends BlockComponent<SurfaceBlockModel> {
   }
 
   get viewport() {
-    return this.std.get(GfxControllerIdentifier).viewport;
+    return this.gfx.viewport;
+  }
+
+  get gfx() {
+    return this.std.get(GfxControllerIdentifier);
   }
 
   constructor() {

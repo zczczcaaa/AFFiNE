@@ -5,6 +5,7 @@ import type { GfxController } from '../controller.js';
 import { GfxExtension, GfxExtensionIdentifier } from '../extension.js';
 import { GfxBlockElementModel } from '../model/gfx-block-model.js';
 import type { GfxModel } from '../model/model.js';
+import type { GfxPrimitiveElementModel } from '../model/surface/element-model.js';
 import type { GfxLocalElementModel } from '../model/surface/local-element-model.js';
 import type { SurfaceBlockModel } from '../model/surface/surface-model.js';
 import {
@@ -57,15 +58,21 @@ export class ViewManager extends GfxExtension {
       });
 
     const updateViewOnElementChange = (surface: SurfaceBlockModel) => {
+      const createView = (
+        model: GfxPrimitiveElementModel | GfxLocalElementModel
+      ) => {
+        const ViewCtor =
+          this._viewCtorMap.get(model.type) ?? GfxElementModelView;
+        const view = new ViewCtor(model, this.gfx);
+
+        this._viewMap.set(model.id, view);
+        view.onCreated();
+      };
+
       this._disposable.add(
         surface.elementAdded.on(payload => {
           const model = surface.getElementById(payload.id)!;
-          const ViewCtor =
-            this._viewCtorMap.get(model.type) ?? GfxElementModelView;
-          const view = new ViewCtor(model, this.gfx);
-
-          this._viewMap.set(model.id, view);
-          view.onCreated();
+          createView(model);
         })
       );
 
@@ -79,9 +86,7 @@ export class ViewManager extends GfxExtension {
 
       this._disposable.add(
         surface.localElementAdded.on(model => {
-          const View = this._viewCtorMap.get(model.type) ?? GfxElementModelView;
-
-          this._viewMap.set(model.id, new View(model, this.gfx));
+          createView(model);
         })
       );
 
@@ -94,15 +99,11 @@ export class ViewManager extends GfxExtension {
       );
 
       surface.localElementModels.forEach(model => {
-        const View = this._viewCtorMap.get(model.type) ?? GfxElementModelView;
-
-        this._viewMap.set(model.id, new View(model, this.gfx));
+        createView(model);
       });
 
       surface.elementModels.forEach(model => {
-        const View = this._viewCtorMap.get(model.type) ?? GfxElementModelView;
-
-        this._viewMap.set(model.id, new View(model, this.gfx));
+        createView(model);
       });
     };
 
