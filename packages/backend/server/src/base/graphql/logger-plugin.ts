@@ -38,9 +38,7 @@ export class GQLLoggerPlugin implements ApolloServerPlugin {
       },
       didEncounterErrors: ctx => {
         ctx.errors.forEach(gqlErr => {
-          const error = mapAnyError(
-            gqlErr.originalError ? gqlErr.originalError : gqlErr
-          );
+          const error = mapAnyError(gqlErr);
           error.log('GraphQL');
 
           metrics.gql.counter('query_error_counter').add(1, {

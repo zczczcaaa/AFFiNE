@@ -251,6 +251,12 @@ export const USER_FRIENDLY_ERRORS = {
     type: 'bad_request',
     message: 'Bad request.',
   },
+  graphql_bad_request: {
+    type: 'bad_request',
+    args: { code: 'string', message: 'string' },
+    message: ({ code, message }) =>
+      `GraphQL bad request, code: ${code}, ${message}`,
+  },
 
   // Input errors
   query_too_long: {

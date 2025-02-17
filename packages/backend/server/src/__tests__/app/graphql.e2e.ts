@@ -1,15 +1,14 @@
-import type { INestApplication } from '@nestjs/common';
 import type { TestFn } from 'ava';
 import ava from 'ava';
 import request from 'supertest';
 
 import { buildAppModule } from '../../app.module';
-import { createTestingApp } from '../utils';
+import { createTestingApp, TestingApp } from '../utils';
 
 const gql = '/graphql';
 
 const test = ava as TestFn<{
-  app: INestApplication;
+  app: TestingApp;
 }>;
 
 test.before('start app', async t => {
@@ -82,4 +81,10 @@ test('should be able to call apis', async t => {
   t.is(res.body.flavor, 'graphql');
   // make sure the request id is set
   t.truthy(res.headers['x-request-id']);
+});
+
+test('should not throw internal error when graphql call with invalid params', async t => {
+  await t.throwsAsync(t.context.app.gql(`query { workspace("1") }`), {
+    message: /Failed to execute gql: query { workspace\("1"\) \}, status: 400/,
+  });
 });

@@ -28,6 +28,17 @@ export class BadRequest extends UserFriendlyError {
   }
 }
 @ObjectType()
+class GraphqlBadRequestDataType {
+  @Field() code!: string
+  @Field() message!: string
+}
+
+export class GraphqlBadRequest extends UserFriendlyError {
+  constructor(args: GraphqlBadRequestDataType, message?: string | ((args: GraphqlBadRequestDataType) => string)) {
+    super('bad_request', 'graphql_bad_request', message, args);
+  }
+}
+@ObjectType()
 class QueryTooLongDataType {
   @Field() max!: number
 }
@@ -787,6 +798,7 @@ export enum ErrorNames {
   TOO_MANY_REQUEST,
   NOT_FOUND,
   BAD_REQUEST,
+  GRAPHQL_BAD_REQUEST,
   QUERY_TOO_LONG,
   USER_NOT_FOUND,
   USER_AVATAR_NOT_FOUND,
@@ -891,5 +903,5 @@ registerEnumType(ErrorNames, {
 export const ErrorDataUnionType = createUnionType({
   name: 'ErrorDataUnion',
   types: () =>
-    [QueryTooLongDataType, WrongSignInCredentialsDataType, UnknownOauthProviderDataType, MissingOauthQueryParameterDataType, InvalidEmailDataType, InvalidPasswordLengthDataType, WorkspacePermissionNotFoundDataType, SpaceNotFoundDataType, MemberNotFoundInSpaceDataType, NotInSpaceDataType, AlreadyInSpaceDataType, SpaceAccessDeniedDataType, SpaceOwnerNotFoundDataType, SpaceShouldHaveOnlyOneOwnerDataType, DocNotFoundDataType, DocAccessDeniedDataType, VersionRejectedDataType, InvalidHistoryTimestampDataType, DocHistoryNotFoundDataType, BlobNotFoundDataType, ExpectToGrantDocUserRolesDataType, ExpectToRevokeDocUserRolesDataType, ExpectToUpdateDocUserRoleDataType, UnsupportedSubscriptionPlanDataType, SubscriptionAlreadyExistsDataType, SubscriptionNotExistsDataType, SameSubscriptionRecurringDataType, SubscriptionPlanNotFoundDataType, CopilotDocNotFoundDataType, CopilotMessageNotFoundDataType, CopilotPromptNotFoundDataType, CopilotProviderSideErrorDataType, CopilotInvalidContextDataType, CopilotContextFileNotSupportedDataType, CopilotFailedToModifyContextDataType, CopilotFailedToMatchContextDataType, RuntimeConfigNotFoundDataType, InvalidRuntimeConfigTypeDataType, InvalidLicenseUpdateParamsDataType, WorkspaceMembersExceedLimitToDowngradeDataType] as const,
+    [GraphqlBadRequestDataType, QueryTooLongDataType, WrongSignInCredentialsDataType, UnknownOauthProviderDataType, MissingOauthQueryParameterDataType, InvalidEmailDataType, InvalidPasswordLengthDataType, WorkspacePermissionNotFoundDataType, SpaceNotFoundDataType, MemberNotFoundInSpaceDataType, NotInSpaceDataType, AlreadyInSpaceDataType, SpaceAccessDeniedDataType, SpaceOwnerNotFoundDataType, SpaceShouldHaveOnlyOneOwnerDataType, DocNotFoundDataType, DocAccessDeniedDataType, VersionRejectedDataType, InvalidHistoryTimestampDataType, DocHistoryNotFoundDataType, BlobNotFoundDataType, ExpectToGrantDocUserRolesDataType, ExpectToRevokeDocUserRolesDataType, ExpectToUpdateDocUserRoleDataType, UnsupportedSubscriptionPlanDataType, SubscriptionAlreadyExistsDataType, SubscriptionNotExistsDataType, SameSubscriptionRecurringDataType, SubscriptionPlanNotFoundDataType, CopilotDocNotFoundDataType, CopilotMessageNotFoundDataType, CopilotPromptNotFoundDataType, CopilotProviderSideErrorDataType, CopilotInvalidContextDataType, CopilotContextFileNotSupportedDataType, CopilotFailedToModifyContextDataType, CopilotFailedToMatchContextDataType, RuntimeConfigNotFoundDataType, InvalidRuntimeConfigTypeDataType, InvalidLicenseUpdateParamsDataType, WorkspaceMembersExceedLimitToDowngradeDataType] as const,
 });

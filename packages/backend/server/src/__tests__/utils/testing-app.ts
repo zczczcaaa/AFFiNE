@@ -162,12 +162,18 @@ export class TestingApp extends ApplyType<INestApplication>() {
     if (res.status !== 200) {
       throw new Error(
         `Failed to execute gql: ${query}, status: ${res.status}, body: ${JSON.stringify(
-          res.body
+          res.body,
+          null,
+          2
         )}`
       );
     }
 
     if (res.body.errors?.length) {
+      if (TEST_LOG_LEVEL !== 'fatal') {
+        // print the error stack when log level is not fatal, for better debugging
+        console.error('%o', res.body);
+      }
       throw new Error(res.body.errors[0].message);
     }
 

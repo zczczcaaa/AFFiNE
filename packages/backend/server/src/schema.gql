@@ -315,7 +315,7 @@ type EditorType {
   name: String!
 }
 
-union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotContextFileNotSupportedDataType | CopilotDocNotFoundDataType | CopilotFailedToMatchContextDataType | CopilotFailedToModifyContextDataType | CopilotInvalidContextDataType | CopilotMessageNotFoundDataType | CopilotPromptNotFoundDataType | CopilotProviderSideErrorDataType | DocAccessDeniedDataType | DocHistoryNotFoundDataType | DocNotFoundDataType | ExpectToGrantDocUserRolesDataType | ExpectToRevokeDocUserRolesDataType | ExpectToUpdateDocUserRoleDataType | InvalidEmailDataType | InvalidHistoryTimestampDataType | InvalidLicenseUpdateParamsDataType | InvalidPasswordLengthDataType | InvalidRuntimeConfigTypeDataType | MemberNotFoundInSpaceDataType | MissingOauthQueryParameterDataType | NotInSpaceDataType | QueryTooLongDataType | RuntimeConfigNotFoundDataType | SameSubscriptionRecurringDataType | SpaceAccessDeniedDataType | SpaceNotFoundDataType | SpaceOwnerNotFoundDataType | SpaceShouldHaveOnlyOneOwnerDataType | SubscriptionAlreadyExistsDataType | SubscriptionNotExistsDataType | SubscriptionPlanNotFoundDataType | UnknownOauthProviderDataType | UnsupportedSubscriptionPlanDataType | VersionRejectedDataType | WorkspaceMembersExceedLimitToDowngradeDataType | WorkspacePermissionNotFoundDataType | WrongSignInCredentialsDataType
+union ErrorDataUnion = AlreadyInSpaceDataType | BlobNotFoundDataType | CopilotContextFileNotSupportedDataType | CopilotDocNotFoundDataType | CopilotFailedToMatchContextDataType | CopilotFailedToModifyContextDataType | CopilotInvalidContextDataType | CopilotMessageNotFoundDataType | CopilotPromptNotFoundDataType | CopilotProviderSideErrorDataType | DocAccessDeniedDataType | DocHistoryNotFoundDataType | DocNotFoundDataType | ExpectToGrantDocUserRolesDataType | ExpectToRevokeDocUserRolesDataType | ExpectToUpdateDocUserRoleDataType | GraphqlBadRequestDataType | InvalidEmailDataType | InvalidHistoryTimestampDataType | InvalidLicenseUpdateParamsDataType | InvalidPasswordLengthDataType | InvalidRuntimeConfigTypeDataType | MemberNotFoundInSpaceDataType | MissingOauthQueryParameterDataType | NotInSpaceDataType | QueryTooLongDataType | RuntimeConfigNotFoundDataType | SameSubscriptionRecurringDataType | SpaceAccessDeniedDataType | SpaceNotFoundDataType | SpaceOwnerNotFoundDataType | SpaceShouldHaveOnlyOneOwnerDataType | SubscriptionAlreadyExistsDataType | SubscriptionNotExistsDataType | SubscriptionPlanNotFoundDataType | UnknownOauthProviderDataType | UnsupportedSubscriptionPlanDataType | VersionRejectedDataType | WorkspaceMembersExceedLimitToDowngradeDataType | WorkspacePermissionNotFoundDataType | WrongSignInCredentialsDataType
 
 enum ErrorNames {
   ACCESS_DENIED
@@ -364,6 +364,7 @@ enum ErrorNames {
   FAILED_TO_CHECKOUT
   FAILED_TO_SAVE_UPDATES
   FAILED_TO_UPSERT_SNAPSHOT
+  GRAPHQL_BAD_REQUEST
   INTERNAL_SERVER_ERROR
   INVALID_CHECKOUT_PARAMETERS
   INVALID_EMAIL
@@ -473,6 +474,11 @@ type GrantedDocUserType {
 type GrantedDocUserTypeEdge {
   cursor: String!
   node: GrantedDocUserType!
+}
+
+type GraphqlBadRequestDataType {
+  code: String!
+  message: String!
 }
 
 type InvalidEmailDataType {
