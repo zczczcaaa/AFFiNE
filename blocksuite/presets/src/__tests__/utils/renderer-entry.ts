@@ -5,7 +5,7 @@ import { setupEditor } from './setup.js';
 
 async function init() {
   setupEditor('edgeless', [ViewportTurboRendererExtension]);
-  addSampleNotes(doc, 6);
+  addSampleNotes(doc, 1);
   doc.load();
 }
 

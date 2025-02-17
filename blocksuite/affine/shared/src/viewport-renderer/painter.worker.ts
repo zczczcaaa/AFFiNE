@@ -1,8 +1,9 @@
 import { type SectionLayout } from './types.js';
 
-type WorkerMessageInit = {
-  type: 'initSection';
+type WorkerMessagePaint = {
+  type: 'paintSection';
   data: {
+    section: SectionLayout;
     width: number;
     height: number;
     dpr: number;
@@ -10,14 +11,7 @@ type WorkerMessageInit = {
   };
 };
 
-type WorkerMessagePaint = {
-  type: 'paintSection';
-  data: {
-    section: SectionLayout;
-  };
-};
-
-type WorkerMessage = WorkerMessageInit | WorkerMessagePaint;
+type WorkerMessage = WorkerMessagePaint;
 
 const meta = {
   emSize: 2048,
@@ -46,14 +40,21 @@ function getBaseline() {
 
 /** Section painter in worker */
 class SectionPainter {
-  private canvas: OffscreenCanvas | null = null;
+  private readonly canvas: OffscreenCanvas = new OffscreenCanvas(0, 0);
   private ctx: OffscreenCanvasRenderingContext2D | null = null;
   private zoom = 1;
 
-  init(modelWidth: number, modelHeight: number, dpr: number, zoom: number) {
-    const width = modelWidth * dpr * zoom;
-    const height = modelHeight * dpr * zoom;
-    this.canvas = new OffscreenCanvas(width, height);
+  setSize(
+    sectionRectW: number,
+    sectionRectH: number,
+    dpr: number,
+    zoom: number
+  ) {
+    const width = sectionRectW * dpr * zoom;
+    const height = sectionRectH * dpr * zoom;
+
+    this.canvas.width = width;
+    this.canvas.height = height;
     this.ctx = this.canvas.getContext('2d')!;
     this.ctx.scale(dpr, dpr);
     this.zoom = zoom;
@@ -130,13 +131,9 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   }
 
   switch (type) {
-    case 'initSection': {
-      const { width, height, dpr, zoom } = data;
-      painter.init(width, height, dpr, zoom);
-      break;
-    }
     case 'paintSection': {
-      const { section } = data;
+      const { section, width, height, dpr, zoom } = data;
+      painter.setSize(width, height, dpr, zoom);
       painter.paint(section);
       break;
     }
