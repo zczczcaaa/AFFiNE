@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   Loading,
   Menu,
   MenuItem,
@@ -165,9 +164,11 @@ export const InviteMemberEditor = ({
         }
         return [...prev, member];
       });
+      setSearchText('');
+      memberSearchService.search('');
       focusInput();
     },
-    [focusInput]
+    [focusInput, memberSearchService]
   );
 
   const handleRoleChange = useCallback((role: DocRole) => {
@@ -211,9 +212,11 @@ export const InviteMemberEditor = ({
               onBlur={onBlur}
               autoFocus
               className={styles.searchInput}
-              placeholder={t[
-                'com.affine.share-menu.invite-editor.placeholder'
-              ]()}
+              placeholder={
+                selectedMembers.length
+                  ? ''
+                  : t['com.affine.share-menu.invite-editor.placeholder']()
+              }
             />
           </div>
           {!selectedMembers.length ? null : (
@@ -225,17 +228,6 @@ export const InviteMemberEditor = ({
             />
           )}
         </div>
-        {selectedMembers.length ? (
-          <div className={styles.sentEmail}>
-            <Checkbox
-              className={styles.checkbox}
-              checked={false}
-              disabled // TODO(@JimmFly): implement this
-            />
-            {t['com.affine.share-menu.invite-editor.sent-email']()}
-            {` (coming soon)`}
-          </div>
-        ) : null}
         <div className={styles.resultContainer}>
           <Result onClickMember={handleClickMember} />
         </div>
