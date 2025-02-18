@@ -3,18 +3,13 @@ import { useSharingUrl } from '@affine/core/components/hooks/affine/use-share-ur
 import { WorkspaceDialogService } from '@affine/core/modules/dialogs';
 import { DocService } from '@affine/core/modules/doc';
 import { EditorService } from '@affine/core/modules/editor';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { useInsidePeekView } from '@affine/core/modules/peek-view/view/modal-container';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { extractEmojiIcon } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
-import {
-  matchModels,
-  NoteBlockModel,
-  NoteDisplayMode,
-} from '@blocksuite/affine/blocks';
+import { type NoteBlockModel } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
 import {
   InformationIcon,
@@ -184,19 +179,9 @@ const LinkButton = ({ note }: { note: NoteBlockModel }) => {
 };
 
 export const EdgelessNoteHeader = ({ note }: { note: NoteBlockModel }) => {
-  const flags = useService(FeatureFlagService).flags;
   const insidePeekView = useInsidePeekView();
 
-  if (!flags.enable_page_block) return null;
-
-  const isFirstVisibleNote =
-    note.parent?.children.find(
-      child =>
-        matchModels(child, [NoteBlockModel]) &&
-        child.displayMode === NoteDisplayMode.DocAndEdgeless
-    ) === note;
-
-  if (!isFirstVisibleNote) return null;
+  if (!note.isPageBlock()) return null;
 
   return (
     <div className={styles.header} data-testid="edgeless-page-block-header">

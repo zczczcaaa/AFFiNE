@@ -18,7 +18,6 @@ import {
   DocModeProvider,
   EditorSettingProvider,
   EditPropsStore,
-  FeatureFlagService,
   FontLoaderService,
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
@@ -399,11 +398,7 @@ export class EdgelessRootBlockComponent extends BlockComponent<
     const run = () => {
       const storedViewport = std.get(EditPropsStore).getStorage('viewport');
       if (!storedViewport) {
-        const enablePageBlock = this.std
-          .get(FeatureFlagService)
-          .getFlag('enable_page_block');
-
-        if (!(enablePageBlock && pageBlockViewportFitAnimation())) {
+        if (!pageBlockViewportFitAnimation()) {
           this.gfx.fitToScreen();
         }
         return;

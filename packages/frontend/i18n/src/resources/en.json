@@ -1357,8 +1357,6 @@
   "com.affine.settings.workspace.experimental-features.enable-mobile-edgeless-editing.description": "Once enabled, users can edit edgeless canvas.",
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.name": "PDF embed preview",
   "com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description": "Once enabled, you can preview PDF in embed view.",
-  "com.affine.settings.workspace.experimental-features.enable-page-block-header.name": "Page Block Header",
-  "com.affine.settings.workspace.experimental-features.enable-page-block-header.description": "Once enabled, the header of page block will be displayed.",
   "com.affine.settings.workspace.experimental-features.enable-editor-rtl.name": "Editor RTL",
   "com.affine.settings.workspace.experimental-features.enable-editor-rtl.description": "Once enabled, the editor will be displayed in RTL mode.",
   "com.affine.settings.workspace.not-owner": "Only an owner can edit the workspace avatar and name. Changes will be shown for everyone.",

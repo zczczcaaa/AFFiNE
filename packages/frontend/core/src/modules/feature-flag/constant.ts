@@ -231,17 +231,6 @@ export const AFFINE_FLAGS = {
     configurable: true,
     defaultState: isCanaryBuild,
   },
-  // TODO(@L-Sun): remove this flag when ready
-  enable_page_block: {
-    category: 'blocksuite',
-    bsFlag: 'enable_page_block',
-    displayName:
-      'com.affine.settings.workspace.experimental-features.enable-page-block-header.name',
-    description:
-      'com.affine.settings.workspace.experimental-features.enable-page-block-header.description',
-    configurable: isCanaryBuild,
-    defaultState: isCanaryBuild,
-  },
   enable_editor_rtl: {
     category: 'affine',
     displayName:

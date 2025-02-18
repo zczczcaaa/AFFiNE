@@ -154,4 +154,17 @@ export class NoteBlockModel
     }
     return false;
   }
+
+  /**
+   * We define a note block as a page block if it is the first visible note
+   */
+  isPageBlock() {
+    return (
+      this.parent?.children.find(
+        child =>
+          child instanceof NoteBlockModel &&
+          child.displayMode !== NoteDisplayMode.EdgelessOnly
+      ) === this
+    );
+  }
 }

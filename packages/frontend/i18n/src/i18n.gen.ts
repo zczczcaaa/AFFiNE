@@ -5438,14 +5438,6 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.experimental-features.enable-pdf-embed-preview.description"](): string;
     /**
-      * `Page Block Header`
-      */
-    ["com.affine.settings.workspace.experimental-features.enable-page-block-header.name"](): string;
-    /**
-      * `Once enabled, the header of page block will be displayed.`
-      */
-    ["com.affine.settings.workspace.experimental-features.enable-page-block-header.description"](): string;
-    /**
       * `Editor RTL`
       */
     ["com.affine.settings.workspace.experimental-features.enable-editor-rtl.name"](): string;

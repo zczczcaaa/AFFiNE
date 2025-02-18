@@ -12,7 +12,6 @@ import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { NoteConfigExtension } from '../config';
-import { isPageBlock } from '../utils';
 import * as styles from './edgeless-page-block-title.css';
 
 @requiredProperties({
@@ -22,7 +21,7 @@ export class EdgelessPageBlockTitle extends SignalWatcher(
   WithDisposable(ShadowlessElement)
 ) {
   override render() {
-    if (!isPageBlock(this.std, this.note)) return;
+    if (!this.note.isPageBlock()) return;
 
     const title = this.std
       .getOptional(NoteConfigExtension.identifier)

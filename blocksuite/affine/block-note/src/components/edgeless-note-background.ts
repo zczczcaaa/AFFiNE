@@ -36,7 +36,6 @@ import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { NoteConfigExtension } from '../config';
-import { isPageBlock } from '../utils';
 import * as styles from './edgeless-note-background.css';
 
 @requiredProperties({
@@ -162,7 +161,7 @@ export class EdgelessNoteBackground extends SignalWatcher(
       @pointerdown=${stopPropagation}
       @click=${this._handleClickAtBackground}
     >
-      ${isPageBlock(this.std, this.note) ? this._renderHeader() : nothing}
+      ${this.note.isPageBlock() ? this._renderHeader() : nothing}
     </div>`;
   }
 

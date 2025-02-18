@@ -1,6 +1,6 @@
 import {
   changeNoteDisplayMode,
-  isPageBlock,
+  NoteConfigExtension,
 } from '@blocksuite/affine-block-note';
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type {
@@ -147,10 +147,6 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     return this.doc
       .get(FeatureFlagService)
       .getFlag('enable_advanced_block_visibility');
-  }
-
-  private get _pageBlockEnabled() {
-    return this.doc.get(FeatureFlagService).getFlag('enable_page_block');
   }
 
   private get doc() {
@@ -348,6 +344,10 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
     const onlyOne = len === 1;
     const isDocOnly = displayMode === NoteDisplayMode.DocOnly;
 
+    const hasPageBlockHeader = !!this.edgeless.std.getOptional(
+      NoteConfigExtension.identifier
+    )?.edgelessNoteHeader;
+
     const theme = this.edgeless.std.get(ThemeProvider).theme;
     const buttonIconSize = { width: '20px', height: '20px' };
     const buttons = [
@@ -378,10 +378,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
           `
         : nothing,
 
-      onlyOne &&
-      !isPageBlock(this.edgeless.std, note) &&
-      this._pageBlockEnabled &&
-      !this._advancedVisibilityEnabled
+      onlyOne && !note.isPageBlock() && !this._advancedVisibilityEnabled
         ? html`<editor-icon-button
             aria-label="Display In Page"
             .showTooltip=${displayMode === NoteDisplayMode.DocAndEdgeless}
@@ -536,7 +533,7 @@ export class EdgelessChangeNoteButton extends WithDisposable(LitElement) {
 
       onlyOne ? this.quickConnectButton : nothing,
 
-      !isPageBlock(this.edgeless.std, this.notes[0])
+      !this.notes[0].isPageBlock() || !hasPageBlockHeader
         ? html`<editor-icon-button
             aria-label="Size"
             data-testid="edgeless-note-auto-height"
