@@ -90,6 +90,11 @@ export class EdgelessMindmapToolButton extends EdgelessToolbarToolMixin(
     .glass.enabled {
       backdrop-filter: blur(2px);
     }
+    @-moz-document url-prefix() {
+      .glass.enabled {
+        backdrop-filter: none;
+      }
+    }
 
     .basket {
       z-index: 3;
