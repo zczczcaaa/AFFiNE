@@ -241,7 +241,7 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
           ${status === 'transmitting'
             ? html`<div @click=${this._handleAbort}>${ChatAbortIcon}</div>`
             : html`<div
-                @click="${this._send}"
+                @click=${this._onTextareaSend}
                 class="chat-panel-send"
                 aria-disabled=${this._isInputEmpty}
               >
@@ -306,7 +306,7 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
     return !!this.chatContext.images.length;
   }
 
-  private get _promptName() {
+  private _getPromptName() {
     if (this._isNetworkDisabled) {
       return PROMPT_NAME_AFFINE_AI;
     }
@@ -315,15 +315,12 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
       : PROMPT_NAME_AFFINE_AI;
   }
 
-  private async _updatePromptName() {
-    if (this._lastPromptName !== this._promptName) {
-      this._lastPromptName = this._promptName;
+  private async _updatePromptName(promptName: string) {
+    if (this._lastPromptName !== promptName) {
       const { currentSessionId } = this.chatContext;
-      if (currentSessionId) {
-        await AIProvider.session?.updateSession(
-          currentSessionId,
-          this._promptName
-        );
+      if (currentSessionId && AIProvider.session) {
+        await AIProvider.session.updateSession(currentSessionId, promptName);
+        this._lastPromptName = promptName;
       }
     }
   }
@@ -346,7 +343,7 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
   private readonly _handleKeyDown = async (evt: KeyboardEvent) => {
     if (evt.key === 'Enter' && !evt.shiftKey && !evt.isComposing) {
       evt.preventDefault();
-      await this._send();
+      await this._onTextareaSend(evt);
     }
   };
 
@@ -452,56 +449,70 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
     `;
   }
 
-  private readonly _send = async () => {
-    const { images, status } = this.chatContext;
-    if (status === 'loading' || status === 'transmitting') return;
+  private readonly _onTextareaSend = async (e: MouseEvent | KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-    const text = this.textarea.value;
-    if (!text && !images.length) {
-      return;
-    }
+    const value = this.textarea.value.trim();
+    if (value.length === 0) return;
 
-    const { doc } = this.host;
     this.textarea.value = '';
     this._isInputEmpty = true;
     this.textarea.style.height = 'unset';
-    this.updateContext({
-      images: [],
-      status: 'loading',
-      error: null,
-    });
 
-    const attachments = await Promise.all(
-      images?.map(image => readBlobAsURL(image))
-    );
+    await this._send(value);
+  };
 
-    const userInfo = await AIProvider.userInfo;
-    this.updateContext({
-      messages: [
-        ...this.chatContext.messages,
-        {
-          id: '',
-          content: text,
-          role: 'user',
-          createdAt: new Date().toISOString(),
-          attachments,
-          userId: userInfo?.id,
-          userName: userInfo?.name,
-          avatarUrl: userInfo?.avatarUrl ?? undefined,
-        },
-        {
-          id: '',
-          content: '',
-          role: 'assistant',
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    });
-
-    const { currentChatBlockId, currentSessionId } = this.chatContext;
-    let content = '';
+  private readonly _send = async (text: string) => {
+    const { images, status, currentChatBlockId, currentSessionId } =
+      this.chatContext;
     const chatBlockExists = !!currentChatBlockId;
+    let content = '';
+
+    if (status === 'loading' || status === 'transmitting') return;
+    if (!text) return;
+
     try {
+      const { doc } = this.host;
+      const promptName = this._getPromptName();
+
+      this.updateContext({
+        images: [],
+        status: 'loading',
+        error: null,
+      });
+
+      const attachments = await Promise.all(
+        images?.map(image => readBlobAsURL(image))
+      );
+
+      const userInfo = await AIProvider.userInfo;
+      this.updateContext({
+        messages: [
+          ...this.chatContext.messages,
+          {
+            id: '',
+            content: text,
+            role: 'user',
+            createdAt: new Date().toISOString(),
+            attachments,
+            userId: userInfo?.id,
+            userName: userInfo?.name,
+            avatarUrl: userInfo?.avatarUrl ?? undefined,
+          },
+          {
+            id: '',
+            content: '',
+            role: 'assistant',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      });
+
+      // must update prompt name after local chat message is updated
+      // otherwise, the unauthorized error can not be rendered properly
+      await this._updatePromptName(promptName);
+
       // If has not forked a chat session, fork a new one
       let chatSessionId = currentSessionId;
       if (!chatSessionId) {
@@ -517,8 +528,6 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
         });
         chatSessionId = forkSessionId;
       }
-
-      await this._updatePromptName();
 
       const abortController = new AbortController();
       const stream = AIProvider.actions.chat?.({

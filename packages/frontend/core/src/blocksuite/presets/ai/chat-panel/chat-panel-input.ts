@@ -288,7 +288,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
     );
   }
 
-  private get _promptName() {
+  private _getPromptName() {
     if (this._isNetworkDisabled) {
       return PROMPT_NAME_AFFINE_AI;
     }
@@ -297,12 +297,12 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       : PROMPT_NAME_AFFINE_AI;
   }
 
-  private async _updatePromptName() {
-    if (this._lastPromptName !== this._promptName) {
-      this._lastPromptName = this._promptName;
+  private async _updatePromptName(promptName: string) {
+    if (this._lastPromptName !== promptName) {
       const sessionId = await this.getSessionId();
-      if (sessionId) {
-        await AIProvider.session?.updateSession(sessionId, this._promptName);
+      if (sessionId && AIProvider.session) {
+        await AIProvider.session.updateSession(sessionId, promptName);
+        this._lastPromptName = promptName;
       }
     }
   }
@@ -457,7 +457,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
           }}
           @keydown=${async (evt: KeyboardEvent) => {
             if (evt.key === 'Enter' && !evt.shiftKey && !evt.isComposing) {
-              this._onTextareaSend(evt);
+              await this._onTextareaSend(evt);
             }
           }}
           @focus=${() => {
@@ -538,7 +538,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       </div>`;
   }
 
-  private readonly _onTextareaSend = (e: MouseEvent | KeyboardEvent) => {
+  private readonly _onTextareaSend = async (e: MouseEvent | KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -549,17 +549,17 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
     this.isInputEmpty = true;
     this.textarea.style.height = 'unset';
 
-    this.send(value).catch(console.error);
+    await this.send(value);
   };
 
   send = async (text: string) => {
-    const { status, markdown, chips } = this.chatContextValue;
+    const { status, markdown, chips, images } = this.chatContextValue;
     if (status === 'loading' || status === 'transmitting') return;
     if (!text) return;
 
     try {
-      const { images } = this.chatContextValue;
       const { doc } = this.host;
+      const promptName = this._getPromptName();
 
       this.updateContext({
         images: [],
@@ -593,7 +593,9 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
         ],
       });
 
-      await this._updatePromptName();
+      // must update prompt name after local chat message is updated
+      // otherwise, the unauthorized error can not be rendered properly
+      await this._updatePromptName(promptName);
 
       const abortController = new AbortController();
       const sessionId = await this.getSessionId();

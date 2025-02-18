@@ -517,6 +517,45 @@ test.describe('chat panel', () => {
     );
   });
 
+  test('can identify shape color, even if network search is active', async ({
+    page,
+  }) => {
+    await page.reload();
+    await clickSideBarAllPageButton(page);
+    await page.waitForTimeout(200);
+    await createLocalWorkspace({ name: 'test' }, page);
+    await clickNewPageButton(page);
+
+    await openChat(page);
+    await page.getByTestId('chat-network-search').click();
+
+    await switchToEdgelessMode(page);
+
+    const shapeButton = await page.waitForSelector(
+      'edgeless-shape-tool-button'
+    );
+    await shapeButton.click();
+    await page.mouse.click(400, 400);
+
+    const askAIButton = await page.waitForSelector('.copilot-icon-button');
+    await askAIButton.click();
+
+    await page.waitForTimeout(1000);
+    await page.keyboard.type('What color is this shape?');
+    await page.keyboard.press('Enter');
+
+    const history = await collectChat(page);
+    expect(history[0]).toEqual({
+      name: 'You',
+      content: 'What color is this shape?',
+    });
+    expect(history[1].name).toBe('AFFiNE AI');
+    expect(history[1].content).toContain('yellow');
+    expect(await page.locator('chat-panel affine-footnote-node').count()).toBe(
+      0
+    );
+  });
+
   test('can trigger inline ai input and action panel by clicking Start with AI button', async ({
     page,
   }) => {
