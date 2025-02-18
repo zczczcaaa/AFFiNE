@@ -8,6 +8,10 @@ export class AFFiNELogger extends WinstonLogger {
     stackOrError?: Error | string | unknown,
     context?: string
   ) {
-    RawAFFiNELogger.prototype.error.call(this, message, stackOrError, context);
+    super.error(
+      message,
+      RawAFFiNELogger.formatStack(stackOrError) as string,
+      context
+    );
   }
 }

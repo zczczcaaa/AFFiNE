@@ -18,6 +18,18 @@ export class AFFiNELogger extends ConsoleLogger {
     return ClsServiceManager.getClsService()?.getId();
   }
 
+  static formatStack(stackOrError?: Error | string | unknown) {
+    if (stackOrError instanceof Error) {
+      const err = stackOrError;
+      let stack = err.stack ?? '';
+      if (err.cause instanceof Error && err.cause.stack) {
+        stack += `\n\nCaused by:\n\n${err.cause.stack}`;
+      }
+      return stack;
+    }
+    return stackOrError;
+  }
+
   /**
    * Nestjs ConsoleLogger.error() will not print the stack trace if the error is an instance of Error
    * This method is a workaround to print the stack trace
@@ -32,15 +44,6 @@ export class AFFiNELogger extends ConsoleLogger {
     stackOrError?: Error | string | unknown,
     context?: string
   ) {
-    let stack = '';
-    if (stackOrError instanceof Error) {
-      const err = stackOrError;
-      stack = err.stack ?? '';
-      if (err.cause instanceof Error && err.cause.stack) {
-        stack += `\n\nCaused by:\n\n${err.cause.stack}`;
-      }
-      stackOrError = stack;
-    }
-    super.error(message, stackOrError, context);
+    super.error(message, AFFiNELogger.formatStack(stackOrError), context);
   }
 }
