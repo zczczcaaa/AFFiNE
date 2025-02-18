@@ -146,10 +146,9 @@ export class EdgelessWatcher {
     const padding = HOVER_AREA_RECT_PADDING_TOP_LEVEL * scale;
 
     const containerWidth = DRAG_HANDLE_CONTAINER_WIDTH_TOP_LEVEL * scale;
-    const offsetLeft = DRAG_HANDLE_CONTAINER_OFFSET_LEFT_TOP_LEVEL * scale;
+    const offsetLeft = DRAG_HANDLE_CONTAINER_OFFSET_LEFT_TOP_LEVEL;
 
     left -= containerWidth + offsetLeft;
-    top -= padding;
     right += padding;
     bottom += padding;
 
@@ -174,7 +173,7 @@ export class EdgelessWatcher {
 
     const { disposables, std } = this.widget;
     const gfx = std.get(GfxControllerIdentifier);
-    const { viewport, selection, tool } = gfx;
+    const { viewport, selection, tool, surface } = gfx;
     const edgelessSlots = std.get(EdgelessLegacySlotIdentifier);
 
     disposables.add(
@@ -212,5 +211,15 @@ export class EdgelessWatcher {
         this.widget.hide();
       })
     );
+
+    if (surface) {
+      disposables.add(
+        surface.elementUpdated.on(() => {
+          if (this.widget.isGfxDragHandleVisible) {
+            this._showDragHandle().catch(console.error);
+          }
+        })
+      );
+    }
   }
 }
