@@ -58,7 +58,7 @@ test.after.always(async t => {
   await t.context.app.close();
 });
 
-test.only('should render page success', async t => {
+test('should render page success', async t => {
   const docId = randomUUID();
   const { app, adapter, permission } = t.context;
 

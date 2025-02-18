@@ -14,6 +14,8 @@ import { AuthGuard } from './core/auth';
 import { ENABLED_FEATURES } from './core/config/server-feature';
 import { serverTimingAndCache } from './middleware/timing';
 
+const OneMB = 1024 * 1024;
+
 export async function createApp() {
   const { AppModule } = await import('./app.module');
 
@@ -24,7 +26,7 @@ export async function createApp() {
     bufferLogs: true,
   });
 
-  app.useBodyParser('raw', { limit: '100mb' });
+  app.useBodyParser('raw', { limit: 100 * OneMB });
 
   app.useLogger(app.get(AFFiNELogger));
 
@@ -36,8 +38,7 @@ export async function createApp() {
 
   app.use(
     graphqlUploadExpress({
-      // TODO(@darkskygit): dynamic limit by quota maybe?
-      maxFileSize: 100 * 1024 * 1024,
+      maxFileSize: 100 * OneMB,
       maxFiles: 32,
     })
   );

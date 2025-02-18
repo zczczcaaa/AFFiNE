@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
+import { Controller, Post, RawBody } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import type { TestFn } from 'ava';
 import ava from 'ava';
@@ -8,6 +9,7 @@ import request from 'supertest';
 
 import { buildAppModule } from '../../app.module';
 import { Config } from '../../base';
+import { Public } from '../../core/auth';
 import { ServerService } from '../../core/config';
 import { createTestingApp, type TestingApp } from '../utils';
 
@@ -36,12 +38,22 @@ function initTestStaticFiles(staticPath: string) {
   }
 }
 
+@Controller('/')
+export class TestResolver {
+  @Public()
+  @Post('/upload')
+  async upload(@RawBody() buffer: Buffer | undefined): Promise<number> {
+    return buffer?.length || 0;
+  }
+}
+
 test.before('init selfhost server', async t => {
   // @ts-expect-error override
   AFFiNE.isSelfhosted = true;
   AFFiNE.flavor.renderer = true;
   const app = await createTestingApp({
     imports: [buildAppModule()],
+    controllers: [TestResolver],
   });
 
   t.context.app = app;
@@ -202,4 +214,17 @@ test.skip('should return web assets if visited by mobile', async t => {
     .expect(200);
 
   t.true(res.text.includes('AFFiNE mobile'));
+});
+
+test('should can send maximum size of body', async t => {
+  const { app } = t.context;
+
+  const body = 'a'.repeat(1 * 1024 * 1024);
+  const res = await app
+    .POST('/upload')
+    .set('Content-Type', 'application/octet-stream')
+    .send(body)
+    .expect(201);
+
+  t.is(Number(res.text), body.length);
 });
