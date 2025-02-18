@@ -22,6 +22,7 @@ import { syncBlockProps } from './utils.js';
 export type StoreOptions = {
   schema: Schema;
   doc: Doc;
+  id?: string;
   readonly?: boolean;
   query?: Query;
   provider?: ServiceProvider;

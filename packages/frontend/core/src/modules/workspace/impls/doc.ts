@@ -26,11 +26,7 @@ export class DocImpl implements Doc {
 
   private readonly _collection: Workspace;
 
-  private readonly _docMap = {
-    undefined: new Map<string, Store>(),
-    true: new Map<string, Store>(),
-    false: new Map<string, Store>(),
-  };
+  private readonly _storeMap = new Map<string, Store>();
 
   // doc/space container.
   private readonly _handleYEvents = (events: Y.YEvent<YBlock | Y.Text>[]) => {
@@ -174,8 +170,8 @@ export class DocImpl implements Doc {
     this._collection = collection;
   }
 
-  private _getReadonlyKey(readonly?: boolean): 'true' | 'false' | 'undefined' {
-    return (readonly?.toString() as 'true' | 'false') ?? 'undefined';
+  private _getReadonlyKey(readonly?: boolean): 'true' | 'false' {
+    return (readonly?.toString() as 'true' | 'false') ?? 'false';
   }
 
   private _handleVersion() {
@@ -238,9 +234,8 @@ export class DocImpl implements Doc {
   }
 
   clearQuery(query: Query, readonly?: boolean) {
-    const readonlyKey = this._getReadonlyKey(readonly);
-
-    this._docMap[readonlyKey].delete(JSON.stringify(query));
+    const key = this._getQueryKey({ readonly, query });
+    this._storeMap.delete(key);
   }
 
   private _destroy() {
@@ -258,13 +253,40 @@ export class DocImpl implements Doc {
     }
   }
 
-  getStore({ readonly, query, provider, extensions }: GetBlocksOptions = {}) {
+  private readonly _getQueryKey = (
+    idOrOptions: string | { readonly?: boolean; query?: Query }
+  ) => {
+    if (typeof idOrOptions === 'string') {
+      return idOrOptions;
+    }
+    const { readonly, query } = idOrOptions;
     const readonlyKey = this._getReadonlyKey(readonly);
+    const key = JSON.stringify({
+      readonlyKey,
+      query,
+    });
+    return key;
+  };
 
-    const key = JSON.stringify(query);
+  getStore({
+    readonly,
+    query,
+    provider,
+    extensions,
+    id,
+  }: GetBlocksOptions = {}) {
+    let idOrOptions: string | { readonly?: boolean; query?: Query };
+    if (readonly || query) {
+      idOrOptions = { readonly, query };
+    } else if (!id) {
+      idOrOptions = this.workspace.idGenerator();
+    } else {
+      idOrOptions = id;
+    }
+    const key = this._getQueryKey(idOrOptions);
 
-    if (this._docMap[readonlyKey].has(key)) {
-      return this._docMap[readonlyKey].get(key) as Store;
+    if (this._storeMap.has(key)) {
+      return this._storeMap.get(key) as Store;
     }
 
     const storeExtensions = SpecProvider.getInstance().getSpec('store');
@@ -281,7 +303,7 @@ export class DocImpl implements Doc {
       extensions: Array.from(extensionSet),
     });
 
-    this._docMap[readonlyKey].set(key, doc);
+    this._storeMap.set(key, doc);
 
     return doc;
   }

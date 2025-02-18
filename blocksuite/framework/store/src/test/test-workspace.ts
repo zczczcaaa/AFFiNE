@@ -180,7 +180,11 @@ export class TestWorkspace implements Workspace {
       tags: [],
     });
     this.slots.docCreated.emit(docId);
-    return this.getDoc(docId, { query, readonly }) as Store;
+    return this.getDoc(docId, {
+      id: docId,
+      query,
+      readonly,
+    }) as Store;
   }
 
   dispose() {
@@ -202,7 +206,10 @@ export class TestWorkspace implements Workspace {
     return space ?? null;
   }
 
-  getDoc(docId: string, options?: GetBlocksOptions): Store | null {
+  getDoc(
+    docId: string,
+    options: GetBlocksOptions = { id: docId }
+  ): Store | null {
     const collection = this.getBlockCollection(docId);
     return collection?.getStore(options) ?? null;
   }

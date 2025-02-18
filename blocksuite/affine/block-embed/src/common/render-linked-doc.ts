@@ -404,7 +404,6 @@ export function createLinkedDocFromSlice(
   snapshots: BlockSnapshot[],
   docTitle?: string
 ) {
-  // const modelsWithChildren = (list:BlockModel[]):BlockModel[]=>list.flatMap(model=>[model,...modelsWithChildren(model.children)])
   const linkedDoc = doc.workspace.createDoc({});
   linkedDoc.load(() => {
     const rootId = linkedDoc.addBlock('affine:page', {

@@ -246,7 +246,9 @@ export class EmbedLinkedDocBlockComponent extends EmbedBlockComponent<EmbedLinke
   }
 
   get linkedDoc() {
-    return this.std.workspace.getDoc(this.model.pageId);
+    return this.std.workspace.getDoc(this.model.pageId, {
+      id: this.model.pageId,
+    });
   }
 
   private _handleDoubleClick(event: MouseEvent) {

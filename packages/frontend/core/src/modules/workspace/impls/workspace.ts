@@ -143,7 +143,11 @@ export class WorkspaceImpl implements Workspace {
       tags: [],
     });
     this.slots.docCreated.emit(docId);
-    return this.getDoc(docId, { query, readonly }) as Store;
+    return this.getDoc(docId, {
+      id: docId,
+      query,
+      readonly,
+    }) as Store;
   }
 
   dispose() {
@@ -155,7 +159,10 @@ export class WorkspaceImpl implements Workspace {
     return space ?? null;
   }
 
-  getDoc(docId: string, options?: GetBlocksOptions): Store | null {
+  getDoc(
+    docId: string,
+    options: GetBlocksOptions = { id: docId }
+  ): Store | null {
     const collection = this._getDoc(docId);
     return collection?.getStore(options) ?? null;
   }
