@@ -245,7 +245,17 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
 
     return html`
       ${style}
-      <div class="affine-paragraph-block-container">
+      <style>
+        .affine-paragraph-block-container[data-has-collapsed-siblings='false']
+          affine-paragraph-heading-icon
+          .heading-icon {
+          transform: translateX(-48px);
+        }
+      </style>
+      <div
+        class="affine-paragraph-block-container"
+        data-has-collapsed-siblings="${collapsedSiblings.length > 0}"
+      >
         <div
           class=${classMap({
             'affine-paragraph-rich-text-wrapper': true,
@@ -253,12 +263,16 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
             [TOGGLE_BUTTON_PARENT_CLASS]: true,
           })}
         >
-          ${this.model.type$.value.startsWith('h') &&
-          collapsedSiblings.length > 0
+          ${this.model.type$.value.startsWith('h')
             ? html`
                 <affine-paragraph-heading-icon
                   .model=${this.model}
                 ></affine-paragraph-heading-icon>
+              `
+            : nothing}
+          ${this.model.type$.value.startsWith('h') &&
+          collapsedSiblings.length > 0
+            ? html`
                 <blocksuite-toggle-button
                   .collapsed=${collapsed}
                   .updateCollapsed=${(value: boolean) => {
