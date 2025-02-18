@@ -1,24 +1,26 @@
-import { Type } from '@nestjs/common';
-import {
-  Field,
-  FieldMiddleware,
-  InputType,
-  Int,
-  MiddlewareContext,
-  NextFn,
-  ObjectType,
-} from '@nestjs/graphql';
-
-const parseCursorMiddleware: FieldMiddleware = async (
-  _ctx: MiddlewareContext,
-  next: NextFn
-) => {
-  const value = await next();
-  return value === undefined || value === null ? null : decode(value);
-};
+import { PipeTransform, Type } from '@nestjs/common';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 
 @InputType()
 export class PaginationInput {
+  /**
+   * Because there is no resolver for GraphQL's InputTypes, we can't automatically decode the cursor input from base64 values.
+   * Use this helper as `PipeTransform` to transform input args
+   *
+   * @example
+   *
+   * paginate(@Args('input', PaginationInput.decode) PaginationInput) {}
+   */
+  static decode: PipeTransform<PaginationInput, PaginationInput> = {
+    transform: value => {
+      return {
+        ...value,
+        after: value.after ? decode(value.after) : null,
+        // before: value.before ? decode(value.before) : null,
+      };
+    },
+  };
+
   @Field(() => Int, {
     nullable: true,
     description: 'returns the first n elements from the list.',
@@ -37,7 +39,6 @@ export class PaginationInput {
     nullable: true,
     description:
       'returns the elements in the list that come after the specified cursor.',
-    middleware: [parseCursorMiddleware],
   })
   after?: string | null;
 
@@ -46,7 +47,6 @@ export class PaginationInput {
   //   nullable: true,
   //   description:
   //     'returns the elements in the list that come before the specified cursor.',
-  //   middleware: [parseCursorMiddleware],
   // })
   // before?: string | null;
 }
@@ -71,7 +71,7 @@ export function paginate<T>(
     edges,
     pageInfo: {
       hasNextPage: edges.length >= paginationInput.first,
-      hasPreviousPage: paginationInput.offset > 0,
+      hasPreviousPage: !!paginationInput.after || paginationInput.offset > 0,
       endCursor: edges.length ? edges[edges.length - 1].cursor : null,
       startCursor: edges.length ? edges[0].cursor : null,
     },
