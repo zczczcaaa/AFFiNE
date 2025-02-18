@@ -18,6 +18,7 @@ import {
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import {
+  DndApiExtensionIdentifier,
   DocModeProvider,
   TelemetryProvider,
 } from '@blocksuite/affine-shared/services';
@@ -985,6 +986,16 @@ export class DragEventWatcher {
     snapshot.content.forEach(rewrite);
   };
 
+  get dndExtension() {
+    return this.std.getOptional(DndApiExtensionIdentifier);
+  }
+
+  /**
+   * This method will try to drop the snapshot as gfx block directly if all blocks can be dropped as gfx block.
+   * Otherwise, it will create a linked doc to reference the original doc.
+   * @param snapshot
+   * @param point
+   */
   private readonly _dropAsGfxBlock = (
     snapshot: SliceSnapshot,
     point: Point
@@ -1063,30 +1074,60 @@ export class DragEventWatcher {
           .catch(console.error);
       }
     } else {
+      const dndExtApi = this.dndExtension;
       const content = snapshot.content.filter(block =>
         schema.safeValidate(block.flavour, 'affine:note')
       );
-      // create note to wrap the snapshot
-      const noteId = store.addBlock(
-        'affine:note',
-        {
-          xywh: new Bound(
-            point.x,
-            point.y,
-            DEFAULT_NOTE_WIDTH,
-            DEFAULT_NOTE_HEIGHT
-          ).serialize(),
-        },
-        this.widget.doc.root!
-      );
+      const sourceDocId = snapshot.pageId;
 
-      this._dropToModel(
-        {
-          ...snapshot,
-          content,
-        },
-        noteId
-      ).catch(console.error);
+      if (
+        dndExtApi &&
+        this.std.store.workspace.docs.has(sourceDocId) &&
+        this.gfx.surface
+      ) {
+        const style = 'vertical' as EmbedCardStyle;
+        const linkedDocSnapshot = dndExtApi.fromEntity({
+          docId: sourceDocId,
+          props: {
+            blockIds: content.map(block => block.id),
+            style: 'vertical',
+            xywh: new Bound(
+              point.x,
+              point.y,
+              EMBED_CARD_WIDTH[style],
+              EMBED_CARD_HEIGHT[style]
+            ).serialize(),
+          },
+        });
+
+        if (linkedDocSnapshot) {
+          this._dropToModel(linkedDocSnapshot, this.gfx.surface.id).catch(
+            console.error
+          );
+        }
+      } else {
+        // create note to wrap the snapshot
+        const noteId = store.addBlock(
+          'affine:note',
+          {
+            xywh: new Bound(
+              point.x,
+              point.y,
+              DEFAULT_NOTE_WIDTH,
+              DEFAULT_NOTE_HEIGHT
+            ).serialize(),
+          },
+          this.widget.doc.root!
+        );
+
+        this._dropToModel(
+          {
+            ...snapshot,
+            content,
+          },
+          noteId
+        ).catch(console.error);
+      }
     }
   };
 

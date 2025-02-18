@@ -32,6 +32,7 @@ export class DNDAPIExtension extends Extension {
     docId: string;
     flavour?: string;
     blockId?: string;
+    props?: Record<string, unknown>;
   }): SliceSnapshot | null {
     const { docId, flavour = 'affine:embed-linked-doc', blockId } = options;
 
@@ -43,6 +44,7 @@ export class DNDAPIExtension extends Extension {
       return null;
     }
     const props = {
+      ...options.props,
       ...(blockId ? { blockId } : {}),
       pageId: docId,
     };
