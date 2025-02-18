@@ -1,11 +1,8 @@
 import {
-  type CanvasRenderer,
-  SurfaceElementModel,
-} from '@blocksuite/affine-block-surface';
-import {
   FrameBlockModel,
   GroupElementModel,
   ImageBlockModel,
+  type NoteBlockModel,
   type RootBlockModel,
 } from '@blocksuite/affine-model';
 import { FetchUtils } from '@blocksuite/affine-shared/adapters';
@@ -13,32 +10,32 @@ import {
   CANVAS_EXPORT_IGNORE_TAGS,
   DEFAULT_IMAGE_PROXY_ENDPOINT,
 } from '@blocksuite/affine-shared/consts';
+import type { Viewport } from '@blocksuite/affine-shared/types';
 import {
   isInsidePageEditor,
   matchModels,
 } from '@blocksuite/affine-shared/utils';
 import {
+  type BlockComponent,
   type BlockStdScope,
   type EditorHost,
   StdIdentifier,
 } from '@blocksuite/block-std';
-import type {
+import {
   GfxBlockElementModel,
-  GfxPrimitiveElementModel,
+  type GfxController,
+  GfxControllerIdentifier,
+  type GfxPrimitiveElementModel,
 } from '@blocksuite/block-std/gfx';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { IBound } from '@blocksuite/global/utils';
-import { Bound } from '@blocksuite/global/utils';
+import { Bound, deserializeXYWH } from '@blocksuite/global/utils';
 import type { ExtensionType, Store } from '@blocksuite/store';
 
-import {
-  getBlockComponentByModel,
-  getRootByEditorHost,
-} from '../../_common/utils/index.js';
-import type { EdgelessRootBlockComponent } from '../../root-block/edgeless/edgeless-root-block.js';
-import { getBlocksInFrameBound } from '../../root-block/edgeless/frame-manager.js';
-import { xywhArrayToObject } from '../../root-block/edgeless/utils/convert.js';
-import { getBackgroundGrid } from '../../root-block/edgeless/utils/query.js';
+import { SurfaceElementModel } from '../../element-model/base.js';
+import type { CanvasRenderer } from '../../renderer/canvas-renderer.js';
+import type { SurfaceBlockComponent } from '../../surface-block.js';
+import { getBgGridGap } from '../../utils/get-bg-grip-gap.js';
 import { FileExporter } from './file-exporter.js';
 
 // oxlint-disable-next-line typescript/consistent-type-imports
@@ -47,6 +44,7 @@ type Html2CanvasFunction = typeof import('html2canvas').default;
 export type ExportOptions = {
   imageProxyEndpoint: string;
 };
+
 export class ExportManager {
   private readonly _exportOptions: ExportOptions = {
     imageProxyEndpoint: DEFAULT_IMAGE_PROXY_ENDPOINT,
@@ -151,7 +149,9 @@ export class ExportManager {
         }
         const rootModel = this.doc.root;
         const rootComponent = this.doc.root
-          ? getBlockComponentByModel(this.editorHost, rootModel)
+          ? rootModel
+            ? this.editorHost.view.getBlock(rootModel.id)
+            : null
           : null;
         const imageCard = rootComponent?.querySelector(
           'affine-image-fallback-card'
@@ -398,12 +398,11 @@ export class ExportManager {
       const rootModel = this.doc.root;
       if (!rootModel) return;
 
-      const edgeless = getBlockComponentByModel(
-        this.editorHost,
-        rootModel
-      ) as EdgelessRootBlockComponent;
-      const bound = edgeless.gfx.elementsBound;
-      return this.edgelessToCanvas(edgeless.surface.renderer, bound, edgeless);
+      const gfx = this.editorHost.std.get(GfxControllerIdentifier);
+      const surfaceBlock = gfx.surfaceComponent as SurfaceBlockComponent | null;
+      if (!surfaceBlock) return;
+      const bound = gfx.elementsBound;
+      return this.edgelessToCanvas(surfaceBlock.renderer, bound, gfx);
     }
   }
 
@@ -411,7 +410,7 @@ export class ExportManager {
   async edgelessToCanvas(
     surfaceRenderer: CanvasRenderer,
     bound: IBound,
-    edgeless?: EdgelessRootBlockComponent,
+    gfx: GfxController,
     nodes?: GfxBlockElementModel[],
     surfaces?: GfxPrimitiveElementModel[],
     edgelessBackground?: {
@@ -449,7 +448,7 @@ export class ExportManager {
         backgroundColor: containerComputedStyle.getPropertyValue(
           '--affine-background-primary-color'
         ),
-        size: getBackgroundGrid(edgelessBackground.zoom, true).gap,
+        size: getBgGridGap(edgelessBackground.zoom),
         gridColor: containerComputedStyle.getPropertyValue(
           '--affine-edgeless-grid-color'
         ),
@@ -457,9 +456,7 @@ export class ExportManager {
     }
 
     const blocks =
-      nodes ??
-      edgeless?.service.gfx.getElementsByBound(bound, { type: 'block' }) ??
-      [];
+      nodes ?? gfx.getElementsByBound(bound, { type: 'block' }) ?? [];
     for (const block of blocks) {
       if (matchModels(block, [ImageBlockModel])) {
         if (!block.sourceId) return;
@@ -592,3 +589,66 @@ export const ExportManagerExtension: ExtensionType = {
     di.add(ExportManager, [StdIdentifier]);
   },
 };
+
+function xywhArrayToObject(element: GfxBlockElementModel) {
+  const [x, y, w, h] = deserializeXYWH(element.xywh);
+  return { x, y, w, h };
+}
+
+function getNotesInFrameBound(
+  doc: Store,
+  frame: FrameBlockModel,
+  fullyContained: boolean = true
+): NoteBlockModel[] {
+  const bound = Bound.deserialize(frame.xywh);
+
+  return (doc.getBlockByFlavour('affine:note') as NoteBlockModel[]).filter(
+    ele => {
+      const xywh = Bound.deserialize(ele.xywh);
+
+      return fullyContained
+        ? bound.contains(xywh)
+        : bound.isPointInBound([xywh.x, xywh.y]);
+    }
+  );
+}
+
+function getBlocksInFrameBound(
+  doc: Store,
+  model: FrameBlockModel,
+  fullyContained: boolean = true
+) {
+  const bound = Bound.deserialize(model.xywh);
+  const surface = model.surface;
+  if (!surface) return [];
+
+  return (
+    getNotesInFrameBound(doc, model, fullyContained) as GfxBlockElementModel[]
+  ).concat(
+    surface.children.filter((ele): ele is GfxBlockElementModel => {
+      if (ele.id === model.id) return false;
+      if (ele instanceof GfxBlockElementModel) {
+        const blockBound = Bound.deserialize(ele.xywh);
+        return fullyContained
+          ? bound.contains(blockBound)
+          : bound.containsPoint([blockBound.x, blockBound.y]);
+      }
+
+      return false;
+    })
+  );
+}
+
+type RootBlockComponent = BlockComponent & {
+  viewportElement: HTMLElement;
+  viewport: Viewport;
+};
+
+function getRootByEditorHost(
+  editorHost: EditorHost
+): RootBlockComponent | null {
+  const model = editorHost.doc.root;
+  if (!model) return null;
+  const root = editorHost.view.getBlock(model.id);
+  return root as RootBlockComponent | null;
+}

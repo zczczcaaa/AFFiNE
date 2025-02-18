@@ -1,6 +1,7 @@
-import type {
-  SurfaceBlockComponent,
-  SurfaceBlockModel,
+import {
+  getBgGridGap,
+  type SurfaceBlockComponent,
+  type SurfaceBlockModel,
 } from '@blocksuite/affine-block-surface';
 import type { EdgelessPreviewer } from '@blocksuite/affine-block-surface-ref';
 import type { RootBlockModel } from '@blocksuite/affine-model';
@@ -23,7 +24,7 @@ import { styleMap } from 'lit/directives/style-map.js';
 
 import type { EdgelessRootBlockWidgetName } from '../types.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
-import { getBackgroundGrid, isCanvasElement } from './utils/query.js';
+import { isCanvasElement } from './utils/query.js';
 
 export class EdgelessRootPreviewBlockComponent
   extends BlockComponent<
@@ -73,7 +74,7 @@ export class EdgelessRootPreviewBlockComponent
   private readonly _refreshLayerViewport = requestThrottledConnectedFrame(
     () => {
       const { zoom, translateX, translateY } = this.service.viewport;
-      const { gap } = getBackgroundGrid(zoom, true);
+      const gap = getBgGridGap(zoom);
 
       this.background.style.setProperty(
         'background-position',

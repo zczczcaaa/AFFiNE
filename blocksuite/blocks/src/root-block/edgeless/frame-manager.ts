@@ -1,6 +1,6 @@
 import type { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
 import { Overlay } from '@blocksuite/affine-block-surface';
-import type { FrameBlockModel, NoteBlockModel } from '@blocksuite/affine-model';
+import type { FrameBlockModel } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
 import {
   generateKeyBetweenV2,
@@ -21,7 +21,6 @@ import {
   type IVec,
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
-import type { Store } from '@blocksuite/store';
 import { Text } from '@blocksuite/store';
 import * as Y from 'yjs';
 
@@ -461,48 +460,4 @@ export class EdgelessFrameManager extends GfxExtension {
   override unmounted(): void {
     this._disposable.dispose();
   }
-}
-
-export function getNotesInFrameBound(
-  doc: Store,
-  frame: FrameBlockModel,
-  fullyContained: boolean = true
-) {
-  const bound = Bound.deserialize(frame.xywh);
-
-  return (doc.getBlockByFlavour('affine:note') as NoteBlockModel[]).filter(
-    ele => {
-      const xywh = Bound.deserialize(ele.xywh);
-
-      return fullyContained
-        ? bound.contains(xywh)
-        : bound.isPointInBound([xywh.x, xywh.y]);
-    }
-  ) as NoteBlockModel[];
-}
-
-export function getBlocksInFrameBound(
-  doc: Store,
-  model: FrameBlockModel,
-  fullyContained: boolean = true
-) {
-  const bound = Bound.deserialize(model.xywh);
-  const surface = model.surface;
-  if (!surface) return [];
-
-  return (
-    getNotesInFrameBound(doc, model, fullyContained) as GfxBlockElementModel[]
-  ).concat(
-    surface.children.filter(ele => {
-      if (ele.id === model.id) return false;
-      if (ele instanceof GfxBlockElementModel) {
-        const blockBound = Bound.deserialize(ele.xywh);
-        return fullyContained
-          ? bound.contains(blockBound)
-          : bound.containsPoint([blockBound.x, blockBound.y]);
-      }
-
-      return false;
-    }) as GfxBlockElementModel[]
-  );
 }

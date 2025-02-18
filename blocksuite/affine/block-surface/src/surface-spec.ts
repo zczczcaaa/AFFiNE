@@ -10,6 +10,7 @@ import {
   EdgelessCRUDExtension,
   EdgelessLegacySlotExtension,
 } from './extensions';
+import { ExportManagerExtension } from './extensions/export-manager/export-manager';
 import { SurfaceBlockService } from './surface-service';
 import { MindMapView } from './view/mindmap';
 
@@ -19,6 +20,7 @@ const CommonSurfaceBlockSpec: ExtensionType[] = [
   MindMapView,
   EdgelessCRUDExtension,
   EdgelessLegacySlotExtension,
+  ExportManagerExtension,
 ];
 
 export const PageSurfaceBlockSpec: ExtensionType[] = [

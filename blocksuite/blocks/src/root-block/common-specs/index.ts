@@ -9,7 +9,6 @@ import {
 import { FlavourExtension } from '@blocksuite/block-std';
 import type { ExtensionType } from '@blocksuite/store';
 
-import { ExportManagerExtension } from '../../_common/export-manager/export-manager';
 import { RootBlockAdapterExtensions } from '../adapters/extension';
 import {
   docRemoteSelectionWidget,
@@ -29,7 +28,6 @@ export const CommonSpecs: ExtensionType[] = [
   DocModeService,
   ThemeService,
   EmbedOptionService,
-  ExportManagerExtension,
   PageViewportServiceExtension,
   DNDAPIExtension,
   FileDropExtension,

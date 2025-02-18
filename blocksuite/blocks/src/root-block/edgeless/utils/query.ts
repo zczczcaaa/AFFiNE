@@ -1,8 +1,4 @@
-import {
-  type CanvasElementWithText,
-  GRID_GAP_MAX,
-  GRID_GAP_MIN,
-} from '@blocksuite/affine-block-surface';
+import type { CanvasElementWithText } from '@blocksuite/affine-block-surface';
 import {
   type AttachmentBlockModel,
   type BookmarkBlockModel,
@@ -34,7 +30,7 @@ import type {
   Viewport,
 } from '@blocksuite/block-std/gfx';
 import type { PointLocation } from '@blocksuite/global/utils';
-import { Bound, clamp } from '@blocksuite/global/utils';
+import { Bound } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
 import type { Connectable } from '../../../_common/utils/index.js';
@@ -226,18 +222,6 @@ export function getCursorMode(edgelessTool: GfxToolsFullOptionValue | null) {
     default:
       return 'default';
   }
-}
-
-export function getBackgroundGrid(zoom: number, showGrid: boolean) {
-  const step = zoom < 0.5 ? 2 : 1 / (Math.floor(zoom) || 1);
-  const gap = clamp(20 * step * zoom, GRID_GAP_MIN, GRID_GAP_MAX);
-
-  return {
-    gap,
-    grid: showGrid
-      ? 'radial-gradient(var(--affine-edgeless-grid-color) 1px, var(--affine-background-primary-color) 1px)'
-      : 'unset',
-  };
 }
 
 export type SelectableProps = {

@@ -80,6 +80,7 @@ export {
   addNote,
   addNoteAtPoint,
   generateElementId,
+  getBgGridGap,
   getLastPropsKey,
   getSurfaceBlock,
   normalizeWheelDeltaY,

@@ -3,6 +3,7 @@ import { addImages } from '@blocksuite/affine-block-image';
 import {
   CanvasElementType,
   EdgelessCRUDIdentifier,
+  ExportManager,
   SurfaceGroupLikeModel,
   TextUtils,
 } from '@blocksuite/affine-block-surface';
@@ -68,7 +69,6 @@ import {
 import DOMPurify from 'dompurify';
 import * as Y from 'yjs';
 
-import { ExportManager } from '../../../_common/export-manager/export-manager.js';
 import { getRootByEditorHost } from '../../../_common/utils/query.js';
 import { ClipboardAdapter } from '../../clipboard/adapter.js';
 import { PageClipboard } from '../../clipboard/index.js';

@@ -4,6 +4,7 @@ import type {
 } from '@blocksuite/affine-block-surface';
 import {
   EdgelessLegacySlotIdentifier,
+  getBgGridGap,
   normalizeWheelDeltaY,
 } from '@blocksuite/affine-block-surface';
 import {
@@ -51,7 +52,7 @@ import { EdgelessClipboardController } from './clipboard/clipboard.js';
 import type { EdgelessSelectedRectWidget } from './components/rects/edgeless-selected-rect.js';
 import { EdgelessPageKeyboardManager } from './edgeless-keyboard.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
-import { getBackgroundGrid, isCanvasElement } from './utils/query.js';
+import { isCanvasElement } from './utils/query.js';
 import { mountShapeTextEditor } from './utils/text.js';
 
 export class EdgelessRootBlockComponent extends BlockComponent<
@@ -106,7 +107,7 @@ export class EdgelessRootBlockComponent extends BlockComponent<
   private readonly _refreshLayerViewport = requestThrottledConnectedFrame(
     () => {
       const { zoom, translateX, translateY } = this.gfx.viewport;
-      const { gap } = getBackgroundGrid(zoom, true);
+      const gap = getBgGridGap(zoom);
 
       if (this.backgroundElm) {
         this.backgroundElm.style.setProperty(
