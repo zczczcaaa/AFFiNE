@@ -1,4 +1,4 @@
-import { AffineSchemas, SpecProvider, TestUtils } from '@blocksuite/blocks';
+import { AffineSchemas, SpecProvider } from '@blocksuite/blocks';
 import { nanoid, Schema, Transformer } from '@blocksuite/store';
 import {
   createAutoIncrementIdGenerator,
@@ -73,7 +73,6 @@ export function createStarterDocCollection() {
     },
   });
   window.Y = Y;
-  window.testUtils = new TestUtils();
 
   return collection;
 }

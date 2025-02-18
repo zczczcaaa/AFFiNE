@@ -28,7 +28,6 @@ import { css, html } from 'lit';
 import { query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { buildPath } from '../../_common/utils/index.js';
 import { PageClipboard } from '../clipboard/index.js';
 import type { PageRootBlockWidgetName } from '../index.js';
 import { PageKeyboardManager } from '../keyboard/keyboard-manager.js';
@@ -269,13 +268,13 @@ export class PageRootBlockComponent extends BlockComponent<
         );
         if (!sel) return;
         let model: BlockModel | null = null;
-        let path: string[] = buildPath(this.doc.getBlockById(sel.blockId));
-        while (path.length > 0 && !model) {
-          const m = this.doc.getBlockById(path[path.length - 1]);
-          if (m && m.flavour === 'affine:note') {
-            model = m;
+        let current = this.doc.getBlockById(sel.blockId);
+        while (current && !model) {
+          if (current.flavour === 'affine:note') {
+            model = current;
+          } else {
+            current = this.doc.getParent(current);
           }
-          path = path.slice(0, -1);
         }
         if (!model) return;
         const prevNote = this.doc.getPrev(model);

@@ -10,8 +10,8 @@ import {
 import { describe, expect, test } from 'vitest';
 
 import { defaultBlockNotionHtmlAdapterMatchers } from '../../_common/adapters/notion-html/block-matcher.js';
-import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { createJob } from '../utils/create-job.js';
+import { nanoidReplacement } from '../utils/nanoid-replacement.js';
 
 const container = new Container();
 [

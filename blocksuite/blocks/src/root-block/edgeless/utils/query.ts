@@ -33,7 +33,7 @@ import type { PointLocation } from '@blocksuite/global/utils';
 import { Bound } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 
-import type { Connectable } from '../../../_common/utils/index.js';
+import type { Connectable } from '../../../_common/types';
 
 export function isMindmapNode(element: GfxBlockElementModel | GfxModel | null) {
   return element?.group instanceof MindmapElementModel;

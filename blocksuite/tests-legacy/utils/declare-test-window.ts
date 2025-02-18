@@ -6,7 +6,7 @@ import type {
   ThemeProvider,
 } from '@blocksuite/affine-shared/services';
 import type { EditorHost } from '@blocksuite/block-std';
-import type { RefNodeSlotsProvider, TestUtils } from '@blocksuite/blocks';
+import type { RefNodeSlotsProvider } from '@blocksuite/blocks';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import type {
   BlockModel,
@@ -47,7 +47,6 @@ declare global {
     debugMenu: HTMLElement;
     editor: AffineEditorContainer;
     host: EditorHost;
-    testUtils: TestUtils;
     job: Transformer;
   }
 }

@@ -1,7 +1,7 @@
 import { isNoteBlock } from '@blocksuite/affine-block-surface';
 import type { GfxModel } from '@blocksuite/block-std/gfx';
 
-import type { Connectable } from '../../../_common/utils/index.js';
+import type { Connectable } from '../../../_common/types.js';
 import type { EdgelessRootBlockComponent } from '../index.js';
 import { isConnectable } from './query.js';
 

@@ -1,19 +1,4 @@
-import {
-  mergeToCodeModel,
-  transformModel,
-} from '@blocksuite/affine-shared/utils';
 import type { BlockSnapshot, SliceSnapshot } from '@blocksuite/store';
-
-class DocTestUtils {
-  // block model operations (data layer)
-  mergeToCodeModel = mergeToCodeModel;
-
-  transformModel = transformModel;
-}
-
-export class TestUtils {
-  docTestUtils = new DocTestUtils();
-}
 
 export function nanoidReplacement(snapshot: BlockSnapshot | SliceSnapshot) {
   return JSON.parse(nanoidReplacementString(JSON.stringify(snapshot)));

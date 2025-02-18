@@ -71,11 +71,12 @@ export const CommonBlockSpecs: ExtensionType[] = [
   BookmarkBlockSpec,
   EmbedExtensions,
   AttachmentBlockSpec,
-  AdapterFactoryExtensions,
   CodeBlockSpec,
   ImageBlockSpec,
   ParagraphBlockSpec,
   DefaultOpenDocExtension,
+  FontLoaderService,
+  AdapterFactoryExtensions,
 ].flat();
 
 export const PageFirstPartyBlockSpecs: ExtensionType[] = [
@@ -83,7 +84,6 @@ export const PageFirstPartyBlockSpecs: ExtensionType[] = [
   NoteBlockSpec,
   PageSurfaceBlockSpec,
   PageSurfaceRefBlockSpec,
-  FontLoaderService,
 ].flat();
 
 export const EdgelessFirstPartyBlockSpecs: ExtensionType[] = [
@@ -94,11 +94,9 @@ export const EdgelessFirstPartyBlockSpecs: ExtensionType[] = [
   EdgelessSurfaceRefBlockSpec,
   FrameBlockSpec,
   EdgelessTextBlockSpec,
-  FontLoaderService,
 ].flat();
 
 export const StoreExtensions: ExtensionType[] = [
-  FeatureFlagService,
   BlockSelectionExtension,
   TextSelectionExtension,
   SurfaceSelectionExtension,
@@ -107,8 +105,9 @@ export const StoreExtensions: ExtensionType[] = [
   ImageSelectionExtension,
   DatabaseSelectionExtension,
   TableSelectionExtension,
+
+  FeatureFlagService,
   LinkPreviewerService,
   FileSizeLimitService,
-
   ImageStoreSpec,
 ].flat();

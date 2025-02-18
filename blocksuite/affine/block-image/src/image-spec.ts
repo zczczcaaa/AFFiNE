@@ -33,4 +33,4 @@ export const ImageBlockSpec: ExtensionType[] = [
   ImageBlockAdapterExtensions,
 ].flat();
 
-export const ImageStoreSpec: ExtensionType[] = [ImageProxyService].flat();
+export const ImageStoreSpec: ExtensionType[] = [ImageProxyService];

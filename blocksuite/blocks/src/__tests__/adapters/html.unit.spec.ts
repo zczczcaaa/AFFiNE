@@ -14,9 +14,9 @@ import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
 import { defaultBlockHtmlAdapterMatchers } from '../../_common/adapters/html/block-matcher.js';
-import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';
+import { nanoidReplacement } from '../utils/nanoid-replacement.js';
 
 const container = new Container();
 [

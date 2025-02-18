@@ -1,5 +1,4 @@
 import type { EditorHost } from '@blocksuite/block-std';
-import type { TestUtils } from '@blocksuite/blocks';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import type { BlockSchema, Blocks, Workspace, Transformer } from '@blocksuite/store';
 import type { z } from 'zod';
@@ -20,7 +19,6 @@ declare global {
     job: Transformer;
     Y: typeof Y;
     std: typeof std;
-    testUtils: TestUtils;
     host: EditorHost;
     testWorker: Worker;
 

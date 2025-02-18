@@ -69,13 +69,13 @@ import {
 import DOMPurify from 'dompurify';
 import * as Y from 'yjs';
 
-import { getRootByEditorHost } from '../../../_common/utils/query.js';
 import { ClipboardAdapter } from '../../clipboard/adapter.js';
 import { PageClipboard } from '../../clipboard/index.js';
 import {
   decodeClipboardBlobs,
   encodeClipboardBlobs,
 } from '../../clipboard/utils.js';
+import type { RootBlockComponent } from '../../types.js';
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 import { edgelessElementsBoundFromRawData } from '../utils/bound-utils.js';
 import { createNewPresentationIndexes } from '../utils/clipboard-utils.js';
@@ -1438,4 +1438,13 @@ function tryGetSvgFromClipboard(clipboardData: DataTransfer) {
   const blob = new Blob([svgContent], { type: 'image/svg+xml' });
   const file = new File([blob], 'pasted-image.svg', { type: 'image/svg+xml' });
   return file;
+}
+
+function getRootByEditorHost(
+  editorHost: EditorHost
+): RootBlockComponent | null {
+  const model = editorHost.doc.root;
+  if (!model) return null;
+  const root = editorHost.view.getBlock(model.id);
+  return root as RootBlockComponent | null;
 }

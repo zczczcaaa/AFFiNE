@@ -3,8 +3,8 @@ import { NotionTextAdapter } from '@blocksuite/affine-shared/adapters';
 import type { SliceSnapshot } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { nanoidReplacement } from '../../_common/test-utils/test-utils.js';
 import { createJob } from '../utils/create-job.js';
+import { nanoidReplacement } from '../utils/nanoid-replacement.js';
 
 describe('notion-text to snapshot', () => {
   test('basic', () => {
