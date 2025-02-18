@@ -111,6 +111,14 @@ export class PreviewHelper {
       EditorSettingExtension(settingSignal),
       {
         setup(di) {
+          di.override(
+            BlockViewIdentifier('affine:database'),
+            () => literal`affine-dnd-preview-database`
+          );
+        },
+      } as ExtensionType,
+      {
+        setup(di) {
           di.override(BlockViewIdentifier('affine:image'), () => {
             return (model: BlockModel) => {
               const parent = model.doc.getParent(model.id);

@@ -1,6 +1,7 @@
 import { CenterPeek } from './components/layout';
 import { DatabaseTitle } from './components/title';
 import { DatabaseBlockComponent } from './database-block';
+import { DatabaseDndPreviewBlockComponent } from './database-dnd-preview-block';
 import { BlockRenderer } from './detail-panel/block-renderer';
 import { NoteRenderer } from './detail-panel/note-renderer';
 import { LinkCell, LinkCellEditing } from './properties/link/cell-renderer';
@@ -35,4 +36,9 @@ export function effects() {
   customElements.define('database-datasource-block-renderer', BlockRenderer);
   customElements.define('affine-database-link-node', LinkNode);
   customElements.define('affine-database', DatabaseBlockComponent);
+
+  customElements.define(
+    'affine-dnd-preview-database',
+    DatabaseDndPreviewBlockComponent
+  );
 }

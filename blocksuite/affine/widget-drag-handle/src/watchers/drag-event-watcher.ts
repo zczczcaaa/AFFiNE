@@ -1083,7 +1083,8 @@ export class DragEventWatcher {
       if (
         dndExtApi &&
         this.std.store.workspace.docs.has(sourceDocId) &&
-        this.gfx.surface
+        this.gfx.surface &&
+        snapshot.pageId !== this.std.store.doc.id
       ) {
         const style = 'vertical' as EmbedCardStyle;
         const linkedDocSnapshot = dndExtApi.fromEntity({
