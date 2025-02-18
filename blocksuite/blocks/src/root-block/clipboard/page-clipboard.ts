@@ -61,8 +61,20 @@ export class PageClipboard extends ReadOnlyClipboard {
     this._std.store.captureSync();
     this._std.command
       .chain()
-      .try(cmd => [
-        cmd.pipe(getTextSelectionCommand),
+      .try<{}>(cmd => [
+        cmd.pipe(getTextSelectionCommand).pipe((ctx, next) => {
+          const { currentTextSelection } = ctx;
+          if (!currentTextSelection) {
+            return;
+          }
+          const { from, to } = currentTextSelection;
+          if (to && from.blockId !== to.blockId) {
+            this._std.command.exec(deleteTextCommand, {
+              currentTextSelection,
+            });
+          }
+          return next();
+        }),
         cmd
           .pipe(getSelectedModelsCommand)
           .pipe(clearAndSelectFirstModelCommand)
