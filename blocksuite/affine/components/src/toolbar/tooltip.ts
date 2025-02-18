@@ -6,6 +6,7 @@ import {
   flip,
   offset,
   type Placement,
+  shift,
 } from '@floating-ui/dom';
 import type { CSSResult } from 'lit';
 import { css, html, LitElement, unsafeCSS } from 'lit';
@@ -67,6 +68,11 @@ const triangleMap = {
     borderColor: 'transparent transparent transparent var(--affine-tooltip)',
   },
 };
+
+// The padding for the autoShift and autoFlip middleware
+// It's used to prevent the tooltip from overflowing the screen
+const AUTO_SHIFT_PADDING = 12;
+const AUTO_FLIP_PADDING = 12;
 
 // Ported from https://floating-ui.com/docs/tutorial#arrow-middleware
 const updateArrowStyles = ({
@@ -166,7 +172,8 @@ export class Tooltip extends LitElement {
             referenceElement: this.parentElement!,
             placement: this.placement,
             middleware: [
-              this.autoFlip && flip({ padding: 12 }),
+              this.autoFlip && flip({ padding: AUTO_FLIP_PADDING }),
+              this.autoShift && shift({ padding: AUTO_SHIFT_PADDING }),
               offset((this.arrow ? TRIANGLE_HEIGHT : 0) + this.offset),
               arrow({
                 element: portalRoot.shadowRoot!.querySelector('.arrow')!,
@@ -247,6 +254,17 @@ export class Tooltip extends LitElement {
    */
   @property({ attribute: false })
   accessor autoFlip = true;
+
+  /**
+   * shifts the floating element to keep it in view.
+   * this prevents the floating element from
+   * overflowing along its axis of alignment,
+   * thereby preserving the side it’s placed on.
+   *
+   * See https://floating-ui.com/docs/shift
+   */
+  @property({ attribute: false })
+  accessor autoShift = false;
 
   @property({ attribute: false })
   accessor hoverOptions: Partial<HoverOptions> = {};

@@ -44,7 +44,6 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2px;
 
         svg {
           color: ${unsafeCSSVarV2('icon/primary')};
@@ -195,7 +194,7 @@ export class ChatCopyMore extends WithDisposable(LitElement) {
               data-testid="action-retry-button"
             >
               ${ResetIcon({ width: '20px', height: '20px' })}
-              <affine-tooltip>Retry</affine-tooltip>
+              <affine-tooltip .autoShift=${true}>Retry</affine-tooltip>
             </div>`
           : nothing}
         ${isLast
