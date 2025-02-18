@@ -87,7 +87,7 @@ const DetailPageImpl = () => {
   const enableEdgelessEditing =
     featureFlagService.flags.enable_mobile_edgeless_editing.value;
   const enableAIButton = useLiveData(
-    featureFlagService.flags.enable_ios_ai_button.$
+    featureFlagService.flags.enable_mobile_ai_button.$
   );
 
   // TODO(@eyhn): remove jotai here

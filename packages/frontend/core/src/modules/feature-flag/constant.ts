@@ -251,11 +251,11 @@ export const AFFINE_FLAGS = {
     configurable: isCanaryBuild,
     defaultState: false,
   },
-  enable_ios_ai_button: {
+  enable_mobile_ai_button: {
     category: 'affine',
     displayName: 'Enable AI Button',
-    description: 'Enable AI Button on iOS',
-    configurable: BUILD_CONFIG.isIOS,
+    description: 'Enable AI Button on mobile',
+    configurable: BUILD_CONFIG.isMobileEdition,
     defaultState: false,
   },
 } satisfies { [key in string]: FlagInfo };
