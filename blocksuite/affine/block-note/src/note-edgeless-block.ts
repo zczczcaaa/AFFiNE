@@ -260,6 +260,7 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
           .model=${this.model}
           .host=${this.host}
           .zoom=${this.gfx.viewport.zoom ?? 1}
+          .disableMask=${this.hideMask}
           .editing=${this._editing}
         ></edgeless-note-mask>
 
@@ -296,6 +297,9 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
 
   @state()
   private accessor _noteFullHeight = 0;
+
+  @state()
+  accessor hideMask = false;
 
   @query(`.${styles.clipContainer} > div`)
   private accessor _noteContent: HTMLElement | null = null;

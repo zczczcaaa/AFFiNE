@@ -55,7 +55,7 @@ export class EdgelessNoteMask extends SignalWatcher(
           bottom: `${-extra}px`,
           right: `${-extra}px`,
           zIndex: '1',
-          pointerEvents: this.editing ? 'none' : 'auto',
+          pointerEvents: this.editing || this.disableMask ? 'none' : 'auto',
           borderRadius: `${
             this.model.edgeless.style.borderRadius * this.zoom
           }px`,
@@ -63,6 +63,9 @@ export class EdgelessNoteMask extends SignalWatcher(
       ></div>
     `;
   }
+
+  @property({ attribute: false })
+  accessor disableMask!: boolean;
 
   @property({ attribute: false })
   accessor editing!: boolean;

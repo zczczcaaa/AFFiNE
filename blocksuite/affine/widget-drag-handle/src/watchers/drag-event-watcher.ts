@@ -1328,6 +1328,7 @@ export class DragEventWatcher {
 
   private _makeDropTarget(view: BlockComponent) {
     const isUnderNote = this._isUnderNoteBlock(view.model);
+    const isNote = matchModels(view.model, [NoteBlockModel]);
 
     if (
       // affine:surface block can't be drop target in any modes
@@ -1371,6 +1372,16 @@ export class DragEventWatcher {
           }
 
           return false;
+        },
+        onDragEnter: () => {
+          if (isNote && 'hideMask' in view) {
+            view.hideMask = true;
+          }
+        },
+        onDragLeave: () => {
+          if (isNote && 'hideMask' in view) {
+            view.hideMask = false;
+          }
         },
         setDropData: () => {
           return {
