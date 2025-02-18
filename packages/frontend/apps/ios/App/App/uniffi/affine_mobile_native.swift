@@ -281,7 +281,7 @@ private func makeRustCall<T, E: Swift.Error>(
     _ callback: (UnsafeMutablePointer<RustCallStatus>) -> T,
     errorHandler: ((RustBuffer) throws -> E)?
 ) throws -> T {
-    uniffiEnsureInitialized()
+    uniffiEnsureAffineMobileNativeInitialized()
     var callStatus = RustCallStatus.init()
     let returnedVal = callback(&callStatus)
     try uniffiCheckCallStatus(callStatus: callStatus, errorHandler: errorHandler)
@@ -352,9 +352,10 @@ private func uniffiTraitInterfaceCallWithError<T, E>(
         callStatus.pointee.errorBuf = FfiConverterString.lower(String(describing: error))
     }
 }
-fileprivate class UniffiHandleMap<T> {
-    private var map: [UInt64: T] = [:]
+fileprivate final class UniffiHandleMap<T>: @unchecked Sendable {
+    // All mutation happens with this lock held, which is why we implement @unchecked Sendable.
     private let lock = NSLock()
+    private var map: [UInt64: T] = [:]
     private var currentHandle: UInt64 = 1
 
     func insert(obj: T) -> UInt64 {
@@ -496,7 +497,7 @@ fileprivate struct FfiConverterString: FfiConverter {
 
 
 
-public protocol DocStoragePoolProtocol : AnyObject {
+public protocol DocStoragePoolProtocol: AnyObject {
     
     func clearClocks(universalId: String) async throws 
     
@@ -554,9 +555,7 @@ public protocol DocStoragePoolProtocol : AnyObject {
     func setSpaceId(universalId: String, spaceId: String) async throws 
     
 }
-
-open class DocStoragePool:
-    DocStoragePoolProtocol {
+open class DocStoragePool: DocStoragePoolProtocol, @unchecked Sendable {
     fileprivate let pointer: UnsafeMutableRawPointer!
 
     /// Used to instantiate a [FFIObject] without an actual pointer, for fakes in tests, mostly.
@@ -605,7 +604,7 @@ open class DocStoragePool:
     
 
     
-open func clearClocks(universalId: String)async throws  {
+open func clearClocks(universalId: String)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -625,7 +624,7 @@ open func clearClocks(universalId: String)async throws  {
     /**
      * Initialize the database and run migrations.
      */
-open func connect(universalId: String, path: String)async throws  {
+open func connect(universalId: String, path: String)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -642,7 +641,7 @@ open func connect(universalId: String, path: String)async throws  {
         )
 }
     
-open func deleteBlob(universalId: String, key: String, permanently: Bool)async throws  {
+open func deleteBlob(universalId: String, key: String, permanently: Bool)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -659,7 +658,7 @@ open func deleteBlob(universalId: String, key: String, permanently: Bool)async t
         )
 }
     
-open func deleteDoc(universalId: String, docId: String)async throws  {
+open func deleteDoc(universalId: String, docId: String)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -676,7 +675,7 @@ open func deleteDoc(universalId: String, docId: String)async throws  {
         )
 }
     
-open func disconnect(universalId: String)async throws  {
+open func disconnect(universalId: String)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -693,7 +692,7 @@ open func disconnect(universalId: String)async throws  {
         )
 }
     
-open func getBlob(universalId: String, key: String)async throws  -> Blob? {
+open func getBlob(universalId: String, key: String)async throws  -> Blob?  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -710,7 +709,7 @@ open func getBlob(universalId: String, key: String)async throws  -> Blob? {
         )
 }
     
-open func getDocClock(universalId: String, docId: String)async throws  -> DocClock? {
+open func getDocClock(universalId: String, docId: String)async throws  -> DocClock?  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -727,7 +726,7 @@ open func getDocClock(universalId: String, docId: String)async throws  -> DocClo
         )
 }
     
-open func getDocClocks(universalId: String, after: Int64?)async throws  -> [DocClock] {
+open func getDocClocks(universalId: String, after: Int64?)async throws  -> [DocClock]  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -744,7 +743,7 @@ open func getDocClocks(universalId: String, after: Int64?)async throws  -> [DocC
         )
 }
     
-open func getDocSnapshot(universalId: String, docId: String)async throws  -> DocRecord? {
+open func getDocSnapshot(universalId: String, docId: String)async throws  -> DocRecord?  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -761,7 +760,7 @@ open func getDocSnapshot(universalId: String, docId: String)async throws  -> Doc
         )
 }
     
-open func getDocUpdates(universalId: String, docId: String)async throws  -> [DocUpdate] {
+open func getDocUpdates(universalId: String, docId: String)async throws  -> [DocUpdate]  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -778,7 +777,7 @@ open func getDocUpdates(universalId: String, docId: String)async throws  -> [Doc
         )
 }
     
-open func getPeerPulledRemoteClock(universalId: String, peer: String, docId: String)async throws  -> DocClock? {
+open func getPeerPulledRemoteClock(universalId: String, peer: String, docId: String)async throws  -> DocClock?  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -795,7 +794,7 @@ open func getPeerPulledRemoteClock(universalId: String, peer: String, docId: Str
         )
 }
     
-open func getPeerPulledRemoteClocks(universalId: String, peer: String)async throws  -> [DocClock] {
+open func getPeerPulledRemoteClocks(universalId: String, peer: String)async throws  -> [DocClock]  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -812,7 +811,7 @@ open func getPeerPulledRemoteClocks(universalId: String, peer: String)async thro
         )
 }
     
-open func getPeerPushedClock(universalId: String, peer: String, docId: String)async throws  -> DocClock? {
+open func getPeerPushedClock(universalId: String, peer: String, docId: String)async throws  -> DocClock?  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -829,7 +828,7 @@ open func getPeerPushedClock(universalId: String, peer: String, docId: String)as
         )
 }
     
-open func getPeerPushedClocks(universalId: String, peer: String)async throws  -> [DocClock] {
+open func getPeerPushedClocks(universalId: String, peer: String)async throws  -> [DocClock]  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -846,7 +845,7 @@ open func getPeerPushedClocks(universalId: String, peer: String)async throws  ->
         )
 }
     
-open func getPeerRemoteClock(universalId: String, peer: String, docId: String)async throws  -> DocClock? {
+open func getPeerRemoteClock(universalId: String, peer: String, docId: String)async throws  -> DocClock?  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -863,7 +862,7 @@ open func getPeerRemoteClock(universalId: String, peer: String, docId: String)as
         )
 }
     
-open func getPeerRemoteClocks(universalId: String, peer: String)async throws  -> [DocClock] {
+open func getPeerRemoteClocks(universalId: String, peer: String)async throws  -> [DocClock]  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -880,7 +879,7 @@ open func getPeerRemoteClocks(universalId: String, peer: String)async throws  ->
         )
 }
     
-open func listBlobs(universalId: String)async throws  -> [ListedBlob] {
+open func listBlobs(universalId: String)async throws  -> [ListedBlob]  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -897,7 +896,7 @@ open func listBlobs(universalId: String)async throws  -> [ListedBlob] {
         )
 }
     
-open func markUpdatesMerged(universalId: String, docId: String, updates: [Int64])async throws  -> UInt32 {
+open func markUpdatesMerged(universalId: String, docId: String, updates: [Int64])async throws  -> UInt32  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -914,7 +913,7 @@ open func markUpdatesMerged(universalId: String, docId: String, updates: [Int64]
         )
 }
     
-open func pushUpdate(universalId: String, docId: String, update: String)async throws  -> Int64 {
+open func pushUpdate(universalId: String, docId: String, update: String)async throws  -> Int64  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -931,7 +930,7 @@ open func pushUpdate(universalId: String, docId: String, update: String)async th
         )
 }
     
-open func releaseBlobs(universalId: String)async throws  {
+open func releaseBlobs(universalId: String)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -948,13 +947,13 @@ open func releaseBlobs(universalId: String)async throws  {
         )
 }
     
-open func setBlob(universalId: String, blob: SetBlob)async throws  {
+open func setBlob(universalId: String, blob: SetBlob)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
                 uniffi_affine_mobile_native_fn_method_docstoragepool_set_blob(
                     self.uniffiClonePointer(),
-                    FfiConverterString.lower(universalId),FfiConverterTypeSetBlob.lower(blob)
+                    FfiConverterString.lower(universalId),FfiConverterTypeSetBlob_lower(blob)
                 )
             },
             pollFunc: ffi_affine_mobile_native_rust_future_poll_void,
@@ -965,13 +964,13 @@ open func setBlob(universalId: String, blob: SetBlob)async throws  {
         )
 }
     
-open func setDocSnapshot(universalId: String, snapshot: DocRecord)async throws  -> Bool {
+open func setDocSnapshot(universalId: String, snapshot: DocRecord)async throws  -> Bool  {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
                 uniffi_affine_mobile_native_fn_method_docstoragepool_set_doc_snapshot(
                     self.uniffiClonePointer(),
-                    FfiConverterString.lower(universalId),FfiConverterTypeDocRecord.lower(snapshot)
+                    FfiConverterString.lower(universalId),FfiConverterTypeDocRecord_lower(snapshot)
                 )
             },
             pollFunc: ffi_affine_mobile_native_rust_future_poll_i8,
@@ -982,7 +981,7 @@ open func setDocSnapshot(universalId: String, snapshot: DocRecord)async throws  
         )
 }
     
-open func setPeerPulledRemoteClock(universalId: String, peer: String, docId: String, clock: Int64)async throws  {
+open func setPeerPulledRemoteClock(universalId: String, peer: String, docId: String, clock: Int64)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -999,7 +998,7 @@ open func setPeerPulledRemoteClock(universalId: String, peer: String, docId: Str
         )
 }
     
-open func setPeerPushedClock(universalId: String, peer: String, docId: String, clock: Int64)async throws  {
+open func setPeerPushedClock(universalId: String, peer: String, docId: String, clock: Int64)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -1016,7 +1015,7 @@ open func setPeerPushedClock(universalId: String, peer: String, docId: String, c
         )
 }
     
-open func setPeerRemoteClock(universalId: String, peer: String, docId: String, clock: Int64)async throws  {
+open func setPeerRemoteClock(universalId: String, peer: String, docId: String, clock: Int64)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -1033,7 +1032,7 @@ open func setPeerRemoteClock(universalId: String, peer: String, docId: String, c
         )
 }
     
-open func setSpaceId(universalId: String, spaceId: String)async throws  {
+open func setSpaceId(universalId: String, spaceId: String)async throws   {
     return
         try  await uniffiRustCallAsync(
             rustFutureFunc: {
@@ -1052,6 +1051,7 @@ open func setSpaceId(universalId: String, spaceId: String)async throws  {
     
 
 }
+
 
 #if swift(>=5.8)
 @_documentation(visibility: private)
@@ -1088,8 +1088,6 @@ public struct FfiConverterTypeDocStoragePool: FfiConverter {
 }
 
 
-
-
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
@@ -1103,6 +1101,8 @@ public func FfiConverterTypeDocStoragePool_lift(_ pointer: UnsafeMutableRawPoint
 public func FfiConverterTypeDocStoragePool_lower(_ value: DocStoragePool) -> UnsafeMutableRawPointer {
     return FfiConverterTypeDocStoragePool.lower(value)
 }
+
+
 
 
 public struct Blob {
@@ -1123,6 +1123,9 @@ public struct Blob {
     }
 }
 
+#if compiler(>=6)
+extension Blob: Sendable {}
+#endif
 
 
 extension Blob: Equatable, Hashable {
@@ -1153,6 +1156,7 @@ extension Blob: Equatable, Hashable {
         hasher.combine(createdAt)
     }
 }
+
 
 
 #if swift(>=5.8)
@@ -1207,6 +1211,9 @@ public struct DocClock {
     }
 }
 
+#if compiler(>=6)
+extension DocClock: Sendable {}
+#endif
 
 
 extension DocClock: Equatable, Hashable {
@@ -1225,6 +1232,7 @@ extension DocClock: Equatable, Hashable {
         hasher.combine(timestamp)
     }
 }
+
 
 
 #if swift(>=5.8)
@@ -1275,6 +1283,9 @@ public struct DocRecord {
     }
 }
 
+#if compiler(>=6)
+extension DocRecord: Sendable {}
+#endif
 
 
 extension DocRecord: Equatable, Hashable {
@@ -1297,6 +1308,7 @@ extension DocRecord: Equatable, Hashable {
         hasher.combine(timestamp)
     }
 }
+
 
 
 #if swift(>=5.8)
@@ -1349,6 +1361,9 @@ public struct DocUpdate {
     }
 }
 
+#if compiler(>=6)
+extension DocUpdate: Sendable {}
+#endif
 
 
 extension DocUpdate: Equatable, Hashable {
@@ -1371,6 +1386,7 @@ extension DocUpdate: Equatable, Hashable {
         hasher.combine(bin)
     }
 }
+
 
 
 #if swift(>=5.8)
@@ -1425,6 +1441,9 @@ public struct ListedBlob {
     }
 }
 
+#if compiler(>=6)
+extension ListedBlob: Sendable {}
+#endif
 
 
 extension ListedBlob: Equatable, Hashable {
@@ -1451,6 +1470,7 @@ extension ListedBlob: Equatable, Hashable {
         hasher.combine(createdAt)
     }
 }
+
 
 
 #if swift(>=5.8)
@@ -1505,6 +1525,9 @@ public struct SetBlob {
     }
 }
 
+#if compiler(>=6)
+extension SetBlob: Sendable {}
+#endif
 
 
 extension SetBlob: Equatable, Hashable {
@@ -1527,6 +1550,7 @@ extension SetBlob: Equatable, Hashable {
         hasher.combine(mime)
     }
 }
+
 
 
 #if swift(>=5.8)
@@ -1627,13 +1651,31 @@ public struct FfiConverterTypeUniffiError: FfiConverterRustBuffer {
 }
 
 
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeUniffiError_lift(_ buf: RustBuffer) throws -> UniffiError {
+    return try FfiConverterTypeUniffiError.lift(buf)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeUniffiError_lower(_ value: UniffiError) -> RustBuffer {
+    return FfiConverterTypeUniffiError.lower(value)
+}
+
+
 extension UniffiError: Equatable, Hashable {}
+
+
 
 extension UniffiError: Foundation.LocalizedError {
     public var errorDescription: String? {
         String(reflecting: self)
     }
 }
+
 
 #if swift(>=5.8)
 @_documentation(visibility: private)
@@ -1843,9 +1885,9 @@ fileprivate func uniffiRustCallAsync<F, T>(
     liftFunc: (F) throws -> T,
     errorHandler: ((RustBuffer) throws -> Swift.Error)?
 ) async throws -> T {
-    // Make sure to call uniffiEnsureInitialized() since future creation doesn't have a
+    // Make sure to call the ensure init function since future creation doesn't have a
     // RustCallStatus param, so doesn't use makeRustCall()
-    uniffiEnsureInitialized()
+    uniffiEnsureAffineMobileNativeInitialized()
     let rustFuture = rustFutureFunc()
     defer {
         freeFunc(rustFuture)
@@ -1876,7 +1918,7 @@ fileprivate func uniffiFutureContinuationCallback(handle: UInt64, pollResult: In
         print("uniffiFutureContinuationCallback invalid handle")
     }
 }
-public func hashcashMint(resource: String, bits: UInt32) -> String {
+public func hashcashMint(resource: String, bits: UInt32) -> String  {
     return try!  FfiConverterString.lift(try! rustCall() {
     uniffi_affine_mobile_native_fn_func_hashcash_mint(
         FfiConverterString.lower(resource),
@@ -1884,8 +1926,8 @@ public func hashcashMint(resource: String, bits: UInt32) -> String {
     )
 })
 }
-public func newDocStoragePool() -> DocStoragePool {
-    return try!  FfiConverterTypeDocStoragePool.lift(try! rustCall() {
+public func newDocStoragePool() -> DocStoragePool  {
+    return try!  FfiConverterTypeDocStoragePool_lift(try! rustCall() {
     uniffi_affine_mobile_native_fn_func_new_doc_storage_pool($0
     )
 })
@@ -1898,9 +1940,9 @@ private enum InitializationResult {
 }
 // Use a global variable to perform the versioning checks. Swift ensures that
 // the code inside is only computed once.
-private var initializationResult: InitializationResult = {
+private let initializationResult: InitializationResult = {
     // Get the bindings contract version from our ComponentInterface
-    let bindings_contract_version = 26
+    let bindings_contract_version = 29
     // Get the scaffolding contract version by calling the into the dylib
     let scaffolding_contract_version = ffi_affine_mobile_native_uniffi_contract_version()
     if bindings_contract_version != scaffolding_contract_version {
@@ -1994,7 +2036,9 @@ private var initializationResult: InitializationResult = {
     return InitializationResult.ok
 }()
 
-private func uniffiEnsureInitialized() {
+// Make the ensure init function public so that other modules which have external type references to
+// our types can call it.
+public func uniffiEnsureAffineMobileNativeInitialized() {
     switch initializationResult {
     case .ok:
         break
