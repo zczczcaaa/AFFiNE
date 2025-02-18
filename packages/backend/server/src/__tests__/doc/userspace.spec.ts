@@ -3,7 +3,6 @@ import { randomUUID } from 'node:crypto';
 import ava, { TestFn } from 'ava';
 import { applyUpdate, Doc as YDoc } from 'yjs';
 
-import { ConfigModule } from '../../base/config';
 import {
   DocStorageModule,
   PgUserspaceDocStorageAdapter as Adapter,
@@ -21,16 +20,7 @@ const test = ava as TestFn<Context>;
 
 test.before(async t => {
   const module = await createTestingModule({
-    imports: [
-      ConfigModule.forRoot({
-        doc: {
-          manager: {
-            enableUpdateAutoMerging: false,
-          },
-        },
-      }),
-      DocStorageModule,
-    ],
+    imports: [DocStorageModule],
   });
 
   t.context.models = module.get(Models);

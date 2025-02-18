@@ -2,18 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaClient } from '@prisma/client';
 
-import { EventBus, OnEvent } from '../../base';
+import { EventBus, JobQueue, OnEvent, OnJob } from '../../base';
 import {
   SubscriptionPlan,
   SubscriptionRecurring,
   SubscriptionVariant,
 } from './types';
 
+declare global {
+  interface Jobs {
+    'nightly.cleanExpiredOnetimeSubscriptions': {};
+    'nightly.notifyAboutToExpireWorkspaceSubscriptions': {};
+  }
+}
+
 @Injectable()
 export class SubscriptionCronJobs {
   constructor(
     private readonly db: PrismaClient,
-    private readonly event: EventBus
+    private readonly event: EventBus,
+    private readonly queue: JobQueue
   ) {}
 
   private getDateRange(after: number, base: number | Date = Date.now()) {
@@ -27,9 +35,27 @@ export class SubscriptionCronJobs {
     return { start, end };
   }
 
-  // TODO(@darkskygit): enable this after the cluster event system is ready
-  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT /* everyday at 12am */)
-  async notifyExpiredWorkspace() {
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async nightlyJob() {
+    await this.queue.add(
+      'nightly.cleanExpiredOnetimeSubscriptions',
+      {},
+      {
+        jobId: 'nightly-payment-clean-expired-onetime-subscriptions',
+      }
+    );
+
+    await this.queue.add(
+      'nightly.notifyAboutToExpireWorkspaceSubscriptions',
+      {},
+      {
+        jobId: 'nightly-payment-notify-about-to-expire-workspace-subscriptions',
+      }
+    );
+  }
+
+  @OnJob('nightly.notifyAboutToExpireWorkspaceSubscriptions')
+  async notifyAboutToExpireWorkspaceSubscriptions() {
     const { start: after30DayStart, end: after30DayEnd } =
       this.getDateRange(30);
     const { start: todayStart, end: todayEnd } = this.getDateRange(0);
@@ -87,7 +113,7 @@ export class SubscriptionCronJobs {
     }
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @OnJob('nightly.cleanExpiredOnetimeSubscriptions')
   async cleanExpiredOnetimeSubscriptions() {
     const subscriptions = await this.db.subscription.findMany({
       where: {

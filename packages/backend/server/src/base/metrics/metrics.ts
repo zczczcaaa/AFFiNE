@@ -1,6 +1,6 @@
 import {
-  Attributes,
   Counter,
+  Gauge,
   Histogram,
   Meter,
   MetricOptions,
@@ -12,14 +12,17 @@ type MetricType = 'counter' | 'gauge' | 'histogram';
 type Metric<T extends MetricType> = T extends 'counter'
   ? Counter
   : T extends 'gauge'
-    ? Histogram
+    ? Gauge
     : T extends 'histogram'
       ? Histogram
       : never;
 
 export type ScopedMetrics = {
-  [T in MetricType]: (name: string, opts?: MetricOptions) => Metric<T>;
+  counter: (name: string, opts?: MetricOptions) => Counter;
+  gauge: (name: string, opts?: MetricOptions) => Gauge;
+  histogram: (name: string, opts?: MetricOptions) => Histogram;
 };
+
 type MetricCreators = {
   [T in MetricType]: (
     meter: Meter,
@@ -46,20 +49,7 @@ const metricCreators: MetricCreators = {
     return meter.createCounter(name, opts);
   },
   gauge(meter: Meter, name: string, opts?: MetricOptions) {
-    let value: any;
-    let attrs: Attributes | undefined;
-    const ob$ = meter.createObservableGauge(name, opts);
-
-    ob$.addCallback(result => {
-      result.observe(value, attrs);
-    });
-
-    return {
-      record: (newValue, newAttrs) => {
-        value = newValue;
-        attrs = newAttrs;
-      },
-    } satisfies Histogram;
+    return meter.createGauge(name, opts);
   },
   histogram(meter: Meter, name: string, opts?: MetricOptions) {
     return meter.createHistogram(name, opts);

@@ -35,7 +35,6 @@ AFFiNE.ENV_MAP = {
   REDIS_SERVER_USER: 'redis.username',
   REDIS_SERVER_PASSWORD: 'redis.password',
   REDIS_SERVER_DATABASE: ['redis.db', 'int'],
-  DOC_MERGE_INTERVAL: ['doc.manager.updatePollInterval', 'int'],
   DOC_SERVICE_ENDPOINT: 'docService.endpoint',
   STRIPE_API_KEY: 'plugins.payment.stripe.keys.APIKey',
   STRIPE_WEBHOOK_KEY: 'plugins.payment.stripe.keys.webhookKey',

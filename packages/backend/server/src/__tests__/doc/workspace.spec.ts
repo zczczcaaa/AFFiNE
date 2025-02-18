@@ -3,7 +3,6 @@ import test from 'ava';
 import * as Sinon from 'sinon';
 import { applyUpdate, Doc as YDoc, encodeStateAsUpdate } from 'yjs';
 
-import { ConfigModule } from '../../base/config';
 import {
   DocStorageModule,
   PgWorkspaceDocStorageAdapter as Adapter,
@@ -16,16 +15,7 @@ let adapter: Adapter;
 
 test.before('init testing module', async () => {
   m = await createTestingModule({
-    imports: [
-      ConfigModule.forRoot({
-        doc: {
-          manager: {
-            enableUpdateAutoMerging: false,
-          },
-        },
-      }),
-      DocStorageModule,
-    ],
+    imports: [DocStorageModule],
   });
   db = m.get(PrismaClient);
   adapter = m.get(Adapter);

@@ -65,7 +65,7 @@ test('should be able to cleanup expired history', async t => {
   let count = await db.snapshotHistory.count();
   t.is(count, 20);
 
-  await t.context.cronJob.cleanupExpiredHistory();
+  await t.context.cronJob.cleanExpiredHistories();
 
   count = await db.snapshotHistory.count();
   t.is(count, 10);
