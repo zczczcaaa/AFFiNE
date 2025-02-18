@@ -10,6 +10,7 @@ import { Pagination } from '@affine/component/setting-components';
 import { BlobManagementService } from '@affine/core/modules/blob-management/services';
 import { useI18n } from '@affine/i18n';
 import type { ListedBlobRecord } from '@affine/nbstore';
+import track from '@affine/track';
 import { getAttachmentFileIcon } from '@blocksuite/affine/blocks';
 import { DeleteIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
@@ -224,6 +225,7 @@ export const BlobManagementPanel = () => {
           ](),
         onConfirm: async () => {
           setDeleting(true);
+          track.$.settingsPanel.workspace.deleteUnusedBlob();
           for (const blob of currentSelectedBlobs) {
             await unusedBlobsEntity.deleteBlob(blob.key, true);
             handleUnselectBlob(blob);

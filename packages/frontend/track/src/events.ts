@@ -60,7 +60,10 @@ type EditorEvents = 'bold' | 'italic' | 'underline' | 'strikeThrough';
 type SettingEvents =
   | 'openSettings'
   | 'changeAppSetting'
-  | 'changeEditorSetting';
+  | 'changeEditorSetting'
+  | 'recoverArchivedWorkspace'
+  | 'deleteArchivedWorkspace'
+  | 'deleteUnusedBlob';
 // END SECTION
 
 // SECTION: organize events
@@ -182,7 +185,17 @@ const PageEvents = {
     },
     settingsPanel: {
       menu: ['openSettings'],
-      workspace: ['viewPlans', 'export', 'addProperty', 'editPropertyMeta'],
+      workspace: [
+        'viewPlans',
+        'export',
+        'addProperty',
+        'editPropertyMeta',
+        'deleteUnusedBlob',
+      ],
+      archivedWorkspaces: [
+        'recoverArchivedWorkspace',
+        'deleteArchivedWorkspace',
+      ],
       profileAndBadge: ['viewPlans'],
       accountUsage: ['viewPlans'],
       accountSettings: ['uploadAvatar', 'removeAvatar', 'updateUserName'],
