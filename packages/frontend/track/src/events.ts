@@ -439,7 +439,7 @@ type SplitViewActionControlType = 'menu' | 'indicator';
 type SplitViewActionType = 'open' | 'close' | 'move' | 'closeOthers';
 
 type AuthArgs = {
-  method: 'password' | 'magic-link' | 'oauth';
+  method: 'password' | 'magic-link' | 'oauth' | 'otp';
   provider?: string;
 };
 

@@ -109,7 +109,8 @@ export class AuthService extends Service {
     }
   }
 
-  async signInMagicLink(email: string, token: string) {
+  async signInMagicLink(email: string, token: string, byLink = true) {
+    const method = byLink ? 'magic-link' : 'otp';
     try {
       await this.fetchService.fetch('/api/auth/magic-link', {
         method: 'POST',
@@ -120,10 +121,10 @@ export class AuthService extends Service {
       });
 
       this.session.revalidate();
-      track.$.$.auth.signedIn({ method: 'magic-link' });
+      track.$.$.auth.signedIn({ method });
     } catch (e) {
       track.$.$.auth.signInFail({
-        method: 'magic-link',
+        method,
         reason: e instanceof BackendError ? e.originError.name : 'unknown',
       });
       throw e;

@@ -141,7 +141,7 @@ export const SignInWithEmailStep = ({
     setIsVerifying(true);
 
     try {
-      await authService.signInMagicLink(email, otp);
+      await authService.signInMagicLink(email, otp, false);
     } catch (e) {
       if (e instanceof BackendError) {
         notify.error({
