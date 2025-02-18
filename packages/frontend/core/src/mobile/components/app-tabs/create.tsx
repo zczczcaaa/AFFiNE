@@ -1,7 +1,6 @@
 import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { DocsService } from '@affine/core/modules/doc';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { TemplateDocService } from '@affine/core/modules/template-doc';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { WorkspaceService } from '@affine/core/modules/workspace';
@@ -15,15 +14,11 @@ import { TabItem } from './tab-item';
 export const AppTabCreate = ({ tab }: AppTabCustomFCProps) => {
   const workbench = useService(WorkbenchService).workbench;
   const workspaceService = useService(WorkspaceService);
-  const featureFlagService = useService(FeatureFlagService);
   const templateDocService = useService(TemplateDocService);
   const docsService = useService(DocsService);
 
   const currentWorkspace = workspaceService.workspace;
   const pageHelper = usePageHelper(currentWorkspace.docCollection);
-  const enableTemplateDoc = useLiveData(
-    featureFlagService.flags.enable_template_doc.$
-  );
   const enablePageTemplate = useLiveData(
     templateDocService.setting.enablePageTemplate$
   );
@@ -34,7 +29,7 @@ export const AppTabCreate = ({ tab }: AppTabCustomFCProps) => {
   const createPage = useAsyncCallback(
     async (isActive: boolean) => {
       if (isActive) return;
-      if (enableTemplateDoc && enablePageTemplate && pageTemplateDocId) {
+      if (enablePageTemplate && pageTemplateDocId) {
         const docId =
           await docsService.duplicateFromTemplate(pageTemplateDocId);
         workbench.openDoc({ docId, fromTab: 'true' });
@@ -44,14 +39,7 @@ export const AppTabCreate = ({ tab }: AppTabCustomFCProps) => {
       }
       track.$.navigationPanel.$.createDoc();
     },
-    [
-      docsService,
-      enablePageTemplate,
-      enableTemplateDoc,
-      pageHelper,
-      pageTemplateDocId,
-      workbench,
-    ]
+    [docsService, enablePageTemplate, pageHelper, pageTemplateDocId, workbench]
   );
 
   return (

@@ -15,7 +15,6 @@ import type {
   DatabaseRow,
   DatabaseValueCell,
 } from '@affine/core/modules/doc-info/types';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { GuardService } from '@affine/core/modules/permissions';
 import { ViewService, WorkbenchService } from '@affine/core/modules/workbench';
 import type { AffineDNDData } from '@affine/core/types/dnd';
@@ -132,13 +131,10 @@ export const DocPropertyRow = ({
   const t = useI18n();
   const docService = useService(DocService);
   const docsService = useService(DocsService);
-  const featureFlagService = useService(FeatureFlagService);
   const customPropertyValue = useLiveData(
     docService.doc.customProperty$(propertyInfo.id)
   );
-  const enableTemplateDoc = useLiveData(
-    featureFlagService.flags.enable_template_doc.$
-  );
+
   const typeInfo = isSupportedDocPropertyType(propertyInfo.type)
     ? DocPropertyTypes[propertyInfo.type]
     : undefined;
@@ -215,9 +211,6 @@ export const DocPropertyRow = ({
   );
 
   if (!ValueRenderer || typeof ValueRenderer !== 'function') return null;
-  if (propertyInfo.id === 'template' && !enableTemplateDoc) {
-    return null;
-  }
 
   return (
     <PropertyRoot

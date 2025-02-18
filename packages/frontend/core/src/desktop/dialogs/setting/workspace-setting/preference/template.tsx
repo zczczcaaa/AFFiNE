@@ -10,25 +10,18 @@ import {
 } from '@affine/component/setting-components';
 import { DocsService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { TemplateDocService } from '@affine/core/modules/template-doc';
 import { TemplateListMenu } from '@affine/core/modules/template-doc/view/template-list-menu';
 import { useI18n } from '@affine/i18n';
 import { DeleteIcon } from '@blocksuite/icons/rc';
-import { useLiveData, useService, useServices } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import { useCallback } from 'react';
 
 import * as styles from './template.css';
 
 export const TemplateDocSetting = () => {
   const t = useI18n();
-  const { featureFlagService, templateDocService } = useServices({
-    FeatureFlagService,
-    TemplateDocService,
-  });
-  const setting = templateDocService.setting;
-
-  const enabled = useLiveData(featureFlagService.flags.enable_template_doc.$);
+  const setting = useService(TemplateDocService).setting;
 
   const enablePageTemplate = useLiveData(setting.enablePageTemplate$);
   const pageTemplateDocId = useLiveData(setting.pageTemplateDocId$);
@@ -54,8 +47,6 @@ export const TemplateDocSetting = () => {
     },
     [setting]
   );
-
-  if (!enabled) return null;
 
   return (
     <SettingWrapper title={t['com.affine.settings.workspace.template.title']()}>

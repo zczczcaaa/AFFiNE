@@ -3,7 +3,6 @@ import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-pa
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { TemplateDocService } from '@affine/core/modules/template-doc';
 import { TemplateListMenuContentScrollable } from '@affine/core/modules/template-doc/view/template-list-menu';
 import { WorkbenchService } from '@affine/core/modules/workbench';
@@ -30,15 +29,10 @@ import * as styles from './index.css';
  * @return a function to create a new doc, will duplicate the template doc if the page template is enabled
  */
 const useNewDoc = () => {
-  const featureFlagService = useService(FeatureFlagService);
   const workspaceService = useService(WorkspaceService);
   const templateDocService = useService(TemplateDocService);
   const docsService = useService(DocsService);
   const workbench = useService(WorkbenchService).workbench;
-
-  const enableTemplateDoc = useLiveData(
-    featureFlagService.flags.enable_template_doc.$
-  );
 
   const currentWorkspace = workspaceService.workspace;
   const enablePageTemplate = useLiveData(
@@ -52,7 +46,7 @@ const useNewDoc = () => {
 
   const createPage = useAsyncCallback(
     async (e?: MouseEvent, mode?: DocMode) => {
-      if (enableTemplateDoc && enablePageTemplate && pageTemplateDocId) {
+      if (enablePageTemplate && pageTemplateDocId) {
         const docId =
           await docsService.duplicateFromTemplate(pageTemplateDocId);
         workbench.openDoc(docId, { at: inferOpenMode(e) });
@@ -60,14 +54,7 @@ const useNewDoc = () => {
         pageHelper.createPage(mode, { at: inferOpenMode(e) });
       }
     },
-    [
-      docsService,
-      enablePageTemplate,
-      enableTemplateDoc,
-      pageHelper,
-      pageTemplateDocId,
-      workbench,
-    ]
+    [docsService, enablePageTemplate, pageHelper, pageTemplateDocId, workbench]
   );
 
   return createPage;

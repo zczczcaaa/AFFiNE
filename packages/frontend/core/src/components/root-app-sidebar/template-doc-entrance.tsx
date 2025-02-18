@@ -1,21 +1,18 @@
 import { Menu, MenuItem, MenuSeparator } from '@affine/component';
 import { MenuItem as SidebarMenuItem } from '@affine/core/modules/app-sidebar/views';
 import { DocsService } from '@affine/core/modules/doc';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { TemplateListMenuContentScrollable } from '@affine/core/modules/template-doc/view/template-list-menu';
 import { WorkbenchService } from '@affine/core/modules/workbench';
 import { inferOpenMode } from '@affine/core/utils';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
 import { TemplateIcon } from '@blocksuite/icons/rc';
-import { useLiveData, useService } from '@toeverything/infra';
+import { useService } from '@toeverything/infra';
 import { useCallback, useState } from 'react';
 
 export const TemplateDocEntrance = () => {
   const t = useI18n();
   const [menuOpen, setMenuOpen] = useState(false);
-  const featureFlagService = useService(FeatureFlagService);
-  const enabled = useLiveData(featureFlagService.flags.enable_template_doc.$);
 
   const toggleMenu = useCallback(() => {
     setMenuOpen(prev => !prev);
@@ -25,10 +22,6 @@ export const TemplateDocEntrance = () => {
     if (open) track.$.sidebar.template.openTemplateListMenu();
     setMenuOpen(open);
   }, []);
-
-  if (!enabled) {
-    return null;
-  }
 
   return (
     <SidebarMenuItem

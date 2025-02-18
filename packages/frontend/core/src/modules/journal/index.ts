@@ -2,7 +2,6 @@ import { type Framework } from '@toeverything/infra';
 
 import { DocScope, DocService, DocsService } from '../doc';
 import { EditorSettingService } from '../editor-setting';
-import { FeatureFlagService } from '../feature-flag';
 import { TemplateDocService } from '../template-doc';
 import { WorkspaceScope } from '../workspace';
 import { JournalService } from './services/journal';
@@ -25,7 +24,6 @@ export function configureJournalModule(framework: Framework) {
       DocsService,
       EditorSettingService,
       TemplateDocService,
-      FeatureFlagService,
     ])
     .store(JournalStore, [DocsService])
     .scope(DocScope)

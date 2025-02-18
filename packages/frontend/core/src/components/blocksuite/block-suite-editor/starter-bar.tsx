@@ -66,9 +66,6 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
     )
   );
   const enableAI = useLiveData(featureFlagService.flags.enable_ai.$);
-  const enableTemplateDoc = useLiveData(
-    featureFlagService.flags.enable_template_doc.$
-  );
 
   const handleSelectTemplate = useAsyncCallback(
     async (templateId: string) => {
@@ -109,7 +106,7 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
     }
   }, [editorService.editor]);
 
-  const showTemplate = !isTemplate && enableTemplateDoc;
+  const showTemplate = !isTemplate;
 
   if (!enableAI && !showTemplate) {
     return null;

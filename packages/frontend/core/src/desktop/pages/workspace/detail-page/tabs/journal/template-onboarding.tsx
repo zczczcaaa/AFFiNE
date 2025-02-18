@@ -1,5 +1,4 @@
 import { Button, IconButton, Menu } from '@affine/component';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { GlobalStateService } from '@affine/core/modules/storage';
 import { TemplateDocService } from '@affine/core/modules/template-doc';
 import { TemplateListMenuContentScrollable } from '@affine/core/modules/template-doc/view/template-list-menu';
@@ -19,11 +18,7 @@ let animationPlayed = false;
 export const JournalTemplateOnboarding = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const globalState = useService(GlobalStateService).globalState;
-  const featureFlagService = useService(FeatureFlagService);
   const templateDocService = useService(TemplateDocService);
-  const enableTemplate = useLiveData(
-    featureFlagService.flags.enable_template_doc.$
-  );
   const t = useI18n();
 
   const dismissed = useLiveData(
@@ -65,7 +60,7 @@ export const JournalTemplateOnboarding = () => {
     [templateDocService.setting]
   );
 
-  if (dismissed || !enableTemplate) return null;
+  if (dismissed) return null;
 
   return (
     <div

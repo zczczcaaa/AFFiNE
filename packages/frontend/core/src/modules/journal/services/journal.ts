@@ -8,7 +8,6 @@ import {
 } from '../../../blocksuite/initialization';
 import type { DocsService } from '../../doc';
 import type { EditorSettingService } from '../../editor-setting';
-import type { FeatureFlagService } from '../../feature-flag';
 import type { TemplateDocService } from '../../template-doc';
 import type { JournalStore } from '../store/journal';
 
@@ -21,8 +20,7 @@ export class JournalService extends Service {
     private readonly store: JournalStore,
     private readonly docsService: DocsService,
     private readonly editorSettingService: EditorSettingService,
-    private readonly templateDocService: TemplateDocService,
-    private readonly featureFlagService: FeatureFlagService
+    private readonly templateDocService: TemplateDocService
   ) {
     super();
   }
@@ -66,8 +64,6 @@ export class JournalService extends Service {
         .getTime(),
     });
 
-    const enableTemplateDoc =
-      this.featureFlagService.flags.enable_template_doc.value;
     const enablePageTemplate =
       this.templateDocService.setting.enablePageTemplate$.value;
     const pageTemplateDocId =
@@ -75,13 +71,13 @@ export class JournalService extends Service {
     const journalTemplateDocId =
       this.templateDocService.setting.journalTemplateDocId$.value;
     // if journal template configured
-    if (enableTemplateDoc && journalTemplateDocId) {
+    if (journalTemplateDocId) {
       this.docsService
         .duplicateFromTemplate(journalTemplateDocId, docRecord.id)
         .catch(console.error);
     }
     // journal template not configured, use page template
-    else if (enableTemplateDoc && enablePageTemplate && pageTemplateDocId) {
+    else if (enablePageTemplate && pageTemplateDocId) {
       this.docsService
         .duplicateFromTemplate(pageTemplateDocId, docRecord.id)
         .catch(console.error);

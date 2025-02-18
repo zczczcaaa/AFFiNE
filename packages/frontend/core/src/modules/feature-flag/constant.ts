@@ -222,15 +222,6 @@ export const AFFINE_FLAGS = {
     configurable: !isMobile,
     defaultState: false,
   },
-  // TODO(@CatsJuice): remove this flag when ready
-  enable_template_doc: {
-    category: 'affine',
-    displayName: 'Enable template doc',
-    description:
-      'Allow users to mark a doc as a template, and create new docs from it',
-    configurable: true,
-    defaultState: isCanaryBuild,
-  },
   enable_editor_rtl: {
     category: 'affine',
     displayName:
