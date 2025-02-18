@@ -11,8 +11,8 @@ export const Workspace = (props: WorkspaceProps) => {
     <AvatarWithName
       name={props.name}
       img={props.avatar}
-      width={`${props.size}px`}
-      height={`${props.size}px`}
+      width={`${props.size ?? 20}px`}
+      height={`${props.size ?? 20}px`}
     />
   );
 };
