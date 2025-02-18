@@ -89,7 +89,10 @@ export const AddSelfhostedStep = ({
 
   return (
     <AuthContainer>
-      <AuthHeader title={t['com.affine.auth.sign.add-selfhosted']()} />
+      <AuthHeader
+        title={t['com.affine.auth.sign-in.add-selfhosted.title']()}
+        subTitle={t['com.affine.auth.sign.add-selfhosted']()}
+      />
       <AuthContent>
         <AuthInput
           label={t['com.affine.auth.sign.add-selfhosted.baseurl']()}

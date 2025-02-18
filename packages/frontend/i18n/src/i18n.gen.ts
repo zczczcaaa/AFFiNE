@@ -1216,6 +1216,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.auth.sign.in.sent.email.subtitle"](): string;
     /**
+      * `Self-Hosted`
+      */
+    ["com.affine.auth.sign.add-selfhosted.title"](): string;
+    /**
       * `Connect to a Self-Hosted Instance`
       */
     ["com.affine.auth.sign.add-selfhosted"](): string;
@@ -4302,6 +4306,14 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.split-view-drag-handle.tooltip"](): string;
     /**
+      * `Split view does not support folders.`
+      */
+    ["com.affine.split-view-folder-warning.description"](): string;
+    /**
+      * `Do not show this again`
+      */
+    ["do-not-show-this-again"](): string;
+    /**
       * `New`
       */
     ["com.affine.quicksearch.group.creation"](): string;
@@ -5329,14 +5341,6 @@ export function useAFFiNEI18N(): {
       * `Enables mind map import.`
       */
     ["com.affine.settings.workspace.experimental-features.enable-mind-map-import.description"](): string;
-    /**
-      * `Split View`
-      */
-    ["com.affine.settings.workspace.experimental-features.enable-multi-view.name"](): string;
-    /**
-      * `The Split View feature enables you to divide your tab into multiple sections for simultaneous viewing and editing of different documents.`
-      */
-    ["com.affine.settings.workspace.experimental-features.enable-multi-view.description"](): string;
     /**
       * `Emoji Folder Icon`
       */
@@ -6930,6 +6934,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.page-starter-bar.edgeless"](): string;
     /**
+      * `Tips`
+      */
+    tips(): string;
+    /**
       * `Template`
       */
     Template(): string;
@@ -7029,6 +7037,13 @@ export function useAFFiNEI18N(): {
       * `Bad request.`
       */
     ["error.BAD_REQUEST"](): string;
+    /**
+      * `GraphQL bad request, code: {{code}}, {{message}}`
+      */
+    ["error.GRAPHQL_BAD_REQUEST"](options: Readonly<{
+        code: string;
+        message: string;
+    }>): string;
     /**
       * `Query is too long, max length is {{max}}.`
       */
@@ -7373,6 +7388,12 @@ export function useAFFiNEI18N(): {
       * `Action has been taken, no more messages allowed.`
       */
     ["error.COPILOT_ACTION_TAKEN"](): string;
+    /**
+      * `Doc {{docId}} not found.`
+      */
+    ["error.COPILOT_DOC_NOT_FOUND"](options: {
+        readonly docId: string;
+    }): string;
     /**
       * `Copilot message {{messageId}} not found.`
       */
