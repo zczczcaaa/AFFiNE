@@ -30,7 +30,7 @@ import { getSnapshotRect } from '../utils.js';
 export class PreviewHelper {
   private readonly _calculateQuery = (
     selectedIds: string[],
-    mode: 'page' | 'edgeless'
+    mode: 'block' | 'gfx'
   ): Query => {
     const ids: Array<{ id: string; viewType: BlockViewType }> = selectedIds.map(
       id => ({
@@ -59,7 +59,7 @@ export class PreviewHelper {
 
       const children = model.children ?? [];
       if (
-        mode === 'edgeless' &&
+        mode === 'gfx' &&
         matchModels(model, [RootBlockModel, SurfaceBlockModel])
       ) {
         children.forEach(child => {
@@ -86,12 +86,12 @@ export class PreviewHelper {
   getPreviewStd = (
     blockIds: string[],
     snapshot: SliceSnapshot,
-    mode: 'edgeless' | 'page'
+    mode: 'block' | 'gfx'
   ) => {
     const widget = this.widget;
     const std = widget.std;
     const sourceGfx = std.get(GfxControllerIdentifier);
-    const isEdgeless = mode === 'edgeless';
+    const isEdgeless = mode === 'gfx';
     blockIds = blockIds.slice();
 
     if (isEdgeless) {
@@ -195,7 +195,7 @@ export class PreviewHelper {
     blockIds: string[];
     snapshot: SliceSnapshot;
     container: HTMLElement;
-    mode: 'page' | 'edgeless';
+    mode: 'block' | 'gfx';
   }): void => {
     const { blockIds, snapshot, container, mode } = options;
     const { previewStd, width, height, scale } = this.getPreviewStd(

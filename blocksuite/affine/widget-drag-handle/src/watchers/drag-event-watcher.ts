@@ -1067,16 +1067,12 @@ export class DragEventWatcher {
         schema.safeValidate(block.flavour, 'affine:note')
       );
       // create note to wrap the snapshot
-      const pos = this.gfx.viewport.toModelCoordFromClientCoord([
-        point.x,
-        point.y,
-      ]);
       const noteId = store.addBlock(
         'affine:note',
         {
           xywh: new Bound(
-            pos[0],
-            pos[1],
+            point.x,
+            point.y,
             DEFAULT_NOTE_WIDTH,
             DEFAULT_NOTE_HEIGHT
           ).serialize(),
@@ -1263,13 +1259,13 @@ export class DragEventWatcher {
           return;
         }
 
-        const { snapshot } = source.data.bsEntity;
+        const { snapshot, fromMode } = source.data.bsEntity;
 
         this.previewHelper.renderDragPreview({
           blockIds: source.data?.bsEntity?.modelIds,
           snapshot,
           container,
-          mode: this.mode ?? 'page',
+          mode: fromMode ?? 'block',
         });
 
         setOffset({ x: 0, y: 0 });
