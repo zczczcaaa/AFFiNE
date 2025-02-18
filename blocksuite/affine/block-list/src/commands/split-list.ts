@@ -115,46 +115,92 @@ export const splitListCommand: Command<{
   let newListId: string | null = null;
 
   if (model.children.length > 0 && !model.collapsed) {
-    /**
-     * case 3: list has children (list not collapsed)
-     *
-     * before:
-     * - aa|a <- split here
-     *   - bbb
-     *
-     * after:
-     * - aa
-     *   - |a
-     *   - bbb
-     */
     const afterText = model.text.split(inlineIndex);
-    newListId = doc.addBlock(
-      'affine:list',
-      {
-        type: model.type,
-        text: afterText,
-        order: model.type === 'numbered' ? 1 : null,
-      },
-      model,
-      0
-    );
-
-    if (model.type === 'numbered') {
-      const nextContinuousNumberedLists = getNextContinuousNumberedLists(
-        doc,
-        newListId
+    if (inlineIndex === 0) {
+      /**
+       * case 3: list has children (list not collapsed), split the list at the start of line
+       *
+       * before:
+       * - |aaa <- split here
+       *   - bbb
+       *
+       * after:
+       * -
+       * - |aaa
+       *   - bbb
+       */
+      newListId = doc.addBlock(
+        'affine:list',
+        {
+          type: model.type,
+          text: afterText,
+          order:
+            model.type === 'numbered' && model.order !== null
+              ? model.order + 1
+              : null,
+        },
+        parent,
+        modelIndex + 1
       );
-      let base = 2;
-      nextContinuousNumberedLists.forEach(list => {
-        doc.transact(() => {
-          list.order = base;
+      const newList = doc.getBlock(newListId)?.model;
+      if (!newList) return;
+      // move children to new list
+      doc.moveBlocks(model.children, newList);
+
+      if (model.type === 'numbered' && model.order !== null) {
+        const nextContinuousNumberedLists = getNextContinuousNumberedLists(
+          doc,
+          newListId
+        );
+        let base = model.order + 2;
+        nextContinuousNumberedLists.forEach(list => {
+          doc.transact(() => {
+            list.order = base;
+          });
+          base += 1;
         });
-        base += 1;
-      });
+      }
+    } else {
+      /**
+       * case 4: list has children (list not collapsed), split the list not at the start of line
+       *
+       * before:
+       * - aa|a <- split here
+       *   - bbb
+       *
+       * after:
+       * - aa
+       *   - |a
+       *   - bbb
+       */
+      newListId = doc.addBlock(
+        'affine:list',
+        {
+          type: model.type,
+          text: afterText,
+          order: model.type === 'numbered' ? 1 : null,
+        },
+        model,
+        0
+      );
+
+      if (model.type === 'numbered') {
+        const nextContinuousNumberedLists = getNextContinuousNumberedLists(
+          doc,
+          newListId
+        );
+        let base = 2;
+        nextContinuousNumberedLists.forEach(list => {
+          doc.transact(() => {
+            list.order = base;
+          });
+          base += 1;
+        });
+      }
     }
   } else {
     /**
-     * case 4: list has children (list collapsed)
+     * case 5: list has children (list collapsed)
      *
      * before:
      * - aa|a <- split here
@@ -166,7 +212,7 @@ export const splitListCommand: Command<{
      * - |a
      *
      *
-     * case 5: list does not have children
+     * case 6: list does not have children
      *
      * before:
      * - aa|a <- split here
