@@ -29,7 +29,7 @@ export const EMBED_CARD_WIDTH: Record<EmbedCardStyle, number> = {
   video: 752,
   figma: 752,
   html: 752,
-  syncedDoc: 752,
+  syncedDoc: 800,
   pdf: 537 + 24 + 2,
 };
 

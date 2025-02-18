@@ -164,7 +164,7 @@ export class EmbedEdgelessSyncedDocBlockComponent extends toEdgelessEmbedBlock(
     this.cardStyleMap = {
       display: 'block',
       width: `${EMBED_CARD_WIDTH[style]}px`,
-      height: `${EMBED_CARD_WIDTH[style]}px`,
+      height: `${EMBED_CARD_HEIGHT[style]}px`,
       transform: `scale(${bound.w / EMBED_CARD_WIDTH[style]}, ${bound.h / EMBED_CARD_HEIGHT[style]})`,
       transformOrigin: '0 0',
     };

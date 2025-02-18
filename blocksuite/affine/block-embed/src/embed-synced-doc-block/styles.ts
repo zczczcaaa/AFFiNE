@@ -57,6 +57,7 @@ export const blockStyles = css`
   }
 
   .affine-embed-synced-doc-container {
+    border: 1px solid var(--affine-border-color);
     border-radius: 8px;
     overflow: hidden;
   }
@@ -68,12 +69,6 @@ export const blockStyles = css`
     display: block;
     width: 100%;
     height: calc(${EMBED_CARD_HEIGHT.syncedDoc}px + 36px);
-  }
-  .affine-embed-synced-doc-container:hover.light {
-    box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.08);
-  }
-  .affine-embed-synced-doc-container:hover.dark {
-    box-shadow: 0px 0px 0px 2px rgba(255, 255, 255, 0.14);
   }
   .affine-embed-synced-doc-header-wrapper {
     position: absolute;
@@ -126,9 +121,6 @@ export const blockStyles = css`
     height: 100%;
     z-index: 1;
     cursor: pointer;
-  }
-  .affine-embed-synced-doc-editor-overlay:hover {
-    background: var(--affine-hover-color);
   }
 
   .affine-embed-synced-doc-editor-empty {
