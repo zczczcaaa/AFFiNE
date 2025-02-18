@@ -18,6 +18,7 @@ import {
   getOptionalModuleMetadata,
   getRequestIdFromHost,
   getRequestIdFromRequest,
+  ScannerModule,
 } from './base';
 import { CacheModule } from './base/cache';
 import { AFFiNEConfig, ConfigModule, mergeConfigOverride } from './base/config';
@@ -25,6 +26,7 @@ import { ErrorModule } from './base/error';
 import { EventModule } from './base/event';
 import { GqlModule } from './base/graphql';
 import { HelpersModule } from './base/helpers';
+import { JobModule } from './base/job';
 import { LoggerModule } from './base/logger';
 import { MailModule } from './base/mailer';
 import { MetricsModule } from './base/metrics';
@@ -89,6 +91,7 @@ export const FunctionalityModules = [
   }),
   ConfigModule.forRoot(),
   RuntimeModule,
+  ScannerModule,
   EventModule,
   RedisModule,
   CacheModule,
@@ -102,6 +105,7 @@ export const FunctionalityModules = [
   ErrorModule,
   LoggerModule,
   WebSocketModule,
+  JobModule.forRoot(),
 ];
 
 function filterOptionalModule(

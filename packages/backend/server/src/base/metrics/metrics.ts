@@ -38,7 +38,8 @@ export type KnownMetricScopes =
   | 'sse'
   | 'mail'
   | 'ai'
-  | 'event';
+  | 'event'
+  | 'job';
 
 const metricCreators: MetricCreators = {
   counter(meter: Meter, name: string, opts?: MetricOptions) {
