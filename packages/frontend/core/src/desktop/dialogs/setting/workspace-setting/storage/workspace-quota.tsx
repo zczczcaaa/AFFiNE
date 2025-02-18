@@ -1,6 +1,5 @@
 import { ErrorMessage, Skeleton } from '@affine/component';
 import { SettingRow } from '@affine/component/setting-components';
-import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceQuotaService } from '@affine/core/modules/quota';
 import { useI18n } from '@affine/i18n';
 import { useLiveData, useService } from '@toeverything/infra';
@@ -11,14 +10,6 @@ import * as styles from './style.css';
 
 export const WorkspaceQuotaPanel = () => {
   const t = useI18n();
-  const workspacePermissionService = useService(
-    WorkspacePermissionService
-  ).permission;
-  const isTeam = useLiveData(workspacePermissionService.isTeam$);
-
-  if (!isTeam) {
-    return null;
-  }
 
   return (
     <SettingRow

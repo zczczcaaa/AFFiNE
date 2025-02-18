@@ -2,9 +2,10 @@ import {
   SettingHeader,
   SettingWrapper,
 } from '@affine/component/setting-components';
+import { WorkspacePermissionService } from '@affine/core/modules/permissions';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import { useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 
 import { EnableCloudPanel } from '../preference/enable-cloud';
 import { BlobManagementPanel } from './blob-management';
@@ -18,6 +19,10 @@ export const WorkspaceSettingStorage = ({
 }) => {
   const t = useI18n();
   const workspace = useService(WorkspaceService).workspace;
+  const workspacePermissionService = useService(
+    WorkspacePermissionService
+  ).permission;
+  const isTeam = useLiveData(workspacePermissionService.isTeam$);
   return (
     <>
       <SettingHeader
@@ -25,22 +30,32 @@ export const WorkspaceSettingStorage = ({
         subtitle={t['com.affine.settings.workspace.storage.subtitle']()}
       />
       {workspace.flavour === 'local' ? (
-        <EnableCloudPanel onCloseSetting={onCloseSetting} />
+        <>
+          <EnableCloudPanel onCloseSetting={onCloseSetting} />{' '}
+          {BUILD_CONFIG.isElectron && (
+            <SettingWrapper>
+              <DesktopExportPanel workspace={workspace} />
+            </SettingWrapper>
+          )}
+        </>
       ) : (
         <>
-          <SettingWrapper>
-            <WorkspaceQuotaPanel />
-          </SettingWrapper>
+          {isTeam ? (
+            <SettingWrapper>
+              <WorkspaceQuotaPanel />
+            </SettingWrapper>
+          ) : null}
+
+          {BUILD_CONFIG.isElectron && (
+            <SettingWrapper>
+              <DesktopExportPanel workspace={workspace} />
+            </SettingWrapper>
+          )}
 
           <SettingWrapper>
             <BlobManagementPanel />
           </SettingWrapper>
         </>
-      )}
-      {BUILD_CONFIG.isElectron && (
-        <SettingWrapper>
-          <DesktopExportPanel workspace={workspace} />
-        </SettingWrapper>
       )}
     </>
   );
