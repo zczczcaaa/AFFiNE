@@ -13,8 +13,8 @@ import { property } from 'lit/decorators.js';
 
 import { extractMarkdownFromDoc } from '../../utils/extract';
 import type { DocDisplayConfig } from '../chat-config';
-import type { BaseChip, ChatChip, DocChip } from '../chat-context';
-import { getChipIcon, getChipTooltip } from './utils';
+import type { ChatChip, DocChip } from '../chat-context';
+import { estimateTokenCount, getChipIcon, getChipTooltip } from './utils';
 
 const EXTRACT_DOC_THROTTLE = 1000;
 
@@ -28,10 +28,16 @@ export class ChatPanelDocChip extends SignalWatcher(
   accessor addChip!: (chip: ChatChip) => void;
 
   @property({ attribute: false })
-  accessor updateChip!: (chip: ChatChip, options: Partial<BaseChip>) => void;
+  accessor updateChip!: (chip: ChatChip, options: Partial<DocChip>) => void;
 
   @property({ attribute: false })
   accessor removeChip!: (chip: ChatChip) => void;
+
+  @property({ attribute: false })
+  accessor checkTokenLimit!: (
+    newChip: DocChip,
+    newTokenCount: number
+  ) => boolean;
 
   @property({ attribute: false })
   accessor docDisplayConfig!: DocDisplayConfig;
@@ -103,15 +109,22 @@ export class ChatPanelDocChip extends SignalWatcher(
       if (!doc.ready) {
         doc.load();
       }
-      const result = await extractMarkdownFromDoc(doc, this.host.std.provider);
-      if (this.chip.markdown) {
-        this.chip.markdown.value = result.markdown;
+      const value = await extractMarkdownFromDoc(doc, this.host.std.provider);
+      const tokenCount = estimateTokenCount(value);
+      if (this.checkTokenLimit(this.chip, tokenCount)) {
+        const markdown = this.chip.markdown ?? new Signal<string>('');
+        markdown.value = value;
+        this.updateChip(this.chip, {
+          state: 'success',
+          markdown,
+          tokenCount,
+        });
       } else {
-        this.chip.markdown = new Signal<string>(result.markdown);
+        this.updateChip(this.chip, {
+          state: 'failed',
+          tooltip: 'Content exceeds token limit',
+        });
       }
-      this.updateChip(this.chip, {
-        state: 'success',
-      });
     } catch (e) {
       this.updateChip(this.chip, {
         state: 'failed',

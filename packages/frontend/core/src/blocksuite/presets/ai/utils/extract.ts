@@ -158,7 +158,7 @@ export async function extractPageAll(
 export async function extractMarkdownFromDoc(
   doc: Store,
   provider: ServiceProvider
-): Promise<{ docId: string; markdown: string }> {
+): Promise<string> {
   const transformer = await getTransformer(doc);
   const adapter = new MarkdownAdapter(transformer, provider);
   const blockModels = getNoteBlockModels(doc);
@@ -177,10 +177,7 @@ export async function extractMarkdownFromDoc(
     snapshot,
     assets: transformer.assetsManager,
   });
-  return {
-    docId: doc.id,
-    markdown: content.file,
-  };
+  return content.file;
 }
 
 function getNoteBlockModels(doc: Store) {

@@ -69,3 +69,14 @@ export function getChipKey(chip: ChatChip) {
   }
   return null;
 }
+
+export function estimateTokenCount(text: string): number {
+  const chinese = text.match(/[\u4e00-\u9fa5]/g)?.length || 0;
+  const english = text.replace(/[\u4e00-\u9fa5]/g, '');
+  // Split English text into words by whitespace
+  const englishWords = english.trim().split(/\s+/).length;
+
+  // Chinese characters: 1 character ≈ 2.5 tokens
+  // English words: 1 word ≈ 1.3 tokens
+  return Math.ceil(chinese * 2.5 + englishWords * 1.3);
+}

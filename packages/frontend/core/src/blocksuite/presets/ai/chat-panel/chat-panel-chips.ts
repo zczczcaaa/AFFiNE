@@ -12,8 +12,21 @@ import { repeat } from 'lit/directives/repeat.js';
 
 import { AIProvider } from '../provider';
 import type { DocDisplayConfig, DocSearchMenuConfig } from './chat-config';
-import type { BaseChip, ChatChip, ChatContextValue } from './chat-context';
-import { getChipKey, isDocChip, isFileChip } from './components/utils';
+import type {
+  ChatChip,
+  ChatContextValue,
+  DocChip,
+  FileChip,
+} from './chat-context';
+import {
+  estimateTokenCount,
+  getChipKey,
+  isDocChip,
+  isFileChip,
+} from './components/utils';
+
+// 100k tokens limit for the docs context
+const MAX_TOKEN_COUNT = 100000;
 
 export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
   static override styles = css`
@@ -91,6 +104,7 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
               .addChip=${this._addChip}
               .updateChip=${this._updateChip}
               .removeChip=${this._removeChip}
+              .checkTokenLimit=${this._checkTokenLimit}
               .docDisplayConfig=${this.docDisplayConfig}
               .host=${this.host}
             ></chat-panel-doc-chip>`;
@@ -189,7 +203,7 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
 
   private readonly _updateChip = (
     chip: ChatChip,
-    options: Partial<BaseChip>
+    options: Partial<DocChip | FileChip>
   ) => {
     const index = this.chatContextValue.chips.findIndex(item => {
       if (isDocChip(chip)) {
@@ -263,5 +277,26 @@ export class ChatPanelChips extends WithDisposable(ShadowlessElement) {
         fileId: chip.fileId,
       });
     }
+  };
+
+  private readonly _checkTokenLimit = (
+    newChip: DocChip,
+    newTokenCount: number
+  ) => {
+    const estimatedTokens = this.chatContextValue.chips.reduce((acc, chip) => {
+      if (isFileChip(chip)) {
+        return acc;
+      }
+      if (chip.docId === newChip.docId) {
+        return acc + newTokenCount;
+      }
+      if (chip.markdown?.value && chip.state === 'success') {
+        const tokenCount =
+          chip.tokenCount ?? estimateTokenCount(chip.markdown.value);
+        return acc + tokenCount;
+      }
+      return acc;
+    }, 0);
+    return estimatedTokens <= MAX_TOKEN_COUNT;
   };
 }
