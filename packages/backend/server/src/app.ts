@@ -24,9 +24,7 @@ export async function createApp() {
     bufferLogs: true,
   });
 
-  if (AFFiNE.flavor.doc) {
-    app.useBodyParser('raw');
-  }
+  app.useBodyParser('raw', { limit: '100mb' });
 
   app.useLogger(app.get(AFFiNELogger));
 

@@ -29,9 +29,9 @@ export async function createTestingApp(
     bodyParser: true,
     rawBody: true,
   });
-  if (AFFiNE.flavor.doc) {
-    app.useBodyParser('raw');
-  }
+
+  app.useBodyParser('raw');
+
   const logger = new AFFiNELogger();
 
   logger.setLogLevels([TEST_LOG_LEVEL]);
