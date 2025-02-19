@@ -37,7 +37,7 @@
     "@sentry/react": "^8.44.0",
     "@toeverything/infra": "workspace:*",
     "@toeverything/pdf-viewer": "^0.1.1",
-    "@toeverything/theme": "^1.1.7",
+    "@toeverything/theme": "^1.1.11",
     "@vanilla-extract/dynamic": "^2.1.2",
     "animejs": "^3.2.2",
     "bytes": "^3.1.2",
