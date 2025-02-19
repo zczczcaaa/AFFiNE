@@ -1,6 +1,11 @@
 import { test } from '@affine-test/kit/playwright';
 import { pasteContent } from '@affine-test/kit/utils/clipboard';
 import {
+  clickEdgelessModeButton,
+  clickPageModeButton,
+  locateEditorContainer,
+} from '@affine-test/kit/utils/editor';
+import {
   copyByKeyboard,
   pasteByKeyboard,
   pressEnter,
@@ -8,6 +13,7 @@ import {
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   clickNewPageButton,
+  getBlockSuiteEditorTitle,
   type,
   waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
@@ -140,4 +146,63 @@ test.describe('paste in multiple blocks text selection', () => {
     await verifyParagraphContent(page, 2, 'hello test');
     await verifyParagraphContent(page, 3, 'test world');
   });
+});
+
+test('paste surface-ref block to another doc as embed-linked-doc block', async ({
+  page,
+}) => {
+  await openHomePage(page);
+  await clickNewPageButton(page, 'Clipboard Test');
+  await waitForEditorLoad(page);
+  await clickEdgelessModeButton(page);
+  const container = locateEditorContainer(page);
+  await container.click();
+
+  // add a shape
+  await page.keyboard.press('s');
+  // click to add a shape
+  await container.click({ position: { x: 100, y: 500 } });
+  await page.waitForTimeout(50);
+  // add a frame
+  await page.keyboard.press('f');
+  await page.waitForTimeout(50);
+
+  // click on the frame title to trigger the change frame button toolbar
+  const frameTitle = page.locator('affine-frame-title');
+  await frameTitle.click();
+  await page.waitForTimeout(50);
+  const changeFrameButton = page.locator('edgeless-change-frame-button');
+  // get insert into page button which with aria-label 'Insert into Page'
+  const insertIntoPageButton = changeFrameButton.locator(
+    `editor-icon-button[aria-label="Insert into Page"]`
+  );
+  await insertIntoPageButton.click();
+
+  await clickPageModeButton(page);
+  await page.waitForTimeout(50);
+
+  // copy surface-ref block
+  const surfaceRefBlock = page.locator('.affine-surface-ref');
+  await surfaceRefBlock.click();
+  await page.waitForTimeout(50);
+  await copyByKeyboard(page);
+
+  // paste to another doc
+  await clickNewPageButton(page);
+  await waitForEditorLoad(page);
+  const title2 = getBlockSuiteEditorTitle(page);
+  await title2.pressSequentially('page2');
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(50);
+
+  // paste the surface-ref block
+  await pasteByKeyboard(page);
+  await page.waitForTimeout(50);
+
+  const embedLinkedDocBlock = page.locator('affine-embed-linked-doc-block');
+  await expect(embedLinkedDocBlock).toBeVisible();
+  const embedLinkedDocBlockTitle = embedLinkedDocBlock.locator(
+    '.affine-embed-linked-doc-content-title-text'
+  );
+  await expect(embedLinkedDocBlockTitle).toHaveText('Clipboard Test');
 });

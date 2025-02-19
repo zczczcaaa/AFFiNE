@@ -17,12 +17,16 @@ export const surfaceRefToEmbed =
         payload.snapshot.flavour === 'affine:surface-ref' &&
         !std.store.hasBlock(payload.snapshot.id)
       ) {
-        const id = payload.snapshot.id;
+        // The blockId of the original surface-ref block
+        const blockId = payload.snapshot.id;
         payload.snapshot.id = std.workspace.idGenerator();
         payload.snapshot.flavour = 'affine:embed-linked-doc';
         payload.snapshot.props = {
-          blockId: id,
           pageId,
+          params: {
+            mode: 'page',
+            blockIds: [blockId],
+          },
         };
       }
     });

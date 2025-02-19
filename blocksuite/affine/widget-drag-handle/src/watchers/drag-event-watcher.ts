@@ -12,6 +12,7 @@ import {
   NoteBlockModel,
   RootBlockModel,
 } from '@blocksuite/affine-model';
+import { surfaceRefToEmbed } from '@blocksuite/affine-shared/adapters';
 import {
   BLOCK_CHILDREN_CONTAINER_PADDING_LEFT,
   EMBED_CARD_HEIGHT,
@@ -68,7 +69,6 @@ import { PreviewHelper } from '../helpers/preview-helper.js';
 import { gfxBlocksFilter } from '../middleware/blocks-filter.js';
 import { newIdCrossDoc } from '../middleware/new-id-cross-doc.js';
 import { reorderList } from '../middleware/reorder-list';
-import { surfaceRefToEmbed } from '../middleware/surface-ref-to-embed.js';
 import {
   containBlock,
   extractIdsFromSnapshot,

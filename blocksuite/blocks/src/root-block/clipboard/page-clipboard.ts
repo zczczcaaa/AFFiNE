@@ -1,5 +1,9 @@
 import { deleteTextCommand } from '@blocksuite/affine-components/rich-text';
 import {
+  pasteMiddleware,
+  surfaceRefToEmbed,
+} from '@blocksuite/affine-shared/adapters';
+import {
   clearAndSelectFirstModelCommand,
   deleteSelectedModelsCommand,
   getBlockIndexCommand,
@@ -13,6 +17,7 @@ import type { UIEventHandler } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/utils';
 import type { BlockSnapshot, Store } from '@blocksuite/store';
 
+import { replaceIdMiddleware } from '../../_common/transformers/middlewares';
 import { ReadOnlyClipboard } from './readonly-clipboard';
 
 /**
@@ -22,6 +27,23 @@ import { ReadOnlyClipboard } from './readonly-clipboard';
 export class PageClipboard extends ReadOnlyClipboard {
   protected _init = () => {
     this._initAdapters();
+    const paste = pasteMiddleware(this._std);
+    // Use surfaceRefToEmbed middleware to convert surface-ref to embed-linked-doc
+    // When pastina a surface-ref block to another doc
+    const surfaceRefToEmbedMiddleware = surfaceRefToEmbed(this._std);
+    const replaceId = replaceIdMiddleware(
+      this._std.store.workspace.idGenerator
+    );
+    this._std.clipboard.use(paste);
+    this._std.clipboard.use(surfaceRefToEmbedMiddleware);
+    this._std.clipboard.use(replaceId);
+    this._disposables.add({
+      dispose: () => {
+        this._std.clipboard.unuse(paste);
+        this._std.clipboard.unuse(surfaceRefToEmbedMiddleware);
+        this._std.clipboard.unuse(replaceId);
+      },
+    });
   };
 
   onBlockSnapshotPaste = async (
@@ -143,3 +165,5 @@ export class PageClipboard extends ReadOnlyClipboard {
     }
   }
 }
+
+export { pasteMiddleware };

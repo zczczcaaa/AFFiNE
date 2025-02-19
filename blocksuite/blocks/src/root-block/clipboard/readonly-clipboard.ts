@@ -5,7 +5,6 @@ import {
   ImageAdapter,
   MixTextAdapter,
   NotionTextAdapter,
-  pasteMiddleware,
 } from '@blocksuite/affine-shared/adapters';
 import {
   copySelectedModelsCommand,
@@ -17,7 +16,6 @@ import { DisposableGroup } from '@blocksuite/global/utils';
 
 import {
   defaultImageProxyMiddleware,
-  replaceIdMiddleware,
   titleMiddleware,
 } from '../../_common/transformers/middlewares.js';
 import { ClipboardAdapter } from './adapter.js';
@@ -64,12 +62,7 @@ export class ReadOnlyClipboard {
     this._std.clipboard.registerAdapter('text/plain', MixTextAdapter, 70);
     this._std.clipboard.registerAdapter('*/*', AttachmentAdapter, 60);
     const copy = copyMiddleware(this._std);
-    const paste = pasteMiddleware(this._std);
     this._std.clipboard.use(copy);
-    this._std.clipboard.use(paste);
-    this._std.clipboard.use(
-      replaceIdMiddleware(this._std.store.workspace.idGenerator)
-    );
     this._std.clipboard.use(
       titleMiddleware(this._std.store.workspace.meta.docMetas)
     );
@@ -91,10 +84,6 @@ export class ReadOnlyClipboard {
         this._std.clipboard.unregisterAdapter('text/html');
         this._std.clipboard.unregisterAdapter('*/*');
         this._std.clipboard.unuse(copy);
-        this._std.clipboard.unuse(paste);
-        this._std.clipboard.unuse(
-          replaceIdMiddleware(this._std.store.workspace.idGenerator)
-        );
         this._std.clipboard.unuse(
           titleMiddleware(this._std.store.workspace.meta.docMetas)
         );
@@ -135,4 +124,4 @@ export class ReadOnlyClipboard {
   }
 }
 
-export { copyMiddleware, pasteMiddleware };
+export { copyMiddleware };
