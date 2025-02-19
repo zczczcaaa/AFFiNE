@@ -1,23 +1,21 @@
 import '../declare-test-window.js';
 
-import type { EditorHost } from '@blocksuite/block-std';
 import type {
   BlockSuiteFlags,
   DatabaseBlockModel,
   ListType,
   RichText,
 } from '@blocksuite/blocks';
-import type { Container } from '@blocksuite/global/di';
 import { assertExists } from '@blocksuite/global/utils';
 import type { InlineRange, InlineRootElement } from '@blocksuite/inline';
 import type { AffineEditorContainer } from '@blocksuite/presets';
-import type { BlockModel, ExtensionType } from '@blocksuite/store';
+import type { BlockModel } from '@blocksuite/store';
 import { uuidv4 } from '@blocksuite/store';
 import type { ConsoleMessage, Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import lz from 'lz-string';
 
-import { currentEditorIndex, multiEditor } from '../multiple-editor.js';
+import { currentEditorIndex } from '../multiple-editor.js';
 import {
   pressArrowRight,
   pressEnter,
@@ -28,12 +26,6 @@ import {
   SHORT_KEY,
   type,
 } from './keyboard.js';
-
-declare global {
-  interface WindowEventMap {
-    'blocksuite:doc-ready': CustomEvent<string>;
-  }
-}
 
 export const defaultPlaygroundURL = new URL(
   `http://localhost:${process.env.CI ? 4173 : 5173}/`
@@ -54,186 +46,6 @@ export const getSelectionRect = async (page: Page): Promise<DOMRect> => {
   assertExists(rect);
   return rect;
 };
-
-/**
- * @example
- * ```ts
- * await initEmptyEditor(page, { enable_some_flag: true });
- * ```
- */
-async function initEmptyEditor({
-  page,
-  flags = {},
-  noInit = false,
-  multiEditor = false,
-}: {
-  page: Page;
-  flags?: Partial<BlockSuiteFlags>;
-  noInit?: boolean;
-  multiEditor?: boolean;
-}) {
-  await page.evaluate(
-    ([flags, noInit, multiEditor]) => {
-      const { collection } = window;
-
-      async function waitForMountPageEditor(
-        doc: ReturnType<typeof collection.createDoc>
-      ) {
-        doc.load();
-
-        if (!doc.root) {
-          await new Promise(resolve => doc.slots.rootAdded.once(resolve));
-        }
-
-        // add app root from https://github.com/toeverything/blocksuite/commit/947201981daa64c5ceeca5fd549460c34e2dabfa
-        const appRoot = document.querySelector('#app');
-        if (!appRoot) {
-          throw new Error('Cannot find app root element(#app).');
-        }
-        const createEditor = () => {
-          const editor = document.createElement('affine-editor-container');
-          for (const [key, value] of Object.entries(flags)) {
-            doc
-              .get(window.$blocksuite.blocks.FeatureFlagService)
-              .setFlag(key as keyof BlockSuiteFlags, value);
-          }
-          doc
-            .get(window.$blocksuite.blocks.FeatureFlagService)
-            .setFlag('enable_advanced_block_visibility', true);
-          editor.doc = doc;
-          editor.autofocus = true;
-          const defaultExtensions: ExtensionType[] = [
-            ...window.$blocksuite.defaultExtensions(),
-            {
-              setup: (di: Container) => {
-                di.addImpl(window.$blocksuite.identifiers.ParseDocUrlService, {
-                  parseDocUrl() {
-                    return undefined;
-                  },
-                });
-              },
-            },
-            {
-              setup: (di: Container) => {
-                di.override(
-                  window.$blocksuite.identifiers.DocModeProvider,
-                  // @ts-expect-error set mock service
-                  window.$blocksuite.mockServices.mockDocModeService(
-                    () => editor.mode,
-                    (mode: 'page' | 'edgeless') => editor.switchEditor(mode)
-                  )
-                );
-              },
-            },
-          ];
-          editor.pageSpecs = [...editor.pageSpecs, ...defaultExtensions];
-          editor.edgelessSpecs = [
-            ...editor.edgelessSpecs,
-            ...defaultExtensions,
-          ];
-
-          editor.std
-            .get(window.$blocksuite.identifiers.RefNodeSlotsProvider)
-            .docLinkClicked.on(({ pageId: docId }) => {
-              const newDoc = collection.getDoc(docId);
-              if (!newDoc) {
-                throw new Error(`Failed to jump to page ${docId}`);
-              }
-              editor.doc = newDoc;
-            });
-          appRoot.append(editor);
-          return editor;
-        };
-
-        const editor = createEditor();
-        if (multiEditor) createEditor();
-
-        editor.updateComplete
-          .then(() => {
-            const debugMenu = document.createElement('starter-debug-menu');
-            const docsPanel = document.createElement('docs-panel');
-            const framePanel = document.createElement('custom-frame-panel');
-            const outlinePanel = document.createElement('custom-outline-panel');
-            const outlineViewer = document.createElement(
-              'custom-outline-viewer'
-            );
-            const leftSidePanel = document.createElement('left-side-panel');
-            // @ts-expect-error set test editor
-            docsPanel.editor = editor;
-            // @ts-expect-error set test editor
-            framePanel.editor = editor;
-            // @ts-expect-error set test editor
-            outlinePanel.editor = editor;
-            // @ts-expect-error set test editor
-            outlineViewer.editor = editor;
-            // @ts-expect-error set test collection
-            debugMenu.collection = collection;
-            // @ts-expect-error set test editor
-            debugMenu.editor = editor;
-            // @ts-expect-error set test docsPanel
-            debugMenu.docsPanel = docsPanel;
-            // @ts-expect-error set test framePanel
-            debugMenu.framePanel = framePanel;
-            // @ts-expect-error set test outlineViewer
-            debugMenu.outlineViewer = outlineViewer;
-            // @ts-expect-error set test outlinePanel
-            debugMenu.outlinePanel = outlinePanel;
-            // @ts-expect-error set test leftSidePanel
-            debugMenu.leftSidePanel = leftSidePanel;
-            document.body.append(debugMenu);
-            document.body.append(leftSidePanel);
-            document.body.append(framePanel);
-            document.body.append(outlinePanel);
-            document.body.append(outlineViewer);
-
-            window.debugMenu = debugMenu;
-            window.editor = editor;
-            window.doc = doc;
-            Object.defineProperty(globalThis, 'host', {
-              get() {
-                return document.querySelector<EditorHost>('editor-host');
-              },
-            });
-            Object.defineProperty(globalThis, 'std', {
-              get() {
-                return document.querySelector<EditorHost>('editor-host')?.std;
-              },
-            });
-            window.dispatchEvent(
-              new CustomEvent('blocksuite:doc-ready', { detail: doc.id })
-            );
-          })
-          .catch(console.error);
-      }
-
-      if (noInit) {
-        const firstDoc = collection.docs.values().next().value?.getStore() as
-          | ReturnType<typeof collection.createDoc>
-          | undefined;
-        if (firstDoc) {
-          window.doc = firstDoc;
-          waitForMountPageEditor(firstDoc).catch;
-        } else {
-          collection.slots.docCreated.on(docId => {
-            const doc = collection.getDoc(docId);
-            if (!doc) {
-              throw new Error(`Failed to get doc ${docId}`);
-            }
-            window.doc = doc;
-            waitForMountPageEditor(doc).catch(console.error);
-          });
-        }
-      } else {
-        collection.meta.initialize();
-        const doc = collection.createDoc({ id: 'doc:home' });
-        window.doc = doc;
-        waitForMountPageEditor(doc).catch(console.error);
-      }
-    },
-    [flags, noInit, multiEditor] as const
-  );
-  await waitNextFrame(page);
-}
 
 export const getEditorLocator = (page: Page) => {
   return page.locator('affine-editor-container').nth(currentEditorIndex);
@@ -316,6 +128,14 @@ export async function enterPlaygroundRoom(
   }
   url.searchParams.set('room', room);
   url.searchParams.set('blobSource', blobSource?.join(',') || 'idb');
+  for (const [key, value] of Object.entries(ops?.flags || {})) {
+    if (value) {
+      url.searchParams.append('flag', key);
+    }
+  }
+  if (ops?.noInit) {
+    url.searchParams.set('noInit', 'true');
+  }
   await page.goto(url.toString());
 
   // See https://github.com/microsoft/playwright/issues/5546
@@ -351,13 +171,6 @@ export async function enterPlaygroundRoom(
   // Log all uncaught errors
   page.on('pageerror', exception => {
     throw new Error(`Uncaught exception: "${exception}"\n${exception.stack}`);
-  });
-
-  await initEmptyEditor({
-    page,
-    flags: ops?.flags,
-    noInit: ops?.noInit,
-    multiEditor,
   });
 
   const locator = page.locator('affine-editor-container');
@@ -419,7 +232,6 @@ export async function enterPlaygroundWithList(
 ) {
   const room = generateRandomRoomId();
   await page.goto(`${DEFAULT_PLAYGROUND}?room=${room}`);
-  await initEmptyEditor({ page });
 
   await page.evaluate(
     ({ contents, type }: { contents: string[]; type: ListType }) => {
@@ -1439,7 +1251,7 @@ export async function mockParseDocUrlService(
 ) {
   await page.evaluate(mapping => {
     const parseDocUrlService = window.host.std.get(
-      window.$blocksuite.identifiers.ParseDocUrlService
+      window.$blocksuite.blocks.ParseDocUrlProvider
     );
     parseDocUrlService.parseDocUrl = (url: string) => {
       const docId = mapping[url];

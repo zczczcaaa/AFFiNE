@@ -99,7 +99,6 @@ test(scoped`basic multi user state`, async ({ context, page: pageA }) => {
 
   const pageB = await context.newPage();
   await enterPlaygroundRoom(pageB, {
-    flags: {},
     room,
     noInit: true,
   });
