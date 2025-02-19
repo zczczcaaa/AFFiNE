@@ -148,7 +148,7 @@ export const SwipeDialog = ({
   title,
   children,
   open,
-  triggerSize = 10,
+  triggerSize = 25,
   onOpenChange,
 }: SwipeDialogProps) => {
   const insideModal = useContext(InsideModalContext);
