@@ -245,7 +245,10 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
                     </span>
                   </div>
                 `
-              : guard([editorMode, syncedDoc], renderEditor)}
+              : guard(
+                  [editorMode, syncedDoc, appTheme, edgelessTheme],
+                  renderEditor
+                )}
           </div>
           <div
             class=${classMap({
