@@ -74,7 +74,7 @@ framework.impl(PopupWindowProvider, {
 
       url = `${redirectProxy}?${search.toString()}`;
     }
-    window.open(url, '_blank', 'noreferrer noopener');
+    window.open(url, '_blank', 'popup noreferrer noopener');
   },
 });
 framework.impl(HapticProvider, {
