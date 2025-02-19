@@ -2,6 +2,10 @@ import { useRefEffect } from '@affine/component';
 import { EditorLoading } from '@affine/component/page-detail-skeleton';
 import { ServerService } from '@affine/core/modules/cloud';
 import {
+  EditorSettingService,
+  fontStyleOptions,
+} from '@affine/core/modules/editor-setting';
+import {
   customImageProxyMiddleware,
   type DocMode,
   ImageProxyService,
@@ -10,9 +14,11 @@ import {
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import type { Store } from '@blocksuite/affine/store';
-import { useService } from '@toeverything/infra';
+import { Slot } from '@radix-ui/react-slot';
+import { useLiveData, useService } from '@toeverything/infra';
+import { cssVar } from '@toeverything/theme';
 import type { CSSProperties } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { DefaultOpenProperty } from '../../doc-properties';
 import { BlocksuiteEditorContainer } from './blocksuite-editor-container';
@@ -126,6 +132,28 @@ export const BlockSuiteEditor = (props: EditorProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const editorSetting = useService(EditorSettingService).editorSetting;
+  const settings = useLiveData(
+    editorSetting.settings$.selector(s => ({
+      fontFamily: s.fontFamily,
+      customFontFamily: s.customFontFamily,
+      fullWidthLayout: s.fullWidthLayout,
+    }))
+  );
+  const fontFamily = useMemo(() => {
+    const fontStyle = fontStyleOptions.find(
+      option => option.key === settings.fontFamily
+    );
+    if (!fontStyle) {
+      return cssVar('fontSansFamily');
+    }
+    const customFontFamily = settings.customFontFamily;
+
+    return customFontFamily && fontStyle.key === 'Custom'
+      ? `${customFontFamily}, ${fontStyle.value}`
+      : fontStyle.value;
+  }, [settings.customFontFamily, settings.fontFamily]);
+
   useEffect(() => {
     if (props.page.root) {
       setIsLoading(false);
@@ -149,9 +177,13 @@ export const BlockSuiteEditor = (props: EditorProps) => {
     throw error;
   }
 
-  return isLoading ? (
-    <EditorLoading />
-  ) : (
-    <BlockSuiteEditorImpl key={props.page.id} {...props} />
+  return (
+    <Slot style={{ '--affine-font-family': fontFamily } as CSSProperties}>
+      {isLoading ? (
+        <EditorLoading />
+      ) : (
+        <BlockSuiteEditorImpl key={props.page.id} {...props} />
+      )}
+    </Slot>
   );
 };

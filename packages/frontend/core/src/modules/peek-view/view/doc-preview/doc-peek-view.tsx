@@ -2,10 +2,6 @@ import { Scrollable } from '@affine/component';
 import { PageDetailSkeleton } from '@affine/component/page-detail-skeleton';
 import { AIProvider } from '@affine/core/blocksuite/presets/ai';
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
-import {
-  BlockSuiteEditor,
-  CustomEditorWrapper,
-} from '@affine/core/components/blocksuite/block-suite-editor';
 import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
 import { PageNotFound } from '@affine/core/desktop/pages/404';
 import { EditorService } from '@affine/core/modules/editor';
@@ -26,7 +22,7 @@ import {
   useServices,
 } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useCallback, useEffect } from 'react';
+import { lazy, Suspense, useCallback, useEffect } from 'react';
 
 import { WorkbenchService } from '../../../workbench';
 import type { DocReferenceInfo } from '../../entities/peek-view';
@@ -35,6 +31,15 @@ import { useEditor } from '../utils';
 import * as styles from './doc-peek-view.css';
 
 const logger = new DebugLogger('doc-peek-view');
+
+// Lazy load BlockSuiteEditor to break circular dependency
+const BlockSuiteEditor = lazy(() =>
+  import('@affine/core/components/blocksuite/block-suite-editor').then(
+    module => ({
+      default: module.BlockSuiteEditor,
+    })
+  )
+);
 
 function fitViewport(
   editor: AffineEditorContainer,
@@ -159,7 +164,7 @@ function DocPeekPreviewEditor({
         <Scrollable.Viewport
           className={clsx('affine-page-viewport', styles.affineDocViewport)}
         >
-          <CustomEditorWrapper>
+          <Suspense fallback={<PageDetailSkeleton />}>
             <BlockSuiteEditor
               className={styles.editor}
               mode={mode}
@@ -168,7 +173,7 @@ function DocPeekPreviewEditor({
               onEditorReady={handleOnEditorReady}
               defaultOpenProperty={defaultOpenProperty}
             />
-          </CustomEditorWrapper>
+          </Suspense>
         </Scrollable.Viewport>
         <Scrollable.Scrollbar />
       </Scrollable.Root>

@@ -407,6 +407,8 @@ export const PeekViewModalContainer = forwardRef<
               <div className={styles.modalContentClip}>
                 <Dialog.Content
                   {...contentOptions}
+                  // mute the radix-ui warning
+                  aria-describedby={undefined}
                   className={clsx({
                     [styles.modalContent]: true,
                     [styles.dialog]: dialogFrame,

@@ -8,10 +8,7 @@ import { useEffect } from 'react';
 import { DocService } from '../modules/doc';
 import { EditorService } from '../modules/editor';
 import { EditorSettingService } from '../modules/editor-setting';
-import {
-  BlockSuiteEditor as Editor,
-  CustomEditorWrapper,
-} from './blocksuite/block-suite-editor';
+import { BlockSuiteEditor } from './blocksuite/block-suite-editor';
 import * as styles from './page-detail-editor.css';
 
 declare global {
@@ -57,19 +54,17 @@ export const PageDetailEditor = ({
   }, [editor, readonly]);
 
   return (
-    <CustomEditorWrapper>
-      <Editor
-        className={clsx(styles.editor, {
-          'full-screen': !isSharedMode && fullWidthLayout,
-          'is-public': isSharedMode,
-        })}
-        mode={mode}
-        defaultOpenProperty={defaultOpenProperty}
-        page={editor.doc.blockSuiteDoc}
-        shared={isSharedMode}
-        readonly={readonly}
-        onEditorReady={onLoad}
-      />
-    </CustomEditorWrapper>
+    <BlockSuiteEditor
+      className={clsx(styles.editor, {
+        'full-screen': !isSharedMode && fullWidthLayout,
+        'is-public': isSharedMode,
+      })}
+      mode={mode}
+      defaultOpenProperty={defaultOpenProperty}
+      page={editor.doc.blockSuiteDoc}
+      shared={isSharedMode}
+      readonly={readonly}
+      onEditorReady={onLoad}
+    />
   );
 };
