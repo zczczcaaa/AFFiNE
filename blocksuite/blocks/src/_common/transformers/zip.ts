@@ -35,16 +35,29 @@ async function exportDocs(collection: Workspace, docs: Store[]) {
   const pathBlobIdMap = job.assetsManager.getPathBlobIdMap();
   const assetsMap = job.assets;
 
-  await Promise.all(
+  // Add blobs to assets folder, if failed, log the error and continue
+  const results = await Promise.all(
     Array.from(pathBlobIdMap.values()).map(async blobId => {
-      await job.assetsManager.readFromBlob(blobId);
-      const ext = getAssetName(assetsMap, blobId).split('.').at(-1);
-      const blob = assetsMap.get(blobId);
-      if (blob) {
-        await assets.file(`${blobId}.${ext}`, blob);
+      try {
+        await job.assetsManager.readFromBlob(blobId);
+        const ext = getAssetName(assetsMap, blobId).split('.').at(-1);
+        const blob = assetsMap.get(blobId);
+        if (blob) {
+          await assets.file(`${blobId}.${ext}`, blob);
+          return { success: true, blobId };
+        }
+        return { success: false, blobId, error: 'Blob not found' };
+      } catch (error) {
+        console.error(`Failed to process blob: ${blobId}`, error);
+        return { success: false, blobId, error };
       }
     })
   );
+
+  const failures = results.filter(r => !r.success);
+  if (failures.length > 0) {
+    console.warn(`Failed to process ${failures.length} blobs:`, failures);
+  }
 
   const downloadBlob = await zip.generate();
   return download(downloadBlob, `${collection.id}.bs.zip`);
