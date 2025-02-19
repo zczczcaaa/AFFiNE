@@ -91,6 +91,52 @@ function createJobErrorCatcher<
   ) as Jobs;
 }
 
+function isEqualUint8Arrays(a: Uint8Array, b: Uint8Array) {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ *
+ * @param local - local doc data
+ * @param localSv - local doc state vector
+ * @param remoteDiff - remote doc data diff with local doc state vector,
+ * should calculated by `Y.diffUpdate(remoteDocData, localSv)`
+ * @param remoteSv - remote doc state vector
+ * @returns null if no diff, otherwise return the diff data
+ */
+function docDiffUpdate(
+  local: Uint8Array,
+  localSv: Uint8Array,
+  remoteDiff: Uint8Array,
+  remoteSv: Uint8Array
+) {
+  // if localSv is not equal to remoteSv, return the diff data
+  if (!isEqualUint8Arrays(localSv, remoteSv)) {
+    return diffUpdate(local, remoteSv);
+  }
+
+  // localDiff is the deletedSet of local doc
+  const localDiff = diffUpdate(local, localSv);
+
+  // if localDiff is equal to remoteDiff, return null, means no diff
+  if (isEqualUint8Arrays(localDiff, remoteDiff)) {
+    return null;
+  } else {
+    // otherwise, return the diff data
+    return diffUpdate(local, remoteSv);
+  }
+}
+
 export class DocSyncPeer {
   /**
    * random unique id for recognize self in "update" event
@@ -286,7 +332,12 @@ export class DocSyncPeer {
         });
         const diff =
           localDocRecord && serverStateVector && serverStateVector.length > 0
-            ? diffUpdate(localDocRecord.bin, serverStateVector)
+            ? docDiffUpdate(
+                localDocRecord.bin,
+                stateVector,
+                newData,
+                serverStateVector
+              )
             : localDocRecord?.bin;
         if (diff && !isEmptyUpdate(diff)) {
           throwIfAborted(signal);
