@@ -33,7 +33,6 @@ import { track } from '@affine/track';
 import {
   BlockServiceWatcher,
   BlockViewIdentifier,
-  ConfigIdentifier,
   type WidgetComponent,
 } from '@blocksuite/affine/block-std';
 import type {
@@ -64,6 +63,7 @@ import {
   PeekViewExtension,
   QuickSearchExtension,
   ReferenceNodeConfigExtension,
+  RootBlockConfigExtension,
   SidebarExtension,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
@@ -605,10 +605,9 @@ export function patchForMobile() {
   const extensions: ExtensionType[] = [
     {
       setup: di => {
-        const pageConfigIdentifier = ConfigIdentifier('affine:page');
-        const prev = di.getFactory(pageConfigIdentifier);
+        const prev = di.getFactory(RootBlockConfigExtension.identifier);
 
-        di.override(pageConfigIdentifier, provider => {
+        di.override(RootBlockConfigExtension.identifier, provider => {
           return {
             ...prev?.(provider),
             keyboardToolbar: createKeyboardToolbarConfig(),
