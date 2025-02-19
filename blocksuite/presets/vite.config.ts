@@ -14,6 +14,10 @@ export default defineConfig(() => {
     resolve: {
       extensions: ['.ts', '.js'],
     },
+    server: {
+      host: true,
+      allowedHosts: true,
+    },
     build: {
       target: 'es2022',
       sourcemap: true,
