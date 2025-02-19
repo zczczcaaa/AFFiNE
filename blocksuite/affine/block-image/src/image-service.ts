@@ -40,17 +40,18 @@ export const ImageDropOption = FileDropConfigExtension({
     if (isInsideEdgelessEditor(std.host)) {
       const gfx = std.get(GfxControllerIdentifier);
       point = gfx.viewport.toViewCoordFromClientCoord(point);
-      addImages(std, files, { point, maxWidth: MAX_IMAGE_WIDTH }).catch(
-        console.error
-      );
+      addImages(std, files, { point, maxWidth: MAX_IMAGE_WIDTH })
+        .then(() => {
+          std.getOptional(TelemetryProvider)?.track('CanvasElementAdded', {
+            control: 'canvas:drop',
+            page: 'whiteboard editor',
+            module: 'toolbar',
+            segment: 'toolbar',
+            type: 'image',
+          });
+        })
+        .catch(console.error);
 
-      std.getOptional(TelemetryProvider)?.track('CanvasElementAdded', {
-        control: 'canvas:drop',
-        page: 'whiteboard editor',
-        module: 'toolbar',
-        segment: 'toolbar',
-        type: 'image',
-      });
       return true;
     }
 
