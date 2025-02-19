@@ -13,6 +13,7 @@ import type {
   WORKSPACE_DIALOG_SCHEMA,
 } from '@affine/core/modules/dialogs/constant';
 import { GlobalContextService } from '@affine/core/modules/global-context';
+import { ServerDeploymentType } from '@affine/graphql';
 import { Trans } from '@affine/i18n';
 import { ContactWithUsIcon } from '@blocksuite/icons/rc';
 import { FrameworkScope, useLiveData, useService } from '@toeverything/infra';
@@ -20,6 +21,7 @@ import { debounce } from 'lodash-es';
 import {
   Suspense,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -71,6 +73,11 @@ const SettingModalInner = ({
     ) ?? defaultServerService.server;
   const loginStatus = useLiveData(
     currentServer.scope.get(AuthService).session.status$
+  );
+  const isSelfhosted = useLiveData(
+    currentServer.config$.selector(
+      c => c.type === ServerDeploymentType.Selfhosted
+    )
   );
 
   const modalContentRef = useRef<HTMLDivElement>(null);
@@ -132,6 +139,16 @@ const SettingModalInner = ({
   const handleOpenStarAFFiNEModal = useCallback(() => {
     setOpenStarAFFiNEModal(true);
   }, [setOpenStarAFFiNEModal]);
+
+  useEffect(() => {
+    if (
+      isSelfhosted &&
+      (settingState.activeTab === 'plans' ||
+        settingState.activeTab === 'workspace:billing')
+    ) {
+      setSettingState({ activeTab: 'workspace:license' });
+    }
+  }, [isSelfhosted, settingState.activeTab]);
 
   return (
     <FrameworkScope scope={currentServer.scope}>
