@@ -24,6 +24,7 @@ export class AcceptInviteService extends Service {
   ) {
     super();
   }
+  inviteId$ = new LiveData<string | undefined>(undefined);
   inviteInfo$ = new LiveData<InviteInfo | undefined>(undefined);
   accepted$ = new LiveData<boolean>(false);
   loading$ = new LiveData(false);
@@ -61,6 +62,7 @@ export class AcceptInviteService extends Service {
         }),
         catchErrorInto(this.error$),
         onStart(() => {
+          this.inviteId$.setValue(inviteId);
           this.loading$.setValue(true);
           this.inviteInfo$.setValue(undefined);
           this.accepted$.setValue(false);

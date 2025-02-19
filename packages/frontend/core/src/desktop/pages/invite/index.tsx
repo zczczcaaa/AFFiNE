@@ -1,5 +1,6 @@
 import {
   AcceptInvitePage,
+  ExpiredPage,
   JoinFailedPage,
 } from '@affine/component/member-components';
 import { ErrorNames, UserFriendlyError } from '@affine/graphql';
@@ -13,10 +14,11 @@ import {
 } from '../../../components/hooks/use-navigate-helper';
 import { AcceptInviteService, AuthService } from '../../../modules/cloud';
 
-const AcceptInvite = ({ inviteId }: { inviteId: string }) => {
+const AcceptInvite = ({ inviteId: targetInviteId }: { inviteId: string }) => {
   const { jumpToPage } = useNavigateHelper();
   const acceptInviteService = useService(AcceptInviteService);
   const error = useLiveData(acceptInviteService.error$);
+  const inviteId = useLiveData(acceptInviteService.inviteId$);
   const inviteInfo = useLiveData(acceptInviteService.inviteInfo$);
   const accepted = useLiveData(acceptInviteService.accepted$);
   const loading = useLiveData(acceptInviteService.loading$);
@@ -29,28 +31,32 @@ const AcceptInvite = ({ inviteId }: { inviteId: string }) => {
     jumpToPage(inviteInfo.workspace.id, 'all', RouteLogic.REPLACE);
   }, [jumpToPage, inviteInfo]);
 
-  useEffect(() => {
-    acceptInviteService.revalidate({
-      inviteId,
-    });
-  }, [acceptInviteService, inviteId]);
+  const onOpenAffine = useCallback(() => {
+    navigateHelper.jumpToIndex();
+  }, [navigateHelper]);
 
   useEffect(() => {
-    if (error) {
+    acceptInviteService.revalidate({
+      inviteId: targetInviteId,
+    });
+  }, [acceptInviteService, targetInviteId]);
+
+  useEffect(() => {
+    if (error && inviteId === targetInviteId) {
       const err = UserFriendlyError.fromAnyError(error);
       if (err.name === ErrorNames.ALREADY_IN_SPACE) {
         return navigateHelper.jumpToIndex();
       }
     }
-  }, [error, navigateHelper]);
+  }, [error, inviteId, navigateHelper, targetInviteId]);
 
-  if (loading) {
+  if (loading || inviteId !== targetInviteId) {
     return null;
   }
 
   if (!inviteInfo) {
     // if invite is expired
-    return <Navigate to="/expired" />;
+    return <ExpiredPage onOpenAffine={onOpenAffine} />;
   }
 
   if (error) {
@@ -66,7 +72,7 @@ const AcceptInvite = ({ inviteId }: { inviteId: string }) => {
     );
   } else {
     // invite is expired
-    return <Navigate to="/expired" />;
+    return <ExpiredPage onOpenAffine={onOpenAffine} />;
   }
 };
 

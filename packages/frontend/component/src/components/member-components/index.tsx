@@ -1,4 +1,5 @@
 export * from './accept-invite-page';
+export * from './expired';
 export * from './invite-modal';
 export * from './invite-team-modal';
 export * from './join-failed-page';
