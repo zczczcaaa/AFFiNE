@@ -350,7 +350,9 @@ export const BlocksuiteDocEditor = forwardRef<
           data-testid="page-editor-blank"
           onClick={onClickBlank}
         ></div>
-        {!readonly && <StarterBar doc={page} />}
+        {!readonly && !BUILD_CONFIG.isMobileEdition && (
+          <StarterBar doc={page} />
+        )}
         {!shared && displayBiDirectionalLink ? (
           <BiDirectionalLinkPanel />
         ) : null}
