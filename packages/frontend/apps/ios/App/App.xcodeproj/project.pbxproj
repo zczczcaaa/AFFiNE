@@ -14,6 +14,7 @@
 		50A285D82D112A5E000D5A6D /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 50A285D52D112A5E000D5A6D /* InfoPlist.xcstrings */; };
 		50A285DC2D112B24000D5A6D /* Intelligents in Frameworks */ = {isa = PBXBuildFile; productRef = 50A285DB2D112B24000D5A6D /* Intelligents */; };
 		9D52FC432D26CDBF00105D0A /* JSValueContainerExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D52FC422D26CDB600105D0A /* JSValueContainerExt.swift */; };
+		9D5622962D64A6A5009F1BE4 /* AuthPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5622952D64A6A4009F1BE4 /* AuthPlugin.swift */; };
 		9D6A85332CCF6DA700DAB35F /* HashcashPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D6A85322CCF6DA700DAB35F /* HashcashPlugin.swift */; };
 		9D90BE252CCB9876006677DB /* CookieManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D90BE172CCB9876006677DB /* CookieManager.swift */; };
 		9D90BE262CCB9876006677DB /* CookiePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D90BE182CCB9876006677DB /* CookiePlugin.swift */; };
@@ -24,7 +25,6 @@
 		9D90BE2B2CCB9876006677DB /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9D90BE1F2CCB9876006677DB /* config.xml */; };
 		9D90BE2D2CCB9876006677DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D90BE222CCB9876006677DB /* Main.storyboard */; };
 		9D90BE2E2CCB9876006677DB /* public in Resources */ = {isa = PBXBuildFile; fileRef = 9D90BE232CCB9876006677DB /* public */; };
-		9DEC593B2D3002E70027CEBD /* AffineHttpHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEC593A2D3002C70027CEBD /* AffineHttpHandler.swift */; };
 		9DEC59432D323EE40027CEBD /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DEC59422D323EE00027CEBD /* Mutex.swift */; };
 		9DFCD1462D27D1D70028C92B /* libaffine_mobile_native.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DFCD1452D27D1D70028C92B /* libaffine_mobile_native.a */; };
 		C4C413792CBE705D00337889 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
@@ -43,6 +43,7 @@
 		50A285D52D112A5E000D5A6D /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		50A285D62D112A5E000D5A6D /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		9D52FC422D26CDB600105D0A /* JSValueContainerExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSValueContainerExt.swift; sourceTree = "<group>"; };
+		9D5622952D64A6A4009F1BE4 /* AuthPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPlugin.swift; sourceTree = "<group>"; };
 		9D6A85322CCF6DA700DAB35F /* HashcashPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashcashPlugin.swift; sourceTree = "<group>"; };
 		9D90BE172CCB9876006677DB /* CookieManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookieManager.swift; sourceTree = "<group>"; };
 		9D90BE182CCB9876006677DB /* CookiePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CookiePlugin.swift; sourceTree = "<group>"; };
@@ -54,7 +55,6 @@
 		9D90BE202CCB9876006677DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D90BE212CCB9876006677DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9D90BE232CCB9876006677DB /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
-		9DEC593A2D3002C70027CEBD /* AffineHttpHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AffineHttpHandler.swift; sourceTree = "<group>"; };
 		9DEC59422D323EE00027CEBD /* Mutex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mutex.swift; sourceTree = "<group>"; };
 		9DFCD1452D27D1D70028C92B /* libaffine_mobile_native.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libaffine_mobile_native.a; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -136,6 +136,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		9D5622942D64A69C009F1BE4 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				9D5622952D64A6A4009F1BE4 /* AuthPlugin.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
 		9D90BE192CCB9876006677DB /* Cookie */ = {
 			isa = PBXGroup;
 			children = (
@@ -150,6 +158,7 @@
 		9D90BE1A2CCB9876006677DB /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				9D5622942D64A69C009F1BE4 /* Auth */,
 				C45499AB2D140B5000E21978 /* NBStore */,
 				E93B276A2CED9298001409B8 /* NavigationGesture */,
 				9D90BE192CCB9876006677DB /* Cookie */,
@@ -161,7 +170,6 @@
 			isa = PBXGroup;
 			children = (
 				9DEC59422D323EE00027CEBD /* Mutex.swift */,
-				9DEC593A2D3002C70027CEBD /* AffineHttpHandler.swift */,
 				9D52FC422D26CDB600105D0A /* JSValueContainerExt.swift */,
 				9D90BE1A2CCB9876006677DB /* Plugins */,
 				9D90BE1C2CCB9876006677DB /* AppDelegate.swift */,
@@ -337,9 +345,9 @@
 				9D52FC432D26CDBF00105D0A /* JSValueContainerExt.swift in Sources */,
 				5075136E2D1925BC00AD60C0 /* IntelligentsPlugin.swift in Sources */,
 				5075136A2D1924C600AD60C0 /* RootViewController.swift in Sources */,
-				9DEC593B2D3002E70027CEBD /* AffineHttpHandler.swift in Sources */,
 				C4C97C7C2D030BE000BC2AD1 /* affine_mobile_native.swift in Sources */,
 				C4C97C7D2D030BE000BC2AD1 /* affine_mobile_nativeFFI.h in Sources */,
+				9D5622962D64A6A5009F1BE4 /* AuthPlugin.swift in Sources */,
 				C4C97C7E2D030BE000BC2AD1 /* affine_mobile_nativeFFI.modulemap in Sources */,
 				E93B276C2CED92B1001409B8 /* NavigationGesturePlugin.swift in Sources */,
 				9DEC59432D323EE40027CEBD /* Mutex.swift in Sources */,

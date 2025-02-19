@@ -11,7 +11,9 @@ export { AccountChanged } from './events/account-changed';
 export { AccountLoggedIn } from './events/account-logged-in';
 export { AccountLoggedOut } from './events/account-logged-out';
 export { ServerInitialized } from './events/server-initialized';
+export { AuthProvider } from './provider/auth';
 export { ValidatorProvider } from './provider/validator';
+export { ServerScope } from './scopes/server';
 export { AcceptInviteService } from './services/accept-invite';
 export { AuthService } from './services/auth';
 export { CaptchaService } from './services/captcha';
@@ -51,6 +53,8 @@ import { UserFeature } from './entities/user-feature';
 import { UserQuota } from './entities/user-quota';
 import { WorkspaceInvoices } from './entities/workspace-invoices';
 import { WorkspaceSubscription } from './entities/workspace-subscription';
+import { configureDefaultAuthProvider } from './impl/auth';
+import { AuthProvider } from './provider/auth';
 import { ValidatorProvider } from './provider/validator';
 import { ServerScope } from './scopes/server';
 import { AcceptInviteService } from './services/accept-invite';
@@ -88,6 +92,8 @@ import { UserFeatureStore } from './stores/user-feature';
 import { UserQuotaStore } from './stores/user-quota';
 
 export function configureCloudModule(framework: Framework) {
+  configureDefaultAuthProvider(framework);
+
   framework
     .service(ServersService, [ServerListStore, ServerConfigStore])
     .service(DefaultServerService, [ServersService])
@@ -112,6 +118,7 @@ export function configureCloudModule(framework: Framework) {
       GraphQLService,
       GlobalState,
       ServerService,
+      AuthProvider,
     ])
     .entity(AuthSession, [AuthStore])
     .service(SubscriptionService, [SubscriptionStore])

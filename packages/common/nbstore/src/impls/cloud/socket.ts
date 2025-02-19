@@ -150,6 +150,16 @@ export function base64ToUint8Array(base64: string) {
   return new Uint8Array(binaryArray);
 }
 
+let authMethod:
+  | ((endpoint: string, cb: (data: object) => void) => void)
+  | undefined;
+
+export function configureSocketAuthMethod(
+  cb: (endpoint: string, cb: (data: object) => void) => void
+) {
+  authMethod = cb;
+}
+
 class SocketManager {
   private readonly socketIOManager: SocketIOManager;
   socket: Socket;
@@ -158,12 +168,20 @@ class SocketManager {
   constructor(endpoint: string) {
     this.socketIOManager = new SocketIOManager(endpoint, {
       autoConnect: false,
-      transports: [BUILD_CONFIG.isIOS ? 'polling' : 'websocket'],
+      transports: ['websocket'],
       secure: new URL(endpoint).protocol === 'https:',
       // we will handle reconnection by ourselves
       reconnection: false,
     });
-    this.socket = this.socketIOManager.socket('/');
+    this.socket = this.socketIOManager.socket('/', {
+      auth(cb) {
+        if (authMethod) {
+          authMethod(endpoint, cb);
+        } else {
+          cb({});
+        }
+      },
+    });
   }
 
   connect() {

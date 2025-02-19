@@ -112,13 +112,7 @@ export class AuthService extends Service {
   async signInMagicLink(email: string, token: string, byLink = true) {
     const method = byLink ? 'magic-link' : 'otp';
     try {
-      await this.fetchService.fetch('/api/auth/magic-link', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, token }),
-      });
+      await this.store.signInMagicLink(email, token);
 
       this.session.revalidate();
       track.$.$.auth.signedIn({ method });
@@ -160,7 +154,7 @@ export class AuthService extends Service {
       );
       url = oauthUrl.toString();
 
-      return url;
+      return url as string;
     } catch (e) {
       track.$.$.auth.signInFail({
         method: 'oauth',
@@ -173,18 +167,16 @@ export class AuthService extends Service {
 
   async signInOauth(code: string, state: string, provider: string) {
     try {
-      const res = await this.fetchService.fetch('/api/oauth/callback', {
-        method: 'POST',
-        body: JSON.stringify({ code, state }),
-        headers: {
-          'content-type': 'application/json',
-        },
-      });
+      const { redirectUri } = await this.store.signInOauth(
+        code,
+        state,
+        provider
+      );
 
       this.session.revalidate();
 
       track.$.$.auth.signedIn({ method: 'oauth', provider });
-      return await res.json();
+      return { redirectUri };
     } catch (e) {
       track.$.$.auth.signInFail({
         method: 'oauth',
@@ -203,16 +195,7 @@ export class AuthService extends Service {
   }) {
     track.$.$.auth.signIn({ method: 'password' });
     try {
-      await this.fetchService.fetch('/api/auth/sign-in', {
-        method: 'POST',
-        body: JSON.stringify(credential),
-        headers: {
-          'content-type': 'application/json',
-          ...(credential.verifyToken
-            ? this.captchaHeaders(credential.verifyToken, credential.challenge)
-            : {}),
-        },
-      });
+      await this.store.signInPassword(credential);
       this.session.revalidate();
       track.$.$.auth.signedIn({ method: 'password' });
     } catch (e) {
@@ -225,7 +208,7 @@ export class AuthService extends Service {
   }
 
   async signOut() {
-    await this.fetchService.fetch('/api/auth/sign-out');
+    await this.store.signOut();
     this.store.setCachedAuthSession(null);
     this.session.revalidate();
   }

@@ -8,8 +8,11 @@ import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
 import { AIButtonProvider } from '@affine/core/modules/ai-button';
 import {
+  AuthProvider,
   AuthService,
   DefaultServerService,
+  ServerScope,
+  ServerService,
   ServersService,
   ValidatorProvider,
 } from '@affine/core/modules/cloud';
@@ -51,9 +54,11 @@ import { RouterProvider } from 'react-router-dom';
 
 import { BlocksuiteMenuConfigProvider } from './bs-menu-config';
 import { ModalConfigProvider } from './modal-config';
+import { Auth } from './plugins/auth';
 import { Hashcash } from './plugins/hashcash';
 import { Intelligents } from './plugins/intelligents';
 import { NbStoreNativeDBApis } from './plugins/nbstore';
+import { writeEndpointToken } from './proxy';
 import { enableNavigationGesture$ } from './web-navigation-control';
 
 const storeManagerClient = createStoreManagerClient();
@@ -133,6 +138,41 @@ framework.impl(AIButtonProvider, {
   dismissAIButton: () => {
     return Intelligents.dismissIntelligentsButton();
   },
+});
+framework.scope(ServerScope).override(AuthProvider, resolver => {
+  const serverService = resolver.get(ServerService);
+  const endpoint = serverService.server.baseUrl;
+  return {
+    async signInMagicLink(email, linkToken) {
+      const { token } = await Auth.signInMagicLink({
+        endpoint,
+        email,
+        token: linkToken,
+      });
+      await writeEndpointToken(endpoint, token);
+    },
+    async signInOauth(code, state, _provider) {
+      const { token } = await Auth.signInOauth({
+        endpoint,
+        code,
+        state,
+      });
+      await writeEndpointToken(endpoint, token);
+      return {};
+    },
+    async signInPassword(credential) {
+      const { token } = await Auth.signInPassword({
+        endpoint,
+        ...credential,
+      });
+      await writeEndpointToken(endpoint, token);
+    },
+    async signOut() {
+      await Auth.signOut({
+        endpoint,
+      });
+    },
+  };
 });
 
 const frameworkProvider = framework.provider();

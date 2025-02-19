@@ -1,7 +1,10 @@
 import './setup';
 
 import { broadcastChannelStorages } from '@affine/nbstore/broadcast-channel';
-import { cloudStorages } from '@affine/nbstore/cloud';
+import {
+  cloudStorages,
+  configureSocketAuthMethod,
+} from '@affine/nbstore/cloud';
 import {
   bindNativeDBApis,
   type NativeDBApis,
@@ -13,6 +16,18 @@ import {
 } from '@affine/nbstore/worker/consumer';
 import { type MessageCommunicapable, OpConsumer } from '@toeverything/infra/op';
 import { AsyncCall } from 'async-call-rpc';
+
+import { readEndpointToken } from './proxy';
+
+configureSocketAuthMethod((endpoint, cb) => {
+  readEndpointToken(endpoint)
+    .then(token => {
+      cb({ token });
+    })
+    .catch(e => {
+      console.error(e);
+    });
+});
 
 globalThis.addEventListener('message', e => {
   if (e.data.type === 'native-db-api-channel') {

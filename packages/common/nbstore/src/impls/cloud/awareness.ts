@@ -22,7 +22,7 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
     super();
   }
 
-  connection = new SocketConnection(`${this.options.serverBaseUrl}/`);
+  connection = new SocketConnection(this.options.serverBaseUrl);
 
   private get socket() {
     return this.connection.inner.socket;
