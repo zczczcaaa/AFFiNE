@@ -34,7 +34,7 @@ export async function getTokenFromLatestMailMessage<A extends Assertions>(
   const emailContent = await getLatestMailMessage();
   const tokenMatch = emailContent.Content.Body.match(tokenRegex);
   const token = tokenMatch
-    ? decodeURIComponent(tokenMatch[1].replace(/=\r\n/, ''))
+    ? decodeURIComponent(tokenMatch[1].replaceAll('=\r\n', ''))
     : null;
   test?.truthy(token);
   return token;
