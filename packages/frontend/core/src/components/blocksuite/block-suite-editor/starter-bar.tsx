@@ -119,7 +119,7 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
         {enableAI ? (
           <Badge
             data-testid="start-with-ai-badge"
-            icon={<AiIcon />}
+            icon={<AiIcon className={styles.aiIcon} />}
             text={t['com.affine.page-starter-bar.ai']()}
             onClick={startWithAI}
           />

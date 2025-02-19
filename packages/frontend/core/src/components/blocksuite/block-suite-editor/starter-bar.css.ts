@@ -64,6 +64,10 @@ export const badgeIcon = style({
   color: cssVarV2.icon.primary,
 });
 
+export const aiIcon = style({
+  color: cssVarV2.icon.activated,
+});
+
 export const badgeText = style({
   fontSize: 15,
   lineHeight: '24px',
