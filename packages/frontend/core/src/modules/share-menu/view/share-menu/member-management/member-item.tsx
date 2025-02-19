@@ -9,7 +9,6 @@ import {
   useConfirmModal,
 } from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
-import { AuthService } from '@affine/core/modules/cloud';
 import { DocService } from '@affine/core/modules/doc';
 import {
   DocGrantedUsersService,
@@ -31,16 +30,15 @@ export const MemberItem = ({
   openPaywallModal,
   hittingPaywall,
   grantedUser,
+  canManageUsers,
 }: {
   grantedUser: GrantedUser;
   hittingPaywall: boolean;
+  canManageUsers: boolean;
   openPaywallModal: () => void;
 }) => {
   const user = grantedUser.user;
-  const session = useService(AuthService).session;
-  const account = useLiveData(session.account$);
-  const disableManage =
-    account?.id === user.id || grantedUser.role === DocRole.Owner;
+  const disableManage = grantedUser.role === DocRole.Owner || !canManageUsers;
 
   const role = useMemo(() => {
     switch (grantedUser.role) {

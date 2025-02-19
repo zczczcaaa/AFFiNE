@@ -121,15 +121,21 @@ export const MembersRow = ({ onClick }: { onClick: () => void }) => {
       className={clsx(styles.rowContainerStyle, 'clickable')}
       onClick={onClick}
     >
-      <div className={styles.memberContainerStyle}>
-        <Avatar
-          url={docOwner?.user.avatarUrl || ''}
-          name={docOwner?.user.name}
-          size={24}
-        />
-        <span>{docOwner?.user.name}</span>
-      </div>
-      <div className={styles.OwnerStyle}>{t['Owner']()}</div>
+      {docOwner ? (
+        <>
+          <div className={styles.memberContainerStyle}>
+            <Avatar
+              url={docOwner.user.avatarUrl || ''}
+              name={docOwner.user.name}
+              size={24}
+            />
+            <span>{docOwner.user.name}</span>
+          </div>
+          <div className={styles.OwnerStyle}>{t['Owner']()}</div>
+        </>
+      ) : (
+        <div>{t['com.affine.share-menu.invite-editor.manage-members']()}</div>
+      )}
       <div className={styles.IconButtonStyle}>
         <ArrowRightSmallIcon />
       </div>

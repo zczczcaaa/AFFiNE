@@ -66,6 +66,7 @@ export const MemberManagement = ({
           grantedUserList={grantedUserList}
           grantedUserCount={grantedUserCount}
           loadMore={loadMore}
+          canManageUsers={canManageUsers}
         />
       ) : (
         <Skeleton className={styles.scrollableRootStyle} />
@@ -90,8 +91,10 @@ const MemberList = ({
   grantedUserList,
   grantedUserCount,
   loadMore,
+  canManageUsers,
 }: {
   hittingPaywall: boolean;
+  canManageUsers: boolean;
   grantedUserList: GrantedUser[];
   grantedUserCount?: number;
   openPaywallModal: () => void;
@@ -105,10 +108,11 @@ const MemberList = ({
           grantedUser={data}
           openPaywallModal={openPaywallModal}
           hittingPaywall={hittingPaywall}
+          canManageUsers={canManageUsers}
         />
       );
     },
-    [hittingPaywall, openPaywallModal]
+    [canManageUsers, hittingPaywall, openPaywallModal]
   );
   return (
     <div className={styles.memberListStyle}>
@@ -119,6 +123,7 @@ const MemberList = ({
             grantedUser={item}
             openPaywallModal={openPaywallModal}
             hittingPaywall={hittingPaywall}
+            canManageUsers={canManageUsers}
           />
         ))
       ) : (

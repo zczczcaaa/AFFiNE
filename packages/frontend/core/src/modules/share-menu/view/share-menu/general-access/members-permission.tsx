@@ -1,8 +1,14 @@
-import { Menu, MenuItem, MenuTrigger, Tooltip } from '@affine/component';
+import {
+  Menu,
+  MenuItem,
+  MenuTrigger,
+  notify,
+  Tooltip,
+} from '@affine/component';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { DocGrantedUsersService } from '@affine/core/modules/permissions';
 import { ShareInfoService } from '@affine/core/modules/share-doc';
-import { DocRole } from '@affine/graphql';
+import { DocRole, UserFriendlyError } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import { InformationIcon } from '@blocksuite/icons/rc';
@@ -47,33 +53,41 @@ export const MembersPermission = ({
   );
   const showTips =
     docDefaultRole === DocRole.Reader || docDefaultRole === DocRole.Editor;
-  const changePermission = useCallback(
+  const changePermission = useAsyncCallback(
     async (docRole: DocRole) => {
-      track.$.sharePanel.$.modifyDocDefaultRole();
-      await docGrantedUsersService.updateDocDefaultRole(docRole);
-      shareInfoService.shareInfo.revalidate();
+      try {
+        track.$.sharePanel.$.modifyDocDefaultRole();
+        await docGrantedUsersService.updateDocDefaultRole(docRole);
+        shareInfoService.shareInfo.revalidate();
+      } catch (error) {
+        const err = UserFriendlyError.fromAnyError(error);
+        notify.error({
+          title: err.name,
+          message: err.message,
+        });
+      }
     },
     [docGrantedUsersService, shareInfoService.shareInfo]
   );
 
-  const selectManage = useAsyncCallback(async () => {
-    await changePermission(DocRole.Manager);
+  const selectManage = useCallback(() => {
+    changePermission(DocRole.Manager);
   }, [changePermission]);
 
-  const selectEdit = useAsyncCallback(async () => {
+  const selectEdit = useCallback(() => {
     if (hittingPaywall) {
       openPaywallModal?.();
       return;
     }
-    await changePermission(DocRole.Editor);
+    changePermission(DocRole.Editor);
   }, [changePermission, hittingPaywall, openPaywallModal]);
 
-  const selectRead = useAsyncCallback(async () => {
+  const selectRead = useCallback(() => {
     if (hittingPaywall) {
       openPaywallModal?.();
       return;
     }
-    await changePermission(DocRole.Reader);
+    changePermission(DocRole.Reader);
   }, [changePermission, hittingPaywall, openPaywallModal]);
 
   return (
