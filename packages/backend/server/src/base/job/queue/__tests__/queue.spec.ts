@@ -60,6 +60,9 @@ test.before(async () => {
             //   which will keep the test process alive to timeout.
             stalledInterval: 100,
           },
+          queue: {
+            defaultJobOptions: { delay: 1000 },
+          },
         },
       }),
       JobModule.forRoot(),

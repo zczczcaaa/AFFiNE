@@ -155,7 +155,8 @@ export class WorkspaceDocResolver {
 
   constructor(
     private readonly prisma: PrismaClient,
-    private readonly permission: PermissionService
+    private readonly permission: PermissionService,
+    private readonly models: Models
   ) {}
 
   @ResolveField(() => [DocType], {
@@ -209,17 +210,19 @@ export class WorkspaceDocResolver {
       },
     });
 
-    if (!doc) {
-      return {
-        docId,
-        workspaceId: workspace.id,
-        mode: PublicDocMode.Page,
-        public: false,
-        defaultRole: DocRole.Manager,
-      };
+    if (doc) {
+      return doc;
     }
 
-    return doc;
+    await this.tryFixDocOwner(workspace.id, docId);
+
+    return {
+      docId,
+      workspaceId: workspace.id,
+      mode: PublicDocMode.Page,
+      public: false,
+      defaultRole: DocRole.Manager,
+    };
   }
 
   @Mutation(() => DocType, {
@@ -330,6 +333,58 @@ export class WorkspaceDocResolver {
     this.logger.log(`Revoke public doc (${JSON.stringify(info)})`);
 
     return this.permission.revokePublicPage(docId.workspace, docId.guid);
+  }
+
+  private async tryFixDocOwner(workspaceId: string, docId: string) {
+    const exists = await this.models.doc.exists(workspaceId, docId);
+
+    // skip if doc not even exists
+    if (!exists) {
+      return;
+    }
+
+    const owner = await this.prisma.workspaceDocUserPermission.findFirst({
+      where: {
+        workspaceId,
+        docId,
+        type: DocRole.Owner,
+      },
+    });
+
+    // skip if owner of already exists
+    if (owner) {
+      return;
+    }
+
+    // try snapshot.createdBy first
+    const snapshot = await this.prisma.snapshot.findUnique({
+      select: {
+        createdBy: true,
+      },
+      where: {
+        workspaceId_id: {
+          workspaceId,
+          id: docId,
+        },
+      },
+    });
+
+    let fixedOwner = snapshot?.createdBy;
+
+    // try workspace.owner
+    if (!fixedOwner) {
+      const owner = await this.permission.getWorkspaceOwner(workspaceId);
+      fixedOwner = owner.id;
+    }
+
+    await this.prisma.workspaceDocUserPermission.create({
+      data: {
+        workspaceId,
+        docId,
+        userId: fixedOwner,
+        type: DocRole.Owner,
+      },
+    });
   }
 }
 
