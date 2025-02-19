@@ -42,6 +42,7 @@ import { Framework, FrameworkRoot, getCurrentStore } from '@toeverything/infra';
 import { OpClient } from '@toeverything/infra/op';
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
 
 import { DesktopThemeSync } from './theme-sync';
 
@@ -209,7 +210,7 @@ export function App() {
 function createStoreManagerClient() {
   const { port1: portForOpClient, port2: portForWorker } = new MessageChannel();
   let portFromWorker: MessagePort | null = null;
-  let portId = crypto.randomUUID();
+  let portId = uuid();
 
   const handleMessage = (ev: MessageEvent) => {
     if (

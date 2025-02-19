@@ -1,4 +1,5 @@
 import { OpClient, transfer } from '@toeverything/infra/op';
+import { v4 as uuid } from 'uuid';
 
 import { DummyConnection } from '../connection';
 import { AwarenessFrontend, BlobFrontend, DocFrontend } from '../frontend';
@@ -33,7 +34,7 @@ export class StoreManagerClient {
     const { port1, port2 } = new MessageChannel();
 
     const client = new OpClient<WorkerOps>(port1);
-    const closeKey = crypto.randomUUID();
+    const closeKey = uuid();
 
     this.client
       .call(
