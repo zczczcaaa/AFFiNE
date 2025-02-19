@@ -19,6 +19,7 @@ import {
 } from '@affine/core/modules/permissions';
 import { DocRole, UserFriendlyError } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
+import track from '@affine/track';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import { useCallback, useMemo } from 'react';
@@ -148,6 +149,7 @@ const Options = ({
 
   const updateUserRole = useCallback(
     async (userId: string, role: DocRole) => {
+      track.$.sharePanel.$.modifyUserDocRole({ control: role });
       try {
         const res = await docGrantedUsersService.updateUserRole(userId, role);
         if (res) {
@@ -214,6 +216,7 @@ const Options = ({
   }, [changeToOwner, openConfirmModal, t]);
 
   const removeMember = useAsyncCallback(async () => {
+    track.$.sharePanel.$.modifyUserDocRole({ control: 'Remove' });
     try {
       await docGrantedUsersService.revokeUsersRole(userId);
       docGrantedUsersService.loadMore();

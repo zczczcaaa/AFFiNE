@@ -20,6 +20,7 @@ import {
   WorkspaceMemberStatus,
 } from '@affine/graphql';
 import { useI18n } from '@affine/i18n';
+import { track } from '@affine/track';
 import { ArrowLeftBigIcon } from '@blocksuite/icons/rc';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
@@ -100,6 +101,7 @@ export const InviteMemberEditor = ({
 
   const onInvite = useAsyncCallback(async () => {
     const selectedMemberIds = selectedMembers.map(member => member.id);
+    track.$.sharePanel.$.inviteUserDocRole({ control: 'member list' });
     try {
       await docGrantedUsersService.grantUsersRole(
         selectedMemberIds,

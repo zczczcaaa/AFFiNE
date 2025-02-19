@@ -103,6 +103,10 @@ type ShareEvents =
   | 'copyShareLink'
   | 'openShareMenu'
   | 'share';
+type DocRoleEvents =
+  | 'modifyDocDefaultRole'
+  | 'modifyUserDocRole'
+  | 'inviteUserDocRole';
 type AuthEvents =
   | 'requestSignIn'
   | 'signIn'
@@ -147,6 +151,7 @@ type UserEvents =
   | CmdkEvents
   | OrganizeEvents
   | ShareEvents
+  | DocRoleEvents
   | AuthEvents
   | AccountEvents
   | PaymentEvents
@@ -176,7 +181,15 @@ const PageEvents = {
       auth: ['requestSignIn', 'signIn', 'signedIn', 'signInFail', 'signOut'],
     },
     sharePanel: {
-      $: ['createShareLink', 'copyShareLink', 'export', 'open'],
+      $: [
+        'createShareLink',
+        'copyShareLink',
+        'export',
+        'open',
+        'modifyDocDefaultRole',
+        'modifyUserDocRole',
+        'inviteUserDocRole',
+      ],
     },
     docInfoPanel: {
       $: ['open'],
@@ -417,6 +430,14 @@ type AttachmentEventArgs = {
   type: string; // file type
 };
 
+type DocRoleControlType =
+  | 'Owner'
+  | 'Editor'
+  | 'Manager'
+  | 'Reader'
+  | 'External'
+  | 'Remove';
+
 type TabActionControlType =
   | 'click'
   | 'dnd'
@@ -512,6 +533,12 @@ export type EventArgs = {
   openAttachmentInNewTab: AttachmentEventArgs;
   openAttachmentInPeekView: AttachmentEventArgs;
   openAttachmentInSplitView: AttachmentEventArgs;
+  modifyUserDocRole: {
+    control: DocRoleControlType;
+  };
+  inviteUserDocRole: {
+    control: 'member list';
+  };
 };
 
 // for type checking
