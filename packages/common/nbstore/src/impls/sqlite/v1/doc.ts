@@ -10,6 +10,13 @@ import type { SpaceType } from '../../../utils/universal-id';
 import { apis } from './db';
 
 /**
+ * We use a fixed timestamp in v1 because the v1 should never be changed.
+ * This date is chosen because it is large enough to overwrite some previous error data.
+ * In our sync storage, only a larger timestamp can overwrite smaller one.
+ */
+const CONST_TIMESTAMP = new Date(1893456000000);
+
+/**
  * @deprecated readonly
  */
 export class SqliteV1DocStorage extends DocStorageBase<{
@@ -34,7 +41,7 @@ export class SqliteV1DocStorage extends DocStorageBase<{
 
   override async pushDocUpdate(update: DocUpdate) {
     // no more writes
-    return { docId: update.docId, timestamp: new Date() };
+    return { docId: update.docId, timestamp: CONST_TIMESTAMP };
   }
 
   override async getDoc(docId: string) {
@@ -52,7 +59,7 @@ export class SqliteV1DocStorage extends DocStorageBase<{
     return {
       docId,
       bin,
-      timestamp: new Date(),
+      timestamp: CONST_TIMESTAMP,
     };
   }
 
@@ -69,8 +76,9 @@ export class SqliteV1DocStorage extends DocStorageBase<{
     const idConverter = await this.getIdConverter();
 
     return timestamps.reduce(
-      (ret, { docId, timestamp }) => {
-        ret[idConverter.oldIdToNewId(docId ?? this.options.id)] = timestamp;
+      (ret, { docId }) => {
+        ret[idConverter.oldIdToNewId(docId ?? this.options.id)] =
+          CONST_TIMESTAMP;
         return ret;
       },
       {} as Record<string, Date>

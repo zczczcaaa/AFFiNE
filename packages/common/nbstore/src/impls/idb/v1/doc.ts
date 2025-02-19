@@ -18,6 +18,13 @@ import { getIdConverter } from '../../../utils/id-converter';
 import { DocIDBConnection } from './db';
 
 /**
+ * We use a fixed timestamp in v1 because the v1 should never be changed.
+ * This date is chosen because it is large enough to overwrite some previous error data.
+ * In our sync storage, only a larger timestamp can overwrite smaller one.
+ */
+const CONST_TIMESTAMP = new Date(1893456000000);
+
+/**
  * @deprecated readonly
  */
 export class IndexedDBV1DocStorage extends DocStorageBase {
@@ -45,7 +52,14 @@ export class IndexedDBV1DocStorage extends DocStorageBase {
       return null;
     }
     const oldId = (await this.getIdConverter()).newIdToOldId(docId);
-    return this.rawGetDoc(oldId);
+    const rawDoc = await this.rawGetDoc(oldId);
+    return rawDoc
+      ? {
+          docId: rawDoc.docId,
+          bin: rawDoc.bin,
+          timestamp: CONST_TIMESTAMP,
+        }
+      : null;
   }
 
   protected override async getDocSnapshot() {
@@ -54,7 +68,7 @@ export class IndexedDBV1DocStorage extends DocStorageBase {
 
   override async pushDocUpdate(update: DocUpdate) {
     // no more writes to old db
-    return { docId: update.docId, timestamp: new Date() };
+    return { docId: update.docId, timestamp: CONST_TIMESTAMP };
   }
 
   override async deleteDoc(docId: string) {
@@ -110,7 +124,7 @@ export class IndexedDBV1DocStorage extends DocStorageBase {
     );
 
     return Object.fromEntries(
-      oldIds.map(id => [idConverter.oldIdToNewId(id), new Date(1)])
+      oldIds.map(id => [idConverter.oldIdToNewId(id), CONST_TIMESTAMP])
     );
   }
 

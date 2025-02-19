@@ -199,7 +199,8 @@ export class DocSyncPeer {
       throwIfAborted(signal);
       if (
         !this.remote.isReadonly &&
-        (pushedClock === null || pushedClock !== clock?.timestamp)
+        clock &&
+        (pushedClock === null || pushedClock !== clock.timestamp)
       ) {
         await this.jobs.pullAndPush(docId, signal);
       } else {
