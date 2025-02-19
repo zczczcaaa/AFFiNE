@@ -49,10 +49,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     const viewportElement = document.querySelector('.affine-edgeless-viewport');
     if (viewportElement) {
       viewportElement.append(this.canvas);
-      initTweakpane(viewportElement as HTMLElement, (value: boolean) => {
-        this.state = value ? 'monitoring' : 'paused';
-        this.canvas.style.display = value ? 'block' : 'none';
-      });
+      initTweakpane(this, viewportElement as HTMLElement);
     }
     syncCanvasSize(this.canvas, this.std.host);
     this.viewport.viewportUpdated.on(() => {
@@ -60,7 +57,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     });
 
     document.fonts.load('15px Inter').then(() => {
-      this.state = 'monitoring';
+      // this.state = 'monitoring';
       this.refresh().catch(console.error);
     });
   }
@@ -82,7 +79,9 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     return this.std.get(GfxControllerIdentifier).viewport;
   }
 
-  private async refresh() {
+  async refresh(force = false) {
+    if (this.state === 'paused' && !force) return;
+
     await nextTick(); // Improves stability during zooming
 
     if (this.canUseCache()) {
@@ -140,8 +139,6 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   private drawCachedBitmap(section: SectionLayout) {
-    if (this.state === 'paused') return;
-
     const bitmap = this.tile!.bitmap;
     const ctx = this.canvas.getContext('2d');
     if (!ctx) return;
