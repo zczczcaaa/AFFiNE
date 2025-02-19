@@ -14,7 +14,7 @@ import type { WorkspaceDoc as PrismaWorkspaceDoc } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 
 import {
-  DocAccessDenied,
+  DocActionDenied,
   DocDefaultRoleCanNotBeOwner,
   DocIsNotPublic,
   ExpectToGrantDocUserRoles,
@@ -662,7 +662,7 @@ export class DocResolver {
         user.id
       );
     } catch (error) {
-      if (error instanceof DocAccessDenied) {
+      if (error instanceof DocActionDenied) {
         this.logger.log(
           `User does not have permission to update page default role (${JSON.stringify(
             {

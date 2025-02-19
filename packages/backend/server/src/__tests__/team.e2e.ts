@@ -856,7 +856,7 @@ test('default page role should be able to override the workspace role', async t 
     await t.throwsAsync(
       updateDocDefaultRole(app, workspace.id, docId, DocRole.Manager),
       {
-        message: `You do not have permission to access doc ${docId} under Space ${workspace.id}.`,
+        message: `You do not have permission to perform Doc.Users.Manage action on doc ${docId}.`,
       }
     );
   }
@@ -908,7 +908,7 @@ test('should be able to grant and revoke doc user role', async t => {
     // external user can't manage the page
     app.switchUser(external);
     await t.throwsAsync(revokeDocUserRoles(app, ws.id, docId, read.id), {
-      message: `You do not have permission to access doc ${docId} under Space ${ws.id}.`,
+      message: `You do not have permission to perform Doc.Users.Manage action on doc ${docId}.`,
     });
   }
 });
@@ -922,7 +922,7 @@ test('update page default role should throw error if the space does not exist', 
   await t.throwsAsync(
     updateDocDefaultRole(app, nonExistWorkspaceId, docId, DocRole.Manager),
     {
-      message: `You do not have permission to access doc ${docId} under Space ${nonExistWorkspaceId}.`,
+      message: `You do not have permission to perform Doc.Users.Manage action on doc ${docId}.`,
     }
   );
 });

@@ -5708,19 +5708,19 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.settings.workspace.affine-ai.description"](): string;
     /**
-      * `Achieved workspaces`
+      * `Archived workspaces`
       */
     ["com.affine.settings.workspace.backup"](): string;
     /**
-      * `Management in local workspace backup files`
+      * `Manage archived local workspace files`
       */
     ["com.affine.settings.workspace.backup.subtitle"](): string;
     /**
-      * `No backup files found`
+      * `No archived workspace files found`
       */
     ["com.affine.settings.workspace.backup.empty"](): string;
     /**
-      * `Delete backup workspace`
+      * `Delete archived workspace`
       */
     ["com.affine.settings.workspace.backup.delete"](): string;
     /**
@@ -5790,14 +5790,6 @@ export function useAFFiNEI18N(): {
       * `Shared doc`
       */
     ["com.affine.share-menu.SharedPage"](): string;
-    /**
-      * `Please try again later.`
-      */
-    ["com.affine.share-menu.confirm-modify-mode.notification.fail.message"](): string;
-    /**
-      * `Failed to modify`
-      */
-    ["com.affine.share-menu.confirm-modify-mode.notification.fail.title"](): string;
     /**
       * `Copy Link`
       */
@@ -7199,11 +7191,11 @@ export function useAFFiNEI18N(): {
         spaceId: string;
     }>): string;
     /**
-      * `You do not have permission to access doc {{docId}} under Space {{spaceId}}.`
+      * `You do not have permission to perform {{action}} action on doc {{docId}}.`
       */
-    ["error.DOC_ACCESS_DENIED"](options: Readonly<{
+    ["error.DOC_ACTION_DENIED"](options: Readonly<{
+        action: string;
         docId: string;
-        spaceId: string;
     }>): string;
     /**
       * `Your client with version {{version}} is rejected by remote sync server. Please upgrade to {{serverVersion}}.`

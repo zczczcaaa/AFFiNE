@@ -5,7 +5,7 @@ import { groupBy } from 'lodash-es';
 
 import {
   CanNotBatchGrantDocOwnerPermissions,
-  DocAccessDenied,
+  DocActionDenied,
   EventBus,
   OnEvent,
   SpaceAccessDenied,
@@ -552,7 +552,7 @@ export class PermissionService {
     user?: string
   ) {
     if (!(await this.tryCheckPage(ws, page, action, user))) {
-      throw new DocAccessDenied({ spaceId: ws, docId: page });
+      throw new DocActionDenied({ spaceId: ws, docId: page, action });
     }
   }
 

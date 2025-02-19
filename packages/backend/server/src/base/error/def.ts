@@ -419,11 +419,11 @@ export const USER_FRIENDLY_ERRORS = {
     message: ({ spaceId, docId }) =>
       `Doc ${docId} under Space ${spaceId} not found.`,
   },
-  doc_access_denied: {
+  doc_action_denied: {
     type: 'no_permission',
-    args: { spaceId: 'string', docId: 'string' },
-    message: ({ spaceId, docId }) =>
-      `You do not have permission to access doc ${docId} under Space ${spaceId}.`,
+    args: { spaceId: 'string', docId: 'string', action: 'string' },
+    message: ({ docId, action }) =>
+      `You do not have permission to perform ${action} action on doc ${docId}.`,
   },
   version_rejected: {
     type: 'action_forbidden',

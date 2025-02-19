@@ -144,6 +144,11 @@ export interface CopilotContextListItem {
   status: Maybe<ContextFileStatus>;
 }
 
+export interface CopilotDocNotFoundDataType {
+  __typename?: 'CopilotDocNotFoundDataType';
+  docId: Scalars['String']['output'];
+}
+
 export interface CopilotFailedToMatchContextDataType {
   __typename?: 'CopilotFailedToMatchContextDataType';
   content: Scalars['String']['output'];
@@ -308,8 +313,9 @@ export interface DeleteSessionInput {
   workspaceId: Scalars['String']['input'];
 }
 
-export interface DocAccessDeniedDataType {
-  __typename?: 'DocAccessDeniedDataType';
+export interface DocActionDeniedDataType {
+  __typename?: 'DocActionDeniedDataType';
+  action: Scalars['String']['output'];
   docId: Scalars['String']['output'];
   spaceId: Scalars['String']['output'];
 }
@@ -387,18 +393,20 @@ export type ErrorDataUnion =
   | AlreadyInSpaceDataType
   | BlobNotFoundDataType
   | CopilotContextFileNotSupportedDataType
+  | CopilotDocNotFoundDataType
   | CopilotFailedToMatchContextDataType
   | CopilotFailedToModifyContextDataType
   | CopilotInvalidContextDataType
   | CopilotMessageNotFoundDataType
   | CopilotPromptNotFoundDataType
   | CopilotProviderSideErrorDataType
-  | DocAccessDeniedDataType
+  | DocActionDeniedDataType
   | DocHistoryNotFoundDataType
   | DocNotFoundDataType
   | ExpectToGrantDocUserRolesDataType
   | ExpectToRevokeDocUserRolesDataType
   | ExpectToUpdateDocUserRoleDataType
+  | GraphqlBadRequestDataType
   | InvalidEmailDataType
   | InvalidHistoryTimestampDataType
   | InvalidLicenseUpdateParamsDataType
@@ -440,6 +448,7 @@ export enum ErrorNames {
   CAPTCHA_VERIFICATION_FAILED = 'CAPTCHA_VERIFICATION_FAILED',
   COPILOT_ACTION_TAKEN = 'COPILOT_ACTION_TAKEN',
   COPILOT_CONTEXT_FILE_NOT_SUPPORTED = 'COPILOT_CONTEXT_FILE_NOT_SUPPORTED',
+  COPILOT_DOC_NOT_FOUND = 'COPILOT_DOC_NOT_FOUND',
   COPILOT_FAILED_TO_CREATE_MESSAGE = 'COPILOT_FAILED_TO_CREATE_MESSAGE',
   COPILOT_FAILED_TO_GENERATE_TEXT = 'COPILOT_FAILED_TO_GENERATE_TEXT',
   COPILOT_FAILED_TO_MATCH_CONTEXT = 'COPILOT_FAILED_TO_MATCH_CONTEXT',
@@ -453,7 +462,7 @@ export enum ErrorNames {
   COPILOT_SESSION_DELETED = 'COPILOT_SESSION_DELETED',
   COPILOT_SESSION_NOT_FOUND = 'COPILOT_SESSION_NOT_FOUND',
   CUSTOMER_PORTAL_CREATE_FAILED = 'CUSTOMER_PORTAL_CREATE_FAILED',
-  DOC_ACCESS_DENIED = 'DOC_ACCESS_DENIED',
+  DOC_ACTION_DENIED = 'DOC_ACTION_DENIED',
   DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER = 'DOC_DEFAULT_ROLE_CAN_NOT_BE_OWNER',
   DOC_HISTORY_NOT_FOUND = 'DOC_HISTORY_NOT_FOUND',
   DOC_IS_NOT_PUBLIC = 'DOC_IS_NOT_PUBLIC',
@@ -470,6 +479,7 @@ export enum ErrorNames {
   FAILED_TO_CHECKOUT = 'FAILED_TO_CHECKOUT',
   FAILED_TO_SAVE_UPDATES = 'FAILED_TO_SAVE_UPDATES',
   FAILED_TO_UPSERT_SNAPSHOT = 'FAILED_TO_UPSERT_SNAPSHOT',
+  GRAPHQL_BAD_REQUEST = 'GRAPHQL_BAD_REQUEST',
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
   INVALID_CHECKOUT_PARAMETERS = 'INVALID_CHECKOUT_PARAMETERS',
   INVALID_EMAIL = 'INVALID_EMAIL',
@@ -581,6 +591,12 @@ export interface GrantedDocUserTypeEdge {
   __typename?: 'GrantedDocUserTypeEdge';
   cursor: Scalars['String']['output'];
   node: GrantedDocUserType;
+}
+
+export interface GraphqlBadRequestDataType {
+  __typename?: 'GraphqlBadRequestDataType';
+  code: Scalars['String']['output'];
+  message: Scalars['String']['output'];
 }
 
 export interface InvalidEmailDataType {

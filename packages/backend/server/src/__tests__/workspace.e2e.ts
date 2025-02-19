@@ -108,12 +108,12 @@ test('should not be able to public not permitted doc', async t => {
 
   await t.throwsAsync(publishDoc(app, 'not_exists_ws', 'doc2'), {
     message:
-      'You do not have permission to access doc doc2 under Space not_exists_ws.',
+      'You do not have permission to perform Doc.Publish action on doc doc2.',
   });
 
   await t.throwsAsync(revokePublicDoc(app, 'not_exists_ws', 'doc2'), {
     message:
-      'You do not have permission to access doc doc2 under Space not_exists_ws.',
+      'You do not have permission to perform Doc.Publish action on doc doc2.',
   });
 });
 
