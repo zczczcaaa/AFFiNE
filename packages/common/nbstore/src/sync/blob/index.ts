@@ -145,12 +145,15 @@ export class BlobSyncImpl implements BlobSync {
     const abort = new AbortController();
     this.abort = abort;
 
-    this.fullSync(abort.signal).catch(error => {
-      if (error === MANUALLY_STOP) {
-        return;
-      }
-      console.error('sync blob error', error);
-    });
+    // TODO(@eyhn): fix this, large blob may cause iOS to crash?
+    if (!BUILD_CONFIG.isIOS) {
+      this.fullSync(abort.signal).catch(error => {
+        if (error === MANUALLY_STOP) {
+          return;
+        }
+        console.error('sync blob error', error);
+      });
+    }
   }
 
   stop() {
