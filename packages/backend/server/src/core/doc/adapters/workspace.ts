@@ -106,6 +106,7 @@ export class PgWorkspaceDocStorageAdapter extends DocStorageAdapter {
             {
               // keep it simple to let all update merged in one job
               jobId: `doc:merge-pending-updates:${workspaceId}:${docId}`,
+              delay: 30 * 1000 /* 30s */,
             }
           );
           turn++;

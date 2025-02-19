@@ -121,6 +121,7 @@ export class JobExecutor
           await this.run(job.name as JobName, job.data);
         },
         {
+          ...this.config.job.queue,
           ...this.config.job.worker,
           connection: this.redis,
           concurrency,

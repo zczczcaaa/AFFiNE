@@ -29,9 +29,15 @@ defineStartupConfig('job', {
   queue: {
     prefix: 'affine_job',
     defaultJobOptions: {
-      attempts: 3,
-      removeOnComplete: true,
-      removeOnFail: false,
+      attempts: 5,
+      removeOnComplete: {
+        age: 3600 /* 1h */,
+        count: 100,
+      },
+      removeOnFail: {
+        age: 24 * 3600 /* 1 day */,
+        count: 500,
+      },
     },
   },
   worker: {},
