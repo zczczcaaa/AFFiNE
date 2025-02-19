@@ -152,7 +152,7 @@ const Scroller = forwardRef<
       <Scrollable.Viewport {...props} ref={ref}>
         {children}
       </Scrollable.Viewport>
-      <Scrollable.Scrollbar />
+      <Scrollable.Scrollbar style={{ zIndex: 1 }} />
     </Scrollable.Root>
   );
 });
