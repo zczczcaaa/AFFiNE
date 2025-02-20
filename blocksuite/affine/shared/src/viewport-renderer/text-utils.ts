@@ -8,13 +8,22 @@ interface WordSegment {
 
 const CJK_REGEX = /[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]/u;
 
+const sentenceSegmenter = new Intl.Segmenter(undefined, {
+  granularity: 'sentence',
+});
+const wordSegmenter = new Intl.Segmenter(undefined, {
+  granularity: 'word',
+});
+const graphemeSegmenter = new Intl.Segmenter(undefined, {
+  granularity: 'grapheme',
+});
+
 function hasCJK(text: string): boolean {
   return CJK_REGEX.test(text);
 }
 
 function getWordSegments(text: string): WordSegment[] {
-  const granularity = hasCJK(text) ? 'grapheme' : 'word';
-  const segmenter = new Intl.Segmenter(undefined, { granularity });
+  const segmenter = hasCJK(text) ? graphemeSegmenter : wordSegmenter;
   return Array.from(segmenter.segment(text)).map(({ segment, index }) => ({
     text: segment,
     start: index,
@@ -130,6 +139,7 @@ export function getSentenceRects(
 }
 
 export function segmentSentences(text: string): string[] {
-  const segmenter = new Intl.Segmenter(undefined, { granularity: 'sentence' });
-  return Array.from(segmenter.segment(text)).map(({ segment }) => segment);
+  return Array.from(sentenceSegmenter.segment(text)).map(
+    ({ segment }) => segment
+  );
 }
