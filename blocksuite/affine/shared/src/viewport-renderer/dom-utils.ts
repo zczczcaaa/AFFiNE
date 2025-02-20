@@ -5,7 +5,7 @@ import {
 import { Pane } from 'tweakpane';
 
 import { getSentenceRects, segmentSentences } from './text-utils.js';
-import type { ParagraphLayout, SectionLayout } from './types.js';
+import type { ParagraphLayout, ViewportLayout } from './types.js';
 import type { ViewportTurboRendererExtension } from './viewport-renderer.js';
 
 export function syncCanvasSize(canvas: HTMLCanvasElement, host: HTMLElement) {
@@ -21,30 +21,30 @@ export function syncCanvasSize(canvas: HTMLCanvasElement, host: HTMLElement) {
   canvas.style.pointerEvents = 'none';
 }
 
-export function getSectionLayout(
+export function getViewportLayout(
   host: HTMLElement,
   viewport: Viewport
-): SectionLayout {
+): ViewportLayout {
   const paragraphBlocks = host.querySelectorAll(
     '.affine-paragraph-rich-text-wrapper [data-v-text="true"]'
   );
 
   const zoom = viewport.zoom;
 
-  let sectionMinX = Infinity;
-  let sectionMinY = Infinity;
-  let sectionMaxX = -Infinity;
-  let sectionMaxY = -Infinity;
+  let layoutMinX = Infinity;
+  let layoutMinY = Infinity;
+  let layoutMaxX = -Infinity;
+  let layoutMaxY = -Infinity;
 
   const paragraphs: ParagraphLayout[] = Array.from(paragraphBlocks).map(p => {
     const sentences = segmentSentences(p.textContent || '');
     const sentenceLayouts = sentences.map(sentence => {
       const rects = getSentenceRects(p, sentence);
       rects.forEach(({ rect }) => {
-        sectionMinX = Math.min(sectionMinX, rect.x);
-        sectionMinY = Math.min(sectionMinY, rect.y);
-        sectionMaxX = Math.max(sectionMaxX, rect.x + rect.w);
-        sectionMaxY = Math.max(sectionMaxY, rect.y + rect.h);
+        layoutMinX = Math.min(layoutMinX, rect.x);
+        layoutMinY = Math.min(layoutMinY, rect.y);
+        layoutMaxX = Math.max(layoutMaxX, rect.x + rect.w);
+        layoutMaxY = Math.max(layoutMaxY, rect.y + rect.h);
       });
       return {
         text: sentence,
@@ -72,22 +72,22 @@ export function getSectionLayout(
     };
   });
 
-  const sectionModelCoord = viewport.toModelCoordFromClientCoord([
-    sectionMinX,
-    sectionMinY,
+  const layoutModelCoord = viewport.toModelCoordFromClientCoord([
+    layoutMinX,
+    layoutMinY,
   ]);
-  const w = (sectionMaxX - sectionMinX) / zoom / viewport.viewScale;
-  const h = (sectionMaxY - sectionMinY) / zoom / viewport.viewScale;
-  const section: SectionLayout = {
+  const w = (layoutMaxX - layoutMinX) / zoom / viewport.viewScale;
+  const h = (layoutMaxY - layoutMinY) / zoom / viewport.viewScale;
+  const layout: ViewportLayout = {
     paragraphs,
     rect: {
-      x: sectionModelCoord[0],
-      y: sectionModelCoord[1],
+      x: layoutModelCoord[0],
+      y: layoutModelCoord[1],
       w: Math.max(w, 0),
       h: Math.max(h, 0),
     },
   };
-  return section;
+  return layout;
 }
 
 export function initTweakpane(

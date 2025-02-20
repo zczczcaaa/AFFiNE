@@ -1,9 +1,9 @@
-import { type SectionLayout } from './types.js';
+import { type ViewportLayout } from './types.js';
 
 type WorkerMessagePaint = {
-  type: 'paintSection';
+  type: 'paintLayout';
   data: {
-    section: SectionLayout;
+    layout: ViewportLayout;
     width: number;
     height: number;
     dpr: number;
@@ -38,20 +38,15 @@ function getBaseline() {
   return y;
 }
 
-/** Section painter in worker */
-class SectionPainter {
+/** Layout painter in worker */
+class LayoutPainter {
   private readonly canvas: OffscreenCanvas = new OffscreenCanvas(0, 0);
   private ctx: OffscreenCanvasRenderingContext2D | null = null;
   private zoom = 1;
 
-  setSize(
-    sectionRectW: number,
-    sectionRectH: number,
-    dpr: number,
-    zoom: number
-  ) {
-    const width = sectionRectW * dpr * zoom;
-    const height = sectionRectH * dpr * zoom;
+  setSize(layoutRectW: number, layoutRectH: number, dpr: number, zoom: number) {
+    const width = layoutRectW * dpr * zoom;
+    const height = layoutRectH * dpr * zoom;
 
     this.canvas.width = width;
     this.canvas.height = height;
@@ -68,11 +63,11 @@ class SectionPainter {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  paint(section: SectionLayout) {
+  paint(layout: ViewportLayout) {
     const { canvas, ctx } = this;
     if (!canvas || !ctx) return;
-    if (section.rect.w === 0 || section.rect.h === 0) {
-      console.warn('empty section rect');
+    if (layout.rect.w === 0 || layout.rect.h === 0) {
+      console.warn('empty layout rect');
       return;
     }
 
@@ -83,7 +78,7 @@ class SectionPainter {
     // Track rendered positions to avoid duplicate rendering across all paragraphs and sentences
     const renderedPositions = new Set<string>();
 
-    section.paragraphs.forEach(paragraph => {
+    layout.paragraphs.forEach(paragraph => {
       const fontSize = 15;
       ctx.font = `300 ${fontSize}px Inter`;
       const baselineY = getBaseline();
@@ -91,8 +86,8 @@ class SectionPainter {
       paragraph.sentences.forEach(sentence => {
         ctx.strokeStyle = 'yellow';
         sentence.rects.forEach(textRect => {
-          const x = textRect.rect.x - section.rect.x;
-          const y = textRect.rect.y - section.rect.y;
+          const x = textRect.rect.x - layout.rect.x;
+          const y = textRect.rect.y - layout.rect.y;
 
           const posKey = `${x},${y}`;
           // Only render if we haven't rendered at this position before
@@ -112,7 +107,7 @@ class SectionPainter {
   }
 }
 
-const painter = new SectionPainter();
+const painter = new LayoutPainter();
 let fontLoaded = false;
 
 font
@@ -131,10 +126,10 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   }
 
   switch (type) {
-    case 'paintSection': {
-      const { section, width, height, dpr, zoom } = data;
+    case 'paintLayout': {
+      const { layout, width, height, dpr, zoom } = data;
       painter.setSize(width, height, dpr, zoom);
-      painter.paint(section);
+      painter.paint(layout);
       break;
     }
   }

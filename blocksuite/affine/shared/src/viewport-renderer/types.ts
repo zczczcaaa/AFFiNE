@@ -23,7 +23,7 @@ export interface ParagraphLayout {
   zoom: number;
 }
 
-export interface SectionLayout {
+export interface ViewportLayout {
   paragraphs: ParagraphLayout[];
   rect: Rect;
 }
