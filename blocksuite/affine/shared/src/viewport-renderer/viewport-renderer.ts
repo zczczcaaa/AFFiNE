@@ -25,6 +25,9 @@ interface Tile {
   zoom: number;
 }
 
+// With high enough zoom, fallback to DOM rendering
+const zoomThreshold = 1;
+
 export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   state: 'monitoring' | 'paused' = 'paused';
   disposables = new DisposableGroup();
@@ -64,7 +67,10 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
       debounceOptions
     );
     this.disposables.add(
-      this.std.store.slots.blockUpdated.on(debouncedLayoutUpdate)
+      this.std.store.slots.blockUpdated.on(() => {
+        this.clearTile();
+        debouncedLayoutUpdate();
+      })
     );
 
     document.fonts.load('15px Inter').then(() => {
@@ -74,10 +80,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   override unmounted() {
-    if (this.tile) {
-      this.tile.bitmap.close();
-      this.tile = null;
-    }
+    this.clearTile();
     if (this.debugPane) {
       this.debugPane.dispose();
       this.debugPane = null;
@@ -94,7 +97,9 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   async refresh(force = false) {
     if (this.state === 'paused' && !force) return;
 
-    if (this.canUseBitmapCache()) {
+    if (this.viewport.zoom > zoomThreshold) {
+      this.clearCanvas();
+    } else if (this.canUseBitmapCache()) {
       this.drawCachedBitmap(this.layoutCache!);
     } else {
       // Unneeded most of the time, the DOM query is debounced after block update
@@ -110,6 +115,13 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   private updateLayoutCache() {
     const layout = getViewportLayout(this.std.host, this.viewport);
     this.layoutCache = layout;
+  }
+
+  private clearTile() {
+    if (this.tile) {
+      this.tile.bitmap.close();
+      this.tile = null;
+    }
   }
 
   private async paintLayout(layout: ViewportLayout): Promise<void> {
@@ -158,12 +170,18 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     );
   }
 
+  private clearCanvas() {
+    const ctx = this.canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
   private drawCachedBitmap(layout: ViewportLayout) {
     const bitmap = this.tile!.bitmap;
     const ctx = this.canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.clearCanvas();
     const layoutViewCoord = this.viewport.toViewCoord(
       layout.rect.x,
       layout.rect.y
