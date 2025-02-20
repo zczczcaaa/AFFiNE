@@ -33,6 +33,7 @@
     "@blocksuite/affine-block-table": "workspace:*",
     "@blocksuite/affine-components": "workspace:*",
     "@blocksuite/affine-fragment-frame-panel": "workspace:*",
+    "@blocksuite/affine-fragment-outline": "workspace:*",
     "@blocksuite/affine-model": "workspace:*",
     "@blocksuite/affine-shared": "workspace:*",
     "@blocksuite/affine-widget-drag-handle": "workspace:*",

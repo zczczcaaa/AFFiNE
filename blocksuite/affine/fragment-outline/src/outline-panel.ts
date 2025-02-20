@@ -1,10 +1,10 @@
+import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import {
   type EditorHost,
   PropTypes,
   requiredProperties,
   ShadowlessElement,
 } from '@blocksuite/block-std';
-import { DocModeProvider } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { provide } from '@lit/context';
 import { effect, signal } from '@preact/signals-core';

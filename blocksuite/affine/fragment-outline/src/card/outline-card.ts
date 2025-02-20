@@ -1,9 +1,6 @@
+import { type NoteBlockModel, NoteDisplayMode } from '@blocksuite/affine-model';
+import { createButtonPopper } from '@blocksuite/affine-shared/utils';
 import { ShadowlessElement } from '@blocksuite/block-std';
-import {
-  createButtonPopper,
-  type NoteBlockModel,
-  NoteDisplayMode,
-} from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { ArrowDownSmallIcon, InvisibleIcon } from '@blocksuite/icons/lit';
 import type { BlockModel } from '@blocksuite/store';

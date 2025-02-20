@@ -91,6 +91,7 @@ export {
   Tooltip,
 } from '@blocksuite/affine-components/toolbar';
 export * from '@blocksuite/affine-fragment-frame-panel';
+export * from '@blocksuite/affine-fragment-outline';
 export * from '@blocksuite/affine-model';
 export {
   AttachmentAdapter,

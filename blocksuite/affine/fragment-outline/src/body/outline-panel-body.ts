@@ -1,18 +1,10 @@
-import { effects } from '@blocksuite/affine-block-note/effects';
+import { changeNoteDisplayMode } from '@blocksuite/affine-block-note';
+import { NoteBlockModel, NoteDisplayMode } from '@blocksuite/affine-model';
+import { DocModeProvider } from '@blocksuite/affine-shared/services';
+import { matchModels } from '@blocksuite/affine-shared/utils';
 import { ShadowlessElement, SurfaceSelection } from '@blocksuite/block-std';
-import {
-  changeNoteDisplayMode,
-  DocModeProvider,
-  matchModels,
-  NoteBlockModel,
-  NoteDisplayMode,
-} from '@blocksuite/blocks';
-import {
-  Bound,
-  noop,
-  SignalWatcher,
-  WithDisposable,
-} from '@blocksuite/global/utils';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
+import { Bound, SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 import { consume } from '@lit/context';
 import { effect, signal } from '@preact/signals-core';
@@ -21,8 +13,6 @@ import { query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { when } from 'lit/directives/when.js';
-
-noop(effects);
 
 import { type TocContext, tocContext } from '../config';
 import type {
@@ -79,10 +69,6 @@ export class OutlinePanelBody extends SignalWatcher(
     return this.editor.doc;
   }
 
-  private get edgeless() {
-    return this.editor.querySelector('affine-edgeless-root');
-  }
-
   get viewportPadding(): [number, number, number, number] {
     const fitPadding = this._context.fitPadding$.value;
     return fitPadding.length === 4
@@ -93,9 +79,9 @@ export class OutlinePanelBody extends SignalWatcher(
   }
 
   private _deSelectNoteInEdgelessMode(note: NoteBlockModel) {
-    if (!this.edgeless) return;
+    const gfx = this.editor.std.get(GfxControllerIdentifier);
+    const selection = gfx.selection;
 
-    const { selection } = this.edgeless.service;
     if (!selection.has(note.id)) return;
     const selectedIds = selection.selectedIds.filter(id => id !== note.id);
     selection.set({
@@ -116,18 +102,12 @@ export class OutlinePanelBody extends SignalWatcher(
   }
 
   private _fitToElement(e: FitViewEvent) {
-    const edgeless = this.edgeless;
-
-    if (!edgeless) return;
+    const gfx = this.editor.std.get(GfxControllerIdentifier);
 
     const { block } = e.detail;
     const bound = Bound.deserialize(block.xywh);
 
-    edgeless.service.viewport.setViewportByBound(
-      bound,
-      this.viewportPadding,
-      true
-    );
+    gfx.viewport.setViewportByBound(bound, this.viewportPadding, true);
   }
 
   // when display mode change to page only, we should de-select the note if it is selected in edgeless mode
@@ -200,6 +180,8 @@ export class OutlinePanelBody extends SignalWatcher(
 
   private _selectNote(e: SelectEvent) {
     const { selected, id, multiselect } = e.detail;
+    const gfx = this.editor.std.get(GfxControllerIdentifier);
+    const editorMode = this.editor.std.get(DocModeProvider).getEditorMode();
     const note = this.doc.getBlock(id)?.model;
     if (!note || !matchModels(note, [NoteBlockModel])) return;
 
@@ -213,8 +195,8 @@ export class OutlinePanelBody extends SignalWatcher(
       selectedNotes = [note];
     }
 
-    if (this.edgeless) {
-      this.edgeless?.service.selection.set({
+    if (editorMode === 'edgeless') {
+      gfx.selection.set({
         elements: selectedNotes.map(({ id }) => id),
         editing: false,
       });

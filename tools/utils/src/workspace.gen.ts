@@ -290,6 +290,20 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/fragment-outline',
+    name: '@blocksuite/affine-fragment-outline',
+    workspaceDependencies: [
+      'blocksuite/affine/block-note',
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/framework/global',
+      'blocksuite/framework/inline',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/model',
     name: '@blocksuite/affine-model',
     workspaceDependencies: [
@@ -396,6 +410,7 @@ export const PackageList = [
       'blocksuite/affine/block-table',
       'blocksuite/affine/components',
       'blocksuite/affine/fragment-frame-panel',
+      'blocksuite/affine/fragment-outline',
       'blocksuite/affine/model',
       'blocksuite/affine/shared',
       'blocksuite/affine/widget-drag-handle',
@@ -780,6 +795,7 @@ export type PackageName =
   | '@blocksuite/affine-components'
   | '@blocksuite/data-view'
   | '@blocksuite/affine-fragment-frame-panel'
+  | '@blocksuite/affine-fragment-outline'
   | '@blocksuite/affine-model'
   | '@blocksuite/affine-shared'
   | '@blocksuite/affine-widget-drag-handle'

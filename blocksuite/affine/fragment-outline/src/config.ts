@@ -1,5 +1,5 @@
+import type { ParagraphBlockModel } from '@blocksuite/affine-model';
 import type { EditorHost } from '@blocksuite/block-std';
-import type { ParagraphBlockModel, Signal } from '@blocksuite/blocks';
 import {
   AttachmentIcon,
   BlockIcon,
@@ -21,6 +21,7 @@ import {
   TextIcon,
 } from '@blocksuite/icons/lit';
 import { createContext } from '@lit/context';
+import type { Signal } from '@preact/signals-core';
 import type { TemplateResult } from 'lit';
 
 const _16px = { width: '16px', height: '16px' };

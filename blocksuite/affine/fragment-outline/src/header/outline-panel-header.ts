@@ -1,5 +1,5 @@
+import { createButtonPopper } from '@blocksuite/affine-shared/utils';
 import { ShadowlessElement } from '@blocksuite/block-std';
-import { createButtonPopper } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { SettingsIcon, SortIcon } from '@blocksuite/icons/lit';
 import { consume } from '@lit/context';

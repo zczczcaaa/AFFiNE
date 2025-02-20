@@ -26,6 +26,7 @@
     { "path": "../affine/block-table" },
     { "path": "../affine/components" },
     { "path": "../affine/fragment-frame-panel" },
+    { "path": "../affine/fragment-outline" },
     { "path": "../affine/model" },
     { "path": "../affine/shared" },
     { "path": "../affine/widget-drag-handle" },

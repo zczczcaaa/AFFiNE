@@ -1,5 +1,5 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import { MobileOutlineMenu } from '@blocksuite/affine/presets';
+import { MobileOutlineMenu } from '@blocksuite/affine/blocks';
 import { useCallback, useRef } from 'react';
 
 export const MobileTocMenu = ({ editor }: { editor: EditorHost | null }) => {

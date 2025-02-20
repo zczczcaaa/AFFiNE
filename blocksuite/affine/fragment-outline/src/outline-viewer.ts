@@ -1,14 +1,12 @@
+import { NoteDisplayMode } from '@blocksuite/affine-model';
+import { DocModeProvider } from '@blocksuite/affine-shared/services';
+import { scrollbarStyle } from '@blocksuite/affine-shared/styles';
 import {
   type EditorHost,
   PropTypes,
   requiredProperties,
   ShadowlessElement,
 } from '@blocksuite/block-std';
-import {
-  DocModeProvider,
-  NoteDisplayMode,
-  scrollbarStyle,
-} from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { TocIcon } from '@blocksuite/icons/lit';
 import { provide } from '@lit/context';

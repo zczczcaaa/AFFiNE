@@ -311,7 +311,7 @@ __metadata:
     "@toeverything/theme": "npm:^1.1.11"
     "@types/react": "npm:^19.0.1"
     "@types/react-dom": "npm:^19.0.2"
-    "@vanilla-extract/css": "npm:^1.16.1"
+    "@vanilla-extract/css": "npm:^1.17.0"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     check-password-strength: "npm:^3.0.0"
     clsx: "npm:^2.1.1"
@@ -396,7 +396,7 @@ __metadata:
     "@types/bytes": "npm:^3.1.5"
     "@types/image-blob-reduce": "npm:^4.1.4"
     "@types/lodash-es": "npm:^4.17.12"
-    "@vanilla-extract/css": "npm:^1.16.1"
+    "@vanilla-extract/css": "npm:^1.17.0"
     "@vanilla-extract/dynamic": "npm:^2.1.2"
     animejs: "npm:^3.2.2"
     bytes: "npm:^3.1.2"
@@ -488,7 +488,7 @@ __metadata:
     "@toeverything/theme": "npm:^1.1.11"
     "@types/react": "npm:^19.0.1"
     "@types/react-dom": "npm:^19.0.2"
-    "@vanilla-extract/css": "npm:^1.16.1"
+    "@vanilla-extract/css": "npm:^1.17.0"
     async-call-rpc: "npm:^6.4.2"
     cross-env: "npm:^7.0.3"
     next-themes: "npm:^0.4.4"
@@ -3680,7 +3680,7 @@ __metadata:
     "@blocksuite/store": "workspace:*"
     "@floating-ui/dom": "npm:^1.6.10"
     "@preact/signals-core": "npm:^1.8.0"
-    "@vanilla-extract/css": "npm:^1.14.0"
+    "@vanilla-extract/css": "npm:^1.17.0"
     lit: "npm:^3.2.0"
     yjs: "npm:^13.6.21"
     zod: "npm:^3.24.1"
@@ -3738,6 +3738,30 @@ __metadata:
     "@lit/context": "npm:^1.1.2"
     "@preact/signals-core": "npm:^1.8.0"
     "@toeverything/theme": "npm:^1.1.11"
+    lit: "npm:^3.2.0"
+    minimatch: "npm:^10.0.1"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
+"@blocksuite/affine-fragment-outline@workspace:*, @blocksuite/affine-fragment-outline@workspace:blocksuite/affine/fragment-outline":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-fragment-outline@workspace:blocksuite/affine/fragment-outline"
+  dependencies:
+    "@blocksuite/affine-block-note": "workspace:*"
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/icons": "npm:^2.2.1"
+    "@blocksuite/inline": "workspace:*"
+    "@blocksuite/store": "workspace:*"
+    "@floating-ui/dom": "npm:^1.6.10"
+    "@lit/context": "npm:^1.1.2"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@toeverything/theme": "npm:^1.1.11"
+    "@vanilla-extract/css": "npm:^1.17.0"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
     zod: "npm:^3.23.8"
@@ -3962,6 +3986,7 @@ __metadata:
     "@blocksuite/affine-block-table": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-fragment-frame-panel": "workspace:*"
+    "@blocksuite/affine-fragment-outline": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/affine-widget-drag-handle": "workspace:*"
@@ -15886,7 +15911,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vanilla-extract/css@npm:^1.14.0, @vanilla-extract/css@npm:^1.16.1, @vanilla-extract/css@npm:^1.17.0, @vanilla-extract/css@npm:^1.17.1":
+"@vanilla-extract/css@npm:^1.17.0, @vanilla-extract/css@npm:^1.17.1":
   version: 1.17.1
   resolution: "@vanilla-extract/css@npm:1.17.1"
   dependencies:

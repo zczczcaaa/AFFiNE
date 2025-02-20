@@ -1,16 +1,16 @@
+import {
+  NoteDisplayMode,
+  ParagraphBlockModel,
+  RootBlockModel,
+} from '@blocksuite/affine-model';
+import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
+import { matchModels } from '@blocksuite/affine-shared/utils';
 import {
   type EditorHost,
   PropTypes,
   requiredProperties,
 } from '@blocksuite/block-std';
-import {
-  DocModeProvider,
-  matchModels,
-  NoteDisplayMode,
-  ParagraphBlockModel,
-  RootBlockModel,
-} from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
 import { signal } from '@preact/signals-core';

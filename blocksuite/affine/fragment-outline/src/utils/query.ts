@@ -1,11 +1,10 @@
 import {
-  BlocksUtils,
-  matchModels,
   NoteBlockModel,
   NoteDisplayMode,
   ParagraphBlockModel,
   RootBlockModel,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine-model';
+import { matchModels } from '@blocksuite/affine-shared/utils';
 import type { BlockModel, Store } from '@blocksuite/store';
 
 import { headingKeys } from '../config.js';
@@ -35,14 +34,14 @@ export function getNotesFromDoc(
 }
 
 export function isRootBlock(block: BlockModel): block is RootBlockModel {
-  return BlocksUtils.matchModels(block, [RootBlockModel]);
+  return matchModels(block, [RootBlockModel]);
 }
 
 export function isHeadingBlock(
   block: BlockModel
 ): block is ParagraphBlockModel {
   return (
-    BlocksUtils.matchModels(block, [ParagraphBlockModel]) &&
+    matchModels(block, [ParagraphBlockModel]) &&
     headingKeys.has(block.type$.value)
   );
 }

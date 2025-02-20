@@ -1,9 +1,8 @@
+import { getDocTitleByEditorHost } from '@blocksuite/affine-components/doc-title';
+import { NoteDisplayMode } from '@blocksuite/affine-model';
+import { DocModeProvider } from '@blocksuite/affine-shared/services';
+import type { Viewport } from '@blocksuite/affine-shared/types';
 import type { EditorHost } from '@blocksuite/block-std';
-import {
-  DocModeProvider,
-  getDocTitleByEditorHost,
-  NoteDisplayMode,
-} from '@blocksuite/blocks';
 import { clamp, DisposableGroup } from '@blocksuite/global/utils';
 
 import { getHeadingBlocksFromDoc } from './query.js';
@@ -13,7 +12,7 @@ export function scrollToBlock(host: EditorHost, blockId: string) {
   const mode = docModeService.getEditorMode();
   if (mode === 'edgeless') return;
 
-  if (editor.doc.root?.id === blockId) {
+  if (host.doc.root?.id === blockId) {
     const docTitle = getDocTitleByEditorHost(host);
     if (!docTitle) return;
 
@@ -89,7 +88,9 @@ function highlightBlock(host: EditorHost, blockId: string) {
 
   if (host.doc.root?.id === blockId) return emptyClear;
 
-  const rootComponent = host.querySelector('affine-page-root');
+  const rootComponent = host.querySelector<
+    HTMLElement & { viewport: Viewport }
+  >('affine-page-root');
   if (!rootComponent) return emptyClear;
 
   if (!rootComponent.viewport) {

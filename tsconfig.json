@@ -71,6 +71,7 @@
     { "path": "./blocksuite/affine/components" },
     { "path": "./blocksuite/affine/data-view" },
     { "path": "./blocksuite/affine/fragment-frame-panel" },
+    { "path": "./blocksuite/affine/fragment-outline" },
     { "path": "./blocksuite/affine/model" },
     { "path": "./blocksuite/affine/shared" },
     { "path": "./blocksuite/affine/widget-drag-handle" },
