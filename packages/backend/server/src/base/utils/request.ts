@@ -94,7 +94,7 @@ export function parseCookies(
 export type RequestType = GqlContextType | 'event' | 'job';
 
 export function genRequestId(type: RequestType) {
-  return `${AFFiNE.flavor.type}:${type}/${randomUUID()}`;
+  return `${AFFiNE.flavor.type}:${type}:${randomUUID()}`;
 }
 
 export function getOrGenRequestId(type: RequestType) {

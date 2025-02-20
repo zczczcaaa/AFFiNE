@@ -226,7 +226,7 @@ test('should generate request id', async t => {
 
   await executor.run('nightly.__test__requestId', {});
 
-  t.true(spy.returnValues.some(v => v.includes(':job/')));
+  t.true(spy.returnValues.some(v => v.includes(':job:')));
 
   spy.restore();
 });

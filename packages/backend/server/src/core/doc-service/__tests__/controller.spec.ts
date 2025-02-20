@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { mock } from 'node:test';
 
 import { User, Workspace } from '@prisma/client';
 import ava, { TestFn } from 'ava';
@@ -8,11 +9,13 @@ import { AppModule } from '../../../app.module';
 import { CryptoHelper } from '../../../base';
 import { ConfigModule } from '../../../base/config';
 import { Models } from '../../../models';
+import { DatabaseDocReader } from '../../doc';
 
 const test = ava as TestFn<{
   models: Models;
   app: TestingApp;
   crypto: CryptoHelper;
+  databaseDocReader: DatabaseDocReader;
 }>;
 
 test.before(async t => {
@@ -23,6 +26,7 @@ test.before(async t => {
   t.context.models = app.get(Models);
   t.context.crypto = app.get(CryptoHelper);
   t.context.app = app;
+  t.context.databaseDocReader = app.get(DatabaseDocReader);
 });
 
 let user: User;
@@ -118,4 +122,102 @@ test('should return doc when found', async t => {
   t.is(bin.toString(), 'blob1 data');
   t.is(res.headers['x-doc-timestamp'], timestamp.toString());
   t.is(res.headers['x-doc-editor-id'], user.id);
+});
+
+test('should 404 when doc diff not found', async t => {
+  const { app } = t.context;
+
+  const workspaceId = '123';
+  const docId = '123';
+  await app
+    .POST(`/rpc/workspaces/${workspaceId}/docs/${docId}/diff`)
+    .set('x-access-token', t.context.crypto.sign(docId))
+    .expect({
+      status: 404,
+      code: 'Not Found',
+      type: 'RESOURCE_NOT_FOUND',
+      name: 'NOT_FOUND',
+      message: 'Doc not found',
+    })
+    .expect(404);
+  t.pass();
+});
+
+test('should 404 when doc content not found', async t => {
+  const { app } = t.context;
+
+  const workspaceId = '123';
+  const docId = '123';
+  await app
+    .GET(`/rpc/workspaces/${workspaceId}/docs/${docId}/content`)
+    .set('x-access-token', t.context.crypto.sign(docId))
+    .expect({
+      status: 404,
+      code: 'Not Found',
+      type: 'RESOURCE_NOT_FOUND',
+      name: 'NOT_FOUND',
+      message: 'Doc not found',
+    })
+    .expect(404);
+  t.pass();
+});
+
+test('should get doc content in json format', async t => {
+  const { app } = t.context;
+  mock.method(t.context.databaseDocReader, 'getDocContent', async () => {
+    return {
+      title: 'test title',
+      summary: 'test summary',
+    };
+  });
+
+  const docId = randomUUID();
+  await app
+    .GET(`/rpc/workspaces/${workspace.id}/docs/${docId}/content`)
+    .set('x-access-token', t.context.crypto.sign(docId))
+    .expect({
+      title: 'test title',
+      summary: 'test summary',
+    })
+    .expect(200);
+  t.pass();
+});
+
+test('should 404 when workspace content not found', async t => {
+  const { app } = t.context;
+
+  const workspaceId = '123';
+  await app
+    .GET(`/rpc/workspaces/${workspaceId}/content`)
+    .set('x-access-token', t.context.crypto.sign(workspaceId))
+    .expect({
+      status: 404,
+      code: 'Not Found',
+      type: 'RESOURCE_NOT_FOUND',
+      name: 'NOT_FOUND',
+      message: 'Workspace not found',
+    })
+    .expect(404);
+  t.pass();
+});
+
+test('should get workspace content in json format', async t => {
+  const { app } = t.context;
+  mock.method(t.context.databaseDocReader, 'getWorkspaceContent', async () => {
+    return {
+      name: 'test name',
+      avatarKey: 'avatar key',
+    };
+  });
+
+  const workspaceId = randomUUID();
+  await app
+    .GET(`/rpc/workspaces/${workspaceId}/content`)
+    .set('x-access-token', t.context.crypto.sign(workspaceId))
+    .expect(200)
+    .expect({
+      name: 'test name',
+      avatarKey: 'avatar key',
+    });
+  t.pass();
 });

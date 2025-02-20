@@ -1,17 +1,33 @@
 import { FactoryProvider, Injectable, Logger } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { diffUpdate, encodeStateVectorFromUpdate } from 'yjs';
+import {
+  applyUpdate,
+  diffUpdate,
+  Doc as YDoc,
+  encodeStateVectorFromUpdate,
+} from 'yjs';
 
 import {
+  Cache,
   Config,
   CryptoHelper,
   getOrGenRequestId,
   UserFriendlyError,
 } from '../../base';
+import {
+  type PageDocContent,
+  parsePageDoc,
+  parseWorkspaceDoc,
+  type WorkspaceDocContent,
+} from '../utils/blocksuite';
 import { PgWorkspaceDocStorageAdapter } from './adapters/workspace';
 import { type DocDiff, type DocRecord } from './storage';
 
+const DOC_CONTENT_CACHE_7_DAYS = 7 * 24 * 60 * 60 * 1000;
+
 export abstract class DocReader {
+  constructor(protected readonly cache: Cache) {}
+
   abstract getDoc(
     workspaceId: string,
     docId: string
@@ -22,6 +38,60 @@ export abstract class DocReader {
     docId: string,
     stateVector?: Uint8Array
   ): Promise<DocDiff | null>;
+
+  async getDocContent(
+    workspaceId: string,
+    docId: string
+  ): Promise<PageDocContent | null> {
+    const cacheKey = this.cacheKey(workspaceId, docId);
+    const cachedResult = await this.cache.get<PageDocContent>(cacheKey);
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const content = await this.getDocContentWithoutCache(workspaceId, docId);
+    if (content) {
+      await this.cache.set(cacheKey, content, {
+        ttl: DOC_CONTENT_CACHE_7_DAYS,
+      });
+    }
+    return content;
+  }
+
+  async getWorkspaceContent(
+    workspaceId: string
+  ): Promise<WorkspaceDocContent | null> {
+    const cacheKey = this.cacheKey(workspaceId, workspaceId);
+    const cachedResult = await this.cache.get<WorkspaceDocContent>(cacheKey);
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const content = await this.getWorkspaceContentWithoutCache(workspaceId);
+    if (content) {
+      await this.cache.set(cacheKey, content);
+    }
+    return content;
+  }
+
+  async markDocContentCacheStale(workspaceId: string, docId: string) {
+    await this.cache.delete(this.cacheKey(workspaceId, docId));
+  }
+
+  private cacheKey(workspaceId: string, docId: string) {
+    return workspaceId === docId
+      ? `workspace:${workspaceId}:content`
+      : `workspace:${workspaceId}:doc:${docId}:content`;
+  }
+
+  protected abstract getDocContentWithoutCache(
+    workspaceId: string,
+    guid: string
+  ): Promise<PageDocContent | null>;
+
+  protected abstract getWorkspaceContentWithoutCache(
+    workspaceId: string
+  ): Promise<WorkspaceDocContent | null>;
 
   protected docDiff(update: Uint8Array, stateVector?: Uint8Array) {
     const missing = stateVector ? diffUpdate(update, stateVector) : update;
@@ -35,8 +105,11 @@ export abstract class DocReader {
 
 @Injectable()
 export class DatabaseDocReader extends DocReader {
-  constructor(protected readonly workspace: PgWorkspaceDocStorageAdapter) {
-    super();
+  constructor(
+    protected override readonly cache: Cache,
+    protected readonly workspace: PgWorkspaceDocStorageAdapter
+  ) {
+    super(cache);
   }
 
   async getDoc(workspaceId: string, docId: string): Promise<DocRecord | null> {
@@ -57,6 +130,31 @@ export class DatabaseDocReader extends DocReader {
       timestamp: doc.timestamp,
     };
   }
+
+  protected override async getDocContentWithoutCache(
+    workspaceId: string,
+    guid: string
+  ): Promise<PageDocContent | null> {
+    const docRecord = await this.workspace.getDoc(workspaceId, guid);
+    if (!docRecord) {
+      return null;
+    }
+    const doc = new YDoc();
+    applyUpdate(doc, docRecord.bin);
+    return parsePageDoc(doc);
+  }
+
+  protected override async getWorkspaceContentWithoutCache(
+    workspaceId: string
+  ): Promise<WorkspaceDocContent | null> {
+    const docRecord = await this.workspace.getDoc(workspaceId, workspaceId);
+    if (!docRecord) {
+      return null;
+    }
+    const doc = new YDoc();
+    applyUpdate(doc, docRecord.bin);
+    return parseWorkspaceDoc(doc);
+  }
 }
 
 @Injectable()
@@ -66,9 +164,10 @@ export class RpcDocReader extends DatabaseDocReader {
   constructor(
     private readonly config: Config,
     private readonly crypto: CryptoHelper,
+    protected override readonly cache: Cache,
     protected override readonly workspace: PgWorkspaceDocStorageAdapter
   ) {
-    super(workspace);
+    super(cache, workspace);
   }
 
   private async fetch(
@@ -128,11 +227,8 @@ export class RpcDocReader extends DatabaseDocReader {
       // other error
       this.logger.error(
         `Failed to fetch doc ${url}, fallback to database doc reader`,
-        err.stack
+        err
       );
-      if (err.cause instanceof Error) {
-        this.logger.error(err.cause.stack);
-      }
       // fallback to database doc reader if the error is not user friendly, like network error
       return await super.getDoc(workspaceId, docId);
     }
@@ -172,13 +268,59 @@ export class RpcDocReader extends DatabaseDocReader {
       const err = e as Error;
       this.logger.error(
         `Failed to fetch doc diff ${url}, fallback to database doc reader`,
-        err.stack
+        err
       );
-      if (err.cause instanceof Error) {
-        this.logger.error(err.cause.stack);
-      }
       // fallback to database doc reader if the error is not user friendly, like network error
       return await super.getDocDiff(workspaceId, docId, stateVector);
+    }
+  }
+
+  protected override async getDocContentWithoutCache(
+    workspaceId: string,
+    docId: string
+  ): Promise<PageDocContent | null> {
+    const url = `${this.config.docService.endpoint}/rpc/workspaces/${workspaceId}/docs/${docId}/content`;
+    const accessToken = this.crypto.sign(docId);
+    try {
+      const res = await this.fetch(accessToken, url, 'GET');
+      if (!res) {
+        return null;
+      }
+      return (await res.json()) as PageDocContent;
+    } catch (e) {
+      if (e instanceof UserFriendlyError) {
+        throw e;
+      }
+      const err = e as Error;
+      this.logger.error(
+        `Failed to fetch doc content ${url}, fallback to database doc reader`,
+        err
+      );
+      return await super.getDocContentWithoutCache(workspaceId, docId);
+    }
+  }
+
+  protected override async getWorkspaceContentWithoutCache(
+    workspaceId: string
+  ): Promise<WorkspaceDocContent | null> {
+    const url = `${this.config.docService.endpoint}/rpc/workspaces/${workspaceId}/content`;
+    const accessToken = this.crypto.sign(workspaceId);
+    try {
+      const res = await this.fetch(accessToken, url, 'GET');
+      if (!res) {
+        return null;
+      }
+      return (await res.json()) as WorkspaceDocContent;
+    } catch (e) {
+      if (e instanceof UserFriendlyError) {
+        throw e;
+      }
+      const err = e as Error;
+      this.logger.error(
+        `Failed to fetch workspace content ${url}, fallback to database doc reader`,
+        err
+      );
+      return await super.getWorkspaceContentWithoutCache(workspaceId);
     }
   }
 }

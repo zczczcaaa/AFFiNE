@@ -10,7 +10,7 @@ import Sinon from 'sinon';
 import { AppModule } from '../app.module';
 import { EventBus } from '../base';
 import { AuthService } from '../core/auth';
-import { DocContentService } from '../core/doc-renderer';
+import { DocReader } from '../core/doc';
 import { DocRole, PermissionService, WorkspaceRole } from '../core/permission';
 import { WorkspaceType } from '../core/workspaces';
 import { Models } from '../models';
@@ -53,7 +53,7 @@ test.before(async t => {
       module
         .overrideProvider(EventBus)
         .useValue(Sinon.createStubInstance(EventBus));
-      module.overrideProvider(DocContentService).useValue({
+      module.overrideProvider(DocReader).useValue({
         getWorkspaceContent() {
           return {
             name: 'test',

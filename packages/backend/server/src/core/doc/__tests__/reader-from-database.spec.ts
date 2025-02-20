@@ -8,13 +8,14 @@ import { createTestingApp, type TestingApp } from '../../../__tests__/utils';
 import { AppModule } from '../../../app.module';
 import { ConfigModule } from '../../../base/config';
 import { Models } from '../../../models';
-import { DocReader } from '..';
+import { DocReader, PgWorkspaceDocStorageAdapter } from '..';
 import { DatabaseDocReader } from '../reader';
 
 const test = ava as TestFn<{
   models: Models;
   app: TestingApp;
   docReader: DocReader;
+  adapter: PgWorkspaceDocStorageAdapter;
 }>;
 
 test.before(async t => {
@@ -24,6 +25,7 @@ test.before(async t => {
 
   t.context.models = app.get(Models);
   t.context.docReader = app.get(DocReader);
+  t.context.adapter = app.get(PgWorkspaceDocStorageAdapter);
   t.context.app = app;
 });
 
@@ -135,4 +137,54 @@ test('should return doc diff', async t => {
   t.truthy(diff3!.state);
   applyUpdate(doc2, diff3!.missing);
   t.is(doc2.getText('content').toString(), 'hello world!@');
+});
+
+test('should get doc content', async t => {
+  const docId = randomUUID();
+  const { docReader } = t.context;
+
+  const doc = new YDoc();
+  const text = doc.getText('content');
+  const updates: Buffer[] = [];
+
+  doc.on('update', update => {
+    updates.push(Buffer.from(update));
+  });
+
+  text.insert(0, 'hello');
+  text.insert(5, 'world');
+  text.insert(5, ' ');
+
+  await t.context.adapter.pushDocUpdates(workspace.id, docId, updates, user.id);
+
+  const docContent = await docReader.getDocContent(workspace.id, docId);
+  // TODO(@fengmk2): should create a test ydoc with blocks
+  t.is(docContent, null);
+});
+
+test('should get workspace content', async t => {
+  const { docReader } = t.context;
+
+  const doc = new YDoc();
+  const text = doc.getText('content');
+  const updates: Buffer[] = [];
+
+  doc.on('update', update => {
+    updates.push(Buffer.from(update));
+  });
+
+  text.insert(0, 'hello');
+  text.insert(5, 'world');
+  text.insert(5, ' ');
+
+  await t.context.adapter.pushDocUpdates(
+    workspace.id,
+    workspace.id,
+    updates,
+    user.id
+  );
+
+  const workspaceContent = await docReader.getWorkspaceContent(workspace.id);
+  // TODO(@fengmk2): should create a test ydoc with blocks
+  t.is(workspaceContent, null);
 });

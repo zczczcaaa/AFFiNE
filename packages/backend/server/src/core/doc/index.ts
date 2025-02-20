@@ -6,6 +6,7 @@ import { PermissionModule } from '../permission';
 import { QuotaModule } from '../quota';
 import { PgUserspaceDocStorageAdapter } from './adapters/userspace';
 import { PgWorkspaceDocStorageAdapter } from './adapters/workspace';
+import { DocEventsListener } from './event';
 import { DocStorageCronJob } from './job';
 import { DocStorageOptions } from './options';
 import { DatabaseDocReader, DocReader, DocReaderProvider } from './reader';
@@ -19,6 +20,7 @@ import { DatabaseDocReader, DocReader, DocReaderProvider } from './reader';
     DocStorageCronJob,
     DocReaderProvider,
     DatabaseDocReader,
+    DocEventsListener,
   ],
   exports: [
     DatabaseDocReader,

@@ -70,4 +70,31 @@ export class DocRpcController {
     );
     res.send(Buffer.concat([diff.missing, diff.state]));
   }
+
+  @SkipThrottle()
+  @Internal()
+  @Get('/workspaces/:workspaceId/docs/:docId/content')
+  async getDocContent(
+    @Param('workspaceId') workspaceId: string,
+    @Param('docId') docId: string
+  ) {
+    const content = await this.docReader.getDocContent(workspaceId, docId);
+    if (!content) {
+      throw new NotFound('Doc not found');
+    }
+    this.logger.log(`get doc content ${docId} from workspace ${workspaceId}`);
+    return content;
+  }
+
+  @SkipThrottle()
+  @Internal()
+  @Get('/workspaces/:workspaceId/content')
+  async getWorkspaceContent(@Param('workspaceId') workspaceId: string) {
+    const content = await this.docReader.getWorkspaceContent(workspaceId);
+    if (!content) {
+      throw new NotFound('Workspace not found');
+    }
+    this.logger.log(`get workspace content ${workspaceId}`);
+    return content;
+  }
 }

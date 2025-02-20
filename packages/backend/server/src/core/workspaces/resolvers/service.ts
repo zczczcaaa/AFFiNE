@@ -10,7 +10,7 @@ import {
   UserNotFound,
 } from '../../../base';
 import { Models } from '../../../models';
-import { DocContentService } from '../../doc-renderer';
+import { DocReader } from '../../doc';
 import { PermissionService, WorkspaceRole } from '../../permission';
 import { WorkspaceBlobStorage } from '../../storage';
 
@@ -30,7 +30,7 @@ export class WorkspaceService {
   constructor(
     private readonly blobStorage: WorkspaceBlobStorage,
     private readonly cache: Cache,
-    private readonly doc: DocContentService,
+    private readonly doc: DocReader,
     private readonly mailer: MailService,
     private readonly permission: PermissionService,
     private readonly prisma: PrismaClient,

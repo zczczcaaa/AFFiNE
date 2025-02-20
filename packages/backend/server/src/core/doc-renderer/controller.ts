@@ -8,8 +8,8 @@ import isMobile from 'is-mobile';
 import { Config, metrics, URLHelper } from '../../base';
 import { htmlSanitize } from '../../native';
 import { Public } from '../auth';
+import { DocReader } from '../doc';
 import { PermissionService } from '../permission';
-import { DocContentService } from './service';
 
 interface RenderOptions {
   title: string;
@@ -50,7 +50,7 @@ export class DocRendererController {
   private readonly mobileAssets: HtmlAssets = defaultAssets;
 
   constructor(
-    private readonly doc: DocContentService,
+    private readonly doc: DocReader,
     private readonly permission: PermissionService,
     private readonly config: Config,
     private readonly url: URLHelper
@@ -114,7 +114,7 @@ export class DocRendererController {
     }
 
     if (allowUrlPreview) {
-      return this.doc.getPageContent(workspaceId, docId);
+      return this.doc.getDocContent(workspaceId, docId);
     }
 
     return null;

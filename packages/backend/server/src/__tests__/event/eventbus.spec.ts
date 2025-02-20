@@ -187,7 +187,7 @@ test('should generate request id for event', async t => {
 
   await eventbus.emitAsync('__test__.requestId', {});
 
-  t.true(listeners.onRequestId.lastCall.returnValue.includes(':event/'));
+  t.true(listeners.onRequestId.lastCall.returnValue.includes(':event:'));
 });
 
 test('should continuously use the same request id', async t => {

@@ -10,7 +10,7 @@ import { AppModule } from '../../../app.module';
 import { Config, UserFriendlyError } from '../../../base';
 import { ConfigModule } from '../../../base/config';
 import { Models } from '../../../models';
-import { DatabaseDocReader, DocReader } from '..';
+import { DatabaseDocReader, DocReader, PgWorkspaceDocStorageAdapter } from '..';
 import { RpcDocReader } from '../reader';
 
 const test = ava as TestFn<{
@@ -18,6 +18,7 @@ const test = ava as TestFn<{
   app: TestingApp;
   docReader: DocReader;
   databaseDocReader: DatabaseDocReader;
+  adapter: PgWorkspaceDocStorageAdapter;
   config: Config;
 }>;
 
@@ -39,6 +40,7 @@ test.before(async t => {
   t.context.models = app.get(Models);
   t.context.docReader = app.get(DocReader);
   t.context.databaseDocReader = app.get(DatabaseDocReader);
+  t.context.adapter = app.get(PgWorkspaceDocStorageAdapter);
   t.context.config = app.get(Config);
   t.context.app = app;
 });
@@ -71,12 +73,36 @@ test('should return null when doc not found', async t => {
 });
 
 test('should throw error when doc service internal error', async t => {
-  const { docReader, databaseDocReader } = t.context;
+  const { docReader, adapter } = t.context;
   const docId = randomUUID();
-  mock.method(databaseDocReader, 'getDoc', async () => {
+  mock.method(adapter, 'getDoc', async () => {
     throw new Error('mock doc service internal error');
   });
-  const err = await t.throwsAsync(docReader.getDoc(workspace.id, docId), {
+  let err = await t.throwsAsync(docReader.getDoc(workspace.id, docId), {
+    instanceOf: UserFriendlyError,
+    message: 'An internal error occurred.',
+    name: 'internal_server_error',
+  });
+  t.is(err.type, 'internal_server_error');
+  t.is(err.status, 500);
+
+  err = await t.throwsAsync(docReader.getDocDiff(workspace.id, docId), {
+    instanceOf: UserFriendlyError,
+    message: 'An internal error occurred.',
+    name: 'internal_server_error',
+  });
+  t.is(err.type, 'internal_server_error');
+  t.is(err.status, 500);
+
+  err = await t.throwsAsync(docReader.getDocContent(workspace.id, docId), {
+    instanceOf: UserFriendlyError,
+    message: 'An internal error occurred.',
+    name: 'internal_server_error',
+  });
+  t.is(err.type, 'internal_server_error');
+  t.is(err.status, 500);
+
+  err = await t.throwsAsync(docReader.getWorkspaceContent(workspace.id), {
     instanceOf: UserFriendlyError,
     message: 'An internal error occurred.',
     name: 'internal_server_error',
@@ -231,4 +257,85 @@ test('should get doc diff fallback to database doc reader when endpoint network 
   t.truthy(diff!.state);
   applyUpdate(doc2, diff!.missing);
   t.is(doc2.getText('content').toString(), 'hello world!');
+});
+
+test('should get doc content', async t => {
+  const docId = randomUUID();
+  const { docReader, databaseDocReader } = t.context;
+  mock.method(databaseDocReader, 'getDocContent', async () => {
+    return {
+      title: 'test title',
+      summary: 'test summary',
+    };
+  });
+  const docContent = await docReader.getDocContent(workspace.id, docId);
+  t.deepEqual(docContent, {
+    title: 'test title',
+    summary: 'test summary',
+  });
+});
+
+test('should return null when doc content not exists', async t => {
+  const docId = randomUUID();
+  const { docReader, adapter } = t.context;
+
+  const doc = new YDoc();
+  const text = doc.getText('content');
+  const updates: Buffer[] = [];
+
+  doc.on('update', update => {
+    updates.push(Buffer.from(update));
+  });
+
+  text.insert(0, 'hello');
+  text.insert(5, 'world');
+  text.insert(5, ' ');
+
+  await adapter.pushDocUpdates(workspace.id, docId, updates, user.id);
+
+  const docContent = await docReader.getDocContent(workspace.id, docId);
+  t.is(docContent, null);
+
+  const notExists = await docReader.getDocContent(workspace.id, randomUUID());
+  t.is(notExists, null);
+});
+
+test('should get workspace content from doc service rpc', async t => {
+  const { docReader, databaseDocReader } = t.context;
+  mock.method(databaseDocReader, 'getWorkspaceContent', async () => {
+    return {
+      name: 'test name',
+      avatarKey: 'avatar key',
+    };
+  });
+
+  const workspaceContent = await docReader.getWorkspaceContent(workspace.id);
+  t.deepEqual(workspaceContent, {
+    name: 'test name',
+    avatarKey: 'avatar key',
+  });
+});
+
+test('should return null when workspace bin meta not exists', async t => {
+  const { docReader, adapter } = t.context;
+  const doc = new YDoc();
+  const text = doc.getText('content');
+  const updates: Buffer[] = [];
+
+  doc.on('update', update => {
+    updates.push(Buffer.from(update));
+  });
+
+  text.insert(0, 'hello');
+  text.insert(5, 'world');
+  text.insert(5, ' ');
+
+  await adapter.pushDocUpdates(workspace.id, workspace.id, updates, user.id);
+
+  const workspaceContent = await docReader.getWorkspaceContent(workspace.id);
+  t.is(workspaceContent, null);
+
+  // workspace not exists
+  const notExists = await docReader.getWorkspaceContent(randomUUID());
+  t.is(notExists, null);
 });
