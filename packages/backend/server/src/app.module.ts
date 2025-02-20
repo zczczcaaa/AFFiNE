@@ -49,6 +49,7 @@ import { SelfhostModule } from './core/selfhost';
 import { StorageModule } from './core/storage';
 import { SyncModule } from './core/sync';
 import { UserModule } from './core/user';
+import { VersionModule } from './core/version';
 import { WorkspaceModule } from './core/workspaces';
 import { ModelsModule } from './models';
 import { REGISTERED_PLUGINS } from './plugins';
@@ -225,6 +226,7 @@ export function buildAppModule() {
     // graphql server only
     .useIf(
       config => config.flavor.graphql,
+      VersionModule,
       GqlModule,
       StorageModule,
       ServerConfigModule,

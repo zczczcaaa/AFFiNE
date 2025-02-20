@@ -724,4 +724,15 @@ export const USER_FRIENDLY_ERRORS = {
     message: ({ limit }) =>
       `You cannot downgrade the workspace from team workspace because there are more than ${limit} members that are currently active.`,
   },
+
+  // version errors
+  unsupported_client_version: {
+    type: 'action_forbidden',
+    args: {
+      clientVersion: 'string',
+      requiredVersion: 'string',
+    },
+    message: ({ clientVersion, requiredVersion }) =>
+      `Unsupported client with version [${clientVersion}], required version is [${requiredVersion}].`,
+  },
 } satisfies Record<string, UserFriendlyErrorOptions>;

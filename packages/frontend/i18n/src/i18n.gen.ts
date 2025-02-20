@@ -7503,6 +7503,13 @@ export function useAFFiNEI18N(): {
     ["error.WORKSPACE_MEMBERS_EXCEED_LIMIT_TO_DOWNGRADE"](options: {
         readonly limit: string;
     }): string;
+    /**
+      * `Unsupported client with version [{{clientVersion}}], required version is [{{requiredVersion}}].`
+      */
+    ["error.UNSUPPORTED_CLIENT_VERSION"](options: Readonly<{
+        clientVersion: string;
+        requiredVersion: string;
+    }>): string;
 } { const { t } = useTranslation(); return useMemo(() => createProxy((key) => t.bind(null, key)), [t]); }
 function createComponent(i18nKey: string) {
     return (props) => createElement(Trans, { i18nKey, shouldUnescape: true, ...props });

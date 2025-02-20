@@ -1843,5 +1843,6 @@
   "error.LICENSE_NOT_FOUND": "License not found.",
   "error.INVALID_LICENSE_TO_ACTIVATE": "Invalid license to activate.",
   "error.INVALID_LICENSE_UPDATE_PARAMS": "Invalid license update params. {{reason}}",
-  "error.WORKSPACE_MEMBERS_EXCEED_LIMIT_TO_DOWNGRADE": "You cannot downgrade the workspace from team workspace because there are more than {{limit}} members that are currently active."
+  "error.WORKSPACE_MEMBERS_EXCEED_LIMIT_TO_DOWNGRADE": "You cannot downgrade the workspace from team workspace because there are more than {{limit}} members that are currently active.",
+  "error.UNSUPPORTED_CLIENT_VERSION": "Unsupported client with version [{{clientVersion}}], required version is [{{requiredVersion}}]."
 }
