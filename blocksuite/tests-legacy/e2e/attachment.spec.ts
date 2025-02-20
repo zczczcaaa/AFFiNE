@@ -3,9 +3,9 @@ import { fileURLToPath } from 'node:url';
 
 import { sleep } from '@blocksuite/global/utils';
 import { expect, type Page } from '@playwright/test';
-import { switchEditorMode } from 'utils/actions/edgeless.js';
 
 import { dragBlockToPoint, popImageMoreMenu } from './utils/actions/drag.js';
+import { switchEditorMode } from './utils/actions/edgeless.js';
 import {
   pressArrowDown,
   pressArrowUp,
@@ -43,7 +43,10 @@ import { test } from './utils/playwright.js';
 
 const FILE_NAME = 'test-card-1.png';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const FILE_PATH = path.resolve(__dirname, `../playground/public/${FILE_NAME}`);
+const FILE_PATH = path.resolve(
+  __dirname,
+  `../../playground/public/${FILE_NAME}`
+);
 
 function getAttachment(page: Page) {
   const attachment = page.locator('affine-attachment');

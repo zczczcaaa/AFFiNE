@@ -1,11 +1,11 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "./dist"
+    "rootDir": "./e2e",
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
   },
-  "include": ["**.spec.ts", "**.test.ts", "**/**.ts"],
-  "exclude": ["dist"],
+  "include": ["./e2e"],
   "references": [
     { "path": "../affine/components" },
     { "path": "../affine/model" },

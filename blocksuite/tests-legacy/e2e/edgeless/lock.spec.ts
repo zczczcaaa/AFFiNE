@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
-import { clickView, dblclickView, moveView } from 'utils/actions/click.js';
+
+import { clickView, dblclickView, moveView } from '../utils/actions/click.js';
 import {
   createBrushElement,
   createConnectorElement,
@@ -16,7 +17,7 @@ import {
   getSelectedIds,
   getTypeById,
   setEdgelessTool,
-} from 'utils/actions/edgeless.js';
+} from '../utils/actions/edgeless.js';
 import {
   copyByKeyboard,
   pasteByKeyboard,
@@ -29,15 +30,14 @@ import {
   SHORT_KEY,
   type,
   undoByKeyboard,
-} from 'utils/actions/keyboard.js';
-import { waitNextFrame } from 'utils/actions/misc.js';
+} from '../utils/actions/keyboard.js';
+import { waitNextFrame } from '../utils/actions/misc.js';
 import {
   assertCanvasElementsCount,
   assertEdgelessElementBound,
   assertEdgelessSelectedModelRect,
   assertRichTexts,
-} from 'utils/asserts.js';
-
+} from '../utils/asserts.js';
 import { test } from '../utils/playwright.js';
 
 test.describe('lock', () => {

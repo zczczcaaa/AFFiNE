@@ -1,6 +1,4 @@
 import { expect, type Page } from '@playwright/test';
-import { switchEditorMode } from 'utils/actions/edgeless.js';
-import { getLinkedDocPopover } from 'utils/actions/linked-doc.js';
 
 import {
   addNewPage,
@@ -8,6 +6,7 @@ import {
   switchToPage,
 } from './utils/actions/click.js';
 import { dragBetweenIndices, dragBlockToPoint } from './utils/actions/drag.js';
+import { switchEditorMode } from './utils/actions/edgeless.js';
 import {
   copyByKeyboard,
   cutByKeyboard,
@@ -20,6 +19,7 @@ import {
   SHORT_KEY,
   type,
 } from './utils/actions/keyboard.js';
+import { getLinkedDocPopover } from './utils/actions/linked-doc.js';
 import {
   captureHistory,
   enterPlaygroundRoom,

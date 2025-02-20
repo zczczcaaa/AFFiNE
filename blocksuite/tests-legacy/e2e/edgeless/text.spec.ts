@@ -1,5 +1,4 @@
 import { expect, type Page } from '@playwright/test';
-import { getLinkedDocPopover } from 'utils/actions/linked-doc.js';
 
 import {
   assertEdgelessTool,
@@ -16,6 +15,7 @@ import {
   waitNextFrame,
   zoomResetByKeyboard,
 } from '../utils/actions/index.js';
+import { getLinkedDocPopover } from '../utils/actions/linked-doc.js';
 import { assertEdgelessCanvasText } from '../utils/asserts.js';
 import { test } from '../utils/playwright.js';
 

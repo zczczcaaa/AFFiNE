@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
-import { click, clickView, dblclickView } from 'utils/actions/click.js';
+
+import { click, clickView, dblclickView } from '../../utils/actions/click.js';
 import {
   addNote,
   autoFit,
@@ -13,21 +14,20 @@ import {
   Shape,
   toViewCoord,
   zoomResetByKeyboard,
-} from 'utils/actions/edgeless.js';
+} from '../../utils/actions/edgeless.js';
 import {
   pressBackspace,
   pressEnter,
   pressEscape,
   selectAllByKeyboard,
   type,
-} from 'utils/actions/keyboard.js';
-import { waitNextFrame } from 'utils/actions/misc.js';
+} from '../../utils/actions/keyboard.js';
+import { waitNextFrame } from '../../utils/actions/misc.js';
 import {
   assertEdgelessCanvasText,
   assertRichTexts,
   assertSelectedBound,
-} from 'utils/asserts.js';
-
+} from '../../utils/asserts.js';
 import { test } from '../../utils/playwright.js';
 
 const createFrame = async (

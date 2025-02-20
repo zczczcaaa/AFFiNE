@@ -3,8 +3,6 @@ import './utils/declare-test-window.js';
 import type { BlockSnapshot } from '@blocksuite/store';
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { ignoreSnapshotId } from 'utils/ignore.js';
-import { getEmbedCardToolbar } from 'utils/query.js';
 
 import {
   activeNoteInEdgeless,
@@ -42,7 +40,9 @@ import {
   assertParentBlockFlavour,
   assertRichTextInlineRange,
 } from './utils/asserts.js';
+import { ignoreSnapshotId } from './utils/ignore.js';
 import { scoped, test } from './utils/playwright.js';
+import { getEmbedCardToolbar } from './utils/query.js';
 
 const LOCAL_HOST_URL = 'http://localhost';
 

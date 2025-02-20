@@ -1,11 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
-import { dragBetweenCoords } from 'utils/actions/drag.js';
-import {
-  assertEdgelessNonSelectedRect,
-  assertEdgelessSelectedRect,
-  assertZoomLevel,
-} from 'utils/asserts.js';
 
+import { dragBetweenCoords } from '../utils/actions/drag.js';
 import {
   addBasicShapeElement,
   addNote,
@@ -21,6 +16,11 @@ import {
   toggleFramePanel,
 } from '../utils/actions/edgeless.js';
 import { waitNextFrame } from '../utils/actions/index.js';
+import {
+  assertEdgelessNonSelectedRect,
+  assertEdgelessSelectedRect,
+  assertZoomLevel,
+} from '../utils/asserts.js';
 import { test } from '../utils/playwright.js';
 
 async function dragFrameCard(

@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+
 import {
   addNote,
   locatorScalePanelButton,
@@ -6,19 +7,19 @@ import {
   switchEditorMode,
   triggerComponentToolbarAction,
   zoomResetByKeyboard,
-} from 'utils/actions/edgeless.js';
+} from '../../utils/actions/edgeless.js';
 import {
   copyByKeyboard,
   pasteByKeyboard,
   selectAllByKeyboard,
-} from 'utils/actions/keyboard.js';
+} from '../../utils/actions/keyboard.js';
 import {
   enterPlaygroundRoom,
   initEmptyEdgelessState,
   waitNextFrame,
-} from 'utils/actions/misc.js';
-import { assertRectExist } from 'utils/asserts.js';
-import { test } from 'utils/playwright.js';
+} from '../../utils/actions/misc.js';
+import { assertRectExist } from '../../utils/asserts.js';
+import { test } from '../../utils/playwright.js';
 
 async function setupAndAddNote(page: Page) {
   await enterPlaygroundRoom(page);

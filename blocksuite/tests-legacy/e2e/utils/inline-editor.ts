@@ -17,7 +17,6 @@ export async function getStringFromRichText(
         throw new Error('Cannot find rich-text');
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const editor = (richTexts[index] as any).inlineEditor;
       return editor.yText.toString();
     },

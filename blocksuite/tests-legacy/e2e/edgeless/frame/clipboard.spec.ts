@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
-import { clickView, moveView } from 'utils/actions/click.js';
+
+import { clickView, moveView } from '../../utils/actions/click.js';
 import {
   autoFit,
   createFrame as _createFrame,
@@ -14,15 +15,14 @@ import {
   shiftClickView,
   triggerComponentToolbarAction,
   zoomResetByKeyboard,
-} from 'utils/actions/edgeless.js';
+} from '../../utils/actions/edgeless.js';
 import {
   copyByKeyboard,
   pasteByKeyboard,
   pressBackspace,
   pressEscape,
-} from 'utils/actions/keyboard.js';
-import { assertContainerOfElements } from 'utils/asserts.js';
-
+} from '../../utils/actions/keyboard.js';
+import { assertContainerOfElements } from '../../utils/asserts.js';
 import { test } from '../../utils/playwright.js';
 
 const createFrame = async (

@@ -1,16 +1,16 @@
 import type { DatabaseBlockModel } from '@blocksuite/affine-model';
 import { assertExists } from '@blocksuite/global/utils';
 import { expect, type Page } from '@playwright/test';
-import { switchEditorMode } from 'utils/actions/edgeless.js';
-import { getLinkedDocPopover } from 'utils/actions/linked-doc.js';
+
+import { switchEditorMode } from './utils/actions/edgeless.js';
+import { getLinkedDocPopover } from './utils/actions/linked-doc.js';
 import {
   enterPlaygroundRoom,
   focusRichText,
   initEmptyEdgelessState,
   initEmptyParagraphState,
   waitNextFrame,
-} from 'utils/actions/misc.js';
-
+} from './utils/actions/misc.js';
 import { test } from './utils/playwright.js';
 
 test.describe('Embed synced doc', () => {

@@ -1,8 +1,7 @@
 import { expect } from '@playwright/test';
-import { dragBetweenIndices } from 'utils/actions/drag.js';
-import { getFormatBar } from 'utils/query.js';
 
 import { updateBlockType } from '../utils/actions/block.js';
+import { dragBetweenIndices } from '../utils/actions/drag.js';
 import {
   createCodeBlock,
   pressArrowLeft,
@@ -32,6 +31,7 @@ import {
   assertTitle,
 } from '../utils/asserts.js';
 import { test } from '../utils/playwright.js';
+import { getFormatBar } from '../utils/query.js';
 import { getCodeBlock } from './utils.js';
 
 test('use debug menu can create code block', async ({ page }) => {

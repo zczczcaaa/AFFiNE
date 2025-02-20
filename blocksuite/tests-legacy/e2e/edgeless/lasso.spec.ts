@@ -254,7 +254,7 @@ test.skip('polygonal lasso should complete selection when clicking the last poin
     const curController = edgeless.gfx.tool.currentTool$.peek();
     if (curController?.toolName !== 'lasso')
       throw new Error('expected lasso tool controller');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     return (curController as any)['_isSelecting'];
   });
 

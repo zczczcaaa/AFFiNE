@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+
 import {
   addNote,
   autoFit,
@@ -8,15 +9,14 @@ import {
   getFrameTitle,
   zoomOutByKeyboard,
   zoomResetByKeyboard,
-} from 'utils/actions/edgeless.js';
+} from '../../utils/actions/edgeless.js';
 import {
   pressBackspace,
   pressEnter,
   pressEscape,
   type,
-} from 'utils/actions/keyboard.js';
-import { waitNextFrame } from 'utils/actions/misc.js';
-
+} from '../../utils/actions/keyboard.js';
+import { waitNextFrame } from '../../utils/actions/misc.js';
 import { test } from '../../utils/playwright.js';
 
 const createFrame = async (

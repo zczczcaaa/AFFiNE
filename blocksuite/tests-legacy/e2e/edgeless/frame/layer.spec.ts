@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+
 import {
   createFrame,
   createNote,
@@ -8,9 +9,11 @@ import {
   getEdgelessSelectedRectModel,
   Shape,
   zoomResetByKeyboard,
-} from 'utils/actions/edgeless.js';
-import { pressEscape, selectAllByKeyboard } from 'utils/actions/keyboard.js';
-
+} from '../../utils/actions/edgeless.js';
+import {
+  pressEscape,
+  selectAllByKeyboard,
+} from '../../utils/actions/keyboard.js';
 import { test } from '../../utils/playwright.js';
 
 test.beforeEach(async ({ page }) => {

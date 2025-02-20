@@ -1,5 +1,4 @@
 import { expect, type Locator } from '@playwright/test';
-import { getFormatBar } from 'utils/query.js';
 
 import {
   dragBetweenIndices,
@@ -39,6 +38,7 @@ import {
   assertTextContent,
 } from './utils/asserts.js';
 import { test } from './utils/playwright.js';
+import { getFormatBar } from './utils/query.js';
 
 async function isToggleIconVisible(toggleIcon: Locator) {
   const connected = await toggleIcon.isVisible();

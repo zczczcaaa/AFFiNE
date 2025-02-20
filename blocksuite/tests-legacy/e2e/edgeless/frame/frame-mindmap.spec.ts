@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
-import { clickView } from 'utils/actions/click.js';
+
+import { clickView } from '../../utils/actions/click.js';
 import {
   createFrame,
   dragBetweenViewCoords as _dragBetweenViewCoords,
@@ -9,11 +10,10 @@ import {
   toViewCoord,
   triggerComponentToolbarAction,
   zoomResetByKeyboard,
-} from 'utils/actions/edgeless.js';
-import { pressEscape } from 'utils/actions/keyboard.js';
-import { waitNextFrame } from 'utils/actions/misc.js';
-import { assertContainerOfElements } from 'utils/asserts.js';
-
+} from '../../utils/actions/edgeless.js';
+import { pressEscape } from '../../utils/actions/keyboard.js';
+import { waitNextFrame } from '../../utils/actions/misc.js';
+import { assertContainerOfElements } from '../../utils/asserts.js';
 import { test } from '../../utils/playwright.js';
 
 const dragBetweenViewCoords = async (

@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
-import { clickView } from 'utils/actions/click.js';
-import { dragBetweenCoords } from 'utils/actions/drag.js';
+
+import { clickView } from '../utils/actions/click.js';
+import { dragBetweenCoords } from '../utils/actions/drag.js';
 import {
   addBasicRectShapeElement,
   autoFit,
@@ -10,7 +11,7 @@ import {
   selectElementInEdgeless,
   waitFontsLoaded,
   zoomResetByKeyboard,
-} from 'utils/actions/edgeless.js';
+} from '../utils/actions/edgeless.js';
 import {
   pressBackspace,
   pressEnter,
@@ -18,18 +19,17 @@ import {
   selectAllByKeyboard,
   type,
   undoByKeyboard,
-} from 'utils/actions/keyboard.js';
-import { waitNextFrame } from 'utils/actions/misc.js';
+} from '../utils/actions/keyboard.js';
+import { waitNextFrame } from '../utils/actions/misc.js';
 import {
   assertEdgelessSelectedRect,
   assertSelectedBound,
-} from 'utils/asserts.js';
+} from '../utils/asserts.js';
 import {
   addMindmapNodes,
   createMindMap,
   getMindMapNode,
-} from 'utils/mindmap.js';
-
+} from '../utils/mindmap.js';
 import { test } from '../utils/playwright.js';
 
 test('elements should be selectable after open mindmap menu', async ({
@@ -224,17 +224,17 @@ test('drag root node should layout in real time', async ({ page }) => {
   const { rect: thirdRect } = await getMindMapNode(page, mindmapId, [0, 2]);
 
   const assertMindMapNodesPosition = async (deltaX: number, deltaY: number) => {
-    await expect((await getMindMapNode(page, mindmapId, [0, 0])).rect).toEqual({
+    expect((await getMindMapNode(page, mindmapId, [0, 0])).rect).toEqual({
       ...firstRect,
       x: firstRect.x + deltaX,
       y: firstRect.y + deltaY,
     });
-    await expect((await getMindMapNode(page, mindmapId, [0, 1])).rect).toEqual({
+    expect((await getMindMapNode(page, mindmapId, [0, 1])).rect).toEqual({
       ...secondRect,
       x: secondRect.x + deltaX,
       y: secondRect.y + deltaY,
     });
-    await expect((await getMindMapNode(page, mindmapId, [0, 2])).rect).toEqual({
+    expect((await getMindMapNode(page, mindmapId, [0, 2])).rect).toEqual({
       ...thirdRect,
       x: thirdRect.x + deltaX,
       y: thirdRect.y + deltaY,
@@ -359,13 +359,13 @@ test('allow to type content directly when node has been selected', async ({
   await type(page, 'child node 2');
   await pressEnter(page);
 
-  await expect((await getMindMapNode(page, mindmapId, [0, 1])).text).toBe(
+  expect((await getMindMapNode(page, mindmapId, [0, 1])).text).toBe(
     'parent node'
   );
-  await expect((await getMindMapNode(page, mindmapId, [0, 1, 0])).text).toBe(
+  expect((await getMindMapNode(page, mindmapId, [0, 1, 0])).text).toBe(
     'child node 1'
   );
-  await expect((await getMindMapNode(page, mindmapId, [0, 1, 1])).text).toBe(
+  expect((await getMindMapNode(page, mindmapId, [0, 1, 1])).text).toBe(
     'child node 2'
   );
 });

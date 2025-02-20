@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+
 import {
   click,
   copyByKeyboard,
@@ -17,8 +18,7 @@ import {
   setEdgelessTool,
   switchEditorMode,
   type,
-} from 'utils/actions/index.js';
-
+} from '../utils/actions/index.js';
 import { test } from '../utils/playwright.js';
 
 test.describe('pasting blocks', () => {

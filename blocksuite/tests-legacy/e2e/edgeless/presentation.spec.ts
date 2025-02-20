@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+
 import {
   assertEdgelessTool,
   createFrame,
@@ -11,15 +12,14 @@ import {
   setEdgelessTool,
   Shape,
   toggleFramePanel,
-} from 'utils/actions/edgeless.js';
+} from '../utils/actions/edgeless.js';
 import {
   copyByKeyboard,
   pasteByKeyboard,
   pressEscape,
   selectAllBlocksByKeyboard,
-} from 'utils/actions/keyboard.js';
-import { waitNextFrame } from 'utils/actions/misc.js';
-
+} from '../utils/actions/keyboard.js';
+import { waitNextFrame } from '../utils/actions/misc.js';
 import { test } from '../utils/playwright.js';
 
 test.describe('presentation', () => {
