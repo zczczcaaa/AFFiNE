@@ -1,4 +1,4 @@
-import { ChatPanel } from '@affine/core/blocksuite/presets/ai';
+import { ChatPanel } from '@affine/core/blocksuite/presets';
 import { createPageModePreviewSpecs } from '@affine/core/components/blocksuite/block-suite-editor/specs/preview';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';

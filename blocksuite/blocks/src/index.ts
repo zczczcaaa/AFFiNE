@@ -59,6 +59,10 @@ export {
   onMenuOpen,
 } from '@blocksuite/affine-components/context-menu';
 export {
+  DocTitle,
+  getDocTitleByEditorHost,
+} from '@blocksuite/affine-components/doc-title';
+export {
   HoverController,
   whenHover,
 } from '@blocksuite/affine-components/hover';

@@ -3,7 +3,7 @@ import {
   pushGlobalLoadingEventAtom,
   resolveGlobalLoadingEventAtom,
 } from '@affine/component/global-loading';
-import { AIProvider } from '@affine/core/blocksuite/presets/ai';
+import { AIProvider } from '@affine/core/blocksuite/presets';
 import { SyncAwareness } from '@affine/core/components/affine/awareness';
 import { useRegisterFindInPageCommands } from '@affine/core/components/hooks/affine/use-register-find-in-page-commands';
 import { useRegisterWorkspaceCommands } from '@affine/core/components/hooks/use-register-workspace-commands';

@@ -2,8 +2,8 @@ import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, type TemplateResult, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { MessageRole, MessageUserInfo } from '../../../../blocks';
-import { AffineAIIcon } from '../../_common/icon';
+import type { MessageRole, MessageUserInfo } from '../model';
+import { AffineAIIcon } from './icon';
 
 export class UserInfo extends LitElement {
   static override styles = css`

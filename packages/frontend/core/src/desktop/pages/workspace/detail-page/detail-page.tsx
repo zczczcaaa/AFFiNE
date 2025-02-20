@@ -1,7 +1,7 @@
 import { Scrollable } from '@affine/component';
 import { PageDetailSkeleton } from '@affine/component/page-detail-skeleton';
-import type { ChatPanel } from '@affine/core/blocksuite/presets/ai';
-import { AIProvider } from '@affine/core/blocksuite/presets/ai';
+import type { ChatPanel } from '@affine/core/blocksuite/presets';
+import { AIProvider } from '@affine/core/blocksuite/presets';
 import { PageAIOnboarding } from '@affine/core/components/affine/ai-onboarding';
 import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
 import { DocPropertySidebar } from '@affine/core/components/doc-properties/sidebar';

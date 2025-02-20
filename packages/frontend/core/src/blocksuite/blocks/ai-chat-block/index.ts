@@ -1,3 +1,2 @@
-export * from './ai-chat-model';
-export * from './consts';
-export * from './types';
+export * from './ai-chat-spec';
+export * from './model';

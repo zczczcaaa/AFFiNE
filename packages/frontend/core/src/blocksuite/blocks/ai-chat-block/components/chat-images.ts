@@ -1,9 +1,10 @@
+import { LoadingIcon } from '@blocksuite/affine/blocks';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { ImageLoadingFailedIcon, LoadingIcon } from '../../_common/icon';
+import { ImageLoadingFailedIcon } from './icon';
 
 export class ChatImage extends LitElement {
   static override styles = css`

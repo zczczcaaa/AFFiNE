@@ -1,6 +1,6 @@
 import { Scrollable } from '@affine/component';
 import { PageDetailSkeleton } from '@affine/component/page-detail-skeleton';
-import { AIProvider } from '@affine/core/blocksuite/presets/ai';
+import { AIProvider } from '@affine/core/blocksuite/presets';
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
 import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
 import { PageNotFound } from '@affine/core/desktop/pages/404';

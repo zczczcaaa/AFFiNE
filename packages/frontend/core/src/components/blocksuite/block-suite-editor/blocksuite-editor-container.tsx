@@ -2,12 +2,12 @@ import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import {
   appendParagraphCommand,
   type DocMode,
+  type DocTitle,
   focusBlockEnd,
   getLastNoteBlock,
 } from '@blocksuite/affine/blocks';
 import type {
   AffineEditorContainer,
-  DocTitle,
   EdgelessEditor,
   PageEditor,
 } from '@blocksuite/affine/presets';

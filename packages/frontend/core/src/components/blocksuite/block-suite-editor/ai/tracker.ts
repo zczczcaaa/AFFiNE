@@ -1,4 +1,4 @@
-import { AIProvider } from '@affine/core/blocksuite/presets/ai';
+import { AIProvider } from '@affine/core/blocksuite/presets';
 import { mixpanel, track } from '@affine/track';
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import type { GfxPrimitiveElementModel } from '@blocksuite/affine/block-std/gfx';

@@ -1,9 +1,9 @@
+import { AIChatBlockSpec } from '@affine/core/blocksuite/blocks';
 import {
   AICodeBlockSpec,
   AIImageBlockSpec,
   AIParagraphBlockSpec,
-} from '@affine/core/blocksuite/presets/ai';
-import { AIChatBlockSpec } from '@affine/core/blocksuite/presets/blocks';
+} from '@affine/core/blocksuite/presets';
 import { DocService, DocsService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';

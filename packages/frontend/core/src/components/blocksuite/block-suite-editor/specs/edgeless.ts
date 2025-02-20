@@ -1,4 +1,4 @@
-import { createAIEdgelessRootBlockSpec } from '@affine/core/blocksuite/presets/ai';
+import { createAIEdgelessRootBlockSpec } from '@affine/core/blocksuite/presets';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { builtInTemplates as builtInEdgelessTemplates } from '@affine/templates/edgeless';
 import { builtInTemplates as builtInStickersTemplates } from '@affine/templates/stickers';

@@ -1,4 +1,4 @@
-import { createAIPageRootBlockSpec } from '@affine/core/blocksuite/presets/ai';
+import { createAIPageRootBlockSpec } from '@affine/core/blocksuite/presets';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import {
   PageRootBlockSpec,

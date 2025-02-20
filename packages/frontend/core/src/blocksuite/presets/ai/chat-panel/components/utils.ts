@@ -1,8 +1,8 @@
 import type { CopilotContextDoc, CopilotContextFile } from '@affine/graphql';
+import { LoadingIcon } from '@blocksuite/affine/blocks';
 import { WarningIcon } from '@blocksuite/icons/lit';
 import { type TemplateResult } from 'lit';
 
-import { LoadingIcon } from '../../../blocks/_common/icon';
 import type { ChatChip, ChipState, DocChip, FileChip } from '../chat-context';
 
 export function getChipTooltip(

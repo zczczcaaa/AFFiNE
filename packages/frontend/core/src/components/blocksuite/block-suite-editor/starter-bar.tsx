@@ -1,5 +1,7 @@
-import { handleInlineAskAIAction } from '@affine/core/blocksuite/presets/ai';
-import { pageAIGroups } from '@affine/core/blocksuite/presets/ai/_common/config';
+import {
+  handleInlineAskAIAction,
+  pageAIGroups,
+} from '@affine/core/blocksuite/presets';
 import { DocsService } from '@affine/core/modules/doc';
 import { EditorService } from '@affine/core/modules/editor';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';

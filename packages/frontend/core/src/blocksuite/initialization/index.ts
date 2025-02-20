@@ -14,16 +14,6 @@ export interface DocProps {
   paragraph?: Partial<ParagraphProps>;
 }
 
-export function initEmptyDoc(doc: Store, title?: string) {
-  doc.load(() => {
-    initDocFromProps(doc, {
-      page: {
-        title: new Text(title),
-      },
-    });
-  });
-}
-
 export function initDocFromProps(doc: Store, props?: DocProps) {
   doc.load(() => {
     const pageBlockId = doc.addBlock(

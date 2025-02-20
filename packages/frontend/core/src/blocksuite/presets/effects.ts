@@ -1,3 +1,15 @@
+import { AIChatBlockComponent } from '../blocks/ai-chat-block/ai-chat-block';
+import { EdgelessAIChatBlockComponent } from '../blocks/ai-chat-block/ai-chat-edgeless-block';
+import {
+  AIChatMessage,
+  AIChatMessages,
+} from '../blocks/ai-chat-block/components/ai-chat-messages';
+import {
+  ChatImage,
+  ChatImages,
+} from '../blocks/ai-chat-block/components/chat-images';
+import { ImagePlaceholder } from '../blocks/ai-chat-block/components/image-placeholder';
+import { UserInfo } from '../blocks/ai-chat-block/components/user-info';
 import { TextRenderer } from './_common/components/text-renderer';
 import { AskAIButton } from './ai/_common/components/ask-ai-button';
 import { AskAIIcon } from './ai/_common/components/ask-ai-icon';
@@ -29,18 +41,6 @@ import { registerMiniMindmapBlocks } from './ai/mini-mindmap';
 import { ChatBlockInput } from './ai/peek-view/chat-block-input';
 import { AIChatBlockPeekView } from './ai/peek-view/chat-block-peek-view';
 import { DateTime } from './ai/peek-view/date-time';
-import { AIChatBlockComponent } from './blocks/ai-chat-block/ai-chat-block';
-import { EdgelessAIChatBlockComponent } from './blocks/ai-chat-block/ai-chat-edgeless-block';
-import {
-  AIChatMessage,
-  AIChatMessages,
-} from './blocks/ai-chat-block/components/ai-chat-messages';
-import {
-  ChatImage,
-  ChatImages,
-} from './blocks/ai-chat-block/components/chat-images';
-import { ImagePlaceholder } from './blocks/ai-chat-block/components/image-placeholder';
-import { UserInfo } from './blocks/ai-chat-block/components/user-info';
 
 export function registerBlocksuitePresetsCustomComponents() {
   registerMiniMindmapBlocks();

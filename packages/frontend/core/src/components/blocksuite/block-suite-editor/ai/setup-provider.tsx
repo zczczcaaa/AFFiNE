@@ -1,4 +1,4 @@
-import { AIProvider } from '@affine/core/blocksuite/presets/ai';
+import { AIProvider } from '@affine/core/blocksuite/presets';
 import { toggleGeneralAIOnboarding } from '@affine/core/components/affine/ai-onboarding/apis';
 import type { GlobalDialogService } from '@affine/core/modules/dialogs';
 import {

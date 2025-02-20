@@ -1,4 +1,4 @@
-import { AIChatBlockSpec } from '@affine/core/blocksuite/presets/blocks/ai-chat-block';
+import { AIChatBlockSpec } from '@affine/core/blocksuite/blocks';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
 import { AppThemeService } from '@affine/core/modules/theme';
 import {

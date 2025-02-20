@@ -1,9 +1,9 @@
+import { AIChatBlockSpec } from '@affine/core/blocksuite/blocks';
 import {
   AICodeBlockSpec,
   AIImageBlockSpec,
   AIParagraphBlockSpec,
-} from '@affine/core/blocksuite/presets/ai';
-import { AIChatBlockSpec } from '@affine/core/blocksuite/presets/blocks/ai-chat-block';
+} from '@affine/core/blocksuite/presets';
 import {
   AdapterFactoryExtensions,
   AttachmentBlockSpec,

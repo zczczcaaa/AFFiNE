@@ -1,3 +1,4 @@
+import type { TextRendererOptions } from '@affine/core/blocksuite/presets';
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import type { AffineAIPanelState } from '@blocksuite/affine/blocks';
 import { css, html, LitElement } from 'lit';
@@ -5,8 +6,7 @@ import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { ChatMessage, MessageRole } from '../../../../blocks';
-import type { TextRendererOptions } from '../../../_common/components/text-renderer';
+import type { ChatMessage, MessageRole } from '../model';
 import { UserInfoTemplate } from './user-info';
 
 export class AIChatMessage extends LitElement {

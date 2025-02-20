@@ -22,6 +22,7 @@ import { effects as componentCaptionEffects } from '@blocksuite/affine-component
 import { effects as componentColorPickerEffects } from '@blocksuite/affine-components/color-picker';
 import { effects as componentContextMenuEffects } from '@blocksuite/affine-components/context-menu';
 import { effects as componentDatePickerEffects } from '@blocksuite/affine-components/date-picker';
+import { effects as componentDocTitleEffects } from '@blocksuite/affine-components/doc-title';
 import { effects as componentDropIndicatorEffects } from '@blocksuite/affine-components/drop-indicator';
 import { effects as componentEmbedCardModalEffects } from '@blocksuite/affine-components/embed-card-modal';
 import { FilterableListComponent } from '@blocksuite/affine-components/filterable-list';
@@ -213,6 +214,7 @@ export function effects() {
   componentAiItemEffects();
   componentColorPickerEffects();
   componentEmbedCardModalEffects();
+  componentDocTitleEffects();
 
   widgetScrollAnchoringEffects();
   widgetMobileToolbarEffects();

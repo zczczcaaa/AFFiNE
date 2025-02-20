@@ -20,17 +20,14 @@ import track from '@affine/track';
 import {
   codeToolbarWidget,
   type DocMode,
+  DocTitle,
   embedCardToolbarWidget,
   formatBarWidget,
   imageToolbarWidget,
   slashMenuWidget,
   surfaceRefToolbarWidget,
 } from '@blocksuite/affine/blocks';
-import {
-  DocTitle,
-  EdgelessEditor,
-  PageEditor,
-} from '@blocksuite/affine/presets';
+import { EdgelessEditor, PageEditor } from '@blocksuite/affine/presets';
 import type { Store } from '@blocksuite/affine/store';
 import {
   useFramework,
