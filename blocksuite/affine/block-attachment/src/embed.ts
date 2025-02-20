@@ -1,19 +1,24 @@
-import type {
-  AttachmentBlockModel,
-  ImageBlockProps,
+import {
+  type AttachmentBlockModel,
+  type ImageBlockProps,
+  MAX_IMAGE_WIDTH,
 } from '@blocksuite/affine-model';
 import { FileSizeLimitService } from '@blocksuite/affine-shared/services';
 import {
+  readImageSize,
   transformModel,
   withTempBlobData,
 } from '@blocksuite/affine-shared/utils';
 import { type BlockStdScope, StdIdentifier } from '@blocksuite/block-std';
 import type { Container } from '@blocksuite/global/di';
 import { createIdentifier } from '@blocksuite/global/di';
+import { Bound } from '@blocksuite/global/utils';
 import type { ExtensionType } from '@blocksuite/store';
 import { Extension } from '@blocksuite/store';
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
+
+import { getAttachmentBlob } from './utils';
 
 export type AttachmentEmbedConfig = {
   name: string;
@@ -24,7 +29,10 @@ export type AttachmentEmbedConfig = {
   /**
    * The action will be executed when the 「Turn into embed view」 button is clicked.
    */
-  action?: (model: AttachmentBlockModel) => Promise<void> | void;
+  action?: (
+    model: AttachmentBlockModel,
+    std: BlockStdScope
+  ) => Promise<void> | void;
   /**
    * The template will be used to render the embed view.
    */
@@ -89,11 +97,11 @@ export class AttachmentEmbedService extends Extension {
   // Converts to embed view.
   convertTo(model: AttachmentBlockModel, maxFileSize = this._maxFileSize) {
     const config = this.values.find(config => config.check(model, maxFileSize));
-    if (!config || !config.action) {
+    if (!config?.action) {
       model.doc.updateBlock(model, { embed: true });
       return;
     }
-    config.action(model)?.catch(console.error);
+    config.action(model, this.std)?.catch(console.error);
   }
 
   embedded(model: AttachmentBlockModel, maxFileSize = this._maxFileSize) {
@@ -123,7 +131,12 @@ const embedConfig: AttachmentEmbedConfig[] = [
     check: model =>
       model.doc.schema.flavourSchemaMap.has('affine:image') &&
       model.type.startsWith('image/'),
-    action: model => turnIntoImageBlock(model),
+    async action(model, std) {
+      const component = std.view.getBlock(model.id);
+      if (!component) return;
+
+      await turnIntoImageBlock(model);
+    },
   },
   {
     name: 'pdf',
@@ -171,7 +184,7 @@ const embedConfig: AttachmentEmbedConfig[] = [
 /**
  * Turn the attachment block into an image block.
  */
-export function turnIntoImageBlock(model: AttachmentBlockModel) {
+export async function turnIntoImageBlock(model: AttachmentBlockModel) {
   if (!model.doc.schema.flavourSchemaMap.has('affine:image')) {
     console.error('The image flavour is not supported!');
     return;
@@ -183,15 +196,37 @@ export function turnIntoImageBlock(model: AttachmentBlockModel) {
   const { saveAttachmentData, getImageData } = withTempBlobData();
   saveAttachmentData(sourceId, { name: model.name });
 
-  const imageConvertData = model.sourceId
-    ? getImageData(model.sourceId)
+  let imageSize = model.sourceId ? getImageData(model.sourceId) : undefined;
+
+  const bounds = model.xywh
+    ? Bound.fromXYWH(model.deserializedXYWH)
     : undefined;
+
+  if (bounds) {
+    if (!imageSize?.width || !imageSize?.height) {
+      const blob = await getAttachmentBlob(model);
+      if (blob) {
+        imageSize = await readImageSize(blob);
+      }
+    }
+
+    if (imageSize?.width && imageSize?.height) {
+      const p = imageSize.height / imageSize.width;
+      imageSize.width = Math.min(imageSize.width, MAX_IMAGE_WIDTH);
+      imageSize.height = imageSize.width * p;
+      bounds.w = imageSize.width;
+      bounds.h = imageSize.height;
+    }
+  }
+
+  const others = bounds ? { xywh: bounds.serialize() } : undefined;
 
   const imageProp: Partial<ImageBlockProps> = {
     sourceId,
     caption: model.caption,
     size: model.size,
-    ...imageConvertData,
+    ...imageSize,
+    ...others,
   };
   transformModel(model, 'affine:image', imageProp);
 }

@@ -42,10 +42,10 @@
           "version": 1,
           "props": {
             "sourceId": "ejImogf-Tb7AuKY-v94uz1zuOJbClqK-tWBxVr_ksGA=",
-            "width": 0,
-            "height": 0,
+            "width": 460,
+            "height": 345,
             "index": "a0",
-            "xywh": "[0,0,0,0]",
+            "xywh": "[0,0,460,345]",
             "lockedBySelf": false,
             "rotate": 0,
             "size": 45801,

@@ -97,7 +97,7 @@ export async function uploadAttachmentBlob(
   }
 }
 
-async function getAttachmentBlob(model: AttachmentBlockModel) {
+export async function getAttachmentBlob(model: AttachmentBlockModel) {
   const sourceId = model.sourceId;
   if (!sourceId) {
     return null;

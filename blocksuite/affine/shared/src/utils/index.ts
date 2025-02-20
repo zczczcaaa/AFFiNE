@@ -8,6 +8,7 @@ export * from './edgeless';
 export * from './event';
 export * from './file';
 export * from './fractional-indexing';
+export * from './image';
 export * from './insert';
 export * from './is-abort-error';
 export * from './math';
