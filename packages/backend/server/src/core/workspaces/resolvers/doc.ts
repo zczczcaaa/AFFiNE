@@ -14,6 +14,7 @@ import type { WorkspaceDoc as PrismaWorkspaceDoc } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 
 import {
+  Cache,
   DocActionDenied,
   DocDefaultRoleCanNotBeOwner,
   DocIsNotPublic,
@@ -156,7 +157,8 @@ export class WorkspaceDocResolver {
   constructor(
     private readonly prisma: PrismaClient,
     private readonly permission: PermissionService,
-    private readonly models: Models
+    private readonly models: Models,
+    private readonly cache: Cache
   ) {}
 
   @ResolveField(() => [DocType], {
@@ -336,6 +338,18 @@ export class WorkspaceDocResolver {
   }
 
   private async tryFixDocOwner(workspaceId: string, docId: string) {
+    const allowed = await this.cache.setnx(
+      `fixingOwner:${workspaceId}:${docId}`,
+      1,
+      // TODO(@forehalo): we definitely need a timer helper
+      { ttl: 1000 * 60 * 60 * 24 }
+    );
+
+    // fixed by other instance
+    if (!allowed) {
+      return;
+    }
+
     const exists = await this.models.doc.exists(workspaceId, docId);
 
     // skip if doc not even exists
@@ -351,7 +365,7 @@ export class WorkspaceDocResolver {
       },
     });
 
-    // skip if owner of already exists
+    // skip if owner already exists
     if (owner) {
       return;
     }
@@ -377,7 +391,7 @@ export class WorkspaceDocResolver {
       fixedOwner = owner.id;
     }
 
-    await this.prisma.workspaceDocUserPermission.create({
+    await this.prisma.workspaceDocUserPermission.createMany({
       data: {
         workspaceId,
         docId,
@@ -385,6 +399,10 @@ export class WorkspaceDocResolver {
         type: DocRole.Owner,
       },
     });
+
+    this.logger.debug(
+      `Fixed doc owner for ${docId} in workspace ${workspaceId}, new owner: ${fixedOwner}`
+    );
   }
 }
 
