@@ -77,12 +77,7 @@ export class PageEditor extends SignalWatcher(
     const std = this.std;
     const theme = std.get(ThemeProvider).app$.value;
     return html`
-      <div
-        data-theme=${theme}
-        class=${this.hasViewport
-          ? 'affine-page-viewport'
-          : 'page-editor-container'}
-      >
+      <div data-theme=${theme} class="page-editor-container">
         ${guard([std], () => std.render())}
       </div>
     `;
@@ -102,9 +97,6 @@ export class PageEditor extends SignalWatcher(
 
   @property({ attribute: false })
   accessor doc!: Store;
-
-  @property({ type: Boolean })
-  accessor hasViewport = true;
 
   @property({ attribute: false })
   accessor specs = PageEditorBlockSpecs;

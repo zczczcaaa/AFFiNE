@@ -37,10 +37,10 @@ export function removeModeFromStorage(docId: string) {
 const DEFAULT_MODE: DocMode = 'page';
 const slotMap = new Map<string, Slot<DocMode>>();
 
-export function mockDocModeService(
-  getEditorModeCallback: () => DocMode,
-  setEditorModeCallback: (mode: DocMode) => void
-) {
+export function mockDocModeService(editor: AffineEditorContainer) {
+  const getEditorModeCallback: () => DocMode = () => editor.mode;
+  const setEditorModeCallback: (mode: DocMode) => void = mode =>
+    editor.switchEditor(mode);
   const docModeService: DocModeProvider = {
     getPrimaryMode: (docId: string) => {
       try {

@@ -57,6 +57,7 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 import * as lz from 'lz-string';
 import type { Pane } from 'tweakpane';
 
+import { createTestEditor } from '../../starter/utils/extensions.js';
 import { mockEdgelessTheme } from '../mock-services.js';
 import { AdaptersPanel } from './adapters-panel.js';
 import type { CustomFramePanel } from './custom-frame-panel.js';
@@ -643,8 +644,7 @@ export class StarterDebugMenu extends ShadowlessElement {
       ).length;
       if (currentEditorCount === 1) {
         // Add a second editor
-        const newEditor = document.createElement('affine-editor-container');
-        newEditor.doc = this.doc;
+        const newEditor = createTestEditor(this.doc, this.collection);
         app.append(newEditor);
         app.childNodes.forEach(child => {
           if (child instanceof AffineEditorContainer) {

@@ -12,7 +12,9 @@ effects();
 import {
   CommunityCanvasTextFonts,
   type DocMode,
+  EdgelessEditorBlockSpecs,
   FontConfigExtension,
+  PageEditorBlockSpecs,
   StoreExtensions,
 } from '@blocksuite/blocks';
 import { AffineSchemas } from '@blocksuite/blocks/schemas';
@@ -71,14 +73,16 @@ async function createEditor(
   const editor = new AffineEditorContainer();
   editor.doc = doc;
   editor.mode = mode;
-  editor.pageSpecs = editor.pageSpecs.concat([
+  editor.pageSpecs = [
+    ...PageEditorBlockSpecs,
     FontConfigExtension(CommunityCanvasTextFonts),
     ...extensions,
-  ]);
-  editor.edgelessSpecs = editor.edgelessSpecs.concat([
+  ];
+  editor.edgelessSpecs = [
+    ...EdgelessEditorBlockSpecs,
     FontConfigExtension(CommunityCanvasTextFonts),
     ...extensions,
-  ]);
+  ];
   app.append(editor);
 
   window.editor = editor;

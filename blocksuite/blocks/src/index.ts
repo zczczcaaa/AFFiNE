@@ -9,7 +9,6 @@ import { isCanvasElement } from './root-block/edgeless/utils/query.js';
 export * from './_common/adapters/index.js';
 export { type NavigatorMode } from './_common/edgeless/frame/consts.js';
 export * from './_common/transformers/index.js';
-export { type AbstractEditor } from './_common/types.js';
 export * from './_specs/index.js';
 export { EdgelessTemplatePanel } from './root-block/edgeless/components/toolbar/template/template-panel.js';
 export type {

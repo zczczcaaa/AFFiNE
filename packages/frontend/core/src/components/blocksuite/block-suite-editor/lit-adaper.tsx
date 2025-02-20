@@ -343,7 +343,6 @@ export const BlocksuiteDocEditor = forwardRef<
           ref={onDocRef}
           doc={page}
           specs={specs}
-          hasViewport={false}
         />
         <div
           className={styles.docEditorGap}

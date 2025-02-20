@@ -15,7 +15,7 @@ import { parseStringToRgba } from '../utils/bs-alternative.js';
 import { test } from '../utils/playwright.js';
 
 async function setupWithColorPickerFunction(page: Page) {
-  await enterPlaygroundRoom(page, { flags: { enable_color_picker: true } });
+  await enterPlaygroundRoom(page);
   await initEmptyEdgelessState(page);
   await switchEditorMode(page);
 }

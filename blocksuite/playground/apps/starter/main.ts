@@ -14,7 +14,7 @@ import {
   createStarterDocCollection,
   initStarterDocCollection,
 } from './utils/collection.js';
-import { mountDefaultDocEditor } from './utils/editor.js';
+import { mountDefaultDocEditor } from './utils/setup-playground';
 import { prepareTestApp } from './utils/test';
 
 blocksEffects();

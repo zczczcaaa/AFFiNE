@@ -1,11 +1,5 @@
 import { BlockStdScope, ShadowlessElement } from '@blocksuite/block-std';
-import {
-  type AbstractEditor,
-  type DocMode,
-  EdgelessEditorBlockSpecs,
-  PageEditorBlockSpecs,
-  ThemeProvider,
-} from '@blocksuite/blocks';
+import { type DocMode, ThemeProvider } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import {
   type BlockModel,
@@ -18,10 +12,9 @@ import { property } from 'lit/decorators.js';
 import { keyed } from 'lit/directives/keyed.js';
 import { when } from 'lit/directives/when.js';
 
-export class AffineEditorContainer
-  extends SignalWatcher(WithDisposable(ShadowlessElement))
-  implements AbstractEditor
-{
+export class AffineEditorContainer extends SignalWatcher(
+  WithDisposable(ShadowlessElement)
+) {
   static override styles = css`
     .affine-page-viewport {
       position: relative;
@@ -90,13 +83,11 @@ export class AffineEditorContainer
 
   private readonly _doc = signal<Store>();
 
-  private readonly _edgelessSpecs = signal<ExtensionType[]>(
-    EdgelessEditorBlockSpecs
-  );
+  private readonly _edgelessSpecs = signal<ExtensionType[]>([]);
 
   private readonly _mode = signal<DocMode>('page');
 
-  private readonly _pageSpecs = signal<ExtensionType[]>(PageEditorBlockSpecs);
+  private readonly _pageSpecs = signal<ExtensionType[]>([]);
 
   private readonly _specs = computed(() =>
     this._mode.value === 'page'
@@ -163,9 +154,6 @@ export class AffineEditorContainer
     return this._std.value;
   }
 
-  /**
-   * @deprecated need to refactor
-   */
   override connectedCallback() {
     super.connectedCallback();
 

@@ -121,7 +121,6 @@ test(
 
     const pageB = await context.newPage();
     await enterPlaygroundRoom(pageB, {
-      flags: {},
       room,
       noInit: true,
     });
@@ -181,7 +180,7 @@ test(
 
     const room = await enterPlaygroundRoom(pageA);
     const pageB = await browser.newPage();
-    await enterPlaygroundRoom(pageB, { flags: {}, room });
+    await enterPlaygroundRoom(pageB, { room });
 
     await disconnectByClick(pageA);
     await disconnectByClick(pageB);

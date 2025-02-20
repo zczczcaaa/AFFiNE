@@ -1,7 +1,6 @@
-import { RefNodeSlotsProvider } from '@blocksuite/affine-components/rich-text';
-import { AffineEditorContainer } from '@blocksuite/presets';
 import { Text, type Workspace } from '@blocksuite/store';
 
+import { createTestEditor } from '../utils/extensions.js';
 import type { InitFn } from './utils.js';
 
 export const multiEditor: InitFn = (collection: Workspace, id: string) => {
@@ -24,18 +23,7 @@ export const multiEditor: InitFn = (collection: Workspace, id: string) => {
 
   const app = document.getElementById('app');
   if (app) {
-    const editor = new AffineEditorContainer();
-    editor.doc = doc;
-    editor.std
-      .get(RefNodeSlotsProvider)
-      .docLinkClicked.on(({ pageId: docId }) => {
-        const target = collection.getDoc(docId);
-        if (!target) {
-          throw new Error(`Failed to jump to doc ${docId}`);
-        }
-        target.load();
-        editor.doc = target;
-      });
+    const editor = createTestEditor(doc, collection);
     editor.style.borderRight = '1px solid var(--affine-border-color)';
 
     app.append(editor);
@@ -70,18 +58,7 @@ export const multiEditorVertical: InitFn = (
 
   const app = document.getElementById('app');
   if (app) {
-    const editor = new AffineEditorContainer();
-    editor.doc = doc;
-    editor.std
-      .get(RefNodeSlotsProvider)
-      .docLinkClicked.on(({ pageId: docId }) => {
-        const target = collection.getDoc(docId);
-        if (!target) {
-          throw new Error(`Failed to jump to doc ${docId}`);
-        }
-        target.load();
-        editor.doc = target;
-      });
+    const editor = createTestEditor(doc, collection);
     editor.style.borderBottom = '1px solid var(--affine-border-color)';
 
     app.append(editor);

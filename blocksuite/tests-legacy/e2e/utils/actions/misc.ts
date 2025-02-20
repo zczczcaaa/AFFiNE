@@ -1,7 +1,6 @@
 import '../declare-test-window.js';
 
 import type {
-  BlockSuiteFlags,
   DatabaseBlockModel,
   ListType,
   RichText,
@@ -111,7 +110,6 @@ export function expectConsoleMessage(
 }
 
 export type PlaygroundRoomOptions = {
-  flags?: Partial<BlockSuiteFlags>;
   room?: string;
   blobSource?: ('idb' | 'mock')[];
   noInit?: boolean;
@@ -128,11 +126,6 @@ export async function enterPlaygroundRoom(
   }
   url.searchParams.set('room', room);
   url.searchParams.set('blobSource', blobSource?.join(',') || 'idb');
-  for (const [key, value] of Object.entries(ops?.flags || {})) {
-    if (value) {
-      url.searchParams.append('flag', key);
-    }
-  }
   if (ops?.noInit) {
     url.searchParams.set('noInit', 'true');
   }

@@ -2,7 +2,6 @@ import type { DocModeProvider } from '@blocksuite/blocks';
 import { assertExists } from '@blocksuite/global/utils';
 import type { AffineEditorContainer } from '@blocksuite/presets';
 import type { Doc, Store, Workspace } from '@blocksuite/store';
-import type { LitElement } from 'lit';
 
 export function getDocFromUrlParams(collection: Workspace, url: URL) {
   let doc: Store | null = null;
@@ -41,9 +40,9 @@ export function setDocModeFromUrlParams(
 
 export function listenHashChange(
   collection: Workspace,
-  editor: AffineEditorContainer,
-  panel?: LitElement
+  editor: AffineEditorContainer
 ) {
+  const panel = document.querySelector('docs-panel');
   window.addEventListener('hashchange', () => {
     const url = new URL(location.toString());
     const doc = getDocFromUrlParams(collection, url);
