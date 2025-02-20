@@ -68,6 +68,7 @@ export class SelectionLayer extends SignalWatcher(
         display: 'none',
       });
     const border = '2px solid var(--affine-primary-color)';
+
     return styleMap({
       position: 'absolute',
       pointerEvents: 'none',

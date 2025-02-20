@@ -54,6 +54,12 @@ export class TableBlockComponent extends CaptionedBlockComponent<TableBlockModel
 
   table$ = signal<HTMLTableElement>();
 
+  public getScale(): number {
+    const table = this.table$.value;
+    if (!table) return 1;
+    return table.getBoundingClientRect().width / table.offsetWidth;
+  }
+
   private readonly getRootRect = () => {
     const table = this.table$.value;
     if (!table) return;
@@ -65,11 +71,12 @@ export class TableBlockComponent extends CaptionedBlockComponent<TableBlockModel
     const rootRect = this.getRootRect();
     if (!row || !rootRect) return;
     const rect = row.getBoundingClientRect();
+    const scale = this.getScale();
     return {
-      top: rect.top - rootRect.top,
-      left: rect.left - rootRect.left,
-      width: rect.width,
-      height: rect.height,
+      top: (rect.top - rootRect.top) / scale,
+      left: (rect.left - rootRect.left) / scale,
+      width: rect.width / scale,
+      height: rect.height / scale,
     };
   };
 
@@ -80,11 +87,12 @@ export class TableBlockComponent extends CaptionedBlockComponent<TableBlockModel
     const firstRect = columns.item(0)?.getBoundingClientRect();
     const lastRect = columns.item(columns.length - 1)?.getBoundingClientRect();
     if (!firstRect || !lastRect) return;
+    const scale = this.getScale();
     return {
-      top: firstRect.top - rootRect.top,
-      left: firstRect.left - rootRect.left,
-      width: firstRect.width,
-      height: lastRect.bottom - firstRect.top,
+      top: (firstRect.top - rootRect.top) / scale,
+      left: (firstRect.left - rootRect.left) / scale,
+      width: firstRect.width / scale,
+      height: (lastRect.bottom - firstRect.top) / scale,
     };
   };
 
@@ -99,19 +107,22 @@ export class TableBlockComponent extends CaptionedBlockComponent<TableBlockModel
     const startRow = rows.item(rowStartIndex);
     const endRow = rows.item(rowEndIndex);
     if (!startRow || !endRow || !rootRect) return;
-    const columns = startRow.querySelectorAll('td');
-    const startColumn = columns.item(columnStartIndex);
-    const endColumn = columns.item(columnEndIndex);
-    if (!startColumn || !endColumn) return;
-    const startRect = startRow.getBoundingClientRect();
-    const endRect = endRow.getBoundingClientRect();
-    const startColumnRect = startColumn.getBoundingClientRect();
-    const endColumnRect = endColumn.getBoundingClientRect();
+
+    const startCells = startRow.querySelectorAll('td');
+    const endCells = endRow.querySelectorAll('td');
+    const startCell = startCells.item(columnStartIndex);
+    const endCell = endCells.item(columnEndIndex);
+    if (!startCell || !endCell) return;
+
+    const startRect = startCell.getBoundingClientRect();
+    const endRect = endCell.getBoundingClientRect();
+    const scale = this.getScale();
+
     return {
-      top: startRect.top - rootRect.top,
-      left: startColumnRect.left - rootRect.left,
-      width: endColumnRect.right - startColumnRect.left,
-      height: endRect.bottom - startRect.top,
+      top: (startRect.top - rootRect.top) / scale,
+      left: (startRect.left - rootRect.left) / scale,
+      width: (endRect.right - startRect.left) / scale,
+      height: (endRect.bottom - startRect.top) / scale,
     };
   };
 

@@ -43,6 +43,10 @@ export class SelectionController implements ReactiveController {
   private get clipboard() {
     return this.host.std.clipboard;
   }
+  private get scale() {
+    return this.host.getScale();
+  }
+
   widthAdjust(dragHandle: HTMLElement, event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -50,6 +54,7 @@ export class SelectionController implements ReactiveController {
     const currentWidth =
       dragHandle.closest('td')?.getBoundingClientRect().width ??
       DefaultColumnWidth;
+    const adjustedWidth = currentWidth / this.scale;
     const columnId = dragHandle.dataset['widthAdjustColumnId'];
     if (!columnId) {
       return;
@@ -60,7 +65,7 @@ export class SelectionController implements ReactiveController {
         columnId,
         width: Math.max(
           ColumnMinWidth,
-          event.clientX - initialX + currentWidth
+          (event.clientX - initialX) / this.scale + adjustedWidth
         ),
       };
     };
