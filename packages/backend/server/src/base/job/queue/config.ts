@@ -30,10 +30,8 @@ defineStartupConfig('job', {
     prefix: 'affine_job',
     defaultJobOptions: {
       attempts: 5,
-      removeOnComplete: {
-        age: 3600 /* 1h */,
-        count: 100,
-      },
+      // should remove job after it's completed, because we will add a new job with the same job id
+      removeOnComplete: true,
       removeOnFail: {
         age: 24 * 3600 /* 1 day */,
         count: 500,
