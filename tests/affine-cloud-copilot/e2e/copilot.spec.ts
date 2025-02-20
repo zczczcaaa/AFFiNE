@@ -111,10 +111,10 @@ const collectChat = async (page: Page) => {
   }
   // wait ai response
   await page.waitForSelector('.chat-panel-messages .message chat-copy-more');
-  await page.waitForTimeout(ONE_SECOND);
+  await page.waitForTimeout(200);
   const lastMessage = await chatPanel.$$('.message').then(m => m[m.length - 1]);
   await lastMessage.waitForSelector('chat-copy-more');
-  await page.waitForTimeout(ONE_SECOND);
+  await page.waitForTimeout(200);
   return Promise.all(
     Array.from(await chatPanel.$$('.message')).map(async m => ({
       name: await m.$('.user-info').then(i => i?.innerText()),
@@ -906,8 +906,19 @@ test.describe('chat with doc', () => {
     await clickNewPageButton(page);
 
     await openChat(page);
-    const chipTitle = await page.getByTestId('chat-panel-chip-title');
+
+    const addButton = await page.locator('chat-panel-chips .add-button');
+    await addButton.click();
+    const docItem = await page.locator('chat-panel-add-popover icon-button', {
+      hasText: 'Untitled',
+    });
+    await docItem.click();
+    await page.waitForTimeout(200);
+    let chipTitle = await page.getByTestId('chat-panel-chip-title');
     expect(await chipTitle.textContent()).toBe('Untitled');
+    let chip = await page.getByTestId('chat-panel-chip');
+    // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
+    expect(await chip.getAttribute('data-state')).toBe('success');
 
     const editorTitle = await page.locator('doc-title .inline-editor').nth(0);
     await editorTitle.pressSequentially('AFFiNE AI', {
@@ -928,11 +939,6 @@ test.describe('chat with doc', () => {
     );
 
     expect(await chipTitle.textContent()).toBe('AFFiNE AI');
-    const chip = await page.getByTestId('chat-panel-chip');
-    // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
-    expect(await chip.getAttribute('data-state')).toBe('candidate');
-    await chip.click();
-    await page.waitForTimeout(1000);
     // oxlint-disable-next-line unicorn/prefer-dom-node-dataset
     expect(await chip.getAttribute('data-state')).toBe('success');
 
@@ -951,7 +957,7 @@ test.describe('chat with doc', () => {
     expect((await collectChat(page)).length).toBe(0);
 
     await page.reload();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(200);
     await openChat(page);
     expect(await chipTitle.textContent()).toBe('AFFiNE AI');
     const chip2 = await page.getByTestId('chat-panel-chip');

@@ -167,17 +167,8 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   };
 
   private readonly _updateChips = async () => {
-    const candidateChip: DocChip = {
-      docId: this.doc.id,
-      state: 'candidate',
-    };
-
     // context not initialized, show candidate chip
     if (!this._chatSessionId || !this._chatContextId) {
-      this.chatContextValue = {
-        ...this.chatContextValue,
-        chips: [candidateChip],
-      };
       return;
     }
 
@@ -212,7 +203,7 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     });
     this.chatContextValue = {
       ...this.chatContextValue,
-      chips: chips.length === 0 ? [candidateChip] : chips,
+      chips,
     };
   };
 
