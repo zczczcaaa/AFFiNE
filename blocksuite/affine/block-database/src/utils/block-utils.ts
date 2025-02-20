@@ -37,24 +37,6 @@ export function addProperty(
   return id;
 }
 
-export function applyCellsUpdate(model: DatabaseBlockModel) {
-  model.doc.updateBlock(model, {
-    cells: model.cells,
-  });
-}
-
-export function applyPropertyUpdate(model: DatabaseBlockModel) {
-  model.doc.updateBlock(model, {
-    columns: model.columns,
-  });
-}
-
-export function applyViewsUpdate(model: DatabaseBlockModel) {
-  model.doc.updateBlock(model, {
-    views: model.views,
-  });
-}
-
 export function copyCellsByProperty(
   model: DatabaseBlockModel,
   fromId: Column['id'],
@@ -156,7 +138,6 @@ export function moveViewTo(
       arr => insertPositionToIndex(position, arr)
     );
   });
-  applyViewsUpdate(model);
 }
 
 export function updateCell(
@@ -255,6 +236,5 @@ export const updateView = <ViewData extends ViewBasicDataType>(
       return { ...v, ...update(v as ViewData) };
     });
   });
-  applyViewsUpdate(model);
 };
 export const DATABASE_CONVERT_WHITE_LIST = ['affine:list', 'affine:paragraph'];

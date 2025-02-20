@@ -34,8 +34,6 @@ import {
 } from './properties/index.js';
 import {
   addProperty,
-  applyCellsUpdate,
-  applyPropertyUpdate,
   copyCellsByProperty,
   deleteRows,
   deleteView,
@@ -169,7 +167,6 @@ export class DatabaseBlockDataSource extends DataSourceBase {
         columnId: propertyId,
         value: newValue,
       });
-      applyCellsUpdate(this._model);
     }
   }
 
@@ -199,7 +196,6 @@ export class DatabaseBlockDataSource extends DataSourceBase {
       insertToPosition,
       property.create(this.newPropertyName())
     );
-    applyPropertyUpdate(this._model);
     return result;
   }
 
@@ -283,7 +279,6 @@ export class DatabaseBlockDataSource extends DataSourceBase {
   propertyDataSet(propertyId: string, data: Record<string, unknown>): void {
     this._runCapture();
     this.updateProperty(propertyId, () => ({ data }));
-    applyPropertyUpdate(this._model);
   }
 
   propertyDataTypeGet(propertyId: string): TypeInstance | undefined {
@@ -337,7 +332,6 @@ export class DatabaseBlockDataSource extends DataSourceBase {
       schema
     );
     copyCellsByProperty(this._model, copyId, id);
-    applyPropertyUpdate(this._model);
     return id;
   }
 
@@ -366,7 +360,6 @@ export class DatabaseBlockDataSource extends DataSourceBase {
   propertyNameSet(propertyId: string, name: string): void {
     this.doc.captureSync();
     this.updateProperty(propertyId, () => ({ name }));
-    applyPropertyUpdate(this._model);
   }
 
   override propertyReadonlyGet(propertyId: string): boolean {
@@ -421,7 +414,6 @@ export class DatabaseBlockDataSource extends DataSourceBase {
       }
     });
     updateCells(this._model, propertyId, cells);
-    applyPropertyUpdate(this._model);
   }
 
   rowAdd(insertPosition: InsertToPosition | number): string {
