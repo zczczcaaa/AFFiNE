@@ -1,9 +1,9 @@
-import type { EditorHost } from '@blocksuite/block-std';
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import {
-  EdgelessLegacySlotIdentifier,
-  EdgelessRootService,
+  DocModeProvider,
   EditPropsStore,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine-shared/services';
+import type { EditorHost } from '@blocksuite/block-std';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
@@ -103,10 +103,6 @@ export class FramesSettingMenu extends WithDisposable(LitElement) {
     this._editPropsStore.setStorage('presentHideToolbar', this.hideToolbar);
   };
 
-  private get _edgelessRootService() {
-    return this.editorHost.std.getOptional(EdgelessRootService);
-  }
-
   private get _editPropsStore() {
     return this.editorHost.std.get(EditPropsStore);
   }
@@ -176,7 +172,8 @@ export class FramesSettingMenu extends WithDisposable(LitElement) {
 
   override updated(_changedProperties: PropertyValues) {
     if (_changedProperties.has('editorHost')) {
-      if (this._edgelessRootService) {
+      const docModeProvider = this.editorHost.std.get(DocModeProvider);
+      if (docModeProvider.getEditorMode() === 'edgeless') {
         this.disposables.add(
           this.slots.navigatorSettingUpdated.on(
             ({ blackBackground, hideToolbar }) => {

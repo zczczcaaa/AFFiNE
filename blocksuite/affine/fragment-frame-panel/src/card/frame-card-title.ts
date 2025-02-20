@@ -1,5 +1,5 @@
+import type { FrameBlockModel } from '@blocksuite/affine-model';
 import { ShadowlessElement } from '@blocksuite/block-std';
-import type { FrameBlockModel } from '@blocksuite/blocks';
 import { DisposableGroup, WithDisposable } from '@blocksuite/global/utils';
 import { css, html, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';

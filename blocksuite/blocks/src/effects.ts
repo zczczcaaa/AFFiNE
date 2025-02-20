@@ -33,6 +33,7 @@ import { SmoothCorner } from '@blocksuite/affine-components/smooth-corner';
 import { effects as componentToggleButtonEffects } from '@blocksuite/affine-components/toggle-button';
 import { ToggleSwitch } from '@blocksuite/affine-components/toggle-switch';
 import { effects as componentToolbarEffects } from '@blocksuite/affine-components/toolbar';
+import { effects as fragmentFramePanelEffects } from '@blocksuite/affine-fragment-frame-panel/effects';
 import { effects as widgetDragHandleEffects } from '@blocksuite/affine-widget-drag-handle/effects';
 import { effects as widgetEdgelessAutoConnectEffects } from '@blocksuite/affine-widget-edgeless-auto-connect/effects';
 import { effects as widgetFrameTitleEffects } from '@blocksuite/affine-widget-frame-title/effects';
@@ -185,6 +186,8 @@ export function effects() {
   stdEffects();
   inlineEffects();
 
+  dataViewEffects();
+
   blockNoteEffects();
   blockAttachmentEffects();
   blockBookmarkEffects();
@@ -224,7 +227,8 @@ export function effects() {
   widgetRemoteSelectionEffects();
   widgetDragHandleEffects();
   widgetEdgelessAutoConnectEffects();
-  dataViewEffects();
+
+  fragmentFramePanelEffects();
 
   customElements.define('affine-page-root', PageRootBlockComponent);
   customElements.define('affine-preview-root', PreviewRootBlockComponent);

@@ -1,3 +1,4 @@
+import { isFrameBlock } from '@blocksuite/affine-block-frame';
 import {
   isNoteBlock,
   type SurfaceBlockComponent,
@@ -18,7 +19,6 @@ import {
   isEmbeddedLinkBlock,
   isEmbedLinkedDocBlock,
   isEmbedSyncedDocBlock,
-  isFrameBlock,
   isImageBlock,
 } from '../../../edgeless/utils/query.js';
 

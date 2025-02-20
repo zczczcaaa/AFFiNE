@@ -1,12 +1,12 @@
-import type { EditorHost } from '@blocksuite/block-std';
+import type { NavigatorMode } from '@blocksuite/affine-block-frame';
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import {
-  createButtonPopper,
   DocModeProvider,
-  EdgelessLegacySlotIdentifier,
-  EdgelessRootService,
   EditPropsStore,
-  type NavigatorMode,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine-shared/services';
+import { createButtonPopper } from '@blocksuite/affine-shared/utils';
+import type { EditorHost } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { DisposableGroup, WithDisposable } from '@blocksuite/global/utils';
 import { PresentationIcon, SettingsIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, type PropertyValues } from 'lit';
@@ -112,13 +112,18 @@ export class FramePanelHeader extends WithDisposable(LitElement) {
 
   private _edgelessDisposables: DisposableGroup | null = null;
 
+  private get _gfx() {
+    return this.editorHost.std.get(GfxControllerIdentifier);
+  }
+
   private readonly _enterPresentationMode = () => {
-    if (!this._edgelessRootService) {
+    const docModeProvider = this.editorHost.std.get(DocModeProvider);
+    if (docModeProvider.getEditorMode() !== 'edgeless') {
       this.editorHost.std.get(DocModeProvider).setEditorMode('edgeless');
     }
 
     setTimeout(() => {
-      this._edgelessRootService?.gfx.tool.setTool({
+      this._gfx.tool.setTool({
         type: 'frameNavigator',
         mode: this._navigatorMode,
       });
@@ -132,8 +137,6 @@ export class FramePanelHeader extends WithDisposable(LitElement) {
   private _navigatorMode: NavigatorMode = 'fit';
 
   private readonly _setEdgelessDisposables = () => {
-    if (!this._edgelessRootService) return;
-
     const slots = this.editorHost.std.get(EdgelessLegacySlotIdentifier);
 
     this._clearEdgelessDisposables();
@@ -144,10 +147,6 @@ export class FramePanelHeader extends WithDisposable(LitElement) {
       })
     );
   };
-
-  private get _edgelessRootService() {
-    return this.editorHost.std.getOptional(EdgelessRootService);
-  }
 
   private _tryLoadNavigatorStateLocalRecord() {
     this._navigatorMode = this.editorHost.std
@@ -219,7 +218,8 @@ export class FramePanelHeader extends WithDisposable(LitElement) {
 
   override updated(_changedProperties: PropertyValues) {
     if (_changedProperties.has('editorHost')) {
-      if (this._edgelessRootService) {
+      const docModeProvider = this.editorHost.std.get(DocModeProvider);
+      if (docModeProvider.getEditorMode() === 'edgeless') {
         this._setEdgelessDisposables();
       } else {
         this._clearEdgelessDisposables();

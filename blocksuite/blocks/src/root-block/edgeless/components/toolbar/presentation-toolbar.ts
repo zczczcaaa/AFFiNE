@@ -1,3 +1,7 @@
+import {
+  isFrameBlock,
+  type NavigatorMode,
+} from '@blocksuite/affine-block-frame';
 import { toast } from '@blocksuite/affine-components/toast';
 import type { FrameBlockModel } from '@blocksuite/affine-model';
 import { EditPropsStore } from '@blocksuite/affine-shared/services';
@@ -15,9 +19,7 @@ import { cssVar } from '@toeverything/theme';
 import { css, html, LitElement, nothing, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
-import type { NavigatorMode } from '../../../../_common/edgeless/frame/consts.js';
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
-import { isFrameBlock } from '../../utils/query.js';
 import { launchIntoFullscreen } from '../utils.js';
 import { EdgelessToolbarToolMixin } from './mixins/tool.mixin.js';
 

@@ -7,6 +7,11 @@ import {
   SYNCED_MIN_WIDTH,
 } from '@blocksuite/affine-block-embed';
 import {
+  type EdgelessFrameManager,
+  type FrameOverlay,
+  isFrameBlock,
+} from '@blocksuite/affine-block-frame';
+import {
   CanvasElementType,
   isNoteBlock,
   normalizeShapeBound,
@@ -65,10 +70,6 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless-root-block.js';
-import type {
-  EdgelessFrameManager,
-  FrameOverlay,
-} from '../../frame-manager.js';
 import {
   AI_CHAT_BLOCK_MAX_HEIGHT,
   AI_CHAT_BLOCK_MAX_WIDTH,
@@ -90,7 +91,6 @@ import {
   isEmbedLoomBlock,
   isEmbedSyncedDocBlock,
   isEmbedYoutubeBlock,
-  isFrameBlock,
   isImageBlock,
   isMindmapNode,
 } from '../../utils/query.js';

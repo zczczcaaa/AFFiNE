@@ -21,13 +21,12 @@ import {
   type IVec,
   type SerializedXYWH,
 } from '@blocksuite/global/utils';
-import { Text } from '@blocksuite/store';
+import { type BlockModel, Text } from '@blocksuite/store';
 import * as Y from 'yjs';
 
-import { areSetsEqual } from './utils/misc.js';
-import { isFrameBlock } from './utils/query.js';
-
 const FRAME_PADDING = 40;
+
+export type NavigatorMode = 'fill' | 'fit';
 
 export class FrameOverlay extends Overlay {
   static override overlayName: string = 'frame';
@@ -460,4 +459,14 @@ export class EdgelessFrameManager extends GfxExtension {
   override unmounted(): void {
     this._disposable.dispose();
   }
+}
+
+function areSetsEqual<T>(setA: Set<T>, setB: Set<T>) {
+  if (setA.size !== setB.size) return false;
+  for (const a of setA) if (!setB.has(a)) return false;
+  return true;
+}
+
+export function isFrameBlock(element: unknown): element is FrameBlockModel {
+  return !!element && (element as BlockModel).flavour === 'affine:frame';
 }

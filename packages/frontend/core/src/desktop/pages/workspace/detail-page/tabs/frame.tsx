@@ -1,5 +1,5 @@
+import { FramePanel } from '@blocksuite/affine/blocks';
 import type { AffineEditorContainer } from '@blocksuite/affine/presets';
-import { FramePanel } from '@blocksuite/affine/presets';
 import { useCallback, useEffect, useRef } from 'react';
 
 import * as styles from './frame.css';

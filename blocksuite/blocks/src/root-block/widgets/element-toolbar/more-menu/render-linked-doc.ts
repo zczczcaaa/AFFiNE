@@ -1,3 +1,4 @@
+import { isFrameBlock } from '@blocksuite/affine-block-frame';
 import { getSurfaceBlock, isNoteBlock } from '@blocksuite/affine-block-surface';
 import type { FrameBlockModel, NoteBlockModel } from '@blocksuite/affine-model';
 import { NoteDisplayMode } from '@blocksuite/affine-model';
@@ -12,7 +13,6 @@ import {
   mapFrameIds,
   sortEdgelessElements,
 } from '../../../edgeless/utils/clone-utils.js';
-import { isFrameBlock } from '../../../edgeless/utils/query.js';
 
 function addBlocksToDoc(targetDoc: Store, model: BlockModel, parentId: string) {
   // Add current block to linked doc

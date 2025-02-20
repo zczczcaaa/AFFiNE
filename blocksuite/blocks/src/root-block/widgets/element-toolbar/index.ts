@@ -1,3 +1,4 @@
+import { isFrameBlock } from '@blocksuite/affine-block-frame';
 import { isNoteBlock } from '@blocksuite/affine-block-surface';
 import {
   cloneGroups,
@@ -47,7 +48,6 @@ import {
   isBookmarkBlock,
   isEdgelessTextBlock,
   isEmbeddedBlock,
-  isFrameBlock,
   isImageBlock,
 } from '../../edgeless/utils/query.js';
 import { renderAddFrameButton } from './add-frame-button.js';

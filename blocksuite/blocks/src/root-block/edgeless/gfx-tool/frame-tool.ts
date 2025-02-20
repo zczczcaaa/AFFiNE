@@ -1,3 +1,7 @@
+import type {
+  EdgelessFrameManager,
+  FrameOverlay,
+} from '@blocksuite/affine-block-frame';
 import { OverlayIdentifier } from '@blocksuite/affine-block-surface';
 import type { FrameBlockModel } from '@blocksuite/affine-model';
 import {
@@ -14,8 +18,6 @@ import type { IPoint, IVec } from '@blocksuite/global/utils';
 import { Bound, Vec } from '@blocksuite/global/utils';
 import { Text } from '@blocksuite/store';
 import * as Y from 'yjs';
-
-import type { EdgelessFrameManager, FrameOverlay } from '../frame-manager.js';
 
 export class FrameTool extends BaseTool {
   static override toolName = 'frame';

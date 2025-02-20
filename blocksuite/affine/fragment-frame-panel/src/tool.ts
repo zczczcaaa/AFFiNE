@@ -1,6 +1,5 @@
+import type { NavigatorMode } from '@blocksuite/affine-block-frame';
 import { BaseTool } from '@blocksuite/block-std/gfx';
-
-import type { NavigatorMode } from '../../../_common/edgeless/frame/consts.js';
 
 type PresentToolOption = {
   mode?: NavigatorMode;

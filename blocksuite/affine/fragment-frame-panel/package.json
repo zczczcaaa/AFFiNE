@@ -1,6 +1,6 @@
 {
-  "name": "@blocksuite/affine-block-frame",
-  "description": "Frame block for BlockSuite.",
+  "name": "@blocksuite/affine-fragment-frame-panel",
+  "description": "Frame panel fragment for BlockSuite.",
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -13,22 +13,22 @@
   "author": "toeverything",
   "license": "MIT",
   "dependencies": {
+    "@blocksuite/affine-block-frame": "workspace:*",
     "@blocksuite/affine-block-surface": "workspace:*",
     "@blocksuite/affine-components": "workspace:*",
     "@blocksuite/affine-model": "workspace:*",
     "@blocksuite/affine-shared": "workspace:*",
     "@blocksuite/block-std": "workspace:*",
     "@blocksuite/global": "workspace:*",
+    "@blocksuite/icons": "^2.2.1",
     "@blocksuite/inline": "workspace:*",
     "@blocksuite/store": "workspace:*",
     "@floating-ui/dom": "^1.6.10",
     "@lit/context": "^1.1.2",
     "@preact/signals-core": "^1.8.0",
     "@toeverything/theme": "^1.1.11",
-    "@types/mdast": "^4.0.4",
     "lit": "^3.2.0",
     "minimatch": "^10.0.1",
-    "yjs": "^13.6.21",
     "zod": "^3.23.8"
   },
   "exports": {

@@ -1,5 +1,6 @@
+import type { FrameBlockModel } from '@blocksuite/affine-model';
+import { on, once } from '@blocksuite/affine-shared/utils';
 import { ShadowlessElement } from '@blocksuite/block-std';
-import { type FrameBlockModel, on, once } from '@blocksuite/blocks';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';

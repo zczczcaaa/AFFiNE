@@ -1,3 +1,7 @@
+import {
+  EdgelessFrameManager,
+  isFrameBlock,
+} from '@blocksuite/affine-block-frame';
 import { isNoteBlock } from '@blocksuite/affine-block-surface';
 import type {
   EdgelessTextBlockModel,
@@ -18,12 +22,10 @@ import { getCommonBoundWithRotation, groupBy } from '@blocksuite/global/utils';
 import { type BlockSnapshot, BlockSnapshotSchema } from '@blocksuite/store';
 
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
-import { EdgelessFrameManager } from '../frame-manager.js';
 import { getSortedCloneElements, prepareCloneData } from './clone-utils.js';
 import {
   isEdgelessTextBlock,
   isEmbedSyncedDocBlock,
-  isFrameBlock,
   isImageBlock,
 } from './query.js';
 

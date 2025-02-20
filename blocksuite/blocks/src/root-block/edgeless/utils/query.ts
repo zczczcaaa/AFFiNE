@@ -12,7 +12,6 @@ import {
   type EmbedLoomModel,
   type EmbedSyncedDocModel,
   type EmbedYoutubeModel,
-  type FrameBlockModel,
   type ImageBlockModel,
   MindmapElementModel,
   ShapeElementModel,
@@ -47,10 +46,6 @@ export function isEdgelessTextBlock(
     'flavour' in element &&
     element.flavour === 'affine:edgeless-text'
   );
-}
-
-export function isFrameBlock(element: unknown): element is FrameBlockModel {
-  return !!element && (element as BlockModel).flavour === 'affine:frame';
 }
 
 export function isImageBlock(

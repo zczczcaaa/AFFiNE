@@ -1,5 +1,10 @@
 import { insertEdgelessTextCommand } from '@blocksuite/affine-block-edgeless-text';
 import {
+  type EdgelessFrameManager,
+  type FrameOverlay,
+  isFrameBlock,
+} from '@blocksuite/affine-block-frame';
+import {
   ConnectorUtils,
   isNoteBlock,
   OverlayIdentifier,
@@ -50,14 +55,9 @@ import { effect } from '@preact/signals-core';
 
 import { isSingleMindMapNode } from '../../../_common/edgeless/mindmap/index.js';
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
-import type { EdgelessFrameManager, FrameOverlay } from '../frame-manager.js';
 import { prepareCloneData } from '../utils/clone-utils.js';
 import { calPanDelta } from '../utils/panning-utils.js';
-import {
-  isCanvasElement,
-  isEdgelessTextBlock,
-  isFrameBlock,
-} from '../utils/query.js';
+import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
 import type { EdgelessSnapManager } from '../utils/snap-manager.js';
 import {
   addText,

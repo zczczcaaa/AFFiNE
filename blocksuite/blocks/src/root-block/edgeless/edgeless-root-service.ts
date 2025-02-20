@@ -1,3 +1,4 @@
+import type { EdgelessFrameManager } from '@blocksuite/affine-block-frame';
 import {
   EdgelessCRUDIdentifier,
   EdgelessLegacySlotIdentifier,
@@ -36,7 +37,6 @@ import { Bound, getCommonBound } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 
 import { RootService } from '../root-service.js';
-import type { EdgelessFrameManager } from './frame-manager.js';
 import { TemplateJob } from './services/template.js';
 import {
   createInsertPlaceMiddleware,

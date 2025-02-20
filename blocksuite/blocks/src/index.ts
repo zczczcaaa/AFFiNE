@@ -7,7 +7,6 @@ import { splitElements } from './root-block/edgeless/utils/clipboard-utils.js';
 import { isCanvasElement } from './root-block/edgeless/utils/query.js';
 
 export * from './_common/adapters/index.js';
-export { type NavigatorMode } from './_common/edgeless/frame/consts.js';
 export * from './_common/transformers/index.js';
 export * from './_specs/index.js';
 export { EdgelessTemplatePanel } from './root-block/edgeless/components/toolbar/template/template-panel.js';
@@ -16,10 +15,6 @@ export type {
   TemplateCategory,
   TemplateManager,
 } from './root-block/edgeless/components/toolbar/template/template-type.js';
-export {
-  EdgelessFrameManager,
-  FrameOverlay,
-} from './root-block/edgeless/frame-manager.js';
 export { CopilotTool } from './root-block/edgeless/gfx-tool/copilot-tool.js';
 export * from './root-block/edgeless/gfx-tool/index.js';
 export { EditPropsMiddlewareBuilder } from './root-block/edgeless/middlewares/base.js';
@@ -95,6 +90,7 @@ export {
   ToolbarMoreMenuConfigExtension,
   Tooltip,
 } from '@blocksuite/affine-components/toolbar';
+export * from '@blocksuite/affine-fragment-frame-panel';
 export * from '@blocksuite/affine-model';
 export {
   AttachmentAdapter,

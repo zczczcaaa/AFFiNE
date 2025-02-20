@@ -3471,6 +3471,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-block-frame@workspace:blocksuite/affine/block-frame"
   dependencies:
+    "@blocksuite/affine-block-surface": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
@@ -3485,6 +3486,7 @@ __metadata:
     "@types/mdast": "npm:^4.0.4"
     lit: "npm:^3.2.0"
     minimatch: "npm:^10.0.1"
+    yjs: "npm:^13.6.21"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -3718,6 +3720,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blocksuite/affine-fragment-frame-panel@workspace:*, @blocksuite/affine-fragment-frame-panel@workspace:blocksuite/affine/fragment-frame-panel":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/affine-fragment-frame-panel@workspace:blocksuite/affine/fragment-frame-panel"
+  dependencies:
+    "@blocksuite/affine-block-frame": "workspace:*"
+    "@blocksuite/affine-block-surface": "workspace:*"
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/icons": "npm:^2.2.1"
+    "@blocksuite/inline": "workspace:*"
+    "@blocksuite/store": "workspace:*"
+    "@floating-ui/dom": "npm:^1.6.10"
+    "@lit/context": "npm:^1.1.2"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@toeverything/theme": "npm:^1.1.11"
+    lit: "npm:^3.2.0"
+    minimatch: "npm:^10.0.1"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@blocksuite/affine-model@workspace:*, @blocksuite/affine-model@workspace:blocksuite/affine/model":
   version: 0.0.0-use.local
   resolution: "@blocksuite/affine-model@workspace:blocksuite/affine/model"
@@ -3935,6 +3961,7 @@ __metadata:
     "@blocksuite/affine-block-surface-ref": "workspace:*"
     "@blocksuite/affine-block-table": "workspace:*"
     "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-fragment-frame-panel": "workspace:*"
     "@blocksuite/affine-model": "workspace:*"
     "@blocksuite/affine-shared": "workspace:*"
     "@blocksuite/affine-widget-drag-handle": "workspace:*"

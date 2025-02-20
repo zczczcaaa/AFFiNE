@@ -1,12 +1,14 @@
-import { type EditorHost, ShadowlessElement } from '@blocksuite/block-std';
-import { generateKeyBetweenV2 } from '@blocksuite/block-std/gfx';
+import { EdgelessFrameManager } from '@blocksuite/affine-block-frame';
+import type { FrameBlockModel } from '@blocksuite/affine-model';
 import {
   DocModeProvider,
-  EdgelessFrameManager,
-  EdgelessRootService,
   EditPropsStore,
-  type FrameBlockModel,
-} from '@blocksuite/blocks';
+} from '@blocksuite/affine-shared/services';
+import { type EditorHost, ShadowlessElement } from '@blocksuite/block-std';
+import {
+  generateKeyBetweenV2,
+  GfxControllerIdentifier,
+} from '@blocksuite/block-std/gfx';
 import {
   Bound,
   DisposableGroup,
@@ -110,7 +112,7 @@ export class FramePanelBody extends SignalWatcher(
     }
 
     this._selected = [];
-    this._edgelessRootService?.selection.set({
+    this._gfx.selection.set({
       elements: this._selected,
       editing: false,
     });
@@ -126,6 +128,10 @@ export class FramePanelBody extends SignalWatcher(
 
   private _lastEdgelessRootId = '';
 
+  private get _gfx() {
+    return this.editorHost.std.get(GfxControllerIdentifier);
+  }
+
   private readonly _selectFrame = (e: SelectEvent) => {
     const { selected, id, multiselect } = e.detail;
 
@@ -138,7 +144,7 @@ export class FramePanelBody extends SignalWatcher(
       this._selected = [id];
     }
 
-    this._edgelessRootService?.selection.set({
+    this._gfx.selection.set({
       elements: this._selected,
       editing: false,
     });
@@ -151,10 +157,6 @@ export class FramePanelBody extends SignalWatcher(
       cardIndex: idx,
     }));
   };
-
-  get _edgelessRootService() {
-    return this.editorHost.std.getOptional(EdgelessRootService);
-  }
 
   get frames() {
     const frames = this.editorHost.doc
@@ -229,8 +231,9 @@ export class FramePanelBody extends SignalWatcher(
   private _fitToElement(e: FitViewEvent) {
     const { block } = e.detail;
     const bound = Bound.deserialize(block.xywh);
+    const docModeProvider = this.editorHost.std.get(DocModeProvider);
 
-    if (!this._edgelessRootService) {
+    if (docModeProvider.getEditorMode() !== 'edgeless') {
       // When click frame card in page mode
       // Should switch to edgeless mode and set viewport to the frame
       const viewport = {
@@ -242,11 +245,7 @@ export class FramePanelBody extends SignalWatcher(
       this.editorHost.std.get(EditPropsStore).setStorage('viewport', viewport);
       this.editorHost.std.get(DocModeProvider).setEditorMode('edgeless');
     } else {
-      this._edgelessRootService.viewport.setViewportByBound(
-        bound,
-        this.viewportPadding,
-        true
-      );
+      this._gfx.viewport.setViewportByBound(bound, this.viewportPadding, true);
     }
   }
 
@@ -398,7 +397,7 @@ export class FramePanelBody extends SignalWatcher(
       this._setDocDisposables(this.editorHost.doc);
       // after switch to edgeless mode, should update the selection
       if (this.editorHost.doc.id === this._lastEdgelessRootId) {
-        this._edgelessRootService?.selection.set({
+        this._gfx.selection.set({
           elements: this._selected,
           editing: false,
         });

@@ -1,3 +1,4 @@
+import type { EdgelessFrameManager } from '@blocksuite/affine-block-frame';
 import { EdgelessCRUDIdentifier } from '@blocksuite/affine-block-surface';
 import type {
   EdgelessColorPickerButton,
@@ -36,7 +37,6 @@ import { join } from 'lit/directives/join.js';
 import { when } from 'lit/directives/when.js';
 
 import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
-import type { EdgelessFrameManager } from '../../edgeless/frame-manager.js';
 import { mountFrameTitleEditor } from '../../edgeless/utils/text.js';
 
 function getMostCommonColor(
