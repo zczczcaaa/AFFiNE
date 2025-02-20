@@ -51,6 +51,10 @@ export interface ElementLockEvent extends TelemetryEvent {
   control: 'lock' | 'unlock' | 'group-lock';
 }
 
+export interface BlockCreationEvent extends TelemetryEvent {
+  blockType: string;
+}
+
 export interface MindMapCollapseEvent extends TelemetryEvent {
   page: 'whiteboard editor';
   segment: 'mind map';

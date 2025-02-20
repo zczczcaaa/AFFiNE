@@ -274,6 +274,15 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
             place: 'after',
             removeEmptyLine: true,
           })
+          .pipe(({ insertedTableBlockId }) => {
+            if (insertedTableBlockId) {
+              const telemetry =
+                rootComponent.std.getOptional(TelemetryProvider);
+              telemetry?.track('BlockCreated', {
+                blockType: 'affine:table',
+              });
+            }
+          })
           .run();
       },
     },
@@ -612,8 +621,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
             if (insertedDatabaseBlockId) {
               const telemetry =
                 rootComponent.std.getOptional(TelemetryProvider);
-              telemetry?.track('AddDatabase', {
-                blockId: insertedDatabaseBlockId,
+              telemetry?.track('BlockCreated', {
+                blockType: 'affine:database',
               });
             }
           })
@@ -675,8 +684,8 @@ export const defaultSlashMenuConfig: SlashMenuConfig = {
             if (insertedDatabaseBlockId) {
               const telemetry =
                 rootComponent.std.getOptional(TelemetryProvider);
-              telemetry?.track('AddDatabase', {
-                blockId: insertedDatabaseBlockId,
+              telemetry?.track('BlockCreated', {
+                blockType: 'affine:database',
               });
             }
           })

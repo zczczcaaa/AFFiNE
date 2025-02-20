@@ -5,6 +5,7 @@ import type { LinkToolbarEvents } from './link.js';
 import type { NoteEvents } from './note.js';
 import type {
   AttachmentUploadedEvent,
+  BlockCreationEvent,
   DocCreatedEvent,
   ElementCreationEvent,
   ElementLockEvent,
@@ -24,6 +25,7 @@ export type TelemetryEventMap = OutDatabaseAllEvents &
     EdgelessElementLocked: ElementLockEvent;
     ExpandedAndCollapsed: MindMapCollapseEvent;
     AttachmentUploadedEvent: AttachmentUploadedEvent;
+    BlockCreated: BlockCreationEvent;
   };
 
 export interface TelemetryService {
