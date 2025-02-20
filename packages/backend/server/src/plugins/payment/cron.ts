@@ -45,13 +45,14 @@ export class SubscriptionCronJobs {
       }
     );
 
-    await this.queue.add(
-      'nightly.notifyAboutToExpireWorkspaceSubscriptions',
-      {},
-      {
-        jobId: 'nightly-payment-notify-about-to-expire-workspace-subscriptions',
-      }
-    );
+    // FIXME(@forehalo): the strategy is totally wrong, for monthly plan. redesign required
+    // await this.queue.add(
+    //   'nightly.notifyAboutToExpireWorkspaceSubscriptions',
+    //   {},
+    //   {
+    //     jobId: 'nightly-payment-notify-about-to-expire-workspace-subscriptions',
+    //   }
+    // );
   }
 
   @OnJob('nightly.notifyAboutToExpireWorkspaceSubscriptions')
