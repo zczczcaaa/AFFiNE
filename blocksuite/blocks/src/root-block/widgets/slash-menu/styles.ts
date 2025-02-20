@@ -1,4 +1,5 @@
 import { scrollbarStyle } from '@blocksuite/affine-shared/styles';
+import { unsafeCSSVar, unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
 import { baseTheme } from '@toeverything/theme';
 import { css, unsafeCSS } from 'lit';
 
@@ -23,8 +24,8 @@ export const styles = css`
     overflow-y: auto;
     font-family: ${unsafeCSS(baseTheme.fontSansFamily)};
 
-    background: var(--affine-background-overlay-panel-color);
-    box-shadow: var(--affine-shadow-2);
+    background: ${unsafeCSSVarV2('layer/background/overlayPanel')};
+    box-shadow: ${unsafeCSSVar('overlayPanelShadow')};
     border-radius: 8px;
     z-index: var(--affine-z-index-popover);
     user-select: none;
@@ -61,7 +62,7 @@ export const styles = css`
     border: 1px solid var(--affine-border-color, #e3e2e4);
     border-radius: 4px;
     color: var(--affine-icon-color);
-    background: var(--affine-background-overlay-panel-color);
+    background: ${unsafeCSSVarV2('layer/background/overlayPanel')};
 
     display: flex;
     justify-content: center;

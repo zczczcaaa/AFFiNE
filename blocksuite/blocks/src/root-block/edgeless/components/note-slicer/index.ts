@@ -373,7 +373,7 @@ export class NoteSlicer extends WidgetComponent<
     if (!noteBlock || !this._divingLinePositions.length) return nothing;
 
     const rect = getRectByBlockComponent(noteBlock);
-    const width = rect.width - 2 * EDGELESS_BLOCK_CHILD_PADDING;
+    const width = rect.width - 2 * EDGELESS_BLOCK_CHILD_PADDING * this._zoom;
     const buttonPosition = this._divingLinePositions[this._activeSlicerIndex];
 
     return html`<div class="note-slicer-container">
@@ -383,7 +383,6 @@ export class NoteSlicer extends WidgetComponent<
           left: `${buttonPosition.x - 66 * this._zoom}px`,
           top: `${buttonPosition.y}px`,
           opacity: 1,
-          scale: `${this._zoom}`,
           transform: 'translateY(-50%)',
         })}
       >
