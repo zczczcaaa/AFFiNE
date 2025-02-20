@@ -634,17 +634,6 @@ export class UserSubscriptionManager extends SubscriptionManager {
       EarlyAccessType.AI
     );
 
-    // fast pass if the user is not early access for any plan
-    if (!proEarlyAccess && !aiEarlyAccess) {
-      return {
-        proEarlyAccess,
-        aiEarlyAccess,
-        proSubscribed: false,
-        aiSubscribed: false,
-        onetime: false,
-      };
-    }
-
     let proSubscribed = false;
     let aiSubscribed = false;
 
@@ -661,14 +650,12 @@ export class UserSubscriptionManager extends SubscriptionManager {
         continue;
       }
 
-      if (sub.status === 'past_due' || sub.status === 'canceled') {
-        if (lookupKey.plan === SubscriptionPlan.Pro) {
-          proSubscribed = true;
-        }
+      if (lookupKey.plan === SubscriptionPlan.Pro) {
+        proSubscribed = true;
+      }
 
-        if (lookupKey.plan === SubscriptionPlan.AI) {
-          aiSubscribed = true;
-        }
+      if (lookupKey.plan === SubscriptionPlan.AI) {
+        aiSubscribed = true;
       }
     }
 
