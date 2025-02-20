@@ -437,13 +437,15 @@ export class DocSyncPeer {
           data.length > 0 ? await this.mergeUpdates(data) : new Uint8Array();
 
         throwIfAborted(signal);
-        await this.local.pushDocUpdate(
-          {
-            docId,
-            bin: update,
-          },
-          this.uniqueId
-        );
+        if (!isEmptyUpdate(update)) {
+          await this.local.pushDocUpdate(
+            {
+              docId,
+              bin: update,
+            },
+            this.uniqueId
+          );
+        }
         throwIfAborted(signal);
 
         await this.syncMetadata.setPeerPulledRemoteClock(this.peerId, {

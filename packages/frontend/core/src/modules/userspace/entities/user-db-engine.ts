@@ -1,5 +1,5 @@
-import { IndexedDBDocStorage } from '@affine/nbstore/idb';
-import { SqliteDocStorage } from '@affine/nbstore/sqlite';
+import { IndexedDBDocStorage, IndexedDBSyncStorage } from '@affine/nbstore/idb';
+import { SqliteDocStorage, SqliteSyncStorage } from '@affine/nbstore/sqlite';
 import type { StoreClient } from '@affine/nbstore/worker/client';
 import { Entity } from '@toeverything/infra';
 
@@ -16,6 +16,10 @@ export class UserDBEngine extends Entity<{
     BUILD_CONFIG.isElectron || BUILD_CONFIG.isIOS
       ? SqliteDocStorage
       : IndexedDBDocStorage;
+  SyncStorageType =
+    BUILD_CONFIG.isElectron || BUILD_CONFIG.isIOS
+      ? SqliteSyncStorage
+      : IndexedDBSyncStorage;
 
   canGracefulStop() {
     // TODO(@eyhn): Implement this
@@ -38,6 +42,14 @@ export class UserDBEngine extends Entity<{
               id: `${serverService.server.id}:` + this.userId,
               flavour: serverService.server.id,
               type: 'userspace',
+            },
+          },
+          sync: {
+            name: this.SyncStorageType.identifier,
+            opts: {
+              id: `${serverService.server.id}:` + this.userId,
+              type: 'userspace',
+              flavour: serverService.server.id,
             },
           },
         },
