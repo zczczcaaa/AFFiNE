@@ -7,16 +7,17 @@ import { applyUpdate, Doc as YDoc } from 'yjs';
 
 import { createTestingApp, type TestingApp } from '../../../__tests__/utils';
 import { AppModule } from '../../../app.module';
-import { Config, InternalServerError } from '../../../base';
+import { Config, UserFriendlyError } from '../../../base';
 import { ConfigModule } from '../../../base/config';
 import { Models } from '../../../models';
-import { DocReader } from '..';
+import { DatabaseDocReader, DocReader } from '..';
 import { RpcDocReader } from '../reader';
 
 const test = ava as TestFn<{
   models: Models;
   app: TestingApp;
   docReader: DocReader;
+  databaseDocReader: DatabaseDocReader;
   config: Config;
 }>;
 
@@ -37,6 +38,7 @@ test.before(async t => {
 
   t.context.models = app.get(Models);
   t.context.docReader = app.get(DocReader);
+  t.context.databaseDocReader = app.get(DatabaseDocReader);
   t.context.config = app.get(Config);
   t.context.app = app;
 });
@@ -69,14 +71,18 @@ test('should return null when doc not found', async t => {
 });
 
 test('should throw error when doc service internal error', async t => {
-  const { docReader } = t.context;
+  const { docReader, databaseDocReader } = t.context;
   const docId = randomUUID();
-  mock.method(docReader, 'getDoc', async () => {
-    throw new InternalServerError('mock doc service internal error');
+  mock.method(databaseDocReader, 'getDoc', async () => {
+    throw new Error('mock doc service internal error');
   });
-  await t.throwsAsync(docReader.getDoc(workspace.id, docId), {
-    instanceOf: InternalServerError,
+  const err = await t.throwsAsync(docReader.getDoc(workspace.id, docId), {
+    instanceOf: UserFriendlyError,
+    message: 'An internal error occurred.',
+    name: 'internal_server_error',
   });
+  t.is(err.type, 'internal_server_error');
+  t.is(err.status, 500);
 });
 
 test('should fallback to database doc reader when endpoint network error', async t => {

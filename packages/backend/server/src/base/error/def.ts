@@ -104,7 +104,7 @@ export class UserFriendlyError extends Error {
 
   static fromUserFriendlyErrorJSON(body: UserFriendlyError) {
     return new UserFriendlyError(
-      body.type as UserFriendlyErrorBaseType,
+      body.type.toLowerCase() as UserFriendlyErrorBaseType,
       body.name.toLowerCase() as keyof typeof USER_FRIENDLY_ERRORS,
       body.message,
       body.data
