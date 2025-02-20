@@ -1,3 +1,4 @@
+import type { EditorHost } from '@blocksuite/block-std';
 import type { ParagraphBlockModel, Signal } from '@blocksuite/blocks';
 import {
   AttachmentIcon,
@@ -21,8 +22,6 @@ import {
 } from '@blocksuite/icons/lit';
 import { createContext } from '@lit/context';
 import type { TemplateResult } from 'lit';
-
-import type { AffineEditorContainer } from '../../editors/editor-container.js';
 
 const _16px = { width: '16px', height: '16px' };
 
@@ -85,7 +84,7 @@ export const headingKeys = new Set(
 export const outlineSettingsKey = 'outlinePanelSettings';
 
 export type TocContext = {
-  editor$: Signal<AffineEditorContainer>;
+  editor$: Signal<EditorHost>;
   enableSorting$: Signal<boolean>;
   showIcons$: Signal<boolean>;
   fitPadding$: Signal<number[]>;

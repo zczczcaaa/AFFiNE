@@ -310,7 +310,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
               />
             </Scrollable.Root>
             <EditorOutlineViewer
-              editor={editorContainer}
+              editor={editorContainer?.host ?? null}
               show={mode === 'page' && !isSideBarOpen}
               openOutlinePanel={openOutlinePanel}
             />
@@ -350,7 +350,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
       <ViewSidebarTab tabId="outline" icon={<TocIcon />}>
         <Scrollable.Root className={styles.sidebarScrollArea}>
           <Scrollable.Viewport>
-            <EditorOutlinePanel editor={editorContainer} />
+            <EditorOutlinePanel editor={editorContainer?.host ?? null} />
           </Scrollable.Viewport>
           <Scrollable.Scrollbar />
         </Scrollable.Root>
@@ -359,7 +359,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
       <ViewSidebarTab tabId="frame" icon={<FrameIcon />}>
         <Scrollable.Root className={styles.sidebarScrollArea}>
           <Scrollable.Viewport>
-            <EditorFramePanel editor={editorContainer} />
+            <EditorFramePanel editor={editorContainer?.host ?? null} />
           </Scrollable.Viewport>
           <Scrollable.Scrollbar />
         </Scrollable.Root>

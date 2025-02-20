@@ -127,7 +127,7 @@ export const PageHeaderMenuButton = () => {
         title={t['com.affine.header.menu.toc']()}
         items={
           <div className={styles.outlinePanel}>
-            <MobileTocMenu editor={editorContainer} />
+            <MobileTocMenu editor={editorContainer?.host ?? null} />
           </div>
         }
       >

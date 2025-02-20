@@ -1,4 +1,4 @@
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
+import type { EditorHost } from '@blocksuite/affine/block-std';
 import { OutlineViewer } from '@blocksuite/affine/presets';
 import { useCallback, useRef } from 'react';
 
@@ -9,7 +9,7 @@ export const EditorOutlineViewer = ({
   show,
   openOutlinePanel,
 }: {
-  editor: AffineEditorContainer | null;
+  editor: EditorHost | null;
   show: boolean;
   openOutlinePanel?: () => void;
 }) => {

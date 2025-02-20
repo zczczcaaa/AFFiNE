@@ -1,9 +1,14 @@
 import {
+  type EditorHost,
   PropTypes,
   requiredProperties,
   ShadowlessElement,
 } from '@blocksuite/block-std';
-import { NoteDisplayMode, scrollbarStyle } from '@blocksuite/blocks';
+import {
+  DocModeProvider,
+  NoteDisplayMode,
+  scrollbarStyle,
+} from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { TocIcon } from '@blocksuite/icons/lit';
 import { provide } from '@lit/context';
@@ -13,7 +18,6 @@ import { property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { AffineEditorContainer } from '../../editors/editor-container.js';
 import { type TocContext, tocContext } from './config.js';
 import { getHeadingBlocksFromDoc } from './utils/query.js';
 import {
@@ -219,8 +223,9 @@ export class OutlineViewer extends SignalWatcher(
   }
 
   override render() {
-    if (this.editor.doc.root === null || this.editor.mode === 'edgeless')
-      return nothing;
+    const docModeService = this.editor.std.get(DocModeProvider);
+    const mode = docModeService.getEditorMode();
+    if (this.editor.doc.root === null || mode === 'edgeless') return nothing;
 
     const headingBlocks = getHeadingBlocksFromDoc(
       this.editor.doc,
@@ -308,7 +313,7 @@ export class OutlineViewer extends SignalWatcher(
   private accessor _showViewer: boolean = false;
 
   @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
+  accessor editor!: EditorHost;
 
   @property({ attribute: false })
   accessor toggleOutlinePanel: (() => void) | null = null;

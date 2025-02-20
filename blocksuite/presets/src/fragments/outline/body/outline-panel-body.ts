@@ -2,6 +2,7 @@ import { effects } from '@blocksuite/affine-block-note/effects';
 import { ShadowlessElement, SurfaceSelection } from '@blocksuite/block-std';
 import {
   changeNoteDisplayMode,
+  DocModeProvider,
   matchModels,
   NoteBlockModel,
   NoteDisplayMode,
@@ -224,7 +225,9 @@ export class OutlinePanelBody extends SignalWatcher(
 
   private _watchSelectedNotes() {
     return effect(() => {
-      const { std, doc, mode } = this.editor;
+      const { std, doc } = this.editor;
+      const docModeService = this.editor.std.get(DocModeProvider);
+      const mode = docModeService.getEditorMode();
       if (mode !== 'edgeless') return;
 
       const currSelectedNotes = std.selection

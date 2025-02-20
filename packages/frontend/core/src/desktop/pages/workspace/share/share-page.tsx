@@ -268,7 +268,7 @@ const SharePageInner = ({
                 <Scrollable.Scrollbar />
               </Scrollable.Root>
               <EditorOutlineViewer
-                editor={editorContainer}
+                editor={editorContainer?.host ?? null}
                 show={publishMode === 'page'}
               />
               {!BUILD_CONFIG.isElectron && <SharePageFooter />}

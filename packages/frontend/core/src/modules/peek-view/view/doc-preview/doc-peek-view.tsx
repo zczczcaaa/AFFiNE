@@ -179,7 +179,7 @@ function DocPeekPreviewEditor({
       </Scrollable.Root>
       {!BUILD_CONFIG.isMobileEdition && !BUILD_CONFIG.isMobileWeb ? (
         <EditorOutlineViewer
-          editor={editorElement}
+          editor={editorElement?.host ?? null}
           show={mode === 'page'}
           openOutlinePanel={openOutlinePanel}
         />

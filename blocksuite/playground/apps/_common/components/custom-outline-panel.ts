@@ -22,7 +22,7 @@ export class CustomOutlinePanel extends WithDisposable(ShadowlessElement) {
 
   private _renderPanel() {
     return html`<affine-outline-panel
-      .editor=${this.editor}
+      .editor=${this.editor.host}
       .fitPadding=${[50, 360, 50, 50]}
     ></affine-outline-panel>`;
   }

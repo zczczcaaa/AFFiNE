@@ -1,15 +1,16 @@
 import {
+  type EditorHost,
   PropTypes,
   requiredProperties,
   ShadowlessElement,
 } from '@blocksuite/block-std';
+import { DocModeProvider } from '@blocksuite/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
 import { provide } from '@lit/context';
 import { effect, signal } from '@preact/signals-core';
 import { html, type PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { AffineEditorContainer } from '../../editors/editor-container.js';
 import { outlineSettingsKey, type TocContext, tocContext } from './config.js';
 import * as styles from './outline-panel.css';
 
@@ -21,6 +22,12 @@ export const AFFINE_OUTLINE_PANEL = 'affine-outline-panel';
 export class OutlinePanel extends SignalWatcher(
   WithDisposable(ShadowlessElement)
 ) {
+  private _getEditorMode(host: EditorHost) {
+    const docModeService = host.std.get(DocModeProvider);
+    const mode = docModeService.getEditorMode();
+    return mode;
+  }
+
   private _setContext() {
     this._context = {
       editor$: signal(this.editor),
@@ -39,7 +46,7 @@ export class OutlinePanel extends SignalWatcher(
         }
 
         const editor = this._context.editor$.value;
-        if (editor.mode === 'edgeless') {
+        if (this._getEditorMode(editor) === 'edgeless') {
           this._context.enableSorting$.value = true;
         } else if (settings) {
           this._context.enableSorting$.value = settings.enableSorting;
@@ -51,7 +58,8 @@ export class OutlinePanel extends SignalWatcher(
   private _watchSettingsChange() {
     this.disposables.add(
       effect(() => {
-        if (this._context.editor$.value.mode === 'edgeless') return;
+        if (this._getEditorMode(this._context.editor$.value) === 'edgeless')
+          return;
 
         const showPreviewIcon = this._context.showIcons$.value;
         const enableNotesSorting = this._context.enableSorting$.value;
@@ -84,7 +92,7 @@ export class OutlinePanel extends SignalWatcher(
   }
 
   override render() {
-    if (!this.editor.host) return;
+    if (!this.editor) return;
 
     return html`
       <affine-outline-panel-header></affine-outline-panel-header>
@@ -97,7 +105,7 @@ export class OutlinePanel extends SignalWatcher(
   private accessor _context!: TocContext;
 
   @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
+  accessor editor!: EditorHost;
 
   @property({ attribute: false })
   accessor fitPadding!: number[];

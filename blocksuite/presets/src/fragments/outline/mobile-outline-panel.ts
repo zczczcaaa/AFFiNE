@@ -1,6 +1,11 @@
 import { unsafeCSSVarV2 } from '@blocksuite/affine-shared/theme';
-import { PropTypes, requiredProperties } from '@blocksuite/block-std';
 import {
+  type EditorHost,
+  PropTypes,
+  requiredProperties,
+} from '@blocksuite/block-std';
+import {
+  DocModeProvider,
   matchModels,
   NoteDisplayMode,
   ParagraphBlockModel,
@@ -14,7 +19,6 @@ import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import type { AffineEditorContainer } from '../../editors/editor-container.js';
 import { getHeadingBlocksFromDoc } from './utils/query.js';
 import {
   observeActiveHeadingDuringScroll,
@@ -162,8 +166,9 @@ export class MobileOutlineMenu extends SignalWatcher(
   };
 
   override render() {
-    if (this.editor.doc.root === null || this.editor.mode === 'edgeless')
-      return nothing;
+    const docModeService = this.editor.std.get(DocModeProvider);
+    const mode = docModeService.getEditorMode();
+    if (this.editor.doc.root === null || mode === 'edgeless') return nothing;
 
     const headingBlocks = getHeadingBlocksFromDoc(
       this.editor.doc,
@@ -182,7 +187,7 @@ export class MobileOutlineMenu extends SignalWatcher(
   }
 
   @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
+  accessor editor!: EditorHost;
 }
 
 declare global {

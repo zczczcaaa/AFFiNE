@@ -1,13 +1,17 @@
 import type { EditorHost } from '@blocksuite/block-std';
-import { getDocTitleByEditorHost, NoteDisplayMode } from '@blocksuite/blocks';
+import {
+  DocModeProvider,
+  getDocTitleByEditorHost,
+  NoteDisplayMode,
+} from '@blocksuite/blocks';
 import { clamp, DisposableGroup } from '@blocksuite/global/utils';
 
-import type { AffineEditorContainer } from '../../../editors/editor-container.js';
 import { getHeadingBlocksFromDoc } from './query.js';
 
-export function scrollToBlock(editor: AffineEditorContainer, blockId: string) {
-  const { host, mode } = editor;
-  if (mode === 'edgeless' || !host) return;
+export function scrollToBlock(host: EditorHost, blockId: string) {
+  const docModeService = host.std.get(DocModeProvider);
+  const mode = docModeService.getEditorMode();
+  if (mode === 'edgeless') return;
 
   if (editor.doc.root?.id === blockId) {
     const docTitle = getDocTitleByEditorHost(host);
@@ -49,12 +53,11 @@ export function isBlockBeforeViewportCenter(
 }
 
 export const observeActiveHeadingDuringScroll = (
-  getEditor: () => AffineEditorContainer, // workaround for editor changed
+  getEditor: () => EditorHost, // workaround for editor changed
   update: (activeHeading: string | null) => void
 ) => {
   const handler = () => {
-    const { host } = getEditor();
-    if (!host) return;
+    const host = getEditor();
 
     const headings = getHeadingBlocksFromDoc(
       host.doc,
@@ -81,13 +84,10 @@ export const observeActiveHeadingDuringScroll = (
 let highlightMask: HTMLDivElement | null = null;
 let highlightTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
-function highlightBlock(editor: AffineEditorContainer, blockId: string) {
+function highlightBlock(host: EditorHost, blockId: string) {
   const emptyClear = () => {};
 
-  const { host } = editor;
-  if (!host) return emptyClear;
-
-  if (editor.doc.root?.id === blockId) return emptyClear;
+  if (host.doc.root?.id === blockId) return emptyClear;
 
   const rootComponent = host.querySelector('affine-page-root');
   if (!rootComponent) return emptyClear;
@@ -152,11 +152,11 @@ function highlightBlock(editor: AffineEditorContainer, blockId: string) {
 // this function is useful when the scroll need smooth animation
 let highlightIntervalId: ReturnType<typeof setInterval> | null = null;
 export async function scrollToBlockWithHighlight(
-  editor: AffineEditorContainer,
+  host: EditorHost,
   blockId: string,
   timeout = 3000
 ) {
-  scrollToBlock(editor, blockId);
+  scrollToBlock(host, blockId);
 
   let timeCount = 0;
 
@@ -173,10 +173,9 @@ export async function scrollToBlockWithHighlight(
         return;
       }
 
-      const { host } = editor;
-      const block = host?.view.getBlock(blockId);
+      const block = host.view.getBlock(blockId);
 
-      if (!host || !block || timeCount > timeout) {
+      if (!block || timeCount > timeout) {
         clearInterval(highlightIntervalId);
         resolve(() => {});
         return;
@@ -194,7 +193,7 @@ export async function scrollToBlockWithHighlight(
       clearInterval(highlightIntervalId);
 
       // highlight block
-      resolve(highlightBlock(editor, blockId));
+      resolve(highlightBlock(host, blockId));
     }, 100);
   });
 }
