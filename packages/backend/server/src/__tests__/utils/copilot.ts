@@ -444,9 +444,12 @@ export async function chatWithText(
   app: TestingApp,
   sessionId: string,
   messageId?: string,
-  prefix = ''
+  prefix = '',
+  retry?: boolean
 ): Promise<string> {
-  const query = messageId ? `?messageId=${messageId}` : '';
+  const query = messageId
+    ? `?messageId=${messageId}` + (retry ? '&retry=true' : '')
+    : '';
   const res = await app
     .GET(`/api/copilot/chat/${sessionId}${prefix}${query}`)
     .expect(200);

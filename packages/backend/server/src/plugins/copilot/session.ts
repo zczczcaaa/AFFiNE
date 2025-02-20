@@ -75,10 +75,11 @@ export class ChatSession implements AsyncDisposable {
     this.stashMessageCount += 1;
   }
 
-  revertLatestMessage() {
+  revertLatestMessage(removeLatestUserMessage: boolean) {
     const messages = this.state.messages;
     messages.splice(
-      messages.findLastIndex(({ role }) => role === AiPromptRole.user) + 1
+      messages.findLastIndex(({ role }) => role === AiPromptRole.user) +
+        (removeLatestUserMessage ? 0 : 1)
     );
   }
 
@@ -341,7 +342,10 @@ export class ChatSessionService {
 
   // revert the latest messages not generate by user
   // after revert, we can retry the action
-  async revertLatestMessage(sessionId: string) {
+  async revertLatestMessage(
+    sessionId: string,
+    removeLatestUserMessage: boolean
+  ) {
     await this.db.$transaction(async tx => {
       const id = await tx.aiSession
         .findUnique({
@@ -361,7 +365,8 @@ export class ChatSessionService {
         .then(roles =>
           roles
             .slice(
-              roles.findLastIndex(({ role }) => role === AiPromptRole.user) + 1
+              roles.findLastIndex(({ role }) => role === AiPromptRole.user) +
+                (removeLatestUserMessage ? 0 : 1)
             )
             .map(({ id }) => id)
         );

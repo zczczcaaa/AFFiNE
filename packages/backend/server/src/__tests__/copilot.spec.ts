@@ -602,36 +602,81 @@ test('should revert message correctly', async t => {
 
     const message = (await session.createMessage({
       sessionId,
-      content: 'hello',
+      content: '1',
     }))!;
 
     await s.pushByMessageId(message);
     await s.save();
   }
 
+  const cleanObject = (obj: any[]) =>
+    JSON.parse(
+      JSON.stringify(obj, (k, v) =>
+        ['id', 'createdAt'].includes(k) || v === null ? undefined : v
+      )
+    );
+
   // check ChatSession behavior
   {
     const s = (await session.get(sessionId))!;
-    s.push({ role: 'assistant', content: 'hi', createdAt: new Date() });
+    s.push({ role: 'assistant', content: '2', createdAt: new Date() });
+    s.push({ role: 'user', content: '3', createdAt: new Date() });
+    s.push({ role: 'assistant', content: '4', createdAt: new Date() });
     await s.save();
     const beforeRevert = s.finish({ word: 'world' });
-    t.is(beforeRevert.length, 3, 'should have three messages before revert');
+    t.snapshot(
+      cleanObject(beforeRevert),
+      'should have three messages before revert'
+    );
 
-    s.revertLatestMessage();
-    const afterRevert = s.finish({ word: 'world' });
-    t.is(afterRevert.length, 2, 'should remove assistant message after revert');
+    {
+      s.revertLatestMessage(false);
+      const afterRevert = s.finish({ word: 'world' });
+      t.snapshot(
+        cleanObject(afterRevert),
+        'should remove assistant message after revert'
+      );
+    }
+
+    {
+      s.revertLatestMessage(true);
+      const afterRevert = s.finish({ word: 'world' });
+      t.snapshot(
+        cleanObject(afterRevert),
+        'should remove assistant message after revert'
+      );
+    }
   }
 
   // check database behavior
   {
     let s = (await session.get(sessionId))!;
-    const beforeRevert = s.finish({ word: 'world' });
-    t.is(beforeRevert.length, 3, 'should have three messages before revert');
 
-    await session.revertLatestMessage(sessionId);
-    s = (await session.get(sessionId))!;
-    const afterRevert = s.finish({ word: 'world' });
-    t.is(afterRevert.length, 2, 'should remove assistant message after revert');
+    const beforeRevert = s.finish({ word: 'world' });
+    t.snapshot(
+      cleanObject(beforeRevert),
+      'should have three messages before revert'
+    );
+
+    {
+      await session.revertLatestMessage(sessionId, false);
+      s = (await session.get(sessionId))!;
+      const afterRevert = s.finish({ word: 'world' });
+      t.snapshot(
+        cleanObject(afterRevert),
+        'should remove assistant message after revert'
+      );
+    }
+
+    {
+      await session.revertLatestMessage(sessionId, true);
+      s = (await session.get(sessionId))!;
+      const afterRevert = s.finish({ word: 'world' });
+      t.snapshot(
+        cleanObject(afterRevert),
+        'should remove assistant message after revert'
+      );
+    }
   }
 });
 

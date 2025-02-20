@@ -498,6 +498,15 @@ test('should be able to retry with api', async t => {
     );
   }
 
+  const cleanObject = (obj: any[]) =>
+    JSON.parse(
+      JSON.stringify(obj, (k, v) =>
+        ['id', 'sessionId', 'createdAt'].includes(k) || v === null
+          ? undefined
+          : v
+      )
+    );
+
   // retry chat
   {
     const { id } = await createWorkspace(app);
@@ -514,10 +523,32 @@ test('should be able to retry with api', async t => {
 
     // should only have 1 message
     const histories = await getHistories(app, { workspaceId: id });
-    t.deepEqual(
-      histories.map(h => h.messages.map(m => m.content)),
-      [['generate text to text']],
-      'should be able to list history'
+    t.snapshot(
+      cleanObject(histories),
+      'should be able to list history after retry'
+    );
+  }
+
+  // retry chat with new message id
+  {
+    const { id } = await createWorkspace(app);
+    const sessionId = await createCopilotSession(
+      app,
+      id,
+      randomUUID(),
+      promptName
+    );
+    const messageId = await createCopilotMessage(app, sessionId);
+    await chatWithText(app, sessionId, messageId);
+    // retry with new message id
+    const newMessageId = await createCopilotMessage(app, sessionId);
+    await chatWithText(app, sessionId, newMessageId, '', true);
+
+    // should only have 1 message
+    const histories = await getHistories(app, { workspaceId: id });
+    t.snapshot(
+      cleanObject(histories),
+      'should be able to list history after retry'
     );
   }
 
