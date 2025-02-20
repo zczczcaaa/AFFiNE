@@ -85,10 +85,6 @@ export class AffineAIPanelWidget extends WidgetComponent {
 
   private _answer: string | null = null;
 
-  private readonly _cancelCallback = () => {
-    this.focus();
-  };
-
   private readonly _clearDiscardModal = () => {
     if (this._discardModalAbort) {
       this._discardModalAbort.abort();
@@ -97,25 +93,7 @@ export class AffineAIPanelWidget extends WidgetComponent {
   };
 
   private readonly _clickOutside = () => {
-    switch (this.state) {
-      case 'hidden':
-        return;
-      case 'error':
-      case 'finished':
-        if (!this._answer) {
-          this.hide();
-        } else {
-          this.discard();
-        }
-        break;
-      default:
-        this.discard();
-    }
-  };
-
-  private readonly _discardCallback = () => {
-    this.hide();
-    this.config?.discardCallback?.();
+    this._discardWithConfirmation();
   };
 
   private _discardModalAbort: AbortController | null = null;
@@ -171,25 +149,25 @@ export class AffineAIPanelWidget extends WidgetComponent {
 
   ctx: unknown = null;
 
-  discard = () => {
-    if ((this.state === 'finished' || this.state === 'error') && !this.answer) {
-      this._discardCallback();
+  private readonly _discardWithConfirmation = () => {
+    if (this.state === 'hidden') {
       return;
     }
-    if (this.state === 'input') {
+    if (this.state === 'input' || !this.answer) {
       this.hide();
       return;
     }
     this.showDiscardModal()
       .then(discard => {
-        if (discard) {
-          this._discardCallback();
-        } else {
-          this._cancelCallback();
-        }
-        this.restoreSelection();
+        discard && this.discard();
       })
       .catch(console.error);
+  };
+
+  discard = () => {
+    this.hide();
+    this.restoreSelection();
+    this.config?.discardCallback?.();
   };
 
   /**
@@ -472,7 +450,7 @@ export class AffineAIPanelWidget extends WidgetComponent {
         'input',
         () =>
           html`<ai-panel-input
-            .onBlur=${this.discard}
+            .onBlur=${this._discardWithConfirmation}
             .onFinish=${this._inputFinish}
             .onInput=${this.onInput}
             .networkSearchConfig=${config.networkSearchConfig}

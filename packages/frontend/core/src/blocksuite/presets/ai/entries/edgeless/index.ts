@@ -47,7 +47,7 @@ export function setupEdgelessElementToolbarAIEntry(
         if (aiPanel.config) {
           aiPanel.config.generateAnswer = ({ finish, input }) => {
             finish('success');
-            aiPanel.discard();
+            aiPanel.hide();
             extractSelectedContent(edgeless.host)
               .then(context => {
                 AIProvider.slots.requestSendWithChat.emit({

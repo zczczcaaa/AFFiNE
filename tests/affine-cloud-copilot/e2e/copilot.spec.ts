@@ -436,7 +436,7 @@ test.describe('chat panel', () => {
     expect(editorContent).toBe(content);
   });
 
-  test('can be retry or discard chat in page mode', async ({ page }) => {
+  test('can regenerate chat in page mode', async ({ page }) => {
     await page.reload();
     await clickSideBarAllPageButton(page);
     await page.waitForTimeout(200);
@@ -467,13 +467,53 @@ test.describe('chat panel', () => {
         ).innerText()
       ).not.toBe(content);
     }
+  });
 
-    // discard
+  test('can discard chat in page mode', async ({ page }) => {
+    await page.reload();
+    await clickSideBarAllPageButton(page);
+    await page.waitForTimeout(200);
+    await createLocalWorkspace({ name: 'test' }, page);
+    await clickNewPageButton(page);
+    await focusToEditor(page);
+    await page.keyboard.type('/');
+    await page.getByTestId('sub-menu-0').getByText('Ask AI').click();
+    const input = await page.waitForSelector('ai-panel-input textarea');
+    await input.fill('hello');
+    await input.press('Enter');
+
+    // discard without confirm modal
     {
       const resp = await page.waitForSelector(
         'ai-panel-answer .response-list-container:last-child'
       );
       await (await resp.waitForSelector('.ai-item-discard')).click();
+      const editorContent = await getEditorContent(page);
+      expect(editorContent).toBe('');
+    }
+  });
+
+  test('can discard chat with confirm modal in edgeless mode', async ({
+    page,
+  }) => {
+    await page.reload();
+    await clickSideBarAllPageButton(page);
+    await page.waitForTimeout(200);
+    await createLocalWorkspace({ name: 'test' }, page);
+    await clickNewPageButton(page);
+    await focusToEditor(page);
+    await page.keyboard.type('/');
+    await page.getByTestId('sub-menu-0').getByText('Ask AI').click();
+    const input = await page.waitForSelector('ai-panel-input textarea');
+    await input.fill('hello');
+    await input.press('Enter');
+
+    // discard with confirm modal
+    {
+      await page.waitForSelector(
+        'ai-panel-answer .response-list-container:last-child'
+      );
+      await page.mouse.click(100, 100);
       await page.getByTestId('confirm-modal-confirm').click();
       const editorContent = await getEditorContent(page);
       expect(editorContent).toBe('');
