@@ -335,3 +335,55 @@ test('undo-redo when add inline latex using markdown shortcut', async ({
   ]);
   await assertRichTextInlineRange(page, 0, 3, 0);
 });
+
+test('auto focus after add inline latex using markdown shortcut', async ({
+  page,
+}) => {
+  await enterPlaygroundRoom(page);
+  await initEmptyParagraphState(page);
+  await focusRichText(page);
+
+  await type(page, 'aa$$ bbb\ncc');
+  await assertRichTextInlineDeltas(page, [
+    {
+      insert: 'aa',
+    },
+    {
+      insert: ' ',
+      attributes: {
+        latex: 'bbb',
+      },
+    },
+    {
+      insert: 'cc',
+    },
+  ]);
+
+  await undoByKeyboard(page);
+  await assertRichTextInlineDeltas(page, [
+    {
+      insert: 'aa',
+    },
+    {
+      insert: ' ',
+      attributes: {
+        latex: 'bbb',
+      },
+    },
+  ]);
+  await redoByKeyboard(page);
+  await assertRichTextInlineDeltas(page, [
+    {
+      insert: 'aa',
+    },
+    {
+      insert: ' ',
+      attributes: {
+        latex: 'bbb',
+      },
+    },
+    {
+      insert: 'cc',
+    },
+  ]);
+});

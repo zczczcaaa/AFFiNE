@@ -229,6 +229,10 @@ export class AffineLatexNode extends SignalWatcher(
               latex,
             }
           );
+          this.editor.setInlineRange({
+            index: this.endOffset,
+            length: 0,
+          });
         }
       },
       { once: true }
