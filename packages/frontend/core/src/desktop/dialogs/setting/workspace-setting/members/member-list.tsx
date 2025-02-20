@@ -247,6 +247,7 @@ const MemberItem = ({
         setOpen={setOpen}
         member={member}
         inputValue={inputValue}
+        placeholder={workspaceName}
         setInputValue={setInputValue}
         isEquals={isEquals}
         onConfirm={confirmAssign}

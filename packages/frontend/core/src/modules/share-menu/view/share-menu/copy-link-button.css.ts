@@ -6,6 +6,7 @@ export const copyLinkContainerStyle = style({
   alignItems: 'center',
   width: '100%',
   position: 'relative',
+  border: `1px solid ${cssVarV2('layer/insideBorder/blackBorder')}`,
   selectors: {
     '&.secondary': {
       padding: 0,

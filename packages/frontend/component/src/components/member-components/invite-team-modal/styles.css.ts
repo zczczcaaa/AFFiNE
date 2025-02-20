@@ -100,6 +100,7 @@ export const errorHint = style({
 export const contentStyle = style({
   paddingLeft: '0',
   paddingRight: '0',
+  overflowY: 'visible',
 });
 
 export const invitationLinkContent = style({

@@ -89,9 +89,11 @@ export const PublicDoc = ({ disabled }: { disabled?: boolean }) => {
       </div>
       {disabled ? (
         <div className={clsx(styles.menuTriggerStyle, 'disable')}>
-          {isSharedPage
-            ? t['com.affine.share-menu.option.link.readonly']()
-            : t['com.affine.share-menu.option.link.no-access']()}
+          <div className={styles.menuTriggerText}>
+            {isSharedPage
+              ? t['com.affine.share-menu.option.link.readonly']()
+              : t['com.affine.share-menu.option.link.no-access']()}
+          </div>
         </div>
       ) : (
         <Menu
@@ -128,6 +130,7 @@ export const PublicDoc = ({ disabled }: { disabled?: boolean }) => {
             className={styles.menuTriggerStyle}
             data-testid="share-link-menu-trigger"
             variant="plain"
+            suffixClassName={styles.suffixClassName}
             contentStyle={{
               width: '100%',
             }}

@@ -8,6 +8,7 @@ import type {
   WorkspaceProfileInfo,
 } from '@affine/core/modules/workspace';
 import { UNTITLED_WORKSPACE_NAME } from '@affine/env/constant';
+import { useI18n } from '@affine/i18n';
 import {
   ArrowDownSmallIcon,
   CloudWorkspaceIcon,
@@ -269,6 +270,7 @@ export const WorkspaceCard = forwardRef<
     },
     ref
   ) => {
+    const t = useI18n();
     const information = useWorkspaceInfo(workspaceMetadata);
 
     const name = information?.name ?? UNTITLED_WORKSPACE_NAME;
@@ -331,10 +333,18 @@ export const WorkspaceCard = forwardRef<
               </Button>
             ) : null}
             {hideCollaborationIcon || information?.isOwner ? null : (
-              <CollaborationIcon className={styles.collaborationIcon} />
+              <Tooltip
+                content={t['com.affine.settings.workspace.state.joined']()}
+              >
+                <CollaborationIcon className={styles.collaborationIcon} />
+              </Tooltip>
             )}
             {hideTeamWorkspaceIcon || !information?.isTeam ? null : (
-              <TeamWorkspaceIcon className={styles.collaborationIcon} />
+              <Tooltip
+                content={t['com.affine.settings.workspace.state.team']()}
+              >
+                <TeamWorkspaceIcon className={styles.collaborationIcon} />
+              </Tooltip>
             )}
             {onClickOpenSettings && (
               <div className={styles.settingButton} onClick={onOpenSettings}>

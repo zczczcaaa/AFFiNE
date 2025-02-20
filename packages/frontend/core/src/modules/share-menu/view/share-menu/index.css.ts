@@ -15,6 +15,10 @@ export const content = style({
   flexDirection: 'column',
   gap: '8px',
 });
+export const divider = style({
+  borderColor: cssVarV2('tab/divider/divider'),
+  margin: '4px 0px',
+});
 export const menuStyle = style({
   width: '390px',
   maxHeight: '562px',
@@ -65,6 +69,13 @@ export const columnContainerStyle = style({
   justifyContent: 'center',
   width: '100%',
   gap: '8px',
+});
+export const memberRowsStyle = style({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  gap: '8px',
+  margin: '6px 0px',
 });
 export const exportContainerStyle = style({
   display: 'flex',
@@ -127,8 +138,9 @@ export const shortcutStyle = style({
 });
 
 export const generalAccessStyle = style({
-  padding: '4px',
+  padding: '3px 4px',
   fontSize: cssVar('fontSm'),
   color: cssVarV2('text/secondary'),
   fontWeight: 500,
+  height: '30px',
 });

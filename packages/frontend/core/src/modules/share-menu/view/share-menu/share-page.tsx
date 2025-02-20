@@ -1,4 +1,4 @@
-import { Skeleton } from '@affine/component';
+import { Divider, Skeleton } from '@affine/component';
 import { Button } from '@affine/component/ui/button';
 import { ServerService } from '@affine/core/modules/cloud';
 import { DocService } from '@affine/core/modules/doc';
@@ -97,8 +97,11 @@ export const AFFiNESharePage = (
   return (
     <div className={styles.content}>
       <div className={styles.columnContainerStyle}>
-        {canManageUsers && <InviteInput onFocus={props.onClickInvite} />}
-        <MembersRow onClick={props.onClickMembers} />
+        <div className={styles.memberRowsStyle}>
+          {canManageUsers && <InviteInput onFocus={props.onClickInvite} />}
+          <MembersRow onClick={props.onClickMembers} />
+        </div>
+
         <div className={styles.generalAccessStyle}>
           {t['com.affine.share-menu.generalAccess']()}
         </div>
@@ -109,6 +112,7 @@ export const AFFiNESharePage = (
         />
         <PublicDoc disabled={!canPublish} />
       </div>
+      <Divider className={styles.divider} />
       <CopyLinkButton workspaceId={workspaceId} />
     </div>
   );

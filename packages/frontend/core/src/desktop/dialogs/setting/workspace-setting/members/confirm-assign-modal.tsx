@@ -10,6 +10,7 @@ export const ConfirmAssignModal = ({
   setOpen,
   member,
   inputValue,
+  placeholder,
   setInputValue,
   isEquals,
   onConfirm,
@@ -19,6 +20,7 @@ export const ConfirmAssignModal = ({
   isEquals: boolean;
   member: Member;
   inputValue: string;
+  placeholder?: string;
   onConfirm: () => void;
   setInputValue: (value: string) => void;
 }) => {
@@ -35,31 +37,45 @@ export const ConfirmAssignModal = ({
       confirmButtonOptions={{ disabled: !isEquals, variant: 'error' }}
     >
       <div className={styles.confirmAssignModalContent}>
-        <div>
-          <p>
-            {t['com.affine.payment.member.team.assign.confirm.description']({
-              name: member.name || member.email || member.id,
-            })}
-          </p>
-          <p>
-            {t['com.affine.payment.member.team.assign.confirm.description-1']()}
-          </p>
-          <p>
-            {t['com.affine.payment.member.team.assign.confirm.description-2']()}
-          </p>
-          <p>
-            {t['com.affine.payment.member.team.assign.confirm.description-3']()}
-          </p>
+        <p>
+          {t['com.affine.payment.member.team.assign.confirm.description']({
+            name: member.name || member.email || member.id,
+          })}
+        </p>
+        <div className={styles.descriptions}>
+          <div className={styles.description}>
+            <span className={styles.prefixDot} />
+            <span>
+              {t[
+                'com.affine.payment.member.team.assign.confirm.description-1'
+              ]()}
+            </span>
+          </div>
+          <div className={styles.description}>
+            <span className={styles.prefixDot} />
+            <span>
+              {t[
+                'com.affine.payment.member.team.assign.confirm.description-2'
+              ]()}
+            </span>
+          </div>
+          <div className={styles.description}>
+            <span className={styles.prefixDot} />
+            <span>
+              {t[
+                'com.affine.payment.member.team.assign.confirm.description-3'
+              ]()}
+            </span>
+          </div>
         </div>
+
         <div className={styles.confirmInputContainer}>
           {t['com.affine.payment.member.team.assign.confirm.description-4']()}
           <Input
             value={inputValue}
             inputStyle={{ fontSize: cssVar('fontSm') }}
             onChange={setInputValue}
-            placeholder={t.t(
-              'com.affine.payment.member.team.assign.confirm.placeholder'
-            )}
+            placeholder={placeholder}
           />
         </div>
       </div>

@@ -128,6 +128,25 @@ export const confirmAssignModalContent = style({
   padding: '0',
 });
 
+export const descriptions = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
+
+export const description = style({
+  display: 'flex',
+});
+
+export const prefixDot = style({
+  background: cssVarV2('icon/activated'),
+  width: '5px',
+  height: '5px',
+  borderRadius: '50%',
+  marginRight: '12px',
+  marginTop: '10px',
+});
+
 export const confirmInputContainer = style({
   display: 'flex',
   flexDirection: 'column',

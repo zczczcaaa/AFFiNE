@@ -2,7 +2,6 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 export const inputStyle = style({
-  marginTop: '6px',
   padding: '4px',
   gap: '4px',
   borderRadius: '4px',

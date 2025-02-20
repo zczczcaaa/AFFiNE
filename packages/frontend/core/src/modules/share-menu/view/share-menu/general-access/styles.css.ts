@@ -3,19 +3,28 @@ import { cssVarV2 } from '@toeverything/theme/v2';
 import { style } from '@vanilla-extract/css';
 
 export const menuTriggerStyle = style({
-  padding: '4px 10px',
+  padding: '4px 0px 4px 4px',
   borderRadius: '4px',
   justifyContent: 'space-between',
   display: 'flex',
   fontSize: cssVar('fontSm'),
   fontWeight: 400,
+  height: '30px',
   selectors: {
     '&.disable': {
       alignItems: 'center',
       gap: '4px',
+      marginRight: '4px',
       color: cssVarV2('text/disable'),
     },
   },
+});
+export const menuTriggerText = style({
+  margin: '0px 4px',
+});
+export const suffixClassName = style({
+  width: '20px',
+  height: '20px',
 });
 
 export const rowContainerStyle = style({
@@ -23,7 +32,7 @@ export const rowContainerStyle = style({
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
-  padding: '4px',
+  marginLeft: '4px',
 });
 export const exportContainerStyle = style({
   display: 'flex',
@@ -32,7 +41,6 @@ export const exportContainerStyle = style({
 });
 export const labelStyle = style({
   fontSize: cssVar('fontSm'),
-  fontWeight: 500,
 });
 export const publicItemRowStyle = style({
   display: 'flex',

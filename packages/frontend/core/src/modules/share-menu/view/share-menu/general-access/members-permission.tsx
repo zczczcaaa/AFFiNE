@@ -97,7 +97,9 @@ export const MembersPermission = ({
       </div>
       {disabled ? (
         <div className={clsx(styles.menuTriggerStyle, 'disable')}>
-          {showTips ? <Tips disable={disabled} /> : null} {currentRoleName}
+          <div className={styles.menuTriggerText}>
+            {showTips ? <Tips disable={disabled} /> : null} {currentRoleName}
+          </div>
         </div>
       ) : (
         <Menu
@@ -142,6 +144,7 @@ export const MembersPermission = ({
           <MenuTrigger
             className={styles.menuTriggerStyle}
             variant="plain"
+            suffixClassName={styles.suffixClassName}
             contentStyle={{
               width: '100%',
             }}
