@@ -3,7 +3,11 @@ import { css, html } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { PropTypes, requiredProperties } from '../view/decorators/required.js';
-import { type EditorHost, ShadowlessElement } from '../view/index.js';
+import {
+  type BlockComponent,
+  type EditorHost,
+  ShadowlessElement,
+} from '../view/index.js';
 import type { GfxBlockElementModel } from './model/gfx-block-model.js';
 import { Viewport } from './viewport.js';
 
@@ -31,6 +35,13 @@ export function requestThrottledConnectedFrame<
   }) as T;
 }
 
+function setDisplay(view: BlockComponent | null, display: 'block' | 'none') {
+  if (!view) return;
+  if (view.style.display !== display) {
+    view.style.display = display;
+  }
+}
+
 @requiredProperties({
   viewport: PropTypes.instanceOf(Viewport),
 })
@@ -53,10 +64,7 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
 
       modelsInViewport.forEach(model => {
         const view = host.std.view.getBlock(model.id);
-
-        if (view) {
-          view.style.display = '';
-        }
+        setDisplay(view, 'block');
 
         if (this._lastVisibleModels?.has(model)) {
           this._lastVisibleModels!.delete(model);
@@ -65,10 +73,7 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
 
       this._lastVisibleModels?.forEach(model => {
         const view = host.std.view.getBlock(model.id);
-
-        if (view) {
-          view.style.display = 'none';
-        }
+        setDisplay(view, 'none');
       });
 
       this._lastVisibleModels = modelsInViewport;
