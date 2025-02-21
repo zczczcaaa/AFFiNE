@@ -22,7 +22,7 @@
     "@floating-ui/dom": "^1.6.10",
     "@lit/context": "^1.1.2",
     "@preact/signals-core": "^1.8.0",
-    "@toeverything/theme": "^1.1.11",
+    "@toeverything/theme": "^1.1.12",
     "@types/hast": "^3.0.4",
     "@types/mdast": "^4.0.4",
     "dompurify": "^3.2.4",
