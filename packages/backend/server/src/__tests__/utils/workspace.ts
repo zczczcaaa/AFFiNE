@@ -85,6 +85,21 @@ export async function updateWorkspace(
   return res.updateWorkspace.public;
 }
 
+export async function deleteWorkspace(
+  app: TestingApp,
+  workspaceId: string
+): Promise<boolean> {
+  const res = await app.gql(
+    `
+      mutation {
+        deleteWorkspace(id: "${workspaceId}")
+      }
+    `
+  );
+
+  return res.deleteWorkspace;
+}
+
 export async function publishDoc(
   app: TestingApp,
   workspaceId: string,

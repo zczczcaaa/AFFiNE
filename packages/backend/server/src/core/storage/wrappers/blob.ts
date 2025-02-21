@@ -42,7 +42,7 @@ export class WorkspaceBlobStorage {
     return this.provider.get(`${workspaceId}/${key}`);
   }
 
-  async list(workspaceId: string) {
+  async list(workspaceId: string, syncBlobMeta = true) {
     const blobsInDb = await this.db.blob.findMany({
       where: {
         workspaceId,
@@ -59,7 +59,9 @@ export class WorkspaceBlobStorage {
       blob.key = blob.key.slice(workspaceId.length + 1);
     });
 
-    this.trySyncBlobsMeta(workspaceId, blobs);
+    if (syncBlobMeta) {
+      this.trySyncBlobsMeta(workspaceId, blobs);
+    }
 
     return blobs.map(blob => ({
       key: blob.key,
@@ -182,7 +184,8 @@ export class WorkspaceBlobStorage {
 
   @OnEvent('workspace.deleted')
   async onWorkspaceDeleted({ id }: Events['workspace.deleted']) {
-    const blobs = await this.list(id);
+    // do not sync blob meta to DB
+    const blobs = await this.list(id, false);
 
     // to reduce cpu time holding
     blobs.forEach(blob => {

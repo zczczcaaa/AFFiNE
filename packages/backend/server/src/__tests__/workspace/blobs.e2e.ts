@@ -1,10 +1,13 @@
 import test from 'ava';
+import Sinon from 'sinon';
 
+import { WorkspaceBlobStorage } from '../../core/storage/wrappers/blob';
 import { WorkspaceFeatureModel } from '../../models';
 import {
   collectAllBlobSizes,
   createTestingApp,
   createWorkspace,
+  deleteWorkspace,
   getWorkspaceBlobsSize,
   listBlobs,
   setBlob,
@@ -75,6 +78,25 @@ test('should list blobs', async t => {
   t.is(ret.length, 2, 'failed to list blobs');
   // list blob result is not ordered
   t.deepEqual(ret.sort(), [hash1, hash2].sort());
+});
+
+test('should auto delete blobs when workspace is deleted', async t => {
+  await app.signup('u1@affine.pro');
+
+  const workspace = await createWorkspace(app);
+  const buffer1 = Buffer.from([0, 0]);
+  await setBlob(app, workspace.id, buffer1);
+  const buffer2 = Buffer.from([0, 1]);
+  await setBlob(app, workspace.id, buffer2);
+  const size = await collectAllBlobSizes(app);
+  t.is(size, 4);
+  const blobs = await listBlobs(app, workspace.id);
+  t.is(blobs.length, 2);
+
+  const workspaceBlobStorage = Sinon.spy(app.get(WorkspaceBlobStorage));
+  await deleteWorkspace(app, workspace.id);
+  // should not emit workspace.blob.sync event
+  t.is(workspaceBlobStorage.syncBlobMeta.callCount, 0);
 });
 
 test('should calc blobs size', async t => {
