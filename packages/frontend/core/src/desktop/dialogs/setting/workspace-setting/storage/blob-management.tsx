@@ -261,6 +261,8 @@ export const BlobManagementPanel = () => {
     return;
   }, [unusedBlobs]);
 
+  const isEmpty = (unusedBlobs.length === 0 || !unusedBlobs) && !isLoading;
+
   return (
     <>
       {selectedBlobs.length > 0 ? (
@@ -288,42 +290,44 @@ export const BlobManagementPanel = () => {
           {`${t['com.affine.settings.workspace.storage.unused-blobs']()} (${unusedBlobs.length})`}
         </div>
       )}
-      <div className={styles.blobManagementContainer}>
-        {isLoading ? (
-          <div className={styles.loadingContainer}>
-            <Loading size={32} />
-          </div>
-        ) : unusedBlobs.length === 0 ? (
-          <Empty />
-        ) : (
-          <>
-            <div className={styles.blobPreviewGrid} ref={blobPreviewGridRef}>
-              {unusedBlobsPage.map(blob => {
-                const selected = selectedBlobs.includes(blob);
-                return (
-                  <BlobCard
-                    key={blob.key}
-                    blobRecord={blob}
-                    onClick={e => handleBlobClick(blob, e)}
-                    selected={selected}
-                  />
-                );
-              })}
+      {isEmpty ? (
+        <Empty />
+      ) : (
+        <div className={styles.blobManagementContainer}>
+          {isLoading ? (
+            <div className={styles.loadingContainer}>
+              <Loading size={32} />
             </div>
-            {unusedBlobs.length > PAGE_SIZE && (
-              <Pagination
-                pageNum={pageNum}
-                totalCount={unusedBlobs.length}
-                countPerPage={PAGE_SIZE}
-                onPageChange={(_, pageNum) => {
-                  setPageNum(pageNum);
-                  setSkip(pageNum * PAGE_SIZE);
-                }}
-              />
-            )}
-          </>
-        )}
-      </div>
+          ) : (
+            <>
+              <div className={styles.blobPreviewGrid} ref={blobPreviewGridRef}>
+                {unusedBlobsPage.map(blob => {
+                  const selected = selectedBlobs.includes(blob);
+                  return (
+                    <BlobCard
+                      key={blob.key}
+                      blobRecord={blob}
+                      onClick={e => handleBlobClick(blob, e)}
+                      selected={selected}
+                    />
+                  );
+                })}
+              </div>
+              {unusedBlobs.length > PAGE_SIZE && (
+                <Pagination
+                  pageNum={pageNum}
+                  totalCount={unusedBlobs.length}
+                  countPerPage={PAGE_SIZE}
+                  onPageChange={(_, pageNum) => {
+                    setPageNum(pageNum);
+                    setSkip(pageNum * PAGE_SIZE);
+                  }}
+                />
+              )}
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 };

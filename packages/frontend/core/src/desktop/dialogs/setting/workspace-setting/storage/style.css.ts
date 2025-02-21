@@ -88,7 +88,12 @@ export const loadingContainer = style({
 });
 
 export const empty = style({
-  padding: '8px 16px',
+  paddingTop: '64px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: cssVarV2('text/secondary'),
+  fontSize: cssVar('fontSm'),
 });
 
 export const blobPreviewContainer = style({

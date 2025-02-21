@@ -214,8 +214,8 @@ export const BackupSettingPanel = () => {
         />
       );
     }
-    if (backupWorkspaces?.items.length === 0 || !backupWorkspaces) {
-      return <Empty />;
+    if (!backupWorkspaces) {
+      return null;
     }
     return (
       <>
@@ -242,6 +242,9 @@ export const BackupSettingPanel = () => {
     );
   }, [isLoading, backupWorkspaces, pageNum]);
 
+  const isEmpty =
+    (backupWorkspaces?.items.length === 0 || !backupWorkspaces) && !isLoading;
+
   return (
     <>
       <SettingHeader
@@ -249,7 +252,11 @@ export const BackupSettingPanel = () => {
         subtitle={t['com.affine.settings.workspace.backup.subtitle']()}
         data-testid="backup-title"
       />
-      <div className={styles.listContainer}>{innerElement}</div>
+      {isEmpty ? (
+        <Empty />
+      ) : (
+        <div className={styles.listContainer}>{innerElement}</div>
+      )}
     </>
   );
 };
