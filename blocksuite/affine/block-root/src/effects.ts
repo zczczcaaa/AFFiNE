@@ -143,151 +143,32 @@ import {
 } from './widgets/viewport-overlay/viewport-overlay.js';
 
 export function effects() {
+  // Run other effects
   widgetEdgelessElementToolbarEffects();
   widgetMobileToolbarEffects();
   widgetLinkedDocEffects();
 
+  // Register components by category
+  registerRootComponents();
+  registerWidgets();
+  registerEdgelessToolbarComponents();
+  registerEdgelessPanelComponents();
+  registerEdgelessEditorComponents();
+  registerAIComponents();
+  registerMiscComponents();
+}
+
+function registerRootComponents() {
   customElements.define('affine-page-root', PageRootBlockComponent);
   customElements.define('affine-preview-root', PreviewRootBlockComponent);
   customElements.define('affine-edgeless-root', EdgelessRootBlockComponent);
-  customElements.define('edgeless-copilot-panel', EdgelessCopilotPanel);
-  customElements.define(
-    'edgeless-copilot-toolbar-entry',
-    EdgelessCopilotToolbarEntry
-  );
-  customElements.define('edgeless-connector-handle', EdgelessConnectorHandle);
-  customElements.define('edgeless-zoom-toolbar', EdgelessZoomToolbar);
   customElements.define(
     'affine-edgeless-root-preview',
     EdgelessRootPreviewBlockComponent
   );
-  customElements.define('affine-custom-modal', AffineCustomModal);
-  customElements.define('affine-slash-menu', SlashMenu);
-  customElements.define('inner-slash-menu', InnerSlashMenu);
-  customElements.define('generating-placeholder', GeneratingPlaceholder);
-  customElements.define('ai-finish-tip', AIFinishTip);
-  customElements.define('ai-panel-divider', AIPanelDivider);
-  customElements.define(NOTE_SLICER_WIDGET, NoteSlicer);
-  customElements.define(
-    EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET,
-    EdgelessNavigatorBlackBackgroundWidget
-  );
-  customElements.define('zoom-bar-toggle-button', ZoomBarToggleButton);
-  customElements.define(
-    EDGELESS_DRAGGING_AREA_WIDGET,
-    EdgelessDraggingAreaRectWidget
-  );
-  customElements.define('loader-element', Loader);
-  customElements.define('edgeless-brush-menu', EdgelessBrushMenu);
-  customElements.define('edgeless-brush-tool-button', EdgelessBrushToolButton);
-  customElements.define(
-    'edgeless-connector-tool-button',
-    EdgelessConnectorToolButton
-  );
-  customElements.define(
-    'edgeless-default-tool-button',
-    EdgelessDefaultToolButton
-  );
-  customElements.define('edgeless-connector-menu', EdgelessConnectorMenu);
-  customElements.define('ai-panel-answer', AIPanelAnswer);
-  customElements.define(
-    'edgeless-eraser-tool-button',
-    EdgelessEraserToolButton
-  );
-  customElements.define('edgeless-frame-menu', EdgelessFrameMenu);
-  customElements.define('edgeless-frame-tool-button', EdgelessFrameToolButton);
-  customElements.define('ai-panel-input', AIPanelInput);
-  customElements.define('ai-panel-generating', AIPanelGenerating);
-  customElements.define('edgeless-link-tool-button', EdgelessLinkToolButton);
-  customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);
-  customElements.define('edgeless-lasso-tool-button', EdgelessLassoToolButton);
-  customElements.define('ai-panel-error', AIPanelError);
-  customElements.define(
-    EDGELESS_SELECTED_RECT_WIDGET,
-    EdgelessSelectedRectWidget
-  );
-  customElements.define('mindmap-import-placeholder', MindMapPlaceholder);
-  customElements.define(
-    'edgeless-note-senior-button',
-    EdgelessNoteSeniorButton
-  );
-  customElements.define('edgeless-align-panel', EdgelessAlignPanel);
-  customElements.define('card-style-panel', CardStylePanel);
-  customElements.define('edgeless-color-button', EdgelessColorButton);
-  customElements.define('edgeless-color-panel', EdgelessColorPanel);
-  customElements.define('edgeless-text-color-icon', EdgelessTextColorIcon);
-  customElements.define(
-    'edgeless-mindmap-tool-button',
-    EdgelessMindmapToolButton
-  );
-  customElements.define('edgeless-note-tool-button', EdgelessNoteToolButton);
-  customElements.define('edgeless-note-menu', EdgelessNoteMenu);
-  customElements.define('edgeless-line-width-panel', EdgelessLineWidthPanel);
-  customElements.define(
-    'edgeless-frame-order-button',
-    EdgelessFrameOrderButton
-  );
-  customElements.define('edgeless-frame-order-menu', EdgelessFrameOrderMenu);
-  customElements.define(
-    'edgeless-auto-complete-panel',
-    EdgelessAutoCompletePanel
-  );
-  customElements.define(
-    'edgeless-navigator-setting-button',
-    EdgelessNavigatorSettingButton
-  );
-  customElements.define('edgeless-present-button', EdgelessPresentButton);
-  customElements.define('overlay-scrollbar', OverlayScrollbar);
-  customElements.define('affine-template-loading', AffineTemplateLoading);
-  customElements.define('edgeless-auto-complete', EdgelessAutoComplete);
-  customElements.define(
-    'edgeless-font-weight-and-style-panel',
-    EdgelessFontWeightAndStylePanel
-  );
-  customElements.define('edgeless-note-shadow-panel', EdgelessNoteShadowPanel);
-  customElements.define('edgeless-templates-panel', EdgelessTemplatePanel);
-  customElements.define('edgeless-text-menu', EdgelessTextMenu);
-  customElements.define('edgeless-template-button', EdgelessTemplateButton);
-  customElements.define('edgeless-tool-icon-button', EdgelessToolIconButton);
-  customElements.define('edgeless-size-panel', EdgelessSizePanel);
-  customElements.define('edgeless-scale-panel', EdgelessScalePanel);
-  customElements.define('edgeless-font-family-panel', EdgelessFontFamilyPanel);
-  customElements.define('edgeless-shape-panel', EdgelessShapePanel);
-  customElements.define('note-display-mode-panel', NoteDisplayModePanel);
-  customElements.define('edgeless-toolbar-button', EdgelessToolbarButton);
-  customElements.define('frame-preview', FramePreview);
-  customElements.define('presentation-toolbar', PresentationToolbar);
-  customElements.define('edgeless-shape-menu', EdgelessShapeMenu);
-  customElements.define('stroke-style-panel', StrokeStylePanel);
-  customElements.define('edgeless-shape-tool-button', EdgelessShapeToolButton);
-  customElements.define(
-    'edgeless-connector-label-editor',
-    EdgelessConnectorLabelEditor
-  );
-  customElements.define(
-    'edgeless-shape-tool-element',
-    EdgelessShapeToolElement
-  );
-  customElements.define('edgeless-shape-text-editor', EdgelessShapeTextEditor);
-  customElements.define(
-    'edgeless-group-title-editor',
-    EdgelessGroupTitleEditor
-  );
-  customElements.define(EDGELESS_TOOLBAR_WIDGET, EdgelessToolbarWidget);
-  customElements.define('edgeless-shape-style-panel', EdgelessShapeStylePanel);
-  customElements.define(
-    'edgeless-frame-title-editor',
-    EdgelessFrameTitleEditor
-  );
-  customElements.define('edgeless-text-editor', EdgelessTextEditor);
-  customElements.define('affine-image-toolbar', AffineImageToolbar);
-  customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
-  customElements.define(
-    'edgeless-toolbar-shape-draggable',
-    EdgelessToolbarShapeDraggable
-  );
-  customElements.define('toolbar-arrow-up-icon', ToolbarArrowUpIcon);
+}
 
+function registerWidgets() {
   customElements.define(AFFINE_AI_PANEL_WIDGET, AffineAIPanelWidget);
   customElements.define(AFFINE_EMBED_CARD_TOOLBAR_WIDGET, EmbedCardToolbar);
   customElements.define(AFFINE_INNER_MODAL_WIDGET, AffineInnerModalWidget);
@@ -297,7 +178,6 @@ export function effects() {
     AffinePageDraggingAreaWidget
   );
   customElements.define(AFFINE_EDGELESS_COPILOT_WIDGET, EdgelessCopilotWidget);
-
   customElements.define(AFFINE_IMAGE_TOOLBAR_WIDGET, AffineImageToolbarWidget);
   customElements.define(AFFINE_SLASH_MENU_WIDGET, AffineSlashMenuWidget);
   customElements.define(
@@ -310,4 +190,182 @@ export function effects() {
   );
   customElements.define(AFFINE_SURFACE_REF_TOOLBAR, AffineSurfaceRefToolbar);
   customElements.define(AFFINE_FORMAT_BAR_WIDGET, AffineFormatBarWidget);
+}
+
+function registerEdgelessToolbarComponents() {
+  // Tool buttons
+  customElements.define('edgeless-brush-tool-button', EdgelessBrushToolButton);
+  customElements.define(
+    'edgeless-connector-tool-button',
+    EdgelessConnectorToolButton
+  );
+  customElements.define(
+    'edgeless-default-tool-button',
+    EdgelessDefaultToolButton
+  );
+  customElements.define(
+    'edgeless-eraser-tool-button',
+    EdgelessEraserToolButton
+  );
+  customElements.define('edgeless-frame-tool-button', EdgelessFrameToolButton);
+  customElements.define('edgeless-link-tool-button', EdgelessLinkToolButton);
+  customElements.define('edgeless-lasso-tool-button', EdgelessLassoToolButton);
+  customElements.define(
+    'edgeless-mindmap-tool-button',
+    EdgelessMindmapToolButton
+  );
+  customElements.define('edgeless-note-tool-button', EdgelessNoteToolButton);
+  customElements.define('edgeless-shape-tool-button', EdgelessShapeToolButton);
+  customElements.define('edgeless-template-button', EdgelessTemplateButton);
+
+  // Menus
+  customElements.define('edgeless-brush-menu', EdgelessBrushMenu);
+  customElements.define('edgeless-connector-menu', EdgelessConnectorMenu);
+  customElements.define('edgeless-frame-menu', EdgelessFrameMenu);
+  customElements.define('edgeless-mindmap-menu', EdgelessMindmapMenu);
+  customElements.define('edgeless-note-menu', EdgelessNoteMenu);
+  customElements.define('edgeless-shape-menu', EdgelessShapeMenu);
+  customElements.define('edgeless-text-menu', EdgelessTextMenu);
+  customElements.define('edgeless-slide-menu', EdgelessSlideMenu);
+
+  // Toolbar components
+  customElements.define(EDGELESS_TOOLBAR_WIDGET, EdgelessToolbarWidget);
+  customElements.define('edgeless-toolbar-button', EdgelessToolbarButton);
+  customElements.define('edgeless-tool-icon-button', EdgelessToolIconButton);
+  customElements.define(
+    'edgeless-toolbar-shape-draggable',
+    EdgelessToolbarShapeDraggable
+  );
+  customElements.define('toolbar-arrow-up-icon', ToolbarArrowUpIcon);
+
+  // Frame order components
+  customElements.define(
+    'edgeless-frame-order-button',
+    EdgelessFrameOrderButton
+  );
+  customElements.define('edgeless-frame-order-menu', EdgelessFrameOrderMenu);
+  customElements.define(
+    'edgeless-navigator-setting-button',
+    EdgelessNavigatorSettingButton
+  );
+  customElements.define('edgeless-present-button', EdgelessPresentButton);
+  customElements.define(
+    'edgeless-note-senior-button',
+    EdgelessNoteSeniorButton
+  );
+}
+
+function registerEdgelessPanelComponents() {
+  customElements.define('edgeless-align-panel', EdgelessAlignPanel);
+  customElements.define('card-style-panel', CardStylePanel);
+  customElements.define('edgeless-color-panel', EdgelessColorPanel);
+  customElements.define('edgeless-line-width-panel', EdgelessLineWidthPanel);
+  customElements.define(
+    'edgeless-font-weight-and-style-panel',
+    EdgelessFontWeightAndStylePanel
+  );
+  customElements.define('edgeless-note-shadow-panel', EdgelessNoteShadowPanel);
+  customElements.define('edgeless-size-panel', EdgelessSizePanel);
+  customElements.define('edgeless-scale-panel', EdgelessScalePanel);
+  customElements.define('edgeless-font-family-panel', EdgelessFontFamilyPanel);
+  customElements.define('edgeless-shape-panel', EdgelessShapePanel);
+  customElements.define('note-display-mode-panel', NoteDisplayModePanel);
+  customElements.define('stroke-style-panel', StrokeStylePanel);
+  customElements.define('edgeless-shape-style-panel', EdgelessShapeStylePanel);
+
+  // Color components
+  customElements.define('edgeless-color-button', EdgelessColorButton);
+  customElements.define('edgeless-text-color-icon', EdgelessTextColorIcon);
+}
+
+function registerEdgelessEditorComponents() {
+  customElements.define(
+    'edgeless-connector-label-editor',
+    EdgelessConnectorLabelEditor
+  );
+  customElements.define('edgeless-shape-text-editor', EdgelessShapeTextEditor);
+  customElements.define(
+    'edgeless-group-title-editor',
+    EdgelessGroupTitleEditor
+  );
+  customElements.define(
+    'edgeless-frame-title-editor',
+    EdgelessFrameTitleEditor
+  );
+  customElements.define('edgeless-text-editor', EdgelessTextEditor);
+}
+
+function registerAIComponents() {
+  customElements.define('generating-placeholder', GeneratingPlaceholder);
+  customElements.define('ai-finish-tip', AIFinishTip);
+  customElements.define('ai-panel-divider', AIPanelDivider);
+  customElements.define('ai-panel-answer', AIPanelAnswer);
+  customElements.define('ai-panel-input', AIPanelInput);
+  customElements.define('ai-panel-generating', AIPanelGenerating);
+  customElements.define('ai-panel-error', AIPanelError);
+}
+
+function registerMiscComponents() {
+  // Modal and menu components
+  customElements.define('affine-custom-modal', AffineCustomModal);
+  customElements.define('affine-slash-menu', SlashMenu);
+  customElements.define('inner-slash-menu', InnerSlashMenu);
+
+  // Loading and preview components
+  customElements.define('loader-element', Loader);
+  customElements.define('frame-preview', FramePreview);
+  customElements.define('affine-template-loading', AffineTemplateLoading);
+
+  // Toolbar and UI components
+  customElements.define('affine-image-toolbar', AffineImageToolbar);
+  customElements.define('presentation-toolbar', PresentationToolbar);
+  customElements.define('edgeless-zoom-toolbar', EdgelessZoomToolbar);
+  customElements.define('zoom-bar-toggle-button', ZoomBarToggleButton);
+  customElements.define('overlay-scrollbar', OverlayScrollbar);
+
+  // Auto-complete components
+  customElements.define(
+    'edgeless-auto-complete-panel',
+    EdgelessAutoCompletePanel
+  );
+  customElements.define('edgeless-auto-complete', EdgelessAutoComplete);
+
+  // Note and template components
+  customElements.define(NOTE_SLICER_WIDGET, NoteSlicer);
+  customElements.define('edgeless-templates-panel', EdgelessTemplatePanel);
+
+  // Navigation components
+  customElements.define(
+    EDGELESS_NAVIGATOR_BLACK_BACKGROUND_WIDGET,
+    EdgelessNavigatorBlackBackgroundWidget
+  );
+
+  // Dragging area components
+  customElements.define(
+    EDGELESS_DRAGGING_AREA_WIDGET,
+    EdgelessDraggingAreaRectWidget
+  );
+  customElements.define(
+    EDGELESS_SELECTED_RECT_WIDGET,
+    EdgelessSelectedRectWidget
+  );
+
+  // Copilot components
+  customElements.define('edgeless-copilot-panel', EdgelessCopilotPanel);
+  customElements.define(
+    'edgeless-copilot-toolbar-entry',
+    EdgelessCopilotToolbarEntry
+  );
+
+  // Mindmap components
+  customElements.define('mindmap-import-placeholder', MindMapPlaceholder);
+
+  // Shape components
+  customElements.define(
+    'edgeless-shape-tool-element',
+    EdgelessShapeToolElement
+  );
+
+  // Connector components
+  customElements.define('edgeless-connector-handle', EdgelessConnectorHandle);
 }
