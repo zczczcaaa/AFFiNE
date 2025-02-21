@@ -8,21 +8,10 @@ import {
 import type { BlockComponent } from '@blocksuite/block-std';
 import { BlockService } from '@blocksuite/block-std';
 
-import {
-  HtmlTransformer,
-  MarkdownTransformer,
-  ZipTransformer,
-} from '../_common/transformers/index.js';
 import type { RootBlockComponent } from './types.js';
 
 export abstract class RootService extends BlockService {
   static override readonly flavour = RootBlockSchema.model.flavour;
-
-  transformers = {
-    markdown: MarkdownTransformer,
-    html: HtmlTransformer,
-    zip: ZipTransformer,
-  };
 
   get selectedBlocks() {
     let result: BlockComponent[] = [];

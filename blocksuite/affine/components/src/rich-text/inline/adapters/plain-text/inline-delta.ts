@@ -1,7 +1,7 @@
 import {
+  AdapterTextUtils,
   InlineDeltaToPlainTextAdapterExtension,
   type TextBuffer,
-  TextUtils,
 } from '@blocksuite/affine-shared/adapters';
 import type { ExtensionType } from '@blocksuite/store';
 
@@ -20,7 +20,7 @@ export const referenceDeltaMarkdownAdapterMatch =
 
       const { configs } = context;
       const title = configs.get(`title:${reference.pageId}`) ?? '';
-      const url = TextUtils.generateDocUrl(
+      const url = AdapterTextUtils.generateDocUrl(
         configs.get('docLinkBaseUrl') ?? '',
         String(reference.pageId),
         reference.params ?? Object.create(null)

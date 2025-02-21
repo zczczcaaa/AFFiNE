@@ -56,6 +56,11 @@ import {
 import type { ExtensionType } from '@blocksuite/store';
 
 import { AdapterFactoryExtensions } from '../_common/adapters/extension.js';
+import {
+  HtmlAdapterExtension,
+  MarkdownAdapterExtension,
+  NotionHtmlAdapterExtension,
+} from './preset/adapters.js';
 
 export const CommonBlockSpecs: ExtensionType[] = [
   DocDisplayMetaService,
@@ -110,4 +115,8 @@ export const StoreExtensions: ExtensionType[] = [
   LinkPreviewerService,
   FileSizeLimitService,
   ImageStoreSpec,
+
+  HtmlAdapterExtension,
+  MarkdownAdapterExtension,
+  NotionHtmlAdapterExtension,
 ].flat();

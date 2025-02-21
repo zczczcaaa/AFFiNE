@@ -118,7 +118,7 @@ export class SurfaceRefNotePortal extends WithDisposable(ShadowlessElement) {
       query: this.query,
       readonly: true,
     });
-    const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
+    const previewSpec = SpecProvider.getInstance().getSpec('preview:page');
     return new BlockStdScope({
       store: doc,
       extensions: previewSpec.value.slice(),

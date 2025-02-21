@@ -2,6 +2,7 @@ import type { CanvasElementWithText } from '@blocksuite/affine-block-surface';
 import {
   type AttachmentBlockModel,
   type BookmarkBlockModel,
+  type Connectable,
   ConnectorElementModel,
   type EdgelessTextBlockModel,
   type EmbedBlockModel,
@@ -31,8 +32,6 @@ import type {
 import type { PointLocation } from '@blocksuite/global/utils';
 import { Bound } from '@blocksuite/global/utils';
 import type { BlockModel } from '@blocksuite/store';
-
-import type { Connectable } from '../../../_common/types';
 
 export function isMindmapNode(element: GfxBlockElementModel | GfxModel | null) {
   return element?.group instanceof MindmapElementModel;

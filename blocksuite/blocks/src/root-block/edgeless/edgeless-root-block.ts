@@ -45,12 +45,12 @@ import { css, html } from 'lit';
 import { query } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { isSingleMindMapNode } from '../../_common/edgeless/mindmap/index.js';
 import type { EdgelessRootBlockWidgetName } from '../types.js';
 import { EdgelessClipboardController } from './clipboard/clipboard.js';
 import type { EdgelessSelectedRectWidget } from './components/rects/edgeless-selected-rect.js';
 import { EdgelessPageKeyboardManager } from './edgeless-keyboard.js';
 import type { EdgelessRootService } from './edgeless-root-service.js';
+import { isSingleMindMapNode } from './utils/mindmap.js';
 import { isCanvasElement } from './utils/query.js';
 import { mountShapeTextEditor } from './utils/text.js';
 

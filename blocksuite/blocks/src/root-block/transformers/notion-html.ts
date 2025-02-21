@@ -1,11 +1,10 @@
-import { NotionHtmlInlineToDeltaAdapterExtensions } from '@blocksuite/affine-components/rich-text';
+import { defaultImageProxyMiddleware } from '@blocksuite/affine-block-image';
 import { NotionHtmlAdapter } from '@blocksuite/affine-shared/adapters';
+import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
 import { extMimeMap, Transformer, type Workspace } from '@blocksuite/store';
 
-import { defaultBlockNotionHtmlAdapterMatchers } from '../adapters/notion-html/block-matcher.js';
-import { defaultImageProxyMiddleware } from './middlewares.js';
 import { Unzip } from './utils.js';
 
 type ImportNotionZipOptions = {
@@ -13,15 +12,14 @@ type ImportNotionZipOptions = {
   imported: Blob;
 };
 
-const container = new Container();
-[
-  ...NotionHtmlInlineToDeltaAdapterExtensions,
-  ...defaultBlockNotionHtmlAdapterMatchers,
-].forEach(ext => {
-  ext.setup(container);
-});
-
-const provider = container.provider();
+function getProvider() {
+  const container = new Container();
+  const exts = SpecProvider.getInstance().getSpec('store').value;
+  exts.forEach(ext => {
+    ext.setup(container);
+  });
+  return container.provider();
+}
 
 /**
  * Imports a Notion zip file into the BlockSuite collection.
@@ -40,6 +38,7 @@ async function importNotionZip({
   collection,
   imported,
 }: ImportNotionZipOptions) {
+  const provider = getProvider();
   const pageIds: string[] = [];
   let isWorkspaceFile = false;
   let hasMarkdown = false;

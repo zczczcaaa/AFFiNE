@@ -103,7 +103,7 @@ export class PreviewHelper {
     const query = this._calculateQuery(blockIds as string[], mode);
     const store = widget.doc.doc.getStore({ query });
     const previewSpec = SpecProvider.getInstance().getSpec(
-      isEdgeless ? 'edgeless:preview' : 'page:preview'
+      isEdgeless ? 'preview:edgeless' : 'preview:page'
     );
     const settingSignal = signal({ ...editorSetting });
     const extensions = [

@@ -1,9 +1,9 @@
 import {
   EdgelessFrameManager,
   FrameOverlay,
+  PresentTool,
 } from '@blocksuite/affine-block-frame';
 import { ConnectionOverlay } from '@blocksuite/affine-block-surface';
-import { PresentTool } from '@blocksuite/affine-fragment-frame-panel';
 import type { ExtensionType } from '@blocksuite/store';
 
 import { EdgelessRootBlockSpec } from '../../root-block/edgeless/edgeless-root-spec.js';

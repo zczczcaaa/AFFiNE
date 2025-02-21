@@ -116,7 +116,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
     ],
   };
 
-  protected _buildPreviewSpec = (name: 'page:preview' | 'edgeless:preview') => {
+  protected _buildPreviewSpec = (name: 'preview:page' | 'preview:edgeless') => {
     const nextDepth = this.depth + 1;
     const previewSpecBuilder = SpecProvider.getInstance().getSpec(name);
     const currentDisposables = this.disposables;
@@ -203,7 +203,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
             <div class="affine-page-viewport" data-theme=${appTheme}>
               ${new BlockStdScope({
                 store: syncedDoc,
-                extensions: this._buildPreviewSpec('page:preview'),
+                extensions: this._buildPreviewSpec('preview:page'),
               }).render()}
             </div>
           `,
@@ -214,7 +214,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
             <div class="affine-edgeless-viewport" data-theme=${edgelessTheme}>
               ${new BlockStdScope({
                 store: syncedDoc,
-                extensions: this._buildPreviewSpec('edgeless:preview'),
+                extensions: this._buildPreviewSpec('preview:edgeless'),
               }).render()}
             </div>
           `,

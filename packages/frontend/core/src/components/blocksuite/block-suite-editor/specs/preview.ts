@@ -29,14 +29,17 @@ const CustomSpecs: ExtensionType[] = [
   getFontConfigExtension(),
 ].flat();
 
-function patchPreviewSpec(id: string, specs: ExtensionType[]) {
+function patchPreviewSpec(
+  id: 'preview:edgeless' | 'preview:page',
+  specs: ExtensionType[]
+) {
   const specProvider = SpecProvider.getInstance();
   specProvider.extendSpec(id, specs);
 }
 
 export function effects() {
   // Patch edgeless preview spec for blocksuite surface-ref and embed-synced-doc
-  patchPreviewSpec('edgeless:preview', CustomSpecs);
+  patchPreviewSpec('preview:edgeless', CustomSpecs);
 }
 
 export function getPagePreviewThemeExtension(framework: FrameworkProvider) {
@@ -98,7 +101,7 @@ export function createPageModePreviewSpecs(
   framework: FrameworkProvider
 ): SpecBuilder {
   const specProvider = SpecProvider.getInstance();
-  const pagePreviewSpec = specProvider.getSpec('page:preview');
+  const pagePreviewSpec = specProvider.getSpec('preview:page');
   // Enable theme extension, doc display meta extension and peek view service
   const peekViewService = framework.get(PeekViewService);
   pagePreviewSpec.extend([

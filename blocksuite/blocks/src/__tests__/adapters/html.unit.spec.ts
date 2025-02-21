@@ -3,7 +3,10 @@ import {
   InlineDeltaToHtmlAdapterExtensions,
 } from '@blocksuite/affine-components/rich-text';
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
-import { HtmlAdapter } from '@blocksuite/affine-shared/adapters';
+import {
+  embedSyncedDocMiddleware,
+  HtmlAdapter,
+} from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
@@ -14,7 +17,6 @@ import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
 import { defaultBlockHtmlAdapterMatchers } from '../../_common/adapters/html/block-matcher.js';
-import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';
 import { nanoidReplacement } from '../utils/nanoid-replacement.js';
 

@@ -3,10 +3,17 @@ import type { ExtensionType } from '@blocksuite/store';
 
 import { SpecBuilder } from './spec-builder.js';
 
+type SpecId =
+  | 'store'
+  | 'page'
+  | 'edgeless'
+  | 'preview:page'
+  | 'preview:edgeless';
+
 export class SpecProvider {
   static instance: SpecProvider;
 
-  private readonly specMap = new Map<string, ExtensionType[]>();
+  private readonly specMap = new Map<SpecId, ExtensionType[]>();
 
   private constructor() {}
 
@@ -17,17 +24,17 @@ export class SpecProvider {
     return SpecProvider.instance;
   }
 
-  addSpec(id: string, spec: ExtensionType[]) {
+  addSpec(id: SpecId, spec: ExtensionType[]) {
     if (!this.specMap.has(id)) {
       this.specMap.set(id, spec);
     }
   }
 
-  clearSpec(id: string) {
+  clearSpec(id: SpecId) {
     this.specMap.delete(id);
   }
 
-  extendSpec(id: string, newSpec: ExtensionType[]) {
+  extendSpec(id: SpecId, newSpec: ExtensionType[]) {
     const existingSpec = this.specMap.get(id);
     if (!existingSpec) {
       console.error(`Spec not found for ${id}`);
@@ -36,26 +43,17 @@ export class SpecProvider {
     this.specMap.set(id, [...existingSpec, ...newSpec]);
   }
 
-  getSpec(id: string) {
+  getSpec(id: SpecId) {
     const spec = this.specMap.get(id);
     assertExists(spec, `Spec not found for ${id}`);
     return new SpecBuilder(spec);
   }
 
-  hasSpec(id: string) {
+  hasSpec(id: SpecId) {
     return this.specMap.has(id);
   }
 
-  cloneSpec(id: string, targetId: string) {
-    const existingSpec = this.specMap.get(id);
-    if (!existingSpec) {
-      console.error(`Spec not found for ${id}`);
-      return;
-    }
-    this.specMap.set(targetId, [...existingSpec]);
-  }
-
-  omitSpec(id: string, targetSpec: ExtensionType) {
+  omitSpec(id: SpecId, targetSpec: ExtensionType) {
     const existingSpec = this.specMap.get(id);
     if (!existingSpec) {
       console.error(`Spec not found for ${id}`);
@@ -68,7 +66,7 @@ export class SpecProvider {
     );
   }
 
-  replaceSpec(id: string, targetSpec: ExtensionType, newSpec: ExtensionType) {
+  replaceSpec(id: SpecId, targetSpec: ExtensionType, newSpec: ExtensionType) {
     const existingSpec = this.specMap.get(id);
     if (!existingSpec) {
       console.error(`Spec not found for ${id}`);

@@ -53,9 +53,9 @@ import {
 } from '@blocksuite/global/utils';
 import { effect } from '@preact/signals-core';
 
-import { isSingleMindMapNode } from '../../../_common/edgeless/mindmap/index.js';
 import type { EdgelessRootBlockComponent } from '../edgeless-root-block.js';
 import { prepareCloneData } from '../utils/clone-utils.js';
+import { isSingleMindMapNode } from '../utils/mindmap.js';
 import { calPanDelta } from '../utils/panning-utils.js';
 import { isCanvasElement, isEdgelessTextBlock } from '../utils/query.js';
 import type { EdgelessSnapManager } from '../utils/snap-manager.js';

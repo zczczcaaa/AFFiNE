@@ -240,7 +240,7 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
   private _previewDoc: Store | null = null;
 
   private readonly _previewSpec =
-    SpecProvider.getInstance().getSpec('edgeless:preview');
+    SpecProvider.getInstance().getSpec('preview:edgeless');
 
   private _referencedModel: GfxModel | null = null;
 

@@ -1,7 +1,7 @@
 import {
+  AdapterTextUtils,
   FOOTNOTE_DEFINITION_PREFIX,
   InlineDeltaToMarkdownAdapterExtension,
-  TextUtils,
 } from '@blocksuite/affine-shared/adapters';
 import type { PhrasingContent } from 'mdast';
 import type RemarkMath from 'remark-math';
@@ -74,7 +74,7 @@ export const referenceDeltaToMarkdownAdapterMatcher =
       const { configs } = context;
       const title = configs.get(`title:${reference.pageId}`);
       const params = reference.params ?? {};
-      const url = TextUtils.generateDocUrl(
+      const url = AdapterTextUtils.generateDocUrl(
         configs.get('docLinkBaseUrl') ?? '',
         String(reference.pageId),
         params

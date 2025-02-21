@@ -1,3 +1,4 @@
+import { defaultImageProxyMiddleware } from '@blocksuite/affine-block-image';
 import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import {
   Schema,
@@ -6,7 +7,6 @@ import {
 } from '@blocksuite/store';
 import { TestWorkspace } from '@blocksuite/store/test';
 
-import { defaultImageProxyMiddleware } from '../../_common/transformers/middlewares.js';
 import { AffineSchemas } from '../../schemas.js';
 
 declare global {

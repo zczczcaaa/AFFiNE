@@ -1,9 +1,9 @@
 import { ListBlockSchema } from '@blocksuite/affine-model';
 import {
+  AdapterTextUtils,
   BlockHtmlAdapterExtension,
   type BlockHtmlAdapterMatcher,
   HastUtils,
-  TextUtils,
 } from '@blocksuite/affine-shared/adapters';
 import type { DeltaInsert } from '@blocksuite/inline';
 import { nanoid } from '@blocksuite/store';
@@ -124,7 +124,7 @@ export const listBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
           Array.isArray(currentTNode.properties.className) &&
           currentTNode.properties.className.includes('todo-list')
         ) ===
-          TextUtils.isNullish(
+          AdapterTextUtils.isNullish(
             o.node.props.type === 'todo'
               ? (o.node.props.checked as boolean)
               : undefined
@@ -177,7 +177,7 @@ export const listBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
           Array.isArray(previousTNode.properties.className) &&
           previousTNode.properties.className.includes('todo-list')
         ) ===
-          TextUtils.isNullish(
+          AdapterTextUtils.isNullish(
             o.node.props.type === 'todo'
               ? (o.node.props.checked as boolean)
               : undefined

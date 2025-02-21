@@ -11,6 +11,7 @@ export * from './page/page-root-spec.js';
 export * from './preview/preview-root-block.js';
 export * from './root-config.js';
 export { RootService } from './root-service.js';
+export * from './transformers/index.js';
 export * from './types.js';
 export * from './utils/index.js';
 export * from './widgets/index.js';

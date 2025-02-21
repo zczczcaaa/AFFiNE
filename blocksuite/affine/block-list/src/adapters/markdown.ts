@@ -1,9 +1,9 @@
 import { ListBlockSchema } from '@blocksuite/affine-model';
 import {
+  AdapterTextUtils,
   BlockMarkdownAdapterExtension,
   type BlockMarkdownAdapterMatcher,
   type MarkdownAST,
-  TextUtils,
 } from '@blocksuite/affine-shared/adapters';
 import type { DeltaInsert } from '@blocksuite/inline';
 import { nanoid } from '@blocksuite/store';
@@ -75,8 +75,8 @@ export const listBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher = {
         walkerContext.getNodeContext('affine:list:parent') === o.parent &&
         currentTNode.type === 'list' &&
         currentTNode.ordered === (o.node.props.type === 'numbered') &&
-        TextUtils.isNullish(currentTNode.children[0].checked) ===
-          TextUtils.isNullish(
+        AdapterTextUtils.isNullish(currentTNode.children[0].checked) ===
+          AdapterTextUtils.isNullish(
             o.node.props.type === 'todo'
               ? (o.node.props.checked as boolean)
               : undefined
@@ -129,8 +129,8 @@ export const listBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher = {
         currentTNode.type === 'listItem' &&
         previousTNode?.type === 'list' &&
         previousTNode.ordered === (o.node.props.type === 'numbered') &&
-        TextUtils.isNullish(currentTNode.checked) ===
-          TextUtils.isNullish(
+        AdapterTextUtils.isNullish(currentTNode.checked) ===
+          AdapterTextUtils.isNullish(
             o.node.props.type === 'todo'
               ? (o.node.props.checked as boolean)
               : undefined

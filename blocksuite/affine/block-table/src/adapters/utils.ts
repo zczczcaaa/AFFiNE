@@ -4,7 +4,10 @@ import type {
   TableColumn,
   TableRow,
 } from '@blocksuite/affine-model';
-import { HastUtils, TextUtils } from '@blocksuite/affine-shared/adapters';
+import {
+  AdapterTextUtils,
+  HastUtils,
+} from '@blocksuite/affine-shared/adapters';
 import { generateFractionalIndexingKeyBetween } from '@blocksuite/affine-shared/utils';
 import type { DeltaInsert } from '@blocksuite/inline';
 import { nanoid } from '@blocksuite/store';
@@ -155,7 +158,7 @@ export const createTableProps = (rowTextLists: string[][]) => {
       const cellId = `${row.rowId}:${column.columnId}`;
       const text = rowTextLists[i]?.[j];
       cells[cellId] = {
-        text: TextUtils.createText(text ?? ''),
+        text: AdapterTextUtils.createText(text ?? ''),
       };
     }
   }

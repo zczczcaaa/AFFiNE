@@ -19,7 +19,7 @@ import {
 } from '@blocksuite/block-std/gfx';
 import type { Bound, IVec } from '@blocksuite/global/utils';
 
-import { isSingleMindMapNode } from '../../../../../_common/edgeless/mindmap/index.js';
+import { isSingleMindMapNode } from '../../../utils/mindmap.js';
 import { isMindmapNode } from '../../../utils/query.js';
 import { DefaultModeDragType, DefaultToolExt, type DragState } from '../ext.js';
 import { calculateResponseArea } from './drag-utils.js';

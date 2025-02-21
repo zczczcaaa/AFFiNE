@@ -86,7 +86,7 @@ function generateDocUrl(
   return url;
 }
 
-export const TextUtils = {
+export const AdapterTextUtils = {
   mergeDeltas,
   isNullish,
   createText,

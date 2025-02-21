@@ -1,8 +1,8 @@
 import { EmbedLinkedDocBlockSchema } from '@blocksuite/affine-model';
 import {
+  AdapterTextUtils,
   BlockMarkdownAdapterExtension,
   type BlockMarkdownAdapterMatcher,
-  TextUtils,
 } from '@blocksuite/affine-shared/adapters';
 
 export const embedLinkedDocBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher =
@@ -19,7 +19,7 @@ export const embedLinkedDocBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatc
           return;
         }
         const title = configs.get('title:' + o.node.props.pageId) ?? 'untitled';
-        const url = TextUtils.generateDocUrl(
+        const url = AdapterTextUtils.generateDocUrl(
           configs.get('docLinkBaseUrl') ?? '',
           String(o.node.props.pageId),
           o.node.props.params ?? Object.create(null)

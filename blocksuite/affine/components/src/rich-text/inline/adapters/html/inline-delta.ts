@@ -1,7 +1,7 @@
 import type { InlineHtmlAST } from '@blocksuite/affine-shared/adapters';
 import {
+  AdapterTextUtils,
   InlineDeltaToHtmlAdapterExtension,
-  TextUtils,
 } from '@blocksuite/affine-shared/adapters';
 import { ThemeProvider } from '@blocksuite/affine-shared/services';
 
@@ -90,7 +90,7 @@ export const referenceDeltaToHtmlAdapterMatcher =
 
       const { configs } = context;
       const title = configs.get(`title:${reference.pageId}`);
-      const url = TextUtils.generateDocUrl(
+      const url = AdapterTextUtils.generateDocUrl(
         configs.get('docLinkBaseUrl') ?? '',
         String(reference.pageId),
         reference.params ?? Object.create(null)

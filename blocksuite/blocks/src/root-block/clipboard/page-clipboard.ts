@@ -1,6 +1,7 @@
 import { deleteTextCommand } from '@blocksuite/affine-components/rich-text';
 import {
   pasteMiddleware,
+  replaceIdMiddleware,
   surfaceRefToEmbed,
 } from '@blocksuite/affine-shared/adapters';
 import {
@@ -17,7 +18,6 @@ import type { UIEventHandler } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/utils';
 import type { BlockSnapshot, Store } from '@blocksuite/store';
 
-import { replaceIdMiddleware } from '../../_common/transformers/middlewares';
 import { ReadOnlyClipboard } from './readonly-clipboard';
 
 /**

@@ -14,7 +14,7 @@ import {
   type InlineDeltaMatcher,
 } from '../types/adapter.js';
 import type { HtmlAST, InlineHtmlAST } from '../types/hast.js';
-import { TextUtils } from '../utils/text.js';
+import { AdapterTextUtils } from '../utils/text.js';
 
 export type InlineDeltaToHtmlAdapterMatcher = InlineDeltaMatcher<InlineHtmlAST>;
 
@@ -119,7 +119,7 @@ export class HtmlDeltaConverter extends DeltaASTConverter<
     options: DeltaASTConverterOptions = Object.create(null)
   ): DeltaInsert<AffineTextAttributes>[] {
     return this._spreadAstToDelta(ast, options).reduce((acc, cur) => {
-      return TextUtils.mergeDeltas(acc, cur);
+      return AdapterTextUtils.mergeDeltas(acc, cur);
     }, [] as DeltaInsert<AffineTextAttributes>[]);
   }
 

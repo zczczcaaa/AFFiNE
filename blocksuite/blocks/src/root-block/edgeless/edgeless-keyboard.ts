@@ -31,11 +31,6 @@ import {
 import { IS_MAC } from '@blocksuite/global/env';
 import { Bound, getCommonBound } from '@blocksuite/global/utils';
 
-import {
-  getNearestTranslation,
-  isElementOutsideViewport,
-  isSingleMindMapNode,
-} from '../../_common/edgeless/mindmap/index.js';
 import { PageKeyboardManager } from '../keyboard/keyboard-manager.js';
 import type { EdgelessRootBlockComponent } from './edgeless-root-block.js';
 import { CopilotTool } from './gfx-tool/copilot-tool.js';
@@ -48,6 +43,11 @@ import {
 } from './utils/consts.js';
 import { deleteElements } from './utils/crud.js';
 import { getNextShapeType } from './utils/hotkey-utils.js';
+import {
+  getNearestTranslation,
+  isElementOutsideViewport,
+  isSingleMindMapNode,
+} from './utils/mindmap.js';
 import { isCanvasElement } from './utils/query.js';
 import {
   mountConnectorLabelEditor,

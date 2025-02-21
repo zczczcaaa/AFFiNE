@@ -1,6 +1,9 @@
 import { InlineDeltaToPlainTextAdapterExtensions } from '@blocksuite/affine-components/rich-text';
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
-import { PlainTextAdapter } from '@blocksuite/affine-shared/adapters';
+import {
+  embedSyncedDocMiddleware,
+  PlainTextAdapter,
+} from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
@@ -10,7 +13,6 @@ import type {
 import { describe, expect, test } from 'vitest';
 
 import { defaultBlockPlainTextAdapterMatchers } from '../../_common/adapters/plain-text/block-matcher.js';
-import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';
 
 const container = new Container();

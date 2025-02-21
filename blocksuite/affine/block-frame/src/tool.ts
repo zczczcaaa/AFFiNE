@@ -1,5 +1,6 @@
-import type { NavigatorMode } from '@blocksuite/affine-block-frame';
 import { BaseTool } from '@blocksuite/block-std/gfx';
+
+import type { NavigatorMode } from './frame-manager';
 
 type PresentToolOption = {
   mode?: NavigatorMode;

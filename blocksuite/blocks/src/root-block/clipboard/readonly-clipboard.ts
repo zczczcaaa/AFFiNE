@@ -1,3 +1,4 @@
+import { defaultImageProxyMiddleware } from '@blocksuite/affine-block-image';
 import {
   AttachmentAdapter,
   copyMiddleware,
@@ -5,6 +6,7 @@ import {
   ImageAdapter,
   MixTextAdapter,
   NotionTextAdapter,
+  titleMiddleware,
 } from '@blocksuite/affine-shared/adapters';
 import {
   copySelectedModelsCommand,
@@ -14,10 +16,6 @@ import {
 import type { BlockComponent, UIEventHandler } from '@blocksuite/block-std';
 import { DisposableGroup } from '@blocksuite/global/utils';
 
-import {
-  defaultImageProxyMiddleware,
-  titleMiddleware,
-} from '../../_common/transformers/middlewares.js';
 import { ClipboardAdapter } from './adapter.js';
 
 /**

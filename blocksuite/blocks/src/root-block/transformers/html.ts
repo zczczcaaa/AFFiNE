@@ -1,20 +1,16 @@
+import { defaultImageProxyMiddleware } from '@blocksuite/affine-block-image';
 import {
-  HtmlInlineToDeltaAdapterExtensions,
-  InlineDeltaToHtmlAdapterExtensions,
-} from '@blocksuite/affine-components/rich-text';
-import { HtmlAdapter } from '@blocksuite/affine-shared/adapters';
+  docLinkBaseURLMiddleware,
+  fileNameMiddleware,
+  HtmlAdapter,
+  titleMiddleware,
+} from '@blocksuite/affine-shared/adapters';
+import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
 import type { Store, Workspace } from '@blocksuite/store';
 import { extMimeMap, Transformer } from '@blocksuite/store';
 
-import { defaultBlockHtmlAdapterMatchers } from '../adapters/html/block-matcher.js';
-import {
-  defaultImageProxyMiddleware,
-  docLinkBaseURLMiddleware,
-  fileNameMiddleware,
-  titleMiddleware,
-} from './middlewares.js';
 import { createAssetsArchive, download, Unzip } from './utils.js';
 
 type ImportHTMLToDocOptions = {
@@ -28,16 +24,14 @@ type ImportHTMLZipOptions = {
   imported: Blob;
 };
 
-const container = new Container();
-[
-  ...HtmlInlineToDeltaAdapterExtensions,
-  ...defaultBlockHtmlAdapterMatchers,
-  ...InlineDeltaToHtmlAdapterExtensions,
-].forEach(ext => {
-  ext.setup(container);
-});
-
-const provider = container.provider();
+function getProvider() {
+  const container = new Container();
+  const exts = SpecProvider.getInstance().getSpec('store').value;
+  exts.forEach(ext => {
+    ext.setup(container);
+  });
+  return container.provider();
+}
 
 /**
  * Exports a doc to HTML format.
@@ -46,6 +40,7 @@ const provider = container.provider();
  * @returns A Promise that resolves when the export is complete.
  */
 async function exportDoc(doc: Store) {
+  const provider = getProvider();
   const job = new Transformer({
     schema: doc.schema,
     blobCRUD: doc.blobSync,
@@ -101,6 +96,7 @@ async function importHTMLToDoc({
   html,
   fileName,
 }: ImportHTMLToDocOptions) {
+  const provider = getProvider();
   const job = new Transformer({
     schema: collection.schema,
     blobCRUD: collection.blobSync,
@@ -135,6 +131,7 @@ async function importHTMLToDoc({
  * @returns A Promise that resolves to an array of IDs of the newly created docs.
  */
 async function importHTMLZip({ collection, imported }: ImportHTMLZipOptions) {
+  const provider = getProvider();
   const unzip = new Unzip();
   await unzip.load(imported);
 

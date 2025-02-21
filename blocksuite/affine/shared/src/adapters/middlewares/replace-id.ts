@@ -6,13 +6,8 @@ import type {
   ParagraphBlockModel,
   SurfaceRefBlockModel,
 } from '@blocksuite/affine-model';
-import { DEFAULT_IMAGE_PROXY_ENDPOINT } from '@blocksuite/affine-shared/consts';
 import { assertExists } from '@blocksuite/global/utils';
-import type {
-  DeltaOperation,
-  DocMeta,
-  TransformerMiddleware,
-} from '@blocksuite/store';
+import type { DeltaOperation, TransformerMiddleware } from '@blocksuite/store';
 
 export const replaceIdMiddleware =
   (idGenerator: () => string): TransformerMiddleware =>
@@ -201,105 +196,5 @@ export const replaceIdMiddleware =
           });
         }
       }
-    });
-  };
-
-export const customImageProxyMiddleware = (
-  imageProxyURL: string
-): TransformerMiddleware => {
-  return ({ adapterConfigs }) => {
-    adapterConfigs.set('imageProxy', imageProxyURL);
-  };
-};
-
-const customDocLinkBaseUrlMiddleware = (
-  baseUrl: string,
-  collectionId: string
-): TransformerMiddleware => {
-  return ({ adapterConfigs }) => {
-    const docLinkBaseUrl = baseUrl
-      ? `${baseUrl}/workspace/${collectionId}`
-      : '';
-    adapterConfigs.set('docLinkBaseUrl', docLinkBaseUrl);
-  };
-};
-
-export const titleMiddleware =
-  (metas: DocMeta[]): TransformerMiddleware =>
-  ({ slots, adapterConfigs }) => {
-    slots.beforeExport.on(() => {
-      for (const meta of metas) {
-        adapterConfigs.set('title:' + meta.id, meta.title);
-      }
-    });
-  };
-
-export const docLinkBaseURLMiddlewareBuilder = (
-  baseUrl: string,
-  collectionId: string
-) => {
-  let middleware = customDocLinkBaseUrlMiddleware(baseUrl, collectionId);
-  return {
-    get: () => middleware,
-    set: (url: string) => {
-      middleware = customDocLinkBaseUrlMiddleware(url, collectionId);
-    },
-  };
-};
-
-const defaultDocLinkBaseURLMiddlewareBuilder = (collectionId: string) =>
-  docLinkBaseURLMiddlewareBuilder(
-    typeof window !== 'undefined' ? window.location.origin : '.',
-    collectionId
-  );
-
-export const docLinkBaseURLMiddleware = (collectionId: string) =>
-  defaultDocLinkBaseURLMiddlewareBuilder(collectionId).get();
-
-export const setDocLinkBaseURLMiddleware = (collectionId: string) =>
-  defaultDocLinkBaseURLMiddlewareBuilder(collectionId).set;
-
-const imageProxyMiddlewareBuilder = () => {
-  let middleware = customImageProxyMiddleware(DEFAULT_IMAGE_PROXY_ENDPOINT);
-  return {
-    get: () => middleware,
-    set: (url: string) => {
-      middleware = customImageProxyMiddleware(url);
-    },
-  };
-};
-
-const defaultImageProxyMiddlewarBuilder = imageProxyMiddlewareBuilder();
-
-export const setImageProxyMiddlewareURL = defaultImageProxyMiddlewarBuilder.set;
-
-export const defaultImageProxyMiddleware =
-  defaultImageProxyMiddlewarBuilder.get();
-
-export const embedSyncedDocMiddleware =
-  (type: 'content'): TransformerMiddleware =>
-  ({ adapterConfigs }) => {
-    adapterConfigs.set('embedSyncedDocExportType', type);
-  };
-
-export const fileNameMiddleware =
-  (fileName?: string): TransformerMiddleware =>
-  ({ slots }) => {
-    slots.beforeImport.on(payload => {
-      if (payload.type !== 'page') {
-        return;
-      }
-      if (!fileName) {
-        return;
-      }
-      payload.snapshot.meta.title = fileName;
-      payload.snapshot.blocks.props.title = {
-        '$blocksuite:internal:text$': true,
-        delta: [
-          {
-            insert: fileName,
-          },
-        ],
-      };
     });
   };

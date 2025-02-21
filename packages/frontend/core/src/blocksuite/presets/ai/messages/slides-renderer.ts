@@ -209,7 +209,7 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
           ${new BlockStdScope({
             store: this._doc,
             extensions:
-              SpecProvider.getInstance().getSpec('edgeless:preview').value,
+              SpecProvider.getInstance().getSpec('preview:edgeless').value,
           }).render()}
         </div>
         <div class="mask"></div>

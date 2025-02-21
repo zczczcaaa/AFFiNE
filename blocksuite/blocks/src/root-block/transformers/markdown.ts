@@ -1,33 +1,27 @@
+import { defaultImageProxyMiddleware } from '@blocksuite/affine-block-image';
 import {
-  InlineDeltaToMarkdownAdapterExtensions,
-  MarkdownInlineToDeltaAdapterExtensions,
-} from '@blocksuite/affine-components/rich-text';
-import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
+  docLinkBaseURLMiddleware,
+  fileNameMiddleware,
+  MarkdownAdapter,
+  titleMiddleware,
+} from '@blocksuite/affine-shared/adapters';
+import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { assertExists, sha } from '@blocksuite/global/utils';
 import type { Store, Workspace } from '@blocksuite/store';
 import { extMimeMap, Transformer } from '@blocksuite/store';
 
-import { defaultBlockMarkdownAdapterMatchers } from '../adapters/index.js';
-import {
-  defaultImageProxyMiddleware,
-  docLinkBaseURLMiddleware,
-  fileNameMiddleware,
-  titleMiddleware,
-} from './middlewares.js';
 import { createAssetsArchive, download, Unzip } from './utils.js';
 
-const container = new Container();
-[
-  ...MarkdownInlineToDeltaAdapterExtensions,
-  ...defaultBlockMarkdownAdapterMatchers,
-  ...InlineDeltaToMarkdownAdapterExtensions,
-].forEach(ext => {
-  ext.setup(container);
-});
-
-const provider = container.provider();
+function getProvider() {
+  const container = new Container();
+  const exts = SpecProvider.getInstance().getSpec('store').value;
+  exts.forEach(ext => {
+    ext.setup(container);
+  });
+  return container.provider();
+}
 
 type ImportMarkdownToBlockOptions = {
   doc: Store;
@@ -52,6 +46,7 @@ type ImportMarkdownZipOptions = {
  * @returns A Promise that resolves when the export is complete
  */
 async function exportDoc(doc: Store) {
+  const provider = getProvider();
   const job = new Transformer({
     schema: doc.schema,
     blobCRUD: doc.blobSync,
@@ -111,6 +106,7 @@ async function importMarkdownToBlock({
   markdown,
   blockId,
 }: ImportMarkdownToBlockOptions) {
+  const provider = getProvider();
   const job = new Transformer({
     schema: doc.schema,
     blobCRUD: doc.blobSync,
@@ -156,6 +152,7 @@ async function importMarkdownToDoc({
   markdown,
   fileName,
 }: ImportMarkdownToDocOptions) {
+  const provider = getProvider();
   const job = new Transformer({
     schema: collection.schema,
     blobCRUD: collection.blobSync,
@@ -192,6 +189,7 @@ async function importMarkdownZip({
   collection,
   imported,
 }: ImportMarkdownZipOptions) {
+  const provider = getProvider();
   const unzip = new Unzip();
   await unzip.load(imported);
 

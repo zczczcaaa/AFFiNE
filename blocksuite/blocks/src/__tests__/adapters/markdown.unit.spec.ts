@@ -7,7 +7,10 @@ import {
   NoteDisplayMode,
   TableModelFlavour,
 } from '@blocksuite/affine-model';
-import { MarkdownAdapter } from '@blocksuite/affine-shared/adapters';
+import {
+  embedSyncedDocMiddleware,
+  MarkdownAdapter,
+} from '@blocksuite/affine-shared/adapters';
 import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
@@ -19,7 +22,6 @@ import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
 import { defaultBlockMarkdownAdapterMatchers } from '../../_common/adapters/markdown/block-matcher.js';
-import { embedSyncedDocMiddleware } from '../../_common/transformers/middlewares.js';
 import { createJob } from '../utils/create-job.js';
 import { nanoidReplacement } from '../utils/nanoid-replacement.js';
 

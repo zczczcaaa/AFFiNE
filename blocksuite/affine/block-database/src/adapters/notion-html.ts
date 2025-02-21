@@ -1,9 +1,9 @@
 import { DatabaseBlockSchema } from '@blocksuite/affine-model';
 import {
+  AdapterTextUtils,
   BlockNotionHtmlAdapterExtension,
   type BlockNotionHtmlAdapterMatcher,
   HastUtils,
-  TextUtils,
 } from '@blocksuite/affine-shared/adapters';
 import { getTagColor } from '@blocksuite/data-view';
 import { type BlockSnapshot, nanoid } from '@blocksuite/store';
@@ -219,7 +219,7 @@ export const databaseBlockNotionHtmlAdapterMatcher: BlockNotionHtmlAdapterMatche
                     column.type = 'rich-text';
                     row[column.id] = {
                       columnId: column.id,
-                      value: TextUtils.createText(text),
+                      value: AdapterTextUtils.createText(text),
                     };
                   } else {
                     row[column.id] = {
@@ -235,11 +235,11 @@ export const databaseBlockNotionHtmlAdapterMatcher: BlockNotionHtmlAdapterMatche
                 }
                 if (
                   column.type === 'rich-text' &&
-                  !TextUtils.isText(row[column.id].value)
+                  !AdapterTextUtils.isText(row[column.id].value)
                 ) {
                   row[column.id] = {
                     columnId: column.id,
-                    value: TextUtils.createText(row[column.id].value),
+                    value: AdapterTextUtils.createText(row[column.id].value),
                   };
                 }
               });

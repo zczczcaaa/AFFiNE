@@ -7,7 +7,6 @@ import { splitElements } from './root-block/edgeless/utils/clipboard-utils.js';
 import { isCanvasElement } from './root-block/edgeless/utils/query.js';
 
 export * from './_common/adapters/index.js';
-export * from './_common/transformers/index.js';
 export * from './_specs/index.js';
 export { EdgelessTemplatePanel } from './root-block/edgeless/components/toolbar/template/template-panel.js';
 export type {
@@ -93,31 +92,7 @@ export {
 export * from '@blocksuite/affine-fragment-frame-panel';
 export * from '@blocksuite/affine-fragment-outline';
 export * from '@blocksuite/affine-model';
-export {
-  AttachmentAdapter,
-  AttachmentAdapterFactoryExtension,
-  AttachmentAdapterFactoryIdentifier,
-  codeBlockWrapMiddleware,
-  FetchUtils,
-  HtmlAdapter,
-  HtmlAdapterFactoryExtension,
-  HtmlAdapterFactoryIdentifier,
-  ImageAdapter,
-  ImageAdapterFactoryExtension,
-  ImageAdapterFactoryIdentifier,
-  MarkdownAdapter,
-  MarkdownAdapterFactoryExtension,
-  MarkdownAdapterFactoryIdentifier,
-  MixTextAdapter,
-  MixTextAdapterFactoryExtension,
-  MixTextAdapterFactoryIdentifier,
-  NotionTextAdapter,
-  NotionTextAdapterFactoryExtension,
-  NotionTextAdapterFactoryIdentifier,
-  PlainTextAdapter,
-  PlainTextAdapterFactoryExtension,
-  PlainTextAdapterFactoryIdentifier,
-} from '@blocksuite/affine-shared/adapters';
+export * from '@blocksuite/affine-shared/adapters';
 export * from '@blocksuite/affine-shared/commands';
 export { HighlightSelection } from '@blocksuite/affine-shared/selection';
 export * from '@blocksuite/affine-shared/services';

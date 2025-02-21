@@ -197,7 +197,7 @@ async function renderNoteContent(
     match: ids.map(id => ({ id, viewType: 'display' })),
   };
   const previewDoc = doc.doc.getStore({ query });
-  const previewSpec = SpecProvider.getInstance().getSpec('page:preview');
+  const previewSpec = SpecProvider.getInstance().getSpec('preview:page');
   const previewStd = new BlockStdScope({
     store: previewDoc,
     extensions: previewSpec.value,
