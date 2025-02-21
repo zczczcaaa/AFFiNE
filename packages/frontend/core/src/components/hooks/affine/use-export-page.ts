@@ -21,12 +21,12 @@ import {
   titleMiddleware,
   ZipTransformer,
 } from '@blocksuite/affine/blocks';
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import { type Store, Transformer } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import { useSetAtom } from 'jotai';
 import { nanoid } from 'nanoid';
 
+import type { AffineEditorContainer } from '../../blocksuite/block-suite-editor/blocksuite-editor-container';
 import { useAsyncCallback } from '../affine-async-hooks';
 
 type ExportType = 'pdf' | 'html' | 'png' | 'markdown' | 'snapshot';

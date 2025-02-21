@@ -99,26 +99,6 @@ export default defineConfig(({ mode }) => {
         },
         input: {
           main: resolve(__dirname, 'index.html'),
-          'examples/basic/page': resolve(
-            __dirname,
-            'examples/basic/page/index.html'
-          ),
-          'examples/basic/edgeless': resolve(
-            __dirname,
-            'examples/basic/edgeless/index.html'
-          ),
-          'examples/multiple-editors/page-page': resolve(
-            __dirname,
-            'examples/multiple-editors/page-page/index.html'
-          ),
-          'examples/multiple-editors/page-edgeless': resolve(
-            __dirname,
-            'examples/multiple-editors/page-edgeless/index.html'
-          ),
-          'examples/multiple-editors/edgeless-edgeless': resolve(
-            __dirname,
-            'examples/multiple-editors/edgeless-edgeless/index.html'
-          ),
           'examples/inline': resolve(__dirname, 'examples/inline/index.html'),
         },
         treeshake: true,

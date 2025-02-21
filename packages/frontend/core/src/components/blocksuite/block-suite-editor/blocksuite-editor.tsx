@@ -12,7 +12,6 @@ import {
   LinkPreviewerService,
 } from '@blocksuite/affine/blocks';
 import { DisposableGroup } from '@blocksuite/affine/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import type { Store } from '@blocksuite/affine/store';
 import { Slot } from '@radix-ui/react-slot';
 import { useLiveData, useService } from '@toeverything/infra';
@@ -21,7 +20,10 @@ import type { CSSProperties } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
 import type { DefaultOpenProperty } from '../../doc-properties';
-import { BlocksuiteEditorContainer } from './blocksuite-editor-container';
+import {
+  type AffineEditorContainer,
+  BlocksuiteEditorContainer,
+} from './blocksuite-editor-container';
 import { NoPageRootError } from './no-page-error';
 
 export type EditorProps = {

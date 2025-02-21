@@ -1,3 +1,4 @@
+import type { AffineEditorContainer } from '@affine/core/components/blocksuite/block-suite-editor';
 import type { DefaultOpenProperty } from '@affine/core/components/doc-properties';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import {
@@ -7,7 +8,6 @@ import {
   HighlightSelection,
   type ReferenceParams,
 } from '@blocksuite/affine/blocks';
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import type { InlineEditor } from '@blocksuite/inline';
 import { effect } from '@preact/signals-core';
 import { Entity, LiveData } from '@toeverything/infra';

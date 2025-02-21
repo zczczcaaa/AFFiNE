@@ -1,37 +1,52 @@
-import { BlockStdScope, ShadowlessElement } from '@blocksuite/block-std';
-import { EdgelessEditorBlockSpecs, ThemeProvider } from '@blocksuite/blocks';
-import { SignalWatcher, WithDisposable } from '@blocksuite/global/utils';
-import type { Store } from '@blocksuite/store';
-import { css, html, nothing, type TemplateResult } from 'lit';
+import {
+  BlockStdScope,
+  EditorHost,
+  ShadowlessElement,
+} from '@blocksuite/affine/block-std';
+import { PageEditorBlockSpecs, ThemeProvider } from '@blocksuite/affine/blocks';
+import {
+  noop,
+  SignalWatcher,
+  WithDisposable,
+} from '@blocksuite/affine/global/utils';
+import type { Store } from '@blocksuite/affine/store';
+import { css, html, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { guard } from 'lit/directives/guard.js';
 
-export class EdgelessEditor extends SignalWatcher(
+noop(EditorHost);
+
+export class PageEditor extends SignalWatcher(
   WithDisposable(ShadowlessElement)
 ) {
   static override styles = css`
-    edgeless-editor {
+    page-editor {
       font-family: var(--affine-font-family);
       background: var(--affine-background-primary-color);
     }
 
-    edgeless-editor * {
+    page-editor * {
       box-sizing: border-box;
     }
 
     @media print {
-      edgeless-editor {
+      page-editor {
         height: auto;
       }
     }
 
-    .affine-edgeless-viewport {
-      display: block;
-      height: 100%;
+    .affine-page-viewport {
       position: relative;
-      overflow: clip;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
       container-name: viewport;
       container-type: inline-size;
+    }
+
+    .page-editor-container {
+      display: block;
+      height: 100%;
     }
   `;
 
@@ -64,9 +79,9 @@ export class EdgelessEditor extends SignalWatcher(
     if (!this.doc.root) return nothing;
 
     const std = this.std;
-    const theme = std.get(ThemeProvider).edgeless$.value;
+    const theme = std.get(ThemeProvider).app$.value;
     return html`
-      <div class="affine-edgeless-viewport" data-theme=${theme}>
+      <div data-theme=${theme} class="page-editor-container">
         ${guard([std], () => std.render())}
       </div>
     `;
@@ -88,10 +103,7 @@ export class EdgelessEditor extends SignalWatcher(
   accessor doc!: Store;
 
   @property({ attribute: false })
-  accessor editor!: TemplateResult;
-
-  @property({ attribute: false })
-  accessor specs = EdgelessEditorBlockSpecs;
+  accessor specs = PageEditorBlockSpecs;
 
   @state()
   accessor std!: BlockStdScope;
@@ -99,6 +111,6 @@ export class EdgelessEditor extends SignalWatcher(
 
 declare global {
   interface HTMLElementTagNameMap {
-    'edgeless-editor': EdgelessEditor;
+    'page-editor': PageEditor;
   }
 }

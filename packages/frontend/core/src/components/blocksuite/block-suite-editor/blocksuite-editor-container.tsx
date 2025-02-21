@@ -1,16 +1,17 @@
+import type {
+  EdgelessEditor,
+  PageEditor,
+} from '@affine/core/blocksuite/editors';
 import { FeatureFlagService } from '@affine/core/modules/feature-flag';
+import type { BlockStdScope, EditorHost } from '@blocksuite/affine/block-std';
 import {
   appendParagraphCommand,
   type DocMode,
   type DocTitle,
   focusBlockEnd,
   getLastNoteBlock,
+  type RootBlockModel,
 } from '@blocksuite/affine/blocks';
-import type {
-  AffineEditorContainer,
-  EdgelessEditor,
-  PageEditor,
-} from '@blocksuite/affine/presets';
 import { type Store } from '@blocksuite/affine/store';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
@@ -35,6 +36,18 @@ interface BlocksuiteEditorContainerProps {
   className?: string;
   defaultOpenProperty?: DefaultOpenProperty;
   style?: React.CSSProperties;
+}
+
+export interface AffineEditorContainer extends HTMLElement {
+  page: Store;
+  doc: Store;
+  docTitle: DocTitle;
+  host: EditorHost;
+  model: RootBlockModel | null;
+  updateComplete: Promise<boolean>;
+  mode: DocMode;
+  origin: HTMLDivElement;
+  std: BlockStdScope;
 }
 
 export const BlocksuiteEditorContainer = forwardRef<
@@ -66,9 +79,11 @@ export const BlocksuiteEditorContainer = forwardRef<
         return docTitleRef.current;
       },
       get host() {
-        return mode === 'page'
-          ? docRef.current?.host
-          : edgelessRef.current?.host;
+        return (
+          (mode === 'page'
+            ? docRef.current?.host
+            : edgelessRef.current?.host) ?? null
+        );
       },
       get model() {
         return page.root as any;
@@ -110,7 +125,7 @@ export const BlocksuiteEditorContainer = forwardRef<
         }
         return undefined;
       },
-    }) as unknown as AffineEditorContainer & { origin: HTMLDivElement };
+    }) as AffineEditorContainer;
 
     return proxy;
   }, [mode, page]);

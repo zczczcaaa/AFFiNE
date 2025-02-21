@@ -1,17 +1,14 @@
 import type { Page } from '@playwright/test';
 
-import { currentEditorIndex } from './multiple-editor.js';
-
 export async function getStringFromRichText(
   page: Page,
   index = 0
 ): Promise<string> {
   await page.waitForTimeout(50);
   return page.evaluate(
-    ([index, currentEditorIndex]) => {
-      const editorHost =
-        document.querySelectorAll('editor-host')[currentEditorIndex];
-      const richTexts = editorHost.querySelectorAll('rich-text');
+    ([index]) => {
+      const editorHost = document.querySelector('editor-host');
+      const richTexts = editorHost?.querySelectorAll('rich-text');
 
       if (!richTexts) {
         throw new Error('Cannot find rich-text');
@@ -20,6 +17,6 @@ export async function getStringFromRichText(
       const editor = (richTexts[index] as any).inlineEditor;
       return editor.yText.toString();
     },
-    [index, currentEditorIndex]
+    [index]
   );
 }

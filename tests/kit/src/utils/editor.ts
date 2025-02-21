@@ -1,6 +1,8 @@
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
+import type * as BlocksuiteBlocks from '@blocksuite/affine/blocks';
 import type { IVec, XYWH } from '@blocksuite/global/utils';
 import { expect, type Locator, type Page } from '@playwright/test';
+
+declare type _GLOBAL_ = typeof BlocksuiteBlocks;
 
 const AFFINE_FORMAT_BAR_WIDGET = 'affine-format-bar-widget';
 const EDGELESS_ELEMENT_TOOLBAR_WIDGET = 'edgeless-element-toolbar-widget';
@@ -73,7 +75,7 @@ export function locateFormatBar(page: Page, editorIndex = 0) {
 
 export async function getEdgelessSelectedIds(page: Page, editorIndex = 0) {
   const container = locateEditorContainer(page, editorIndex);
-  return container.evaluate((container: AffineEditorContainer) => {
+  return container.evaluate(container => {
     const root = container.querySelector('affine-edgeless-root');
     if (!root) {
       throw new Error('Edgeless root not found');
@@ -100,7 +102,7 @@ export async function getSelectedXYWH(
 
 export async function getViewportCenter(page: Page, editorIndex = 0) {
   const container = locateEditorContainer(page, editorIndex);
-  return container.evaluate((container: AffineEditorContainer) => {
+  return container.evaluate(container => {
     const root = container.querySelector('affine-edgeless-root');
     if (!root) {
       throw new Error('Edgeless root not found');
@@ -115,7 +117,7 @@ export async function setViewportCenter(
   editorIndex = 0
 ) {
   const container = locateEditorContainer(page, editorIndex);
-  return container.evaluate((container: AffineEditorContainer, center) => {
+  return container.evaluate((container, center) => {
     const root = container.querySelector('affine-edgeless-root');
     if (!root) {
       throw new Error('Edgeless root not found');
@@ -126,7 +128,7 @@ export async function setViewportCenter(
 
 export async function setViewportZoom(page: Page, zoom = 1, editorIndex = 0) {
   const container = locateEditorContainer(page, editorIndex);
-  return container.evaluate((container: AffineEditorContainer, zoom) => {
+  return container.evaluate((container, zoom) => {
     const root = container.querySelector('affine-edgeless-root');
     if (!root) {
       throw new Error('Edgeless root not found');
@@ -141,7 +143,7 @@ export async function setViewportZoom(page: Page, zoom = 1, editorIndex = 0) {
  */
 export async function toViewCoord(page: Page, point: IVec, editorIndex = 0) {
   const container = locateEditorContainer(page, editorIndex);
-  return container.evaluate((container: AffineEditorContainer, point) => {
+  return container.evaluate((container, point) => {
     const root = container.querySelector('affine-edgeless-root');
     if (!root) {
       throw new Error('Edgeless root not found');
@@ -159,7 +161,7 @@ export async function toViewCoord(page: Page, point: IVec, editorIndex = 0) {
  */
 export async function toModelCoord(page: Page, point: IVec, editorIndex = 0) {
   const container = locateEditorContainer(page, editorIndex);
-  return container.evaluate((container: AffineEditorContainer, point) => {
+  return container.evaluate((container, point) => {
     const root = container.querySelector('affine-edgeless-root');
     if (!root) {
       throw new Error('Edgeless root not found');

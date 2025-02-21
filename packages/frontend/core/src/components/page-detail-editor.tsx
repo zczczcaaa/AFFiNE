@@ -1,6 +1,5 @@
 import './page-detail-editor.css';
 
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import { useLiveData, useService } from '@toeverything/infra';
 import clsx from 'clsx';
 import { useEffect } from 'react';
@@ -8,6 +7,7 @@ import { useEffect } from 'react';
 import { DocService } from '../modules/doc';
 import { EditorService } from '../modules/editor';
 import { EditorSettingService } from '../modules/editor-setting';
+import type { AffineEditorContainer } from './blocksuite/block-suite-editor';
 import { BlockSuiteEditor } from './blocksuite/block-suite-editor';
 import * as styles from './page-detail-editor.css';
 

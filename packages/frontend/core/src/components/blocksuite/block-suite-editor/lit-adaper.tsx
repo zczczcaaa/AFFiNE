@@ -3,6 +3,7 @@ import {
   useConfirmModal,
   useLitPortalFactory,
 } from '@affine/component';
+import { EdgelessEditor, PageEditor } from '@affine/core/blocksuite/editors';
 import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
 import { DocService, DocsService } from '@affine/core/modules/doc';
 import type {
@@ -27,7 +28,6 @@ import {
   slashMenuWidget,
   surfaceRefToolbarWidget,
 } from '@blocksuite/affine/blocks';
-import { EdgelessEditor, PageEditor } from '@blocksuite/affine/presets';
 import type { Store } from '@blocksuite/affine/store';
 import {
   useFramework,

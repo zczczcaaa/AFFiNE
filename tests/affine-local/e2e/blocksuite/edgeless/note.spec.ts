@@ -27,7 +27,6 @@ import {
   type,
   waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import type {
   EdgelessRootBlockComponent,
   NoteBlockModel,
@@ -294,16 +293,13 @@ test.describe('edgeless note element toolbar', () => {
   test('note edgeless styles', async ({ page }) => {
     const getNoteEdgelessProps = async (page: Page, noteId: string) => {
       const container = locateEditorContainer(page);
-      return await container.evaluate(
-        (container: AffineEditorContainer, noteId) => {
-          const root = container.querySelector(
-            'affine-edgeless-root'
-          ) as EdgelessRootBlockComponent;
-          const note = root.gfx.getElementById(noteId) as NoteBlockModel;
-          return note.edgeless;
-        },
-        noteId
-      );
+      return await container.evaluate((container: HTMLElement, noteId) => {
+        const root = container.querySelector(
+          'affine-edgeless-root'
+        ) as EdgelessRootBlockComponent;
+        const note = root.gfx.getElementById(noteId) as NoteBlockModel;
+        return note.edgeless;
+      }, noteId);
     };
 
     const toolbar = locateElementToolbar(page);

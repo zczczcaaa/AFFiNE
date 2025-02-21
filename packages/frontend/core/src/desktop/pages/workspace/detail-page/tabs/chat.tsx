@@ -1,4 +1,5 @@
 import { ChatPanel } from '@affine/core/blocksuite/presets';
+import type { AffineEditorContainer } from '@affine/core/components/blocksuite/block-suite-editor';
 import { createPageModePreviewSpecs } from '@affine/core/components/blocksuite/block-suite-editor/specs/preview';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
@@ -9,7 +10,6 @@ import {
   DocModeProvider,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import { useFramework } from '@toeverything/infra';
 import { forwardRef, useEffect, useRef } from 'react';
 

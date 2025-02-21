@@ -9,7 +9,6 @@ import { UrlService } from '@affine/core/modules/url';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
 import { TextSelection } from '@blocksuite/affine/block-std';
-import type { AffineEditorContainer } from '@blocksuite/affine/presets';
 import { useService, useServiceOptional } from '@toeverything/infra';
 import { useStore } from 'jotai';
 import { useTheme } from 'next-themes';
@@ -29,6 +28,7 @@ import {
 import { usePageHelper } from '../../components/blocksuite/block-suite-page-list/utils';
 import { EditorSettingService } from '../../modules/editor-setting';
 import { CMDKQuickSearchService } from '../../modules/quicksearch/services/cmdk';
+import type { AffineEditorContainer } from '../blocksuite/block-suite-editor';
 import { useActiveBlocksuiteEditor } from './use-block-suite-editor';
 import { useNavigateHelper } from './use-navigate-helper';
 

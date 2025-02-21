@@ -3,6 +3,7 @@ import { PageDetailSkeleton } from '@affine/component/page-detail-skeleton';
 import type { ChatPanel } from '@affine/core/blocksuite/presets';
 import { AIProvider } from '@affine/core/blocksuite/presets';
 import { PageAIOnboarding } from '@affine/core/components/affine/ai-onboarding';
+import type { AffineEditorContainer } from '@affine/core/components/blocksuite/block-suite-editor';
 import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
 import { DocPropertySidebar } from '@affine/core/components/doc-properties/sidebar';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
@@ -22,7 +23,6 @@ import {
   type Disposable,
   DisposableGroup,
 } from '@blocksuite/affine/global/utils';
-import { type AffineEditorContainer } from '@blocksuite/affine/presets';
 import {
   AiIcon,
   FrameIcon,
