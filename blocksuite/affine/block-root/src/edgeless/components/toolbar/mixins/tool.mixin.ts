@@ -6,7 +6,7 @@ import type {
 } from '@blocksuite/block-std/gfx';
 import {
   type Constructor,
-  // eslint-disable-next-line no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   type DisposableClass,
   WithDisposable,
 } from '@blocksuite/global/utils';

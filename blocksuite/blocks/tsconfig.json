@@ -21,6 +21,7 @@
     { "path": "../affine/block-list" },
     { "path": "../affine/block-note" },
     { "path": "../affine/block-paragraph" },
+    { "path": "../affine/block-root" },
     { "path": "../affine/block-surface" },
     { "path": "../affine/block-surface-ref" },
     { "path": "../affine/block-table" },

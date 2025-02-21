@@ -9,13 +9,14 @@ import type {
   EdgelessCopilotWidget,
 } from '@blocksuite/affine/blocks';
 import {
-  BlocksUtils,
   CodeBlockModel,
   EdgelessTextBlockModel,
   EmbedSyncedDocModel,
   ImageBlockModel,
+  matchModels,
   NoteBlockModel,
   ShapeElementModel,
+  splitElements,
   TextElementModel,
 } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
@@ -431,7 +432,7 @@ export function actionToHandler<T extends keyof BlockSuitePresets.AIActions>(
       togglePanel = async () => {
         if (isEmpty) return true;
         const { notes, shapes, images, edgelessTexts, embedSyncedDocs } =
-          BlocksUtils.splitElements(selectedElements);
+          splitElements(selectedElements);
         const blocks = [
           ...notes,
           ...shapes,
@@ -489,7 +490,7 @@ export function noteWithCodeBlockShowWen(
   return (
     selected[0] instanceof NoteBlockModel &&
     selected[0].children.length === 1 &&
-    BlocksUtils.matchModels(selected[0].children[0], [CodeBlockModel])
+    matchModels(selected[0].children[0], [CodeBlockModel])
   );
 }
 

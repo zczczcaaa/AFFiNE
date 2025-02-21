@@ -13,9 +13,8 @@ import { ImageBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-i
 import { LatexBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-latex';
 import { ListBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-list';
 import { ParagraphBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-paragraph';
+import { RootBlockNotionHtmlAdapterExtension } from '@blocksuite/affine-block-root';
 import type { ExtensionType } from '@blocksuite/store';
-
-import { RootBlockNotionHtmlAdapterExtension } from '../../../root-block/adapters/notion-html.js';
 
 export const defaultBlockNotionHtmlAdapterMatchers: ExtensionType[] = [
   ListBlockNotionHtmlAdapterExtension,

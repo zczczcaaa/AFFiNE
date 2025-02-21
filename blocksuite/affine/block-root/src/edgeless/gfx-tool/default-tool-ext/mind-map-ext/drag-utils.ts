@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   NODE_HORIZONTAL_SPACING,
   NODE_VERTICAL_SPACING,

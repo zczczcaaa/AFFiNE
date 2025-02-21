@@ -1,9 +1,9 @@
 import {
   type AIItemGroupConfig,
   AIStarIconWithAnimation,
-  BlocksUtils,
   MindmapElementModel,
   ShapeElementModel,
+  splitElements,
   TextElementModel,
 } from '@blocksuite/affine/blocks';
 
@@ -293,7 +293,7 @@ const generateGroup: AIItemGroupConfig = {
             shapes,
             notes: _,
             frames: __,
-          } = BlocksUtils.splitElements(selectedElements);
+          } = splitElements(selectedElements);
 
           const pureShapes = shapes.filter(
             e =>
@@ -412,7 +412,7 @@ const generateGroup: AIItemGroupConfig = {
           }
 
           const { notes, frames, shapes, images, edgelessTexts } =
-            BlocksUtils.splitElements(selectedElements);
+            splitElements(selectedElements);
           const f = frames.length;
           const i = images.length;
           const n = notes.length;

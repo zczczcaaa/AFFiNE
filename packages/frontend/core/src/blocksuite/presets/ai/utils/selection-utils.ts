@@ -4,7 +4,6 @@ import {
   type GfxModel,
 } from '@blocksuite/affine/block-std/gfx';
 import {
-  BlocksUtils,
   type CopilotTool,
   DatabaseBlockModel,
   type FrameBlockModel,
@@ -14,6 +13,9 @@ import {
   getSelectedModelsCommand,
   getTextSelectionCommand,
   ImageBlockModel,
+  isCanvasElement,
+  matchModels,
+  splitElements,
   type SurfaceBlockComponent,
 } from '@blocksuite/affine/blocks';
 import {
@@ -51,7 +53,7 @@ export async function allToCanvas(host: EditorHost) {
 export async function elementsToCanvas(host: EditorHost, elements: GfxModel[]) {
   const edgelessRoot = getEdgelessRootFromEditor(host);
   const { notes, frames, shapes, images, edgelessTexts, embedSyncedDocs } =
-    BlocksUtils.splitElements(elements);
+    splitElements(elements);
 
   const blockElements = [
     ...notes,
@@ -119,8 +121,7 @@ export async function getTextContentFromBlockModels(
 ) {
   // Currently only filter out images and databases
   const selectedTextModels = models.filter(
-    model =>
-      !BlocksUtils.matchModels(model, [ImageBlockModel, DatabaseBlockModel])
+    model => !matchModels(model, [ImageBlockModel, DatabaseBlockModel])
   );
   const drafts = selectedTextModels.map(toDraftModel);
   drafts.forEach(draft => traverse(draft, drafts));
@@ -218,7 +219,7 @@ export const getFirstImageInFrame = (
     false
   );
   const image = elements.find(ele => {
-    if (!BlocksUtils.isCanvasElement(ele)) {
+    if (!isCanvasElement(ele)) {
       return ele.flavour === 'affine:image';
     }
     return false;

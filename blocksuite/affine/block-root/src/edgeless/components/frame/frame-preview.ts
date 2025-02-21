@@ -1,4 +1,5 @@
 import type { FrameBlockModel } from '@blocksuite/affine-model';
+import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import {
   BlockServiceWatcher,
   BlockStdScope,
@@ -18,7 +19,6 @@ import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { SpecProvider } from '../../../../_specs/index.js';
 import type { EdgelessRootPreviewBlockComponent } from '../../edgeless-root-preview-block.js';
 
 const DEFAULT_PREVIEW_CONTAINER_WIDTH = 280;

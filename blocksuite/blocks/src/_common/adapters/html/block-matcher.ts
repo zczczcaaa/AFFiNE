@@ -13,9 +13,8 @@ import {
 import { ImageBlockHtmlAdapterExtension } from '@blocksuite/affine-block-image';
 import { ListBlockHtmlAdapterExtension } from '@blocksuite/affine-block-list';
 import { ParagraphBlockHtmlAdapterExtension } from '@blocksuite/affine-block-paragraph';
+import { RootBlockHtmlAdapterExtension } from '@blocksuite/affine-block-root';
 import { TableBlockHtmlAdapterExtension } from '@blocksuite/affine-block-table';
-
-import { RootBlockHtmlAdapterExtension } from '../../../root-block/adapters/html.js';
 
 export const defaultBlockHtmlAdapterMatchers = [
   ListBlockHtmlAdapterExtension,

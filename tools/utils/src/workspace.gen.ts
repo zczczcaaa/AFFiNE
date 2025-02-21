@@ -211,6 +211,40 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/affine/block-root',
+    name: '@blocksuite/affine-block-root',
+    workspaceDependencies: [
+      'blocksuite/affine/block-attachment',
+      'blocksuite/affine/block-bookmark',
+      'blocksuite/affine/block-data-view',
+      'blocksuite/affine/block-database',
+      'blocksuite/affine/block-edgeless-text',
+      'blocksuite/affine/block-embed',
+      'blocksuite/affine/block-frame',
+      'blocksuite/affine/block-image',
+      'blocksuite/affine/block-latex',
+      'blocksuite/affine/block-list',
+      'blocksuite/affine/block-note',
+      'blocksuite/affine/block-paragraph',
+      'blocksuite/affine/block-surface',
+      'blocksuite/affine/block-surface-ref',
+      'blocksuite/affine/block-table',
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/affine/widget-drag-handle',
+      'blocksuite/affine/widget-edgeless-auto-connect',
+      'blocksuite/affine/widget-frame-title',
+      'blocksuite/affine/widget-remote-selection',
+      'blocksuite/affine/widget-scroll-anchoring',
+      'blocksuite/framework/block-std',
+      'blocksuite/affine/data-view',
+      'blocksuite/framework/global',
+      'blocksuite/framework/inline',
+      'blocksuite/framework/store',
+    ],
+  },
+  {
     location: 'blocksuite/affine/block-surface',
     name: '@blocksuite/affine-block-surface',
     workspaceDependencies: [
@@ -404,6 +438,7 @@ export const PackageList = [
       'blocksuite/affine/block-list',
       'blocksuite/affine/block-note',
       'blocksuite/affine/block-paragraph',
+      'blocksuite/affine/block-root',
       'blocksuite/affine/block-surface',
       'blocksuite/affine/block-surface-ref',
       'blocksuite/affine/block-table',
@@ -788,6 +823,7 @@ export type PackageName =
   | '@blocksuite/affine-block-list'
   | '@blocksuite/affine-block-note'
   | '@blocksuite/affine-block-paragraph'
+  | '@blocksuite/affine-block-root'
   | '@blocksuite/affine-block-surface'
   | '@blocksuite/affine-block-surface-ref'
   | '@blocksuite/affine-block-table'

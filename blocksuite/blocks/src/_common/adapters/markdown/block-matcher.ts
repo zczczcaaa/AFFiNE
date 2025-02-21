@@ -15,9 +15,8 @@ import { LatexBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-lat
 import { ListBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-list';
 import { DocNoteBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-note';
 import { ParagraphBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-paragraph';
+import { RootBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-root';
 import { TableBlockMarkdownAdapterExtension } from '@blocksuite/affine-block-table';
-
-import { RootBlockMarkdownAdapterExtension } from '../../../root-block/adapters/markdown.js';
 
 export const defaultBlockMarkdownAdapterMatchers = [
   RootBlockMarkdownAdapterExtension,

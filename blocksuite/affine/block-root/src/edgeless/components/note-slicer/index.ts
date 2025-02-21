@@ -1,5 +1,10 @@
+import type { NoteBlockComponent } from '@blocksuite/affine-block-note';
 import { isNoteBlock } from '@blocksuite/affine-block-surface';
-import { DEFAULT_NOTE_HEIGHT } from '@blocksuite/affine-model';
+import {
+  DEFAULT_NOTE_HEIGHT,
+  type NoteBlockModel,
+  type RootBlockModel,
+} from '@blocksuite/affine-model';
 import { EDGELESS_BLOCK_CHILD_PADDING } from '@blocksuite/affine-shared/consts';
 import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import { getRectByBlockComponent } from '@blocksuite/affine-shared/utils';
@@ -17,12 +22,7 @@ import { state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type {
-  EdgelessRootBlockComponent,
-  NoteBlockComponent,
-  NoteBlockModel,
-  RootBlockModel,
-} from '../../../../index.js';
+import type { EdgelessRootBlockComponent } from '../../edgeless-root-block';
 
 const DIVIDING_LINE_OFFSET = 4;
 const NEW_NOTE_GAP = 40;

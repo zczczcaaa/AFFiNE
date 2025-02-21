@@ -8,11 +8,11 @@ import {
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type { DocMode, ImageSelection } from '@blocksuite/affine/blocks';
 import {
-  BlocksUtils,
   DocModeProvider,
   EdgelessCRUDIdentifier,
   EditPropsStore,
   getSelectedBlocksCommand,
+  matchModels,
   NoteDisplayMode,
   NotificationProvider,
   ParagraphBlockModel,
@@ -33,8 +33,6 @@ import { AIProvider, type AIUserInfo } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { insertBelow, replace } from '../utils/editor-actions';
 import { BlockIcon, CreateIcon, InsertBelowIcon, ReplaceIcon } from './icons';
-
-const { matchModels } = BlocksUtils;
 
 type Selections = {
   text?: TextSelection;

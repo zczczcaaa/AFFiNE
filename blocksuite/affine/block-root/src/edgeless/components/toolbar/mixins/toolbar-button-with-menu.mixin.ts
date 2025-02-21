@@ -2,7 +2,7 @@ import type { Constructor } from '@blocksuite/global/utils';
 import type { LitElement } from 'lit';
 
 import {
-  // eslint-disable-next-line no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   type EdgelessToolbarToolClass,
   EdgelessToolbarToolMixin,
 } from './tool.mixin.js';
