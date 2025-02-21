@@ -4,7 +4,8 @@ import { createVar, style } from '@vanilla-extract/css';
 export const cellContainerStyle = style({
   position: 'relative',
   alignItems: 'center',
-  border: '1px solid var(--affine-border-color)',
+  border: '1px solid',
+  borderColor: cssVarV2.table.border,
   borderCollapse: 'collapse',
   isolation: 'auto',
   textAlign: 'start',

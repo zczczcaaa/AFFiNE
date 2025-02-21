@@ -2,8 +2,7 @@ import { style } from '@vanilla-extract/css';
 
 export const tableContainer = style({
   display: 'block',
-  backgroundColor: 'var(--affine-background-primary-color)',
-  padding: '10px 0 18px',
+  padding: '10px 0 18px 10px',
   overflowX: 'auto',
   overflowY: 'visible',
   selectors: {

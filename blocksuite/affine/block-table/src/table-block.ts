@@ -135,7 +135,7 @@ export class TableBlockComponent extends CaptionedBlockComponent<TableBlockModel
         contenteditable="false"
         class=${tableContainer}
         style=${styleMap({
-          marginLeft: `-${virtualPadding}px`,
+          marginLeft: `-${virtualPadding + 10}px`,
           marginRight: `-${virtualPadding}px`,
           position: 'relative',
         })}
