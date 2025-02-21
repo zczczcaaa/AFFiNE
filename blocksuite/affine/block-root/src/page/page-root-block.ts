@@ -1,3 +1,4 @@
+import { appendParagraphCommand } from '@blocksuite/affine-block-paragraph';
 import { focusTextModel } from '@blocksuite/affine-components/rich-text';
 import {
   CodeBlockModel,
@@ -49,11 +50,7 @@ function testClickOnBlankArea(
   const blankRight =
     viewportLeft + (viewportWidth - pageWidth) / 2 + pageWidth - paddingRight;
 
-  if (state.raw.clientX < blankLeft || state.raw.clientX > blankRight) {
-    return true;
-  }
-
-  return false;
+  return state.raw.clientX < blankLeft || state.raw.clientX > blankRight;
 }
 
 export class PageRootBlockComponent extends BlockComponent<
@@ -321,6 +318,32 @@ export class PageRootBlockComponent extends BlockComponent<
       ) {
         return;
       }
+      // prevent cursor jump
+      event.raw.preventDefault();
+    });
+
+    this.handleEvent('click', ctx => {
+      const event = ctx.get('pointerState');
+      if (
+        event.raw.target !== this &&
+        event.raw.target !== this.viewportElement &&
+        event.raw.target !== this.rootElementContainer
+      ) {
+        return;
+      }
+
+      const notes = this.model.children.filter(
+        (child): child is NoteBlockModel =>
+          child instanceof NoteBlockModel &&
+          child.displayMode !== NoteDisplayMode.EdgelessOnly
+      );
+
+      // make sure there is a block can be focused
+      if (notes.length === 0 || notes[notes.length - 1].children.length === 0) {
+        this.std.command.exec(appendParagraphCommand);
+        return;
+      }
+
       const { paddingLeft, paddingRight } = window.getComputedStyle(
         this.rootElementContainer
       );
@@ -334,6 +357,14 @@ export class PageRootBlockComponent extends BlockComponent<
         parseFloat(paddingRight)
       );
       if (!isClickOnBlankArea) {
+        const lastBlock = notes[notes.length - 1].lastChild();
+        if (
+          !lastBlock ||
+          !matchModels(lastBlock, [ParagraphBlockModel]) ||
+          lastBlock.text.length !== 0
+        ) {
+          this.std.command.exec(appendParagraphCommand);
+        }
         return;
       }
 
@@ -371,67 +402,6 @@ export class PageRootBlockComponent extends BlockComponent<
       }
 
       return;
-    });
-
-    this.handleEvent('click', ctx => {
-      const event = ctx.get('pointerState');
-      if (
-        event.raw.target !== this &&
-        event.raw.target !== this.viewportElement &&
-        event.raw.target !== this.rootElementContainer
-      ) {
-        return;
-      }
-
-      let newTextSelectionId: string | null = null;
-      const readonly = this.doc.readonly;
-      const lastNote = this.model.children
-        .slice()
-        .reverse()
-        .find(child => {
-          const isNote = matchModels(child, [NoteBlockModel]);
-          if (!isNote) return false;
-          const displayOnDoc =
-            !!child.displayMode &&
-            child.displayMode !== NoteDisplayMode.EdgelessOnly;
-          return displayOnDoc;
-        });
-      if (!lastNote) {
-        if (readonly) return;
-        const noteId = this.doc.addBlock('affine:note', {}, this.model.id);
-        const paragraphId = this.doc.addBlock('affine:paragraph', {}, noteId);
-        newTextSelectionId = paragraphId;
-      } else {
-        const last = lastNote.children.at(-1);
-        if (
-          !last ||
-          !(matchModels(last, [ParagraphBlockModel]) && last.text.length === 0)
-        ) {
-          if (readonly) return;
-          const paragraphId = this.doc.addBlock(
-            'affine:paragraph',
-            {},
-            lastNote.id
-          );
-          newTextSelectionId = paragraphId;
-        }
-      }
-
-      this.updateComplete
-        .then(() => {
-          if (!newTextSelectionId) return;
-          this.host.selection.setGroup('note', [
-            this.host.selection.create(TextSelection, {
-              from: {
-                blockId: newTextSelectionId,
-                index: 0,
-                length: 0,
-              },
-              to: null,
-            }),
-          ]);
-        })
-        .catch(console.error);
     });
   }
 
