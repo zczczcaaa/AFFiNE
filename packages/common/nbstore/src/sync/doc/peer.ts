@@ -247,7 +247,7 @@ export class DocSyncPeer {
         !this.remote.isReadonly &&
         clock &&
         (pushedClock === null ||
-          pushedClock.getTime() !== clock.timestamp.getTime())
+          pushedClock.getTime() < clock.timestamp.getTime())
       ) {
         await this.jobs.pullAndPush(docId, signal);
       } else {
@@ -255,9 +255,10 @@ export class DocSyncPeer {
         const pulled =
           (await this.syncMetadata.getPeerPulledRemoteClock(this.peerId, docId))
             ?.timestamp ?? null;
+        const remoteClock = this.status.remoteClocks.get(docId);
         if (
-          pulled === null ||
-          pulled.getTime() !== this.status.remoteClocks.get(docId)?.getTime()
+          remoteClock &&
+          (pulled === null || pulled.getTime() < remoteClock.getTime())
         ) {
           await this.jobs.pull(docId, signal);
         }
