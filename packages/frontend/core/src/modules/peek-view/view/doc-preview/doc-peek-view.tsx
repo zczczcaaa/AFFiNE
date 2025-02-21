@@ -96,12 +96,9 @@ function DocPeekPreviewEditor({
 
   const handleOnEditorReady = useCallback(
     (editorContainer: AffineEditorContainer) => {
-      if (!editorContainer.host) {
-        return;
-      }
       const disposableGroup = new DisposableGroup();
       const refNodeSlots =
-        editorContainer.host.std.getOptional(RefNodeSlotsProvider);
+        editorContainer.std.getOptional(RefNodeSlotsProvider);
       if (!refNodeSlots) return;
       // doc change event inside peek view should be handled by peek view
       disposableGroup.add(

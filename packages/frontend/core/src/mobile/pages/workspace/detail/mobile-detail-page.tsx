@@ -139,9 +139,6 @@ const DetailPageImpl = () => {
 
   const onLoad = useCallback(
     (editorContainer: AffineEditorContainer) => {
-      // blocksuite editor host
-      const editorHost = editorContainer.host;
-
       // provide image proxy endpoint to blocksuite
       const imageProxyUrl = new URL(
         BUILD_CONFIG.imageProxyUrl,
@@ -153,14 +150,19 @@ const DetailPageImpl = () => {
         server.baseUrl
       ).toString();
 
-      editorHost?.std.clipboard.use(customImageProxyMiddleware(imageProxyUrl));
-      editorHost?.doc.get(ImageProxyService).setImageProxyURL(imageProxyUrl);
+      editorContainer.std.clipboard.use(
+        customImageProxyMiddleware(imageProxyUrl)
+      );
+      editorContainer.doc
+        .get(ImageProxyService)
+        .setImageProxyURL(imageProxyUrl);
 
       // provide link preview endpoint to blocksuite
-      editorHost?.doc.get(LinkPreviewerService).setEndpoint(linkPreviewUrl);
+      editorContainer.doc.get(LinkPreviewerService).setEndpoint(linkPreviewUrl);
 
       // provide page mode and updated date to blocksuite
-      const refNodeService = editorHost?.std.getOptional(RefNodeSlotsProvider);
+      const refNodeService =
+        editorContainer.std.getOptional(RefNodeSlotsProvider);
       const disposable = new DisposableGroup();
       if (refNodeService) {
         disposable.add(

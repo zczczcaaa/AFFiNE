@@ -167,10 +167,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
 
   const onLoad = useCallback(
     (editorContainer: AffineEditorContainer) => {
-      // blocksuite editor host
-      const editorHost = editorContainer.host;
-
-      const std = editorHost?.std;
+      const std = editorContainer.std;
       const disposable = new DisposableGroup();
       if (std) {
         const refNodeSlots = std.getOptional(RefNodeSlotsProvider);
@@ -179,7 +176,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
             // the event should not be emitted by AffineReference
             refNodeSlots.docLinkClicked.on(
               ({ pageId, params, openMode, event, host }) => {
-                if (host !== editorHost) {
+                if (host !== editorContainer.host) {
                   return;
                 }
                 openMode ??=

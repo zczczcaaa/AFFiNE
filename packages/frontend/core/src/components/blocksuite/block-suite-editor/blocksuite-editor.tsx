@@ -67,46 +67,38 @@ const BlockSuiteEditorImpl = ({
       let canceled = false;
       const disposableGroup = new DisposableGroup();
 
-      if (onEditorReady) {
-        // Invoke onLoad once the editor has been mounted to the DOM.
-        editor.updateComplete
-          .then(() => {
-            if (canceled) {
-              return;
-            }
-            // host should be ready
+      // Invoke onLoad once the editor has been mounted to the DOM.
+      if (canceled) {
+        return;
+      }
 
-            // provide image proxy endpoint to blocksuite
-            const imageProxyUrl = new URL(
-              BUILD_CONFIG.imageProxyUrl,
-              server.baseUrl
-            ).toString();
-            const linkPreviewUrl = new URL(
-              BUILD_CONFIG.linkPreviewUrl,
-              server.baseUrl
-            ).toString();
+      // provide image proxy endpoint to blocksuite
+      const imageProxyUrl = new URL(
+        BUILD_CONFIG.imageProxyUrl,
+        server.baseUrl
+      ).toString();
 
-            editor.host?.std.clipboard.use(
-              customImageProxyMiddleware(imageProxyUrl)
-            );
+      const linkPreviewUrl = new URL(
+        BUILD_CONFIG.linkPreviewUrl,
+        server.baseUrl
+      ).toString();
 
-            page.get(LinkPreviewerService).setEndpoint(linkPreviewUrl);
+      editor.std.clipboard.use(customImageProxyMiddleware(imageProxyUrl));
+      page.get(LinkPreviewerService).setEndpoint(linkPreviewUrl);
+      page.get(ImageProxyService).setImageProxyURL(imageProxyUrl);
 
-            page.get(ImageProxyService).setImageProxyURL(imageProxyUrl);
-
-            return editor.host?.updateComplete;
-          })
-          .then(() => {
-            if (canceled) {
-              return;
-            }
+      editor.updateComplete
+        .then(() => {
+          if (onEditorReady) {
             const dispose = onEditorReady(editor);
             if (dispose) {
               disposableGroup.add(dispose);
             }
-          })
-          .catch(console.error);
-      }
+          }
+        })
+        .catch(error => {
+          console.error('Error updating editor', error);
+        });
 
       return () => {
         canceled = true;

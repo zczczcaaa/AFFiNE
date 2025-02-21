@@ -42,7 +42,7 @@ export interface AffineEditorContainer extends HTMLElement {
   page: Store;
   doc: Store;
   docTitle: DocTitle;
-  host: EditorHost;
+  host?: EditorHost;
   model: RootBlockModel | null;
   updateComplete: Promise<boolean>;
   mode: DocMode;
