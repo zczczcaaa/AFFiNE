@@ -78,22 +78,6 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
       });
     };
 
-    if (this.connection.status === 'connected') {
-      joinAndCollect().catch(err =>
-        console.error('awareness join failed', err)
-      );
-    }
-
-    const unsubscribeConnectionStatusChanged = this.connection.onStatusChanged(
-      status => {
-        if (status === 'connected') {
-          joinAndCollect().catch(err =>
-            console.error('awareness join failed', err)
-          );
-        }
-      }
-    );
-
     const handleCollectAwareness = ({
       spaceId,
       spaceType,
@@ -145,6 +129,22 @@ export class CloudAwarenessStorage extends AwarenessStorageBase {
         });
       }
     };
+
+    if (this.connection.status === 'connected') {
+      joinAndCollect().catch(err =>
+        console.error('awareness join failed', err)
+      );
+    }
+
+    const unsubscribeConnectionStatusChanged = this.connection.onStatusChanged(
+      status => {
+        if (status === 'connected') {
+          joinAndCollect().catch(err =>
+            console.error('awareness join failed', err)
+          );
+        }
+      }
+    );
 
     return () => {
       leave();
