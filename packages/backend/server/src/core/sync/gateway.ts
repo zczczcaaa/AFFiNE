@@ -11,7 +11,6 @@ import { ClsInterceptor } from 'nestjs-cls';
 import { Socket } from 'socket.io';
 
 import {
-  AlreadyInSpace,
   CallMetric,
   DocNotFound,
   GatewayErrorWrapper,
@@ -617,24 +616,22 @@ abstract class SyncSocketAdapter {
   }
 
   async join(userId: string, spaceId: string, roomType: RoomType = 'sync') {
-    this.assertNotIn(spaceId, roomType);
+    if (this.in(spaceId, roomType)) {
+      return;
+    }
     await this.assertAccessible(spaceId, userId, WorkspaceRole.Collaborator);
     return this.client.join(this.room(spaceId, roomType));
   }
 
   async leave(spaceId: string, roomType: RoomType = 'sync') {
-    this.assertIn(spaceId, roomType);
+    if (!this.in(spaceId, roomType)) {
+      return;
+    }
     return this.client.leave(this.room(spaceId, roomType));
   }
 
   in(spaceId: string, roomType: RoomType = 'sync') {
     return this.client.rooms.has(this.room(spaceId, roomType));
-  }
-
-  assertNotIn(spaceId: string, roomType: RoomType = 'sync') {
-    if (this.client.rooms.has(this.room(spaceId, roomType))) {
-      throw new AlreadyInSpace({ spaceId });
-    }
   }
 
   assertIn(spaceId: string, roomType: RoomType = 'sync') {
