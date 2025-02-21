@@ -5,7 +5,8 @@ import {
   scrollbarStyle,
 } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import { css, html, LitElement } from 'lit';
+import { cssVar } from '@toeverything/theme';
+import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
@@ -21,7 +22,7 @@ export class AskAIPanel extends WithDisposable(LitElement) {
       max-height: 374px;
       overflow-y: auto;
       background: var(--affine-background-overlay-panel-color);
-      box-shadow: var(--affine-shadow-2);
+      box-shadow: ${unsafeCSS(cssVar('overlayPanelShadow'))};
       border-radius: 8px;
       z-index: var(--affine-z-index-popover);
       scrollbar-gutter: stable;
