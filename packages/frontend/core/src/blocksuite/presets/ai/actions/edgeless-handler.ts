@@ -451,11 +451,7 @@ export function actionToHandler<T extends keyof BlockSuitePresets.AIActions>(
 
     togglePanel()
       .then(isEmpty => {
-        aiPanel.toggle(
-          referenceElement,
-          isEmpty ? undefined : 'placeholder',
-          false
-        );
+        aiPanel.toggle(referenceElement, isEmpty ? undefined : '', false);
       })
       .catch(console.error);
   };

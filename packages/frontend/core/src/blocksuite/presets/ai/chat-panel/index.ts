@@ -346,10 +346,9 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     if (!this.doc) throw new Error('doc is required');
 
     this._disposables.add(
-      AIProvider.slots.actions.on(({ action, event }) => {
+      AIProvider.slots.actions.on(({ event }) => {
         const { status } = this.chatContextValue;
         if (
-          action !== 'chat' &&
           event === 'finished' &&
           (status === 'idle' || status === 'success')
         ) {

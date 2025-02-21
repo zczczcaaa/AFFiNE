@@ -278,7 +278,7 @@ export class AffineAIPanelWidget extends WidgetComponent {
     input?: string,
     shouldTriggerCallback?: boolean
   ) => {
-    if (input) {
+    if (typeof input === 'string') {
       this._inputText = input;
       this.generate();
     } else {

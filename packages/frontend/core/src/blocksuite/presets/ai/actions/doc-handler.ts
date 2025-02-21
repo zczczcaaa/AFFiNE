@@ -1,9 +1,9 @@
 import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
 import {
   type AffineAIPanelWidget,
-  type AffineAIPanelWidgetConfig,
   type AIError,
   type AIItemGroupConfig,
+  AIStarIconWithAnimation,
   createLitPortal,
 } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
@@ -64,66 +64,63 @@ export function bindTextStream(
   });
 }
 
-export function actionToStream<T extends keyof BlockSuitePresets.AIActions>(
+function actionToStream<T extends keyof BlockSuitePresets.AIActions>(
+  host: EditorHost,
   id: T,
+  input: string,
   signal?: AbortSignal,
   variants?: Omit<
     Parameters<BlockSuitePresets.AIActions[T]>[0],
     keyof BlockSuitePresets.AITextActionOptions
   >,
   trackerOptions?: BlockSuitePresets.TrackerOptions
-) {
+): BlockSuitePresets.TextStream | undefined {
   const action = AIProvider.actions[id];
   if (!action || typeof action !== 'function') return;
-  return (host: EditorHost): BlockSuitePresets.TextStream => {
-    let stream: BlockSuitePresets.TextStream | undefined;
-    return {
-      async *[Symbol.asyncIterator]() {
-        const { currentTextSelection, selectedBlocks } = getSelections(host);
 
-        let markdown: string;
-        let attachments: File[] = [];
+  let stream: BlockSuitePresets.TextStream | undefined;
+  return {
+    async *[Symbol.asyncIterator]() {
+      const { currentTextSelection, selectedBlocks } = getSelections(host);
 
-        if (currentTextSelection?.isCollapsed()) {
-          markdown = await selectAboveBlocks(host);
-        } else {
-          [markdown, attachments] = await Promise.all([
-            getSelectedTextContent(host),
-            getSelectedImagesAsBlobs(host),
-          ]);
-        }
+      let markdown: string;
+      let attachments: File[] = [];
 
-        // for now if there are more than one selected blocks, we will not omit the attachments
-        const sendAttachments =
-          selectedBlocks?.length === 1 && attachments.length > 0;
-        const models = selectedBlocks?.map(block => block.model);
-        const control = trackerOptions?.control ?? 'format-bar';
-        const where = trackerOptions?.where ?? 'ai-panel';
-        const options = {
-          ...variants,
-          attachments: sendAttachments ? attachments : undefined,
-          input: sendAttachments ? '' : markdown,
-          stream: true,
-          host,
-          models,
-          signal,
-          control,
-          where,
-          docId: host.doc.id,
-          workspaceId: host.doc.workspace.id,
-        } as Parameters<typeof action>[0];
-        // @ts-expect-error TODO(@Peng): maybe fix this
-        stream = action(options);
-        if (!stream) return;
-        yield* stream;
-      },
-    };
+      if (currentTextSelection?.isCollapsed()) {
+        markdown = await selectAboveBlocks(host);
+      } else {
+        [markdown, attachments] = await Promise.all([
+          getSelectedTextContent(host),
+          getSelectedImagesAsBlobs(host),
+        ]);
+      }
+
+      const models = selectedBlocks?.map(block => block.model);
+      const control = trackerOptions?.control ?? 'format-bar';
+      const where = trackerOptions?.where ?? 'ai-panel';
+      const options = {
+        ...variants,
+        attachments,
+        input: input ? `${markdown}\n${input}` : markdown,
+        stream: true,
+        host,
+        models,
+        signal,
+        control,
+        where,
+        docId: host.doc.id,
+        workspaceId: host.doc.workspace.id,
+      } as Parameters<typeof action>[0];
+      // @ts-expect-error TODO(@Peng): maybe fix this
+      stream = action(options);
+      if (!stream) return;
+      yield* stream;
+    },
   };
 }
 
-export function actionToGenerateAnswer<
-  T extends keyof BlockSuitePresets.AIActions,
->(
+function actionToGenerateAnswer<T extends keyof BlockSuitePresets.AIActions>(
+  host: EditorHost,
   id: T,
   variants?: Omit<
     Parameters<BlockSuitePresets.AIActions[T]>[0],
@@ -131,28 +128,29 @@ export function actionToGenerateAnswer<
   >,
   trackerOptions?: BlockSuitePresets.TrackerOptions
 ) {
-  return (host: EditorHost) => {
-    return ({
+  return ({
+    input,
+    signal,
+    update,
+    finish,
+  }: {
+    input: string;
+    signal?: AbortSignal;
+    update: (text: string) => void;
+    finish: (state: 'success' | 'error' | 'aborted', err?: AIError) => void;
+  }) => {
+    const { selectedBlocks: blocks } = getSelections(host);
+    if (!blocks || blocks.length === 0) return;
+    const stream = actionToStream(
+      host,
+      id,
+      input,
       signal,
-      update,
-      finish,
-    }: {
-      input: string;
-      signal?: AbortSignal;
-      update: (text: string) => void;
-      finish: (state: 'success' | 'error' | 'aborted', err?: AIError) => void;
-    }) => {
-      const { selectedBlocks: blocks } = getSelections(host);
-      if (!blocks || blocks.length === 0) return;
-      const stream = actionToStream(
-        id,
-        signal,
-        variants,
-        trackerOptions
-      )?.(host);
-      if (!stream) return;
-      bindTextStream(stream, { update, finish, signal });
-    };
+      variants,
+      trackerOptions
+    );
+    if (!stream) return;
+    bindTextStream(stream, { update, finish, signal });
   };
 }
 
@@ -174,10 +172,11 @@ function updateAIPanelConfig<T extends keyof BlockSuitePresets.AIActions>(
   const { config, host } = aiPanel;
   assertExists(config);
   config.generateAnswer = actionToGenerateAnswer(
+    host,
     id,
     variants,
     trackerOptions
-  )(host);
+  );
 
   const ctx = new AIContext();
   config.answerRenderer = actionToAnswerRenderer(id, host, ctx);
@@ -206,7 +205,7 @@ export function actionToHandler<T extends keyof BlockSuitePresets.AIActions>(
     if (!blocks || blocks.length === 0) return;
     const block = blocks.at(-1);
     assertExists(block);
-    aiPanel.toggle(block, 'placeholder');
+    aiPanel.toggle(block, '');
   };
 }
 
@@ -222,43 +221,12 @@ export function handleInlineAskAIAction(
   if (!lastBlockPath) return;
   const block = host.view.getBlock(lastBlockPath);
   if (!block) return;
-
-  const generateAnswer: AffineAIPanelWidgetConfig['generateAnswer'] = ({
-    finish,
-    input,
-    signal,
-    update,
-  }) => {
-    if (!AIProvider.actions.chat) return;
-
-    // recover selection to get content from above blocks
-    assertExists(selection);
-    host.selection.set([selection]);
-
-    selectAboveBlocks(host)
-      .then(async context => {
-        if (!AIProvider.session || !AIProvider.actions.chat) return;
-        const sessionId = await AIProvider.session.createSession(
-          host.doc.workspace.id,
-          host.doc.id
-        );
-        const stream = AIProvider.actions.chat({
-          sessionId,
-          input: `${context}\n${input}`,
-          stream: true,
-          host,
-          where: 'inline-chat-panel',
-          control: 'chat-send',
-          docId: host.doc.id,
-          workspaceId: host.doc.workspace.id,
-        });
-        bindTextStream(stream, { update, finish, signal });
-      })
-      .catch(console.error);
-  };
   if (!panel.config) return;
 
-  panel.config.generateAnswer = generateAnswer;
+  updateAIPanelConfig(panel, 'chat', AIStarIconWithAnimation, undefined, {
+    control: 'chat-send',
+    where: 'inline-chat-panel',
+  });
 
   if (!actionGroups) {
     panel.toggle(block);
