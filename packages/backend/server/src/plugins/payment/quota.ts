@@ -74,7 +74,7 @@ export class QuotaOverride {
         );
         break;
       case SubscriptionPlan.Pro:
-        await this.models.userFeature.add(
+        await this.models.userFeature.switchQuota(
           userId,
           recurring === 'lifetime' ? 'lifetime_pro_plan_v1' : 'pro_plan_v1',
           'subscription activated'
