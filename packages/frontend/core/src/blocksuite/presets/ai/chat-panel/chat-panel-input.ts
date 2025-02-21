@@ -5,11 +5,7 @@ import {
   openFileOrFiles,
   unsafeCSSVarV2,
 } from '@blocksuite/affine/blocks';
-import {
-  assertExists,
-  SignalWatcher,
-  WithDisposable,
-} from '@blocksuite/affine/global/utils';
+import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/utils';
 import { ImageIcon, PublishIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
@@ -169,38 +165,6 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       }
     }
 
-    .chat-panel-images-wrapper {
-      overflow: hidden scroll;
-      max-height: 128px;
-
-      .chat-panel-images {
-        display: flex;
-        gap: 4px;
-        flex-wrap: wrap;
-        position: relative;
-
-        .image-container {
-          width: 58px;
-          height: 58px;
-          border-radius: 4px;
-          border: 1px solid var(--affine-border-color);
-          cursor: pointer;
-          overflow: hidden;
-          position: relative;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          img {
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
-          }
-        }
-      }
-    }
-
     .chat-panel-send svg rect {
       fill: var(--affine-primary-color);
     }
@@ -210,45 +174,16 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
     .chat-panel-send[aria-disabled='true'] svg rect {
       fill: var(--affine-text-disable-color);
     }
-
-    .close-wrapper {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      border: 1px solid var(--affine-border-color);
-      justify-content: center;
-      align-items: center;
-      display: none;
-      position: absolute;
-      background-color: var(--affine-white);
-      z-index: 1;
-      cursor: pointer;
-    }
-
-    .close-wrapper:hover {
-      background-color: var(--affine-background-error-color);
-      border: 1px solid var(--affine-error-color);
-    }
-
-    .close-wrapper:hover svg path {
-      fill: var(--affine-error-color);
-    }
   `;
 
   @property({ attribute: false })
   accessor host!: EditorHost;
 
-  @query('.chat-panel-images')
-  accessor imagesWrapper!: HTMLDivElement;
+  @query('image-preview-grid')
+  accessor imagePreviewGrid: HTMLDivElement | null = null;
 
   @query('textarea')
   accessor textarea!: HTMLTextAreaElement;
-
-  @query('.close-wrapper')
-  accessor closeWrapper!: HTMLDivElement;
-
-  @state()
-  accessor curIndex = -1;
 
   @state()
   accessor isInputEmpty = true;
@@ -314,57 +249,11 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
     });
   }
 
-  private _renderImages(images: File[]) {
-    return html`
-      <div
-        class="chat-panel-images-wrapper"
-        @mouseleave=${() => {
-          this.closeWrapper.style.display = 'none';
-          this.curIndex = -1;
-        }}
-      >
-        <div class="chat-panel-images">
-          ${repeat(
-            images,
-            image => image.name,
-            (image, index) =>
-              html`<div
-                class="image-container"
-                @mouseenter=${(evt: MouseEvent) => {
-                  const ele = evt.target as HTMLImageElement;
-                  const rect = ele.getBoundingClientRect();
-                  assertExists(ele.parentElement?.parentElement);
-                  const parentRect =
-                    ele.parentElement.parentElement.getBoundingClientRect();
-                  const left = Math.abs(rect.right - parentRect.left) - 8;
-                  const top = Math.abs(parentRect.top - rect.top);
-                  this.curIndex = index;
-                  this.closeWrapper.style.display = 'flex';
-                  this.closeWrapper.style.left = left + 'px';
-                  this.closeWrapper.style.top = top + 'px';
-                }}
-              >
-                <img src="${URL.createObjectURL(image)}" alt="${image.name}" />
-              </div>`
-          )}
-        </div>
-        <div
-          class="close-wrapper"
-          @click=${() => {
-            if (this.curIndex >= 0 && this.curIndex < images.length) {
-              const newImages = [...images];
-              newImages.splice(this.curIndex, 1);
-              this.updateContext({ images: newImages });
-              this.curIndex = -1;
-              this.closeWrapper.style.display = 'none';
-            }
-          }}
-        >
-          ${CloseIcon}
-        </div>
-      </div>
-    `;
-  }
+  private readonly _handleImageRemove = (index: number) => {
+    const oldImages = this.chatContextValue.images;
+    const newImages = oldImages.filter((_, i) => i !== index);
+    this.updateContext({ images: newImages });
+  };
 
   private readonly _toggleNetworkSearch = (e: MouseEvent) => {
     e.preventDefault();
@@ -422,7 +311,14 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
           this.textarea.focus();
         }}
       >
-        ${hasImages ? this._renderImages(images) : nothing}
+        ${hasImages
+          ? html`
+              <image-preview-grid
+                .images=${images}
+                .onImageRemove=${this._handleImageRemove}
+              ></image-preview-grid>
+            `
+          : nothing}
         ${this.chatContextValue.quote
           ? html`<div class="chat-selection-quote">
               ${repeat(
@@ -448,7 +344,7 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
             this.isInputEmpty = !textarea.value.trim();
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
-            let imagesHeight = this.imagesWrapper?.scrollHeight ?? 0;
+            let imagesHeight = this.imagePreviewGrid?.scrollHeight ?? 0;
             if (imagesHeight) imagesHeight += 12;
             if (this.scrollHeight >= 200 + imagesHeight) {
               textarea.style.height = '148px';

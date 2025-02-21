@@ -17,6 +17,7 @@ import { AskAIPanel } from './ai/_common/components/ask-ai-panel';
 import { AskAIToolbarButton } from './ai/_common/components/ask-ai-toolbar';
 import { ChatActionList } from './ai/_common/components/chat-action-list';
 import { ChatCopyMore } from './ai/_common/components/copy-more';
+import { ImagePreviewGrid } from './ai/_common/components/image-preview-grid';
 import { ChatPanel } from './ai/chat-panel';
 import { ActionWrapper } from './ai/chat-panel/actions/action-wrapper';
 import { ChatText } from './ai/chat-panel/actions/chat-text';
@@ -50,6 +51,7 @@ export function registerBlocksuitePresetsCustomComponents() {
   customElements.define('ask-ai-panel', AskAIPanel);
   customElements.define('chat-action-list', ChatActionList);
   customElements.define('chat-copy-more', ChatCopyMore);
+  customElements.define('image-preview-grid', ImagePreviewGrid);
   customElements.define('action-wrapper', ActionWrapper);
   customElements.define('chat-text', ChatText);
   customElements.define('action-image-to-text', ActionImageToText);

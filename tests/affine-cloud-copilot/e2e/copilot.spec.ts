@@ -806,7 +806,7 @@ test.describe('chat with block', () => {
           .waitForSelector('.ai-item-continue-with-ai')
           .then(i => i.click());
         await page
-          .waitForSelector('chat-panel-input .chat-panel-images')
+          .waitForSelector('chat-panel-input image-preview-grid')
           .then(el => el.waitForElementState('visible'));
       });
     });

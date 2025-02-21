@@ -9,15 +9,9 @@ import { ImageIcon, PublishIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { repeat } from 'lit/directives/repeat.js';
 
 import type { ChatMessage } from '../../../blocks';
-import {
-  ChatAbortIcon,
-  ChatClearIcon,
-  ChatSendIcon,
-  CloseIcon,
-} from '../_common/icons';
+import { ChatAbortIcon, ChatClearIcon, ChatSendIcon } from '../_common/icons';
 import type { AINetworkSearchConfig } from '../chat-panel/chat-config';
 import {
   PROMPT_NAME_AFFINE_AI,
@@ -78,30 +72,6 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
         outline: none;
       }
     }
-    .chat-input-images {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      position: relative;
-      .image-container {
-        width: 58px;
-        height: 58px;
-        border-radius: 4px;
-        border: 1px solid var(--affine-border-color);
-        cursor: pointer;
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        img {
-          max-width: 100%;
-          max-height: 100%;
-          width: auto;
-          height: auto;
-        }
-      }
-    }
 
     .chat-panel-send svg rect {
       fill: var(--affine-primary-color);
@@ -113,26 +83,6 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
       fill: var(--affine-text-disable-color);
     }
 
-    .close-wrapper {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      border: 1px solid var(--affine-border-color);
-      justify-content: center;
-      align-items: center;
-      display: none;
-      position: absolute;
-      background-color: var(--affine-white);
-      z-index: 1;
-      cursor: pointer;
-    }
-    .close-wrapper:hover {
-      background-color: var(--affine-background-error-color);
-      border: 1px solid var(--affine-error-color);
-    }
-    .close-wrapper:hover svg path {
-      fill: var(--affine-error-color);
-    }
     .chat-panel-input-actions {
       display: flex;
       gap: 8px;
@@ -198,7 +148,12 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
         }
       </style>
       <div class="ai-chat-input">
-        ${hasImages ? this._renderImages(images) : nothing}
+        ${hasImages
+          ? html`<image-preview-grid
+              .images=${images}
+              .onImageRemove=${this._handleImageRemove}
+            ></image-preview-grid>`
+          : nothing}
         <textarea
           rows="1"
           placeholder="What are your thoughts?"
@@ -286,12 +241,6 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
 
   @state()
   accessor _focused = false;
-
-  @query('.close-wrapper')
-  accessor closeWrapper: HTMLDivElement | null = null;
-
-  @state()
-  accessor _curIndex = -1;
 
   private _lastPromptName: string | null = null;
 
@@ -397,57 +346,11 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
     reportResponse('aborted:stop');
   };
 
-  private _renderImages(images: File[]) {
-    return html`
-      <div
-        class="chat-input-images"
-        @mouseleave=${() => {
-          if (!this.closeWrapper) return;
-          this.closeWrapper.style.display = 'none';
-          this._curIndex = -1;
-        }}
-      >
-        ${repeat(
-          images,
-          image => image.name,
-          (image, index) =>
-            html`<div
-              class="image-container"
-              @mouseenter=${(evt: MouseEvent) => {
-                const ele = evt.target as HTMLImageElement;
-                const rect = ele.getBoundingClientRect();
-                if (!ele.parentElement) return;
-                const parentRect = ele.parentElement.getBoundingClientRect();
-                const left = Math.abs(rect.right - parentRect.left) - 8;
-                const top = Math.abs(parentRect.top - rect.top) - 8;
-                this._curIndex = index;
-                if (!this.closeWrapper) return;
-                this.closeWrapper.style.display = 'flex';
-                this.closeWrapper.style.left = left + 'px';
-                this.closeWrapper.style.top = top + 'px';
-              }}
-            >
-              <img src="${URL.createObjectURL(image)}" alt="${image.name}" />
-            </div>`
-        )}
-        <div
-          class="close-wrapper"
-          @click=${() => {
-            if (this._curIndex >= 0 && this._curIndex < images.length) {
-              const newImages = [...images];
-              newImages.splice(this._curIndex, 1);
-              this.updateContext({ images: newImages });
-              this._curIndex = -1;
-              if (!this.closeWrapper) return;
-              this.closeWrapper.style.display = 'none';
-            }
-          }}
-        >
-          ${CloseIcon}
-        </div>
-      </div>
-    `;
-  }
+  private readonly _handleImageRemove = (index: number) => {
+    const oldImages = this.chatContext.images;
+    const newImages = oldImages.filter((_, i) => i !== index);
+    this.updateContext({ images: newImages });
+  };
 
   private readonly _onTextareaSend = async (e: MouseEvent | KeyboardEvent) => {
     e.preventDefault();
