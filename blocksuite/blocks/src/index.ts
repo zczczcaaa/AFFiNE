@@ -1,8 +1,5 @@
-/* oxlint-disable @typescript-eslint/triple-slash-reference */
-/// <reference path="./effects.ts" />
-
-export * from './_common/adapters/index.js';
-export * from './_specs/index.js';
+export * from './adapters/index.js';
+export * from './extensions/index.js';
 export * from './schemas.js';
 export * from '@blocksuite/affine-block-attachment';
 export * from '@blocksuite/affine-block-bookmark';
@@ -105,6 +102,7 @@ export {
   printToPdf,
   referenceToNode,
   type Signal,
+  SpecBuilder,
   SpecProvider,
 } from '@blocksuite/affine-shared/utils';
 export type { DragBlockPayload } from '@blocksuite/affine-widget-drag-handle';

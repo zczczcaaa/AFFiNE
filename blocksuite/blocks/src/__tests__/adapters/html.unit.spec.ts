@@ -1,13 +1,8 @@
-import {
-  HtmlInlineToDeltaAdapterExtensions,
-  InlineDeltaToHtmlAdapterExtensions,
-} from '@blocksuite/affine-components/rich-text';
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
 import {
   embedSyncedDocMiddleware,
   HtmlAdapter,
 } from '@blocksuite/affine-shared/adapters';
-import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
   DocSnapshot,
@@ -16,19 +11,11 @@ import type {
 import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { defaultBlockHtmlAdapterMatchers } from '../../_common/adapters/html/block-matcher.js';
 import { createJob } from '../utils/create-job.js';
+import { getProvider } from '../utils/get-provider.js';
 import { nanoidReplacement } from '../utils/nanoid-replacement.js';
 
-const container = new Container();
-[
-  ...HtmlInlineToDeltaAdapterExtensions,
-  ...defaultBlockHtmlAdapterMatchers,
-  ...InlineDeltaToHtmlAdapterExtensions,
-].forEach(ext => {
-  ext.setup(container);
-});
-const provider = container.provider();
+const provider = getProvider();
 
 describe('snapshot to html', () => {
   const template = (html: string, title?: string) => {

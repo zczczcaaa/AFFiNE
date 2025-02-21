@@ -289,7 +289,7 @@ export class DocImpl implements Doc {
       return this._storeMap.get(key) as Store;
     }
 
-    const storeExtensions = SpecProvider.getInstance().getSpec('store');
+    const storeExtensions = SpecProvider._.getSpec('store');
     const extensionSet = new Set(
       storeExtensions.value.concat(extensions ?? [])
     );

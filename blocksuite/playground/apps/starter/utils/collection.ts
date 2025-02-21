@@ -56,8 +56,7 @@ export function createStarterDocCollection() {
     blobSources,
   };
   const collection = new TestWorkspace(options);
-  collection.storeExtensions =
-    SpecProvider.getInstance().getSpec('store').value;
+  collection.storeExtensions = SpecProvider._.getSpec('store').value;
   collection.start();
 
   // debug info

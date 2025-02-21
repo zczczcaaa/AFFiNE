@@ -33,7 +33,7 @@ function patchPreviewSpec(
   id: 'preview:edgeless' | 'preview:page',
   specs: ExtensionType[]
 ) {
-  const specProvider = SpecProvider.getInstance();
+  const specProvider = SpecProvider._;
   specProvider.extendSpec(id, specs);
 }
 
@@ -100,7 +100,7 @@ export function getPagePreviewThemeExtension(framework: FrameworkProvider) {
 export function createPageModePreviewSpecs(
   framework: FrameworkProvider
 ): SpecBuilder {
-  const specProvider = SpecProvider.getInstance();
+  const specProvider = SpecProvider._;
   const pagePreviewSpec = specProvider.getSpec('preview:page');
   // Enable theme extension, doc display meta extension and peek view service
   const peekViewService = framework.get(PeekViewService);

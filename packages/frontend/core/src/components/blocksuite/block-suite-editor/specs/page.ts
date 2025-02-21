@@ -12,7 +12,7 @@ import { enableAffineExtension, enableAIExtension } from './custom/root-block';
 export function createPageModeSpecs(framework: FrameworkProvider): SpecBuilder {
   const featureFlagService = framework.get(FeatureFlagService);
   const enableAI = featureFlagService.flags.enable_ai.value;
-  const provider = SpecProvider.getInstance();
+  const provider = SpecProvider._;
   const pageSpec = provider.getSpec('page');
   enableAffineExtension(framework, pageSpec);
   if (enableAI) {

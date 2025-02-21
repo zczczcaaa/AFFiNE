@@ -17,7 +17,7 @@ export function createEdgelessModeSpecs(
 ): SpecBuilder {
   const featureFlagService = framework.get(FeatureFlagService);
   const enableAI = featureFlagService.flags.enable_ai.value;
-  const edgelessSpec = SpecProvider.getInstance().getSpec('edgeless');
+  const edgelessSpec = SpecProvider._.getSpec('edgeless');
   enableAffineExtension(framework, edgelessSpec);
   if (enableAI) {
     enableAIExtension(edgelessSpec);

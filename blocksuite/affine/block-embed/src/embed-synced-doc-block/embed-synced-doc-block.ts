@@ -118,7 +118,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
 
   protected _buildPreviewSpec = (name: 'preview:page' | 'preview:edgeless') => {
     const nextDepth = this.depth + 1;
-    const previewSpecBuilder = SpecProvider.getInstance().getSpec(name);
+    const previewSpecBuilder = SpecProvider._.getSpec(name);
     const currentDisposables = this.disposables;
     const editorSetting =
       this.std.getOptional(EditorSettingProvider) ??

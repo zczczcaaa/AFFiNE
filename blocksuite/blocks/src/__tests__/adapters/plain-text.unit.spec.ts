@@ -1,10 +1,8 @@
-import { InlineDeltaToPlainTextAdapterExtensions } from '@blocksuite/affine-components/rich-text';
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
 import {
   embedSyncedDocMiddleware,
   PlainTextAdapter,
 } from '@blocksuite/affine-shared/adapters';
-import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
   DocSnapshot,
@@ -12,17 +10,10 @@ import type {
 } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { defaultBlockPlainTextAdapterMatchers } from '../../_common/adapters/plain-text/block-matcher.js';
 import { createJob } from '../utils/create-job.js';
+import { getProvider } from '../utils/get-provider.js';
 
-const container = new Container();
-[
-  ...defaultBlockPlainTextAdapterMatchers,
-  ...InlineDeltaToPlainTextAdapterExtensions,
-].forEach(ext => {
-  ext.setup(container);
-});
-const provider = container.provider();
+const provider = getProvider();
 
 describe('snapshot to plain text', () => {
   test('paragraph', async () => {

@@ -1,8 +1,4 @@
 import {
-  InlineDeltaToMarkdownAdapterExtensions,
-  MarkdownInlineToDeltaAdapterExtensions,
-} from '@blocksuite/affine-components/rich-text';
-import {
   DefaultTheme,
   NoteDisplayMode,
   TableModelFlavour,
@@ -11,7 +7,6 @@ import {
   embedSyncedDocMiddleware,
   MarkdownAdapter,
 } from '@blocksuite/affine-shared/adapters';
-import { Container } from '@blocksuite/global/di';
 import type {
   BlockSnapshot,
   DocSnapshot,
@@ -21,20 +16,11 @@ import type {
 import { AssetsManager, MemoryBlobCRUD } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { defaultBlockMarkdownAdapterMatchers } from '../../_common/adapters/markdown/block-matcher.js';
 import { createJob } from '../utils/create-job.js';
+import { getProvider } from '../utils/get-provider.js';
 import { nanoidReplacement } from '../utils/nanoid-replacement.js';
 
-const container = new Container();
-[
-  ...MarkdownInlineToDeltaAdapterExtensions,
-  ...defaultBlockMarkdownAdapterMatchers,
-  ...InlineDeltaToMarkdownAdapterExtensions,
-].forEach(ext => {
-  ext.setup(container);
-});
-
-const provider = container.provider();
+const provider = getProvider();
 
 describe('snapshot to markdown', () => {
   test('code', async () => {

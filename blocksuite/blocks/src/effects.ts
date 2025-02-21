@@ -45,7 +45,7 @@ import { effects as stdEffects } from '@blocksuite/block-std/effects';
 import { effects as dataViewEffects } from '@blocksuite/data-view/effects';
 import { effects as inlineEffects } from '@blocksuite/inline/effects';
 
-import { registerSpecs } from './_specs/register-specs.js';
+import { registerSpecs } from './extensions/register.js';
 
 export function effects() {
   registerSpecs();
@@ -73,6 +73,7 @@ export function effects() {
   blockCodeEffects();
   blockTableEffects();
   blockRootEffects();
+
   componentCaptionEffects();
   componentContextMenuEffects();
   componentDatePickerEffects();

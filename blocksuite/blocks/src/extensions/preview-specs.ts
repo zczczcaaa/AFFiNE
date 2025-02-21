@@ -7,7 +7,7 @@ import type { ExtensionType } from '@blocksuite/store';
 import {
   EdgelessFirstPartyBlockSpecs,
   PageFirstPartyBlockSpecs,
-} from '../common.js';
+} from './common.js';
 
 export const PreviewEdgelessEditorBlockSpecs: ExtensionType[] = [
   PreviewEdgelessRootBlockSpec,

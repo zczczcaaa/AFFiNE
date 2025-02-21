@@ -1,7 +1,5 @@
-import { NotionHtmlInlineToDeltaAdapterExtensions } from '@blocksuite/affine-components/rich-text';
 import { DefaultTheme, NoteDisplayMode } from '@blocksuite/affine-model';
 import { NotionHtmlAdapter } from '@blocksuite/affine-shared/adapters';
-import { Container } from '@blocksuite/global/di';
 import {
   AssetsManager,
   type BlockSnapshot,
@@ -9,19 +7,11 @@ import {
 } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
-import { defaultBlockNotionHtmlAdapterMatchers } from '../../_common/adapters/notion-html/block-matcher.js';
 import { createJob } from '../utils/create-job.js';
+import { getProvider } from '../utils/get-provider.js';
 import { nanoidReplacement } from '../utils/nanoid-replacement.js';
 
-const container = new Container();
-[
-  ...NotionHtmlInlineToDeltaAdapterExtensions,
-  ...defaultBlockNotionHtmlAdapterMatchers,
-].forEach(ext => {
-  ext.setup(container);
-});
-
-const provider = container.provider();
+const provider = getProvider();
 
 describe('notion html to snapshot', () => {
   test('code', async () => {

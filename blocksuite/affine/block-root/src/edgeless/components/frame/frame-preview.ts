@@ -80,8 +80,7 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
 
   private _previewDoc: Store | null = null;
 
-  private readonly _previewSpec =
-    SpecProvider.getInstance().getSpec('preview:edgeless');
+  private readonly _previewSpec = SpecProvider._.getSpec('preview:edgeless');
 
   private readonly _updateFrameViewportWH = () => {
     const [, , w, h] = deserializeXYWH(this.frame.xywh);

@@ -26,7 +26,7 @@ type ImportHTMLZipOptions = {
 
 function getProvider() {
   const container = new Container();
-  const exts = SpecProvider.getInstance().getSpec('store').value;
+  const exts = SpecProvider._.getSpec('store').value;
   exts.forEach(ext => {
     ext.setup(container);
   });

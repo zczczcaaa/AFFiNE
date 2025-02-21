@@ -244,11 +244,10 @@ export const extendEdgelessPreviewSpec = (function () {
     if (framework === _framework && _extension) {
       return _extension;
     } else {
-      _extension &&
-        SpecProvider.getInstance().omitSpec('preview:edgeless', _extension);
+      _extension && SpecProvider._.omitSpec('preview:edgeless', _extension);
       _extension = getThemeExtension(framework);
       _framework = framework;
-      SpecProvider.getInstance().extendSpec('preview:edgeless', [_extension]);
+      SpecProvider._.extendSpec('preview:edgeless', [_extension]);
       return _extension;
     }
   };

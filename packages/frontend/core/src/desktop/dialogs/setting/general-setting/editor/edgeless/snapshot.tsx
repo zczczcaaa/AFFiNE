@@ -92,7 +92,7 @@ export const EdgelessSnapshot = (props: Props) => {
     const editorHost = new BlockStdScope({
       store: doc,
       extensions: [
-        ...SpecProvider.getInstance().getSpec('preview:edgeless').value,
+        ...SpecProvider._.getSpec('preview:edgeless').value,
         getThemeExtension(framework),
       ],
     }).render();

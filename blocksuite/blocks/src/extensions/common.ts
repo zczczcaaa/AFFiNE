@@ -55,12 +55,13 @@ import {
 } from '@blocksuite/block-std';
 import type { ExtensionType } from '@blocksuite/store';
 
-import { AdapterFactoryExtensions } from '../_common/adapters/extension.js';
 import {
+  AdapterFactoryExtensions,
   HtmlAdapterExtension,
   MarkdownAdapterExtension,
   NotionHtmlAdapterExtension,
-} from './preset/adapters.js';
+  PlainTextAdapterExtension,
+} from '../adapters/extension.js';
 
 export const CommonBlockSpecs: ExtensionType[] = [
   DocDisplayMetaService,
@@ -119,4 +120,5 @@ export const StoreExtensions: ExtensionType[] = [
   HtmlAdapterExtension,
   MarkdownAdapterExtension,
   NotionHtmlAdapterExtension,
+  PlainTextAdapterExtension,
 ].flat();

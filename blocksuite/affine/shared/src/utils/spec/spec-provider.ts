@@ -17,7 +17,7 @@ export class SpecProvider {
 
   private constructor() {}
 
-  static getInstance() {
+  static get _() {
     if (!SpecProvider.instance) {
       SpecProvider.instance = new SpecProvider();
     }

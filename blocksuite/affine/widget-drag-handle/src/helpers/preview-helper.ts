@@ -102,7 +102,7 @@ export class PreviewHelper {
     const editorSetting = std.get(EditorSettingProvider).peek();
     const query = this._calculateQuery(blockIds as string[], mode);
     const store = widget.doc.doc.getStore({ query });
-    const previewSpec = SpecProvider.getInstance().getSpec(
+    const previewSpec = SpecProvider._.getSpec(
       isEdgeless ? 'preview:edgeless' : 'preview:page'
     );
     const settingSignal = signal({ ...editorSetting });
