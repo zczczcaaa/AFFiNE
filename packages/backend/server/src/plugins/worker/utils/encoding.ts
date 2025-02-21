@@ -35,11 +35,13 @@ export async function decodeWithCharset(
     });
   const body = await rewriter.transform(response).arrayBuffer();
 
-  if (charset) {
-    const decoder = new TextDecoder(charset);
-    res.charset = decoder.encoding;
-    return new Response(decoder.decode(body), response);
-  } else {
-    return new Response(body, response);
-  }
+  try {
+    if (charset) {
+      const decoder = new TextDecoder(charset);
+      res.charset = decoder.encoding;
+      return new Response(decoder.decode(body), response);
+    }
+  } catch {}
+
+  return new Response(body, response);
 }
