@@ -112,6 +112,9 @@ export function getRequestIdFromRequest(req: Request, type: RequestType) {
 
 export function getRequestIdFromHost(host: ArgumentsHost) {
   const type = host.getType<GqlContextType>();
+  if (type === 'ws') {
+    return genRequestId(type);
+  }
   const req = getRequestFromHost(host);
   return getRequestIdFromRequest(req, type);
 }
