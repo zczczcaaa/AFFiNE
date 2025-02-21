@@ -53,6 +53,9 @@ export const workspaceServerName = style([
     },
   },
 ]);
+export const infoMoreIcon = style({
+  color: cssVarV2.icon.secondary,
+});
 
 export const workspaceServerSpacer = style({
   width: 0,
