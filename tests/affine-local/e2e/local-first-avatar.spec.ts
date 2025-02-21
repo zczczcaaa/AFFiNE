@@ -4,6 +4,7 @@ import {
   clickNewPageButton,
   waitForEditorLoad,
 } from '@affine-test/kit/utils/page-logic';
+import { createLocalWorkspace } from '@affine-test/kit/utils/workspace';
 import { expect } from '@playwright/test';
 
 test('should create a page with a local first avatar and remove it', async ({
@@ -13,10 +14,7 @@ test('should create a page with a local first avatar and remove it', async ({
   await openHomePage(page);
   await waitForEditorLoad(page);
   await clickNewPageButton(page);
-  await page.getByTestId('workspace-name').click();
-  await page.getByTestId('new-workspace').click();
-  await page.getByTestId('create-workspace-input').fill('Test Workspace 1');
-  await page.getByTestId('create-workspace-create-button').click();
+  await createLocalWorkspace({ name: 'Test Workspace 1' }, page);
   await page.waitForTimeout(1000);
   await page.getByTestId('workspace-name').click();
   await page

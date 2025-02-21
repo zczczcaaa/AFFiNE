@@ -3,10 +3,8 @@ import {
   clickNewPageButton,
   getBlockSuiteEditorTitle,
 } from '@affine-test/kit/utils/page-logic';
-import {
-  clickSideBarCurrentWorkspaceBanner,
-  clickSideBarSettingButton,
-} from '@affine-test/kit/utils/sidebar';
+import { clickSideBarSettingButton } from '@affine-test/kit/utils/sidebar';
+import { createLocalWorkspace } from '@affine-test/kit/utils/workspace';
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
@@ -112,13 +110,7 @@ test('windows only check', async ({ page }) => {
 test('delete workspace', async ({ page }) => {
   await clickNewPageButton(page);
 
-  await clickSideBarCurrentWorkspaceBanner(page);
-  await page.getByTestId('new-workspace').click();
-  await page.getByTestId('create-workspace-input').fill('Delete Me');
-  await page.getByTestId('create-workspace-create-button').click();
-  // await page.getByTestId('create-workspace-continue-button').click({
-  //   delay: 100,
-  // });
+  await createLocalWorkspace({ name: 'Delete Me' }, page);
   await page.waitForTimeout(1000);
   await clickSideBarSettingButton(page);
   await page.getByTestId('workspace-setting:preference').click();

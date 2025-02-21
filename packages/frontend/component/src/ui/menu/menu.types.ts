@@ -25,6 +25,8 @@ export interface MenuItemProps
   suffix?: ReactNode;
   prefixIcon?: ReactNode;
   suffixIcon?: ReactNode;
+  prefixIconClassName?: string;
+  suffixIconClassName?: string;
   checked?: boolean;
   selected?: boolean;
   block?: boolean;

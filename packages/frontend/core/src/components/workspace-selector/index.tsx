@@ -97,6 +97,8 @@ export const WorkspaceSelector = ({
         ...menuContentOptions,
         style: {
           width: '300px',
+          maxHeight: 'min(800px, calc(100vh - 200px))',
+          padding: 0,
           ...menuContentOptions?.style,
         },
       }}

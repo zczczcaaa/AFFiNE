@@ -186,6 +186,14 @@ const Dialog = ({
               className={styles.workspaceSelector}
               showArrowDownIcon
               disable={disabled}
+              menuContentOptions={{
+                side: 'top',
+                style: {
+                  maxHeight: 'min(600px, calc(50vh + 50px))',
+                  width: 352,
+                  maxWidth: 'calc(100vw - 20px)',
+                },
+              }}
             />
           </>
         )}

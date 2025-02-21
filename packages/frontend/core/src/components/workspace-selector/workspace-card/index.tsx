@@ -249,6 +249,7 @@ export const WorkspaceCard = forwardRef<
     hideCollaborationIcon?: boolean;
     hideTeamWorkspaceIcon?: boolean;
     active?: boolean;
+    infoClassName?: string;
     onClickOpenSettings?: (workspaceMetadata: WorkspaceMetadata) => void;
     onClickEnableCloud?: (workspaceMetadata: WorkspaceMetadata) => void;
   }
@@ -262,6 +263,7 @@ export const WorkspaceCard = forwardRef<
       onClickOpenSettings,
       onClickEnableCloud,
       className,
+      infoClassName,
       disable,
       hideCollaborationIcon,
       hideTeamWorkspaceIcon,
@@ -296,7 +298,7 @@ export const WorkspaceCard = forwardRef<
         ref={ref}
         {...props}
       >
-        <div className={styles.infoContainer}>
+        <div className={clsx(styles.infoContainer, infoClassName)}>
           {information ? (
             <WorkspaceAvatar
               meta={workspaceMetadata}
@@ -332,34 +334,35 @@ export const WorkspaceCard = forwardRef<
                 Enable Cloud
               </Button>
             ) : null}
-            {hideCollaborationIcon || information?.isOwner ? null : (
-              <Tooltip
-                content={t['com.affine.settings.workspace.state.joined']()}
-              >
-                <CollaborationIcon className={styles.collaborationIcon} />
-              </Tooltip>
-            )}
-            {hideTeamWorkspaceIcon || !information?.isTeam ? null : (
-              <Tooltip
-                content={t['com.affine.settings.workspace.state.team']()}
-              >
-                <TeamWorkspaceIcon className={styles.collaborationIcon} />
-              </Tooltip>
-            )}
+
             {onClickOpenSettings && (
               <div className={styles.settingButton} onClick={onOpenSettings}>
                 <SettingsIcon width={16} height={16} />
               </div>
             )}
           </div>
-          {showArrowDownIcon && <ArrowDownSmallIcon />}
         </div>
 
-        {active && (
-          <div className={styles.activeContainer}>
-            <DoneIcon className={styles.activeIcon} />
-          </div>
-        )}
+        <div className={styles.suffixIcons}>
+          {hideCollaborationIcon || information?.isOwner ? null : (
+            <Tooltip
+              content={t['com.affine.settings.workspace.state.joined']()}
+            >
+              <CollaborationIcon className={styles.collaborationIcon} />
+            </Tooltip>
+          )}
+          {hideTeamWorkspaceIcon || !information?.isTeam ? null : (
+            <Tooltip content={t['com.affine.settings.workspace.state.team']()}>
+              <TeamWorkspaceIcon className={styles.collaborationIcon} />
+            </Tooltip>
+          )}
+          {active && (
+            <div className={styles.activeContainer}>
+              <DoneIcon className={styles.activeIcon} />
+            </div>
+          )}
+          {showArrowDownIcon && <ArrowDownSmallIcon />}
+        </div>
       </div>
     );
   }

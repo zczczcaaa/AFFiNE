@@ -666,6 +666,7 @@
   "com.affine.nameWorkspace.description": "A workspace is your virtual space to capture, create and plan as just one person or together as a team.",
   "com.affine.nameWorkspace.placeholder": "Set a workspace name",
   "com.affine.nameWorkspace.subtitle.workspace-name": "Workspace name",
+  "com.affine.nameWorkspace.subtitle.workspace-type": "Workspace type",
   "com.affine.nameWorkspace.title": "Name your workspace",
   "com.affine.new.page-mode": "New page",
   "com.affine.new_edgeless": "New edgeless",
