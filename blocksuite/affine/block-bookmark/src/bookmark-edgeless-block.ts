@@ -10,6 +10,8 @@ import { BookmarkBlockComponent } from './bookmark-block.js';
 export class BookmarkEdgelessBlockComponent extends toGfxBlockComponent(
   BookmarkBlockComponent
 ) {
+  override selectedStyle$ = null;
+
   override blockDraggable = false;
 
   override getRenderingRect() {

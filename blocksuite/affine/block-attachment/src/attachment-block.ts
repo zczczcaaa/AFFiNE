@@ -38,8 +38,6 @@ export class AttachmentBlockComponent extends CaptionedBlockComponent<Attachment
 
   protected _isResizing = false;
 
-  protected _isSelected = false;
-
   protected _whenHover: HoverController | null = new HoverController(
     this,
     ({ abortController }) => {

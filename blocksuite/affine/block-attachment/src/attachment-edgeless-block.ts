@@ -35,7 +35,7 @@ export class AttachmentEdgelessBlockComponent extends toGfxBlockComponent(
       this.slots.elementResizeEnd.on(() => {
         this._isResizing = false;
         this._showOverlay =
-          this._isResizing || this._isDragging || !this._isSelected;
+          this._isResizing || this._isDragging || !this.selected$.peek();
       })
     );
   }

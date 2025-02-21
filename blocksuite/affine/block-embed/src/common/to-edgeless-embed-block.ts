@@ -22,6 +22,8 @@ export function toEdgelessEmbedBlock<
   B extends typeof EmbedBlockComponent<Model, Service, WidgetName>,
 >(block: B) {
   return class extends toGfxBlockComponent(block) {
+    override selectedStyle$ = null;
+
     _isDragging = false;
 
     _isResizing = false;

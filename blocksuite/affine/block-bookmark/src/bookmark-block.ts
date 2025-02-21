@@ -4,9 +4,10 @@ import {
 } from '@blocksuite/affine-components/caption';
 import type { BookmarkBlockModel } from '@blocksuite/affine-model';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
+import { computed, type ReadonlySignal } from '@preact/signals-core';
 import { html } from 'lit';
 import { property, query } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
+import { type ClassInfo, classMap } from 'lit/directives/class-map.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
 
 import { refreshBookmarkUrlData } from './utils.js';
@@ -14,6 +15,12 @@ import { refreshBookmarkUrlData } from './utils.js';
 export const BOOKMARK_MIN_WIDTH = 450;
 
 export class BookmarkBlockComponent extends CaptionedBlockComponent<BookmarkBlockModel> {
+  selectedStyle$: ReadonlySignal<ClassInfo> | null = computed<ClassInfo>(
+    () => ({
+      'selected-style': this.selected$.value,
+    })
+  );
+
   private _fetchAbortController?: AbortController;
 
   blockDraggable = true;
@@ -69,16 +76,12 @@ export class BookmarkBlockComponent extends CaptionedBlockComponent<BookmarkBloc
   }
 
   override renderBlock() {
-    const selected = this.selected$.value;
-    const isInEdgeless =
-      this.std.get(DocModeProvider).getEditorMode() === 'edgeless';
-
     return html`
       <div
         draggable="${this.blockDraggable ? 'true' : 'false'}"
         class=${classMap({
           'affine-bookmark-container': true,
-          'selected-style': selected && !isInEdgeless,
+          ...this.selectedStyle$?.value,
         })}
         style=${this.containerStyleMap}
       >

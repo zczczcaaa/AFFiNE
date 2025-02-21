@@ -12,10 +12,11 @@ import { DocModeProvider } from '@blocksuite/affine-shared/services';
 import type { BlockService } from '@blocksuite/block-std';
 import type { GfxCompatibleProps } from '@blocksuite/block-std/gfx';
 import type { BlockModel } from '@blocksuite/store';
+import { computed, type ReadonlySignal } from '@preact/signals-core';
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
 import { query } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
+import { type ClassInfo, classMap } from 'lit/directives/class-map.js';
 import { type StyleInfo, styleMap } from 'lit/directives/style-map.js';
 
 export class EmbedBlockComponent<
@@ -23,6 +24,12 @@ export class EmbedBlockComponent<
   Service extends BlockService = BlockService,
   WidgetName extends string = string,
 > extends CaptionedBlockComponent<Model, Service, WidgetName> {
+  selectedStyle$: ReadonlySignal<ClassInfo> | null = computed<ClassInfo>(
+    () => ({
+      'selected-style': this.selected$.value,
+    })
+  );
+
   private _fetchAbortController = new AbortController();
 
   _cardStyle: EmbedCardStyle = 'horizontal';
@@ -43,10 +50,6 @@ export class EmbedBlockComponent<
   protected embedContainerStyle: StyleInfo = {};
 
   renderEmbed = (content: () => TemplateResult) => {
-    const selected = this.selected$.value;
-    const isInEdgeless =
-      this.std.get(DocModeProvider).getEditorMode() === 'edgeless';
-
     if (
       this._cardStyle === 'horizontal' ||
       this._cardStyle === 'horizontalThin' ||
@@ -54,7 +57,7 @@ export class EmbedBlockComponent<
     ) {
       this.style.display = 'block';
 
-      if (isInEdgeless) {
+      if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
         this.style.minWidth = `${EMBED_CARD_MIN_WIDTH}px`;
       }
     }
@@ -64,7 +67,7 @@ export class EmbedBlockComponent<
         draggable="${this.blockDraggable ? 'true' : 'false'}"
         class=${classMap({
           'embed-block-container': true,
-          'selected-style': selected && !isInEdgeless,
+          ...this.selectedStyle$?.value,
         })}
         style=${styleMap({
           height: `${this._cardHeight}px`,
