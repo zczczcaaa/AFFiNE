@@ -5,9 +5,9 @@ import type {
 } from '@blocksuite/blocks';
 import type { Store } from '@blocksuite/store';
 
-import type { AffineEditorContainer } from '../../index.js';
+import type { TestAffineEditorContainer } from '../../index.js';
 
-export function getSurface(doc: Store, editor: AffineEditorContainer) {
+export function getSurface(doc: Store, editor: TestAffineEditorContainer) {
   const surfaceModel = doc.getBlockByFlavour('affine:surface');
 
   return editor.host!.view.getBlock(
@@ -17,17 +17,17 @@ export function getSurface(doc: Store, editor: AffineEditorContainer) {
 
 export function getDocRootBlock(
   doc: Store,
-  editor: AffineEditorContainer,
+  editor: TestAffineEditorContainer,
   mode: 'page'
 ): PageRootBlockComponent;
 export function getDocRootBlock(
   doc: Store,
-  editor: AffineEditorContainer,
+  editor: TestAffineEditorContainer,
   mode: 'edgeless'
 ): EdgelessRootBlockComponent;
 export function getDocRootBlock(
   doc: Store,
-  editor: AffineEditorContainer,
+  editor: TestAffineEditorContainer,
   _?: 'edgeless' | 'page'
 ) {
   return editor.host!.view.getBlock(doc.root!.id) as

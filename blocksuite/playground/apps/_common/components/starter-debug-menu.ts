@@ -48,7 +48,7 @@ import {
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { SerializedXYWH } from '@blocksuite/global/utils';
 import type { DeltaInsert } from '@blocksuite/inline/types';
-import { AffineEditorContainer, type CommentPanel } from '@blocksuite/presets';
+import { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import { Text, Transformer, type Workspace } from '@blocksuite/store';
 import type { SlDropdown } from '@shoelace-style/shoelace';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
@@ -57,6 +57,7 @@ import { customElement, property, query, state } from 'lit/decorators.js';
 import * as lz from 'lz-string';
 import type { Pane } from 'tweakpane';
 
+import type { CommentPanel } from '../../comment/index.js';
 import { createTestEditor } from '../../starter/utils/extensions.js';
 import { mockEdgelessTheme } from '../mock-services.js';
 import { AdaptersPanel } from './adapters-panel.js';
@@ -647,7 +648,7 @@ export class StarterDebugMenu extends ShadowlessElement {
         const newEditor = createTestEditor(this.doc, this.collection);
         app.append(newEditor);
         app.childNodes.forEach(child => {
-          if (child instanceof AffineEditorContainer) {
+          if (child instanceof TestAffineEditorContainer) {
             child.style.flex = '1';
           }
         });
@@ -1014,7 +1015,7 @@ export class StarterDebugMenu extends ShadowlessElement {
   accessor docsPanel!: DocsPanel;
 
   @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
+  accessor editor!: TestAffineEditorContainer;
 
   @property({ attribute: false })
   accessor framePanel!: CustomFramePanel;

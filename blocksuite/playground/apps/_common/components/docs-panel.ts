@@ -5,7 +5,7 @@ import {
   GenerateDocUrlProvider,
 } from '@blocksuite/blocks';
 import { WithDisposable } from '@blocksuite/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import type { Doc, Workspace } from '@blocksuite/store';
 import { css, html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
@@ -163,7 +163,7 @@ export class DocsPanel extends WithDisposable(ShadowlessElement) {
   }
 
   @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
+  accessor editor!: TestAffineEditorContainer;
 
   @property({ attribute: false })
   accessor onClose!: () => void;

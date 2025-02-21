@@ -12,7 +12,7 @@ import {
   toast,
 } from '@blocksuite/blocks';
 import { Slot } from '@blocksuite/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import { type Workspace } from '@blocksuite/store';
 import { Signal, signal } from '@preact/signals-core';
 
@@ -37,7 +37,7 @@ export function removeModeFromStorage(docId: string) {
 const DEFAULT_MODE: DocMode = 'page';
 const slotMap = new Map<string, Slot<DocMode>>();
 
-export function mockDocModeService(editor: AffineEditorContainer) {
+export function mockDocModeService(editor: TestAffineEditorContainer) {
   const getEditorModeCallback: () => DocMode = () => editor.mode;
   const setEditorModeCallback: (mode: DocMode) => void = mode =>
     editor.switchEditor(mode);
@@ -78,7 +78,7 @@ export function mockDocModeService(editor: AffineEditorContainer) {
   return docModeService;
 }
 
-export function mockNotificationService(editor: AffineEditorContainer) {
+export function mockNotificationService(editor: TestAffineEditorContainer) {
   const notificationService: NotificationService = {
     toast: (message, options) => {
       toast(editor.host!, message, options?.duration);

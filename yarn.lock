@@ -3930,7 +3930,6 @@ __metadata:
     "@blocksuite/blocks": "workspace:*"
     "@blocksuite/global": "workspace:*"
     "@blocksuite/inline": "workspace:*"
-    "@blocksuite/presets": "workspace:*"
     "@blocksuite/store": "workspace:*"
     "@blocksuite/sync": "workspace:*"
   languageName: unknown
@@ -4092,69 +4091,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blocksuite/legacy-e2e@workspace:blocksuite/tests-legacy":
+"@blocksuite/integration-test@workspace:*, @blocksuite/integration-test@workspace:blocksuite/integration-test":
   version: 0.0.0-use.local
-  resolution: "@blocksuite/legacy-e2e@workspace:blocksuite/tests-legacy"
-  dependencies:
-    "@blocksuite/affine-components": "workspace:*"
-    "@blocksuite/affine-model": "workspace:*"
-    "@blocksuite/affine-shared": "workspace:*"
-    "@blocksuite/block-std": "workspace:*"
-    "@blocksuite/global": "workspace:*"
-    "@blocksuite/inline": "workspace:*"
-    "@blocksuite/presets": "workspace:*"
-    "@blocksuite/store": "workspace:*"
-    "@playwright/test": "npm:=1.50.1"
-    "@toeverything/theme": "npm:^1.1.7"
-  languageName: unknown
-  linkType: soft
-
-"@blocksuite/playground@workspace:blocksuite/playground":
-  version: 0.0.0-use.local
-  resolution: "@blocksuite/playground@workspace:blocksuite/playground"
-  dependencies:
-    "@blocksuite/affine-components": "workspace:*"
-    "@blocksuite/affine-model": "workspace:*"
-    "@blocksuite/affine-shared": "workspace:*"
-    "@blocksuite/block-std": "workspace:*"
-    "@blocksuite/blocks": "workspace:*"
-    "@blocksuite/data-view": "workspace:*"
-    "@blocksuite/global": "workspace:*"
-    "@blocksuite/icons": "npm:^2.2.1"
-    "@blocksuite/inline": "workspace:*"
-    "@blocksuite/presets": "workspace:*"
-    "@blocksuite/store": "workspace:*"
-    "@blocksuite/sync": "workspace:*"
-    "@preact/signals-core": "npm:^1.8.0"
-    "@shoelace-style/shoelace": "npm:2.20.0"
-    "@toeverything/pdf-viewer": "npm:^0.1.1"
-    "@toeverything/pdfium": "npm:^0.1.1"
-    "@toeverything/y-indexeddb": "npm:0.10.0-canary.9"
-    "@tweakpane/core": "npm:^2.0.4"
-    "@types/katex": "npm:^0.16.7"
-    "@types/micromatch": "npm:^4.0.9"
-    "@vanilla-extract/vite-plugin": "npm:^5.0.0"
-    browser-fs-access: "npm:^0.35.0"
-    graphql: "npm:^16.9.0"
-    jszip: "npm:^3.10.1"
-    lit: "npm:^3.2.0"
-    lz-string: "npm:^1.5.0"
-    magic-string: "npm:^0.30.11"
-    tweakpane: "npm:^4.0.4"
-    vite: "npm:^6.0.3"
-    vite-plugin-istanbul: "npm:^7.0.0"
-    vite-plugin-wasm: "npm:^3.3.0"
-    vite-plugin-web-components-hmr: "npm:^0.1.3"
-    y-indexeddb: "npm:^9.0.12"
-    y-protocols: "npm:^1.0.6"
-    yjs: "npm:^13.6.21"
-    zod: "npm:^3.23.8"
-  languageName: unknown
-  linkType: soft
-
-"@blocksuite/presets@workspace:*, @blocksuite/presets@workspace:blocksuite/presets":
-  version: 0.0.0-use.local
-  resolution: "@blocksuite/presets@workspace:blocksuite/presets"
+  resolution: "@blocksuite/integration-test@workspace:blocksuite/integration-test"
   dependencies:
     "@blocksuite/affine-block-note": "workspace:*"
     "@blocksuite/affine-block-surface": "workspace:*"
@@ -4179,6 +4118,66 @@ __metadata:
     vite-plugin-istanbul: "npm:^7.0.0"
     vite-plugin-wasm: "npm:^3.4.1"
     vitest: "npm:^3.0.0"
+    yjs: "npm:^13.6.21"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
+"@blocksuite/legacy-e2e@workspace:blocksuite/tests-legacy":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/legacy-e2e@workspace:blocksuite/tests-legacy"
+  dependencies:
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/inline": "workspace:*"
+    "@blocksuite/integration-test": "workspace:*"
+    "@blocksuite/store": "workspace:*"
+    "@playwright/test": "npm:=1.50.1"
+    "@toeverything/theme": "npm:^1.1.7"
+  languageName: unknown
+  linkType: soft
+
+"@blocksuite/playground@workspace:blocksuite/playground":
+  version: 0.0.0-use.local
+  resolution: "@blocksuite/playground@workspace:blocksuite/playground"
+  dependencies:
+    "@blocksuite/affine-components": "workspace:*"
+    "@blocksuite/affine-model": "workspace:*"
+    "@blocksuite/affine-shared": "workspace:*"
+    "@blocksuite/block-std": "workspace:*"
+    "@blocksuite/blocks": "workspace:*"
+    "@blocksuite/data-view": "workspace:*"
+    "@blocksuite/global": "workspace:*"
+    "@blocksuite/icons": "npm:^2.2.1"
+    "@blocksuite/inline": "workspace:*"
+    "@blocksuite/integration-test": "workspace:*"
+    "@blocksuite/store": "workspace:*"
+    "@blocksuite/sync": "workspace:*"
+    "@preact/signals-core": "npm:^1.8.0"
+    "@shoelace-style/shoelace": "npm:2.20.0"
+    "@toeverything/pdf-viewer": "npm:^0.1.1"
+    "@toeverything/pdfium": "npm:^0.1.1"
+    "@toeverything/y-indexeddb": "npm:0.10.0-canary.9"
+    "@tweakpane/core": "npm:^2.0.4"
+    "@types/katex": "npm:^0.16.7"
+    "@types/micromatch": "npm:^4.0.9"
+    "@vanilla-extract/vite-plugin": "npm:^5.0.0"
+    browser-fs-access: "npm:^0.35.0"
+    graphql: "npm:^16.9.0"
+    jszip: "npm:^3.10.1"
+    lit: "npm:^3.2.0"
+    lz-string: "npm:^1.5.0"
+    magic-string: "npm:^0.30.11"
+    tweakpane: "npm:^4.0.4"
+    vite: "npm:^6.0.3"
+    vite-plugin-istanbul: "npm:^7.0.0"
+    vite-plugin-wasm: "npm:^3.3.0"
+    vite-plugin-web-components-hmr: "npm:^0.1.3"
+    y-indexeddb: "npm:^9.0.12"
+    y-protocols: "npm:^1.0.6"
     yjs: "npm:^13.6.21"
     zod: "npm:^3.23.8"
   languageName: unknown

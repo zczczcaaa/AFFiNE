@@ -18,7 +18,7 @@
     "@blocksuite/global": "workspace:*",
     "@blocksuite/icons": "^2.2.1",
     "@blocksuite/inline": "workspace:*",
-    "@blocksuite/presets": "workspace:*",
+    "@blocksuite/integration-test": "workspace:*",
     "@blocksuite/store": "workspace:*",
     "@blocksuite/sync": "workspace:*",
     "@preact/signals-core": "^1.8.0",

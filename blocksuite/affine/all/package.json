@@ -17,7 +17,6 @@
     "@blocksuite/blocks": "workspace:*",
     "@blocksuite/global": "workspace:*",
     "@blocksuite/inline": "workspace:*",
-    "@blocksuite/presets": "workspace:*",
     "@blocksuite/store": "workspace:*",
     "@blocksuite/sync": "workspace:*"
   },
@@ -37,7 +36,6 @@
     "./inline": "./src/inline/index.ts",
     "./inline/consts": "./src/inline/consts.ts",
     "./inline/types": "./src/inline/types.ts",
-    "./presets": "./src/presets/index.ts",
     "./blocks": "./src/blocks/index.ts",
     "./blocks/schemas": "./src/blocks/schemas.ts",
     "./sync": "./src/sync/index.ts"
@@ -82,9 +80,6 @@
       ],
       "inline/types": [
         "dist/inline/types.d.ts"
-      ],
-      "presets": [
-        "dist/presets/index.d.ts"
       ],
       "blocks": [
         "dist/blocks/index.d.ts"

@@ -1,5 +1,5 @@
 import { DocModeProvider } from '@blocksuite/blocks';
-import { AffineEditorContainer } from '@blocksuite/presets';
+import { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import type { Workspace } from '@blocksuite/store';
 
 import {
@@ -27,7 +27,7 @@ export async function mountDefaultDocEditor(collection: Workspace) {
   const init = params.get('init');
   if (init && init.startsWith('multiple-editor')) {
     app.childNodes.forEach(node => {
-      if (node instanceof AffineEditorContainer) {
+      if (node instanceof TestAffineEditorContainer) {
         node.style.flex = '1';
         if (init === 'multiple-editor-vertical') {
           node.style.overflow = 'auto';

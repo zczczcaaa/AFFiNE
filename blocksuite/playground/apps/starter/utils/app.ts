@@ -1,4 +1,3 @@
-import { CommentPanel } from '@blocksuite/presets';
 import type { Store, Workspace } from '@blocksuite/store';
 
 import { AttachmentViewerPanel } from '../../_common/components/attachment-viewer-panel';
@@ -8,6 +7,7 @@ import { CustomOutlineViewer } from '../../_common/components/custom-outline-vie
 import { DocsPanel } from '../../_common/components/docs-panel';
 import { LeftSidePanel } from '../../_common/components/left-side-panel';
 import { StarterDebugMenu } from '../../_common/components/starter-debug-menu';
+import { CommentPanel } from '../../comment/comment-panel';
 import { createTestEditor } from './extensions';
 
 export async function createTestApp(doc: Store, collection: Workspace) {

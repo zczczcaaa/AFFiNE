@@ -15,7 +15,7 @@ import {
   titleMiddleware,
 } from '@blocksuite/blocks';
 import { WithDisposable } from '@blocksuite/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import { type DocSnapshot, Transformer } from '@blocksuite/store';
 import { effect } from '@preact/signals-core';
 import type SlTabPanel from '@shoelace-style/shoelace/dist/components/tab-panel/tab-panel.js';
@@ -284,7 +284,7 @@ export class AdaptersPanel extends WithDisposable(ShadowlessElement) {
   private accessor _plainTextContent = '';
 
   @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
+  accessor editor!: TestAffineEditorContainer;
 }
 
 declare global {

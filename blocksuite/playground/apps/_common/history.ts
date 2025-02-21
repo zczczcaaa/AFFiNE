@@ -1,6 +1,6 @@
 import type { DocModeProvider } from '@blocksuite/blocks';
 import { assertExists } from '@blocksuite/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import type { Doc, Store, Workspace } from '@blocksuite/store';
 
 export function getDocFromUrlParams(collection: Workspace, url: URL) {
@@ -40,7 +40,7 @@ export function setDocModeFromUrlParams(
 
 export function listenHashChange(
   collection: Workspace,
-  editor: AffineEditorContainer
+  editor: TestAffineEditorContainer
 ) {
   const panel = document.querySelector('docs-panel');
   window.addEventListener('hashchange', () => {

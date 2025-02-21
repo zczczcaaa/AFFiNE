@@ -1,5 +1,5 @@
 import type { EditorHost } from '@blocksuite/block-std';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import type { Store, Transformer, Workspace } from '@blocksuite/store';
 
 declare global {
@@ -13,12 +13,12 @@ declare global {
       global: {
         utils: typeof import('@blocksuite/global/utils');
       };
-      editor: typeof import('@blocksuite/presets');
+      editor: typeof import('@blocksuite/integration-test');
       blockStd: typeof import('@blocksuite/block-std');
     };
     collection: Workspace;
     doc: Store;
-    editor: AffineEditorContainer;
+    editor: TestAffineEditorContainer;
     host: EditorHost;
     job: Transformer;
   }

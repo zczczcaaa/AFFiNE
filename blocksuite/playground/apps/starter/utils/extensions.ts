@@ -9,7 +9,7 @@ import {
   ParseDocUrlExtension,
   RefNodeSlotsProvider,
 } from '@blocksuite/blocks';
-import { type AffineEditorContainer } from '@blocksuite/presets';
+import { type TestAffineEditorContainer } from '@blocksuite/integration-test';
 import type { ExtensionType, Store, Workspace } from '@blocksuite/store';
 
 import {
@@ -19,7 +19,7 @@ import {
 } from '../../_common/mock-services';
 
 export function getTestCommonExtensions(
-  editor: AffineEditorContainer
+  editor: TestAffineEditorContainer
 ): ExtensionType[] {
   return [
     FontConfigExtension(CommunityCanvasTextFonts),

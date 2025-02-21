@@ -1,6 +1,6 @@
 {
-  "name": "@blocksuite/presets",
-  "description": "Prebuilt BlockSuite editors and opt-in additional UI components.",
+  "name": "@blocksuite/integration-test",
+  "description": "Integration test for BlockSuite",
   "type": "module",
   "scripts": {
     "dev": "vite",

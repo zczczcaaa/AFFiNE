@@ -1,5 +1,5 @@
 import { WithDisposable } from '@blocksuite/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import { css, html, LitElement, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
@@ -38,7 +38,7 @@ export class CustomOutlineViewer extends WithDisposable(LitElement) {
   private accessor _show = false;
 
   @property({ attribute: false })
-  accessor editor!: AffineEditorContainer;
+  accessor editor!: TestAffineEditorContainer;
 
   @property({ attribute: false })
   accessor toggleOutlinePanel: (() => void) | null = null;

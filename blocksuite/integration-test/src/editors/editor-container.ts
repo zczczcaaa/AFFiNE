@@ -12,7 +12,7 @@ import { property } from 'lit/decorators.js';
 import { keyed } from 'lit/directives/keyed.js';
 import { when } from 'lit/directives/when.js';
 
-export class AffineEditorContainer extends SignalWatcher(
+export class TestAffineEditorContainer extends SignalWatcher(
   WithDisposable(ShadowlessElement)
 ) {
   static override styles = css`
@@ -215,6 +215,6 @@ export class AffineEditorContainer extends SignalWatcher(
 
 declare global {
   interface HTMLElementTagNameMap {
-    'affine-editor-container': AffineEditorContainer;
+    'affine-editor-container': TestAffineEditorContainer;
   }
 }

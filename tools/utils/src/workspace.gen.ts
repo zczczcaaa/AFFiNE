@@ -9,7 +9,6 @@ export const PackageList = [
       'blocksuite/blocks',
       'blocksuite/framework/global',
       'blocksuite/framework/inline',
-      'blocksuite/presets',
       'blocksuite/framework/store',
       'blocksuite/framework/sync',
     ],
@@ -459,25 +458,8 @@ export const PackageList = [
     workspaceDependencies: ['blocksuite/framework/global'],
   },
   {
-    location: 'blocksuite/playground',
-    name: '@blocksuite/playground',
-    workspaceDependencies: [
-      'blocksuite/affine/components',
-      'blocksuite/affine/model',
-      'blocksuite/affine/shared',
-      'blocksuite/framework/block-std',
-      'blocksuite/blocks',
-      'blocksuite/affine/data-view',
-      'blocksuite/framework/global',
-      'blocksuite/framework/inline',
-      'blocksuite/presets',
-      'blocksuite/framework/store',
-      'blocksuite/framework/sync',
-    ],
-  },
-  {
-    location: 'blocksuite/presets',
-    name: '@blocksuite/presets',
+    location: 'blocksuite/integration-test',
+    name: '@blocksuite/integration-test',
     workspaceDependencies: [
       'blocksuite/affine/block-note',
       'blocksuite/affine/block-surface',
@@ -492,6 +474,23 @@ export const PackageList = [
     ],
   },
   {
+    location: 'blocksuite/playground',
+    name: '@blocksuite/playground',
+    workspaceDependencies: [
+      'blocksuite/affine/components',
+      'blocksuite/affine/model',
+      'blocksuite/affine/shared',
+      'blocksuite/framework/block-std',
+      'blocksuite/blocks',
+      'blocksuite/affine/data-view',
+      'blocksuite/framework/global',
+      'blocksuite/framework/inline',
+      'blocksuite/integration-test',
+      'blocksuite/framework/store',
+      'blocksuite/framework/sync',
+    ],
+  },
+  {
     location: 'blocksuite/tests-legacy',
     name: '@blocksuite/legacy-e2e',
     workspaceDependencies: [
@@ -501,7 +500,7 @@ export const PackageList = [
       'blocksuite/framework/block-std',
       'blocksuite/framework/global',
       'blocksuite/framework/inline',
-      'blocksuite/presets',
+      'blocksuite/integration-test',
       'blocksuite/framework/store',
     ],
   },
@@ -809,8 +808,8 @@ export type PackageName =
   | '@blocksuite/inline'
   | '@blocksuite/store'
   | '@blocksuite/sync'
+  | '@blocksuite/integration-test'
   | '@blocksuite/playground'
-  | '@blocksuite/presets'
   | '@blocksuite/legacy-e2e'
   | '@affine/docs'
   | '@affine/server-native'

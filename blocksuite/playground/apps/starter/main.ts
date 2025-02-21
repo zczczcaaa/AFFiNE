@@ -4,12 +4,13 @@ import * as blockStd from '@blocksuite/block-std';
 import * as blocks from '@blocksuite/blocks';
 import { effects as blocksEffects } from '@blocksuite/blocks/effects';
 import * as globalUtils from '@blocksuite/global/utils';
-import * as editor from '@blocksuite/presets';
-import { effects as presetsEffects } from '@blocksuite/presets/effects';
+import * as editor from '@blocksuite/integration-test';
+import { effects as presetsEffects } from '@blocksuite/integration-test/effects';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import * as store from '@blocksuite/store';
 
 import { setupEdgelessTemplate } from '../_common/setup.js';
+import { effects as commentEffects } from '../comment/effects.js';
 import {
   createStarterDocCollection,
   initStarterDocCollection,
@@ -19,6 +20,7 @@ import { prepareTestApp } from './utils/test';
 
 blocksEffects();
 presetsEffects();
+commentEffects();
 
 async function main() {
   if (window.collection) return;

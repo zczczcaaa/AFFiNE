@@ -16,7 +16,7 @@
     { "path": "../affine/data-view" },
     { "path": "../framework/global" },
     { "path": "../framework/inline" },
-    { "path": "../presets" },
+    { "path": "../integration-test" },
     { "path": "../framework/store" },
     { "path": "../framework/sync" }
   ]

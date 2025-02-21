@@ -7,7 +7,7 @@ import type {
 } from '@blocksuite/blocks';
 import { assertExists } from '@blocksuite/global/utils';
 import type { InlineRange, InlineRootElement } from '@blocksuite/inline';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import type { TestAffineEditorContainer } from '@blocksuite/integration-test';
 import type { BlockModel } from '@blocksuite/store';
 import { uuidv4 } from '@blocksuite/store';
 import type { ConsoleMessage, Locator, Page } from '@playwright/test';
@@ -169,7 +169,7 @@ export async function enterPlaygroundRoom(
   const locator = page.locator('affine-editor-container');
   await locator.isVisible();
   await page.evaluate(async () => {
-    const dom = document.querySelector<AffineEditorContainer>(
+    const dom = document.querySelector<TestAffineEditorContainer>(
       'affine-editor-container'
     );
     if (dom) {

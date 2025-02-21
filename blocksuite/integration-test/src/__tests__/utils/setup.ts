@@ -25,7 +25,7 @@ import {
   TestWorkspace,
 } from '@blocksuite/store/test';
 
-import { AffineEditorContainer } from '../../index.js';
+import { TestAffineEditorContainer } from '../../index.js';
 
 function createCollectionOptions() {
   const schema = new Schema();
@@ -70,7 +70,7 @@ async function createEditor(
   const blockCollection = collection.docs.values().next().value;
   assertExists(blockCollection, 'Need to create a doc first');
   const doc = blockCollection.getStore();
-  const editor = new AffineEditorContainer();
+  const editor = new TestAffineEditorContainer();
   editor.doc = doc;
   editor.mode = mode;
   editor.pageSpecs = [
@@ -127,12 +127,12 @@ export function cleanup() {
 }
 
 declare global {
-  const editor: AffineEditorContainer;
+  const editor: TestAffineEditorContainer;
   const doc: Store;
   const collection: TestWorkspace;
   const job: Transformer;
   interface Window {
-    editor: AffineEditorContainer;
+    editor: TestAffineEditorContainer;
     doc: Store;
     job: Transformer;
     collection: TestWorkspace;

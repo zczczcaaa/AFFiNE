@@ -13,7 +13,7 @@
     { "path": "../framework/block-std" },
     { "path": "../framework/global" },
     { "path": "../framework/inline" },
-    { "path": "../presets" },
+    { "path": "../integration-test" },
     { "path": "../framework/store" }
   ]
 }
