@@ -103,7 +103,7 @@ export function initTweakpane(
   debugPane.title = 'Viewport Turbo Renderer';
 
   debugPane
-    .addBinding({ paused: true }, 'paused', {
+    .addBinding({ paused: false }, 'paused', {
       label: 'Paused',
     })
     .on('change', ({ value }) => {

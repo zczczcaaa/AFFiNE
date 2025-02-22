@@ -7,6 +7,8 @@ import {
   Vec,
 } from '@blocksuite/global/utils';
 
+import type { GfxViewportElement } from '.';
+
 function cutoff(value: number, ref: number, sign: number) {
   if (sign > 0 && value > ref) return ref;
   if (sign < 0 && value < ref) return ref;
@@ -29,7 +31,9 @@ export class Viewport {
 
   protected _center: IPoint = { x: 0, y: 0 };
 
-  protected _el: HTMLElement | null = null;
+  protected _shell: HTMLElement | null = null;
+
+  protected _element: GfxViewportElement | null = null;
 
   protected _height = 0;
 
@@ -44,6 +48,8 @@ export class Viewport {
   protected _width = 0;
 
   protected _zoom: number = 1.0;
+
+  elementReady = new Slot<GfxViewportElement>();
 
   sizeUpdated = new Slot<{
     width: number;
@@ -60,12 +66,20 @@ export class Viewport {
 
   ZOOM_MIN = ZOOM_MIN;
 
+  constructor() {
+    this.elementReady.once(el => (this._element = el));
+  }
+
   get boundingClientRect() {
-    if (!this._el) return new DOMRect(0, 0, 0, 0);
+    if (!this._shell) return new DOMRect(0, 0, 0, 0);
     if (!this._cachedBoundingClientRect) {
-      this._cachedBoundingClientRect = this._el.getBoundingClientRect();
+      this._cachedBoundingClientRect = this._shell.getBoundingClientRect();
     }
     return this._cachedBoundingClientRect;
+  }
+
+  get element() {
+    return this._element;
   }
 
   get center() {
@@ -103,7 +117,7 @@ export class Viewport {
    * This property is used to calculate the scale of the editor.
    */
   get viewScale() {
-    if (!this._el || this._cachedOffsetWidth === null) return 1;
+    if (!this._shell || this._cachedOffsetWidth === null) return 1;
     return this.boundingClientRect.width / this._cachedOffsetWidth;
   }
 
@@ -168,12 +182,12 @@ export class Viewport {
   }
 
   clearViewportElement() {
-    if (this._resizeObserver && this._el) {
-      this._resizeObserver.unobserve(this._el);
+    if (this._resizeObserver && this._shell) {
+      this._resizeObserver.unobserve(this._shell);
       this._resizeObserver.disconnect();
     }
     this._resizeObserver = null;
-    this._el = null;
+    this._shell = null;
     this._cachedBoundingClientRect = null;
     this._cachedOffsetWidth = null;
   }
@@ -222,10 +236,10 @@ export class Viewport {
   }
 
   onResize() {
-    if (!this._el) return;
+    if (!this._shell) return;
     const { centerX, centerY, zoom, width: oldWidth, height: oldHeight } = this;
     const { left, top, width, height } = this.boundingClientRect;
-    this._cachedOffsetWidth = this._el.offsetWidth;
+    this._cachedOffsetWidth = this._shell.offsetWidth;
 
     this.setRect(left, top, width, height);
     this.setCenter(
@@ -331,8 +345,9 @@ export class Viewport {
     this.setViewport(zoom, center, smooth);
   }
 
-  setViewportElement(el: HTMLElement) {
-    this._el = el;
+  /** This is the outer container of the viewport, which is the host of the viewport element */
+  setShellElement(el: HTMLElement) {
+    this._shell = el;
     this._cachedBoundingClientRect = el.getBoundingClientRect();
     this._cachedOffsetWidth = el.offsetWidth;
 

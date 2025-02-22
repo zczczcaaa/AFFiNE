@@ -274,7 +274,7 @@ export class GfxController extends LifeCycleWatcher {
   }
 
   override mounted() {
-    this.viewport.setViewportElement(this.std.host);
+    this.viewport.setShellElement(this.std.host);
     this.std.provider.getAll(GfxExtensionIdentifier).forEach(ext => {
       ext.mounted();
     });

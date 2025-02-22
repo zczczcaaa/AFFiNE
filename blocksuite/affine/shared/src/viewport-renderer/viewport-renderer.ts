@@ -50,14 +50,20 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   override mounted() {
-    const viewportElement = document.querySelector('.affine-edgeless-viewport');
-    if (viewportElement) {
-      viewportElement.append(this.canvas);
-      initTweakpane(this, viewportElement as HTMLElement);
+    const mountPoint = document.querySelector('.affine-edgeless-viewport');
+    if (mountPoint) {
+      mountPoint.append(this.canvas);
+      initTweakpane(this, mountPoint as HTMLElement);
     }
-    syncCanvasSize(this.canvas, this.std.host);
-    this.viewport.viewportUpdated.on(() => {
-      this.refresh().catch(console.error);
+
+    this.viewport.elementReady.once(() => {
+      syncCanvasSize(this.canvas, this.std.host);
+      this.state = 'monitoring';
+      this.disposables.add(
+        this.viewport.viewportUpdated.on(() => {
+          this.refresh().catch(console.error);
+        })
+      );
     });
 
     const debounceOptions = { leading: false, trailing: true };
@@ -72,11 +78,6 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
         debouncedLayoutUpdate();
       })
     );
-
-    document.fonts.load('15px Inter').then(() => {
-      // this.state = 'monitoring';
-      this.refresh().catch(console.error);
-    });
   }
 
   override unmounted() {
