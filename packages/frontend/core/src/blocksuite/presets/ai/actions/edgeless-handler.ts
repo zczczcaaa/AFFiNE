@@ -3,11 +3,7 @@ import {
   GfxControllerIdentifier,
   type GfxModel,
 } from '@blocksuite/affine/block-std/gfx';
-import type {
-  AffineAIPanelWidget,
-  AIError,
-  EdgelessCopilotWidget,
-} from '@blocksuite/affine/blocks';
+import type { AIError } from '@blocksuite/affine/blocks';
 import {
   CodeBlockModel,
   EdgelessTextBlockModel,
@@ -40,6 +36,8 @@ import {
   getSelectedNoteAnchor,
   getSelections,
 } from '../utils/selection-utils';
+import type { AffineAIPanelWidget } from '../widgets/ai-panel/ai-panel';
+import type { EdgelessCopilotWidget } from '../widgets/edgeless-copilot';
 import { actionToAnswerRenderer } from './answer-renderer';
 import { EXCLUDING_COPY_ACTIONS } from './consts';
 import { bindTextStream } from './doc-handler';

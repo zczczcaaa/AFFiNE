@@ -1,21 +1,21 @@
 /* oxlint-disable @typescript-eslint/no-non-null-assertion */
-import type { PointerEventState } from '@blocksuite/block-std';
+import type { PointerEventState } from '@blocksuite/affine/block-std';
 import {
   BaseTool,
   type GfxModel,
   MouseButton,
-} from '@blocksuite/block-std/gfx';
-import { IS_MAC } from '@blocksuite/global/env';
+} from '@blocksuite/affine/block-std/gfx';
+import { IS_MAC } from '@blocksuite/affine/global/env';
 import {
   Bound,
   getCommonBoundWithRotation,
   Slot,
-} from '@blocksuite/global/utils';
+} from '@blocksuite/affine/global/utils';
 
 import {
   AFFINE_AI_PANEL_WIDGET,
   type AffineAIPanelWidget,
-} from '../../widgets/ai-panel/ai-panel.js';
+} from '../widgets/ai-panel/ai-panel.js';
 
 export class CopilotTool extends BaseTool {
   static override toolName: string = 'copilot';

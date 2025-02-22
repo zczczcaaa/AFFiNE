@@ -42,6 +42,25 @@ import { registerMiniMindmapBlocks } from './ai/mini-mindmap';
 import { ChatBlockInput } from './ai/peek-view/chat-block-input';
 import { AIChatBlockPeekView } from './ai/peek-view/chat-block-peek-view';
 import { DateTime } from './ai/peek-view/date-time';
+import {
+  AFFINE_AI_PANEL_WIDGET,
+  AffineAIPanelWidget,
+} from './ai/widgets/ai-panel/ai-panel';
+import {
+  AIPanelAnswer,
+  AIPanelDivider,
+  AIPanelError,
+  AIPanelGenerating,
+  AIPanelInput,
+} from './ai/widgets/ai-panel/components';
+import { AIFinishTip } from './ai/widgets/ai-panel/components/finish-tip';
+import { GeneratingPlaceholder } from './ai/widgets/ai-panel/components/generating-placeholder';
+import {
+  AFFINE_EDGELESS_COPILOT_WIDGET,
+  EdgelessCopilotWidget,
+} from './ai/widgets/edgeless-copilot';
+import { EdgelessCopilotPanel } from './ai/widgets/edgeless-copilot-panel';
+import { EdgelessCopilotToolbarEntry } from './ai/widgets/edgeless-copilot-panel/toolbar-entry';
 
 export function registerBlocksuitePresetsCustomComponents() {
   registerMiniMindmapBlocks();
@@ -87,4 +106,21 @@ export function registerBlocksuitePresetsCustomComponents() {
   customElements.define('chat-images', ChatImages);
   customElements.define('user-info', UserInfo);
   customElements.define('text-renderer', TextRenderer);
+
+  customElements.define('generating-placeholder', GeneratingPlaceholder);
+  customElements.define('ai-finish-tip', AIFinishTip);
+  customElements.define('ai-panel-divider', AIPanelDivider);
+  customElements.define('ai-panel-answer', AIPanelAnswer);
+  customElements.define('ai-panel-input', AIPanelInput);
+  customElements.define('ai-panel-generating', AIPanelGenerating);
+  customElements.define('ai-panel-error', AIPanelError);
+
+  customElements.define(AFFINE_AI_PANEL_WIDGET, AffineAIPanelWidget);
+  customElements.define(AFFINE_EDGELESS_COPILOT_WIDGET, EdgelessCopilotWidget);
+
+  customElements.define('edgeless-copilot-panel', EdgelessCopilotPanel);
+  customElements.define(
+    'edgeless-copilot-toolbar-entry',
+    EdgelessCopilotToolbarEntry
+  );
 }

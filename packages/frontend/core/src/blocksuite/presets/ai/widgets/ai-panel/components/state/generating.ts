@@ -1,9 +1,6 @@
-import {
-  AIStarIconWithAnimation,
-  AIStopIcon,
-} from '@blocksuite/affine-components/icons';
-import type { ColorScheme } from '@blocksuite/affine-model';
-import { WithDisposable } from '@blocksuite/global/utils';
+import type { ColorScheme } from '@blocksuite/affine/blocks';
+import { AIStarIconWithAnimation, AIStopIcon } from '@blocksuite/affine/blocks';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';

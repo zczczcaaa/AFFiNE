@@ -75,17 +75,12 @@ import { EdgelessTemplatePanel } from './edgeless/components/toolbar/template/te
 import { EdgelessTemplateButton } from './edgeless/components/toolbar/template/template-tool-button.js';
 import { EdgelessTextMenu } from './edgeless/components/toolbar/text/text-menu.js';
 import {
-  AFFINE_AI_PANEL_WIDGET,
-  AFFINE_EDGELESS_COPILOT_WIDGET,
   AFFINE_EMBED_CARD_TOOLBAR_WIDGET,
   AFFINE_FORMAT_BAR_WIDGET,
-  AffineAIPanelWidget,
   AffineFormatBarWidget,
   AffineImageToolbarWidget,
   AffineModalWidget,
   EDGELESS_TOOLBAR_WIDGET,
-  EdgelessCopilotToolbarEntry,
-  EdgelessCopilotWidget,
   EdgelessRootBlockComponent,
   EdgelessRootPreviewBlockComponent,
   EmbedCardToolbar,
@@ -93,16 +88,6 @@ import {
   PageRootBlockComponent,
   PreviewRootBlockComponent,
 } from './index.js';
-import { AIPanelDivider } from './widgets/ai-panel/components/divider.js';
-import { AIFinishTip } from './widgets/ai-panel/components/finish-tip.js';
-import { GeneratingPlaceholder } from './widgets/ai-panel/components/generating-placeholder.js';
-import {
-  AIPanelAnswer,
-  AIPanelError,
-  AIPanelGenerating,
-  AIPanelInput,
-} from './widgets/ai-panel/components/index.js';
-import { EdgelessCopilotPanel } from './widgets/edgeless-copilot-panel/index.js';
 import {
   AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET,
   AffineEdgelessZoomToolbarWidget,
@@ -154,7 +139,6 @@ export function effects() {
   registerEdgelessToolbarComponents();
   registerEdgelessPanelComponents();
   registerEdgelessEditorComponents();
-  registerAIComponents();
   registerMiscComponents();
 }
 
@@ -169,7 +153,6 @@ function registerRootComponents() {
 }
 
 function registerWidgets() {
-  customElements.define(AFFINE_AI_PANEL_WIDGET, AffineAIPanelWidget);
   customElements.define(AFFINE_EMBED_CARD_TOOLBAR_WIDGET, EmbedCardToolbar);
   customElements.define(AFFINE_INNER_MODAL_WIDGET, AffineInnerModalWidget);
   customElements.define(AFFINE_MODAL_WIDGET, AffineModalWidget);
@@ -177,7 +160,6 @@ function registerWidgets() {
     AFFINE_PAGE_DRAGGING_AREA_WIDGET,
     AffinePageDraggingAreaWidget
   );
-  customElements.define(AFFINE_EDGELESS_COPILOT_WIDGET, EdgelessCopilotWidget);
   customElements.define(AFFINE_IMAGE_TOOLBAR_WIDGET, AffineImageToolbarWidget);
   customElements.define(AFFINE_SLASH_MENU_WIDGET, AffineSlashMenuWidget);
   customElements.define(
@@ -295,16 +277,6 @@ function registerEdgelessEditorComponents() {
   customElements.define('edgeless-text-editor', EdgelessTextEditor);
 }
 
-function registerAIComponents() {
-  customElements.define('generating-placeholder', GeneratingPlaceholder);
-  customElements.define('ai-finish-tip', AIFinishTip);
-  customElements.define('ai-panel-divider', AIPanelDivider);
-  customElements.define('ai-panel-answer', AIPanelAnswer);
-  customElements.define('ai-panel-input', AIPanelInput);
-  customElements.define('ai-panel-generating', AIPanelGenerating);
-  customElements.define('ai-panel-error', AIPanelError);
-}
-
 function registerMiscComponents() {
   // Modal and menu components
   customElements.define('affine-custom-modal', AffineCustomModal);
@@ -348,13 +320,6 @@ function registerMiscComponents() {
   customElements.define(
     EDGELESS_SELECTED_RECT_WIDGET,
     EdgelessSelectedRectWidget
-  );
-
-  // Copilot components
-  customElements.define('edgeless-copilot-panel', EdgelessCopilotPanel);
-  customElements.define(
-    'edgeless-copilot-toolbar-entry',
-    EdgelessCopilotToolbarEntry
   );
 
   // Mindmap components

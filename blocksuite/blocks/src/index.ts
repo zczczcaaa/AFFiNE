@@ -21,6 +21,7 @@ export * from '@blocksuite/affine-block-surface-ref';
 export * from '@blocksuite/affine-block-table';
 export {
   type AIError,
+  AIErrorType,
   type AIItemConfig,
   type AIItemGroupConfig,
   AIItemList,
@@ -84,6 +85,7 @@ export {
   FontFamilyVariables,
   SizeVariables,
   StyleVariables,
+  unsafeCSSVar,
   unsafeCSSVarV2,
 } from '@blocksuite/affine-shared/theme';
 export { type AffineTextAttributes } from '@blocksuite/affine-shared/types';
@@ -93,17 +95,21 @@ export {
   createSignalFromObservable,
   findNoteBlockModel,
   getLastNoteBlock,
+  getPageRootByElement,
   isInsideEdgelessEditor,
   isInsidePageEditor,
   matchModels,
+  MOUSE_BUTTON,
   on,
   once,
   openFileOrFiles,
   printToPdf,
   referenceToNode,
+  requestConnectedFrame,
   type Signal,
   SpecBuilder,
   SpecProvider,
+  stopPropagation,
 } from '@blocksuite/affine-shared/utils';
 export type { DragBlockPayload } from '@blocksuite/affine-widget-drag-handle';
 

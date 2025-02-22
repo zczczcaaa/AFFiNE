@@ -1,6 +1,6 @@
 import type { TextRendererOptions } from '@affine/core/blocksuite/presets';
+import type { AffineAIPanelState } from '@affine/core/blocksuite/presets/ai/widgets/ai-panel/type';
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import type { AffineAIPanelState } from '@blocksuite/affine/blocks';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';

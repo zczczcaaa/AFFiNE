@@ -5,7 +5,6 @@ import {
   SurfaceSelection,
   type TextSelection,
 } from '@blocksuite/affine/block-std';
-import type { AffineAIPanelWidget } from '@blocksuite/affine/blocks';
 import {
   defaultImageProxyMiddleware,
   deleteTextCommand,
@@ -18,6 +17,7 @@ import {
   markDownToDoc,
   markdownToSnapshot,
 } from '../../_common';
+import type { AffineAIPanelWidget } from '../widgets/ai-panel/ai-panel';
 
 const getNoteId = (blockElement: BlockComponent) => {
   let element = blockElement;

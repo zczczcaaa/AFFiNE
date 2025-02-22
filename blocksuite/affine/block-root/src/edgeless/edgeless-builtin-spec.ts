@@ -9,7 +9,6 @@ import type { ExtensionType } from '@blocksuite/store';
 import { EdgelessRootBlockSpec } from './edgeless-root-spec.js';
 import { BrushTool } from './gfx-tool/brush-tool.js';
 import { ConnectorTool } from './gfx-tool/connector-tool.js';
-import { CopilotTool } from './gfx-tool/copilot-tool.js';
 import { DefaultTool } from './gfx-tool/default-tool.js';
 import { MindMapIndicatorOverlay } from './gfx-tool/default-tool-ext/mind-map-ext/indicator-overlay.js';
 import { EmptyTool } from './gfx-tool/empty-tool.js';
@@ -33,7 +32,6 @@ export const EdgelessToolExtension: ExtensionType[] = [
   NoteTool,
   BrushTool,
   ConnectorTool,
-  CopilotTool,
   TemplateTool,
   EmptyTool,
   FrameTool,

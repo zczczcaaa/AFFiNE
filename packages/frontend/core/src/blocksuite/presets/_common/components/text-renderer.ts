@@ -3,10 +3,6 @@ import {
   type EditorHost,
   ShadowlessElement,
 } from '@blocksuite/affine/block-std';
-import type {
-  AffineAIPanelState,
-  AffineAIPanelWidgetConfig,
-} from '@blocksuite/affine/blocks';
 import {
   CodeBlockComponent,
   codeBlockWrapMiddleware,
@@ -32,6 +28,10 @@ import { property, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { keyed } from 'lit/directives/keyed.js';
 
+import type {
+  AffineAIPanelState,
+  AffineAIPanelWidgetConfig,
+} from '../../ai/widgets/ai-panel/type';
 import { CustomPageEditorBlockSpecs } from '../utils/custom-specs';
 import { markDownToDoc } from '../utils/markdown-utils';
 

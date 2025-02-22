@@ -1,11 +1,11 @@
+import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
   AIDoneIcon,
   CopyIcon,
+  NotificationProvider,
   WarningIcon,
-} from '@blocksuite/affine-components/icons';
-import { NotificationProvider } from '@blocksuite/affine-shared/services';
-import type { EditorHost } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+} from '@blocksuite/affine/blocks';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property, state } from 'lit/decorators.js';

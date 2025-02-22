@@ -4,7 +4,6 @@ import {
   type GfxModel,
 } from '@blocksuite/affine/block-std/gfx';
 import {
-  type CopilotTool,
   DatabaseBlockModel,
   type FrameBlockModel,
   getBlockSelectionsCommand,
@@ -26,6 +25,7 @@ import {
 } from '@blocksuite/affine/store';
 
 import { getContentFromSlice } from '../../_common';
+import type { CopilotTool } from '../tool/copilot-tool';
 import { getEdgelessCopilotWidget } from './edgeless';
 
 export function getEdgelessRootFromEditor(editor: EditorHost) {

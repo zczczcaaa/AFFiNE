@@ -3,15 +3,11 @@ import {
   WidgetViewExtension,
 } from '@blocksuite/affine/block-std';
 import {
-  AFFINE_AI_PANEL_WIDGET,
-  AFFINE_EDGELESS_COPILOT_WIDGET,
-  AffineAIPanelWidget,
   AffineCodeToolbarWidget,
   AffineFormatBarWidget,
   AffineImageToolbarWidget,
   AffineSlashMenuWidget,
   CodeBlockSpec,
-  EdgelessCopilotWidget,
   EdgelessElementToolbarWidget,
   EdgelessRootBlockSpec,
   ImageBlockSpec,
@@ -34,6 +30,15 @@ import { setupFormatBarAIEntry } from './entries/format-bar/setup-format-bar';
 import { setupImageToolbarAIEntry } from './entries/image-toolbar/setup-image-toolbar';
 import { setupSlashMenuAIEntry } from './entries/slash-menu/setup-slash-menu';
 import { setupSpaceAIEntry } from './entries/space/setup-space';
+import { CopilotTool } from './tool/copilot-tool';
+import {
+  AFFINE_AI_PANEL_WIDGET,
+  AffineAIPanelWidget,
+} from './widgets/ai-panel/ai-panel';
+import {
+  AFFINE_EDGELESS_COPILOT_WIDGET,
+  EdgelessCopilotWidget,
+} from './widgets/edgeless-copilot';
 
 function getAIPageRootWatcher(framework: FrameworkProvider) {
   class AIPageRootWatcher extends BlockServiceWatcher {
@@ -118,6 +123,7 @@ export function createAIEdgelessRootBlockSpec(
 ): ExtensionType[] {
   return [
     ...EdgelessRootBlockSpec,
+    CopilotTool,
     aiPanelWidget,
     edgelessCopilotWidget,
     getAIEdgelessRootWatcher(framework),

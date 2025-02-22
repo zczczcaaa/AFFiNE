@@ -1,8 +1,8 @@
 import { TextSelection } from '@blocksuite/affine/block-std';
-import type { AffineAIPanelWidget } from '@blocksuite/affine/blocks';
 
 import { handleInlineAskAIAction } from '../../actions/doc-handler';
 import { AIProvider } from '../../provider';
+import type { AffineAIPanelWidget } from '../../widgets/ai-panel/ai-panel';
 
 export function setupSpaceAIEntry(panel: AffineAIPanelWidget) {
   panel.handleEvent('keyDown', ctx => {

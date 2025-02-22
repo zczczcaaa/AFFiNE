@@ -1,8 +1,7 @@
-import type { AIItemGroupConfig } from '@blocksuite/affine-components/ai-item';
-import { scrollbarStyle } from '@blocksuite/affine-shared/styles';
-import { on, stopPropagation } from '@blocksuite/affine-shared/utils';
-import type { EditorHost } from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+import type { EditorHost } from '@blocksuite/affine/block-std';
+import type { AIItemGroupConfig } from '@blocksuite/affine/blocks';
+import { on, scrollbarStyle, stopPropagation } from '@blocksuite/affine/blocks';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 

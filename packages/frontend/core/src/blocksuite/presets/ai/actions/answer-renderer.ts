@@ -1,8 +1,5 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import type {
-  AffineAIPanelWidget,
-  MindmapElementModel,
-} from '@blocksuite/affine/blocks';
+import type { MindmapElementModel } from '@blocksuite/affine/blocks';
 
 import { createTextRenderer } from '../../_common';
 import {
@@ -13,6 +10,7 @@ import { createSlidesRenderer } from '../messages/slides-renderer';
 import { createIframeRenderer, createImageRenderer } from '../messages/wrapper';
 import type { AIContext } from '../utils/context';
 import { isMindmapChild, isMindMapRoot } from '../utils/edgeless';
+import type { AffineAIPanelWidget } from '../widgets/ai-panel/ai-panel';
 import { IMAGE_ACTIONS } from './consts';
 import { responseToExpandMindmap } from './edgeless-response';
 

@@ -1,6 +1,4 @@
 import {
-  AFFINE_AI_PANEL_WIDGET,
-  type AffineAIPanelWidget,
   type AffineSlashMenuActionItem,
   type AffineSlashMenuContext,
   type AffineSlashMenuItem,
@@ -17,6 +15,10 @@ import { html } from 'lit';
 import { pageAIGroups } from '../../_common/config';
 import { handleInlineAskAIAction } from '../../actions/doc-handler';
 import { AIProvider } from '../../provider';
+import {
+  AFFINE_AI_PANEL_WIDGET,
+  type AffineAIPanelWidget,
+} from '../../widgets/ai-panel/ai-panel';
 
 export function setupSlashMenuAIEntry(slashMenu: AffineSlashMenuWidget) {
   const AIItems = pageAIGroups.map(group => group.items).flat();

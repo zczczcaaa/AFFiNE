@@ -1,11 +1,9 @@
 import type {
   AIItemGroupConfig,
   DocMode,
-  EdgelessCopilotWidget,
   EdgelessElementToolbarWidget,
   EdgelessRootBlockComponent,
 } from '@blocksuite/affine/blocks';
-import { EdgelessCopilotToolbarEntry } from '@blocksuite/affine/blocks';
 import { noop } from '@blocksuite/affine/global/utils';
 import { html } from 'lit';
 
@@ -13,6 +11,8 @@ import { AIProvider } from '../../provider';
 import { getAIPanelWidget } from '../../utils/ai-widgets';
 import { getEdgelessCopilotWidget } from '../../utils/edgeless';
 import { extractSelectedContent } from '../../utils/extract';
+import type { EdgelessCopilotWidget } from '../../widgets/edgeless-copilot';
+import { EdgelessCopilotToolbarEntry } from '../../widgets/edgeless-copilot-panel/toolbar-entry';
 import { edgelessAIGroups } from './actions-config';
 
 noop(EdgelessCopilotToolbarEntry);

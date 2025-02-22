@@ -1,9 +1,10 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
+import { assertExists } from '@blocksuite/affine/global/utils';
+
 import {
   AFFINE_AI_PANEL_WIDGET,
   AffineAIPanelWidget,
-} from '@blocksuite/affine/blocks';
-import { assertExists } from '@blocksuite/affine/global/utils';
+} from '../widgets/ai-panel/ai-panel';
 
 export const getAIPanelWidget = (host: EditorHost): AffineAIPanelWidget => {
   const rootBlockId = host.doc.root?.id;

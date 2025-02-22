@@ -1,9 +1,6 @@
 import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
 import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
-import {
-  type AffineAIPanelWidgetConfig,
-  SpecProvider,
-} from '@blocksuite/affine/blocks';
+import { SpecProvider } from '@blocksuite/affine/blocks';
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { Schema, type Store } from '@blocksuite/affine/store';
@@ -14,6 +11,7 @@ import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import { PPTBuilder } from '../slides/index';
 import { getAIPanelWidget } from '../utils/ai-widgets';
 import type { AIContext } from '../utils/context';
+import type { AffineAIPanelWidgetConfig } from '../widgets/ai-panel/type';
 
 export const createSlidesRenderer: (
   host: EditorHost,

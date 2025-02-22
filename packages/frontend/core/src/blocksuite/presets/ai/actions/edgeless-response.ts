@@ -1,9 +1,7 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type {
-  AffineAIPanelWidget,
   AIItemConfig,
-  EdgelessCopilotWidget,
   EdgelessElementToolbarWidget,
   MindmapElementModel,
   ShapeElementModel,
@@ -44,6 +42,8 @@ import {
   getSurfaceElementFromEditor,
 } from '../utils/selection-utils';
 import { createTemplateJob } from '../utils/template-job';
+import type { AffineAIPanelWidget } from '../widgets/ai-panel/ai-panel';
+import type { EdgelessCopilotWidget } from '../widgets/edgeless-copilot';
 import { EXCLUDING_INSERT_ACTIONS, generatingStages } from './consts';
 
 type FinishConfig = Exclude<

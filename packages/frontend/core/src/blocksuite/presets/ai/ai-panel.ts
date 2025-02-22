@@ -2,8 +2,6 @@ import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import {
-  type AffineAIPanelWidget,
-  type AffineAIPanelWidgetConfig,
   type AIItemConfig,
   ImageBlockModel,
   isInsideEdgelessEditor,
@@ -42,6 +40,8 @@ import { AIContext } from './utils/context';
 import { findNoteBlockModel } from './utils/edgeless';
 import { copyTextAnswer } from './utils/editor-actions';
 import { getSelections } from './utils/selection-utils';
+import type { AffineAIPanelWidget } from './widgets/ai-panel/ai-panel';
+import type { AffineAIPanelWidgetConfig } from './widgets/ai-panel/type';
 
 function asCaption<T extends keyof BlockSuitePresets.AIActions>(
   host: EditorHost,

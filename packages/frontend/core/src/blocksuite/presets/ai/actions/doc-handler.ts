@@ -1,6 +1,5 @@
 import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
 import {
-  type AffineAIPanelWidget,
   type AIError,
   type AIItemGroupConfig,
   AIStarIconWithAnimation,
@@ -26,6 +25,7 @@ import {
   getSelections,
   selectAboveBlocks,
 } from '../utils/selection-utils';
+import type { AffineAIPanelWidget } from '../widgets/ai-panel/ai-panel';
 import { actionToAnswerRenderer } from './answer-renderer';
 
 export function bindTextStream(

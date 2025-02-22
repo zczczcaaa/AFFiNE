@@ -1,10 +1,10 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import type { AffineAIPanelWidgetConfig } from '@blocksuite/affine/blocks';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { getAIPanelWidget } from '../utils/ai-widgets';
 import { preprocessHtml } from '../utils/html';
+import type { AffineAIPanelWidgetConfig } from '../widgets/ai-panel/type';
 
 type AIAnswerWrapperOptions = {
   height: number;

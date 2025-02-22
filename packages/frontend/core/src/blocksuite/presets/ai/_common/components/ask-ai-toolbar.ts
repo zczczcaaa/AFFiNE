@@ -4,7 +4,6 @@ import {
   TextSelection,
 } from '@blocksuite/affine/block-std';
 import {
-  type AffineAIPanelWidgetConfig,
   type AIItemGroupConfig,
   createLitPortal,
 } from '@blocksuite/affine/blocks';
@@ -16,6 +15,7 @@ import { property } from 'lit/decorators.js';
 import { AIProvider } from '../../provider';
 import { getAIPanelWidget } from '../../utils/ai-widgets';
 import { extractSelectedContent } from '../../utils/extract';
+import type { AffineAIPanelWidgetConfig } from '../../widgets/ai-panel/type';
 
 export class AskAIToolbarButton extends WithDisposable(LitElement) {
   static override styles = css`

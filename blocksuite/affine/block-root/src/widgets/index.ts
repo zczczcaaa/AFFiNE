@@ -1,17 +1,4 @@
 export { EDGELESS_TOOLBAR_WIDGET } from '../edgeless/components/toolbar/edgeless-toolbar.js';
-export {
-  AFFINE_AI_PANEL_WIDGET,
-  AffineAIPanelWidget,
-} from './ai-panel/ai-panel.js';
-export {
-  type AffineAIPanelState,
-  type AffineAIPanelWidgetConfig,
-} from './ai-panel/type.js';
-export {
-  AFFINE_EDGELESS_COPILOT_WIDGET,
-  EdgelessCopilotWidget,
-} from './edgeless-copilot/index.js';
-export { EdgelessCopilotToolbarEntry } from './edgeless-copilot-panel/toolbar-entry.js';
 export { AffineEdgelessZoomToolbarWidget } from './edgeless-zoom-toolbar/index.js';
 export {
   EDGELESS_ELEMENT_TOOLBAR_WIDGET,
@@ -53,4 +40,5 @@ export {
   type AffineSlashSubMenu,
 } from './slash-menu/index.js';
 export { AffineSurfaceRefToolbar } from './surface-ref-toolbar/surface-ref-toolbar.js';
+export * from './viewport-overlay/viewport-overlay.js';
 export { AffineFrameTitleWidget } from '@blocksuite/affine-widget-frame-title';

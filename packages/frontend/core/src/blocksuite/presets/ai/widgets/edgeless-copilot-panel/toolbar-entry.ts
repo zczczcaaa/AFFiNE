@@ -1,16 +1,15 @@
-import type { AIItemGroupConfig } from '@blocksuite/affine-components/ai-item';
-import { AIStarIcon } from '@blocksuite/affine-components/icons';
-import type { EditorHost } from '@blocksuite/block-std';
+import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
   GfxControllerIdentifier,
   isGfxGroupCompatibleModel,
-} from '@blocksuite/block-std/gfx';
-import { WithDisposable } from '@blocksuite/global/utils';
+} from '@blocksuite/affine/block-std/gfx';
+import type { AIItemGroupConfig } from '@blocksuite/affine/blocks';
+import { AIStarIcon, sortEdgelessElements } from '@blocksuite/affine/blocks';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { CopilotTool } from '../../edgeless/gfx-tool/copilot-tool.js';
-import { sortEdgelessElements } from '../../edgeless/utils/clone-utils.js';
+import type { CopilotTool } from '../../tool/copilot-tool';
 
 export class EdgelessCopilotToolbarEntry extends WithDisposable(LitElement) {
   static override styles = css`

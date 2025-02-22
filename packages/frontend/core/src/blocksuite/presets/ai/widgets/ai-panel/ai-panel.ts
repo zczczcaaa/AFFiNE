@@ -1,17 +1,18 @@
-import type { AIError } from '@blocksuite/affine-components/ai-item';
+import { WidgetComponent } from '@blocksuite/affine/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import {
+  AFFINE_FORMAT_BAR_WIDGET,
+  AFFINE_VIEWPORT_OVERLAY_WIDGET,
+  type AffineViewportOverlayWidget,
+  type AIError,
   DocModeProvider,
-  NotificationProvider,
-  ThemeProvider,
-} from '@blocksuite/affine-shared/services';
-import {
   getPageRootByElement,
+  NotificationProvider,
   stopPropagation,
-} from '@blocksuite/affine-shared/utils';
-import { WidgetComponent } from '@blocksuite/block-std';
-import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
-import { assertExists } from '@blocksuite/global/utils';
-import type { BaseSelection } from '@blocksuite/store';
+  ThemeProvider,
+} from '@blocksuite/affine/blocks';
+import { assertExists } from '@blocksuite/affine/global/utils';
+import type { BaseSelection } from '@blocksuite/affine/store';
 import {
   autoPlacement,
   autoUpdate,
@@ -26,11 +27,6 @@ import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 
-import { AFFINE_FORMAT_BAR_WIDGET } from '../format-bar/format-bar.js';
-import {
-  AFFINE_VIEWPORT_OVERLAY_WIDGET,
-  type AffineViewportOverlayWidget,
-} from '../viewport-overlay/viewport-overlay.js';
 import type { AIPanelGenerating } from './components/index.js';
 import type { AffineAIPanelState, AffineAIPanelWidgetConfig } from './type.js';
 

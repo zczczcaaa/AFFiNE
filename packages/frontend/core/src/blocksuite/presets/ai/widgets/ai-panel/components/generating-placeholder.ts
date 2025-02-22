@@ -1,10 +1,10 @@
 import {
+  ColorScheme,
   DarkLoadingIcon,
   LightLoadingIcon,
-} from '@blocksuite/affine-components/icons';
-import { ColorScheme } from '@blocksuite/affine-model';
-import { unsafeCSSVar } from '@blocksuite/affine-shared/theme';
-import { WithDisposable } from '@blocksuite/global/utils';
+  unsafeCSSVar,
+} from '@blocksuite/affine/blocks';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { baseTheme } from '@toeverything/theme';
 import {
   css,

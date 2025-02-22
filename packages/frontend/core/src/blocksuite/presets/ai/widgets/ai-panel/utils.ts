@@ -1,6 +1,6 @@
-import type { AIItemGroupConfig } from '@blocksuite/affine-components/ai-item';
-import { isInsidePageEditor } from '@blocksuite/affine-shared/utils';
-import type { EditorHost } from '@blocksuite/block-std';
+import type { EditorHost } from '@blocksuite/affine/block-std';
+import type { AIItemGroupConfig } from '@blocksuite/affine/blocks';
+import { isInsidePageEditor } from '@blocksuite/affine/blocks';
 
 export function filterAIItemGroup(
   host: EditorHost,

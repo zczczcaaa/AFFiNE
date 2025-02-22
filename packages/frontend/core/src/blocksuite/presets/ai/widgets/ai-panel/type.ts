@@ -1,7 +1,4 @@
-import type {
-  AIError,
-  AIItemGroupConfig,
-} from '@blocksuite/affine-components/ai-item';
+import type { AIError, AIItemGroupConfig } from '@blocksuite/affine/blocks';
 import type { Signal } from '@preact/signals-core';
 import type { nothing, TemplateResult } from 'lit';
 

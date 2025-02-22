@@ -1,13 +1,18 @@
-import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
-import type { AIItemGroupConfig } from '@blocksuite/affine-components/ai-item';
-import type { RootBlockModel } from '@blocksuite/affine-model';
+import { WidgetComponent } from '@blocksuite/affine/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
+import type {
+  AIItemGroupConfig,
+  RootBlockModel,
+} from '@blocksuite/affine/blocks';
 import {
+  EdgelessLegacySlotIdentifier,
   MOUSE_BUTTON,
   requestConnectedFrame,
-} from '@blocksuite/affine-shared/utils';
-import { WidgetComponent } from '@blocksuite/block-std';
-import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
-import { Bound, getCommonBoundWithRotation } from '@blocksuite/global/utils';
+} from '@blocksuite/affine/blocks';
+import {
+  Bound,
+  getCommonBoundWithRotation,
+} from '@blocksuite/affine/global/utils';
 import {
   autoUpdate,
   computePosition,
