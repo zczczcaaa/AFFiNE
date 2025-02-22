@@ -1,12 +1,14 @@
 import type { AIItemGroupConfig } from '@blocksuite/affine-components/ai-item';
 import { AIStarIcon } from '@blocksuite/affine-components/icons';
 import type { EditorHost } from '@blocksuite/block-std';
-import { isGfxGroupCompatibleModel } from '@blocksuite/block-std/gfx';
+import {
+  GfxControllerIdentifier,
+  isGfxGroupCompatibleModel,
+} from '@blocksuite/block-std/gfx';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import type { CopilotTool } from '../../edgeless/gfx-tool/copilot-tool.js';
 import { sortEdgelessElements } from '../../edgeless/utils/clone-utils.js';
 
@@ -26,9 +28,13 @@ export class EdgelessCopilotToolbarEntry extends WithDisposable(LitElement) {
     this._showCopilotPanel();
   };
 
+  private get _gfx() {
+    return this.host.std.get(GfxControllerIdentifier);
+  }
+
   private _showCopilotPanel() {
     const selectedElements = sortEdgelessElements(
-      this.edgeless.service.selection.selectedElements
+      this._gfx.selection.selectedElements
     );
     const toBeSelected = new Set(selectedElements);
 
@@ -45,10 +51,11 @@ export class EdgelessCopilotToolbarEntry extends WithDisposable(LitElement) {
       }
     });
 
-    this.edgeless.gfx.tool.setTool('copilot');
-    (
-      this.edgeless.gfx.tool.currentTool$.peek() as CopilotTool
-    ).updateSelectionWith(Array.from(toBeSelected), 10);
+    this._gfx.tool.setTool('copilot');
+    (this._gfx.tool.currentTool$.peek() as CopilotTool).updateSelectionWith(
+      Array.from(toBeSelected),
+      10
+    );
   }
 
   override render() {
@@ -60,9 +67,6 @@ export class EdgelessCopilotToolbarEntry extends WithDisposable(LitElement) {
       ${AIStarIcon} <span class="label medium">Ask AI</span>
     </edgeless-tool-icon-button>`;
   }
-
-  @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
 
   @property({ attribute: false })
   accessor groups!: AIItemGroupConfig[];

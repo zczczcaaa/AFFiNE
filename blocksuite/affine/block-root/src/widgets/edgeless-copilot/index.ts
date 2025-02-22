@@ -1,3 +1,4 @@
+import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import type { AIItemGroupConfig } from '@blocksuite/affine-components/ai-item';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import {
@@ -5,6 +6,7 @@ import {
   requestConnectedFrame,
 } from '@blocksuite/affine-shared/utils';
 import { WidgetComponent } from '@blocksuite/block-std';
+import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
 import { Bound, getCommonBoundWithRotation } from '@blocksuite/global/utils';
 import {
   autoUpdate,
@@ -19,7 +21,6 @@ import { css, html, nothing } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
 import {
   AFFINE_AI_PANEL_WIDGET,
   AffineAIPanelWidget,
@@ -28,10 +29,7 @@ import { EdgelessCopilotPanel } from '../edgeless-copilot-panel/index.js';
 
 export const AFFINE_EDGELESS_COPILOT_WIDGET = 'affine-edgeless-copilot-widget';
 
-export class EdgelessCopilotWidget extends WidgetComponent<
-  RootBlockModel,
-  EdgelessRootBlockComponent
-> {
+export class EdgelessCopilotWidget extends WidgetComponent<RootBlockModel> {
   static override styles = css`
     .copilot-selection-rect {
       position: absolute;
@@ -51,8 +49,8 @@ export class EdgelessCopilotWidget extends WidgetComponent<
 
   groups: AIItemGroupConfig[] = [];
 
-  get edgeless() {
-    return this.block;
+  get gfx() {
+    return this.std.get(GfxControllerIdentifier);
   }
 
   get selectionModelRect() {
@@ -81,7 +79,6 @@ export class EdgelessCopilotWidget extends WidgetComponent<
         const panel = new EdgelessCopilotPanel();
         panel.host = this.host;
         panel.groups = this.groups;
-        panel.edgeless = this.edgeless;
         this.renderRoot.append(panel);
         this._copilotPanel = panel;
       }
@@ -89,7 +86,7 @@ export class EdgelessCopilotWidget extends WidgetComponent<
       const referenceElement = this.selectionElem;
       const panel = this._copilotPanel;
       // @TODO: optimize
-      const viewport = this.edgeless.service.viewport;
+      const viewport = this.gfx.viewport;
 
       if (!referenceElement || !referenceElement.isConnected) return;
 
@@ -153,11 +150,8 @@ export class EdgelessCopilotWidget extends WidgetComponent<
   private _updateSelection(rect: DOMRect) {
     this._selectionModelRect = rect;
 
-    const zoom = this.edgeless.service.viewport.zoom;
-    const [x, y] = this.edgeless.service.viewport.toViewCoord(
-      rect.left,
-      rect.top
-    );
+    const zoom = this.gfx.viewport.zoom;
+    const [x, y] = this.gfx.viewport.toViewCoord(rect.left, rect.top);
     const [width, height] = [rect.width * zoom, rect.height * zoom];
 
     this._selectionRect = { x, y, width, height };
@@ -176,7 +170,7 @@ export class EdgelessCopilotWidget extends WidgetComponent<
           return;
         }
 
-        const off = this.block.dispatcher.add('pointerDown', ctx => {
+        const off = this.std.event.add('pointerDown', ctx => {
           const e = ctx.get('pointerState').raw;
           if (
             e.button === MOUSE_BUTTON.MAIN &&
@@ -196,7 +190,7 @@ export class EdgelessCopilotWidget extends WidgetComponent<
   override connectedCallback(): void {
     super.connectedCallback();
 
-    const CopilotSelectionTool = this.edgeless.gfx.tool.get('copilot');
+    const CopilotSelectionTool = this.gfx.tool.get('copilot');
 
     this._disposables.add(
       CopilotSelectionTool.draggingAreaUpdated.on(shouldShowPanel => {
@@ -212,7 +206,7 @@ export class EdgelessCopilotWidget extends WidgetComponent<
     );
 
     this._disposables.add(
-      this.edgeless.service.viewport.viewportUpdated.on(() => {
+      this.gfx.viewport.viewportUpdated.on(() => {
         if (!this._visible) return;
 
         this._updateSelection(CopilotSelectionTool.area);
@@ -221,7 +215,7 @@ export class EdgelessCopilotWidget extends WidgetComponent<
 
     this._disposables.add(
       effect(() => {
-        const currentTool = this.edgeless.gfx.tool.currentToolName$.value;
+        const currentTool = this.gfx.tool.currentToolName$.value;
 
         if (!this._visible || currentTool === 'copilot') return;
 
@@ -234,8 +228,8 @@ export class EdgelessCopilotWidget extends WidgetComponent<
   }
 
   determineInsertionBounds(width = 800, height = 95) {
-    const elements = this.edgeless.service.selection.selectedElements;
-    const offsetY = 20 / this.edgeless.service.viewport.zoom;
+    const elements = this.gfx.selection.selectedElements;
+    const offsetY = 20 / this.gfx.viewport.zoom;
     const bounds = new Bound(0, 0, width, height);
     if (elements.length) {
       const { x, y, h } = getCommonBoundWithRotation(elements);
@@ -256,7 +250,8 @@ export class EdgelessCopilotWidget extends WidgetComponent<
   }
 
   lockToolbar(disabled: boolean) {
-    this.edgeless.slots.toolbarLocked.emit(disabled);
+    const legacySlot = this.std.get(EdgelessLegacySlotIdentifier);
+    legacySlot.toolbarLocked.emit(disabled);
   }
 
   override render() {

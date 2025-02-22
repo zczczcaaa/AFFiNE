@@ -33,7 +33,6 @@ import { Bound, getCommonBound } from '@blocksuite/global/utils';
 
 import { PageKeyboardManager } from '../keyboard/keyboard-manager.js';
 import type { EdgelessRootBlockComponent } from './edgeless-root-block.js';
-import { CopilotTool } from './gfx-tool/copilot-tool.js';
 import { LassoTool } from './gfx-tool/lasso-tool.js';
 import { ShapeTool } from './gfx-tool/shape-tool.js';
 import {
@@ -324,9 +323,6 @@ export class EdgelessPageKeyboardManager extends PageKeyboardManager {
         Escape: () => {
           const currentTool = this.rootComponent.gfx.tool.currentTool$.peek();
           if (currentTool instanceof LassoTool && currentTool.isSelecting) {
-            currentTool.abort();
-          }
-          if (currentTool instanceof CopilotTool) {
             currentTool.abort();
           }
 

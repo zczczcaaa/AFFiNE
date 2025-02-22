@@ -6,8 +6,6 @@ import { WithDisposable } from '@blocksuite/global/utils';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import type { EdgelessRootBlockComponent } from '../../edgeless/edgeless-root-block.js';
-
 export class EdgelessCopilotPanel extends WithDisposable(LitElement) {
   static override styles = css`
     :host {
@@ -34,7 +32,7 @@ export class EdgelessCopilotPanel extends WithDisposable(LitElement) {
   `;
 
   private _getChain() {
-    return this.edgeless.service.std.command.chain();
+    return this.host.std.command.chain();
   }
 
   override connectedCallback(): void {
@@ -73,9 +71,6 @@ export class EdgelessCopilotPanel extends WithDisposable(LitElement) {
       </div>
     `;
   }
-
-  @property({ attribute: false })
-  accessor edgeless!: EdgelessRootBlockComponent;
 
   @property({ attribute: false })
   accessor entry: 'toolbar' | 'selection' | undefined = undefined;

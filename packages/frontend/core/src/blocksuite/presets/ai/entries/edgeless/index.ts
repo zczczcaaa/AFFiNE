@@ -71,7 +71,6 @@ export function setupEdgelessElementToolbarAIEntry(
       };
 
       return html`<edgeless-copilot-toolbar-entry
-        .edgeless=${edgeless}
         .host=${edgeless.host}
         .groups=${edgelessAIGroups}
         .onClick=${handler}
