@@ -1,11 +1,7 @@
 import './ask-ai-panel';
 
 import { type EditorHost } from '@blocksuite/affine/block-std';
-import {
-  type AIItemGroupConfig,
-  createLitPortal,
-  HoverController,
-} from '@blocksuite/affine/blocks';
+import { createLitPortal, HoverController } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { flip, offset } from '@floating-ui/dom';
 import { css, html, LitElement, nothing } from 'lit';
@@ -13,6 +9,7 @@ import { property, query } from 'lit/decorators.js';
 import { ref } from 'lit/directives/ref.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
+import type { AIItemGroupConfig } from './ai-item/types';
 import type { ButtonSize } from './ask-ai-icon';
 
 type toggleType = 'hover' | 'click';

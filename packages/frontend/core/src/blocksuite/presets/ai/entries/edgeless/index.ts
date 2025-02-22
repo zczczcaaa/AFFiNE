@@ -1,5 +1,4 @@
 import type {
-  AIItemGroupConfig,
   DocMode,
   EdgelessElementToolbarWidget,
   EdgelessRootBlockComponent,
@@ -7,6 +6,7 @@ import type {
 import { noop } from '@blocksuite/affine/global/utils';
 import { html } from 'lit';
 
+import type { AIItemGroupConfig } from '../../_common/components/ai-item/types';
 import { AIProvider } from '../../provider';
 import { getAIPanelWidget } from '../../utils/ai-widgets';
 import { getEdgelessCopilotWidget } from '../../utils/edgeless';

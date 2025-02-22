@@ -1,9 +1,10 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import type { AIItemGroupConfig } from '@blocksuite/affine/blocks';
 import { on, scrollbarStyle, stopPropagation } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
+
+import type { AIItemGroupConfig } from '../../_common/components/ai-item/types';
 
 export class EdgelessCopilotPanel extends WithDisposable(LitElement) {
   static override styles = css`

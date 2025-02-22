@@ -1,11 +1,5 @@
 import { type EditorHost } from '@blocksuite/affine/block-std';
-import {
-  type AIError,
-  PaymentRequiredError,
-  scrollbarStyle,
-  UnauthorizedError,
-  unsafeCSSVarV2,
-} from '@blocksuite/affine/blocks';
+import { scrollbarStyle, unsafeCSSVarV2 } from '@blocksuite/affine/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/utils';
 import { ToggleDownIcon } from '@blocksuite/icons/lit';
 import { signal } from '@preact/signals-core';
@@ -13,6 +7,11 @@ import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 
+import {
+  type AIError,
+  PaymentRequiredError,
+  UnauthorizedError,
+} from '../_common/components/ai-item/types';
 import { ErrorTipIcon } from '../_common/icons';
 import { AIProvider } from '../provider';
 

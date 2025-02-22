@@ -1,3 +1,8 @@
+import {
+  GeneralNetworkError,
+  PaymentRequiredError,
+  UnauthorizedError,
+} from '@affine/core/blocksuite/presets/ai/_common/components/ai-item/types';
 import { showAILoginRequiredAtom } from '@affine/core/components/affine/auth/ai-login-required';
 import {
   addContextDocMutation,
@@ -20,11 +25,6 @@ import {
   updateCopilotSessionMutation,
   UserFriendlyError,
 } from '@affine/graphql';
-import {
-  GeneralNetworkError,
-  PaymentRequiredError,
-  UnauthorizedError,
-} from '@blocksuite/affine/blocks';
 import { getCurrentStore } from '@toeverything/infra';
 
 type OptionsField<T extends GraphQLQuery> =

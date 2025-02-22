@@ -3,10 +3,7 @@ import {
   type EditorHost,
   TextSelection,
 } from '@blocksuite/affine/block-std';
-import {
-  type AIItemGroupConfig,
-  createLitPortal,
-} from '@blocksuite/affine/blocks';
+import { createLitPortal } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { flip, offset } from '@floating-ui/dom';
 import { css, html, LitElement } from 'lit';
@@ -16,6 +13,7 @@ import { AIProvider } from '../../provider';
 import { getAIPanelWidget } from '../../utils/ai-widgets';
 import { extractSelectedContent } from '../../utils/extract';
 import type { AffineAIPanelWidgetConfig } from '../../widgets/ai-panel/type';
+import type { AIItemGroupConfig } from './ai-item/types';
 
 export class AskAIToolbarButton extends WithDisposable(LitElement) {
   static override styles = css`

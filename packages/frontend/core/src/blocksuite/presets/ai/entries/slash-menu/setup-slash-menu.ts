@@ -4,7 +4,6 @@ import {
   type AffineSlashMenuItem,
   AffineSlashMenuWidget,
   type AffineSlashSubMenu,
-  type AIItemConfig,
   AIStarIcon,
   DocModeProvider,
 } from '@blocksuite/affine/blocks';
@@ -12,6 +11,7 @@ import { assertExists } from '@blocksuite/affine/global/utils';
 import { MoreHorizontalIcon } from '@blocksuite/icons/lit';
 import { html } from 'lit';
 
+import type { AIItemConfig } from '../../_common/components/ai-item/types';
 import { pageAIGroups } from '../../_common/config';
 import { handleInlineAskAIAction } from '../../actions/doc-handler';
 import { AIProvider } from '../../provider';

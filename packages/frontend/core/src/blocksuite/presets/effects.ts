@@ -11,6 +11,7 @@ import {
 import { ImagePlaceholder } from '../blocks/ai-chat-block/components/image-placeholder';
 import { UserInfo } from '../blocks/ai-chat-block/components/user-info';
 import { TextRenderer } from './_common/components/text-renderer';
+import { effects as componentAiItemEffects } from './ai/_common/components/ai-item';
 import { AskAIButton } from './ai/_common/components/ask-ai-button';
 import { AskAIIcon } from './ai/_common/components/ask-ai-icon';
 import { AskAIPanel } from './ai/_common/components/ask-ai-panel';
@@ -61,9 +62,10 @@ import {
 } from './ai/widgets/edgeless-copilot';
 import { EdgelessCopilotPanel } from './ai/widgets/edgeless-copilot-panel';
 import { EdgelessCopilotToolbarEntry } from './ai/widgets/edgeless-copilot-panel/toolbar-entry';
-
 export function registerBlocksuitePresetsCustomComponents() {
   registerMiniMindmapBlocks();
+  componentAiItemEffects();
+
   customElements.define('ask-ai-icon', AskAIIcon);
   customElements.define('ask-ai-button', AskAIButton);
   customElements.define('ask-ai-toolbar-button', AskAIToolbarButton);

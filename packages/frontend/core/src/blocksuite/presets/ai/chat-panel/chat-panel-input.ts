@@ -1,16 +1,13 @@
 import { stopPropagation } from '@affine/core/utils';
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import {
-  type AIError,
-  openFileOrFiles,
-  unsafeCSSVarV2,
-} from '@blocksuite/affine/blocks';
+import { openFileOrFiles, unsafeCSSVarV2 } from '@blocksuite/affine/blocks';
 import { SignalWatcher, WithDisposable } from '@blocksuite/affine/global/utils';
 import { ImageIcon, PublishIcon } from '@blocksuite/icons/lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
+import type { AIError } from '../_common/components/ai-item/types';
 import {
   ChatAbortIcon,
   ChatClearIcon,

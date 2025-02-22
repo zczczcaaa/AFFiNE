@@ -2,13 +2,13 @@ import {
   EditorHost,
   PropTypes,
   requiredProperties,
-} from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+} from '@blocksuite/affine/block-std';
+import { EnterIcon } from '@blocksuite/affine/blocks';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 
-import { EnterIcon } from '../icons';
 import { menuItemStyles } from './styles';
 import type { AIItemConfig, AISubItemConfig } from './types';
 

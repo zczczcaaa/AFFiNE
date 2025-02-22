@@ -1,7 +1,5 @@
 import { type EditorHost, TextSelection } from '@blocksuite/affine/block-std';
 import {
-  type AIError,
-  type AIItemGroupConfig,
   AIStarIconWithAnimation,
   createLitPortal,
 } from '@blocksuite/affine/blocks';
@@ -9,6 +7,10 @@ import { assertExists } from '@blocksuite/affine/global/utils';
 import { flip, offset } from '@floating-ui/dom';
 import { html, type TemplateResult } from 'lit';
 
+import type {
+  AIError,
+  AIItemGroupConfig,
+} from '../_common/components/ai-item/types';
 import {
   buildCopyConfig,
   buildErrorConfig,

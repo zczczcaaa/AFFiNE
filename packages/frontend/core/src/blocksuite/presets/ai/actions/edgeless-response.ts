@@ -1,7 +1,6 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type {
-  AIItemConfig,
   EdgelessElementToolbarWidget,
   MindmapElementModel,
   ShapeElementModel,
@@ -28,6 +27,7 @@ import { html, type TemplateResult } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { insertFromMarkdown } from '../../_common';
+import type { AIItemConfig } from '../_common/components/ai-item/types';
 import { AIPenIcon, ChatWithAIIcon } from '../_common/icons';
 import { AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';

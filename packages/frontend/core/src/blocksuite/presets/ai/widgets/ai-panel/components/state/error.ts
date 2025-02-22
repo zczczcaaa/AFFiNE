@@ -1,11 +1,14 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import { AIErrorType, type AIItemGroupConfig } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 
+import {
+  AIErrorType,
+  type AIItemGroupConfig,
+} from '../../../../_common/components/ai-item/types.js';
 import type { AIPanelErrorConfig, CopyConfig } from '../../type.js';
 import { filterAIItemGroup } from '../../utils.js';
 

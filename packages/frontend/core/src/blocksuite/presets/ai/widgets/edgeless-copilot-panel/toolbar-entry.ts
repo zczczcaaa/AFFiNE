@@ -3,12 +3,12 @@ import {
   GfxControllerIdentifier,
   isGfxGroupCompatibleModel,
 } from '@blocksuite/affine/block-std/gfx';
-import type { AIItemGroupConfig } from '@blocksuite/affine/blocks';
 import { AIStarIcon, sortEdgelessElements } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
+import type { AIItemGroupConfig } from '../../_common/components/ai-item/types';
 import type { CopilotTool } from '../../tool/copilot-tool';
 
 export class EdgelessCopilotToolbarEntry extends WithDisposable(LitElement) {

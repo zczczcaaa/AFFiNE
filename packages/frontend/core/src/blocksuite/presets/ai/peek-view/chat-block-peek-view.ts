@@ -1,6 +1,5 @@
-import { type EditorHost } from '@blocksuite/affine/block-std';
+import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
-  type AIError,
   CanvasElementType,
   ConnectorMode,
   DocModeProvider,
@@ -26,6 +25,7 @@ import {
   constructUserInfoWithMessages,
   queryHistoryMessages,
 } from '../_common/chat-actions-handle';
+import type { AIError } from '../_common/components/ai-item/types';
 import { SmallHintIcon } from '../_common/icons';
 import type { AINetworkSearchConfig } from '../chat-panel/chat-config';
 import { AIChatErrorRenderer } from '../messages/error';

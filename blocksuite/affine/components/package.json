@@ -40,7 +40,6 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./ai-item": "./src/ai-item/index.ts",
     "./color-picker": "./src/color-picker/index.ts",
     "./icons": "./src/icons/index.ts",
     "./peek": "./src/peek/index.ts",

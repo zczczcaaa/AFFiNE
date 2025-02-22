@@ -1,11 +1,11 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import {
-  PaymentRequiredError,
-  UnauthorizedError,
-} from '@blocksuite/affine/blocks';
 import { Slot } from '@blocksuite/affine/global/utils';
 import { captureException } from '@sentry/react';
 
+import {
+  PaymentRequiredError,
+  UnauthorizedError,
+} from './_common/components/ai-item/types';
 import type { ChatContextValue } from './chat-panel/chat-context';
 
 export interface AIUserInfo {

@@ -1,5 +1,6 @@
-import type { AIError } from '@blocksuite/affine/blocks';
 import type { Signal } from '@preact/signals-core';
+
+import type { AIError } from '../_common/components/ai-item/types';
 
 export type ChatMessage = {
   id: string;

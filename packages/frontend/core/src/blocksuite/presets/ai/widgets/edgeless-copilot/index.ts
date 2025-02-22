@@ -1,9 +1,6 @@
 import { WidgetComponent } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
-import type {
-  AIItemGroupConfig,
-  RootBlockModel,
-} from '@blocksuite/affine/blocks';
+import type { RootBlockModel } from '@blocksuite/affine/blocks';
 import {
   EdgelessLegacySlotIdentifier,
   MOUSE_BUTTON,
@@ -26,6 +23,7 @@ import { css, html, nothing } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
+import type { AIItemGroupConfig } from '../../_common/components/ai-item/types.js';
 import {
   AFFINE_AI_PANEL_WIDGET,
   AffineAIPanelWidget,

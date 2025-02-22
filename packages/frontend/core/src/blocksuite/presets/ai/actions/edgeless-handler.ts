@@ -3,7 +3,6 @@ import {
   GfxControllerIdentifier,
   type GfxModel,
 } from '@blocksuite/affine/block-std/gfx';
-import type { AIError } from '@blocksuite/affine/blocks';
 import {
   CodeBlockModel,
   EdgelessTextBlockModel,
@@ -21,6 +20,7 @@ import type { TemplateResult } from 'lit';
 
 import { AIChatBlockModel } from '../../../blocks';
 import { getContentFromSlice } from '../../_common';
+import type { AIError } from '../_common/components/ai-item/types';
 import { AIProvider } from '../provider';
 import { reportResponse } from '../utils/action-reporter';
 import { getAIPanelWidget } from '../utils/ai-widgets';

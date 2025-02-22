@@ -20,17 +20,6 @@ export * from '@blocksuite/affine-block-surface';
 export * from '@blocksuite/affine-block-surface-ref';
 export * from '@blocksuite/affine-block-table';
 export {
-  type AIError,
-  AIErrorType,
-  type AIItemConfig,
-  type AIItemGroupConfig,
-  AIItemList,
-  type AISubItemConfig,
-  GeneralNetworkError,
-  PaymentRequiredError,
-  UnauthorizedError,
-} from '@blocksuite/affine-components/ai-item';
-export {
   menu,
   type MenuOptions,
   onMenuOpen,

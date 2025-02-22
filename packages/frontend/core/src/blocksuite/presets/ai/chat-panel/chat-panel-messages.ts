@@ -1,13 +1,10 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { ShadowlessElement } from '@blocksuite/affine/block-std';
 import {
-  type AIError,
   DocModeProvider,
   FeatureFlagService,
   isInsidePageEditor,
-  PaymentRequiredError,
   type SpecBuilder,
-  UnauthorizedError,
 } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import type { BaseSelection } from '@blocksuite/affine/store';
@@ -21,6 +18,11 @@ import {
   EdgelessEditorActions,
   PageEditorActions,
 } from '../_common/chat-actions-handle';
+import {
+  type AIError,
+  PaymentRequiredError,
+  UnauthorizedError,
+} from '../_common/components/ai-item/types';
 import { AffineAvatarIcon, AffineIcon, DownArrowIcon } from '../_common/icons';
 import { AIChatErrorRenderer } from '../messages/error';
 import { AIProvider } from '../provider';

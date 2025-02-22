@@ -4,7 +4,6 @@ import {
   AFFINE_FORMAT_BAR_WIDGET,
   AFFINE_VIEWPORT_OVERLAY_WIDGET,
   type AffineViewportOverlayWidget,
-  type AIError,
   DocModeProvider,
   getPageRootByElement,
   NotificationProvider,
@@ -27,6 +26,7 @@ import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 
+import type { AIError } from '../../_common/components/ai-item/types.js';
 import type { AIPanelGenerating } from './components/index.js';
 import type { AffineAIPanelState, AffineAIPanelWidgetConfig } from './type.js';
 

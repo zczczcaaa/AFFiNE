@@ -2,15 +2,15 @@ import {
   EditorHost,
   PropTypes,
   requiredProperties,
-} from '@blocksuite/block-std';
-import { WithDisposable } from '@blocksuite/global/utils';
+} from '@blocksuite/affine/block-std';
+import { createLitPortal } from '@blocksuite/affine/blocks';
+import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { flip, offset } from '@floating-ui/dom';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, LitElement, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import { createLitPortal } from '../portal';
 import type { AIItem } from './ai-item';
 import { SUBMENU_OFFSET_CROSS_AXIS, SUBMENU_OFFSET_MAIN_AXIS } from './const';
 import type { AIItemConfig, AIItemGroupConfig } from './types';

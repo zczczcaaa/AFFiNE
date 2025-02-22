@@ -1,14 +1,12 @@
 import { type EditorHost } from '@blocksuite/affine/block-std';
-import {
-  type AIItemGroupConfig,
-  DocModeProvider,
-  scrollbarStyle,
-} from '@blocksuite/affine/blocks';
+import { DocModeProvider, scrollbarStyle } from '@blocksuite/affine/blocks';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
 import { cssVar } from '@toeverything/theme';
 import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+
+import type { AIItemGroupConfig } from './ai-item/types';
 
 export class AskAIPanel extends WithDisposable(LitElement) {
   static override styles = css`

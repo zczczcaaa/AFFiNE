@@ -1,6 +1,10 @@
-import type { AIError, AIItemGroupConfig } from '@blocksuite/affine/blocks';
 import type { Signal } from '@preact/signals-core';
 import type { nothing, TemplateResult } from 'lit';
+
+import type {
+  AIError,
+  AIItemGroupConfig,
+} from '../../_common/components/ai-item/types';
 
 export interface CopyConfig {
   allowed: boolean;

@@ -2,7 +2,6 @@ import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import {
-  type AIItemConfig,
   ImageBlockModel,
   isInsideEdgelessEditor,
   matchModels,
@@ -14,6 +13,7 @@ import type { FrameworkProvider } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
 
 import { createTextRenderer, insertFromMarkdown } from '../_common';
+import type { AIItemConfig } from './_common/components/ai-item/types';
 import {
   AIPenIcon,
   AIStarIconWithAnimation,

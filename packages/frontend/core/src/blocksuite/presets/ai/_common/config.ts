@@ -1,7 +1,5 @@
 import type { Chain, InitCommandCtx } from '@blocksuite/affine/block-std';
 import {
-  type AIItemGroupConfig,
-  type AISubItemConfig,
   CodeBlockModel,
   getSelectedModelsCommand,
   ImageBlockModel,
@@ -19,6 +17,10 @@ import {
 } from '../actions/types';
 import { AIProvider } from '../provider';
 import { getAIPanelWidget } from '../utils/ai-widgets';
+import type {
+  AIItemGroupConfig,
+  AISubItemConfig,
+} from './components/ai-item/types';
 import {
   AIDoneIcon,
   AIImageIcon,

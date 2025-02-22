@@ -1,5 +1,4 @@
 import {
-  type AIItemGroupConfig,
   AIStarIconWithAnimation,
   MindmapElementModel,
   ShapeElementModel,
@@ -7,6 +6,7 @@ import {
   TextElementModel,
 } from '@blocksuite/affine/blocks';
 
+import type { AIItemGroupConfig } from '../../_common/components/ai-item/types';
 import {
   AIExpandMindMapIcon,
   AIImageIcon,
