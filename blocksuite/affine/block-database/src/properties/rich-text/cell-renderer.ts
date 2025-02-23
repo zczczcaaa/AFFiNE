@@ -221,7 +221,7 @@ export class RichTextCell extends BaseRichTextCell {
         .attributesSchema=${this.attributesSchema}
         .attributeRenderer=${this.attributeRenderer}
         .embedChecker=${this.inlineManager?.embedChecker}
-        .markdownShortcutHandler=${this.inlineManager?.markdownShortcutHandler}
+        .markdownMatches=${this.inlineManager?.markdownMatches}
         .readonly=${true}
         class="affine-database-rich-text inline-editor"
       ></rich-text>`
@@ -525,7 +525,7 @@ export class RichTextCellEditing extends BaseRichTextCell {
       .attributesSchema=${this.attributesSchema}
       .attributeRenderer=${this.attributeRenderer}
       .embedChecker=${this.inlineManager?.embedChecker}
-      .markdownShortcutHandler=${this.inlineManager?.markdownShortcutHandler}
+      .markdownMatches=${this.inlineManager?.markdownMatches}
       .verticalScrollContainerGetter=${() =>
         this.topContenteditableElement?.host
           ? getViewportElement(this.topContenteditableElement.host)

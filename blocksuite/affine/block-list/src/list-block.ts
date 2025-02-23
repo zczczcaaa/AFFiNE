@@ -85,10 +85,6 @@ export class ListBlockComponent extends CaptionedBlockComponent<ListBlockModel> 
     return this.std.get(DefaultInlineManagerExtension.identifier);
   }
 
-  get markdownShortcutHandler() {
-    return this.inlineManager.markdownShortcutHandler;
-  }
-
   override get topContenteditableElement() {
     if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
       return this.closest<BlockComponent>(NOTE_SELECTOR);
@@ -193,7 +189,7 @@ export class ListBlockComponent extends CaptionedBlockComponent<ListBlockModel> 
             .undoManager=${this.doc.history}
             .attributeRenderer=${this.attributeRenderer}
             .attributesSchema=${this.attributesSchema}
-            .markdownShortcutHandler=${this.markdownShortcutHandler}
+            .markdownMatches=${this.inlineManager?.markdownMatches}
             .embedChecker=${this.embedChecker}
             .readonly=${this.doc.readonly}
             .inlineRangeProvider=${this._inlineRangeProvider}

@@ -90,10 +90,6 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
     return this.std.get(DefaultInlineManagerExtension.identifier);
   }
 
-  get markdownShortcutHandler() {
-    return this.inlineManager.markdownShortcutHandler;
-  }
-
   override get topContenteditableElement() {
     if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
       return this.closest<BlockComponent>(NOTE_SELECTOR);
@@ -294,7 +290,7 @@ export class ParagraphBlockComponent extends CaptionedBlockComponent<
             .undoManager=${this.doc.history}
             .attributesSchema=${this.attributesSchema}
             .attributeRenderer=${this.attributeRenderer}
-            .markdownShortcutHandler=${this.markdownShortcutHandler}
+            .markdownMatches=${this.inlineManager?.markdownMatches}
             .embedChecker=${this.embedChecker}
             .readonly=${this.doc.readonly}
             .inlineRangeProvider=${this._inlineRangeProvider}

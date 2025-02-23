@@ -3,12 +3,10 @@ import { ShadowlessElement } from '@blocksuite/block-std';
 import { assertExists, WithDisposable } from '@blocksuite/global/utils';
 import {
   type AttributeRenderer,
-  createInlineKeyDownHandler,
   type DeltaInsert,
   InlineEditor,
   type InlineRange,
   type InlineRangeProvider,
-  type KeyboardBindingContext,
   type VLine,
 } from '@blocksuite/inline';
 import { Text } from '@blocksuite/store';
@@ -19,6 +17,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import * as Y from 'yjs';
 import { z } from 'zod';
 
+import type { InlineMarkdownMatch } from './extension/type.js';
 import { onVBeforeinput, onVCompositionEnd } from './hooks.js';
 import type { AffineInlineEditor } from './inline/index.js';
 
@@ -181,20 +180,40 @@ export class RichText extends WithDisposable(ShadowlessElement) {
     }
     const inlineEditor = this._inlineEditor;
 
-    const markdownShortcutHandler = this.markdownShortcutHandler;
-    if (markdownShortcutHandler) {
-      const keyDownHandler = createInlineKeyDownHandler(inlineEditor, {
-        inputRule: {
-          key: [' ', 'Enter'],
-          handler: context =>
-            markdownShortcutHandler(context, this.undoManager),
-        },
-      });
-
+    const markdownMatches = this.markdownMatches;
+    if (markdownMatches) {
       inlineEditor.disposables.addFromEvent(
         this.inlineEventSource ?? this.inlineEditorContainer,
         'keydown',
-        keyDownHandler
+        (e: KeyboardEvent) => {
+          if (e.key !== ' ' && e.key !== 'Enter') return;
+
+          const inlineRange = inlineEditor.getInlineRange();
+          if (!inlineRange || inlineRange.length > 0) return;
+
+          const nearestLineBreakIndex = inlineEditor.yTextString
+            .slice(0, inlineRange.index)
+            .lastIndexOf('\n');
+          const prefixText = inlineEditor.yTextString.slice(
+            nearestLineBreakIndex + 1,
+            inlineRange.index
+          );
+
+          for (const match of markdownMatches) {
+            const { pattern, action } = match;
+            if (prefixText.match(pattern)) {
+              action({
+                inlineEditor,
+                prefixText,
+                inlineRange,
+                pattern,
+                undoManager: this.undoManager,
+              });
+              e.preventDefault();
+              break;
+            }
+          }
+        }
       );
     }
 
@@ -409,12 +428,7 @@ export class RichText extends WithDisposable(ShadowlessElement) {
   accessor inlineRangeProvider: InlineRangeProvider | undefined = undefined;
 
   @property({ attribute: false })
-  accessor markdownShortcutHandler:
-    | (<TextAttributes extends AffineTextAttributes = AffineTextAttributes>(
-        context: KeyboardBindingContext<TextAttributes>,
-        undoManager: Y.UndoManager
-      ) => boolean)
-    | undefined = undefined;
+  accessor markdownMatches: InlineMarkdownMatch<AffineTextAttributes>[] = [];
 
   @property({ attribute: false })
   accessor readonly = false;

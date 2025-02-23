@@ -127,7 +127,7 @@ export class BlockRenderer
         .attributesSchema=${this.attributesSchema}
         .attributeRenderer=${this.attributeRenderer}
         .embedChecker=${this.inlineManager.embedChecker}
-        .markdownShortcutHandler=${this.inlineManager.markdownShortcutHandler}
+        .markdownMatches=${this.inlineManager.markdownMatches}
         class="inline-editor"
       ></rich-text>
     `;

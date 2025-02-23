@@ -1106,31 +1106,6 @@ test('delete embed when pressing backspace after embed', async ({ page }) => {
   ]);
 });
 
-test('markdown shortcut using keyboard util', async ({ page }) => {
-  await enterInlineEditorPlayground(page);
-  await focusInlineRichText(page);
-
-  await page.waitForTimeout(100);
-
-  await type(page, 'aaa**bbb** ccc');
-
-  const delta = await getDeltaFromInlineRichText(page);
-  expect(delta).toEqual([
-    {
-      insert: 'aaa',
-    },
-    {
-      insert: 'bbb',
-      attributes: {
-        bold: true,
-      },
-    },
-    {
-      insert: 'ccc',
-    },
-  ]);
-});
-
 test('triple click to select line', async ({ page }) => {
   await enterInlineEditorPlayground(page);
   await focusInlineRichText(page);

@@ -5,9 +5,7 @@ import {
   type AttributeRenderer,
   type BaseTextAttributes,
   baseTextAttributes,
-  createInlineKeyDownHandler,
   InlineEditor,
-  KEYBOARD_ALLOW_DEFAULT,
   ZERO_WIDTH_NON_JOINER,
 } from '@blocksuite/inline';
 import { effects } from '@blocksuite/inline/effects';
@@ -17,8 +15,6 @@ import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import * as Y from 'yjs';
 import { z } from 'zod';
-
-import { markdownMatches } from './markdown.js';
 
 effects();
 
@@ -131,30 +127,6 @@ export class TestRichText extends ShadowlessElement {
     this.contentEditable = 'true';
     this.style.outline = 'none';
     this.inlineEditor.mount(this._container, this);
-
-    const keydownHandler = createInlineKeyDownHandler(this.inlineEditor, {
-      inputRule: {
-        key: ' ',
-        handler: context => {
-          const { inlineEditor, prefixText, inlineRange } = context;
-          for (const match of markdownMatches) {
-            const matchedText = prefixText.match(match.pattern);
-            if (matchedText) {
-              return match.action({
-                inlineEditor,
-                prefixText,
-                inlineRange,
-                pattern: match.pattern,
-                undoManager: this.undoManager,
-              });
-            }
-          }
-
-          return KEYBOARD_ALLOW_DEFAULT;
-        },
-      },
-    });
-    this.addEventListener('keydown', keydownHandler);
 
     this.inlineEditor.slots.textChange.on(() => {
       const el = this.querySelector('.y-text');

@@ -9,11 +9,8 @@ import {
   baseTextAttributes,
   type DeltaInsert,
   getDefaultAttributeRenderer,
-  KEYBOARD_ALLOW_DEFAULT,
-  type KeyboardBindingContext,
 } from '@blocksuite/inline';
 import type { ExtensionType } from '@blocksuite/store';
-import type * as Y from 'yjs';
 import { z, type ZodObject, type ZodTypeAny } from 'zod';
 
 import { MarkdownMatcherIdentifier } from './markdown-matcher.js';
@@ -59,27 +56,6 @@ export class InlineManager {
         >;
       }, defaultSchema);
     return schema;
-  };
-
-  markdownShortcutHandler = (
-    context: KeyboardBindingContext<AffineTextAttributes>,
-    undoManager: Y.UndoManager
-  ) => {
-    const { inlineEditor, prefixText, inlineRange } = context;
-    for (const match of this.markdownMatches) {
-      const matchedText = prefixText.match(match.pattern);
-      if (matchedText) {
-        return match.action({
-          inlineEditor,
-          prefixText,
-          inlineRange,
-          pattern: match.pattern,
-          undoManager,
-        });
-      }
-    }
-
-    return KEYBOARD_ALLOW_DEFAULT;
   };
 
   readonly specs: Array<InlineSpecs<AffineTextAttributes>>;

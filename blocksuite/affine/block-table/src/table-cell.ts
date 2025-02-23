@@ -745,8 +745,7 @@ export class TableCell extends SignalWatcher(
           .attributesSchema="${this.inlineManager?.getSchema()}"
           .attributeRenderer="${this.inlineManager?.getRenderer()}"
           .embedChecker="${this.inlineManager?.embedChecker}"
-          .markdownShortcutHandler="${this.inlineManager
-            ?.markdownShortcutHandler}"
+          .markdownMatches="${this.inlineManager?.markdownMatches}"
           .readonly="${this.readonly}"
           .enableClipboard="${true}"
           .verticalScrollContainerGetter="${() =>

@@ -187,7 +187,7 @@ export class HeaderAreaTextCell extends BaseTextCell {
       .attributesSchema="${this.attributesSchema}"
       .attributeRenderer="${this.attributeRenderer}"
       .embedChecker="${this.inlineManager?.embedChecker}"
-      .markdownShortcutHandler="${this.inlineManager?.markdownShortcutHandler}"
+      .markdownMatches="${this.inlineManager?.markdownMatches}"
       .readonly="${true}"
       class="data-view-header-area-rich-text"
     ></rich-text>`;
@@ -391,7 +391,7 @@ export class HeaderAreaTextCellEditing extends BaseTextCell {
       .attributesSchema="${this.attributesSchema}"
       .attributeRenderer="${this.attributeRenderer}"
       .embedChecker="${this.inlineManager?.embedChecker}"
-      .markdownShortcutHandler="${this.inlineManager?.markdownShortcutHandler}"
+      .markdownMatches="${this.inlineManager?.markdownMatches}"
       .readonly="${this.readonly}"
       .enableClipboard="${false}"
       .verticalScrollContainerGetter="${() =>

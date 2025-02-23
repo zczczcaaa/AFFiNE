@@ -4,7 +4,6 @@ import type {
   DeltaInsert,
   InlineEditor,
   InlineRange,
-  KeyboardBindingHandler,
 } from '@blocksuite/inline';
 import type * as Y from 'yjs';
 import type { ZodTypeAny } from 'zod';
@@ -28,7 +27,7 @@ export type InlineMarkdownMatchAction<
   inlineRange: InlineRange;
   pattern: RegExp;
   undoManager: Y.UndoManager;
-}) => ReturnType<KeyboardBindingHandler>;
+}) => void;
 
 export type InlineMarkdownMatch<
   AffineTextAttributes extends BaseTextAttributes = BaseTextAttributes,

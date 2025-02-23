@@ -4,6 +4,7 @@ import {
   getCursorBlockIdAndHeight,
   initEmptyParagraphState,
   pressArrowLeft,
+  pressArrowRight,
   pressBackspace,
   pressEnter,
   pressSpace,
@@ -228,6 +229,24 @@ test.describe('markdown inline-text', () => {
   });
 
   test('bolditalic', async ({ page }) => {
+    await type(page, 'aa***b*** ');
+    await assertRichTextInlineDeltas(page, [
+      {
+        insert: 'aa',
+      },
+      {
+        insert: 'b',
+        attributes: {
+          bold: true,
+          italic: true,
+        },
+      },
+    ]);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await assertRichTexts(page, ['']);
+
     await type(page, 'aa***bb*** ');
     await assertRichTextInlineDeltas(page, [
       {
@@ -282,6 +301,23 @@ test.describe('markdown inline-text', () => {
   });
 
   test('bold', async ({ page }) => {
+    await type(page, 'aa**b** ');
+    await assertRichTextInlineDeltas(page, [
+      {
+        insert: 'aa',
+      },
+      {
+        insert: 'b',
+        attributes: {
+          bold: true,
+        },
+      },
+    ]);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await assertRichTexts(page, ['']);
+
     await type(page, 'aa**bb** ');
     await assertRichTextInlineDeltas(page, [
       {
@@ -333,6 +369,23 @@ test.describe('markdown inline-text', () => {
   });
 
   test('italic', async ({ page }) => {
+    await type(page, 'aa*b* ');
+    await assertRichTextInlineDeltas(page, [
+      {
+        insert: 'aa',
+      },
+      {
+        insert: 'b',
+        attributes: {
+          italic: true,
+        },
+      },
+    ]);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await assertRichTexts(page, ['']);
+
     await type(page, 'aa*bb* ');
     await assertRichTextInlineDeltas(page, [
       {
@@ -385,6 +438,23 @@ test.describe('markdown inline-text', () => {
   });
 
   test('strike', async ({ page }) => {
+    await type(page, 'aa~~b~~ ');
+    await assertRichTextInlineDeltas(page, [
+      {
+        insert: 'aa',
+      },
+      {
+        insert: 'b',
+        attributes: {
+          strike: true,
+        },
+      },
+    ]);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await assertRichTexts(page, ['']);
+
     await type(page, 'aa~~bb~~ ');
     await assertRichTextInlineDeltas(page, [
       {
@@ -436,6 +506,23 @@ test.describe('markdown inline-text', () => {
   });
 
   test('underline', async ({ page }) => {
+    await type(page, 'aa~b~ ');
+    await assertRichTextInlineDeltas(page, [
+      {
+        insert: 'aa',
+      },
+      {
+        insert: 'b',
+        attributes: {
+          underline: true,
+        },
+      },
+    ]);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await assertRichTexts(page, ['']);
+
     await type(page, 'aa~bb~ ');
     await assertRichTextInlineDeltas(page, [
       {
@@ -487,6 +574,23 @@ test.describe('markdown inline-text', () => {
   });
 
   test('code', async ({ page }) => {
+    await type(page, 'aa`b` ');
+    await assertRichTextInlineDeltas(page, [
+      {
+        insert: 'aa',
+      },
+      {
+        insert: 'b',
+        attributes: {
+          code: true,
+        },
+      },
+    ]);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await undoByKeyboard(page);
+    await assertRichTexts(page, ['']);
+
     await type(page, 'aa`bb` ');
     await assertRichTextInlineDeltas(page, [
       {
@@ -538,6 +642,40 @@ test.describe('markdown inline-text', () => {
     await assertRichTexts(page, ['` test` ']);
     await undoByKeyboard(page);
     await assertRichTexts(page, ['']);
+
+    // https://github.com/toeverything/AFFiNE/issues/9410
+    await waitNextFrame(page);
+    await type(page, 'test**bold** ');
+    await assertRichTextInlineDeltas(page, [
+      {
+        insert: 'test',
+      },
+      {
+        insert: 'bold',
+        attributes: {
+          bold: true,
+        },
+      },
+    ]);
+    await pressArrowLeft(page, 8);
+    await type(page, '`');
+    await pressArrowRight(page, 8);
+    await type(page, '` ');
+    await assertRichTextInlineDeltas(page, [
+      {
+        insert: 'test',
+        attributes: {
+          code: true,
+        },
+      },
+      {
+        insert: 'bold',
+        attributes: {
+          bold: true,
+          code: true,
+        },
+      },
+    ]);
   });
 });
 
