@@ -9,6 +9,7 @@ import { effects } from '../../effects.js';
 blocksEffects();
 effects();
 
+import type { ViewportTurboRendererExtension } from '@blocksuite/affine-shared/viewport-renderer';
 import {
   CommunityCanvasTextFonts,
   type DocMode,
@@ -136,5 +137,6 @@ declare global {
     doc: Store;
     job: Transformer;
     collection: TestWorkspace;
+    renderer: ViewportTurboRendererExtension;
   }
 }

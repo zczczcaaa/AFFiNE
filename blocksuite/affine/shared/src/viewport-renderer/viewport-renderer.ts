@@ -67,15 +67,17 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     });
 
     const debounceOptions = { leading: false, trailing: true };
-    const debouncedLayoutUpdate = debounce(
-      () => this.updateLayoutCache(),
-      500,
+    const debouncedRefresh = debounce(
+      () => {
+        this.refresh().catch(console.error);
+      },
+      1000, // During this period, fallback to DOM
       debounceOptions
     );
     this.disposables.add(
       this.std.store.slots.blockUpdated.on(() => {
-        this.clearTile();
-        debouncedLayoutUpdate();
+        this.invalidate();
+        debouncedRefresh();
       })
     );
   }
@@ -103,19 +105,28 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     } else if (this.canUseBitmapCache()) {
       this.drawCachedBitmap(this.layoutCache!);
     } else {
-      // Unneeded most of the time, the DOM query is debounced after block update
       if (!this.layoutCache) {
         this.updateLayoutCache();
       }
-
-      await this.paintLayout(this.layoutCache!);
-      this.drawCachedBitmap(this.layoutCache!);
+      const layout = this.layoutCache!;
+      await this.paintLayout(layout);
+      this.drawCachedBitmap(layout);
     }
+  }
+
+  invalidate() {
+    this.clearCache();
+    this.clearCanvas();
   }
 
   private updateLayoutCache() {
     const layout = getViewportLayout(this.std.host, this.viewport);
     this.layoutCache = layout;
+  }
+
+  private clearCache() {
+    this.layoutCache = null;
+    this.clearTile();
   }
 
   private clearTile() {
