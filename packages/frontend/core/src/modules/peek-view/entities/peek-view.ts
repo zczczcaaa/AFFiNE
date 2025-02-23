@@ -14,7 +14,7 @@ import { Entity, LiveData } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
 import { firstValueFrom, map, race } from 'rxjs';
 
-import type { AIChatBlockModel } from '../../../blocksuite/blocks';
+import type { AIChatBlockModel } from '../../../blocksuite/ai/blocks';
 import { resolveLinkToDoc } from '../../navigation';
 import type { WorkbenchService } from '../../workbench';
 

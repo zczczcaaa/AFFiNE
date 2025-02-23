@@ -1,4 +1,4 @@
-import { AIProvider } from '@affine/core/blocksuite/presets';
+import { AIProvider } from '@affine/core/blocksuite/ai';
 import type { OAuthProviderType } from '@affine/graphql';
 import { track } from '@affine/track';
 import { OnEvent, Service } from '@toeverything/infra';

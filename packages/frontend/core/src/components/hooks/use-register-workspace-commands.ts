@@ -14,6 +14,8 @@ import { useStore } from 'jotai';
 import { useTheme } from 'next-themes';
 import { useEffect } from 'react';
 
+import type { AffineEditorContainer } from '../../blocksuite/block-suite-editor';
+import { usePageHelper } from '../../blocksuite/block-suite-page-list/utils';
 import {
   PreconditionStrategy,
   registerAffineCommand,
@@ -25,10 +27,8 @@ import {
   registerAffineSettingsCommands,
   registerAffineUpdatesCommands,
 } from '../../commands';
-import { usePageHelper } from '../../components/blocksuite/block-suite-page-list/utils';
 import { EditorSettingService } from '../../modules/editor-setting';
 import { CMDKQuickSearchService } from '../../modules/quicksearch/services/cmdk';
-import type { AffineEditorContainer } from '../blocksuite/block-suite-editor';
 import { useActiveBlocksuiteEditor } from './use-block-suite-editor';
 import { useNavigateHelper } from './use-navigate-helper';
 

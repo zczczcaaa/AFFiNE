@@ -624,8 +624,7 @@ jobs:
         with:
           filters: |
             changed:
-              - 'packages/frontend/core/src/blocksuite/presets/ai/**'
-              - 'packages/frontend/core/src/components/blocksuite/block-suite-editor/ai/**'
+              - 'packages/frontend/core/src/blocksuite/ai/**'
               - 'tests/affine-cloud-copilot/**'
 
       - name: Setup Node.js

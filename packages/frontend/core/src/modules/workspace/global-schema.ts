@@ -1,4 +1,4 @@
-import { AIChatBlockSchema } from '@affine/core/blocksuite/blocks/ai-chat-block/model';
+import { AIChatBlockSchema } from '@affine/core/blocksuite/ai/blocks/ai-chat-block/model';
 import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { Schema } from '@blocksuite/affine/store';
 

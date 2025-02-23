@@ -1,4 +1,4 @@
-import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
+import { usePageHelper } from '@affine/core/blocksuite/block-suite-page-list/utils';
 import { useAsyncCallback } from '@affine/core/components/hooks/affine-async-hooks';
 import { DocsService } from '@affine/core/modules/doc';
 import { TemplateDocService } from '@affine/core/modules/template-doc';

@@ -1,6 +1,6 @@
-import { ChatPanel } from '@affine/core/blocksuite/presets';
-import type { AffineEditorContainer } from '@affine/core/components/blocksuite/block-suite-editor';
-import { createPageModePreviewSpecs } from '@affine/core/components/blocksuite/block-suite-editor/specs/preview';
+import { ChatPanel } from '@affine/core/blocksuite/ai';
+import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
+import { createPageModePreviewSpecs } from '@affine/core/blocksuite/block-suite-editor/specs/preview';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { DocSearchMenuService } from '@affine/core/modules/doc-search-menu/services';

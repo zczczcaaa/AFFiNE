@@ -5,7 +5,7 @@ import {
   MobileMenu,
   MobileMenuItem,
 } from '@affine/component/ui/menu';
-import { useFavorite } from '@affine/core/components/blocksuite/block-suite-header/favorite';
+import { useFavorite } from '@affine/core/blocksuite/block-suite-header/favorite';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
 import { DocInfoSheet } from '@affine/core/mobile/components';
 import { MobileTocMenu } from '@affine/core/mobile/components/toc-menu';

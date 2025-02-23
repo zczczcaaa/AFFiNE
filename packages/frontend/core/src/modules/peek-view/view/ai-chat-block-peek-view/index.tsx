@@ -1,12 +1,11 @@
 import { toReactNode } from '@affine/component';
-import { AIChatBlockPeekViewTemplate } from '@affine/core/blocksuite/presets';
+import { AIChatBlockPeekViewTemplate } from '@affine/core/blocksuite/ai';
+import type { AIChatBlockModel } from '@affine/core/blocksuite/ai/blocks/ai-chat-block/model/ai-chat-model';
+import { createPageModePreviewSpecs } from '@affine/core/blocksuite/block-suite-editor/specs/preview';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import { useFramework } from '@toeverything/infra';
 import { useMemo } from 'react';
-
-import type { AIChatBlockModel } from '../../../../blocksuite/blocks/ai-chat-block/model/ai-chat-model';
-import { createPageModePreviewSpecs } from '../../../../components/blocksuite/block-suite-editor/specs/preview';
 
 export type AIChatBlockPeekViewProps = {
   model: AIChatBlockModel;

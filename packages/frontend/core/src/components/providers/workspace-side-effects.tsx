@@ -3,7 +3,11 @@ import {
   pushGlobalLoadingEventAtom,
   resolveGlobalLoadingEventAtom,
 } from '@affine/component/global-loading';
-import { AIProvider } from '@affine/core/blocksuite/presets';
+import {
+  AIProvider,
+  CopilotClient,
+  setupAIProvider,
+} from '@affine/core/blocksuite/ai';
 import { SyncAwareness } from '@affine/core/components/affine/awareness';
 import { useRegisterFindInPageCommands } from '@affine/core/components/hooks/affine/use-register-find-in-page-commands';
 import { useRegisterWorkspaceCommands } from '@affine/core/components/hooks/use-register-workspace-commands';
@@ -44,9 +48,6 @@ import {
   switchMap,
   timeout,
 } from 'rxjs';
-
-import { CopilotClient } from '../blocksuite/block-suite-editor/ai/copilot-client';
-import { setupAIProvider } from '../blocksuite/block-suite-editor/ai/setup-provider';
 
 /**
  * @deprecated just for legacy code, will be removed in the future

@@ -39,8 +39,8 @@ import { useLiveData, useService, useServices } from '@toeverything/infra';
 import type { MouseEvent } from 'react';
 import { useCallback, useState } from 'react';
 
+import { usePageHelper } from '../../blocksuite/block-suite-page-list/utils';
 import type { CollectionService } from '../../modules/collection';
-import { usePageHelper } from '../blocksuite/block-suite-page-list/utils';
 import { IsFavoriteIcon } from '../pure/icons';
 import { FavoriteTag } from './components/favorite-tag';
 import * as styles from './list.css';

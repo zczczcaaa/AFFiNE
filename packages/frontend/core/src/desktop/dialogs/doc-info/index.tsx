@@ -1,5 +1,5 @@
 import { Modal, Scrollable } from '@affine/component';
-import { BlocksuiteHeaderTitle } from '@affine/core/components/blocksuite/block-suite-header/title';
+import { BlocksuiteHeaderTitle } from '@affine/core/blocksuite/block-suite-header/title';
 import type { DialogComponentProps } from '@affine/core/modules/dialogs';
 import type { WORKSPACE_DIALOG_SCHEMA } from '@affine/core/modules/dialogs/constant';
 import { type Doc, DocsService } from '@affine/core/modules/doc';

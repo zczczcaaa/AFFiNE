@@ -5,7 +5,7 @@ import {
   PropertyCollapsibleContent,
   PropertyCollapsibleSection,
 } from '@affine/component';
-import { BacklinkGroups } from '@affine/core/components/blocksuite/block-suite-editor/bi-directional-link-panel';
+import { BacklinkGroups } from '@affine/core/blocksuite/block-suite-editor/bi-directional-link-panel';
 import { CreatePropertyMenuItems } from '@affine/core/components/doc-properties/menu/create-doc-property';
 import { DocPropertyRow } from '@affine/core/components/doc-properties/table';
 import type { DocCustomPropertyInfo } from '@affine/core/modules/db';

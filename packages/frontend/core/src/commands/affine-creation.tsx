@@ -3,7 +3,7 @@ import { track } from '@affine/track';
 import type { DocMode } from '@blocksuite/affine/blocks';
 import { ImportIcon, PlusIcon } from '@blocksuite/icons/rc';
 
-import type { usePageHelper } from '../components/blocksuite/block-suite-page-list/utils';
+import type { usePageHelper } from '../blocksuite/block-suite-page-list/utils';
 import type { GlobalDialogService } from '../modules/dialogs';
 import { registerAffineCommand } from './registry';
 

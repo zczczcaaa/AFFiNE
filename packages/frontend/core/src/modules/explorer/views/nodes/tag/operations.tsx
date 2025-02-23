@@ -1,5 +1,5 @@
 import { IconButton, MenuItem, MenuSeparator, toast } from '@affine/component';
-import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
+import { usePageHelper } from '@affine/core/blocksuite/block-suite-page-list/utils';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
 import { DocsService } from '@affine/core/modules/doc';
 import { FavoriteService } from '@affine/core/modules/favorite';

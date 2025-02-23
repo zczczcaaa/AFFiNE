@@ -1,4 +1,4 @@
-import type { AffineEditorContainer } from '@affine/core/components/blocksuite/block-suite-editor';
+import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
 import type { DefaultOpenProperty } from '@affine/core/components/doc-properties';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import {

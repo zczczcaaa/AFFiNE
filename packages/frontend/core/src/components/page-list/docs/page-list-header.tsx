@@ -28,8 +28,8 @@ import clsx from 'clsx';
 import { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { usePageHelper } from '../../../blocksuite/block-suite-page-list/utils';
 import { CollectionService } from '../../../modules/collection';
-import { usePageHelper } from '../../blocksuite/block-suite-page-list/utils';
 import { createTagFilter } from '../filter/utils';
 import { SaveAsCollectionButton } from '../view';
 import * as styles from './page-list-header.css';

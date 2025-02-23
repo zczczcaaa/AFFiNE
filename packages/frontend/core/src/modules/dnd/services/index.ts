@@ -5,7 +5,7 @@ import {
   type MonitorGetFeedback,
   type toExternalData,
 } from '@affine/component';
-import { createPageModeSpecs } from '@affine/core/components/blocksuite/block-suite-editor/specs/page';
+import { createPageModeSpecs } from '@affine/core/blocksuite/block-suite-editor/specs/page';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { BlockStdScope } from '@blocksuite/affine/block-std';
 import {

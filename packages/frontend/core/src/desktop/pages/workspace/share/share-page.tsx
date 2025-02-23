@@ -1,6 +1,6 @@
 import { Scrollable } from '@affine/component';
-import type { AffineEditorContainer } from '@affine/core/components/blocksuite/block-suite-editor';
-import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
+import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
+import { EditorOutlineViewer } from '@affine/core/blocksuite/outline-viewer';
 import { useActiveBlocksuiteEditor } from '@affine/core/components/hooks/use-block-suite-editor';
 import { usePageDocumentTitle } from '@affine/core/components/hooks/use-global-state';
 import { useNavigateHelper } from '@affine/core/components/hooks/use-navigate-helper';

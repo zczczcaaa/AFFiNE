@@ -5,7 +5,7 @@ import {
   notify,
   useConfirmModal,
 } from '@affine/component';
-import { usePageHelper } from '@affine/core/components/blocksuite/block-suite-page-list/utils';
+import { usePageHelper } from '@affine/core/blocksuite/block-suite-page-list/utils';
 import { useDeleteCollectionInfo } from '@affine/core/components/hooks/affine/use-delete-collection-info';
 import { IsFavoriteIcon } from '@affine/core/components/pure/icons';
 import { CollectionService } from '@affine/core/modules/collection';

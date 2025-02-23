@@ -1,9 +1,9 @@
 import { Scrollable } from '@affine/component';
 import { PageDetailSkeleton } from '@affine/component/page-detail-skeleton';
-import { AIProvider } from '@affine/core/blocksuite/presets';
+import { AIProvider } from '@affine/core/blocksuite/ai';
+import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
+import { EditorOutlineViewer } from '@affine/core/blocksuite/outline-viewer';
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
-import type { AffineEditorContainer } from '@affine/core/components/blocksuite/block-suite-editor';
-import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
 import { PageNotFound } from '@affine/core/desktop/pages/404';
 import { EditorService } from '@affine/core/modules/editor';
 import { GuardService } from '@affine/core/modules/permissions';
@@ -34,11 +34,9 @@ const logger = new DebugLogger('doc-peek-view');
 
 // Lazy load BlockSuiteEditor to break circular dependency
 const BlockSuiteEditor = lazy(() =>
-  import('@affine/core/components/blocksuite/block-suite-editor').then(
-    module => ({
-      default: module.BlockSuiteEditor,
-    })
-  )
+  import('@affine/core/blocksuite/block-suite-editor').then(module => ({
+    default: module.BlockSuiteEditor,
+  }))
 );
 
 function fitViewport(

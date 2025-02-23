@@ -1,5 +1,5 @@
 // the following import is used to ensure the block suite editor effects are run
-import '../components/blocksuite/block-suite-editor';
+import '../blocksuite/block-suite-editor';
 
 import { DebugLogger } from '@affine/debug';
 import { DEFAULT_WORKSPACE_NAME } from '@affine/env/constant';

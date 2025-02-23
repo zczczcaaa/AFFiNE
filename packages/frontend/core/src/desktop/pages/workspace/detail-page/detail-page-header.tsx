@@ -5,14 +5,14 @@ import {
   observeResize,
   useDraggable,
 } from '@affine/component';
-import { FavoriteButton } from '@affine/core/components/blocksuite/block-suite-header/favorite';
-import { InfoButton } from '@affine/core/components/blocksuite/block-suite-header/info';
-import { JournalWeekDatePicker } from '@affine/core/components/blocksuite/block-suite-header/journal/date-picker';
-import { JournalTodayButton } from '@affine/core/components/blocksuite/block-suite-header/journal/today-button';
-import { PageHeaderMenuButton } from '@affine/core/components/blocksuite/block-suite-header/menu';
-import { DetailPageHeaderPresentButton } from '@affine/core/components/blocksuite/block-suite-header/present/detail-header-present-button';
-import { BlocksuiteHeaderTitle } from '@affine/core/components/blocksuite/block-suite-header/title';
-import { EditorModeSwitch } from '@affine/core/components/blocksuite/block-suite-mode-switch';
+import { FavoriteButton } from '@affine/core/blocksuite/block-suite-header/favorite';
+import { InfoButton } from '@affine/core/blocksuite/block-suite-header/info';
+import { JournalWeekDatePicker } from '@affine/core/blocksuite/block-suite-header/journal/date-picker';
+import { JournalTodayButton } from '@affine/core/blocksuite/block-suite-header/journal/today-button';
+import { PageHeaderMenuButton } from '@affine/core/blocksuite/block-suite-header/menu';
+import { DetailPageHeaderPresentButton } from '@affine/core/blocksuite/block-suite-header/present/detail-header-present-button';
+import { BlocksuiteHeaderTitle } from '@affine/core/blocksuite/block-suite-header/title';
+import { EditorModeSwitch } from '@affine/core/blocksuite/block-suite-mode-switch';
 import { useRegisterCopyLinkCommands } from '@affine/core/components/hooks/affine/use-register-copy-link-commands';
 import { HeaderDivider } from '@affine/core/components/pure/header';
 import { DocService } from '@affine/core/modules/doc';
