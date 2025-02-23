@@ -1,11 +1,13 @@
 import {
   Bound,
   clamp,
+  debounce,
   type IPoint,
   type IVec,
   Slot,
   Vec,
 } from '@blocksuite/global/utils';
+import { signal } from '@preact/signals-core';
 
 import type { GfxViewportElement } from '.';
 
@@ -60,11 +62,33 @@ export class Viewport {
 
   viewportMoved = new Slot<IVec>();
 
-  viewportUpdated = new Slot<{ zoom: number; center: IVec }>();
+  viewportUpdated = new Slot<{
+    zoom: number;
+    center: IVec;
+  }>();
+
+  zooming$ = signal(false);
+  panning$ = signal(false);
 
   ZOOM_MAX = ZOOM_MAX;
 
   ZOOM_MIN = ZOOM_MIN;
+
+  private readonly _resetZooming = debounce(
+    () => {
+      this.zooming$.value = false;
+    },
+    100,
+    { leading: false, trailing: true }
+  );
+
+  private readonly _resetPanning = debounce(
+    () => {
+      this.panning$.value = false;
+    },
+    100,
+    { leading: false, trailing: true }
+  );
 
   constructor() {
     this.elementReady.once(el => (this._element = el));
@@ -197,6 +221,8 @@ export class Viewport {
     this.sizeUpdated.dispose();
     this.viewportMoved.dispose();
     this.viewportUpdated.dispose();
+    this.zooming$.value = false;
+    this.panning$.value = false;
   }
 
   getFitToScreenData(
@@ -254,10 +280,12 @@ export class Viewport {
   setCenter(centerX: number, centerY: number) {
     this._center.x = centerX;
     this._center.y = centerY;
+    this.panning$.value = true;
     this.viewportUpdated.emit({
       zoom: this.zoom,
       center: Vec.toVec(this.center) as IVec,
     });
+    this._resetPanning();
   }
 
   setRect(left: number, top: number, width: number, height: number) {
@@ -373,11 +401,13 @@ export class Viewport {
       Vec.toVec(focusPoint),
       Vec.mul(offset, prevZoom / newZoom)
     );
+    this.zooming$.value = true;
     this.setCenter(newCenter[0], newCenter[1]);
     this.viewportUpdated.emit({
       zoom: this.zoom,
       center: Vec.toVec(this.center) as IVec,
     });
+    this._resetZooming();
   }
 
   smoothTranslate(x: number, y: number, numSteps = 10) {
