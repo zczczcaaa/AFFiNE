@@ -8,6 +8,7 @@ import { WorkspaceService } from '@affine/core/modules/workspace';
 import {
   createSignalFromObservable,
   DocModeProvider,
+  FootNoteNodeConfigExtension,
   RefNodeSlotsProvider,
 } from '@blocksuite/affine/blocks';
 import { useFramework } from '@toeverything/infra';
@@ -19,6 +20,11 @@ export interface SidebarTabProps {
   editor: AffineEditorContainer | null;
   onLoad?: ((component: HTMLElement) => void) | null;
 }
+
+// Disable hover effect for footnote node in chat panel
+const FOOTNOTE_CONFIG = FootNoteNodeConfigExtension({
+  disableHoverEffect: true,
+});
 
 // A wrapper for CopilotPanel
 export const EditorChatPanel = forwardRef(function EditorChatPanel(
@@ -84,8 +90,9 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
           );
         },
       };
-      chatPanelRef.current.previewSpecBuilder =
-        createPageModePreviewSpecs(framework);
+      const previewSpecBuilder = createPageModePreviewSpecs(framework);
+      previewSpecBuilder.extend([FOOTNOTE_CONFIG]);
+      chatPanelRef.current.previewSpecBuilder = previewSpecBuilder;
     } else {
       chatPanelRef.current.host = editor.host;
       chatPanelRef.current.doc = editor.doc;

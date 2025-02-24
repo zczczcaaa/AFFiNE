@@ -14,6 +14,7 @@ export class FootNotePopupChip extends LitElement {
       gap: 4px;
       box-sizing: border-box;
       cursor: default;
+      transition: width 0.3s ease-in-out;
     }
 
     .prefix-icon,

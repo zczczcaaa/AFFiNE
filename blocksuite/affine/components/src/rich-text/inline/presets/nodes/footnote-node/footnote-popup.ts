@@ -26,7 +26,6 @@ export class FootNotePopup extends SignalWatcher(WithDisposable(LitElement)) {
     .footnote-popup-container {
       border-radius: 4px;
       box-shadow: ${unsafeCSSVar('overlayPanelShadow')};
-      border-radius: 4px;
       background-color: ${unsafeCSSVarV2('layer/background/primary')};
       border: 0.5px solid ${unsafeCSSVarV2('layer/insideBorder/border')};
     }

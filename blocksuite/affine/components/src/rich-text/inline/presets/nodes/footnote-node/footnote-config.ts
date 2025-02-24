@@ -25,6 +25,7 @@ export interface FootNoteNodeConfig {
   customPopupRenderer?: FootNotePopupRenderer;
   interactive?: boolean;
   hidePopup?: boolean;
+  disableHoverEffect?: boolean;
   onPopupClick?: FootNotePopupClickHandler;
 }
 
@@ -33,7 +34,9 @@ export class FootNoteNodeConfigProvider {
   private _customPopupRenderer?: FootNotePopupRenderer;
   private _hidePopup: boolean;
   private _interactive: boolean;
+  private _disableHoverEffect: boolean;
   private _onPopupClick?: FootNotePopupClickHandler;
+
   get customNodeRenderer() {
     return this._customNodeRenderer;
   }
@@ -58,6 +61,10 @@ export class FootNoteNodeConfigProvider {
     return this._interactive;
   }
 
+  get disableHoverEffect() {
+    return this._disableHoverEffect;
+  }
+
   constructor(
     config: FootNoteNodeConfig,
     readonly std: BlockStdScope
@@ -66,6 +73,7 @@ export class FootNoteNodeConfigProvider {
     this._customPopupRenderer = config.customPopupRenderer;
     this._hidePopup = config.hidePopup ?? false;
     this._interactive = config.interactive ?? true;
+    this._disableHoverEffect = config.disableHoverEffect ?? false;
     this._onPopupClick = config.onPopupClick;
   }
 
@@ -83,6 +91,10 @@ export class FootNoteNodeConfigProvider {
 
   setInteractive(interactive: boolean) {
     this._interactive = interactive;
+  }
+
+  setDisableHoverEffect(disableHoverEffect: boolean) {
+    this._disableHoverEffect = disableHoverEffect;
   }
 
   setPopupClick(onPopupClick: FootNotePopupClickHandler) {

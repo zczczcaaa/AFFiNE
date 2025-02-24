@@ -19,6 +19,7 @@ import { shift } from '@floating-ui/dom';
 import { baseTheme } from '@toeverything/theme';
 import { css, html, nothing, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { ref } from 'lit-html/directives/ref.js';
 
 import { HoverController } from '../../../../../hover/controller';
@@ -37,7 +38,7 @@ export class AffineFootnoteNode extends WithDisposable(ShadowlessElement) {
 
     .footnote-content-default {
       display: inline-block;
-      background: ${unsafeCSSVarV2('button/primary')};
+      background: ${unsafeCSSVarV2('block/footnote/numberBgHover')};
       color: ${unsafeCSSVarV2('button/pureWhiteText')};
       width: 14px;
       height: 14px;
@@ -48,6 +49,21 @@ export class AffineFootnoteNode extends WithDisposable(ShadowlessElement) {
       text-align: center;
       text-overflow: ellipsis;
       font-family: ${unsafeCSS(baseTheme.fontSansFamily)};
+      transition: background 0.3s ease-in-out;
+    }
+
+    .footnote-node.hover-effect {
+      .footnote-content-default {
+        color: var(--affine-text-primary-color);
+        background: ${unsafeCSSVarV2('block/footnote/numberBg')};
+      }
+    }
+
+    .footnote-node.hover-effect:hover {
+      .footnote-content-default {
+        color: ${unsafeCSSVarV2('button/pureWhiteText')};
+        background: ${unsafeCSSVarV2('block/footnote/numberBgHover')};
+      }
     }
   `;
 
@@ -65,6 +81,10 @@ export class AffineFootnoteNode extends WithDisposable(ShadowlessElement) {
 
   get hidePopup() {
     return this.config?.hidePopup;
+  }
+
+  get disableHoverEffect() {
+    return this.config?.disableHoverEffect;
   }
 
   get onPopupClick() {
@@ -142,7 +162,7 @@ export class AffineFootnoteNode extends WithDisposable(ShadowlessElement) {
         },
       };
     },
-    { enterDelay: 500 }
+    { enterDelay: 300 }
   );
 
   override render() {
@@ -156,9 +176,14 @@ export class AffineFootnoteNode extends WithDisposable(ShadowlessElement) {
       ? this.customNodeRenderer(footnote, this.std)
       : this._FootNoteDefaultContent(footnote);
 
+    const nodeClasses = classMap({
+      'footnote-node': true,
+      'hover-effect': !this.disableHoverEffect,
+    });
+
     return html`<span
       ${this.hidePopup ? '' : ref(this._whenHover.setReference)}
-      class="footnote-node"
+      class=${nodeClasses}
       >${node}<v-text .str=${ZERO_WIDTH_NON_JOINER}></v-text
     ></span>`;
   }
