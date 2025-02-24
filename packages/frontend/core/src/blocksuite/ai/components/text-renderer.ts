@@ -1,3 +1,4 @@
+import { createReactComponentFromLit } from '@affine/component';
 import {
   BlockStdScope,
   BlockViewIdentifier,
@@ -30,6 +31,7 @@ import { property, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { keyed } from 'lit/directives/keyed.js';
 import { literal } from 'lit/static-html.js';
+import React from 'react';
 
 import { markDownToDoc } from '../../utils';
 import type {
@@ -349,12 +351,6 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
   accessor state: AffineAIPanelState | undefined = undefined;
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'text-renderer': TextRenderer;
-  }
-}
-
 export const createTextRenderer: (
   host: EditorHost,
   options: TextRendererOptions
@@ -368,3 +364,14 @@ export const createTextRenderer: (
     ></text-renderer>`;
   };
 };
+
+export const LitTextRenderer = createReactComponentFromLit({
+  react: React,
+  elementClass: TextRenderer,
+});
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'text-renderer': TextRenderer;
+  }
+}

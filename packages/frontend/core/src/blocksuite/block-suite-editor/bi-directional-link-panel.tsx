@@ -1,9 +1,4 @@
-import {
-  Button,
-  createReactComponentFromLit,
-  Divider,
-  useLitPortalFactory,
-} from '@affine/component';
+import { Button, Divider, useLitPortalFactory } from '@affine/component';
 import { DocService } from '@affine/core/modules/doc';
 import {
   type Backlink,
@@ -28,7 +23,7 @@ import {
   useLiveData,
   useServices,
 } from '@toeverything/infra';
-import React, {
+import {
   Fragment,
   type ReactNode,
   useCallback,
@@ -40,18 +35,13 @@ import {
   AffinePageReference,
   AffineSharedPageReference,
 } from '../../components/affine/reference-link';
-import { TextRenderer } from '../ai/components/text-renderer';
-import * as styles from './bi-directional-link-panel.css';
+import { LitTextRenderer } from '../ai/components/text-renderer';
 import {
   patchReferenceRenderer,
   type ReferenceReactRenderer,
-} from './specs/custom/spec-patchers';
+} from '../extensions/reference-renderer';
+import * as styles from './bi-directional-link-panel.css';
 import { createPageModeSpecs } from './specs/page';
-
-const BlocksuiteTextRenderer = createReactComponentFromLit({
-  react: React,
-  elementClass: TextRenderer,
-});
 
 const PREFIX = 'bi-directional-link-panel-collapse:';
 
@@ -288,7 +278,7 @@ export const BacklinkGroups = () => {
                       />
                     </>
                   ) : (
-                    <BlocksuiteTextRenderer
+                    <LitTextRenderer
                       className={styles.linkPreviewRenderer}
                       answer={link.markdownPreview}
                       schema={getAFFiNEWorkspaceSchema()}

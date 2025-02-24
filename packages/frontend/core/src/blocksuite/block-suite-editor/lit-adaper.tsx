@@ -1,9 +1,11 @@
+import { useConfirmModal, useLitPortalFactory } from '@affine/component';
 import {
-  createReactComponentFromLit,
-  useConfirmModal,
-  useLitPortalFactory,
-} from '@affine/component';
-import { EdgelessEditor, PageEditor } from '@affine/core/blocksuite/editors';
+  type EdgelessEditor,
+  LitDocEditor,
+  LitDocTitle,
+  LitEdgelessEditor,
+  type PageEditor,
+} from '@affine/core/blocksuite/editors';
 import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
 import { DocService, DocsService } from '@affine/core/modules/doc';
 import type {
@@ -18,16 +20,7 @@ import { toURLSearchParams } from '@affine/core/modules/navigation';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import track from '@affine/track';
-import {
-  codeToolbarWidget,
-  type DocMode,
-  DocTitle,
-  embedCardToolbarWidget,
-  formatBarWidget,
-  imageToolbarWidget,
-  slashMenuWidget,
-  surfaceRefToolbarWidget,
-} from '@blocksuite/affine/blocks';
+import type { DocMode, DocTitle } from '@blocksuite/affine/blocks';
 import type { Store } from '@blocksuite/affine/store';
 import {
   useFramework,
@@ -35,7 +28,8 @@ import {
   useService,
   useServices,
 } from '@toeverything/infra';
-import React, {
+import type React from 'react';
+import {
   forwardRef,
   Fragment,
   useCallback,
@@ -52,45 +46,29 @@ import {
   type DefaultOpenProperty,
   DocPropertiesTable,
 } from '../../components/doc-properties';
+import { patchForAttachmentEmbedViews } from '../extensions/attachment-embed-view';
+import { patchDocModeService } from '../extensions/doc-mode-service';
+import { patchDocUrlExtensions } from '../extensions/doc-url';
+import { EdgelessClipboardWatcher } from '../extensions/edgeless-clipboard';
+import { patchForClipboardInElectron } from '../extensions/electron-clipboard';
+import { enableMobileExtension } from '../extensions/entry/enable-mobile';
+import { patchForEdgelessNoteConfig } from '../extensions/note-config';
+import { patchNotificationService } from '../extensions/notification-service';
+import { patchOpenDocExtension } from '../extensions/open-doc';
+import { patchPeekViewService } from '../extensions/peek-view-service';
+import { patchQuickSearchService } from '../extensions/quick-search-service';
+import {
+  patchReferenceRenderer,
+  type ReferenceReactRenderer,
+} from '../extensions/reference-renderer';
+import { patchSideBarService } from '../extensions/side-bar-service';
 import { BiDirectionalLinkPanel } from './bi-directional-link-panel';
 import { BlocksuiteEditorJournalDocTitle } from './journal-doc-title';
-import { extendEdgelessPreviewSpec } from './specs/custom/root-block';
-import {
-  patchDocModeService,
-  patchEdgelessClipboard,
-  patchForAttachmentEmbedViews,
-  patchForClipboardInElectron,
-  patchForEdgelessNoteConfig,
-  patchForMobile,
-  patchGenerateDocUrlExtension,
-  patchNotificationService,
-  patchOpenDocExtension,
-  patchParseDocUrlExtension,
-  patchPeekViewService,
-  patchQuickSearchService,
-  patchReferenceRenderer,
-  patchSideBarService,
-  type ReferenceReactRenderer,
-} from './specs/custom/spec-patchers';
 import { createEdgelessModeSpecs } from './specs/edgeless';
 import { createPageModeSpecs } from './specs/page';
+import { extendEdgelessPreviewSpec } from './specs/preview';
 import { StarterBar } from './starter-bar';
 import * as styles from './styles.css';
-
-const adapted = {
-  DocEditor: createReactComponentFromLit({
-    react: React,
-    elementClass: PageEditor,
-  }),
-  DocTitle: createReactComponentFromLit({
-    react: React,
-    elementClass: DocTitle,
-  }),
-  EdgelessEditor: createReactComponentFromLit({
-    react: React,
-    elementClass: EdgelessEditor,
-  }),
-};
 
 interface BlocksuiteEditorProps {
   page: Store;
@@ -165,9 +143,8 @@ const usePatchSpecs = (mode: DocMode) => {
         patchNotificationService(confirmModal),
         patchPeekViewService(peekViewService),
         patchOpenDocExtension(),
-        patchEdgelessClipboard(),
-        patchParseDocUrlExtension(framework),
-        patchGenerateDocUrlExtension(framework),
+        EdgelessClipboardWatcher,
+        patchDocUrlExtensions(framework),
         patchQuickSearchService(framework),
         patchSideBarService(framework),
         patchDocModeService(docService, docsService, editorService),
@@ -178,13 +155,7 @@ const usePatchSpecs = (mode: DocMode) => {
       builder.extend([patchForAttachmentEmbedViews(reactToLit)]);
     }
     if (BUILD_CONFIG.isMobileEdition) {
-      builder.omit(formatBarWidget);
-      builder.omit(embedCardToolbarWidget);
-      builder.omit(slashMenuWidget);
-      builder.omit(codeToolbarWidget);
-      builder.omit(imageToolbarWidget);
-      builder.omit(surfaceRefToolbarWidget);
-      builder.extend([patchForMobile()].flat());
+      enableMobileExtension(builder);
     }
     if (BUILD_CONFIG.isElectron) {
       builder.extend([patchForClipboardInElectron(framework)].flat());
@@ -319,7 +290,7 @@ export const BlocksuiteDocEditor = forwardRef<
     <>
       <div className={styles.affineDocViewport}>
         {!isJournal ? (
-          <adapted.DocTitle doc={page} ref={onTitleRef} />
+          <LitDocTitle doc={page} ref={onTitleRef} />
         ) : (
           <BlocksuiteEditorJournalDocTitle page={page} />
         )}
@@ -335,7 +306,7 @@ export const BlocksuiteDocEditor = forwardRef<
             />
           </div>
         ) : null}
-        <adapted.DocEditor
+        <LitDocEditor
           className={styles.docContainer}
           ref={onDocRef}
           doc={page}
@@ -391,7 +362,7 @@ export const BlocksuiteEdgelessEditor = forwardRef<
 
   return (
     <div className={styles.affineEdgelessDocViewport}>
-      <adapted.EdgelessEditor ref={onDocRef} doc={page} specs={specs} />
+      <LitEdgelessEditor ref={onDocRef} doc={page} specs={specs} />
       {portals}
     </div>
   );

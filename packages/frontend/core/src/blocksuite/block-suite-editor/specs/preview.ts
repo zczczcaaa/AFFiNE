@@ -20,9 +20,10 @@ import type { ExtensionType } from '@blocksuite/affine/store';
 import type { FrameworkProvider } from '@toeverything/infra';
 import type { Observable } from 'rxjs';
 
-import { buildDocDisplayMetaExtension } from './custom/root-block';
-import { patchPeekViewService } from './custom/spec-patchers';
-import { getFontConfigExtension } from './font-extension';
+import { buildDocDisplayMetaExtension } from '../../extensions/display-meta';
+import { getFontConfigExtension } from '../../extensions/font-config';
+import { patchPeekViewService } from '../../extensions/peek-view-service';
+import { getThemeExtension } from '../../extensions/theme';
 
 const CustomSpecs: ExtensionType[] = [
   AIChatBlockSpec,
@@ -111,3 +112,19 @@ export function createPageModePreviewSpecs(
   ]);
   return pagePreviewSpec;
 }
+
+export const extendEdgelessPreviewSpec = (function () {
+  let _extension: ExtensionType;
+  let _framework: FrameworkProvider;
+  return function (framework: FrameworkProvider) {
+    if (framework === _framework && _extension) {
+      return _extension;
+    } else {
+      _extension && SpecProvider._.omitSpec('preview:edgeless', _extension);
+      _extension = getThemeExtension(framework);
+      _framework = framework;
+      SpecProvider._.extendSpec('preview:edgeless', [_extension]);
+      return _extension;
+    }
+  };
+})();
