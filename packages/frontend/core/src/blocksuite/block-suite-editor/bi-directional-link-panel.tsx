@@ -36,12 +36,12 @@ import {
   AffineSharedPageReference,
 } from '../../components/affine/reference-link';
 import { LitTextRenderer } from '../ai/components/text-renderer';
+import { enableEditorExtension } from '../extensions/entry/enable-editor';
 import {
   patchReferenceRenderer,
   type ReferenceReactRenderer,
 } from '../extensions/reference-renderer';
 import * as styles from './bi-directional-link-panel.css';
-import { createPageModeSpecs } from './specs/page';
 
 const PREFIX = 'bi-directional-link-panel-collapse:';
 
@@ -144,7 +144,7 @@ const usePreviewExtensions = () => {
   }, [workspaceService]);
 
   const extensions = useMemo(() => {
-    const specs = createPageModeSpecs(framework);
+    const specs = enableEditorExtension(framework, 'page');
     specs.extend([patchReferenceRenderer(reactToLit, referenceRenderer)]);
     return specs.value;
   }, [reactToLit, referenceRenderer, framework]);

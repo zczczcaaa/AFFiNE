@@ -1,4 +1,3 @@
-import { AIChatBlockSpec } from '@affine/core/blocksuite/ai/blocks';
 import { PeekViewService } from '@affine/core/modules/peek-view/services/peek-view';
 import { AppThemeService } from '@affine/core/modules/theme';
 import {
@@ -9,8 +8,8 @@ import {
 import {
   ColorScheme,
   createSignalFromObservable,
+  FootNoteNodeConfigExtension,
   type Signal,
-  type SpecBuilder,
   SpecProvider,
   type ThemeExtension,
   ThemeExtensionIdentifier,
@@ -20,30 +19,13 @@ import type { ExtensionType } from '@blocksuite/affine/store';
 import type { FrameworkProvider } from '@toeverything/infra';
 import type { Observable } from 'rxjs';
 
-import { buildDocDisplayMetaExtension } from '../../extensions/display-meta';
-import { getFontConfigExtension } from '../../extensions/font-config';
-import { patchPeekViewService } from '../../extensions/peek-view-service';
-import { getThemeExtension } from '../../extensions/theme';
+import { AIChatBlockSpec } from '../../ai/blocks';
+import { buildDocDisplayMetaExtension } from '../display-meta';
+import { getFontConfigExtension } from '../font-config';
+import { patchPeekViewService } from '../peek-view-service';
+import { getThemeExtension } from '../theme';
 
-const CustomSpecs: ExtensionType[] = [
-  AIChatBlockSpec,
-  getFontConfigExtension(),
-].flat();
-
-function patchPreviewSpec(
-  id: 'preview:edgeless' | 'preview:page',
-  specs: ExtensionType[]
-) {
-  const specProvider = SpecProvider._;
-  specProvider.extendSpec(id, specs);
-}
-
-export function effects() {
-  // Patch edgeless preview spec for blocksuite surface-ref and embed-synced-doc
-  patchPreviewSpec('preview:edgeless', CustomSpecs);
-}
-
-export function getPagePreviewThemeExtension(framework: FrameworkProvider) {
+function getPagePreviewThemeExtension(framework: FrameworkProvider) {
   class AffinePagePreviewThemeExtension
     extends LifeCycleWatcher
     implements ThemeExtension
@@ -98,33 +80,42 @@ export function getPagePreviewThemeExtension(framework: FrameworkProvider) {
   return AffinePagePreviewThemeExtension;
 }
 
-export function createPageModePreviewSpecs(
-  framework: FrameworkProvider
-): SpecBuilder {
+// Disable hover effect for footnote node in center peek preview mode
+const footnodeConfig = FootNoteNodeConfigExtension({
+  disableHoverEffect: true,
+});
+
+const fontConfig = getFontConfigExtension();
+
+let _framework: FrameworkProvider;
+let _previewExtensions: ExtensionType[];
+export function enablePreviewExtension(framework: FrameworkProvider): void {
+  if (_framework === framework && _previewExtensions) {
+    return;
+  }
+
   const specProvider = SpecProvider._;
-  const pagePreviewSpec = specProvider.getSpec('preview:page');
-  // Enable theme extension, doc display meta extension and peek view service
+
+  if (_previewExtensions) {
+    _previewExtensions.forEach(extension => {
+      specProvider.omitSpec('preview:page', extension);
+      specProvider.omitSpec('preview:edgeless', extension);
+    });
+  }
+
+  _framework = framework;
   const peekViewService = framework.get(PeekViewService);
-  pagePreviewSpec.extend([
+
+  _previewExtensions = [
+    ...AIChatBlockSpec,
+    footnodeConfig,
+    fontConfig,
+    getThemeExtension(framework),
     getPagePreviewThemeExtension(framework),
     buildDocDisplayMetaExtension(framework),
     patchPeekViewService(peekViewService),
-  ]);
-  return pagePreviewSpec;
-}
+  ];
 
-export const extendEdgelessPreviewSpec = (function () {
-  let _extension: ExtensionType;
-  let _framework: FrameworkProvider;
-  return function (framework: FrameworkProvider) {
-    if (framework === _framework && _extension) {
-      return _extension;
-    } else {
-      _extension && SpecProvider._.omitSpec('preview:edgeless', _extension);
-      _extension = getThemeExtension(framework);
-      _framework = framework;
-      SpecProvider._.extendSpec('preview:edgeless', [_extension]);
-      return _extension;
-    }
-  };
-})();
+  specProvider.extendSpec('preview:page', _previewExtensions);
+  specProvider.extendSpec('preview:edgeless', _previewExtensions);
+}

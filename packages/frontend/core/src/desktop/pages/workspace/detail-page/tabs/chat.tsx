@@ -1,6 +1,5 @@
 import { ChatPanel } from '@affine/core/blocksuite/ai';
 import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
-import { createPageModePreviewSpecs } from '@affine/core/blocksuite/block-suite-editor/specs/preview';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { DocSearchMenuService } from '@affine/core/modules/doc-search-menu/services';
@@ -8,8 +7,8 @@ import { WorkspaceService } from '@affine/core/modules/workspace';
 import {
   createSignalFromObservable,
   DocModeProvider,
-  FootNoteNodeConfigExtension,
   RefNodeSlotsProvider,
+  SpecProvider,
 } from '@blocksuite/affine/blocks';
 import { useFramework } from '@toeverything/infra';
 import { forwardRef, useEffect, useRef } from 'react';
@@ -20,11 +19,6 @@ export interface SidebarTabProps {
   editor: AffineEditorContainer | null;
   onLoad?: ((component: HTMLElement) => void) | null;
 }
-
-// Disable hover effect for footnote node in chat panel
-const FOOTNOTE_CONFIG = FootNoteNodeConfigExtension({
-  disableHoverEffect: true,
-});
 
 // A wrapper for CopilotPanel
 export const EditorChatPanel = forwardRef(function EditorChatPanel(
@@ -90,8 +84,7 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
           );
         },
       };
-      const previewSpecBuilder = createPageModePreviewSpecs(framework);
-      previewSpecBuilder.extend([FOOTNOTE_CONFIG]);
+      const previewSpecBuilder = SpecProvider._.getSpec('preview:page');
       chatPanelRef.current.previewSpecBuilder = previewSpecBuilder;
     } else {
       chatPanelRef.current.host = editor.host;

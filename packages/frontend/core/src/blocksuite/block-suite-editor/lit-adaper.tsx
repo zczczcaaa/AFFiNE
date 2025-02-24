@@ -51,7 +51,9 @@ import { patchDocModeService } from '../extensions/doc-mode-service';
 import { patchDocUrlExtensions } from '../extensions/doc-url';
 import { EdgelessClipboardWatcher } from '../extensions/edgeless-clipboard';
 import { patchForClipboardInElectron } from '../extensions/electron-clipboard';
+import { enableEditorExtension } from '../extensions/entry/enable-editor';
 import { enableMobileExtension } from '../extensions/entry/enable-mobile';
+import { enablePreviewExtension } from '../extensions/entry/enable-preview';
 import { patchForEdgelessNoteConfig } from '../extensions/note-config';
 import { patchNotificationService } from '../extensions/notification-service';
 import { patchOpenDocExtension } from '../extensions/open-doc';
@@ -64,9 +66,6 @@ import {
 import { patchSideBarService } from '../extensions/side-bar-service';
 import { BiDirectionalLinkPanel } from './bi-directional-link-panel';
 import { BlocksuiteEditorJournalDocTitle } from './journal-doc-title';
-import { createEdgelessModeSpecs } from './specs/edgeless';
-import { createPageModeSpecs } from './specs/page';
-import { extendEdgelessPreviewSpec } from './specs/preview';
 import { StarterBar } from './starter-bar';
 import * as styles from './styles.css';
 
@@ -125,16 +124,13 @@ const usePatchSpecs = (mode: DocMode) => {
   }, [workspaceService]);
 
   useMemo(() => {
-    extendEdgelessPreviewSpec(framework);
+    enablePreviewExtension(framework);
   }, [framework]);
 
   const confirmModal = useConfirmModal();
 
   const patchedSpecs = useMemo(() => {
-    const builder =
-      mode === 'edgeless'
-        ? createEdgelessModeSpecs(framework)
-        : createPageModeSpecs(framework);
+    const builder = enableEditorExtension(framework, mode);
 
     builder.extend(
       [

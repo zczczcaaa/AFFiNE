@@ -1,35 +1,24 @@
 import { Skeleton } from '@affine/component';
 import type { EditorSettingSchema } from '@affine/core/modules/editor-setting';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
-import { AppThemeService } from '@affine/core/modules/theme';
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import {
   BlockServiceIdentifier,
   BlockStdScope,
-  LifeCycleWatcher,
-  StdIdentifier,
 } from '@blocksuite/affine/block-std';
 import {
   GfxControllerIdentifier,
   type GfxPrimitiveElementModel,
 } from '@blocksuite/affine/block-std/gfx';
-import type { ThemeExtension } from '@blocksuite/affine/blocks';
 import {
-  ColorScheme,
-  createSignalFromObservable,
   EdgelessCRUDIdentifier,
   SpecProvider,
-  ThemeExtensionIdentifier,
 } from '@blocksuite/affine/blocks';
-import type { Container } from '@blocksuite/affine/global/di';
 import { Bound } from '@blocksuite/affine/global/utils';
 import type { Block, Store } from '@blocksuite/affine/store';
-import type { Signal } from '@preact/signals-core';
-import type { FrameworkProvider } from '@toeverything/infra';
 import { useFramework } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
 import { useCallback, useEffect, useRef } from 'react';
-import type { Observable } from 'rxjs';
 import { map, pairwise } from 'rxjs';
 
 import {
@@ -91,10 +80,7 @@ export const EdgelessSnapshot = (props: Props) => {
 
     const editorHost = new BlockStdScope({
       store: doc,
-      extensions: [
-        ...SpecProvider._.getSpec('preview:edgeless').value,
-        getThemeExtension(framework),
-      ],
+      extensions: SpecProvider._.getSpec('preview:edgeless').value,
     }).render();
     docRef.current = doc;
     editorHostRef.current?.remove();
@@ -128,7 +114,7 @@ export const EdgelessSnapshot = (props: Props) => {
 
     // append to dom node
     wrapperRef.current.append(editorHost);
-  }, [docName, firstUpdate, framework, updateElements]);
+  }, [docName, firstUpdate, updateElements]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -172,58 +158,3 @@ export const EdgelessSnapshot = (props: Props) => {
     </div>
   );
 };
-
-function getThemeExtension(framework: FrameworkProvider) {
-  class AffineThemeExtension
-    extends LifeCycleWatcher
-    implements ThemeExtension
-  {
-    static override readonly key = 'affine-settings-theme';
-
-    private readonly theme: Signal<ColorScheme>;
-
-    protected readonly disposables: (() => void)[] = [];
-
-    static override setup(di: Container) {
-      super.setup(di);
-      di.override(ThemeExtensionIdentifier, AffineThemeExtension, [
-        StdIdentifier,
-      ]);
-    }
-
-    constructor(std: BlockStdScope) {
-      super(std);
-      const theme$: Observable<ColorScheme> = framework
-        .get(AppThemeService)
-        .appTheme.theme$.map(theme => {
-          return theme === ColorScheme.Dark
-            ? ColorScheme.Dark
-            : ColorScheme.Light;
-        });
-      const { signal, cleanup } = createSignalFromObservable<ColorScheme>(
-        theme$,
-        ColorScheme.Light
-      );
-      this.theme = signal;
-      this.disposables.push(cleanup);
-    }
-
-    getAppTheme() {
-      return this.theme;
-    }
-
-    getEdgelessTheme() {
-      return this.theme;
-    }
-
-    override unmounted() {
-      this.dispose();
-    }
-
-    dispose() {
-      this.disposables.forEach(dispose => dispose());
-    }
-  }
-
-  return AffineThemeExtension;
-}
