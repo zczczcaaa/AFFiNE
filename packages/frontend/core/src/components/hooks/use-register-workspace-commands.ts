@@ -8,13 +8,11 @@ import { I18nService } from '@affine/core/modules/i18n';
 import { UrlService } from '@affine/core/modules/url';
 import { WorkspaceService } from '@affine/core/modules/workspace';
 import { useI18n } from '@affine/i18n';
-import { TextSelection } from '@blocksuite/affine/block-std';
 import { useService, useServiceOptional } from '@toeverything/infra';
 import { useStore } from 'jotai';
 import { useTheme } from 'next-themes';
 import { useEffect } from 'react';
 
-import type { AffineEditorContainer } from '../../blocksuite/block-suite-editor';
 import { usePageHelper } from '../../blocksuite/block-suite-page-list/utils';
 import {
   PreconditionStrategy,
@@ -29,40 +27,19 @@ import {
 } from '../../commands';
 import { EditorSettingService } from '../../modules/editor-setting';
 import { CMDKQuickSearchService } from '../../modules/quicksearch/services/cmdk';
-import { useActiveBlocksuiteEditor } from './use-block-suite-editor';
 import { useNavigateHelper } from './use-navigate-helper';
 
-function hasLinkPopover(editor: AffineEditorContainer | null) {
-  const textSelection = editor?.host?.std.selection.find(TextSelection);
-  if (editor && textSelection && textSelection.from.length > 0) {
-    const formatBar = editor.host?.querySelector('affine-format-bar-widget');
-    if (formatBar) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function registerCMDKCommand(
-  service: CMDKQuickSearchService,
-  editor: AffineEditorContainer | null
-) {
+function registerCMDKCommand(service: CMDKQuickSearchService) {
   return registerAffineCommand({
     id: 'affine:show-quick-search',
     preconditionStrategy: PreconditionStrategy.Never,
     category: 'affine:general',
     keyBinding: {
       binding: '$mod+K',
-      capture: true,
     },
     label: '',
     icon: '',
     run() {
-      // Due to a conflict with the shortcut for creating a link after selecting text in blocksuite,
-      // opening the quick search modal is disabled when link-popup is visitable.
-      if (hasLinkPopover(editor)) {
-        return;
-      }
       service.toggle();
     },
   });
@@ -76,7 +53,6 @@ export function useRegisterWorkspaceCommands() {
   const urlService = useService(UrlService);
   const pageHelper = usePageHelper(currentWorkspace.docCollection);
   const navigationHelper = useNavigateHelper();
-  const [editor] = useActiveBlocksuiteEditor();
   const cmdkQuickSearchService = useService(CMDKQuickSearchService);
   const editorSettingService = useService(EditorSettingService);
   const workspaceDialogService = useService(WorkspaceDialogService);
@@ -88,12 +64,12 @@ export function useRegisterWorkspaceCommands() {
     useServiceOptional(DesktopApiService)?.handler.updater.quitAndInstall;
 
   useEffect(() => {
-    const unsub = registerCMDKCommand(cmdkQuickSearchService, editor);
+    const unsub = registerCMDKCommand(cmdkQuickSearchService);
 
     return () => {
       unsub();
     };
-  }, [cmdkQuickSearchService, editor]);
+  }, [cmdkQuickSearchService]);
 
   // register AffineUpdatesCommands
   useEffect(() => {

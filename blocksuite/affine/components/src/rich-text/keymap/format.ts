@@ -20,8 +20,14 @@ export const textFormatKeymap = (std: BlockStdScope) =>
             const textSelection = selection.find(TextSelection);
             if (!textSelection) return;
 
+            const allowed = config.textChecker?.(std.host) ?? true;
+            if (!allowed) return;
+
+            const event = ctx.get('keyboardState').raw;
+            event.stopPropagation();
+            event.preventDefault();
+
             config.action(std.host);
-            ctx.get('keyboardState').raw.preventDefault();
             return true;
           },
         };

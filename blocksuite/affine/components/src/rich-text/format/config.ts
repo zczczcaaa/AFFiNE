@@ -1,4 +1,4 @@
-import type { EditorHost } from '@blocksuite/block-std';
+import { type EditorHost, TextSelection } from '@blocksuite/block-std';
 import type { TemplateResult } from 'lit';
 
 import {
@@ -26,6 +26,7 @@ export interface TextFormatConfig {
   hotkey?: string;
   activeWhen: (host: EditorHost) => boolean;
   action: (host: EditorHost) => void;
+  textChecker?: (host: EditorHost) => boolean;
 }
 
 export const textFormatConfigs: TextFormatConfig[] = [
@@ -123,6 +124,15 @@ export const textFormatConfigs: TextFormatConfig[] = [
     },
     action: host => {
       host.std.command.chain().pipe(toggleLink).run();
+    },
+    // should check text length
+    textChecker: host => {
+      const textSelection = host.std.selection.find(TextSelection);
+      if (!textSelection || textSelection.isCollapsed()) return false;
+
+      return Boolean(
+        textSelection.from.length + (textSelection.to?.length ?? 0)
+      );
     },
   },
 ];
