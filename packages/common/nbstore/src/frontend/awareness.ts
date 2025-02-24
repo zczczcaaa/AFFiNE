@@ -61,6 +61,11 @@ export class AwarenessFrontend {
       handleSyncCollect
     );
 
+    awareness.once('destroy', () => {
+      awareness.off('update', handleAwarenessUpdate);
+      unsubscribe();
+    });
+
     return () => {
       awareness.off('update', handleAwarenessUpdate);
       unsubscribe();
