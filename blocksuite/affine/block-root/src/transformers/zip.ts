@@ -29,7 +29,10 @@ async function exportDocs(collection: Workspace, docs: Store[]) {
     snapshots
       .filter((snapshot): snapshot is DocSnapshot => !!snapshot)
       .map(async snapshot => {
-        const snapshotName = `${snapshot.meta.title || 'untitled'}.snapshot.json`;
+        // Use the title and id as the snapshot file name
+        const title = snapshot.meta.title || 'untitled';
+        const id = snapshot.meta.id;
+        const snapshotName = `${title}-${id}.snapshot.json`;
         await zip.file(snapshotName, JSON.stringify(snapshot, null, 2));
       })
   );
@@ -63,6 +66,7 @@ async function exportDocs(collection: Workspace, docs: Store[]) {
   }
 
   const downloadBlob = await zip.generate();
+  // Use the collection id as the zip file name
   return download(downloadBlob, `${collection.id}.bs.zip`);
 }
 
