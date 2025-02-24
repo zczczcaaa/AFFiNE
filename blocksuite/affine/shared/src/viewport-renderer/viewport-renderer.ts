@@ -66,13 +66,12 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
       );
     });
 
-    const debounceOptions = { leading: false, trailing: true };
     const debouncedRefresh = debounce(
       () => {
         this.refresh().catch(console.error);
       },
       1000, // During this period, fallback to DOM
-      debounceOptions
+      { leading: false, trailing: true }
     );
     this.disposables.add(
       this.std.store.slots.blockUpdated.on(() => {
@@ -97,11 +96,12 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     return this.std.get(GfxControllerIdentifier).viewport;
   }
 
-  async refresh(force = false) {
-    if (this.state === 'paused' && !force) return;
+  async refresh() {
+    if (this.state === 'paused') return;
 
+    this.clearCanvas();
     if (this.viewport.zoom > zoomThreshold) {
-      this.clearCanvas();
+      return;
     } else if (this.canUseBitmapCache()) {
       this.drawCachedBitmap(this.layoutCache!);
     } else {
@@ -115,18 +115,14 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   invalidate() {
-    this.clearCache();
-    this.clearCanvas();
+    this.layoutCache = null;
+    this.clearTile();
+    this.clearCanvas(); // Should clear immediately after content updates
   }
 
   private updateLayoutCache() {
     const layout = getViewportLayout(this.std.host, this.viewport);
     this.layoutCache = layout;
-  }
-
-  private clearCache() {
-    this.layoutCache = null;
-    this.clearTile();
   }
 
   private clearTile() {
@@ -154,17 +150,13 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
 
       this.worker.onmessage = (e: MessageEvent) => {
         if (e.data.type === 'bitmapPainted') {
-          this.handlePaintedBitmap(e.data.bitmap, layout, resolve);
+          this.handlePaintedBitmap(e.data.bitmap, resolve);
         }
       };
     });
   }
 
-  private handlePaintedBitmap(
-    bitmap: ImageBitmap,
-    layout: ViewportLayout,
-    resolve: () => void
-  ) {
+  private handlePaintedBitmap(bitmap: ImageBitmap, resolve: () => void) {
     if (this.tile) {
       this.tile.bitmap.close();
     }
@@ -172,7 +164,6 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
       bitmap,
       zoom: this.viewport.zoom,
     };
-    this.drawCachedBitmap(layout);
     resolve();
   }
 
