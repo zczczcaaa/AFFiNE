@@ -231,7 +231,7 @@ export const BlocksuiteDocEditor = forwardRef<
         if (typeof externalTitleRef === 'function') {
           externalTitleRef(el);
         } else {
-          (externalTitleRef as any).current = el;
+          externalTitleRef.current = el;
         }
       }
     },

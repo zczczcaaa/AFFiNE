@@ -23,7 +23,7 @@ export const LitEdgelessEditor = createReactComponentFromLit({
   elementClass: EdgelessEditor,
 });
 
-export function effects() {
+export function editorEffects() {
   customElements.define('page-editor', PageEditor);
   customElements.define('edgeless-editor', EdgelessEditor);
 }
