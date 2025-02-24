@@ -63,5 +63,6 @@
   "devDependencies": {
     "@vanilla-extract/vite-plugin": "^5.0.0",
     "vitest": "3.0.6"
-  }
+  },
+  "version": "0.20.0"
 }
