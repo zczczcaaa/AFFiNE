@@ -6,19 +6,19 @@ import {
   PageViewportServiceExtension,
   ThemeService,
 } from '@blocksuite/affine-shared/services';
+import { dragHandleWidget } from '@blocksuite/affine-widget-drag-handle';
+import { docRemoteSelectionWidget } from '@blocksuite/affine-widget-remote-selection';
+import { scrollAnchoringWidget } from '@blocksuite/affine-widget-scroll-anchoring';
 import { FlavourExtension } from '@blocksuite/block-std';
 import type { ExtensionType } from '@blocksuite/store';
 
 import { RootBlockAdapterExtensions } from '../adapters/extension';
 import {
-  docRemoteSelectionWidget,
-  dragHandleWidget,
   embedCardToolbarWidget,
   formatBarWidget,
   innerModalWidget,
   linkedDocWidget,
   modalWidget,
-  scrollAnchoringWidget,
   slashMenuWidget,
   viewportOverlayWidget,
 } from './widgets';

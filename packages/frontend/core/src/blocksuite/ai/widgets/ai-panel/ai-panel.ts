@@ -1,4 +1,7 @@
-import { WidgetComponent } from '@blocksuite/affine/block-std';
+import {
+  WidgetComponent,
+  WidgetViewExtension,
+} from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import {
   AFFINE_FORMAT_BAR_WIDGET,
@@ -25,6 +28,7 @@ import {
 import { css, html, nothing, type PropertyValues } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
+import { literal, unsafeStatic } from 'lit/static-html.js';
 
 import type { AIError } from '../../components/ai-item/types.js';
 import type { AIPanelGenerating } from './components/index.js';
@@ -543,3 +547,9 @@ export class AffineAIPanelWidget extends WidgetComponent {
   @property()
   accessor state: AffineAIPanelState = 'hidden';
 }
+
+export const aiPanelWidget = WidgetViewExtension(
+  'affine:page',
+  AFFINE_AI_PANEL_WIDGET,
+  literal`${unsafeStatic(AFFINE_AI_PANEL_WIDGET)}`
+);

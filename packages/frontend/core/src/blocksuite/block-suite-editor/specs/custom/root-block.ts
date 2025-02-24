@@ -1,9 +1,3 @@
-import {
-  AICodeBlockSpec,
-  AIImageBlockSpec,
-  AIParagraphBlockSpec,
-} from '@affine/core/blocksuite/ai';
-import { AIChatBlockSpec } from '@affine/core/blocksuite/ai/blocks';
 import { DocService, DocsService } from '@affine/core/modules/doc';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
@@ -19,14 +13,11 @@ import type {
   ThemeExtension,
 } from '@blocksuite/affine/blocks';
 import {
-  CodeBlockSpec,
   ColorScheme,
   createSignalFromObservable,
   DatabaseConfigExtension,
   DocDisplayMetaProvider,
   EditorSettingExtension,
-  ImageBlockSpec,
-  ParagraphBlockSpec,
   referenceToNode,
   RootBlockConfigExtension,
   SpecProvider,
@@ -266,11 +257,4 @@ export function enableAffineExtension(
       buildDocDisplayMetaExtension(framework),
     ].flat()
   );
-}
-
-export function enableAIExtension(specBuilder: SpecBuilder): void {
-  specBuilder.replace(CodeBlockSpec, AICodeBlockSpec);
-  specBuilder.replace(ImageBlockSpec, AIImageBlockSpec);
-  specBuilder.replace(ParagraphBlockSpec, AIParagraphBlockSpec);
-  specBuilder.extend(AIChatBlockSpec);
 }

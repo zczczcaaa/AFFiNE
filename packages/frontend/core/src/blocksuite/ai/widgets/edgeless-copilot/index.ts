@@ -1,4 +1,7 @@
-import { WidgetComponent } from '@blocksuite/affine/block-std';
+import {
+  WidgetComponent,
+  WidgetViewExtension,
+} from '@blocksuite/affine/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
 import type { RootBlockModel } from '@blocksuite/affine/blocks';
 import {
@@ -22,6 +25,7 @@ import { effect } from '@preact/signals-core';
 import { css, html, nothing } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { literal, unsafeStatic } from 'lit/static-html.js';
 
 import type { AIItemGroupConfig } from '../../components/ai-item/types.js';
 import {
@@ -289,6 +293,12 @@ export class EdgelessCopilotWidget extends WidgetComponent<RootBlockModel> {
   @query('.copilot-selection-rect')
   accessor selectionElem!: HTMLDivElement;
 }
+
+export const edgelessCopilotWidget = WidgetViewExtension(
+  'affine:page',
+  AFFINE_EDGELESS_COPILOT_WIDGET,
+  literal`${unsafeStatic(AFFINE_EDGELESS_COPILOT_WIDGET)}`
+);
 
 declare global {
   interface HTMLElementTagNameMap {

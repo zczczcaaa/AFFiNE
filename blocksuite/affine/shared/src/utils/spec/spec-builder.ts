@@ -13,10 +13,20 @@ export class SpecBuilder {
 
   extend(extensions: ExtensionType[]) {
     this._value = [...this._value, ...extensions];
+    return this;
   }
 
   omit(target: ExtensionType) {
     this._value = this._value.filter(extension => extension !== target);
+    return this;
+  }
+
+  hasAll(target: ExtensionType[]) {
+    return target.every(t => this._value.includes(t));
+  }
+
+  hasOneOf(target: ExtensionType[]) {
+    return target.some(t => this._value.includes(t));
   }
 
   replace(target: ExtensionType[], newExtension: ExtensionType[]) {
@@ -24,5 +34,6 @@ export class SpecBuilder {
       ...this._value.filter(extension => !target.includes(extension)),
       ...newExtension,
     ];
+    return this;
   }
 }

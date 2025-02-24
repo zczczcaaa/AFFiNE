@@ -1,6 +1,6 @@
-import { AFFINE_EDGELESS_AUTO_CONNECT_WIDGET } from '@blocksuite/affine-widget-edgeless-auto-connect';
-import { AFFINE_FRAME_TITLE_WIDGET } from '@blocksuite/affine-widget-frame-title';
-import { AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET } from '@blocksuite/affine-widget-remote-selection';
+import { autoConnectWidget } from '@blocksuite/affine-widget-edgeless-auto-connect';
+import { frameTitleWidget } from '@blocksuite/affine-widget-frame-title';
+import { edgelessRemoteSelectionWidget } from '@blocksuite/affine-widget-remote-selection';
 import {
   BlockServiceWatcher,
   BlockViewExtension,
@@ -20,30 +20,15 @@ import { EDGELESS_SELECTED_RECT_WIDGET } from './components/rects/edgeless-selec
 import { EDGELESS_TOOLBAR_WIDGET } from './components/toolbar/edgeless-toolbar.js';
 import { EdgelessRootService } from './edgeless-root-service.js';
 
-export const edgelessRemoteSelectionWidget = WidgetViewExtension(
-  'affine:page',
-  AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET,
-  literal`${unsafeStatic(AFFINE_EDGELESS_REMOTE_SELECTION_WIDGET)}`
-);
 export const edgelessZoomToolbarWidget = WidgetViewExtension(
   'affine:page',
   AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET,
   literal`${unsafeStatic(AFFINE_EDGELESS_ZOOM_TOOLBAR_WIDGET)}`
 );
-export const frameTitleWidget = WidgetViewExtension(
-  'affine:page',
-  AFFINE_FRAME_TITLE_WIDGET,
-  literal`${unsafeStatic(AFFINE_FRAME_TITLE_WIDGET)}`
-);
 export const elementToolbarWidget = WidgetViewExtension(
   'affine:page',
   EDGELESS_ELEMENT_TOOLBAR_WIDGET,
   literal`${unsafeStatic(EDGELESS_ELEMENT_TOOLBAR_WIDGET)}`
-);
-export const autoConnectWidget = WidgetViewExtension(
-  'affine:page',
-  AFFINE_EDGELESS_AUTO_CONNECT_WIDGET,
-  literal`${unsafeStatic(AFFINE_EDGELESS_AUTO_CONNECT_WIDGET)}`
 );
 export const edgelessDraggingAreaWidget = WidgetViewExtension(
   'affine:page',

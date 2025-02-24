@@ -13,7 +13,7 @@ import {
 } from '@blocksuite/affine-model';
 import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import { matchModels, stopPropagation } from '@blocksuite/affine-shared/utils';
-import { WidgetComponent } from '@blocksuite/block-std';
+import { WidgetComponent, WidgetViewExtension } from '@blocksuite/block-std';
 import {
   type GfxController,
   GfxControllerIdentifier,
@@ -28,6 +28,7 @@ import { css, html, nothing, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { literal, unsafeStatic } from 'lit/static-html.js';
 
 const PAGE_VISIBLE_INDEX_LABEL_WIDTH = 44;
 const PAGE_VISIBLE_INDEX_LABEL_HEIGHT = 24;
@@ -612,6 +613,12 @@ export class EdgelessAutoConnectWidget extends WidgetComponent<RootBlockModel> {
   @state()
   private accessor _show = false;
 }
+
+export const autoConnectWidget = WidgetViewExtension(
+  'affine:page',
+  AFFINE_EDGELESS_AUTO_CONNECT_WIDGET,
+  literal`${unsafeStatic(AFFINE_EDGELESS_AUTO_CONNECT_WIDGET)}`
+);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,7 +1,8 @@
 import { FrameBlockModel, type RootBlockModel } from '@blocksuite/affine-model';
-import { WidgetComponent } from '@blocksuite/block-std';
+import { WidgetComponent, WidgetViewExtension } from '@blocksuite/block-std';
 import { html } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
+import { literal, unsafeStatic } from 'lit/static-html.js';
 
 import type { AffineFrameTitle } from './frame-title.js';
 
@@ -36,3 +37,9 @@ export class AffineFrameTitleWidget extends WidgetComponent<RootBlockModel> {
 }
 
 export * from './styles.js';
+
+export const frameTitleWidget = WidgetViewExtension(
+  'affine:page',
+  AFFINE_FRAME_TITLE_WIDGET,
+  literal`${unsafeStatic(AFFINE_FRAME_TITLE_WIDGET)}`
+);
