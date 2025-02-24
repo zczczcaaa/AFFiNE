@@ -1054,6 +1054,7 @@ export class DragEventWatcher {
 
         if (
           block.flavour === 'affine:attachment' ||
+          block.flavour === 'affine:bookmark' ||
           block.flavour.startsWith('affine:embed-')
         ) {
           const style = 'vertical' as EmbedCardStyle;
@@ -1135,6 +1136,7 @@ export class DragEventWatcher {
                 block.id === content[idx].id &&
                 (block.flavour === 'affine:image' ||
                   block.flavour === 'affine:attachment' ||
+                  block.flavour === 'affine:bookmark' ||
                   block.flavour.startsWith('affine:embed-'))
               ) {
                 store.updateBlock(block as BlockModel, {
