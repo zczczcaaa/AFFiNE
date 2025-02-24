@@ -134,12 +134,13 @@ export const SignInStep = ({
           });
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
 
       // TODO(@eyhn): better error handling
       notify.error({
-        title: 'Failed to send email. Please try again.',
+        title: 'Failed to sign in',
+        message: err.message,
       });
     }
 

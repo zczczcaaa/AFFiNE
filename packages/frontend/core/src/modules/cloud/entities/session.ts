@@ -12,6 +12,7 @@ import { isEqual } from 'lodash-es';
 import { EMPTY, mergeMap } from 'rxjs';
 
 import { validateAndReduceImage } from '../../../utils/reduce-image';
+import { BackendError } from '../error';
 import type { AccountProfile, AuthStore } from '../stores/auth';
 
 export interface AuthSessionInfo {
@@ -94,22 +95,32 @@ export class AuthSession extends Entity {
   );
 
   private async getSession(): Promise<AuthSessionInfo | null> {
-    const session = await this.store.fetchSession();
+    try {
+      const session = await this.store.fetchSession();
 
-    if (session?.user) {
-      const account = {
-        id: session.user.id,
-        email: session.user.email,
-        label: session.user.name,
-        avatar: session.user.avatarUrl,
-        info: session.user,
-      };
-      const result = {
-        account,
-      };
-      return result;
-    } else {
-      return null;
+      if (session?.user) {
+        const account = {
+          id: session.user.id,
+          email: session.user.email,
+          label: session.user.name,
+          avatar: session.user.avatarUrl,
+          info: session.user,
+        };
+        const result = {
+          account,
+        };
+        return result;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      if (
+        e instanceof BackendError &&
+        e.originError.name === 'UNSUPPORTED_CLIENT_VERSION'
+      ) {
+        return null;
+      }
+      throw e;
     }
   }
 

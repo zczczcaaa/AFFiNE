@@ -299,6 +299,7 @@ export class AuthController {
     res.send({ id: user.id });
   }
 
+  @UseNamedGuard('version')
   @Throttle('default', { limit: 1200 })
   @Public()
   @Get('/session')
