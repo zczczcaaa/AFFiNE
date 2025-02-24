@@ -231,6 +231,7 @@ class StoreConsumer {
           const undo = this.docSync.addPriority(docId, priority);
           return () => undo();
         }),
+      'docSync.resetSync': () => this.docSync.resetSync(),
       'blobSync.downloadBlob': key => this.blobSync.downloadBlob(key),
       'blobSync.uploadBlob': blob => this.blobSync.uploadBlob(blob),
       'blobSync.fullSync': () =>

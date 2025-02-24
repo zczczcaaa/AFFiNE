@@ -81,6 +81,7 @@ interface GroupedWorkerOps {
     state: [void, DocSyncState];
     docState: [string, DocSyncDocState];
     addPriority: [{ docId: string; priority: number }, boolean];
+    resetSync: [void, void];
   };
 
   blobSync: {

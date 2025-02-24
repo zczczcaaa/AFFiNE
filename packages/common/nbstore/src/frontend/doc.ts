@@ -534,4 +534,8 @@ export class DocFrontend {
       sub?.unsubscribe();
     });
   }
+
+  async resetSync() {
+    await this.sync.resetSync();
+  }
 }

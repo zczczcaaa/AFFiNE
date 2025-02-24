@@ -222,6 +222,10 @@ class WorkerDocSync implements DocSync {
       subscription.unsubscribe();
     };
   }
+
+  resetSync(): Promise<void> {
+    return this.client.call('docSync.resetSync');
+  }
 }
 
 class WorkerBlobSync implements BlobSync {

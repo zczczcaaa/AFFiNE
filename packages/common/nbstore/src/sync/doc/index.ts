@@ -27,6 +27,7 @@ export interface DocSync {
   readonly state$: Observable<DocSyncState>;
   docState$(docId: string): Observable<DocSyncDocState>;
   addPriority(id: string, priority: number): () => void;
+  resetSync(): Promise<void>;
 }
 
 export class DocSyncImpl implements DocSync {
@@ -126,5 +127,14 @@ export class DocSyncImpl implements DocSync {
   addPriority(id: string, priority: number) {
     const undo = this.peers.map(peer => peer.addPriority(id, priority));
     return () => undo.forEach(fn => fn());
+  }
+
+  async resetSync() {
+    const running = this.abort !== null;
+    this.stop();
+    await this.sync.clearClocks();
+    if (running) {
+      this.start();
+    }
   }
 }
