@@ -103,7 +103,7 @@ export const Component = () => {
   return (
     <>
       <AllDocSidebarTabs />
-      <TagDetail tagId={params.tagId} />;
+      <TagDetail tagId={params.tagId} />
     </>
   );
 };
