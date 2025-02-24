@@ -290,12 +290,27 @@ export function getSnapshotRect(snapshot: SliceSnapshot): Bound | null {
     if (block.flavour === 'affine:surface') {
       if (block.props.elements) {
         Object.values(
-          block.props.elements as Record<string, { xywh: SerializedXYWH }>
+          block.props.elements as Record<
+            string,
+            { type: string; xywh: SerializedXYWH }
+          >
         ).forEach(elem => {
           if (elem.xywh) {
             bound = bound
               ? bound.unite(Bound.deserialize(elem.xywh))
               : Bound.deserialize(elem.xywh);
+          }
+
+          if (elem.type === 'connector') {
+            let connectorBound: Bound | undefined;
+
+            if (elem.xywh) {
+              connectorBound = Bound.deserialize(elem.xywh);
+            }
+
+            if (connectorBound) {
+              bound = bound ? bound.unite(connectorBound) : connectorBound;
+            }
           }
         });
       }

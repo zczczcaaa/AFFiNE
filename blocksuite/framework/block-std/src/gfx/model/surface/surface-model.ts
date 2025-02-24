@@ -12,10 +12,19 @@ import { createDecoratorState } from './decorators/common.js';
 import { initializeObservers, initializeWatchers } from './decorators/index.js';
 import {
   GfxGroupLikeElementModel,
-  GfxPrimitiveElementModel,
+  type GfxPrimitiveElementModel,
   syncElementFromY,
 } from './element-model.js';
 import type { GfxLocalElementModel } from './local-element-model.js';
+
+/**
+ * Used for text field
+ */
+export const SURFACE_TEXT_UNIQ_IDENTIFIER = 'affine:surface:text';
+/**
+ * Used for field that use Y.Map. E.g. group children field
+ */
+export const SURFACE_YMAP_UNIQ_IDENTIFIER = 'affine:surface:ymap';
 
 export type SurfaceBlockProps = {
   elements: Boxed<Y.Map<Y.Map<unknown>>>;
@@ -390,8 +399,28 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
       throw new Error(`Invalid element type: ${type}`);
     }
 
+    Object.entries(props).forEach(([key, val]) => {
+      if (val instanceof Object) {
+        if (Reflect.has(val, SURFACE_TEXT_UNIQ_IDENTIFIER)) {
+          const yText = new Y.Text();
+          yText.applyDelta(Reflect.get(val, 'delta'));
+          Reflect.set(props, key, yText);
+        }
+
+        if (Reflect.has(val, SURFACE_YMAP_UNIQ_IDENTIFIER)) {
+          const childJson = Reflect.get(val, 'json') as Record<string, unknown>;
+          const childrenYMap = new Y.Map<unknown>();
+
+          Object.keys(childJson).forEach(childId => {
+            childrenYMap.set(childId, childJson[childId]);
+          });
+          Reflect.set(props, key, childrenYMap);
+        }
+      }
+    });
+
     // @ts-expect-error ignore
-    return (ctor.propsToY ?? GfxPrimitiveElementModel.propsToY)(props);
+    return ctor.propsToY ? ctor.propsToY(props) : props;
   }
 
   private _watchGroupRelationChange() {

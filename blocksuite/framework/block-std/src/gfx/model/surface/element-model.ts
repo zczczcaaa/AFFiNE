@@ -199,10 +199,6 @@ export abstract class GfxPrimitiveElementModel<
     this.seed = randomSeed();
   }
 
-  static propsToY(props: Record<string, unknown>) {
-    return props;
-  }
-
   containsBound(bounds: Bound): boolean {
     return getPointsFromBoundWithRotation(this).some(point =>
       bounds.containsPoint(point)

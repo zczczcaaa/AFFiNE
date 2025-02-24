@@ -125,8 +125,8 @@ export class ConnectorElementModel extends GfxPrimitiveElementModel<ConnectorEle
     return 'connector';
   }
 
-  static override propsToY(props: ConnectorElementProps) {
-    if (props.text && !(props.text instanceof Y.Text)) {
+  static propsToY(props: ConnectorElementProps) {
+    if (typeof props.text === 'string') {
       props.text = new Y.Text(props.text);
     }
 

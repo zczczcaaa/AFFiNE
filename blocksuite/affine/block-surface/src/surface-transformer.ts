@@ -1,4 +1,8 @@
 import type { SurfaceBlockProps } from '@blocksuite/block-std/gfx';
+import {
+  SURFACE_TEXT_UNIQ_IDENTIFIER,
+  SURFACE_YMAP_UNIQ_IDENTIFIER,
+} from '@blocksuite/block-std/gfx';
 import type {
   FromSnapshotPayload,
   SnapshotNode,
@@ -6,10 +10,6 @@ import type {
 } from '@blocksuite/store';
 import { BaseBlockTransformer } from '@blocksuite/store';
 import * as Y from 'yjs';
-
-const SURFACE_TEXT_UNIQ_IDENTIFIER = 'affine:surface:text';
-// Used for group children field
-const SURFACE_YMAP_UNIQ_IDENTIFIER = 'affine:surface:ymap';
 
 export class SurfaceBlockTransformer extends BaseBlockTransformer<SurfaceBlockProps> {
   private _elementToJSON(element: Y.Map<unknown>) {

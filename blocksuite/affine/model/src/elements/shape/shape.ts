@@ -67,8 +67,8 @@ export class ShapeElementModel extends GfxPrimitiveElementModel<ShapeProps> {
     return 'shape';
   }
 
-  static override propsToY(props: ShapeProps) {
-    if (props.text && !(props.text instanceof Y.Text)) {
+  static propsToY(props: ShapeProps) {
+    if (typeof props.text === 'string') {
       props.text = new Y.Text(props.text);
     }
 

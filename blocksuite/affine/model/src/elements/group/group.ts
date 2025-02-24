@@ -35,8 +35,8 @@ export class GroupElementModel extends GfxGroupLikeElementModel<GroupElementProp
     return 'group';
   }
 
-  static override propsToY(props: Record<string, unknown>) {
-    if ('title' in props && !(props.title instanceof Y.Text)) {
+  static propsToY(props: Record<string, unknown>) {
+    if (typeof props.title === 'string') {
       props.title = new Y.Text(props.title as string);
     }
 

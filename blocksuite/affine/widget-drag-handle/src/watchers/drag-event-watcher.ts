@@ -1,5 +1,4 @@
 import { ParagraphBlockComponent } from '@blocksuite/affine-block-paragraph';
-import { SurfaceBlockModel } from '@blocksuite/affine-block-surface';
 import { DropIndicator } from '@blocksuite/affine-components/drop-indicator';
 import {
   AttachmentBlockModel,
@@ -45,11 +44,14 @@ import {
   type GfxModel,
   GfxPrimitiveElementModel,
   isGfxGroupCompatibleModel,
+  SURFACE_YMAP_UNIQ_IDENTIFIER,
+  SurfaceBlockModel,
 } from '@blocksuite/block-std/gfx';
 import {
   assertType,
   Bound,
   groupBy,
+  type IVec,
   last,
   Point,
   Rect,
@@ -752,7 +754,11 @@ export class DragEventWatcher {
     const idRemap = new Map<string, string>();
     let elemMap: Record<
       string,
-      { type: string; children?: { json: Record<string, unknown> } }
+      {
+        type: string;
+        xywh?: SerializedXYWH;
+        children?: { json: Record<string, unknown> };
+      }
     > = {};
     const blockMap: Record<
       string,
@@ -766,7 +772,7 @@ export class DragEventWatcher {
       const constructor = surface.getConstructor(elem.type);
       const isGroup = Object.isPrototypeOf.call(
         GfxGroupLikeElementModel.prototype,
-        constructor
+        constructor.prototype
       );
 
       return isGroup;
@@ -782,24 +788,40 @@ export class DragEventWatcher {
       if (block.flavour === 'affine:surface') {
         elemMap = (block.props.elements as typeof elemMap) ?? {};
         Object.entries(elemMap).forEach(([elemId, elem]) => {
-          if (isGroupLikeElem(elem)) {
-            // only add the group to the root if it's not a child of any other element
-            if (
-              Object.values(containerTree).every(
-                childSet => !childSet.has(elemId)
-              )
-            ) {
-              containerTree['root'].add(elem.type);
-            }
+          if (
+            Object.values(containerTree).every(
+              childSet => !childSet.has(elemId)
+            )
+          ) {
+            containerTree['root'].add(elemId);
+          }
 
+          if (isGroupLikeElem(elem)) {
             Object.keys(elem.children?.json ?? {}).forEach(childId => {
               containerTree[elemId] = containerTree[elemId] ?? new Set();
               containerTree[elemId].add(childId);
               // if the child was already added to the root, remove it
               containerTree['root'].delete(childId);
             });
-          } else {
-            containerTree['root'].add(elemId);
+            return;
+          } else if (elem.type === 'connector') {
+            assertType<{
+              type: 'connector';
+              source: { position: IVec; id?: string };
+              target: { position: IVec; id?: string };
+            }>(elem);
+
+            if (elem.source.id) {
+              containerTree[elemId] = containerTree[elemId] ?? new Set();
+              containerTree[elemId].add(elem.source.id);
+              containerTree['root'].delete(elem.source.id);
+            }
+
+            if (elem.target.id) {
+              containerTree[elemId] = containerTree[elemId] ?? new Set();
+              containerTree[elemId].add(elem.target.id);
+              containerTree['root'].delete(elem.target.id);
+            }
           }
         });
 
@@ -876,19 +898,58 @@ export class DragEventWatcher {
           idRemap.set(id, slices.content[0].id);
         }
       } else if (elemMap[id]) {
-        if (elemMap[id].children) {
-          const childJson = elemMap[id].children.json;
-          Object.keys(childJson).forEach(childId => {
-            if (idRemap.has(childId)) {
-              const remappedId = idRemap.get(childId)!;
-              childJson[remappedId] = childJson[childId];
-              delete childJson[childId];
-            } else {
-              delete childJson[childId];
+        const elem = elemMap[id];
+
+        Object.entries(elem).forEach(([_, val]) => {
+          if (
+            val instanceof Object &&
+            Reflect.has(val, SURFACE_YMAP_UNIQ_IDENTIFIER)
+          ) {
+            const childJson = Reflect.get(val, 'json') as Record<
+              string,
+              unknown
+            >;
+
+            Object.keys(childJson).forEach(oldChildId => {
+              if (idRemap.has(oldChildId)) {
+                const remappedId = idRemap.get(oldChildId)!;
+                const val = structuredClone(childJson[oldChildId]);
+
+                if (elem.type === 'mindmap') {
+                  assertType<{ parent?: string }>(val);
+                  if (val.parent) {
+                    val.parent = idRemap.get(val.parent);
+                  }
+                }
+                childJson[remappedId] = val;
+                delete childJson[oldChildId];
+              } else {
+                delete childJson[oldChildId];
+              }
+            });
+          }
+        });
+
+        if (elem.type === 'connector') {
+          assertType<{
+            type: 'connector';
+            source: { position: IVec; id?: string };
+            target: { position: IVec; id?: string };
+          }>(elem);
+
+          (['source', 'target'] as const).forEach(key => {
+            const endpoint = elem[key];
+            if (endpoint.id) {
+              if (idRemap.get(endpoint.id)) {
+                endpoint.id = idRemap.get(endpoint.id);
+              } else {
+                delete endpoint.id;
+              }
             }
           });
         }
-        const newId = surface.addElement(elemMap[id]);
+
+        const newId = surface.addElement(elem);
         idRemap.set(id, newId);
       }
     };
@@ -918,8 +979,45 @@ export class DragEventWatcher {
       if (block.flavour === 'affine:surface') {
         if (block.props.elements) {
           Object.values(
-            block.props.elements as Record<string, { xywh: SerializedXYWH }>
+            block.props.elements as Record<
+              string,
+              { type: string; xywh?: SerializedXYWH }
+            >
           ).forEach(elem => {
+            if (elem.type === 'connector') {
+              assertType<{
+                type: 'connector';
+                xywh?: SerializedXYWH;
+                source: { position: IVec; id?: string };
+                target: { position: IVec; id?: string };
+              }>(elem);
+
+              const connectorBound = elem.xywh
+                ? Bound.deserialize(elem.xywh)
+                : new Bound(0, 0, 0, 0);
+
+              delete elem.xywh;
+
+              (['source', 'target'] as const).forEach(key => {
+                const endpoint = elem[key];
+                if (!endpoint.id) {
+                  const originalPos = endpoint.position;
+
+                  elem[key] = {
+                    position: ignoreOriginalPos
+                      ? [
+                          originalPos[0] - connectorBound.x + modelX,
+                          originalPos[1] - connectorBound.y + modelY,
+                        ]
+                      : [
+                          originalPos[0] - rect.x + modelX,
+                          originalPos[1] - rect.y + modelY,
+                        ],
+                  };
+                }
+              });
+            }
+
             if (elem.xywh) {
               const elemBound = Bound.deserialize(elem.xywh);
 

@@ -58,6 +58,8 @@ export {
   prop,
 } from './model/surface/local-element-model.js';
 export {
+  SURFACE_TEXT_UNIQ_IDENTIFIER,
+  SURFACE_YMAP_UNIQ_IDENTIFIER,
   SurfaceBlockModel,
   type SurfaceBlockProps,
   type SurfaceMiddleware,

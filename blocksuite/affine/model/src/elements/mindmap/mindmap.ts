@@ -180,7 +180,7 @@ export class MindmapElementModel extends GfxGroupLikeElementModel<MindmapElement
     return 'mindmap';
   }
 
-  static override propsToY(props: Record<string, unknown>) {
+  static propsToY(props: Record<string, unknown>) {
     if (
       props.children &&
       !isNodeType(props.children as Record<string, unknown>) &&

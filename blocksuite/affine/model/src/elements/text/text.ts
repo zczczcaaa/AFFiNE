@@ -30,9 +30,9 @@ export class TextElementModel extends GfxPrimitiveElementModel<TextElementProps>
     return 'text';
   }
 
-  static override propsToY(props: Record<string, unknown>) {
-    if (props.text && !(props.text instanceof Y.Text)) {
-      props.text = new Y.Text(props.text as string);
+  static propsToY(props: Record<string, unknown>) {
+    if (typeof props.text === 'string') {
+      props.text = new Y.Text(props.text);
     }
 
     return props;

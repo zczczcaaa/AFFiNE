@@ -63,10 +63,6 @@ export class BrushElementModel extends GfxPrimitiveElementModel<BrushProps> {
     return 'brush';
   }
 
-  static override propsToY(props: BrushProps) {
-    return props;
-  }
-
   override containsBound(bounds: Bound) {
     const points = getPointsFromBoundWithRotation(this);
     return points.some(point => bounds.containsPoint(point));
