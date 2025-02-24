@@ -20,7 +20,12 @@ export class VersionService {
       return true;
     }
 
-    if (!clientVersion || !semver.satisfies(clientVersion, range)) {
+    if (
+      !clientVersion ||
+      !semver.satisfies(clientVersion, range, {
+        includePrerelease: true,
+      })
+    ) {
       throw new UnsupportedClientVersion({
         clientVersion: clientVersion ?? 'unset_or_invalid',
         requiredVersion,

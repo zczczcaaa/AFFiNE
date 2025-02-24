@@ -146,3 +146,26 @@ test('should tell downgrade if client version is higher than allowed', async t =
     'Unsupported client with version [0.23.0], required version is [>=0.20.0 <=0.22.0].'
   );
 });
+
+test('should test prerelease version', async t => {
+  runtime.fetch
+    .withArgs('client/versionControl.requiredVersion')
+    .resolves('>=0.19.0');
+
+  let res = await app
+    .GET('/guarded/test')
+    .set('x-affine-version', '0.19.0-canary.1');
+
+  // 0.19.0-canary.1 is lower than 0.19.0 obviously
+  t.is(res.status, 403);
+
+  res = await app
+    .GET('/guarded/test')
+    .set('x-affine-version', '0.20.0-canary.1');
+
+  t.is(res.status, 200);
+
+  res = await app.GET('/guarded/test').set('x-affine-version', '0.20.0-beta.2');
+
+  t.is(res.status, 200);
+});
