@@ -680,6 +680,7 @@ export class DocSyncPeer {
       const cachedClocks = await this.syncMetadata.getPeerRemoteClocks(
         this.peerId
       );
+      this.status.remoteClocks.clear();
       throwIfAborted(signal);
       for (const [id, v] of Object.entries(cachedClocks)) {
         this.status.remoteClocks.set(id, v);
@@ -690,8 +691,9 @@ export class DocSyncPeer {
       const maxClockValue = this.status.remoteClocks.max;
       const newClocks = await this.remote.getDocTimestamps(maxClockValue);
       for (const [id, v] of Object.entries(newClocks)) {
-        this.actions.updateRemoteClock(id, v);
+        this.status.remoteClocks.set(id, v);
       }
+      this.statusUpdatedSubject$.next(true);
 
       for (const [id, v] of Object.entries(newClocks)) {
         await this.syncMetadata.setPeerRemoteClock(this.peerId, {
