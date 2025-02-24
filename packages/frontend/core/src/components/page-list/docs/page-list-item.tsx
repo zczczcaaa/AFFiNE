@@ -1,19 +1,11 @@
 import { Checkbox, Tooltip, useDraggable } from '@affine/component';
-import { type Doc, DocsService } from '@affine/core/modules/doc';
 import { TagService } from '@affine/core/modules/tag';
 import type { AffineDNDData } from '@affine/core/types/dnd';
 import { stopPropagation } from '@affine/core/utils';
 import { i18nTime } from '@affine/i18n';
-import { FrameworkScope, useLiveData, useService } from '@toeverything/infra';
+import { useLiveData, useService } from '@toeverything/infra';
 import type { ForwardedRef, PropsWithChildren } from 'react';
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { forwardRef, useCallback, useEffect, useMemo } from 'react';
 
 import { WorkbenchLink } from '../../../modules/workbench/view/workbench-link';
 import {
@@ -150,7 +142,7 @@ const PageListOperationsCell = ({
   ) : null;
 };
 
-const PagelistItemInner = (props: PageListItemProps) => {
+export const PageListItem = (props: PageListItemProps) => {
   const [displayProperties] = useAllDocDisplayProperties();
   const pageTitleElement = useMemo(() => {
     return (
@@ -254,29 +246,6 @@ const PagelistItemInner = (props: PageListItemProps) => {
         {pageTitleElement}
       </CustomDragPreview>
     </>
-  );
-};
-
-export const PageListItem = (props: PageListItemProps) => {
-  const docsService = useService(DocsService);
-  const [doc, setDoc] = useState<Doc | null>(null);
-
-  useLayoutEffect(() => {
-    const { doc, release } = docsService.open(props.pageId);
-    setDoc(doc);
-    return () => {
-      release();
-    };
-  }, [props.pageId, docsService.list, docsService]);
-
-  if (!doc) {
-    return null;
-  }
-
-  return (
-    <FrameworkScope scope={doc.scope}>
-      <PagelistItemInner {...props} />
-    </FrameworkScope>
   );
 };
 
