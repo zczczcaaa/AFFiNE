@@ -399,31 +399,23 @@ export class DocFrontend {
     this.statusUpdatedSubject$.next(job.docId);
   }
 
-  /**
-   * skip listen doc update when apply update
-   */
-  private skipDocUpdate = false;
-
   applyUpdate(docId: string, update: Uint8Array) {
     const doc = this.status.docs.get(docId);
     if (doc && !isEmptyUpdate(update)) {
       try {
-        this.skipDocUpdate = true;
         applyUpdate(doc, update, NBSTORE_ORIGIN);
       } catch (err) {
         console.error('failed to apply update yjs doc', err);
-      } finally {
-        this.skipDocUpdate = false;
       }
     }
   }
 
   private readonly handleDocUpdate = (
     update: Uint8Array,
-    _origin: any,
+    origin: any,
     doc: YDoc
   ) => {
-    if (this.skipDocUpdate) {
+    if (origin === NBSTORE_ORIGIN) {
       return;
     }
     if (!this.status.docs.has(doc.guid)) {
