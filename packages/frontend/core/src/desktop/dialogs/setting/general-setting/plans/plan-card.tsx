@@ -145,14 +145,14 @@ const ActionButton = ({ detail, recurring }: PlanCardProps) => {
   //    if currentRecurring !== recurring       => 'Change to {recurring} Billing'
   //    else                                    => 'Upgrade'
 
-  // not signed in
-  if (!loggedIn) {
-    return <SignUpAction>{signUpText}</SignUpAction>;
-  }
-
   // team
   if (detail.plan === SubscriptionPlan.Team) {
     return <UpgradeToTeam recurring={recurring} />;
+  }
+
+  // not signed in
+  if (!loggedIn) {
+    return <SignUpAction>{signUpText}</SignUpAction>;
   }
 
   // lifetime
