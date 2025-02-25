@@ -23,6 +23,9 @@ export const WorkspaceSettingStorage = ({
     WorkspacePermissionService
   ).permission;
   const isTeam = useLiveData(workspacePermissionService.isTeam$);
+  const isOwner = useLiveData(workspacePermissionService.isOwner$);
+
+  const canExport = !isTeam || isOwner;
   return (
     <>
       <SettingHeader
@@ -46,7 +49,7 @@ export const WorkspaceSettingStorage = ({
             </SettingWrapper>
           ) : null}
 
-          {BUILD_CONFIG.isElectron && (
+          {BUILD_CONFIG.isElectron && canExport && (
             <SettingWrapper>
               <DesktopExportPanel workspace={workspace} />
             </SettingWrapper>
