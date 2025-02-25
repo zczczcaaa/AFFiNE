@@ -8,6 +8,7 @@ type WorkerMessagePaint = {
     height: number;
     dpr: number;
     zoom: number;
+    version: number;
   };
 };
 
@@ -63,7 +64,7 @@ class LayoutPainter {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  paint(layout: ViewportLayout) {
+  paint(layout: ViewportLayout, version: number) {
     const { canvas, ctx } = this;
     if (!canvas || !ctx) return;
     if (layout.rect.w === 0 || layout.rect.h === 0) {
@@ -103,7 +104,10 @@ class LayoutPainter {
     });
 
     const bitmap = canvas.transferToImageBitmap();
-    self.postMessage({ type: 'bitmapPainted', bitmap }, { transfer: [bitmap] });
+    self.postMessage(
+      { type: 'bitmapPainted', bitmap, version },
+      { transfer: [bitmap] }
+    );
   }
 }
 
@@ -127,9 +131,9 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 
   switch (type) {
     case 'paintLayout': {
-      const { layout, width, height, dpr, zoom } = data;
+      const { layout, width, height, dpr, zoom, version } = data;
       painter.setSize(width, height, dpr, zoom);
-      painter.paint(layout);
+      painter.paint(layout, version);
       break;
     }
   }

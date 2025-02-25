@@ -31,6 +31,7 @@ const zoomThreshold = 1;
 export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   state: 'monitoring' | 'paused' = 'paused';
   disposables = new DisposableGroup();
+  private layoutVersion = 0;
 
   static override setup(di: Container) {
     di.addImpl(ViewportTurboRendererIdentifier, this, [StdIdentifier]);
@@ -115,6 +116,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   invalidate() {
+    this.layoutVersion++;
     this.layoutCache = null;
     this.clearTile();
     this.clearCanvas(); // Should clear immediately after content updates
@@ -137,6 +139,8 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
       if (!this.worker) return;
 
       const dpr = window.devicePixelRatio;
+      const currentVersion = this.layoutVersion;
+
       this.worker.postMessage({
         type: 'paintLayout',
         data: {
@@ -145,12 +149,18 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
           height: layout.rect.h,
           dpr,
           zoom: this.viewport.zoom,
+          version: currentVersion,
         },
       });
 
       this.worker.onmessage = (e: MessageEvent) => {
         if (e.data.type === 'bitmapPainted') {
-          this.handlePaintedBitmap(e.data.bitmap, resolve);
+          if (e.data.version === this.layoutVersion) {
+            this.handlePaintedBitmap(e.data.bitmap, resolve);
+          } else {
+            e.data.bitmap.close();
+            resolve();
+          }
         }
       };
     });
@@ -180,7 +190,9 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   private drawCachedBitmap(layout: ViewportLayout) {
-    const bitmap = this.tile!.bitmap;
+    if (!this.tile) return; // version mismatch
+
+    const bitmap = this.tile.bitmap;
     const ctx = this.canvas.getContext('2d');
     if (!ctx) return;
 
