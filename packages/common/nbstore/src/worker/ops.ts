@@ -87,7 +87,8 @@ interface GroupedWorkerOps {
   blobSync: {
     downloadBlob: [string, BlobRecord | null];
     uploadBlob: [BlobRecord, void];
-    fullSync: [void, boolean];
+    fullDownload: [void, void];
+    fullUpload: [void, void];
     setMaxBlobSize: [number, void];
     onReachedMaxBlobSize: [void, number];
     state: [void, BlobSyncState];

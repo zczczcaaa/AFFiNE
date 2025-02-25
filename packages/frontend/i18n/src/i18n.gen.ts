@@ -196,9 +196,25 @@ export function useAFFiNEI18N(): {
       */
     Export(): string;
     /**
+      * `Export (Offline)`
+      */
+    ["Export(Offline)"](): string;
+    /**
+      * `Full Sync`
+      */
+    ["Full Sync"](): string;
+    /**
       * `You can export the entire Workspace data for backup, and the exported data can be re-imported.`
       */
     ["Export Description"](): string;
+    /**
+      * `You can export the entire Workspace data for backup, and the exported data can be re-imported, but you are offline now which will cause the exported data not up to date.`
+      */
+    ["Export Description(Offline)"](): string;
+    /**
+      * `You can export the entire Workspace data for backup, and the exported data can be re-imported, but you must sync all cloud data first to keep your exported data up to date.`
+      */
+    ["Full Sync Description"](): string;
     /**
       * `Export failed`
       */
@@ -2676,6 +2692,10 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.nameWorkspace.subtitle.workspace-name"](): string;
     /**
+      * `Workspace type`
+      */
+    ["com.affine.nameWorkspace.subtitle.workspace-type"](): string;
+    /**
       * `Name your workspace`
       */
     ["com.affine.nameWorkspace.title"](): string;
@@ -3513,11 +3533,11 @@ export function useAFFiNEI18N(): {
       */
     ["com.affine.payment.cloud.free.benefit.g2-5"](): string;
     /**
-      * `Open-source under MIT license.`
+      * `Local Editor under MIT license.`
       */
     ["com.affine.payment.cloud.free.description"](): string;
     /**
-      * `FOSS + Basic`
+      * `Local FOSS + Cloud Basic`
       */
     ["com.affine.payment.cloud.free.name"](): string;
     /**

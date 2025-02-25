@@ -15,8 +15,12 @@ export class BlobFrontend {
     return this.sync.uploadBlob(blob);
   }
 
-  fullSync() {
-    return this.sync.fullSync();
+  fullDownload() {
+    return this.sync.fullDownload();
+  }
+
+  fullUpload() {
+    return this.sync.fullUpload();
   }
 
   addPriority(_id: string, _priority: number) {

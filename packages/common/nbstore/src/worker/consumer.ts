@@ -234,20 +234,10 @@ class StoreConsumer {
       'docSync.resetSync': () => this.docSync.resetSync(),
       'blobSync.downloadBlob': key => this.blobSync.downloadBlob(key),
       'blobSync.uploadBlob': blob => this.blobSync.uploadBlob(blob),
-      'blobSync.fullSync': () =>
-        new Observable(subscriber => {
-          const abortController = new AbortController();
-          this.blobSync
-            .fullSync(abortController.signal)
-            .then(() => {
-              subscriber.next(true);
-              subscriber.complete();
-            })
-            .catch(error => {
-              subscriber.error(error);
-            });
-          return () => abortController.abort(MANUALLY_STOP);
-        }),
+      'blobSync.fullDownload': (_, { signal }) =>
+        this.blobSync.fullDownload(signal),
+      'blobSync.fullUpload': (_, { signal }) =>
+        this.blobSync.fullUpload(signal),
       'blobSync.state': () => this.blobSync.state$,
       'blobSync.setMaxBlobSize': size => this.blobSync.setMaxBlobSize(size),
       'blobSync.onReachedMaxBlobSize': () =>

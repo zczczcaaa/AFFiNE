@@ -9,6 +9,8 @@ import type { PeerStorageOptions } from '../types';
 
 export interface BlobSyncState {
   isStorageOverCapacity: boolean;
+  total: number;
+  synced: number;
 }
 
 export interface BlobSync {
@@ -18,7 +20,8 @@ export interface BlobSync {
     signal?: AbortSignal
   ): Promise<BlobRecord | null>;
   uploadBlob(blob: BlobRecord, signal?: AbortSignal): Promise<void>;
-  fullSync(signal?: AbortSignal): Promise<void>;
+  fullDownload(signal?: AbortSignal): Promise<void>;
+  fullUpload(signal?: AbortSignal): Promise<void>;
   setMaxBlobSize(size: number): void;
   onReachedMaxBlobSize(cb: (byteSize: number) => void): () => void;
 }
@@ -26,6 +29,8 @@ export interface BlobSync {
 export class BlobSyncImpl implements BlobSync {
   readonly state$ = new BehaviorSubject<BlobSyncState>({
     isStorageOverCapacity: false,
+    total: Object.values(this.storages.remotes).length ? 1 : 0,
+    synced: 0,
   });
   private abort: AbortController | null = null;
   private maxBlobSize: number = 1024 * 1024 * 100; // 100MB
@@ -34,19 +39,24 @@ export class BlobSyncImpl implements BlobSync {
   constructor(readonly storages: PeerStorageOptions<BlobStorage>) {}
 
   async downloadBlob(blobId: string, signal?: AbortSignal) {
-    const localBlob = await this.storages.local.get(blobId, signal);
-    if (localBlob) {
-      return localBlob;
-    }
-
-    for (const storage of Object.values(this.storages.remotes)) {
-      const data = await storage.get(blobId, signal);
-      if (data) {
-        await this.storages.local.set(data, signal);
-        return data;
+    try {
+      const localBlob = await this.storages.local.get(blobId, signal);
+      if (localBlob) {
+        return localBlob;
       }
+
+      for (const storage of Object.values(this.storages.remotes)) {
+        const data = await storage.get(blobId, signal);
+        if (data) {
+          await this.storages.local.set(data, signal);
+          return data;
+        }
+      }
+      return null;
+    } catch (e) {
+      console.error('error when download blob', e);
+      return null;
     }
-    return null;
   }
 
   async uploadBlob(blob: BlobRecord, signal?: AbortSignal) {
@@ -62,7 +72,11 @@ export class BlobSyncImpl implements BlobSync {
           return await remote.set(blob, signal);
         } catch (err) {
           if (err instanceof OverCapacityError) {
-            this.state$.next({ isStorageOverCapacity: true });
+            this.state$.next({
+              isStorageOverCapacity: true,
+              total: this.state$.value.total,
+              synced: this.state$.value.synced,
+            });
           }
           throw err;
         }
@@ -70,71 +84,95 @@ export class BlobSyncImpl implements BlobSync {
     );
   }
 
-  async fullSync(signal?: AbortSignal) {
+  async fullDownload(signal?: AbortSignal) {
     throwIfAborted(signal);
 
     await this.storages.local.connection.waitForConnected(signal);
+    const localList = (await this.storages.local.list(signal)).map(b => b.key);
+    this.state$.next({
+      ...this.state$.value,
+      synced: localList.length,
+    });
 
-    for (const [remotePeer, remote] of Object.entries(this.storages.remotes)) {
-      let localList: string[] = [];
-      let remoteList: string[] = [];
+    await Promise.allSettled(
+      Object.entries(this.storages.remotes).map(
+        async ([remotePeer, remote]) => {
+          await remote.connection.waitForConnected(signal);
 
-      await remote.connection.waitForConnected(signal);
+          const remoteList = (await remote.list(signal)).map(b => b.key);
 
-      try {
-        localList = (await this.storages.local.list(signal)).map(b => b.key);
-        throwIfAborted(signal);
-        remoteList = (await remote.list(signal)).map(b => b.key);
-        throwIfAborted(signal);
-      } catch (err) {
-        if (err === MANUALLY_STOP) {
-          throw err;
-        }
-        console.error(`error when sync`, err);
-        continue;
-      }
+          this.state$.next({
+            ...this.state$.value,
+            total: Math.max(this.state$.value.total, remoteList.length),
+          });
 
-      const needUpload = difference(localList, remoteList);
-      for (const key of needUpload) {
-        try {
-          const data = await this.storages.local.get(key, signal);
           throwIfAborted(signal);
-          if (data) {
-            await remote.set(data, signal);
-            throwIfAborted(signal);
+
+          const needDownload = difference(remoteList, localList);
+          for (const key of needDownload) {
+            try {
+              const data = await remote.get(key, signal);
+              throwIfAborted(signal);
+              if (data) {
+                await this.storages.local.set(data, signal);
+                this.state$.next({
+                  ...this.state$.value,
+                  synced: this.state$.value.synced + 1,
+                });
+                throwIfAborted(signal);
+              }
+            } catch (err) {
+              if (err === MANUALLY_STOP) {
+                throw err;
+              }
+              console.error(
+                `error when sync ${key} from [${remotePeer}] to [local]`,
+                err
+              );
+            }
           }
-        } catch (err) {
-          if (err === MANUALLY_STOP) {
-            throw err;
-          }
-          console.error(
-            `error when sync ${key} from [local] to [${remotePeer}]`,
-            err
-          );
         }
-      }
+      )
+    );
+  }
 
-      const needDownload = difference(remoteList, localList);
+  async fullUpload(signal?: AbortSignal) {
+    throwIfAborted(signal);
 
-      for (const key of needDownload) {
-        try {
-          const data = await remote.get(key, signal);
+    await this.storages.local.connection.waitForConnected(signal);
+    const localList = (await this.storages.local.list(signal)).map(b => b.key);
+
+    await Promise.allSettled(
+      Object.entries(this.storages.remotes).map(
+        async ([remotePeer, remote]) => {
+          await remote.connection.waitForConnected(signal);
+
+          const remoteList = (await remote.list(signal)).map(b => b.key);
+
           throwIfAborted(signal);
-          if (data) {
-            await this.storages.local.set(data, signal);
-            throwIfAborted(signal);
+
+          const needUpload = difference(localList, remoteList);
+          for (const key of needUpload) {
+            try {
+              const data = await this.storages.local.get(key, signal);
+              throwIfAborted(signal);
+              if (data) {
+                await remote.set(data, signal);
+                throwIfAborted(signal);
+              }
+            } catch (err) {
+              if (err === MANUALLY_STOP) {
+                throw err;
+              }
+              console.error(
+                `error when sync ${key} from [local] to [${remotePeer}]`,
+                err
+              );
+            }
           }
-        } catch (err) {
-          if (err === MANUALLY_STOP) {
-            throw err;
-          }
-          console.error(
-            `error when sync ${key} from [${remotePeer}] to [local]`,
-            err
-          );
         }
-      }
-    }
+      )
+    );
   }
 
   start() {
@@ -144,16 +182,12 @@ export class BlobSyncImpl implements BlobSync {
 
     const abort = new AbortController();
     this.abort = abort;
-
-    // TODO(@eyhn): fix this, large blob may cause iOS to crash?
-    if (!BUILD_CONFIG.isIOS) {
-      this.fullSync(abort.signal).catch(error => {
-        if (error === MANUALLY_STOP) {
-          return;
-        }
-        console.error('sync blob error', error);
-      });
-    }
+    this.fullUpload(abort.signal).catch(error => {
+      if (error === MANUALLY_STOP) {
+        return;
+      }
+      console.error('sync blob error', error);
+    });
   }
 
   stop() {

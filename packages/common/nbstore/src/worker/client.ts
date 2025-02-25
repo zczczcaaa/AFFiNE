@@ -257,26 +257,23 @@ class WorkerBlobSync implements BlobSync {
   uploadBlob(blob: BlobRecord, _signal?: AbortSignal): Promise<void> {
     return this.client.call('blobSync.uploadBlob', blob);
   }
-  fullSync(signal?: AbortSignal): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const abortListener = () => {
-        reject(signal?.reason);
-        subscription.unsubscribe();
-      };
+  fullDownload(signal?: AbortSignal): Promise<void> {
+    const download = this.client.call('blobSync.fullDownload');
 
-      signal?.addEventListener('abort', abortListener);
-
-      const subscription = this.client.ob$('blobSync.fullSync').subscribe({
-        next() {
-          signal?.removeEventListener('abort', abortListener);
-          resolve();
-        },
-        error(err) {
-          signal?.removeEventListener('abort', abortListener);
-          reject(err);
-        },
-      });
+    signal?.addEventListener('abort', () => {
+      download.cancel();
     });
+
+    return download;
+  }
+  fullUpload(signal?: AbortSignal): Promise<void> {
+    const upload = this.client.call('blobSync.fullUpload');
+
+    signal?.addEventListener('abort', () => {
+      upload.cancel();
+    });
+
+    return upload;
   }
 }
 
