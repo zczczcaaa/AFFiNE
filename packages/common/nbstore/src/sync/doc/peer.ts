@@ -272,7 +272,7 @@ export class DocSyncPeer {
       jobs: (Job & { type: 'push' })[],
       signal?: AbortSignal
     ) => {
-      if (this.status.connectedDocs.has(docId)) {
+      if (this.status.connectedDocs.has(docId) && !this.remote.isReadonly) {
         const maxClock = jobs.reduce(
           (a, b) => (a.getTime() > b.clock.getTime() ? a : b.clock),
           new Date(0)
