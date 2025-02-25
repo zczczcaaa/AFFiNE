@@ -107,9 +107,10 @@ export const InviteMemberEditor = ({
         selectedMemberIds,
         inviteDocRoleType
       );
+      onClickCancel();
 
       notify.success({
-        title: 'Invite successful',
+        title: t['Invitation sent'](),
       });
     } catch (error) {
       const err = UserFriendlyError.fromAnyError(error);
@@ -117,7 +118,13 @@ export const InviteMemberEditor = ({
         title: t[`error.${err.name}`](err.data),
       });
     }
-  }, [docGrantedUsersService, inviteDocRoleType, selectedMembers, t]);
+  }, [
+    docGrantedUsersService,
+    inviteDocRoleType,
+    onClickCancel,
+    selectedMembers,
+    t,
+  ]);
 
   const handleCompositionStart: CompositionEventHandler<HTMLInputElement> =
     useCallback(() => {
