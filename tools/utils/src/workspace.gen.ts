@@ -716,6 +716,11 @@ export const PackageList = [
     ],
   },
   {
+    location: 'packages/frontend/media-capture-playground',
+    name: '@affine/media-capture-playground',
+    workspaceDependencies: ['packages/frontend/native'],
+  },
+  {
     location: 'packages/frontend/native',
     name: '@affine/native',
     workspaceDependencies: [],
@@ -866,6 +871,7 @@ export type PackageName =
   | '@affine/electron-api'
   | '@affine/graphql'
   | '@affine/i18n'
+  | '@affine/media-capture-playground'
   | '@affine/native'
   | '@affine/templates'
   | '@affine/track'
