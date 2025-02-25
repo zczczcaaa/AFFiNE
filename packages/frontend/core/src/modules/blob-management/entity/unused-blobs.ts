@@ -121,45 +121,26 @@ export class UnusedBlobs extends Entity {
   }
 
   private async getUsedBlobs(): Promise<string[]> {
-    const batchSize = 100;
-    let offset = 0;
-    const unusedBlobKeys: string[] = [];
-
-    while (true) {
-      const result = await this.docsSearchService.indexer.blockIndex.aggregate(
-        {
-          type: 'boolean',
-          occur: 'must',
-          queries: [
-            {
-              type: 'exists',
-              field: 'blob',
-            },
-          ],
-        },
-        'blob',
-        {
-          pagination: {
-            limit: batchSize,
-            skip: offset,
+    const result = await this.docsSearchService.indexer.blockIndex.aggregate(
+      {
+        type: 'boolean',
+        occur: 'must',
+        queries: [
+          {
+            type: 'exists',
+            field: 'blob',
           },
-        }
-      );
-
-      if (!result.buckets.length) {
-        break;
+        ],
+      },
+      'blob',
+      {
+        pagination: {
+          limit: Number.MAX_SAFE_INTEGER,
+        },
       }
+    );
 
-      unusedBlobKeys.push(...result.buckets.map(bucket => bucket.key));
-      offset += batchSize;
-
-      // If we got less results than the batch size, we've reached the end
-      if (result.buckets.length < batchSize) {
-        break;
-      }
-    }
-
-    return unusedBlobKeys;
+    return result.buckets.map(bucket => bucket.key);
   }
 
   async hydrateBlob(
