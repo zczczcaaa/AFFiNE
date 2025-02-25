@@ -189,7 +189,7 @@ const SharePageInner = ({
   ]);
 
   const t = useI18n();
-  const pageTitle = useLiveData(page?.title$) ?? t['unnamed']();
+  const pageTitle = useLiveData(page?.title$);
   const { jumpToPageBlock, openPage } = useNavigateHelper();
 
   usePageDocumentTitle(pageTitle);
@@ -235,7 +235,7 @@ const SharePageInner = ({
   }
 
   if (!workspace || !page || !editor) {
-    return;
+    return <AppContainer fallback />;
   }
 
   return (
@@ -243,7 +243,7 @@ const SharePageInner = ({
       <FrameworkScope scope={page.scope}>
         <FrameworkScope scope={editor.scope}>
           <ViewIcon icon={publishMode === 'page' ? 'doc' : 'edgeless'} />
-          <ViewTitle title={pageTitle} />
+          <ViewTitle title={pageTitle ?? t['unnamed']()} />
           <div className={styles.root}>
             <div className={styles.mainContainer}>
               <ShareHeader
