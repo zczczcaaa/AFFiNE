@@ -1,4 +1,5 @@
 import {
+  IconButton,
   MenuItem,
   MenuSeparator,
   toast,
@@ -22,10 +23,11 @@ import {
   InformationIcon,
   LinkedPageIcon,
   OpenInNewIcon,
+  PlusIcon,
   SplitViewIcon,
 } from '@blocksuite/icons/rc';
 import { useLiveData, useServices } from '@toeverything/infra';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { NodeOperation } from '../../tree/types';
 
@@ -52,6 +54,7 @@ export const useExplorerDocNodeOperations = (
   });
   const { openConfirmModal } = useConfirmModal();
 
+  const [addLinkedPageLoading, setAddLinkedPageLoading] = useState(false);
   const docRecord = useLiveData(docsService.list.doc$(docId));
 
   const { createPage } = usePageHelper(
@@ -117,17 +120,22 @@ export const useExplorerDocNodeOperations = (
   }, [docId, workbenchService.workbench]);
 
   const handleAddLinkedPage = useAsyncCallback(async () => {
-    const canEdit = await guardService.can('Doc_Update', docId);
-    if (!canEdit) {
-      toast(t['com.affine.no-permission']());
-      return;
+    setAddLinkedPageLoading(true);
+    try {
+      const canEdit = await guardService.can('Doc_Update', docId);
+      if (!canEdit) {
+        toast(t['com.affine.no-permission']());
+        return;
+      }
+      const newDoc = createPage();
+      // TODO: handle timeout & error
+      await docsService.addLinkedDoc(docId, newDoc.id);
+      track.$.navigationPanel.docs.createDoc({ control: 'linkDoc' });
+      track.$.navigationPanel.docs.linkDoc({ control: 'createDoc' });
+      options.openNodeCollapsed();
+    } finally {
+      setAddLinkedPageLoading(false);
     }
-    const newDoc = createPage();
-    // TODO: handle timeout & error
-    await docsService.addLinkedDoc(docId, newDoc.id);
-    track.$.navigationPanel.docs.createDoc({ control: 'linkDoc' });
-    track.$.navigationPanel.docs.linkDoc({ control: 'createDoc' });
-    options.openNodeCollapsed();
   }, [createPage, guardService, docId, docsService, options, t]);
 
   const handleToggleFavoriteDoc = useCallback(() => {
@@ -139,6 +147,20 @@ export const useExplorerDocNodeOperations = (
 
   return useMemo(
     () => [
+      {
+        index: 0,
+        inline: true,
+        view: (
+          <IconButton
+            size="16"
+            icon={<PlusIcon />}
+            tooltip={t['com.affine.rootAppSidebar.explorer.doc-add-tooltip']()}
+            onClick={handleAddLinkedPage}
+            loading={addLinkedPageLoading}
+            disabled={addLinkedPageLoading}
+          />
+        ),
+      },
       {
         index: 50,
         view: (
@@ -233,6 +255,7 @@ export const useExplorerDocNodeOperations = (
       },
     ],
     [
+      addLinkedPageLoading,
       docId,
       favorite,
       handleAddLinkedPage,
