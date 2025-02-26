@@ -12,8 +12,7 @@ pub struct PdfExtractLoader {
 
 impl PdfExtractLoader {
   pub fn new<R: Read>(reader: R) -> Result<Self, LoaderError> {
-    let document = pdf_extract::Document::load_from(reader)
-      .map_err(|e| LoaderError::OtherError(e.to_string()))?;
+    let document = pdf_extract::Document::load_from(reader)?;
     Ok(Self { document })
   }
 }
@@ -38,7 +37,7 @@ impl PdfExtractLoader {
 }
 
 impl Loader for PdfExtractLoader {
-  fn load(self) -> Result<Vec<Document>, LoaderError> {
+  fn load(self) -> LoaderResult<Vec<Document>> {
     let doc = self.extract_text_to_doc()?;
     Ok(vec![doc])
   }
