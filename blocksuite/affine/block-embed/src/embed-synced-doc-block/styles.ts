@@ -57,9 +57,12 @@ export const blockStyles = css`
   }
 
   .affine-embed-synced-doc-container {
-    border: 1px solid var(--affine-border-color);
+    border: 1px solid transparent;
     border-radius: 8px;
     overflow: hidden;
+  }
+  .affine-embed-synced-doc-container.show-hover-border:hover {
+    border-color: var(--affine-border-color);
   }
   .affine-embed-synced-doc-container.page {
     display: block;
@@ -151,7 +154,12 @@ export const blockStyles = css`
   }
 
   .affine-embed-synced-doc-container.surface {
+    border-color: var(--affine-border-color);
     background: var(--affine-background-primary-color);
+
+    affine-preview-root {
+      padding: 0 24px;
+    }
   }
 
   .affine-embed-synced-doc-container

@@ -10,7 +10,6 @@ export class PreviewRootBlockComponent extends BlockComponent {
   static override styles = css`
     affine-preview-root {
       display: block;
-      padding: 0 24px;
     }
   `;
 

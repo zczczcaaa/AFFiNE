@@ -1,5 +1,6 @@
 import { ChatPanel } from '@affine/core/blocksuite/ai';
 import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
+import { enableFootnoteConfigExtension } from '@affine/core/blocksuite/extensions';
 import { AINetworkSearchService } from '@affine/core/modules/ai-button/services/network-search';
 import { DocDisplayMetaService } from '@affine/core/modules/doc-display-meta';
 import { DocSearchMenuService } from '@affine/core/modules/doc-search-menu/services';
@@ -84,7 +85,9 @@ export const EditorChatPanel = forwardRef(function EditorChatPanel(
           );
         },
       };
-      const previewSpecBuilder = SpecProvider._.getSpec('preview:page');
+      const previewSpecBuilder = enableFootnoteConfigExtension(
+        SpecProvider._.getSpec('preview:page')
+      );
       chatPanelRef.current.previewSpecBuilder = previewSpecBuilder;
     } else {
       chatPanelRef.current.host = editor.host;

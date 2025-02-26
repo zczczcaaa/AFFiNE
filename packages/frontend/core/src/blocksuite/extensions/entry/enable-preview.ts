@@ -8,7 +8,6 @@ import {
 import {
   ColorScheme,
   createSignalFromObservable,
-  FootNoteNodeConfigExtension,
   type Signal,
   SpecProvider,
   type ThemeExtension,
@@ -80,11 +79,6 @@ function getPagePreviewThemeExtension(framework: FrameworkProvider) {
   return AffinePagePreviewThemeExtension;
 }
 
-// Disable hover effect for footnote node in center peek preview mode
-const footnodeConfig = FootNoteNodeConfigExtension({
-  disableHoverEffect: true,
-});
-
 const fontConfig = getFontConfigExtension();
 
 let _framework: FrameworkProvider;
@@ -108,7 +102,6 @@ export function enablePreviewExtension(framework: FrameworkProvider): void {
 
   _previewExtensions = [
     ...AIChatBlockSpec,
-    footnodeConfig,
     fontConfig,
     getThemeExtension(framework),
     getPagePreviewThemeExtension(framework),

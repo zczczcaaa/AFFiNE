@@ -231,6 +231,7 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
             [theme]: true,
             surface: false,
             selected: this.selected$.value,
+            'show-hover-border': true,
           })}
           @click=${this._handleClick}
           style=${containerStyleMap}
