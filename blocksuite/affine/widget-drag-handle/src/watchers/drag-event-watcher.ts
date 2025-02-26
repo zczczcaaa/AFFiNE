@@ -1354,7 +1354,7 @@ export class DragEventWatcher {
       middlewares.push(gfxBlocksFilter(selectedIds, std));
     }
 
-    return std.getTransformer(middlewares);
+    return std.store.getTransformer(middlewares);
   }
 
   private _isDropOnCurrentEditor(std?: BlockStdScope) {

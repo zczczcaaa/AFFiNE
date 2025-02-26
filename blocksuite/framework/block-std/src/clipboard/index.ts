@@ -285,7 +285,7 @@ export class Clipboard extends LifeCycleWatcher {
   }
 
   private _getJob() {
-    return this.std.getTransformer(this._jobMiddlewares);
+    return this.std.store.getTransformer(this._jobMiddlewares);
   }
 
   readFromClipboard(clipboardData: DataTransfer) {

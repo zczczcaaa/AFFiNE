@@ -40,7 +40,6 @@ import {
   titleMiddleware,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
-import { Transformer } from '@blocksuite/affine/store';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Haptics } from '@capacitor/haptics';
@@ -223,19 +222,10 @@ const frameworkProvider = framework.provider();
   try {
     const blockSuiteDoc = doc.blockSuiteDoc;
 
-    const transformer = new Transformer({
-      schema: blockSuiteDoc.schema,
-      blobCRUD: blockSuiteDoc.workspace.blobSync,
-      docCRUD: {
-        create: (id: string) => blockSuiteDoc.workspace.createDoc({ id }),
-        get: (id: string) => blockSuiteDoc.workspace.getDoc(id),
-        delete: (id: string) => blockSuiteDoc.workspace.removeDoc(id),
-      },
-      middlewares: [
-        docLinkBaseURLMiddleware(blockSuiteDoc.workspace.id),
-        titleMiddleware(blockSuiteDoc.workspace.meta.docMetas),
-      ],
-    });
+    const transformer = blockSuiteDoc.getTransformer([
+      docLinkBaseURLMiddleware(blockSuiteDoc.workspace.id),
+      titleMiddleware(blockSuiteDoc.workspace.meta.docMetas),
+    ]);
     const snapshot = transformer.docToSnapshot(blockSuiteDoc);
 
     const container = new Container();

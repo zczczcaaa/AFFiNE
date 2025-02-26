@@ -15,7 +15,7 @@ import {
 } from '@blocksuite/affine/blocks';
 import type { ServiceProvider } from '@blocksuite/affine/global/di';
 import type { BlockModel, Store } from '@blocksuite/affine/store';
-import { Slice, toDraftModel, Transformer } from '@blocksuite/affine/store';
+import { Slice, toDraftModel } from '@blocksuite/affine/store';
 
 import type { ChatContextValue } from '../chat-panel/chat-context';
 import {
@@ -196,17 +196,8 @@ function getNoteBlockModels(doc: Store) {
 }
 
 async function getTransformer(doc: Store) {
-  return new Transformer({
-    schema: doc.schema,
-    blobCRUD: doc.workspace.blobSync,
-    docCRUD: {
-      create: (id: string) => doc.workspace.createDoc({ id }),
-      get: (id: string) => doc.workspace.getDoc(id),
-      delete: (id: string) => doc.workspace.removeDoc(id),
-    },
-    middlewares: [
-      titleMiddleware(doc.workspace.meta.docMetas),
-      embedSyncedDocMiddleware('content'),
-    ],
-  });
+  return doc.getTransformer([
+    titleMiddleware(doc.workspace.meta.docMetas),
+    embedSyncedDocMiddleware('content'),
+  ]);
 }

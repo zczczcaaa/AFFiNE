@@ -9,6 +9,8 @@ import {
   StoreSelectionExtension,
 } from '../../extension/index.js';
 import { Schema } from '../../schema/index.js';
+import type { TransformerMiddleware } from '../../transformer/middleware.js';
+import { Transformer } from '../../transformer/transformer.js';
 import {
   Block,
   type BlockModel,
@@ -714,5 +716,18 @@ export class Store {
 
   get getOptional() {
     return this.provider.getOptional.bind(this.provider);
+  }
+
+  getTransformer(middlewares: TransformerMiddleware[] = []) {
+    return new Transformer({
+      schema: this.schema,
+      blobCRUD: this.workspace.blobSync,
+      docCRUD: {
+        create: (id: string) => this.workspace.createDoc({ id }),
+        get: (id: string) => this.workspace.getDoc(id),
+        delete: (id: string) => this.workspace.removeDoc(id),
+      },
+      middlewares,
+    });
   }
 }

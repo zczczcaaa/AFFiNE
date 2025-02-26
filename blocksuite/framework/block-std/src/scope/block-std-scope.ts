@@ -4,8 +4,6 @@ import {
   type ExtensionType,
   type Store,
   StoreSelectionExtension,
-  Transformer,
-  type TransformerMiddleware,
 } from '@blocksuite/store';
 
 import { Clipboard } from '../clipboard/index.js';
@@ -138,19 +136,6 @@ export class BlockStdScope {
 
   getView(flavour: string) {
     return this.getOptional(BlockViewIdentifier(flavour));
-  }
-
-  getTransformer(middlewares: TransformerMiddleware[] = []) {
-    return new Transformer({
-      schema: this.store.schema,
-      blobCRUD: this.workspace.blobSync,
-      docCRUD: {
-        create: (id: string) => this.workspace.createDoc({ id }),
-        get: (id: string) => this.workspace.getDoc(id),
-        delete: (id: string) => this.workspace.removeDoc(id),
-      },
-      middlewares,
-    });
   }
 
   mount() {

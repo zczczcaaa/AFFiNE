@@ -49,7 +49,7 @@ import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import type { SerializedXYWH } from '@blocksuite/global/utils';
 import type { DeltaInsert } from '@blocksuite/inline/types';
 import { TestAffineEditorContainer } from '@blocksuite/integration-test';
-import { Text, Transformer, type Workspace } from '@blocksuite/store';
+import { Text, type Workspace } from '@blocksuite/store';
 import type { SlDropdown } from '@shoelace-style/shoelace';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 import { css, html } from 'lit';
@@ -237,19 +237,10 @@ export class StarterDebugMenu extends ShadowlessElement {
 
   private async _exportFile(config: AdapterConfig) {
     const doc = this.editor.doc;
-    const job = new Transformer({
-      schema: doc.schema,
-      blobCRUD: this.collection.blobSync,
-      docCRUD: {
-        create: (id: string) => this.collection.createDoc({ id }),
-        get: (id: string) => this.collection.getDoc(id),
-        delete: (id: string) => this.collection.removeDoc(id),
-      },
-      middlewares: [
-        docLinkBaseURLMiddleware(this.collection.id),
-        titleMiddleware(this.collection.meta.docMetas),
-      ],
-    });
+    const job = doc.getTransformer([
+      docLinkBaseURLMiddleware(this.collection.id),
+      titleMiddleware(this.collection.meta.docMetas),
+    ]);
 
     const adapterFactory = this.editor.std.provider.get(config.identifier);
     const adapter = adapterFactory.get(job);
@@ -444,16 +435,7 @@ export class StarterDebugMenu extends ShadowlessElement {
       });
       if (!file) return;
       const doc = this.editor.doc;
-      const job = new Transformer({
-        schema: doc.schema,
-        blobCRUD: this.collection.blobSync,
-        docCRUD: {
-          create: (id: string) => this.collection.createDoc({ id }),
-          get: (id: string) => this.collection.getDoc(id),
-          delete: (id: string) => this.collection.removeDoc(id),
-        },
-        middlewares: [defaultImageProxyMiddleware],
-      });
+      const job = doc.getTransformer([defaultImageProxyMiddleware]);
       const htmlAdapter = new NotionHtmlAdapter(job, this.editor.std.provider);
       await htmlAdapter.toDoc({
         file: await file.text(),

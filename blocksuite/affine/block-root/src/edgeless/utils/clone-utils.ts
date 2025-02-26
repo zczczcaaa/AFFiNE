@@ -19,7 +19,7 @@ import {
   isGfxGroupCompatibleModel,
   type SerializedElement,
 } from '@blocksuite/block-std/gfx';
-import { type BlockSnapshot, Transformer } from '@blocksuite/store';
+import type { BlockSnapshot, Transformer } from '@blocksuite/store';
 
 /**
  * return all elements in the tree of the elements
@@ -40,15 +40,7 @@ export function getSortedCloneElements(elements: GfxModel[]) {
 
 export function prepareCloneData(elements: GfxModel[], std: BlockStdScope) {
   elements = sortEdgelessElements(elements);
-  const job = new Transformer({
-    schema: std.store.schema,
-    blobCRUD: std.workspace.blobSync,
-    docCRUD: {
-      create: (id: string) => std.workspace.createDoc({ id }),
-      get: (id: string) => std.workspace.getDoc(id),
-      delete: (id: string) => std.workspace.removeDoc(id),
-    },
-  });
+  const job = std.store.getTransformer();
   const res = elements.map(element => {
     const data = serializeElement(element, elements, job);
     return data;

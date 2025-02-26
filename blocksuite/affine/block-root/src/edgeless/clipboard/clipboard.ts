@@ -64,7 +64,6 @@ import {
   BlockSnapshotSchema,
   fromJSON,
   type SliceSnapshot,
-  Transformer,
 } from '@blocksuite/store';
 import DOMPurify from 'dompurify';
 import * as Y from 'yjs';
@@ -373,15 +372,7 @@ export class EdgelessClipboardController extends PageClipboard {
       if (mayBeSurfaceDataJson !== undefined) {
         const elementsRawData = JSON.parse(mayBeSurfaceDataJson);
         const { snapshot, blobs } = elementsRawData;
-        const job = new Transformer({
-          schema: this.std.store.schema,
-          blobCRUD: this.std.workspace.blobSync,
-          docCRUD: {
-            create: (id: string) => this.std.workspace.createDoc({ id }),
-            get: (id: string) => this.std.workspace.getDoc(id),
-            delete: (id: string) => this.std.workspace.removeDoc(id),
-          },
-        });
+        const job = this.std.store.getTransformer();
         const map = job.assetsManager.getAssets();
         decodeClipboardBlobs(blobs, map);
         for (const blobId of map.keys()) {
@@ -1377,15 +1368,7 @@ export async function prepareClipboardData(
   selectedAll: GfxModel[],
   std: BlockStdScope
 ) {
-  const job = new Transformer({
-    schema: std.store.schema,
-    blobCRUD: std.workspace.blobSync,
-    docCRUD: {
-      create: (id: string) => std.workspace.createDoc({ id }),
-      get: (id: string) => std.workspace.getDoc(id),
-      delete: (id: string) => std.workspace.removeDoc(id),
-    },
-  });
+  const job = std.store.getTransformer();
   const selected = await Promise.all(
     selectedAll.map(async selected => {
       const data = serializeElement(selected, selectedAll, job);

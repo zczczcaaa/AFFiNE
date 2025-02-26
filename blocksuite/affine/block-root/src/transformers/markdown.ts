@@ -49,19 +49,10 @@ type ImportMarkdownZipOptions = {
  */
 async function exportDoc(doc: Store) {
   const provider = getProvider();
-  const job = new Transformer({
-    schema: doc.schema,
-    blobCRUD: doc.blobSync,
-    docCRUD: {
-      create: (id: string) => doc.workspace.createDoc({ id }),
-      get: (id: string) => doc.workspace.getDoc(id),
-      delete: (id: string) => doc.workspace.removeDoc(id),
-    },
-    middlewares: [
-      docLinkBaseURLMiddleware(doc.workspace.id),
-      titleMiddleware(doc.workspace.meta.docMetas),
-    ],
-  });
+  const job = doc.getTransformer([
+    docLinkBaseURLMiddleware(doc.workspace.id),
+    titleMiddleware(doc.workspace.meta.docMetas),
+  ]);
   const snapshot = job.docToSnapshot(doc);
 
   const adapter = new MarkdownAdapter(job, provider);
@@ -109,19 +100,10 @@ async function importMarkdownToBlock({
   blockId,
 }: ImportMarkdownToBlockOptions) {
   const provider = getProvider();
-  const job = new Transformer({
-    schema: doc.schema,
-    blobCRUD: doc.blobSync,
-    docCRUD: {
-      create: (id: string) => doc.workspace.createDoc({ id }),
-      get: (id: string) => doc.workspace.getDoc(id),
-      delete: (id: string) => doc.workspace.removeDoc(id),
-    },
-    middlewares: [
-      defaultImageProxyMiddleware,
-      docLinkBaseURLMiddleware(doc.workspace.id),
-    ],
-  });
+  const job = doc.getTransformer([
+    defaultImageProxyMiddleware,
+    docLinkBaseURLMiddleware(doc.workspace.id),
+  ]);
   const adapter = new MarkdownAdapter(job, provider);
   const snapshot = await adapter.toSliceSnapshot({
     file: markdown,

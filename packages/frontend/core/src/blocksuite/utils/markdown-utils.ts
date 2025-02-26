@@ -80,19 +80,10 @@ export async function getContentFromSlice(
   slice: Slice,
   type: 'markdown' | 'plain-text' = 'markdown'
 ) {
-  const transformer = new Transformer({
-    schema: host.std.store.schema,
-    blobCRUD: host.std.store.workspace.blobSync,
-    docCRUD: {
-      create: (id: string) => host.std.store.workspace.createDoc({ id }),
-      get: (id: string) => host.std.store.workspace.getDoc(id),
-      delete: (id: string) => host.std.store.workspace.removeDoc(id),
-    },
-    middlewares: [
-      titleMiddleware(host.std.store.workspace.meta.docMetas),
-      embedSyncedDocMiddleware('content'),
-    ],
-  });
+  const transformer = host.std.store.getTransformer([
+    titleMiddleware(host.std.store.workspace.meta.docMetas),
+    embedSyncedDocMiddleware('content'),
+  ]);
   const snapshot = transformer.sliceToSnapshot(slice);
   if (!snapshot) {
     return '';
@@ -113,16 +104,10 @@ export const markdownToSnapshot = async (
   markdown: string,
   host: EditorHost
 ) => {
-  const transformer = new Transformer({
-    schema: host.std.store.schema,
-    blobCRUD: host.std.store.workspace.blobSync,
-    docCRUD: {
-      create: (id: string) => host.std.store.workspace.createDoc({ id }),
-      get: (id: string) => host.std.store.workspace.getDoc(id),
-      delete: (id: string) => host.std.store.workspace.removeDoc(id),
-    },
-    middlewares: [defaultImageProxyMiddleware, pasteMiddleware(host.std)],
-  });
+  const transformer = host.std.store.getTransformer([
+    defaultImageProxyMiddleware,
+    pasteMiddleware(host.std),
+  ]);
   const markdownAdapter = new MixTextAdapter(transformer, host.std.provider);
   const payload = {
     file: markdown,
