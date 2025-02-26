@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   await waitForEmptyEditor(page);
 });
 
-test.describe('Format bar', () => {
+test.describe('Formatting', () => {
   test('should change text color', async ({ page }) => {
     await page.keyboard.press('Enter');
 
@@ -33,7 +33,10 @@ test.describe('Format bar', () => {
       .evaluate(e => window.getComputedStyle(e).getPropertyValue('color'));
 
     const paragraph = page.locator('affine-paragraph');
-    const textSpan = paragraph.getByText('rld');
+    const textSpan = paragraph
+      .locator('affine-text:has-text("rld")')
+      .locator('span')
+      .first();
     await expect(textSpan).toBeVisible();
     const fgColor2 = await textSpan.evaluate(e =>
       window.getComputedStyle(e).getPropertyValue('color')
@@ -62,31 +65,40 @@ test.describe('Format bar', () => {
       .evaluate(e => window.getComputedStyle(e).getPropertyValue('color'));
 
     const paragraph = page.locator('affine-paragraph');
-    const text1Span = paragraph.getByText('rld');
-    const fgColor2 = await text1Span.evaluate(e =>
+    const textSpan1 = paragraph
+      .locator('affine-text:has-text("rld")')
+      .locator('span')
+      .first();
+    const fgColor2 = await textSpan1.evaluate(e =>
       window.getComputedStyle(e).getPropertyValue('color')
     );
 
     expect(fgColor1).toBe(fgColor2);
 
-    await page.keyboard.press('Shift+ArrowLeft');
-    await page.keyboard.press('Shift+ArrowLeft');
+    await page.keyboard.press('ArrowRight');
+
+    for (let i = 0; i < 5; i++) {
+      await page.keyboard.press('Shift+ArrowLeft');
+    }
 
     await formatBar.locator('.highlight-icon').hover();
 
-    const bgYellowButton = formatBar.locator(
-      '[data-testid="var(--affine-text-highlight-yellow)"]'
-    );
+    const yellow = 'var(--affine-text-highlight-yellow)';
+    const bgYellowButton = formatBar.locator(`[data-testid="${yellow}"]`);
     await bgYellowButton.click();
-    const bgColor1 = await bgYellowButton
+
+    const textSpan2 = paragraph
+      .locator('affine-text:has-text("wo")')
       .locator('span')
-      .evaluate(e => window.getComputedStyle(e).getPropertyValue('background'));
+      .first();
 
-    const text2Span = paragraph.getByText('world');
-    const bgColor2 = await text2Span.evaluate(e =>
-      window.getComputedStyle(e).getPropertyValue('background')
-    );
+    await expect(textSpan2).toBeVisible();
 
-    expect(bgColor1).toBe(bgColor2);
+    const bgColor1 = await textSpan1.evaluate(e => e.style.backgroundColor);
+
+    const bgColor2 = await textSpan2.evaluate(e => e.style.backgroundColor);
+
+    expect(yellow).toBe(bgColor1);
+    expect(yellow).toBe(bgColor2);
   });
 });
