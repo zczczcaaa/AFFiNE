@@ -20,10 +20,8 @@ import { choose } from 'lit/directives/choose.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import {
-  type PageRootBlockComponent,
-  RootBlockConfigExtension,
-} from '../../index.js';
+import type { PageRootBlockComponent } from '../../page/page-root-block.js';
+import { RootBlockConfigExtension } from '../../root-config.js';
 import {
   type AFFINE_LINKED_DOC_WIDGET,
   getMenus,
