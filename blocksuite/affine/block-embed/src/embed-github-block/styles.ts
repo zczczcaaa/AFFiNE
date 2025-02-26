@@ -2,6 +2,7 @@ import { css, html } from 'lit';
 
 export const styles = css`
   .affine-embed-github-block {
+    container: affine-embed-github-block / inline-size;
     box-sizing: border-box;
     display: flex;
     width: 100%;
@@ -24,6 +25,7 @@ export const styles = css`
     padding: 12px;
     border-radius: var(--1, 0px);
     opacity: var(--add, 1);
+    overflow: hidden;
   }
 
   .affine-embed-github-content-title {
@@ -373,6 +375,15 @@ export const styles = css`
     }
 
     .affine-embed-github-content-date {
+      display: none;
+    }
+  }
+
+  @container affine-embed-github-block (width < 375px) {
+    .affine-embed-github-content {
+      width: 100%;
+    }
+    .affine-embed-github-banner {
       display: none;
     }
   }

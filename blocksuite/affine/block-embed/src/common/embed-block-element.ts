@@ -9,6 +9,7 @@ import {
   EMBED_CARD_WIDTH,
 } from '@blocksuite/affine-shared/consts';
 import { DocModeProvider } from '@blocksuite/affine-shared/services';
+import { findAncestorModel } from '@blocksuite/affine-shared/utils';
 import type { BlockService } from '@blocksuite/block-std';
 import type { GfxCompatibleProps } from '@blocksuite/block-std/gfx';
 import type { BlockModel } from '@blocksuite/store';
@@ -57,7 +58,15 @@ export class EmbedBlockComponent<
     ) {
       this.style.display = 'block';
 
-      if (this.std.get(DocModeProvider).getEditorMode() === 'edgeless') {
+      const insideNote = findAncestorModel(
+        this.model,
+        m => m.flavour === 'affine:note'
+      );
+
+      if (
+        !insideNote &&
+        this.std.get(DocModeProvider).getEditorMode() === 'edgeless'
+      ) {
         this.style.minWidth = `${EMBED_CARD_MIN_WIDTH}px`;
       }
     }
