@@ -1,9 +1,9 @@
 import type { FrameBlockModel } from '@blocksuite/affine-model';
 import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import {
-  BlockServiceWatcher,
   BlockStdScope,
   type EditorHost,
+  LifeCycleWatcher,
   ShadowlessElement,
 } from '@blocksuite/block-std';
 import { GfxControllerIdentifier } from '@blocksuite/block-std/gfx';
@@ -117,22 +117,26 @@ export class FramePreview extends WithDisposable(ShadowlessElement) {
 
   private _initSpec() {
     const refreshViewport = this._refreshViewport.bind(this);
-    class FramePreviewWatcher extends BlockServiceWatcher {
-      static override readonly flavour = 'affine:page';
+    class FramePreviewWatcher extends LifeCycleWatcher {
+      static override key = 'frame-preview-watcher';
 
       override mounted() {
-        const blockService = this.blockService;
-        blockService.disposables.add(
-          blockService.specSlots.viewConnected.on(({ component }) => {
-            const edgelessBlock =
-              component as EdgelessRootPreviewBlockComponent;
-
-            edgelessBlock.editorViewportSelector = 'frame-preview-viewport';
-            edgelessBlock.service.viewport.sizeUpdated.once(() => {
-              refreshViewport();
-            });
-          })
-        );
+        const { view } = this.std;
+        view.viewUpdated.on(payload => {
+          if (
+            payload.type !== 'block' ||
+            payload.method !== 'add' ||
+            payload.view.model.flavour !== 'affine:page'
+          ) {
+            return;
+          }
+          const edgelessBlock =
+            payload.view as EdgelessRootPreviewBlockComponent;
+          edgelessBlock.editorViewportSelector = 'frame-preview-viewport';
+          edgelessBlock.service.viewport.sizeUpdated.once(() => {
+            refreshViewport();
+          });
+        });
       }
     }
     this._previewSpec.extend([FramePreviewWatcher]);

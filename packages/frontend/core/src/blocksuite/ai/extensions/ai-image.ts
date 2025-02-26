@@ -1,4 +1,4 @@
-import { BlockServiceWatcher } from '@blocksuite/affine/block-std';
+import { LifeCycleWatcher } from '@blocksuite/affine/block-std';
 import {
   AffineImageToolbarWidget,
   ImageBlockSpec,
@@ -7,14 +7,19 @@ import type { ExtensionType } from '@blocksuite/affine/store';
 
 import { setupImageToolbarAIEntry } from '../entries/image-toolbar/setup-image-toolbar';
 
-class AIImageBlockWatcher extends BlockServiceWatcher {
-  static override readonly flavour = 'affine:image';
+class AIImageBlockWatcher extends LifeCycleWatcher {
+  static override key = 'ai-image-block-watcher';
 
   override mounted() {
     super.mounted();
-    this.blockService.specSlots.widgetConnected.on(view => {
-      if (view.component instanceof AffineImageToolbarWidget) {
-        setupImageToolbarAIEntry(view.component);
+    const { view } = this.std;
+    view.viewUpdated.on(payload => {
+      if (payload.type !== 'widget' || payload.method !== 'add') {
+        return;
+      }
+      const component = payload.view;
+      if (component instanceof AffineImageToolbarWidget) {
+        setupImageToolbarAIEntry(component);
       }
     });
   }

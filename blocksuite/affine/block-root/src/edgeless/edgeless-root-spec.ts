@@ -2,11 +2,14 @@ import { autoConnectWidget } from '@blocksuite/affine-widget-edgeless-auto-conne
 import { frameTitleWidget } from '@blocksuite/affine-widget-frame-title';
 import { edgelessRemoteSelectionWidget } from '@blocksuite/affine-widget-remote-selection';
 import {
-  BlockServiceWatcher,
   BlockViewExtension,
+  LifeCycleWatcher,
   WidgetViewExtension,
 } from '@blocksuite/block-std';
-import { ToolController } from '@blocksuite/block-std/gfx';
+import {
+  GfxControllerIdentifier,
+  ToolController,
+} from '@blocksuite/block-std/gfx';
 import type { ExtensionType } from '@blocksuite/store';
 import { literal, unsafeStatic } from 'lit/static-html.js';
 
@@ -56,17 +59,12 @@ export const edgelessToolbarWidget = WidgetViewExtension(
   literal`${unsafeStatic(EDGELESS_TOOLBAR_WIDGET)}`
 );
 
-class EdgelessLocker extends BlockServiceWatcher {
-  static override readonly flavour = 'affine:page';
+class EdgelessLocker extends LifeCycleWatcher {
+  static override key = 'edgeless-locker';
 
   override mounted() {
-    const service = this.blockService;
-    service.disposables.add(
-      service.specSlots.viewConnected.on(({ service }) => {
-        // Does not allow the user to move and zoom.
-        (service as EdgelessRootService).locked = true;
-      })
-    );
+    const { viewport } = this.std.get(GfxControllerIdentifier);
+    viewport.locked = true;
   }
 }
 

@@ -1,4 +1,4 @@
-import { BlockServiceWatcher } from '@blocksuite/affine/block-std';
+import { LifeCycleWatcher } from '@blocksuite/affine/block-std';
 import {
   AffineCodeToolbarWidget,
   CodeBlockSpec,
@@ -7,15 +7,19 @@ import type { ExtensionType } from '@blocksuite/affine/store';
 
 import { setupCodeToolbarAIEntry } from '../entries/code-toolbar/setup-code-toolbar';
 
-class AICodeBlockWatcher extends BlockServiceWatcher {
-  static override readonly flavour = 'affine:code';
+class AICodeBlockWatcher extends LifeCycleWatcher {
+  static override key = 'ai-code-block-watcher';
 
   override mounted() {
     super.mounted();
-    const service = this.blockService;
-    service.specSlots.widgetConnected.on(view => {
-      if (view.component instanceof AffineCodeToolbarWidget) {
-        setupCodeToolbarAIEntry(view.component);
+    const { view } = this.std;
+    view.viewUpdated.on(payload => {
+      if (payload.type !== 'widget' || payload.method !== 'add') {
+        return;
+      }
+      const component = payload.view;
+      if (component instanceof AffineCodeToolbarWidget) {
+        setupCodeToolbarAIEntry(component);
       }
     });
   }

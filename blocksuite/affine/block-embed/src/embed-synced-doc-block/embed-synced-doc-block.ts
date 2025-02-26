@@ -26,9 +26,9 @@ import {
 } from '@blocksuite/affine-shared/utils';
 import {
   BlockSelection,
-  BlockServiceWatcher,
   BlockStdScope,
   type EditorHost,
+  LifeCycleWatcher,
 } from '@blocksuite/block-std';
 import {
   GfxControllerIdentifier,
@@ -124,27 +124,31 @@ export class EmbedSyncedDocBlockComponent extends EmbedBlockComponent<EmbedSynce
       this.std.getOptional(EditorSettingProvider) ??
       signal(GeneralSettingSchema.parse({}));
 
-    class EmbedSyncedDocWatcher extends BlockServiceWatcher {
-      static override readonly flavour = 'affine:embed-synced-doc';
+    class EmbedSyncedDocWatcher extends LifeCycleWatcher {
+      static override key = 'embed-synced-doc-watcher';
 
-      override mounted() {
-        const disposableGroup = this.blockService.disposables;
-        const slots = this.blockService.specSlots;
-        disposableGroup.add(
-          slots.viewConnected.on(({ component }) => {
-            const nextComponent = component as EmbedSyncedDocBlockComponent;
+      override mounted(): void {
+        const { view } = this.std;
+        view.viewUpdated.on(payload => {
+          if (
+            payload.type !== 'block' ||
+            payload.view.model.flavour !== 'affine:embed-synced-doc'
+          ) {
+            return;
+          }
+          const nextComponent = payload.view as EmbedSyncedDocBlockComponent;
+          if (payload.method === 'add') {
             nextComponent.depth = nextDepth;
             currentDisposables.add(() => {
               nextComponent.depth = 0;
             });
-          })
-        );
-        disposableGroup.add(
-          slots.viewDisconnected.on(({ component }) => {
-            const nextComponent = component as EmbedSyncedDocBlockComponent;
+            return;
+          }
+          if (payload.method === 'delete') {
             nextComponent.depth = 0;
-          })
-        );
+            return;
+          }
+        });
       }
     }
 

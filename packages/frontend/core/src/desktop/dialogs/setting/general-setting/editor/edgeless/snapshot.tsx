@@ -2,16 +2,14 @@ import { Skeleton } from '@affine/component';
 import type { EditorSettingSchema } from '@affine/core/modules/editor-setting';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import type { EditorHost } from '@blocksuite/affine/block-std';
-import {
-  BlockServiceIdentifier,
-  BlockStdScope,
-} from '@blocksuite/affine/block-std';
+import { BlockStdScope } from '@blocksuite/affine/block-std';
 import {
   GfxControllerIdentifier,
   type GfxPrimitiveElementModel,
 } from '@blocksuite/affine/block-std/gfx';
 import {
   EdgelessCRUDIdentifier,
+  type EdgelessRootPreviewBlockComponent,
   SpecProvider,
 } from '@blocksuite/affine/blocks';
 import { Bound } from '@blocksuite/affine/global/utils';
@@ -93,14 +91,18 @@ export const EdgelessSnapshot = (props: Props) => {
     }
 
     // refresh viewport
-    const edgelessService = editorHost.std.get(
-      BlockServiceIdentifier('affine:page')
-    );
     const gfx = editorHost.std.get(GfxControllerIdentifier);
-    edgelessService.specSlots.viewConnected.once(({ component }) => {
-      const edgelessBlock = component as any;
+    const disposable = editorHost.std.view.viewUpdated.on(payload => {
+      if (
+        payload.type !== 'block' ||
+        payload.method !== 'add' ||
+        payload.view.model.flavour !== 'affine:page'
+      ) {
+        return;
+      }
+      const component = payload.view as EdgelessRootPreviewBlockComponent;
       doc.readonly = false;
-      edgelessBlock.editorViewportSelector = 'ref-viewport';
+      component.editorViewportSelector = 'ref-viewport';
       const frame = getFrameBlock(doc);
       if (frame && docName !== 'frame') {
         // docName with value 'frame' shouldn't be deleted, it is a part of frame settings
@@ -110,6 +112,7 @@ export const EdgelessSnapshot = (props: Props) => {
       const bound = boundMap.get(docName);
       bound && gfx.viewport.setViewportByBound(bound);
       doc.readonly = true;
+      disposable.dispose();
     });
 
     // append to dom node

@@ -10,10 +10,7 @@ import {
 import { ExternalLinksQuickSearchSession } from '@affine/core/modules/quicksearch/impls/external-links';
 import { JournalsQuickSearchSession } from '@affine/core/modules/quicksearch/impls/journals';
 import { track } from '@affine/track';
-import {
-  BlockServiceWatcher,
-  type WidgetComponent,
-} from '@blocksuite/affine/block-std';
+import { LifeCycleWatcher } from '@blocksuite/affine/block-std';
 import type { QuickSearchResult } from '@blocksuite/affine/blocks';
 import {
   AffineSlashMenuWidget,
@@ -123,65 +120,56 @@ export function patchQuickSearchService(framework: FrameworkProvider) {
     },
   });
 
-  const SlashMenuQuickSearchExtension = patchSpecService(
-    'affine:page',
-    (component: WidgetComponent) => {
-      if (component instanceof AffineSlashMenuWidget) {
-        component.config.items.forEach(item => {
-          if (
-            'action' in item &&
-            (item.name === 'Linked Doc' || item.name === 'Link')
-          ) {
-            item.action = async ({ rootComponent }) => {
-              const [success, { insertedLinkType }] =
-                rootComponent.std.command.exec(insertLinkByQuickSearchCommand);
+  class SlashMenuQuickSearchExtension extends LifeCycleWatcher {
+    static override key = 'slash-menu-quick-search-extension';
 
-              if (!success) return;
-
-              insertedLinkType
-                ?.then(type => {
-                  const flavour = type?.flavour;
-                  if (!flavour) return;
-
-                  if (flavour === 'affine:bookmark') {
-                    track.doc.editor.slashMenu.bookmark();
-                    return;
-                  }
-
-                  if (flavour === 'affine:embed-linked-doc') {
-                    track.doc.editor.slashMenu.linkDoc({
-                      control: 'linkDoc',
-                    });
-                    return;
-                  }
-                })
-                .catch(console.error);
-            };
-          }
-        });
-      }
-    }
-  );
-  return [QuickSearch, SlashMenuQuickSearchExtension];
-}
-
-function patchSpecService(
-  flavour: string,
-  onWidgetConnected?: (component: WidgetComponent) => void
-) {
-  class TempServiceWatcher extends BlockServiceWatcher {
-    static override readonly flavour = flavour;
     override mounted() {
       super.mounted();
-      const disposableGroup = this.blockService.disposables;
-      if (onWidgetConnected) {
-        disposableGroup.add(
-          this.blockService.specSlots.widgetConnected.on(({ component }) => {
-            onWidgetConnected(component);
-          })
-        );
-      }
+      const { view } = this.std;
+      view.viewUpdated.on(payload => {
+        if (payload.type !== 'widget' || payload.method !== 'add') {
+          return;
+        }
+        const component = payload.view;
+        if (component instanceof AffineSlashMenuWidget) {
+          component.config.items.forEach(item => {
+            if (
+              'action' in item &&
+              (item.name === 'Linked Doc' || item.name === 'Link')
+            ) {
+              item.action = async ({ rootComponent }) => {
+                const [success, { insertedLinkType }] =
+                  rootComponent.std.command.exec(
+                    insertLinkByQuickSearchCommand
+                  );
+
+                if (!success) return;
+
+                insertedLinkType
+                  ?.then(type => {
+                    const flavour = type?.flavour;
+                    if (!flavour) return;
+
+                    if (flavour === 'affine:bookmark') {
+                      track.doc.editor.slashMenu.bookmark();
+                      return;
+                    }
+
+                    if (flavour === 'affine:embed-linked-doc') {
+                      track.doc.editor.slashMenu.linkDoc({
+                        control: 'linkDoc',
+                      });
+                      return;
+                    }
+                  })
+                  .catch(console.error);
+              };
+            }
+          });
+        }
+      });
     }
   }
-  return TempServiceWatcher;
+
+  return [QuickSearch, SlashMenuQuickSearchExtension];
 }

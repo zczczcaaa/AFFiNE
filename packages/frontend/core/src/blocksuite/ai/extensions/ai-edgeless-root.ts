@@ -1,4 +1,4 @@
-import { BlockServiceWatcher } from '@blocksuite/affine/block-std';
+import { LifeCycleWatcher } from '@blocksuite/affine/block-std';
 import {
   AffineFormatBarWidget,
   AffineSlashMenuWidget,
@@ -39,32 +39,37 @@ export function createAIEdgelessRootBlockSpec(
 }
 
 function getAIEdgelessRootWatcher(framework: FrameworkProvider) {
-  class AIEdgelessRootWatcher extends BlockServiceWatcher {
-    static override readonly flavour = 'affine:page';
+  class AIEdgelessRootWatcher extends LifeCycleWatcher {
+    static override key = 'ai-edgeless-root-watcher';
 
     override mounted() {
       super.mounted();
-      this.blockService.specSlots.widgetConnected.on(view => {
-        if (view.component instanceof AffineAIPanelWidget) {
-          view.component.style.width = '430px';
-          view.component.config = buildAIPanelConfig(view.component, framework);
-          setupSpaceAIEntry(view.component);
+      const { view } = this.std;
+      view.viewUpdated.on(payload => {
+        if (payload.type !== 'widget' || payload.method !== 'add') {
+          return;
+        }
+        const component = payload.view;
+        if (component instanceof AffineAIPanelWidget) {
+          component.style.width = '430px';
+          component.config = buildAIPanelConfig(component, framework);
+          setupSpaceAIEntry(component);
         }
 
-        if (view.component instanceof EdgelessCopilotWidget) {
-          setupEdgelessCopilot(view.component);
+        if (component instanceof EdgelessCopilotWidget) {
+          setupEdgelessCopilot(component);
         }
 
-        if (view.component instanceof EdgelessElementToolbarWidget) {
-          setupEdgelessElementToolbarAIEntry(view.component);
+        if (component instanceof EdgelessElementToolbarWidget) {
+          setupEdgelessElementToolbarAIEntry(component);
         }
 
-        if (view.component instanceof AffineFormatBarWidget) {
-          setupFormatBarAIEntry(view.component);
+        if (component instanceof AffineFormatBarWidget) {
+          setupFormatBarAIEntry(component);
         }
 
-        if (view.component instanceof AffineSlashMenuWidget) {
-          setupSlashMenuAIEntry(view.component);
+        if (component instanceof AffineSlashMenuWidget) {
+          setupSlashMenuAIEntry(component);
         }
       });
     }

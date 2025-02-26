@@ -1,18 +1,16 @@
-import { BlockServiceWatcher } from '@blocksuite/affine/block-std';
+import { LifeCycleWatcher } from '@blocksuite/affine/block-std';
 import {
   ParagraphBlockService,
   ParagraphBlockSpec,
 } from '@blocksuite/affine/blocks';
-import { assertInstanceOf } from '@blocksuite/affine/global/utils';
 import type { ExtensionType } from '@blocksuite/affine/store';
 
-class AIParagraphBlockWatcher extends BlockServiceWatcher {
-  static override readonly flavour = 'affine:paragraph';
+class AIParagraphBlockWatcher extends LifeCycleWatcher {
+  static override key = 'ai-paragraph-block-watcher';
 
   override mounted() {
     super.mounted();
-    const service = this.blockService;
-    assertInstanceOf(service, ParagraphBlockService);
+    const service = this.std.get(ParagraphBlockService);
     service.placeholderGenerator = model => {
       if (model.type === 'text') {
         return "Type '/' for commands, 'space' for AI";

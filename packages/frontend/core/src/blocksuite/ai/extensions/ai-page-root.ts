@@ -1,4 +1,4 @@
-import { BlockServiceWatcher } from '@blocksuite/affine/block-std';
+import { LifeCycleWatcher } from '@blocksuite/affine/block-std';
 import {
   AffineFormatBarWidget,
   AffineSlashMenuWidget,
@@ -17,24 +17,29 @@ import {
 } from '../widgets/ai-panel/ai-panel';
 
 function getAIPageRootWatcher(framework: FrameworkProvider) {
-  class AIPageRootWatcher extends BlockServiceWatcher {
-    static override readonly flavour = 'affine:page';
+  class AIPageRootWatcher extends LifeCycleWatcher {
+    static override key = 'ai-page-root-watcher';
 
     override mounted() {
       super.mounted();
-      this.blockService.specSlots.widgetConnected.on(view => {
-        if (view.component instanceof AffineAIPanelWidget) {
-          view.component.style.width = '630px';
-          view.component.config = buildAIPanelConfig(view.component, framework);
-          setupSpaceAIEntry(view.component);
+      const { view } = this.std;
+      view.viewUpdated.on(payload => {
+        if (payload.type !== 'widget' || payload.method !== 'add') {
+          return;
+        }
+        const component = payload.view;
+        if (component instanceof AffineAIPanelWidget) {
+          component.style.width = '630px';
+          component.config = buildAIPanelConfig(component, framework);
+          setupSpaceAIEntry(component);
         }
 
-        if (view.component instanceof AffineFormatBarWidget) {
-          setupFormatBarAIEntry(view.component);
+        if (component instanceof AffineFormatBarWidget) {
+          setupFormatBarAIEntry(component);
         }
 
-        if (view.component instanceof AffineSlashMenuWidget) {
-          setupSlashMenuAIEntry(view.component);
+        if (component instanceof AffineSlashMenuWidget) {
+          setupSlashMenuAIEntry(component);
         }
       });
     }
