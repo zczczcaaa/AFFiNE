@@ -250,6 +250,7 @@ export class EdgelessRemoteSelectionWidget extends WidgetComponent<RootBlockMode
           ${MultiCursorDuotoneIcon({
             width: '24px',
             height: '24px',
+            style: `fill: ${_remoteColorManager.get(id)}; stroke: ${_remoteColorManager.get(id)};`,
           })}
           <div
             class="remote-username"
