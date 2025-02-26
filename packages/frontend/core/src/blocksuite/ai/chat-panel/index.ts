@@ -129,6 +129,8 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   // request counter to track the latest request
   private _updateHistoryCounter = 0;
 
+  private _wheelTriggered = false;
+
   private readonly _updateHistory = async () => {
     const { doc } = this;
     this.isLoading = true;
@@ -261,10 +263,12 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
   private _chatContextId: string | null | undefined = null;
 
   private readonly _scrollToEnd = () => {
-    this._chatMessages.value?.scrollToEnd();
+    if (!this._wheelTriggered) {
+      this._chatMessages.value?.scrollToEnd();
+    }
   };
 
-  private readonly _throttledScrollToEnd = throttle(this._scrollToEnd, 1000);
+  private readonly _throttledScrollToEnd = throttle(this._scrollToEnd, 600);
 
   private readonly _cleanupHistories = async () => {
     const notification = this.host.std.getOptional(NotificationProvider);
@@ -324,6 +328,11 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       });
     }
 
+    if (this.chatContextValue.status === 'loading') {
+      // reset the wheel triggered flag when the status is loading
+      this._wheelTriggered = false;
+    }
+
     if (
       _changedProperties.has('chatContextValue') &&
       (this.chatContextValue.status === 'loading' ||
@@ -338,6 +347,19 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
       this.chatContextValue.status === 'transmitting'
     ) {
       this._throttledScrollToEnd();
+    }
+  }
+
+  protected override firstUpdated(): void {
+    const chatMessages = this._chatMessages.value;
+    if (chatMessages) {
+      chatMessages.updateComplete
+        .then(() => {
+          chatMessages.getScrollContainer()?.addEventListener('wheel', () => {
+            this._wheelTriggered = true;
+          });
+        })
+        .catch(console.error);
     }
   }
 

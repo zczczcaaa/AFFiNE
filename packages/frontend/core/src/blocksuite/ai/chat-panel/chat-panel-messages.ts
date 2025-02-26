@@ -152,6 +152,10 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
   @query('.chat-panel-messages')
   accessor messagesContainer: HTMLDivElement | null = null;
 
+  getScrollContainer(): HTMLDivElement | null {
+    return this.messagesContainer;
+  }
+
   private _renderAIOnboarding() {
     return this.isLoading ||
       !this.host?.doc.get(FeatureFlagService).getFlag('enable_ai_onboarding')
@@ -251,7 +255,7 @@ export class ChatPanelMessages extends WithDisposable(ShadowlessElement) {
             </div> `
           : repeat(
               filteredItems,
-              item => (isChatMessage(item) ? item.id : item.sessionId),
+              (_, index) => index,
               (item, index) => {
                 const isLast = index === filteredItems.length - 1;
                 return html`<div class="message">

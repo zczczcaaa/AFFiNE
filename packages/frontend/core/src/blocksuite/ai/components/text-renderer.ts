@@ -185,6 +185,8 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
 
   private _answers: string[] = [];
 
+  private _maxContainerHeight = 0;
+
   private readonly _clearTimer = () => {
     if (this._timer) {
       clearInterval(this._timer);
@@ -256,13 +258,6 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
     }
   };
 
-  private _onWheel(e: MouseEvent) {
-    e.stopPropagation();
-    if (this.state === 'generating') {
-      e.preventDefault();
-    }
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this._answers.push(this.answer);
@@ -301,7 +296,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
           max-height: ${maxHeight ? Math.max(maxHeight, 200) + 'px' : ''};
         }
       </style>
-      <div class=${classes} @wheel=${this._onWheel}>
+      <div class=${classes}>
         ${keyed(
           this._doc,
           html`<div class="ai-answer-text-editor affine-page-viewport">
@@ -328,6 +323,15 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
     super.updated(changedProperties);
     requestAnimationFrame(() => {
       if (!this._container) return;
+      // Track max height during generation
+      if (this.state === 'generating') {
+        this._maxContainerHeight = Math.max(
+          this._maxContainerHeight,
+          this._container.scrollHeight
+        );
+        // Apply min-height to prevent shrinking
+        this._container.style.minHeight = `${this._maxContainerHeight}px`;
+      }
       this._container.scrollTop = this._container.scrollHeight;
     });
   }
