@@ -67,17 +67,10 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
       );
     });
 
-    const debouncedRefresh = debounce(
-      () => {
-        this.refresh().catch(console.error);
-      },
-      1000, // During this period, fallback to DOM
-      { leading: false, trailing: true }
-    );
     this.disposables.add(
       this.std.store.slots.blockUpdated.on(() => {
         this.invalidate();
-        debouncedRefresh();
+        this.debouncedRefresh();
       })
     );
   }
@@ -114,6 +107,14 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
       this.drawCachedBitmap(layout);
     }
   }
+
+  debouncedRefresh = debounce(
+    () => {
+      this.refresh().catch(console.error);
+    },
+    1000, // During this period, fallback to DOM
+    { leading: false, trailing: true }
+  );
 
   invalidate() {
     this.layoutVersion++;
@@ -190,7 +191,10 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   private drawCachedBitmap(layout: ViewportLayout) {
-    if (!this.tile) return; // version mismatch
+    if (!this.tile) {
+      this.debouncedRefresh();
+      return; // version mismatch
+    }
 
     const bitmap = this.tile.bitmap;
     const ctx = this.canvas.getContext('2d');
