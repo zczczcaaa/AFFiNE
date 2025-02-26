@@ -5,14 +5,23 @@ import type {
   TableRow,
 } from '@blocksuite/affine-model';
 import {
-  AdapterTextUtils,
-  HastUtils,
+  type HtmlAST,
+  type MarkdownAST,
 } from '@blocksuite/affine-shared/adapters';
+import { HastUtils } from '@blocksuite/affine-shared/adapters';
 import { generateFractionalIndexingKeyBetween } from '@blocksuite/affine-shared/utils';
 import type { DeltaInsert } from '@blocksuite/inline';
 import { nanoid } from '@blocksuite/store';
-import type { Element, ElementContent } from 'hast';
-import type { PhrasingContent, Table as MarkdownTable, TableCell } from 'mdast';
+import type { Element } from 'hast';
+import type { Table as MarkdownTable } from 'mdast';
+
+type RichTextType = DeltaInsert[];
+const createRichText = (text: RichTextType) => {
+  return {
+    '$blocksuite:internal:text$': true,
+    delta: text,
+  };
+};
 function calculateColumnWidths(rows: string[][]): number[] {
   return (
     rows[0]?.map((_, colIndex) =>
@@ -92,15 +101,6 @@ export const processTable = (
   });
   return table;
 };
-const getTextFromElement = (element: ElementContent): string => {
-  if (element.type === 'text') {
-    return element.value.trim();
-  }
-  if (element.type === 'element') {
-    return element.children.map(child => getTextFromElement(child)).join('');
-  }
-  return '';
-};
 
 const getAllTag = (node: Element | undefined, tagName: string): Element[] => {
   if (!node) {
@@ -120,7 +120,7 @@ const getAllTag = (node: Element | undefined, tagName: string): Element[] => {
   return [];
 };
 
-export const createTableProps = (rowTextLists: string[][]) => {
+export const createTableProps = (deltasLists: RichTextType[][]) => {
   const createIdAndOrder = (count: number) => {
     const result: { id: string; order: string }[] = Array.from({
       length: count,
@@ -135,8 +135,8 @@ export const createTableProps = (rowTextLists: string[][]) => {
     }
     return result;
   };
-  const columnCount = Math.max(...rowTextLists.map(row => row.length));
-  const rowCount = rowTextLists.length;
+  const columnCount = Math.max(...deltasLists.map(row => row.length));
+  const rowCount = deltasLists.length;
 
   const columns: TableColumn[] = createIdAndOrder(columnCount).map(v => ({
     columnId: v.id,
@@ -156,9 +156,9 @@ export const createTableProps = (rowTextLists: string[][]) => {
         continue;
       }
       const cellId = `${row.rowId}:${column.columnId}`;
-      const text = rowTextLists[i]?.[j];
+      const text = deltasLists[i]?.[j];
       cells[cellId] = {
-        text: AdapterTextUtils.createText(text ?? ''),
+        text: createRichText(text ?? []),
       };
     }
   }
@@ -172,7 +172,8 @@ export const createTableProps = (rowTextLists: string[][]) => {
 };
 
 export const parseTableFromHtml = (
-  element: Element
+  element: Element,
+  astToDelta: (ast: HtmlAST) => RichTextType
 ): TableBlockPropsSerialized => {
   const headerRows = getAllTag(element, 'thead').flatMap(node =>
     getAllTag(node, 'tr').map(tr => getAllTag(tr, 'th'))
@@ -184,33 +185,26 @@ export const parseTableFromHtml = (
     getAllTag(node, 'tr').map(tr => getAllTag(tr, 'td'))
   );
   const allRows = [...headerRows, ...bodyRows, ...footerRows];
-  const rowTextLists: string[][] = [];
+  const rowTextLists: RichTextType[][] = [];
   allRows.forEach(cells => {
-    const row: string[] = [];
+    const row: RichTextType[] = [];
     cells.forEach(cell => {
-      row.push(getTextFromElement(cell));
+      row.push(astToDelta(cell));
     });
     rowTextLists.push(row);
   });
   return createTableProps(rowTextLists);
 };
 
-const getTextFromTableCell = (node: TableCell) => {
-  const getTextFromPhrasingContent = (node: PhrasingContent) => {
-    if (node.type === 'text') {
-      return node.value;
-    }
-    return '';
-  };
-  return node.children.map(child => getTextFromPhrasingContent(child)).join('');
-};
-
-export const parseTableFromMarkdown = (node: MarkdownTable) => {
-  const rowTextLists: string[][] = [];
+export const parseTableFromMarkdown = (
+  node: MarkdownTable,
+  astToDelta: (ast: MarkdownAST) => RichTextType
+) => {
+  const rowTextLists: RichTextType[][] = [];
   node.children.forEach(row => {
-    const rowText: string[] = [];
+    const rowText: RichTextType[] = [];
     row.children.forEach(cell => {
-      rowText.push(getTextFromTableCell(cell));
+      rowText.push(astToDelta(cell));
     });
     rowTextLists.push(rowText);
   });

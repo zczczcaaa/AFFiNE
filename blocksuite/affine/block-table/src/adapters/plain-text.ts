@@ -7,6 +7,7 @@ import {
   BlockPlainTextAdapterExtension,
   type BlockPlainTextAdapterMatcher,
 } from '@blocksuite/affine-shared/adapters';
+import type { DeltaInsert } from '@blocksuite/inline';
 import { nanoid } from '@blocksuite/store';
 
 import { createTableProps, formatTable, processTable } from './utils.js';
@@ -21,10 +22,14 @@ export const tableBlockPlainTextAdapterMatcher: BlockPlainTextAdapterMatcher = {
       const text = o.node.content;
       const rowTexts = text.split('\n');
       if (rowTexts.length <= 1) return;
-      const rowTextLists: string[][] = [];
+      const rowTextLists: DeltaInsert[][][] = [];
       let columnCount: number | null = null;
       for (const row of rowTexts) {
-        const cells = row.split('\t');
+        const cells = row.split('\t').map<DeltaInsert[]>(text => [
+          {
+            insert: text,
+          },
+        ]);
         if (cells.length <= 1) return;
         if (columnCount == null) {
           columnCount = cells.length;

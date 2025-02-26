@@ -25,12 +25,15 @@ export const tableBlockMarkdownAdapterMatcher: BlockMarkdownAdapterMatcher = {
     enter: (o, context) => {
       const { walkerContext } = context;
       if (o.node.type === 'table') {
+        const astToDelta = context.deltaConverter.astToDelta.bind(
+          context.deltaConverter
+        );
         walkerContext.openNode(
           {
             type: 'block',
             id: nanoid(),
             flavour: TableModelFlavour,
-            props: parseTableFromMarkdown(o.node),
+            props: parseTableFromMarkdown(o.node, astToDelta),
             children: [],
           },
           'children'

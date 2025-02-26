@@ -30,7 +30,10 @@ export const tableBlockHtmlAdapterMatcher: BlockHtmlAdapterMatcher = {
       }
       const { walkerContext } = context;
       if (o.node.tagName === 'table') {
-        const tableProps = parseTableFromHtml(o.node);
+        const astToDelta = context.deltaConverter.astToDelta.bind(
+          context.deltaConverter
+        );
+        const tableProps = parseTableFromHtml(o.node, astToDelta);
         walkerContext.openNode(
           {
             type: 'block',
