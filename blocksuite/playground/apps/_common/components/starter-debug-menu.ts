@@ -238,7 +238,7 @@ export class StarterDebugMenu extends ShadowlessElement {
   private async _exportFile(config: AdapterConfig) {
     const doc = this.editor.doc;
     const job = new Transformer({
-      schema: this.collection.schema,
+      schema: doc.schema,
       blobCRUD: this.collection.blobSync,
       docCRUD: {
         create: (id: string) => this.collection.createDoc({ id }),
@@ -325,6 +325,7 @@ export class StarterDebugMenu extends ShadowlessElement {
   private async _exportSnapshot() {
     await ZipTransformer.exportDocs(
       this.collection,
+      this.editor.doc.schema,
       Array.from(this.collection.docs.values()).map(collection =>
         collection.getStore()
       )
@@ -346,6 +347,7 @@ export class StarterDebugMenu extends ShadowlessElement {
         const fileName = file.name.split('.').slice(0, -1).join('.');
         const pageId = await HtmlTransformer.importHTMLToDoc({
           collection: this.collection,
+          schema: this.editor.doc.schema,
           html: text,
           fileName,
         });
@@ -369,6 +371,7 @@ export class StarterDebugMenu extends ShadowlessElement {
       if (!file) return;
       const result = await HtmlTransformer.importHTMLZip({
         collection: this.collection,
+        schema: this.editor.doc.schema,
         imported: file,
       });
       if (!this.editor.host) return;
@@ -396,6 +399,7 @@ export class StarterDebugMenu extends ShadowlessElement {
         const fileName = file.name.split('.').slice(0, -1).join('.');
         const pageId = await MarkdownTransformer.importMarkdownToDoc({
           collection: this.collection,
+          schema: this.editor.doc.schema,
           markdown: text,
           fileName,
         });
@@ -419,6 +423,7 @@ export class StarterDebugMenu extends ShadowlessElement {
       if (!file) return;
       const result = await MarkdownTransformer.importMarkdownZip({
         collection: this.collection,
+        schema: this.editor.doc.schema,
         imported: file,
       });
       if (!this.editor.host) return;
@@ -438,8 +443,9 @@ export class StarterDebugMenu extends ShadowlessElement {
         multiple: false,
       });
       if (!file) return;
+      const doc = this.editor.doc;
       const job = new Transformer({
-        schema: this.collection.schema,
+        schema: doc.schema,
         blobCRUD: this.collection.blobSync,
         docCRUD: {
           create: (id: string) => this.collection.createDoc({ id }),
@@ -465,6 +471,7 @@ export class StarterDebugMenu extends ShadowlessElement {
       if (!file) return;
       const result = await NotionHtmlTransformer.importNotionZip({
         collection: this.collection,
+        schema: this.editor.doc.schema,
         imported: file,
       });
       if (!this.editor.host) return;
@@ -488,7 +495,11 @@ export class StarterDebugMenu extends ShadowlessElement {
         return;
       }
       try {
-        const docs = await ZipTransformer.importDocs(this.collection, file);
+        const docs = await ZipTransformer.importDocs(
+          this.collection,
+          this.editor.doc.schema,
+          file
+        );
         for (const doc of docs) {
           if (doc) {
             const noteBlock = window.doc.getBlockByFlavour('affine:note');

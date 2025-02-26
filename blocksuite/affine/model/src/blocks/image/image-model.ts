@@ -3,7 +3,11 @@ import type {
   GfxElementGeometry,
 } from '@blocksuite/block-std/gfx';
 import { GfxCompatible } from '@blocksuite/block-std/gfx';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 import { ImageBlockTransformer } from './image-transformer.js';
 
@@ -39,6 +43,8 @@ export const ImageBlockSchema = defineBlockSchema({
     new ImageBlockTransformer(transformerConfigs),
   toModel: () => new ImageBlockModel(),
 });
+
+export const ImageBlockSchemaExtension = BlockSchemaExtension(ImageBlockSchema);
 
 export class ImageBlockModel
   extends GfxCompatible<ImageBlockProps>(BlockModel)

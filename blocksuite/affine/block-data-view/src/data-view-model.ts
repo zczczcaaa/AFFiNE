@@ -5,7 +5,11 @@ import {
   type InsertToPosition,
 } from '@blocksuite/affine-shared/utils';
 import type { DataViewDataType } from '@blocksuite/data-view';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 type Props = {
   title: string;
@@ -93,3 +97,6 @@ export const DataViewBlockSchema = defineBlockSchema({
     return new DataViewBlockModel();
   },
 });
+
+export const DataViewBlockSchemaExtension =
+  BlockSchemaExtension(DataViewBlockSchema);

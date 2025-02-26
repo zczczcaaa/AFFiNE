@@ -32,12 +32,11 @@ import { Observable } from 'rxjs';
 import { type Doc as YDoc, encodeStateAsUpdate } from 'yjs';
 
 import { DesktopApiService } from '../../desktop-api';
-import {
-  getAFFiNEWorkspaceSchema,
-  type WorkspaceFlavourProvider,
-  type WorkspaceFlavoursProvider,
-  type WorkspaceMetadata,
-  type WorkspaceProfileInfo,
+import type {
+  WorkspaceFlavourProvider,
+  WorkspaceFlavoursProvider,
+  WorkspaceMetadata,
+  WorkspaceProfileInfo,
 } from '../../workspace';
 import { WorkspaceImpl } from '../../workspace/impls/workspace';
 import { getWorkspaceProfileWorker } from './out-worker';
@@ -145,7 +144,6 @@ class LocalWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
 
     const docCollection = new WorkspaceImpl({
       id: id,
-      schema: getAFFiNEWorkspaceSchema(),
       blobSource: {
         get: async key => {
           const record = await blobStorage.get(key);

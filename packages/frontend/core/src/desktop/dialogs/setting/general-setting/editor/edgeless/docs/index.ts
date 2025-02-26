@@ -1,7 +1,7 @@
+import { getAFFiNEWorkspaceSchema } from '@affine/core/modules/workspace';
 import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
-import { AffineSchemas } from '@blocksuite/affine/blocks';
 import type { DocSnapshot, Store } from '@blocksuite/affine/store';
-import { Schema, Transformer } from '@blocksuite/affine/store';
+import { Transformer } from '@blocksuite/affine/store';
 
 const getCollection = (() => {
   let collection: WorkspaceImpl | null = null;
@@ -9,9 +9,7 @@ const getCollection = (() => {
     if (collection) {
       return collection;
     }
-    const schema = new Schema();
-    schema.register(AffineSchemas);
-    collection = new WorkspaceImpl({ schema });
+    collection = new WorkspaceImpl({});
     collection.meta.initialize();
     return collection;
   };
@@ -86,7 +84,7 @@ async function initDoc(name: DocName) {
   const snapshot = (await loaders[name]()) as DocSnapshot;
   const collection = await getCollection();
   const transformer = new Transformer({
-    schema: collection.schema,
+    schema: getAFFiNEWorkspaceSchema(),
     blobCRUD: collection.blobSync,
     docCRUD: {
       create: (id: string) => collection.createDoc({ id }),

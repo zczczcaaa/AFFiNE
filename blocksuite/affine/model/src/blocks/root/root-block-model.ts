@@ -1,5 +1,9 @@
 import type { Text } from '@blocksuite/store';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 export type RootBlockProps = {
   title: Text;
@@ -51,3 +55,5 @@ export const RootBlockSchema = defineBlockSchema({
   },
   toModel: () => new RootBlockModel(),
 });
+
+export const RootBlockSchemaExtension = BlockSchemaExtension(RootBlockSchema);

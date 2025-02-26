@@ -1,3 +1,5 @@
+import { SpecProvider } from '@blocksuite/affine/blocks';
+
 import { AIChatBlockComponent } from './blocks/ai-chat-block/ai-chat-block';
 import { EdgelessAIChatBlockComponent } from './blocks/ai-chat-block/ai-chat-edgeless-block';
 import {
@@ -10,6 +12,7 @@ import {
 } from './blocks/ai-chat-block/components/chat-images';
 import { ImagePlaceholder } from './blocks/ai-chat-block/components/image-placeholder';
 import { UserInfo } from './blocks/ai-chat-block/components/user-info';
+import { AIChatBlockSchemaExtension } from './blocks/ai-chat-block/model';
 import { ChatPanel } from './chat-panel';
 import { ActionWrapper } from './chat-panel/actions/action-wrapper';
 import { ChatText } from './chat-panel/actions/chat-text';
@@ -126,4 +129,6 @@ export function registerAIEffects() {
     'edgeless-copilot-toolbar-entry',
     EdgelessCopilotToolbarEntry
   );
+
+  SpecProvider._.extendSpec('store', [AIChatBlockSchemaExtension]);
 }

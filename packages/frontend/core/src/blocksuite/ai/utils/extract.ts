@@ -197,7 +197,7 @@ function getNoteBlockModels(doc: Store) {
 
 async function getTransformer(doc: Store) {
   return new Transformer({
-    schema: doc.workspace.schema,
+    schema: doc.schema,
     blobCRUD: doc.workspace.blobSync,
     docCRUD: {
       create: (id: string) => doc.workspace.createDoc({ id }),

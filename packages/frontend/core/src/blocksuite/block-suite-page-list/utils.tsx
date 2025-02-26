@@ -4,6 +4,7 @@ import { AppSidebarService } from '@affine/core/modules/app-sidebar';
 import { DocsService } from '@affine/core/modules/doc';
 import { EditorSettingService } from '@affine/core/modules/editor-setting';
 import { WorkbenchService } from '@affine/core/modules/workbench';
+import { getAFFiNEWorkspaceSchema } from '@affine/core/modules/workspace';
 import { type DocMode } from '@blocksuite/affine/blocks';
 import type { Workspace } from '@blocksuite/affine/store';
 import { useServices } from '@toeverything/infra';
@@ -110,6 +111,7 @@ export const usePageHelper = (docCollection: Workspace) => {
       };
       showImportModal({
         collection: docCollection,
+        schema: getAFFiNEWorkspaceSchema(),
         onSuccess,
         onFail: message => {
           reject(new Error(message));

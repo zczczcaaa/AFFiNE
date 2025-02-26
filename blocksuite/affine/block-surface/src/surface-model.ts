@@ -5,7 +5,7 @@ import type {
 import type { SurfaceBlockProps } from '@blocksuite/block-std/gfx';
 import { SurfaceBlockModel as BaseSurfaceModel } from '@blocksuite/block-std/gfx';
 import { DisposableGroup } from '@blocksuite/global/utils';
-import { defineBlockSchema } from '@blocksuite/store';
+import { BlockSchemaExtension, defineBlockSchema } from '@blocksuite/store';
 import * as Y from 'yjs';
 
 import { elementsCtorMap } from './element-model/index.js';
@@ -35,6 +35,9 @@ export const SurfaceBlockSchema = defineBlockSchema({
     new SurfaceBlockTransformer(transformerConfigs),
   toModel: () => new SurfaceBlockModel(),
 });
+
+export const SurfaceBlockSchemaExtension =
+  BlockSchemaExtension(SurfaceBlockSchema);
 
 export type SurfaceMiddleware = (surface: SurfaceBlockModel) => () => void;
 

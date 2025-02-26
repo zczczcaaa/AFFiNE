@@ -1,5 +1,10 @@
-import { type SurfaceBlockModel, ZipTransformer } from '@blocksuite/blocks';
+import {
+  AffineSchemas,
+  type SurfaceBlockModel,
+  ZipTransformer,
+} from '@blocksuite/blocks';
 import type { PointLocation } from '@blocksuite/global/utils';
+import { Schema } from '@blocksuite/store';
 import { beforeEach, expect, test } from 'vitest';
 
 import { wait } from '../utils/common.js';
@@ -25,6 +30,8 @@ const skipFields = new Set(['_lastXYWH']);
 
 const snapshotTest = async (snapshotUrl: string, elementsCount: number) => {
   const transformer = ZipTransformer;
+  const schema = new Schema();
+  schema.register(AffineSchemas);
 
   const snapshotFile = await fetch(snapshotUrl)
     .then(res => res.blob())
@@ -32,8 +39,10 @@ const snapshotTest = async (snapshotUrl: string, elementsCount: number) => {
       console.error(e);
       throw e;
     });
+
   const [newDoc] = await transformer.importDocs(
     window.editor.doc.workspace,
+    schema,
     snapshotFile
   );
 

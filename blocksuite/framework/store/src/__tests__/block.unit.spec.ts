@@ -2,6 +2,7 @@ import { computed, effect } from '@preact/signals-core';
 import { describe, expect, test, vi } from 'vitest';
 import * as Y from 'yjs';
 
+import { BlockSchemaExtension } from '../extension/schema.js';
 import {
   Block,
   BlockModel,
@@ -9,7 +10,6 @@ import {
   internalPrimitives,
 } from '../model/block/index.js';
 import type { YBlock } from '../model/block/types.js';
-import { Schema } from '../schema/index.js';
 import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
 
@@ -27,6 +27,7 @@ const pageSchema = defineBlockSchema({
     version: 1,
   },
 });
+const pageSchemaExtension = BlockSchemaExtension(pageSchema);
 
 const tableSchema = defineBlockSchema({
   flavour: 'table',
@@ -39,6 +40,7 @@ const tableSchema = defineBlockSchema({
     version: 1,
   },
 });
+const tableSchemaExtension = BlockSchemaExtension(tableSchema);
 
 const flatTableSchema = defineBlockSchema({
   flavour: 'flat-table',
@@ -54,6 +56,8 @@ const flatTableSchema = defineBlockSchema({
     isFlatData: true,
   },
 });
+const flatTableSchemaExtension = BlockSchemaExtension(flatTableSchema);
+
 class RootModel extends BlockModel<
   ReturnType<(typeof pageSchema)['model']['props']>
 > {}
@@ -66,9 +70,7 @@ class FlatTableModel extends BlockModel<
 
 function createTestOptions() {
   const idGenerator = createAutoIncrementIdGenerator();
-  const schema = new Schema();
-  schema.register([pageSchema, tableSchema, flatTableSchema]);
-  return { id: 'test-collection', idGenerator, schema };
+  return { id: 'test-collection', idGenerator };
 }
 
 const defaultDocId = 'doc:home';
@@ -76,7 +78,14 @@ function createTestDoc(docId = defaultDocId) {
   const options = createTestOptions();
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
-  const doc = collection.createDoc({ id: docId });
+  const doc = collection.createDoc({
+    id: docId,
+    extensions: [
+      pageSchemaExtension,
+      tableSchemaExtension,
+      flatTableSchemaExtension,
+    ],
+  });
   doc.load();
   return doc;
 }

@@ -1,6 +1,10 @@
 import type { DeltaInsert } from '@blocksuite/inline';
 import type { Text } from '@blocksuite/store';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 export type TableCell = {
   text: Text;
@@ -56,3 +60,5 @@ export const TableBlockSchema = defineBlockSchema({
   },
   toModel: () => new TableBlockModel(),
 });
+
+export const TableBlockSchemaExtension = BlockSchemaExtension(TableBlockSchema);

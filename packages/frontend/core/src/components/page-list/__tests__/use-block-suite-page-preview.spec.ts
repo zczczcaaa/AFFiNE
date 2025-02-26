@@ -3,9 +3,9 @@
  */
 import 'fake-indexeddb/auto';
 
-import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
+import { StoreExtensions } from '@blocksuite/affine/blocks';
 import { assertExists } from '@blocksuite/affine/global/utils';
-import { Schema, type Store, Text } from '@blocksuite/affine/store';
+import { type Store, Text } from '@blocksuite/affine/store';
 import { TestWorkspace } from '@blocksuite/affine/store/test';
 import { renderHook } from '@testing-library/react';
 import { useAtomValue } from 'jotai';
@@ -14,12 +14,11 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { useBlockSuitePagePreview } from '../use-block-suite-page-preview';
 let docCollection: TestWorkspace;
 
-const schema = new Schema();
-schema.register(AffineSchemas);
+const extensions = StoreExtensions;
 
 beforeEach(async () => {
   vi.useFakeTimers({ toFake: ['requestIdleCallback'] });
-  docCollection = new TestWorkspace({ id: 'test', schema });
+  docCollection = new TestWorkspace({ id: 'test' });
   docCollection.meta.initialize();
   const initPage = async (page: Store) => {
     page.load();
@@ -31,7 +30,7 @@ beforeEach(async () => {
     const frameId = page.addBlock('affine:note', {}, pageBlockId);
     page.addBlock('affine:paragraph', {}, frameId);
   };
-  await initPage(docCollection.createDoc({ id: 'page0' }));
+  await initPage(docCollection.createDoc({ id: 'page0', extensions }));
 });
 
 describe('useBlockSuitePagePreview', () => {

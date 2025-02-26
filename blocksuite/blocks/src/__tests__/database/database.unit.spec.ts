@@ -11,39 +11,37 @@ import {
   type Cell,
   type Column,
   type DatabaseBlockModel,
-  DatabaseBlockSchema,
-  NoteBlockSchema,
-  ParagraphBlockSchema,
-  RootBlockSchema,
+  DatabaseBlockSchemaExtension,
+  NoteBlockSchemaExtension,
+  ParagraphBlockSchemaExtension,
+  RootBlockSchemaExtension,
 } from '@blocksuite/affine-model';
 import { propertyModelPresets } from '@blocksuite/data-view/property-pure-presets';
 import type { BlockModel, Store } from '@blocksuite/store';
-import { Schema, Text } from '@blocksuite/store';
+import { Text } from '@blocksuite/store';
 import {
   createAutoIncrementIdGenerator,
   TestWorkspace,
 } from '@blocksuite/store/test';
 import { beforeEach, describe, expect, test } from 'vitest';
 
-const AffineSchemas = [
-  RootBlockSchema,
-  NoteBlockSchema,
-  ParagraphBlockSchema,
-  DatabaseBlockSchema,
+const extensions = [
+  RootBlockSchemaExtension,
+  NoteBlockSchemaExtension,
+  ParagraphBlockSchemaExtension,
+  DatabaseBlockSchemaExtension,
 ];
 
 function createTestOptions() {
   const idGenerator = createAutoIncrementIdGenerator();
-  const schema = new Schema();
-  schema.register(AffineSchemas);
-  return { id: 'test-collection', idGenerator, schema };
+  return { id: 'test-collection', idGenerator };
 }
 
 function createTestDoc(docId = 'doc0') {
   const options = createTestOptions();
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
-  const doc = collection.createDoc({ id: docId });
+  const doc = collection.createDoc({ id: docId, extensions });
   doc.load();
   return doc;
 }

@@ -10,7 +10,6 @@ import {
   type GetBlocksOptions,
   type IdGenerator,
   nanoid,
-  type Schema,
   type Store,
   type Workspace,
   type WorkspaceMeta,
@@ -28,15 +27,12 @@ import { WorkspaceMetaImpl } from './meta';
 
 type WorkspaceOptions = {
   id?: string;
-  schema: Schema;
   blobSource?: BlobSource;
   onLoadDoc?: (doc: Y.Doc) => void;
   onLoadAwareness?: (awareness: Awareness) => void;
 };
 
 export class WorkspaceImpl implements Workspace {
-  protected readonly _schema: Schema;
-
   readonly awarenessStore: AwarenessStore;
 
   readonly blobSync: BlobEngine;
@@ -61,22 +57,15 @@ export class WorkspaceImpl implements Workspace {
     return this.blockCollections;
   }
 
-  get schema() {
-    return this._schema;
-  }
-
   readonly onLoadDoc?: (doc: Y.Doc) => void;
   readonly onLoadAwareness?: (awareness: Awareness) => void;
 
   constructor({
     id,
-    schema,
     blobSource,
     onLoadDoc,
     onLoadAwareness,
-  }: WorkspaceOptions) {
-    this._schema = schema;
-
+  }: WorkspaceOptions = {}) {
     this.id = id || '';
     this.doc = new Y.Doc({ guid: id });
     this.awarenessStore = new AwarenessStore(new Awareness(this.doc));

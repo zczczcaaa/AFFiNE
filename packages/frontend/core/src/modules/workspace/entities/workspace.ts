@@ -3,7 +3,6 @@ import { Entity, LiveData } from '@toeverything/infra';
 import { Observable } from 'rxjs';
 import type { Awareness } from 'y-protocols/awareness.js';
 
-import { getAFFiNEWorkspaceSchema } from '../global-schema';
 import { WorkspaceImpl } from '../impls/workspace';
 import type { WorkspaceScope } from '../scopes/workspace';
 import { WorkspaceEngineService } from '../services/engine';
@@ -51,7 +50,6 @@ export class Workspace extends Entity {
           name: 'blob',
           readonly: false,
         },
-        schema: getAFFiNEWorkspaceSchema(),
         onLoadDoc: doc => this.engine.doc.connectDoc(doc),
         onLoadAwareness: awareness =>
           this.engine.awareness.connectAwareness(awareness),

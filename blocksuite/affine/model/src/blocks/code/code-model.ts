@@ -1,4 +1,9 @@
-import { BlockModel, defineBlockSchema, type Text } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+  type Text,
+} from '@blocksuite/store';
 
 interface CodeBlockProps {
   text: Text;
@@ -29,6 +34,8 @@ export const CodeBlockSchema = defineBlockSchema({
   },
   toModel: () => new CodeBlockModel(),
 });
+
+export const CodeBlockSchemaExtension = BlockSchemaExtension(CodeBlockSchema);
 
 export class CodeBlockModel extends BlockModel<CodeBlockProps> {
   override text!: Text;

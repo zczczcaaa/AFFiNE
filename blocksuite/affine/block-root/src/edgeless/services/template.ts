@@ -91,7 +91,7 @@ export class TemplateJob {
 
   constructor({ model, type, middlewares }: TemplateJobConfig) {
     this.job = new Transformer({
-      schema: model.doc.workspace.schema,
+      schema: model.doc.schema,
       blobCRUD: model.doc.workspace.blobSync,
       docCRUD: {
         create: (id: string) => model.doc.workspace.createDoc({ id }),
@@ -320,8 +320,7 @@ export class TemplateJob {
     from: Record<string, Record<string, unknown>>,
     to: Y.Map<Y.Map<unknown>>
   ) {
-    const schema =
-      this.model.doc.workspace.schema.flavourSchemaMap.get('affine:surface');
+    const schema = this.model.doc.schema.get('affine:surface');
     const surfaceTransformer = schema?.transformer?.(
       new Map()
     ) as SurfaceBlockTransformer;

@@ -214,7 +214,7 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
     if (this._answers.length > 0) {
       const latestAnswer = this._answers.pop();
       this._answers = [];
-      const schema = this.schema ?? this.host?.std.store.workspace.schema;
+      const schema = this.schema ?? this.host?.std.store.schema;
       let provider: ServiceProvider;
       if (this.host) {
         provider = this.host.std.provider;

@@ -15,7 +15,12 @@ import {
   hasDescendantElementImpl,
 } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
-import { BlockModel, defineBlockSchema, type Text } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+  type Text,
+} from '@blocksuite/store';
 import { z } from 'zod';
 
 import { type Color, ColorSchema, DefaultTheme } from '../../themes/index.js';
@@ -56,6 +61,8 @@ export const FrameBlockSchema = defineBlockSchema({
     return new FrameBlockModel();
   },
 });
+
+export const FrameBlockSchemaExtension = BlockSchemaExtension(FrameBlockSchema);
 
 export class FrameBlockModel
   extends GfxCompatible<FrameBlockProps>(BlockModel)

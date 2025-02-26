@@ -374,7 +374,7 @@ export class EdgelessClipboardController extends PageClipboard {
         const elementsRawData = JSON.parse(mayBeSurfaceDataJson);
         const { snapshot, blobs } = elementsRawData;
         const job = new Transformer({
-          schema: this.std.workspace.schema,
+          schema: this.std.store.schema,
           blobCRUD: this.std.workspace.blobSync,
           docCRUD: {
             create: (id: string) => this.std.workspace.createDoc({ id }),
@@ -1378,7 +1378,7 @@ export async function prepareClipboardData(
   std: BlockStdScope
 ) {
   const job = new Transformer({
-    schema: std.workspace.schema,
+    schema: std.store.schema,
     blobCRUD: std.workspace.blobSync,
     docCRUD: {
       create: (id: string) => std.workspace.createDoc({ id }),

@@ -2,7 +2,6 @@ import { useDocMetaHelper } from '@affine/core/components/hooks/use-block-suite-
 import { useDocCollectionPage } from '@affine/core/components/hooks/use-block-suite-workspace-page';
 import { FetchService, GraphQLService } from '@affine/core/modules/cloud';
 import {
-  getAFFiNEWorkspaceSchema,
   type WorkspaceFlavourProvider,
   WorkspaceService,
   WorkspacesService,
@@ -131,7 +130,6 @@ const getOrCreateShellWorkspace = (
           return Promise.resolve([]);
         },
       },
-      schema: getAFFiNEWorkspaceSchema(),
     });
     docCollectionMap.set(workspaceId, docCollection);
     docCollection.doc.emit('sync', [true, docCollection.doc]);

@@ -4,20 +4,13 @@ import type * as Y from 'yjs';
 import type {
   DocMeta,
   DocsPropertiesMeta,
-  Workspace,
   WorkspaceMeta,
 } from '../model/index.js';
 import { createYProxy } from '../reactive/proxy.js';
 
-const COLLECTION_VERSION = 2;
-const PAGE_VERSION = 2;
-
 type DocCollectionMetaState = {
   pages?: unknown[];
   properties?: DocsPropertiesMeta;
-  workspaceVersion?: number;
-  pageVersion?: number;
-  blockVersions?: Record<string, number>;
   name?: string;
   avatar?: string;
 };
@@ -68,10 +61,6 @@ export class TestMeta implements WorkspaceMeta {
     return this._proxy.avatar;
   }
 
-  get blockVersions() {
-    return this._proxy.blockVersions;
-  }
-
   get docMetas() {
     if (!this._proxy.pages) {
       return [] as DocMeta[];
@@ -83,19 +72,8 @@ export class TestMeta implements WorkspaceMeta {
     return this._proxy.pages;
   }
 
-  get hasVersion() {
-    if (!this.blockVersions || !this.pageVersion || !this.workspaceVersion) {
-      return false;
-    }
-    return Object.keys(this.blockVersions).length > 0;
-  }
-
   get name() {
     return this._proxy.name;
-  }
-
-  get pageVersion() {
-    return this._proxy.pageVersion;
   }
 
   get properties(): DocsPropertiesMeta {
@@ -108,10 +86,6 @@ export class TestMeta implements WorkspaceMeta {
       };
     }
     return meta;
-  }
-
-  get workspaceVersion() {
-    return this._proxy.workspaceVersion;
   }
 
   get yDocs() {
@@ -231,34 +205,5 @@ export class TestMeta implements WorkspaceMeta {
   setProperties(meta: DocsPropertiesMeta) {
     this._proxy.properties = meta;
     this.docMetaUpdated.emit();
-  }
-
-  /**
-   * @internal Only for doc initialization
-   */
-  writeVersion(collection: Workspace) {
-    const { blockVersions, pageVersion, workspaceVersion } = this._proxy;
-
-    if (!workspaceVersion) {
-      this._proxy.workspaceVersion = COLLECTION_VERSION;
-    } else {
-      console.error('Workspace version is already set');
-    }
-
-    if (!pageVersion) {
-      this._proxy.pageVersion = PAGE_VERSION;
-    } else {
-      console.error('Doc version is already set');
-    }
-
-    if (!blockVersions) {
-      const _versions: Record<string, number> = {};
-      collection.schema.flavourSchemaMap.forEach((schema, flavour) => {
-        _versions[flavour] = schema.version;
-      });
-      this._proxy.blockVersions = _versions;
-    } else {
-      console.error('Block versions is already set');
-    }
   }
 }

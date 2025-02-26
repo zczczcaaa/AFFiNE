@@ -1,9 +1,8 @@
 import { WorkspaceImpl } from '@affine/core/modules/workspace/impls/workspace';
 import { BlockStdScope, type EditorHost } from '@blocksuite/affine/block-std';
 import { SpecProvider } from '@blocksuite/affine/blocks';
-import { AffineSchemas } from '@blocksuite/affine/blocks/schemas';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
-import { Schema, type Store } from '@blocksuite/affine/store';
+import type { Store } from '@blocksuite/affine/store';
 import { css, html, LitElement, nothing } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -216,9 +215,7 @@ export class AISlidesRenderer extends WithDisposable(LitElement) {
   override connectedCallback(): void {
     super.connectedCallback();
 
-    const schema = new Schema().register(AffineSchemas);
     const collection = new WorkspaceImpl({
-      schema,
       id: 'SLIDES_PREVIEW',
     });
     collection.meta.initialize();

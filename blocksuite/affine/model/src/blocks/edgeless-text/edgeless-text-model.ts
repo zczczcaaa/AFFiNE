@@ -3,7 +3,11 @@ import type {
   GfxElementGeometry,
 } from '@blocksuite/block-std/gfx';
 import { GfxCompatible } from '@blocksuite/block-std/gfx';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 import { z } from 'zod';
 
 import {
@@ -75,6 +79,10 @@ export const EdgelessTextBlockSchema = defineBlockSchema({
     return new EdgelessTextBlockModel();
   },
 });
+
+export const EdgelessTextBlockSchemaExtension = BlockSchemaExtension(
+  EdgelessTextBlockSchema
+);
 
 export class EdgelessTextBlockModel
   extends GfxCompatible<EdgelessTextProps>(BlockModel)

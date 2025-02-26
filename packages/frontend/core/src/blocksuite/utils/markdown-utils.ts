@@ -81,7 +81,7 @@ export async function getContentFromSlice(
   type: 'markdown' | 'plain-text' = 'markdown'
 ) {
   const transformer = new Transformer({
-    schema: host.std.store.workspace.schema,
+    schema: host.std.store.schema,
     blobCRUD: host.std.store.workspace.blobSync,
     docCRUD: {
       create: (id: string) => host.std.store.workspace.createDoc({ id }),
@@ -114,7 +114,7 @@ export const markdownToSnapshot = async (
   host: EditorHost
 ) => {
   const transformer = new Transformer({
-    schema: host.std.store.workspace.schema,
+    schema: host.std.store.schema,
     blobCRUD: host.std.store.workspace.blobSync,
     docCRUD: {
       create: (id: string) => host.std.store.workspace.createDoc({ id }),
@@ -174,12 +174,10 @@ export async function markDownToDoc(
   middlewares?: TransformerMiddleware[]
 ) {
   // Should not create a new doc in the original collection
-  const collection = new WorkspaceImpl({
-    schema,
-  });
+  const collection = new WorkspaceImpl();
   collection.meta.initialize();
   const transformer = new Transformer({
-    schema: collection.schema,
+    schema,
     blobCRUD: collection.blobSync,
     docCRUD: {
       create: (id: string) => collection.createDoc({ id }),

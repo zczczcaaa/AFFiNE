@@ -9,7 +9,7 @@ import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import { Container } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { assertExists, sha } from '@blocksuite/global/utils';
-import type { Store, Workspace } from '@blocksuite/store';
+import type { Schema, Store, Workspace } from '@blocksuite/store';
 import { extMimeMap, Transformer } from '@blocksuite/store';
 
 import { createAssetsArchive, download, Unzip } from './utils.js';
@@ -31,12 +31,14 @@ type ImportMarkdownToBlockOptions = {
 
 type ImportMarkdownToDocOptions = {
   collection: Workspace;
+  schema: Schema;
   markdown: string;
   fileName?: string;
 };
 
 type ImportMarkdownZipOptions = {
   collection: Workspace;
+  schema: Schema;
   imported: Blob;
 };
 
@@ -143,18 +145,20 @@ async function importMarkdownToBlock({
  * Imports Markdown content into a new doc within a collection.
  * @param options Object containing import options
  * @param options.collection The target doc collection
+ * @param options.schema The schema of the target doc collection
  * @param options.markdown The Markdown content to import
  * @param options.fileName Optional filename for the imported doc
  * @returns A Promise that resolves to the ID of the newly created doc, or undefined if import fails
  */
 async function importMarkdownToDoc({
   collection,
+  schema,
   markdown,
   fileName,
 }: ImportMarkdownToDocOptions) {
   const provider = getProvider();
   const job = new Transformer({
-    schema: collection.schema,
+    schema,
     blobCRUD: collection.blobSync,
     docCRUD: {
       create: (id: string) => collection.createDoc({ id }),
@@ -182,11 +186,13 @@ async function importMarkdownToDoc({
  * Imports a zip file containing Markdown files and assets into a collection.
  * @param options Object containing import options
  * @param options.collection The target doc collection
+ * @param options.schema The schema of the target doc collection
  * @param options.imported The zip file as a Blob
  * @returns A Promise that resolves to an array of IDs of the newly created docs
  */
 async function importMarkdownZip({
   collection,
+  schema,
   imported,
 }: ImportMarkdownZipOptions) {
   const provider = getProvider();
@@ -219,7 +225,7 @@ async function importMarkdownZip({
     markdownBlobs.map(async ([fileName, blob]) => {
       const fileNameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
       const job = new Transformer({
-        schema: collection.schema,
+        schema,
         blobCRUD: collection.blobSync,
         docCRUD: {
           create: (id: string) => collection.createDoc({ id }),

@@ -2,7 +2,11 @@ import {
   type GfxCommonBlockProps,
   GfxCompatible,
 } from '@blocksuite/affine/block-std/gfx';
-import { BlockModel, defineBlockSchema } from '@blocksuite/affine/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/affine/store';
 
 type AIChatProps = {
   messages: string; // JSON string of ChatMessage[]
@@ -32,5 +36,8 @@ export const AIChatBlockSchema = defineBlockSchema({
     return new AIChatBlockModel();
   },
 });
+
+export const AIChatBlockSchemaExtension =
+  BlockSchemaExtension(AIChatBlockSchema);
 
 export class AIChatBlockModel extends GfxCompatible<AIChatProps>(BlockModel) {}

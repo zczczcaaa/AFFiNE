@@ -41,7 +41,7 @@ export function getSortedCloneElements(elements: GfxModel[]) {
 export function prepareCloneData(elements: GfxModel[], std: BlockStdScope) {
   elements = sortEdgelessElements(elements);
   const job = new Transformer({
-    schema: std.workspace.schema,
+    schema: std.store.schema,
     blobCRUD: std.workspace.blobSync,
     docCRUD: {
       create: (id: string) => std.workspace.createDoc({ id }),

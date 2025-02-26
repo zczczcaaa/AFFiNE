@@ -2,31 +2,28 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import * as Y from 'yjs';
 
 import type { BlockModel, Store } from '../model/index.js';
-import { Schema } from '../schema/index.js';
 import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
 import {
-  DividerBlockSchema,
-  ListBlockSchema,
-  NoteBlockSchema,
-  ParagraphBlockSchema,
+  DividerBlockSchemaExtension,
+  ListBlockSchemaExtension,
+  NoteBlockSchemaExtension,
+  ParagraphBlockSchemaExtension,
   type RootBlockModel,
-  RootBlockSchema,
+  RootBlockSchemaExtension,
 } from './test-schema.js';
 
-const BlockSchemas = [
-  RootBlockSchema,
-  ParagraphBlockSchema,
-  ListBlockSchema,
-  NoteBlockSchema,
-  DividerBlockSchema,
+const extensions = [
+  RootBlockSchemaExtension,
+  ParagraphBlockSchemaExtension,
+  ListBlockSchemaExtension,
+  NoteBlockSchemaExtension,
+  DividerBlockSchemaExtension,
 ];
 
 function createTestOptions() {
   const idGenerator = createAutoIncrementIdGenerator();
-  const schema = new Schema();
-  schema.register(BlockSchemas);
-  return { id: 'test-collection', idGenerator, schema };
+  return { id: 'test-collection', idGenerator };
 }
 
 test('trigger props updated', () => {
@@ -34,7 +31,7 @@ test('trigger props updated', () => {
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
 
-  const doc = collection.createDoc({ id: 'home' });
+  const doc = collection.createDoc({ id: 'home', extensions });
   doc.load();
 
   doc.addBlock('affine:page');
@@ -94,7 +91,7 @@ test('stash and pop', () => {
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
 
-  const doc = collection.createDoc({ id: 'home' });
+  const doc = collection.createDoc({ id: 'home', extensions });
   doc.load();
 
   doc.addBlock('affine:page');
@@ -164,7 +161,7 @@ test('always get latest value in onChange', () => {
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
 
-  const doc = collection.createDoc({ id: 'home' });
+  const doc = collection.createDoc({ id: 'home', extensions });
   doc.load();
 
   doc.addBlock('affine:page');
@@ -210,11 +207,12 @@ test('query', () => {
   const options = createTestOptions();
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
-  const doc1 = collection.createDoc({ id: 'home' });
+  const doc1 = collection.createDoc({ id: 'home', extensions });
   doc1.load();
-  const doc2 = collection.getDoc('home');
+  const doc2 = collection.getDoc('home', { extensions });
 
   const doc3 = collection.getDoc('home', {
+    extensions,
     query: {
       mode: 'loose',
       match: [
@@ -247,10 +245,10 @@ test('local readonly', () => {
   const options = createTestOptions();
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
-  const doc1 = collection.createDoc({ id: 'home' });
+  const doc1 = collection.createDoc({ id: 'home', extensions });
   doc1.load();
-  const doc2 = collection.getDoc('home', { readonly: true });
-  const doc3 = collection.getDoc('home', { readonly: false });
+  const doc2 = collection.getDoc('home', { readonly: true, extensions });
+  const doc3 = collection.getDoc('home', { readonly: false, extensions });
 
   expect(doc1.readonly).toBeFalsy();
   expect(doc2?.readonly).toBeTruthy();
@@ -276,7 +274,7 @@ describe('move blocks', () => {
     const collection = new TestWorkspace(options);
     collection.meta.initialize();
 
-    const doc = collection.createDoc({ id: 'home' });
+    const doc = collection.createDoc({ id: 'home', extensions });
     doc.load();
     const pageId = doc.addBlock('affine:page');
     const page = doc.getBlock(pageId)!.model;

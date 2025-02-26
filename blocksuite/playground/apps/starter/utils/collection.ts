@@ -49,7 +49,6 @@ export function createStarterDocCollection() {
 
   const options: DocCollectionOptions = {
     id: collectionId,
-    schema,
     idGenerator,
     awarenessSources: [new BroadcastChannelAwarenessSource(id)],
     docSources,
@@ -63,7 +62,7 @@ export function createStarterDocCollection() {
   window.collection = collection;
   window.blockSchemas = AffineSchemas;
   window.job = new Transformer({
-    schema: collection.schema,
+    schema,
     blobCRUD: collection.blobSync,
     docCRUD: {
       create: (id: string) => collection.createDoc({ id }),

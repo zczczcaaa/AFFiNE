@@ -1,4 +1,3 @@
-import { Schema } from '@blocksuite/store';
 import {
   createAutoIncrementIdGenerator,
   TestWorkspace,
@@ -9,19 +8,23 @@ import { effects } from '../effects.js';
 import { TestEditorContainer } from './test-editor.js';
 import {
   type HeadingBlockModel,
-  HeadingBlockSchema,
-  NoteBlockSchema,
-  RootBlockSchema,
+  HeadingBlockSchemaExtension,
+  NoteBlockSchemaExtension,
+  RootBlockSchemaExtension,
 } from './test-schema.js';
 import { testSpecs } from './test-spec.js';
 
 effects();
 
+const extensions = [
+  RootBlockSchemaExtension,
+  NoteBlockSchemaExtension,
+  HeadingBlockSchemaExtension,
+];
+
 function createTestOptions() {
   const idGenerator = createAutoIncrementIdGenerator();
-  const schema = new Schema();
-  schema.register([RootBlockSchema, NoteBlockSchema, HeadingBlockSchema]);
-  return { id: 'test-collection', idGenerator, schema };
+  return { id: 'test-collection', idGenerator };
 }
 
 function wait(time: number) {
@@ -33,7 +36,7 @@ describe('editor host', () => {
     const collection = new TestWorkspace(createTestOptions());
 
     collection.meta.initialize();
-    const doc = collection.createDoc({ id: 'home' });
+    const doc = collection.createDoc({ id: 'home', extensions });
     doc.load();
     const rootId = doc.addBlock('test:page');
     const noteId = doc.addBlock('test:note', {}, rootId);

@@ -4,7 +4,11 @@ import type {
 } from '@blocksuite/block-std/gfx';
 import { GfxCompatible } from '@blocksuite/block-std/gfx';
 import { Bound } from '@blocksuite/global/utils';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 import { z } from 'zod';
 
 import {
@@ -21,6 +25,7 @@ import {
   StrokeStyleSchema,
 } from '../../consts/note';
 import { type Color, ColorSchema, DefaultTheme } from '../../themes';
+import { TableModelFlavour } from '../table';
 
 export const NoteZodSchema = z
   .object({
@@ -47,7 +52,6 @@ export const NoteZodSchema = z
       },
     },
   });
-import { TableModelFlavour } from '../table';
 
 export const NoteBlockSchema = defineBlockSchema({
   flavour: 'affine:note',
@@ -92,6 +96,7 @@ export const NoteBlockSchema = defineBlockSchema({
   },
 });
 
+export const NoteBlockSchemaExtension = BlockSchemaExtension(NoteBlockSchema);
 export type NoteProps = {
   background: Color;
   displayMode: NoteDisplayMode;

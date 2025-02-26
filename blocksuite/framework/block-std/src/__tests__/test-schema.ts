@@ -1,4 +1,8 @@
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 export const RootBlockSchema = defineBlockSchema({
   flavour: 'test:page',
@@ -15,6 +19,8 @@ export const RootBlockSchema = defineBlockSchema({
   },
 });
 
+export const RootBlockSchemaExtension = BlockSchemaExtension(RootBlockSchema);
+
 export class RootBlockModel extends BlockModel<
   ReturnType<(typeof RootBlockSchema)['model']['props']>
 > {}
@@ -29,6 +35,8 @@ export const NoteBlockSchema = defineBlockSchema({
     children: ['test:heading'],
   },
 });
+
+export const NoteBlockSchemaExtension = BlockSchemaExtension(NoteBlockSchema);
 
 export class NoteBlockModel extends BlockModel<
   ReturnType<(typeof NoteBlockSchema)['model']['props']>
@@ -46,6 +54,9 @@ export const HeadingBlockSchema = defineBlockSchema({
     parent: ['test:note'],
   },
 });
+
+export const HeadingBlockSchemaExtension =
+  BlockSchemaExtension(HeadingBlockSchema);
 
 export class HeadingBlockModel extends BlockModel<
   ReturnType<(typeof HeadingBlockSchema)['model']['props']>

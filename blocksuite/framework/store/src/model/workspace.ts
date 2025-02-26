@@ -3,7 +3,6 @@ import type { BlobEngine } from '@blocksuite/sync';
 import type { Awareness } from 'y-protocols/awareness.js';
 import type * as Y from 'yjs';
 
-import type { Schema } from '../schema/schema.js';
 import type { IdGenerator } from '../utils/id-generator.js';
 import type { AwarenessStore } from '../yjs/awareness.js';
 import type { CreateBlocksOptions, Doc, GetBlocksOptions } from './doc.js';
@@ -19,7 +18,6 @@ export interface Workspace {
   readonly onLoadDoc?: (doc: Y.Doc) => void;
   readonly onLoadAwareness?: (awareness: Awareness) => void;
 
-  get schema(): Schema;
   get doc(): Y.Doc;
   get docs(): Map<string, Doc>;
 

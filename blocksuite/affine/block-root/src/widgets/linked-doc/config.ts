@@ -233,6 +233,7 @@ export function createNewDocMenuGroup(
           };
           showImportModal({
             collection: doc.workspace,
+            schema: doc.schema,
             onSuccess,
             onFail,
           });

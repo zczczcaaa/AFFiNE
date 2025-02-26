@@ -4,8 +4,11 @@ import { type Disposable, Slot } from '@blocksuite/global/utils';
 import { computed, signal } from '@preact/signals-core';
 
 import type { ExtensionType } from '../../extension/extension.js';
-import { StoreSelectionExtension } from '../../extension/index.js';
-import type { Schema } from '../../schema/index.js';
+import {
+  BlockSchemaIdentifier,
+  StoreSelectionExtension,
+} from '../../extension/index.js';
+import { Schema } from '../../schema/index.js';
 import {
   Block,
   type BlockModel,
@@ -20,7 +23,6 @@ import { type Query, runQuery } from './query.js';
 import { syncBlockProps } from './utils.js';
 
 export type StoreOptions = {
-  schema: Schema;
   doc: Doc;
   id?: string;
   readonly?: boolean;
@@ -298,14 +300,7 @@ export class Store {
     return this._doc.withoutTransact.bind(this._doc);
   }
 
-  constructor({
-    schema,
-    doc,
-    readonly,
-    query,
-    provider,
-    extensions,
-  }: StoreOptions) {
+  constructor({ doc, readonly, query, provider, extensions }: StoreOptions) {
     const container = new Container();
     container.addImpl(StoreIdentifier, () => this);
 
@@ -331,8 +326,11 @@ export class Store {
       yBlockUpdated: this._doc.slots.yBlockUpdated,
     };
 
-    this._crud = new DocCRUD(this._yBlocks, doc.schema);
-    this._schema = schema;
+    this._schema = new Schema();
+    this._provider.getAll(BlockSchemaIdentifier).forEach(schema => {
+      this._schema.register([schema]);
+    });
+    this._crud = new DocCRUD(this._yBlocks, this._schema);
     if (readonly !== undefined) {
       this._readonly.value = readonly;
     }

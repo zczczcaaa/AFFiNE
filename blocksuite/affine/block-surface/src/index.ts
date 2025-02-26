@@ -50,7 +50,11 @@ export {
 } from './adapters/index.js';
 export type { SurfaceContext } from './surface-block.js';
 export { SurfaceBlockComponent } from './surface-block.js';
-export { SurfaceBlockModel, SurfaceBlockSchema } from './surface-model.js';
+export {
+  SurfaceBlockModel,
+  SurfaceBlockSchema,
+  SurfaceBlockSchemaExtension,
+} from './surface-model.js';
 export type { SurfaceBlockService } from './surface-service.js';
 export {
   EdgelessSurfaceBlockSpec,

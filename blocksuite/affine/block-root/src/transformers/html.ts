@@ -8,19 +8,21 @@ import {
 import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
-import type { Store, Workspace } from '@blocksuite/store';
+import type { Schema, Store, Workspace } from '@blocksuite/store';
 import { extMimeMap, Transformer } from '@blocksuite/store';
 
 import { createAssetsArchive, download, Unzip } from './utils.js';
 
 type ImportHTMLToDocOptions = {
   collection: Workspace;
+  schema: Schema;
   html: string;
   fileName?: string;
 };
 
 type ImportHTMLZipOptions = {
   collection: Workspace;
+  schema: Schema;
   imported: Blob;
 };
 
@@ -87,18 +89,20 @@ async function exportDoc(doc: Store) {
  *
  * @param options - The import options.
  * @param options.collection - The target doc collection.
+ * @param options.schema - The schema of the target doc collection.
  * @param options.html - The HTML content to import.
  * @param options.fileName - Optional filename for the imported doc.
  * @returns A Promise that resolves to the ID of the newly created doc, or undefined if import fails.
  */
 async function importHTMLToDoc({
   collection,
+  schema,
   html,
   fileName,
 }: ImportHTMLToDocOptions) {
   const provider = getProvider();
   const job = new Transformer({
-    schema: collection.schema,
+    schema,
     blobCRUD: collection.blobSync,
     docCRUD: {
       create: (id: string) => collection.createDoc({ id }),
@@ -127,10 +131,15 @@ async function importHTMLToDoc({
  *
  * @param options - The import options.
  * @param options.collection - The target doc collection.
+ * @param options.schema - The schema of the target doc collection.
  * @param options.imported - The zip file as a Blob.
  * @returns A Promise that resolves to an array of IDs of the newly created docs.
  */
-async function importHTMLZip({ collection, imported }: ImportHTMLZipOptions) {
+async function importHTMLZip({
+  collection,
+  schema,
+  imported,
+}: ImportHTMLZipOptions) {
   const provider = getProvider();
   const unzip = new Unzip();
   await unzip.load(imported);
@@ -161,7 +170,7 @@ async function importHTMLZip({ collection, imported }: ImportHTMLZipOptions) {
     htmlBlobs.map(async ([fileName, blob]) => {
       const fileNameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
       const job = new Transformer({
-        schema: collection.schema,
+        schema,
         blobCRUD: collection.blobSync,
         docCRUD: {
           create: (id: string) => collection.createDoc({ id }),

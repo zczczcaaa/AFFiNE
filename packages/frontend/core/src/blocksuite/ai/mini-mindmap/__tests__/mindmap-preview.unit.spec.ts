@@ -4,7 +4,6 @@ import {
   MarkdownInlineToDeltaAdapterExtensions,
 } from '@blocksuite/affine/blocks';
 import { Container } from '@blocksuite/affine/global/di';
-import { Schema } from '@blocksuite/affine/store';
 import { TestWorkspace } from '@blocksuite/affine/store/test';
 import { describe, expect, test } from 'vitest';
 
@@ -29,7 +28,7 @@ describe('markdownToMindmap: convert markdown list to a mind map tree', () => {
   - Text D
     - Text E
 `;
-    const collection = new TestWorkspace({ schema: new Schema() });
+    const collection = new TestWorkspace();
     collection.meta.initialize();
     const doc = collection.createDoc();
     const nodes = markdownToMindmap(markdown, doc, provider);
@@ -67,7 +66,7 @@ describe('markdownToMindmap: convert markdown list to a mind map tree', () => {
     - Text D
         - Text E
 `;
-    const collection = new TestWorkspace({ schema: new Schema() });
+    const collection = new TestWorkspace();
     collection.meta.initialize();
     const doc = collection.createDoc();
     const nodes = markdownToMindmap(markdown, doc, provider);
@@ -99,7 +98,7 @@ describe('markdownToMindmap: convert markdown list to a mind map tree', () => {
 
   test('empty case', () => {
     const markdown = '';
-    const collection = new TestWorkspace({ schema: new Schema() });
+    const collection = new TestWorkspace();
     collection.meta.initialize();
     const doc = collection.createDoc();
     const nodes = markdownToMindmap(markdown, doc, provider);

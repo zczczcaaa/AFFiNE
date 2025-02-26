@@ -53,13 +53,12 @@ import {
   WorkspaceServerService,
 } from '../../cloud';
 import type { GlobalState } from '../../storage';
-import {
-  getAFFiNEWorkspaceSchema,
-  type Workspace,
-  type WorkspaceFlavourProvider,
-  type WorkspaceFlavoursProvider,
-  type WorkspaceMetadata,
-  type WorkspaceProfileInfo,
+import type {
+  Workspace,
+  WorkspaceFlavourProvider,
+  WorkspaceFlavoursProvider,
+  WorkspaceMetadata,
+  WorkspaceProfileInfo,
 } from '../../workspace';
 import { WorkspaceImpl } from '../../workspace/impls/workspace';
 import { getWorkspaceProfileWorker } from './out-worker';
@@ -163,7 +162,6 @@ class CloudWorkspaceFlavourProvider implements WorkspaceFlavourProvider {
 
     const docCollection = new WorkspaceImpl({
       id: workspaceId,
-      schema: getAFFiNEWorkspaceSchema(),
       blobSource: {
         get: async key => {
           const record = await blobStorage.get(key);

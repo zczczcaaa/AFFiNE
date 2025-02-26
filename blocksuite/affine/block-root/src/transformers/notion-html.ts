@@ -3,12 +3,18 @@ import { NotionHtmlAdapter } from '@blocksuite/affine-shared/adapters';
 import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import { Container } from '@blocksuite/global/di';
 import { sha } from '@blocksuite/global/utils';
-import { extMimeMap, Transformer, type Workspace } from '@blocksuite/store';
+import {
+  extMimeMap,
+  type Schema,
+  Transformer,
+  type Workspace,
+} from '@blocksuite/store';
 
 import { Unzip } from './utils.js';
 
 type ImportNotionZipOptions = {
   collection: Workspace;
+  schema: Schema;
   imported: Blob;
 };
 
@@ -26,6 +32,7 @@ function getProvider() {
  *
  * @param options - The options for importing.
  * @param options.collection - The BlockSuite document collection.
+ * @param options.schema - The schema of the BlockSuite document collection.
  * @param options.imported - The imported zip file as a Blob.
  *
  * @returns A promise that resolves to an object containing:
@@ -36,6 +43,7 @@ function getProvider() {
  */
 async function importNotionZip({
   collection,
+  schema,
   imported,
 }: ImportNotionZipOptions) {
   const provider = getProvider();
@@ -117,7 +125,7 @@ async function importNotionZip({
     }
     const pagePromises = Array.from(pagePaths).map(async path => {
       const job = new Transformer({
-        schema: collection.schema,
+        schema,
         blobCRUD: collection.blobSync,
         docCRUD: {
           create: (id: string) => collection.createDoc({ id }),

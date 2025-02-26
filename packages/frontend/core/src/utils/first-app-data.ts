@@ -7,7 +7,10 @@ import onboardingUrl from '@affine/templates/onboarding.zip';
 import { ZipTransformer } from '@blocksuite/affine/blocks';
 
 import { DocsService } from '../modules/doc';
-import type { WorkspacesService } from '../modules/workspace';
+import {
+  getAFFiNEWorkspaceSchema,
+  type WorkspacesService,
+} from '../modules/workspace';
 
 export async function buildShowcaseWorkspace(
   workspacesService: WorkspacesService,
@@ -19,7 +22,11 @@ export async function buildShowcaseWorkspace(
     docCollection.meta.setName(workspaceName);
     const blob = await (await fetch(onboardingUrl)).blob();
 
-    await ZipTransformer.importDocs(docCollection, blob);
+    await ZipTransformer.importDocs(
+      docCollection,
+      getAFFiNEWorkspaceSchema(),
+      blob
+    );
   });
 
   const { workspace, dispose } = workspacesService.open({ metadata: meta });

@@ -1,6 +1,7 @@
-import { replaceIdMiddleware } from '@blocksuite/blocks';
+import { AffineSchemas, replaceIdMiddleware } from '@blocksuite/blocks';
 import {
   type DocSnapshot,
+  Schema,
   Transformer,
   type Workspace,
 } from '@blocksuite/store';
@@ -10,7 +11,7 @@ export async function importFromSnapshot(
   snapshot: DocSnapshot
 ) {
   const job = new Transformer({
-    schema: collection.schema,
+    schema: new Schema().register(AffineSchemas),
     blobCRUD: collection.blobSync,
     docCRUD: {
       create: (id: string) => collection.createDoc({ id }),

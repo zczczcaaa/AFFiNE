@@ -1,4 +1,8 @@
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 export type SurfaceRefProps = {
   reference: string;
@@ -20,5 +24,9 @@ export const SurfaceRefBlockSchema = defineBlockSchema({
   },
   toModel: () => new SurfaceRefBlockModel(),
 });
+
+export const SurfaceRefBlockSchemaExtension = BlockSchemaExtension(
+  SurfaceRefBlockSchema
+);
 
 export class SurfaceRefBlockModel extends BlockModel<SurfaceRefProps> {}

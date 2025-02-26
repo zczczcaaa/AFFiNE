@@ -1,7 +1,6 @@
 import type { Slot } from '@blocksuite/global/utils';
 import type * as Y from 'yjs';
 
-import type { Schema } from '../schema/schema.js';
 import type { AwarenessStore } from '../yjs/awareness.js';
 import type { YBlock } from './block/types.js';
 import type { Query } from './store/query.js';
@@ -18,7 +17,6 @@ export type YBlocks = Y.Map<YBlock>;
 export interface Doc {
   readonly id: string;
   get meta(): DocMeta | undefined;
-  get schema(): Schema;
 
   remove(): void;
   load(initFn?: () => void): void;

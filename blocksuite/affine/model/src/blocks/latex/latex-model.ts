@@ -3,7 +3,11 @@ import {
   GfxCompatible,
   type GfxElementGeometry,
 } from '@blocksuite/block-std/gfx';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 export type LatexProps = {
   latex: string;
@@ -33,6 +37,8 @@ export const LatexBlockSchema = defineBlockSchema({
     return new LatexBlockModel();
   },
 });
+
+export const LatexBlockSchemaExtension = BlockSchemaExtension(LatexBlockSchema);
 
 export class LatexBlockModel
   extends GfxCompatible<LatexProps>(BlockModel)

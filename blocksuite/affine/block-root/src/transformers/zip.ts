@@ -3,15 +3,19 @@ import {
   titleMiddleware,
 } from '@blocksuite/affine-shared/adapters';
 import { sha } from '@blocksuite/global/utils';
-import type { DocSnapshot, Store, Workspace } from '@blocksuite/store';
+import type { DocSnapshot, Schema, Store, Workspace } from '@blocksuite/store';
 import { extMimeMap, getAssetName, Transformer } from '@blocksuite/store';
 
 import { download, Unzip, Zip } from '../transformers/utils.js';
 
-async function exportDocs(collection: Workspace, docs: Store[]) {
+async function exportDocs(
+  collection: Workspace,
+  schema: Schema,
+  docs: Store[]
+) {
   const zip = new Zip();
   const job = new Transformer({
-    schema: collection.schema,
+    schema,
     blobCRUD: collection.blobSync,
     docCRUD: {
       create: (id: string) => collection.createDoc({ id }),
@@ -70,7 +74,11 @@ async function exportDocs(collection: Workspace, docs: Store[]) {
   return download(downloadBlob, `${collection.id}.bs.zip`);
 }
 
-async function importDocs(collection: Workspace, imported: Blob) {
+async function importDocs(
+  collection: Workspace,
+  schema: Schema,
+  imported: Blob
+) {
   const unzip = new Unzip();
   await unzip.load(imported);
 
@@ -98,7 +106,7 @@ async function importDocs(collection: Workspace, imported: Blob) {
   }
 
   const job = new Transformer({
-    schema: collection.schema,
+    schema,
     blobCRUD: collection.blobSync,
     docCRUD: {
       create: (id: string) => collection.createDoc({ id }),

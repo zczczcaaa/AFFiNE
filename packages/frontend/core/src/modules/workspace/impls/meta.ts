@@ -3,20 +3,13 @@ import {
   createYProxy,
   type DocMeta,
   type DocsPropertiesMeta,
-  type Workspace,
   type WorkspaceMeta,
 } from '@blocksuite/affine/store';
 import type * as Y from 'yjs';
 
-const COLLECTION_VERSION = 2;
-const PAGE_VERSION = 2;
-
 type MetaState = {
   pages?: unknown[];
   properties?: DocsPropertiesMeta;
-  workspaceVersion?: number;
-  pageVersion?: number;
-  blockVersions?: Record<string, number>;
   name?: string;
   avatar?: string;
 };
@@ -100,25 +93,6 @@ export class WorkspaceMetaImpl implements WorkspaceMeta {
 
   get docs() {
     return this._proxy.pages;
-  }
-
-  get hasVersion() {
-    if (!this._blockVersions || !this._pageVersion || !this._workspaceVersion) {
-      return false;
-    }
-    return Object.keys(this._blockVersions).length > 0;
-  }
-
-  private get _blockVersions() {
-    return this._proxy.blockVersions;
-  }
-
-  private get _pageVersion() {
-    return this._proxy.pageVersion;
-  }
-
-  private get _workspaceVersion() {
-    return this._proxy.workspaceVersion;
   }
 
   get yDocs() {
@@ -219,34 +193,5 @@ export class WorkspaceMetaImpl implements WorkspaceMeta {
         doc[key] = value;
       });
     }, this._doc.clientID);
-  }
-
-  /**
-   * @internal Only for doc initialization
-   */
-  writeVersion(collection: Workspace) {
-    const { blockVersions, pageVersion, workspaceVersion } = this._proxy;
-
-    if (!workspaceVersion) {
-      this._proxy.workspaceVersion = COLLECTION_VERSION;
-    } else {
-      console.error('Workspace version is already set');
-    }
-
-    if (!pageVersion) {
-      this._proxy.pageVersion = PAGE_VERSION;
-    } else {
-      console.error('Doc version is already set');
-    }
-
-    if (!blockVersions) {
-      const _versions: Record<string, number> = {};
-      collection.schema.flavourSchemaMap.forEach((schema, flavour) => {
-        _versions[flavour] = schema.version;
-      });
-      this._proxy.blockVersions = _versions;
-    } else {
-      console.error('Block versions is already set');
-    }
   }
 }

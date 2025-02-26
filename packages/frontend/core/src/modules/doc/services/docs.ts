@@ -16,6 +16,7 @@ import {
   initDocFromProps,
 } from '../../../blocksuite/initialization';
 import type { DocProperties } from '../../db';
+import { getAFFiNEWorkspaceSchema } from '../../workspace';
 import type { Doc } from '../entities/doc';
 import { DocPropertyList } from '../entities/property-list';
 import { DocRecordList } from '../entities/record-list';
@@ -202,7 +203,7 @@ export class DocsService extends Service {
 
       const collection = this.store.getBlocksuiteCollection();
       const transformer = new Transformer({
-        schema: collection.schema,
+        schema: getAFFiNEWorkspaceSchema(),
         blobCRUD: collection.blobSync,
         docCRUD: {
           create: (id: string) => collection.createDoc({ id }),

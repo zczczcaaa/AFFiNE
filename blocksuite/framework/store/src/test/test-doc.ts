@@ -162,10 +162,6 @@ export class TestDoc implements Doc {
     return this._ready;
   }
 
-  get schema() {
-    return this.workspace.schema;
-  }
-
   get spaceDoc() {
     return this._ySpaceDoc;
   }
@@ -187,13 +183,6 @@ export class TestDoc implements Doc {
 
   private _getReadonlyKey(readonly?: boolean): 'true' | 'false' {
     return (readonly?.toString() as 'true' | 'false') ?? 'false';
-  }
-
-  private _handleVersion() {
-    // Initialization from empty yDoc, indicating that the document is new.
-    if (!this.workspace.meta.hasVersion) {
-      this.workspace.meta.writeVersion(this.workspace);
-    }
   }
 
   private _handleYBlockAdd(id: string) {
@@ -306,7 +295,6 @@ export class TestDoc implements Doc {
 
     const doc = new Store({
       doc: this,
-      schema: this.workspace.schema,
       readonly,
       query,
       provider,
@@ -326,10 +314,6 @@ export class TestDoc implements Doc {
     }
 
     this._ySpaceDoc.load();
-
-    if ((this.workspace.meta.docs?.length ?? 0) <= 1) {
-      this._handleVersion();
-    }
 
     this._initYBlocks();
 

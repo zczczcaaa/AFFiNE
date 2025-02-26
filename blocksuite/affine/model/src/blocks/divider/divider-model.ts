@@ -1,4 +1,8 @@
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 export const DividerBlockSchema = defineBlockSchema({
   flavour: 'affine:divider',
@@ -15,3 +19,6 @@ type Props = {
 };
 
 export class DividerBlockModel extends BlockModel<Props> {}
+
+export const DividerBlockSchemaExtension =
+  BlockSchemaExtension(DividerBlockSchema);

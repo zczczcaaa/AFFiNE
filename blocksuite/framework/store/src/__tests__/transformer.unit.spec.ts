@@ -2,10 +2,10 @@ import { expect, test } from 'vitest';
 import * as Y from 'yjs';
 
 import { MemoryBlobCRUD } from '../adapter/index.js';
+import { BlockSchemaExtension } from '../extension/schema.js';
 import { BlockModel } from '../model/block/block-model.js';
 import { defineBlockSchema } from '../model/block/zod.js';
 import { Text } from '../reactive/index.js';
-import { Schema } from '../schema/index.js';
 import { createAutoIncrementIdGenerator } from '../test/index.js';
 import { TestWorkspace } from '../test/test-workspace.js';
 import { AssetsManager, BaseBlockTransformer } from '../transformer/index.js';
@@ -39,15 +39,16 @@ const docSchema = defineBlockSchema({
   },
 });
 
+const docSchemaExtension = BlockSchemaExtension(docSchema);
 class RootBlockModel extends BlockModel<
   ReturnType<(typeof docSchema)['model']['props']>
 > {}
 
+const extensions = [docSchemaExtension];
+
 function createTestOptions() {
   const idGenerator = createAutoIncrementIdGenerator();
-  const schema = new Schema();
-  schema.register([docSchema]);
-  return { id: 'test-collection', idGenerator, schema };
+  return { id: 'test-collection', idGenerator };
 }
 
 const transformer = new BaseBlockTransformer(new Map());
@@ -58,7 +59,7 @@ test('model to snapshot', () => {
   const options = createTestOptions();
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
-  const doc = collection.createDoc({ id: 'home' });
+  const doc = collection.createDoc({ id: 'home', extensions });
   doc.load();
   doc.addBlock('page');
   const rootModel = doc.root as RootBlockModel;
@@ -75,7 +76,7 @@ test('snapshot to model', async () => {
   const options = createTestOptions();
   const collection = new TestWorkspace(options);
   collection.meta.initialize();
-  const doc = collection.createDoc({ id: 'home' });
+  const doc = collection.createDoc({ id: 'home', extensions });
   doc.load();
   doc.addBlock('page');
   const rootModel = doc.root as RootBlockModel;

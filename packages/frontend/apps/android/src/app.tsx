@@ -166,7 +166,7 @@ framework.impl(AIButtonProvider, {
     const blockSuiteDoc = doc.blockSuiteDoc;
 
     const transformer = new Transformer({
-      schema: blockSuiteDoc.workspace.schema,
+      schema: blockSuiteDoc.schema,
       blobCRUD: blockSuiteDoc.workspace.blobSync,
       docCRUD: {
         create: (id: string) => blockSuiteDoc.workspace.createDoc({ id }),

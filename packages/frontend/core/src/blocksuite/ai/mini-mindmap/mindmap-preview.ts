@@ -99,7 +99,6 @@ export class MiniMindmapPreview extends WithDisposable(LitElement) {
 
     const collection = new WorkspaceImpl({
       id: 'MINI_MINDMAP_TEMPORARY',
-      schema,
     });
     collection.meta.initialize();
     const doc = collection.createDoc({ id: 'doc:home' }).load();
@@ -237,7 +236,7 @@ export const markdownToMindmap = (
 ) => {
   let result: Node | null = null;
   const transformer = new Transformer({
-    schema: doc.workspace.schema,
+    schema: doc.schema,
     blobCRUD: doc.workspace.blobSync,
     docCRUD: {
       create: (id: string) => doc.workspace.createDoc({ id }),

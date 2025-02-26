@@ -5,7 +5,10 @@ import type {
   WORKSPACE_DIALOG_SCHEMA,
 } from '@affine/core/modules/dialogs';
 import { UrlService } from '@affine/core/modules/url';
-import { WorkspaceService } from '@affine/core/modules/workspace';
+import {
+  getAFFiNEWorkspaceSchema,
+  WorkspaceService,
+} from '@affine/core/modules/workspace';
 import { DebugLogger } from '@affine/debug';
 import { useI18n } from '@affine/i18n';
 import track from '@affine/track';
@@ -141,6 +144,7 @@ const importConfigs: Record<ImportType, ImportConfig> = {
         const fileName = file.name.split('.').slice(0, -1).join('.');
         const docId = await MarkdownTransformer.importMarkdownToDoc({
           collection: docCollection,
+          schema: getAFFiNEWorkspaceSchema(),
           markdown: text,
           fileName,
         });
@@ -159,6 +163,7 @@ const importConfigs: Record<ImportType, ImportConfig> = {
       }
       const docIds = await MarkdownTransformer.importMarkdownZip({
         collection: docCollection,
+        schema: getAFFiNEWorkspaceSchema(),
         imported: file,
       });
       return {
@@ -178,6 +183,7 @@ const importConfigs: Record<ImportType, ImportConfig> = {
         const fileName = file.name.split('.').slice(0, -1).join('.');
         const docId = await HtmlTransformer.importHTMLToDoc({
           collection: docCollection,
+          schema: getAFFiNEWorkspaceSchema(),
           html: text,
           fileName,
         });
@@ -197,6 +203,7 @@ const importConfigs: Record<ImportType, ImportConfig> = {
       const { entryId, pageIds, isWorkspaceFile } =
         await NotionHtmlTransformer.importNotionZip({
           collection: docCollection,
+          schema: getAFFiNEWorkspaceSchema(),
           imported: file,
         });
       return {
@@ -212,7 +219,13 @@ const importConfigs: Record<ImportType, ImportConfig> = {
       if (Array.isArray(file)) {
         throw new Error('Expected a single zip file for snapshot import');
       }
-      const docIds = (await ZipTransformer.importDocs(docCollection, file))
+      const docIds = (
+        await ZipTransformer.importDocs(
+          docCollection,
+          getAFFiNEWorkspaceSchema(),
+          file
+        )
+      )
         .filter(doc => doc !== undefined)
         .map(doc => doc.id);
 

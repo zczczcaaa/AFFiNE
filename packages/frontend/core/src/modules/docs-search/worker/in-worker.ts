@@ -116,7 +116,6 @@ const bookmarkFlavours = new Set([
 
 const markdownPreviewDocCollection = new WorkspaceImpl({
   id: 'indexer',
-  schema: blocksuiteSchema,
 });
 
 function generateMarkdownPreviewBuilder(
@@ -190,7 +189,7 @@ function generateMarkdownPreviewBuilder(
   const provider = container.provider();
   const markdownAdapter = new MarkdownAdapter(
     new Transformer({
-      schema: markdownPreviewDocCollection.schema,
+      schema: getAFFiNEWorkspaceSchema(),
       blobCRUD: markdownPreviewDocCollection.blobSync,
       docCRUD: {
         create: (id: string) => markdownPreviewDocCollection.createDoc({ id }),

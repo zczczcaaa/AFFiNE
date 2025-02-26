@@ -1,3 +1,4 @@
+import { BlockSchemaExtension } from '../extension/schema.js';
 import { BlockModel, defineBlockSchema } from '../model/index.js';
 
 export const RootBlockSchema = defineBlockSchema({
@@ -13,6 +14,8 @@ export const RootBlockSchema = defineBlockSchema({
     role: 'root',
   },
 });
+
+export const RootBlockSchemaExtension = BlockSchemaExtension(RootBlockSchema);
 
 export class RootBlockModel extends BlockModel<
   ReturnType<(typeof RootBlockSchema)['model']['props']>
@@ -42,6 +45,8 @@ export const NoteBlockSchema = defineBlockSchema({
   },
 });
 
+export const NoteBlockSchemaExtension = BlockSchemaExtension(NoteBlockSchema);
+
 export const ParagraphBlockSchema = defineBlockSchema({
   flavour: 'affine:paragraph',
   props: internal => ({
@@ -59,6 +64,9 @@ export const ParagraphBlockSchema = defineBlockSchema({
     ],
   },
 });
+
+export const ParagraphBlockSchemaExtension =
+  BlockSchemaExtension(ParagraphBlockSchema);
 
 export const ListBlockSchema = defineBlockSchema({
   flavour: 'affine:list',
@@ -80,6 +88,8 @@ export const ListBlockSchema = defineBlockSchema({
   },
 });
 
+export const ListBlockSchemaExtension = BlockSchemaExtension(ListBlockSchema);
+
 export const DividerBlockSchema = defineBlockSchema({
   flavour: 'affine:divider',
   metadata: {
@@ -88,3 +98,6 @@ export const DividerBlockSchema = defineBlockSchema({
     children: [],
   },
 });
+
+export const DividerBlockSchemaExtension =
+  BlockSchemaExtension(DividerBlockSchema);

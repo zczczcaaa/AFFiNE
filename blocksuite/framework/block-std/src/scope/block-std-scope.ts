@@ -142,7 +142,7 @@ export class BlockStdScope {
 
   getTransformer(middlewares: TransformerMiddleware[] = []) {
     return new Transformer({
-      schema: this.workspace.schema,
+      schema: this.store.schema,
       blobCRUD: this.workspace.blobSync,
       docCRUD: {
         create: (id: string) => this.workspace.createDoc({ id }),

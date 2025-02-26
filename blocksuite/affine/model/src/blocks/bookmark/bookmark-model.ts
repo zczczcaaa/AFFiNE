@@ -3,7 +3,11 @@ import type {
   GfxElementGeometry,
 } from '@blocksuite/block-std/gfx';
 import { GfxCompatible } from '@blocksuite/block-std/gfx';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 import type { EmbedCardStyle, LinkPreviewData } from '../../utils/index.js';
 
@@ -53,6 +57,9 @@ export const BookmarkBlockSchema = defineBlockSchema({
   },
   toModel: () => new BookmarkBlockModel(),
 });
+
+export const BookmarkBlockSchemaExtension =
+  BlockSchemaExtension(BookmarkBlockSchema);
 
 export class BookmarkBlockModel
   extends GfxCompatible<BookmarkBlockProps>(BlockModel)

@@ -4,6 +4,7 @@ import {
   resolveGlobalLoadingEventAtom,
 } from '@affine/component/global-loading';
 import { EditorService } from '@affine/core/modules/editor';
+import { getAFFiNEWorkspaceSchema } from '@affine/core/modules/workspace/global-schema';
 import { useI18n } from '@affine/i18n';
 import { track } from '@affine/track';
 import type { BlockStdScope } from '@blocksuite/affine/block-std';
@@ -59,7 +60,7 @@ async function exportDoc(
   config: AdapterConfig
 ) {
   const transformer = new Transformer({
-    schema: doc.workspace.schema,
+    schema: getAFFiNEWorkspaceSchema(),
     blobCRUD: doc.workspace.blobSync,
     docCRUD: {
       create: (id: string) => doc.workspace.createDoc({ id }),
@@ -148,7 +149,11 @@ async function exportHandler({
       await exportToMarkdown(page, editorRoot?.std);
       return;
     case 'snapshot':
-      await ZipTransformer.exportDocs(page.workspace, [page]);
+      await ZipTransformer.exportDocs(
+        page.workspace,
+        getAFFiNEWorkspaceSchema(),
+        [page]
+      );
       return;
     case 'pdf':
       await printToPdf(editorContainer);

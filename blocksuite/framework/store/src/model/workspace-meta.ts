@@ -1,7 +1,5 @@
 import type { Slot } from '@blocksuite/global/utils';
 
-import type { Workspace } from './workspace.js';
-
 export type Tag = {
   id: string;
   value: string;
@@ -38,8 +36,6 @@ export interface WorkspaceMeta {
   get name(): string | undefined;
   setName(name: string): void;
 
-  hasVersion: boolean;
-  writeVersion(workspace: Workspace): void;
   get docs(): unknown[] | undefined;
   initialize(): void;
 

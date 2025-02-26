@@ -21,14 +21,12 @@ import type {
   Workspace,
   WorkspaceMeta,
 } from '../model/index.js';
-import type { Schema } from '../schema/index.js';
 import { type IdGenerator, nanoid } from '../utils/id-generator.js';
 import { AwarenessStore } from '../yjs/index.js';
 import { TestDoc } from './test-doc.js';
 import { TestMeta } from './test-meta.js';
 
 export type DocCollectionOptions = {
-  schema: Schema;
   id?: string;
   idGenerator?: IdGenerator;
   docSources?: {
@@ -47,8 +45,6 @@ export type DocCollectionOptions = {
  * Do not use this in production
  */
 export class TestWorkspace implements Workspace {
-  protected readonly _schema: Schema;
-
   storeExtensions: ExtensionType[] = [];
 
   readonly awarenessStore: AwarenessStore;
@@ -79,13 +75,8 @@ export class TestWorkspace implements Workspace {
     return this.blockCollections;
   }
 
-  get schema() {
-    return this._schema;
-  }
-
   constructor({
     id,
-    schema,
     idGenerator,
     awarenessSources = [],
     docSources = {
@@ -94,9 +85,7 @@ export class TestWorkspace implements Workspace {
     blobSources = {
       main: new MemoryBlobSource(),
     },
-  }: DocCollectionOptions) {
-    this._schema = schema;
-
+  }: DocCollectionOptions = {}) {
     this.id = id || '';
     this.doc = new Y.Doc({ guid: id });
     this.awarenessStore = new AwarenessStore(new Awareness(this.doc));
@@ -165,7 +154,12 @@ export class TestWorkspace implements Workspace {
    * will be created in the doc simultaneously.
    */
   createDoc(options: CreateBlocksOptions = {}) {
-    const { id: docId = this.idGenerator(), query, readonly } = options;
+    const {
+      id: docId = this.idGenerator(),
+      query,
+      readonly,
+      extensions,
+    } = options;
     if (this._hasDoc(docId)) {
       throw new BlockSuiteError(
         ErrorCode.DocCollectionError,
@@ -184,6 +178,7 @@ export class TestWorkspace implements Workspace {
       id: docId,
       query,
       readonly,
+      extensions,
     }) as Store;
   }
 

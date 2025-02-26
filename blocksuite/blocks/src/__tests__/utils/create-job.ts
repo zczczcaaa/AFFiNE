@@ -1,5 +1,5 @@
 import { defaultImageProxyMiddleware } from '@blocksuite/affine-block-image';
-import { FeatureFlagService } from '@blocksuite/affine-shared/services';
+import { SpecProvider } from '@blocksuite/affine-shared/utils';
 import {
   Schema,
   Transformer,
@@ -26,8 +26,8 @@ export function createJob(middlewares?: TransformerMiddleware[]) {
   const testMiddlewares = middlewares ?? [];
   testMiddlewares.push(defaultImageProxyMiddleware);
   const schema = new Schema().register(AffineSchemas);
-  const docCollection = new TestWorkspace({ schema });
-  docCollection.storeExtensions = [FeatureFlagService];
+  const docCollection = new TestWorkspace();
+  docCollection.storeExtensions = SpecProvider._.getSpec('store').value;
   docCollection.meta.initialize();
   return new Transformer({
     schema,

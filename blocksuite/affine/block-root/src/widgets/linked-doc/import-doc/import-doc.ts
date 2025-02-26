@@ -8,7 +8,7 @@ import {
 } from '@blocksuite/affine-components/icons';
 import { openFileOrFiles } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
-import type { Workspace } from '@blocksuite/store';
+import type { Schema, Workspace } from '@blocksuite/store';
 import { html, LitElement, type PropertyValues } from 'lit';
 import { query, state } from 'lit/decorators.js';
 
@@ -31,6 +31,7 @@ export class ImportDoc extends WithDisposable(LitElement) {
 
   constructor(
     private readonly collection: Workspace,
+    private readonly schema: Schema,
     private readonly onSuccess?: OnSuccessHandler,
     private readonly onFail?: OnFailHandler,
     private readonly abortController = new AbortController()
@@ -63,6 +64,7 @@ export class ImportDoc extends WithDisposable(LitElement) {
       }
       const pageId = await HtmlTransformer.importHTMLToDoc({
         collection: this.collection,
+        schema: this.schema,
         html: text,
         fileName,
       });
@@ -93,6 +95,7 @@ export class ImportDoc extends WithDisposable(LitElement) {
       }
       const pageId = await MarkdownTransformer.importMarkdownToDoc({
         collection: this.collection,
+        schema: this.schema,
         markdown: text,
         fileName,
       });
@@ -117,6 +120,7 @@ export class ImportDoc extends WithDisposable(LitElement) {
     const { entryId, pageIds, isWorkspaceFile, hasMarkdown } =
       await NotionHtmlTransformer.importNotionZip({
         collection: this.collection,
+        schema: this.schema,
         imported: file,
       });
     needLoading && this.abortController.abort();

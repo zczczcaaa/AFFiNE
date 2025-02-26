@@ -4,7 +4,10 @@ import type { SliceSnapshot } from '@blocksuite/store';
 import { describe, expect, test } from 'vitest';
 
 import { createJob } from '../utils/create-job.js';
+import { getProvider } from '../utils/get-provider.js';
 import { nanoidReplacement } from '../utils/nanoid-replacement.js';
+
+getProvider();
 
 describe('notion-text to snapshot', () => {
   test('basic', () => {

@@ -3,7 +3,11 @@ import type {
   GfxElementGeometry,
 } from '@blocksuite/block-std/gfx';
 import { GfxCompatible } from '@blocksuite/block-std/gfx';
-import { BlockModel, defineBlockSchema } from '@blocksuite/store';
+import {
+  BlockModel,
+  BlockSchemaExtension,
+  defineBlockSchema,
+} from '@blocksuite/store';
 
 import type { EmbedCardStyle } from '../../utils/index.js';
 import { AttachmentBlockTransformer } from './attachment-transformer.js';
@@ -85,6 +89,10 @@ export const AttachmentBlockSchema = defineBlockSchema({
     new AttachmentBlockTransformer(transformerConfigs),
   toModel: () => new AttachmentBlockModel(),
 });
+
+export const AttachmentBlockSchemaExtension = BlockSchemaExtension(
+  AttachmentBlockSchema
+);
 
 export class AttachmentBlockModel
   extends GfxCompatible<AttachmentBlockProps>(BlockModel)

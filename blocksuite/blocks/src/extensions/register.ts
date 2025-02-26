@@ -1,6 +1,5 @@
 import { SpecProvider } from '@blocksuite/affine-shared/utils';
 
-import { StoreExtensions } from './common.js';
 import {
   EdgelessEditorBlockSpecs,
   PageEditorBlockSpecs,
@@ -9,6 +8,7 @@ import {
   PreviewEdgelessEditorBlockSpecs,
   PreviewPageEditorBlockSpecs,
 } from './preview-specs.js';
+import { StoreExtensions } from './store.js';
 
 export function registerSpecs() {
   SpecProvider._.addSpec('store', StoreExtensions);
