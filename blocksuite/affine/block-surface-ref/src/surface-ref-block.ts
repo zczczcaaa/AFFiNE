@@ -423,8 +423,9 @@ export class SurfaceRefBlockComponent extends BlockComponent<SurfaceRefBlockMode
 
       override mounted() {
         const disposable = this.std.view.viewUpdated.on(payload => {
+          if (payload.type !== 'block') return;
           if (
-            payload.type === 'add' &&
+            payload.method === 'add' &&
             matchModels(payload.view.model, [RootBlockModel])
           ) {
             disposable.dispose();

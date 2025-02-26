@@ -145,6 +145,8 @@ export class PreviewHelper {
           }
 
           this.std.view.viewUpdated.on(payload => {
+            if (payload.type !== 'block') return;
+
             if (payload.view.model.flavour === 'affine:page') {
               const gfx = this.std.get(GfxControllerIdentifier);
 

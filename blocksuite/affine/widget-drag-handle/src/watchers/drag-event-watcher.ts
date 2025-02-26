@@ -1625,10 +1625,13 @@ export class DragEventWatcher {
 
     disposables.add(
       std.view.viewUpdated.on(payload => {
-        if (payload.type === 'add') {
+        if (payload.type !== 'block') {
+          return;
+        }
+        if (payload.method === 'add') {
           this._makeDropTarget(payload.view);
         } else if (
-          payload.type === 'delete' &&
+          payload.method === 'delete' &&
           this.dropTargetCleanUps.has(payload.id)
         ) {
           this.dropTargetCleanUps.get(payload.id)!.forEach(clean => clean());

@@ -3,16 +3,20 @@ import { Slot } from '@blocksuite/global/utils';
 import { LifeCycleWatcher } from '../extension/index.js';
 import type { BlockComponent, WidgetComponent } from './element/index.js';
 
-type ViewUpdatePayload =
+type ViewUpdateMethod = 'delete' | 'add';
+
+export type ViewUpdatePayload =
   | {
       id: string;
-      type: 'delete';
+      method: ViewUpdateMethod;
+      type: 'block';
       view: BlockComponent;
     }
   | {
       id: string;
-      type: 'add';
-      view: BlockComponent;
+      method: ViewUpdateMethod;
+      type: 'widget';
+      view: WidgetComponent;
     };
 
 export class ViewStore extends LifeCycleWatcher {
@@ -42,7 +46,8 @@ export class ViewStore extends LifeCycleWatcher {
     this._blockMap.delete(node.model.id);
     this.viewUpdated.emit({
       id: node.model.id,
-      type: 'delete',
+      method: 'delete',
+      type: 'block',
       view: node,
     });
   };
@@ -51,6 +56,12 @@ export class ViewStore extends LifeCycleWatcher {
     const id = node.dataset.widgetId as string;
     const widgetIndex = `${node.model.id}|${id}`;
     this._widgetMap.delete(widgetIndex);
+    this.viewUpdated.emit({
+      id: node.model.id,
+      method: 'delete',
+      type: 'widget',
+      view: node,
+    });
   };
 
   getBlock = (id: string): BlockComponent | null => {
@@ -72,7 +83,8 @@ export class ViewStore extends LifeCycleWatcher {
     this._blockMap.set(node.model.id, node);
     this.viewUpdated.emit({
       id: node.model.id,
-      type: 'add',
+      method: 'add',
+      type: 'block',
       view: node,
     });
   };
@@ -81,6 +93,12 @@ export class ViewStore extends LifeCycleWatcher {
     const id = node.dataset.widgetId as string;
     const widgetIndex = `${node.model.id}|${id}`;
     this._widgetMap.set(widgetIndex, node);
+    this.viewUpdated.emit({
+      id: node.model.id,
+      method: 'add',
+      type: 'widget',
+      view: node,
+    });
   };
 
   walkThrough = (
