@@ -19,8 +19,8 @@ public class AuthPlugin: CAPPlugin, CAPBridgedPlugin {
         let token = try call.getStringEnsure("token")
         
         let (data, response) = try await self.fetch(endpoint, method: "POST", action: "/api/auth/magic-link", headers: [:], body: ["email": email, "token": token])
-        
-        if response.statusCode != 200 {
+
+        if response.statusCode >= 400 {
           if let textBody = String(data: data, encoding: .utf8) {
             call.reject(textBody)
           } else {
@@ -49,7 +49,7 @@ public class AuthPlugin: CAPPlugin, CAPBridgedPlugin {
         
         let (data, response) = try await self.fetch(endpoint, method: "POST", action: "/api/oauth/callback", headers: [:], body: ["code": code, "state": state])
         
-        if response.statusCode != 200 {
+        if response.statusCode >= 400 {
           if let textBody = String(data: data, encoding: .utf8) {
             call.reject(textBody)
           } else {
@@ -83,7 +83,7 @@ public class AuthPlugin: CAPPlugin, CAPBridgedPlugin {
           "x-captcha-challenge": challenge,
         ], body: ["email": email, "password": password])
         
-        if response.statusCode != 200 {
+        if response.statusCode >= 400 {
           if let textBody = String(data: data, encoding: .utf8) {
             call.reject(textBody)
           } else {
@@ -109,8 +109,8 @@ public class AuthPlugin: CAPPlugin, CAPBridgedPlugin {
         let endpoint = try call.getStringEnsure("endpoint")
         
         let (data, response) = try await self.fetch(endpoint, method: "GET", action: "/api/auth/sign-out", headers: [:], body: nil)
-        
-        if response.statusCode != 200 {
+
+        if response.statusCode >= 400 {
           if let textBody = String(data: data, encoding: .utf8) {
             call.reject(textBody)
           } else {
