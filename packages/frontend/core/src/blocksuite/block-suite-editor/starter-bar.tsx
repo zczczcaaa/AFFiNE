@@ -115,7 +115,7 @@ const StarterBarNotEmpty = ({ doc }: { doc: Store }) => {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-testid="starter-bar">
       {t['com.affine.page-starter-bar.start']()}
       <ul className={styles.badges}>
         {enableAI ? (
@@ -166,12 +166,9 @@ export const StarterBar = ({ doc }: { doc: Store }) => {
   );
 
   useEffect(() => {
-    const disposable = doc.slots.blockUpdated.on(() => {
-      setIsEmpty(doc.isEmpty);
+    return doc.isEmpty$.subscribe(value => {
+      setIsEmpty(value);
     });
-    return () => {
-      disposable.dispose();
-    };
   }, [doc]);
 
   if (!isEmpty || isTemplate) return null;

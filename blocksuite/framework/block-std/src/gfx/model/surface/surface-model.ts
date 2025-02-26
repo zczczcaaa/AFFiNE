@@ -1,6 +1,12 @@
-import { assertType, type Constructor, Slot } from '@blocksuite/global/utils';
+import {
+  assertType,
+  type Constructor,
+  DisposableGroup,
+  Slot,
+} from '@blocksuite/global/utils';
 import type { Boxed } from '@blocksuite/store';
 import { BlockModel, nanoid } from '@blocksuite/store';
+import { signal } from '@preact/signals-core';
 import * as Y from 'yjs';
 
 import {
@@ -98,6 +104,8 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
     oldValues: Record<string, unknown>;
   }>();
 
+  private readonly _isEmpty$ = signal(false);
+
   get elementModels() {
     const models: GfxPrimitiveElementModel[] = [];
     this._elementModels.forEach(model => models.push(model.model));
@@ -113,7 +121,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
   }
 
   override isEmpty(): boolean {
-    return this._elementModels.size === 0 && this.children.length === 0;
+    return this._isEmpty$.value;
   }
 
   constructor() {
@@ -370,6 +378,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
           if (isGfxGroupCompatibleModel(payload.model)) {
             this._groupLikeModels.set(payload.id, payload.model);
           }
+
           break;
         case 'delete':
           if (isGfxGroupCompatibleModel(payload.model)) {
@@ -382,6 +391,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
               group.removeChild(payload.model as GfxModel);
             }
           }
+
           break;
       }
     });
@@ -445,6 +455,25 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
     });
   }
 
+  private _watchChildrenChange() {
+    const updateIsEmpty = () => {
+      this._isEmpty$.value =
+        this._elementModels.size === 0 && this.children.length === 0;
+    };
+
+    const disposables = new DisposableGroup();
+    disposables.add(this.elementAdded.on(updateIsEmpty));
+    disposables.add(this.elementRemoved.on(updateIsEmpty));
+    this.doc.slots.blockUpdated.on(payload => {
+      if (['add', 'delete'].includes(payload.type)) {
+        updateIsEmpty();
+      }
+    });
+    this.deleted.on(() => {
+      disposables.dispose();
+    });
+  }
+
   protected _extendElement(
     ctorMap: Record<
       string,
@@ -460,6 +489,7 @@ export class SurfaceBlockModel extends BlockModel<SurfaceBlockProps> {
   protected _init() {
     this._initElementModels();
     this._watchGroupRelationChange();
+    this._watchChildrenChange();
   }
 
   getConstructor(type: string) {

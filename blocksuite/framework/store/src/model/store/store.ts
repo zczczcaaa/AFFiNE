@@ -1,7 +1,7 @@
 import { Container, type ServiceProvider } from '@blocksuite/global/di';
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { type Disposable, Slot } from '@blocksuite/global/utils';
-import { signal } from '@preact/signals-core';
+import { computed, signal } from '@preact/signals-core';
 
 import type { ExtensionType } from '../../extension/extension.js';
 import { StoreSelectionExtension } from '../../extension/index.js';
@@ -54,6 +54,10 @@ export class Store {
   };
 
   private readonly _readonly = signal(false);
+
+  private readonly _isEmpty = computed(() => {
+    return this.root?.isEmpty() ?? true;
+  });
 
   private readonly _schema: Schema;
 
@@ -215,7 +219,11 @@ export class Store {
   }
 
   get isEmpty() {
-    return this.root?.isEmpty() ?? true;
+    return this._isEmpty.peek();
+  }
+
+  get isEmpty$() {
+    return this._isEmpty;
   }
 
   get loaded() {
