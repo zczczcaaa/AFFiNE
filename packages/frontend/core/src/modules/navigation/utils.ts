@@ -102,8 +102,8 @@ const isRouteModulePath = (
 ): path is (typeof routeModulePaths)[number] =>
   routeModulePaths.includes(path as any);
 
-export const resolveLinkToDoc = (href: string) => {
-  const meta = resolveRouteLinkMeta(href);
+export const resolveLinkToDoc = (href: string, baseUrl?: string) => {
+  const meta = resolveRouteLinkMeta(href, baseUrl);
   if (!meta || meta.moduleName !== 'doc') return null;
 
   const params = preprocessParams(

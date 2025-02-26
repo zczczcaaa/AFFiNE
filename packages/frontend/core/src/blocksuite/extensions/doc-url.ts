@@ -11,9 +11,11 @@ import type { FrameworkProvider } from '@toeverything/infra';
 
 function patchParseDocUrlExtension(framework: FrameworkProvider) {
   const workspaceService = framework.get(WorkspaceService);
+  const workspaceServerService = framework.get(WorkspaceServerService);
+  const baseUrl = workspaceServerService.server?.baseUrl ?? location.origin;
   const ParseDocUrl = ParseDocUrlExtension({
     parseDocUrl(url) {
-      const info = resolveLinkToDoc(url);
+      const info = resolveLinkToDoc(url, baseUrl);
       if (!info || info.workspaceId !== workspaceService.workspace.id) return;
 
       delete info.refreshKey;
@@ -28,13 +30,14 @@ function patchParseDocUrlExtension(framework: FrameworkProvider) {
 function patchGenerateDocUrlExtension(framework: FrameworkProvider) {
   const workspaceService = framework.get(WorkspaceService);
   const workspaceServerService = framework.get(WorkspaceServerService);
+  const baseUrl = workspaceServerService.server?.baseUrl ?? location.origin;
   const GenerateDocUrl = GenerateDocUrlExtension({
     generateDocUrl(pageId: string, params?: ReferenceParams) {
       return generateUrl({
         ...params,
         pageId,
         workspaceId: workspaceService.workspace.id,
-        baseUrl: workspaceServerService.server?.baseUrl ?? location.origin,
+        baseUrl,
       });
     },
   });
