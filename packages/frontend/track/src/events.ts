@@ -53,7 +53,12 @@ type DocEvents =
   | 'editProperty'
   | 'editPropertyMeta'
   | 'addProperty';
-type EditorEvents = 'bold' | 'italic' | 'underline' | 'strikeThrough';
+type EditorEvents =
+  | 'bold'
+  | 'italic'
+  | 'underline'
+  | 'strikeThrough'
+  | 'foldEdgelessNote';
 // END SECTION
 
 // SECTION: setting events
@@ -360,7 +365,6 @@ const PageEvents = {
         'openInPeekView',
       ],
       aiActions: ['requestSignIn'],
-      pageBlockHeader: ['openDocInfo'],
       starterBar: ['quickStart', 'openTemplateListMenu'],
     },
     inlineDocInfo: {
@@ -377,7 +381,16 @@ const PageEvents = {
       backlinkPreview: ['navigate'],
     },
   },
-  edgeless: {},
+  edgeless: {
+    pageBlock: {
+      headerToolbar: [
+        'toggle',
+        'openDocInfo',
+        'copyBlockToLink',
+        'switchPageMode',
+      ],
+    },
+  },
   workspace: {
     $: {
       $: ['upgradeWorkspace'],

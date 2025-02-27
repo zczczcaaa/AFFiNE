@@ -7,4 +7,5 @@ export type NoteEvents = {
     control: 'display mode';
     type: 'note';
   };
+  EdgelessNoteEditing: TelemetryEvent;
 };

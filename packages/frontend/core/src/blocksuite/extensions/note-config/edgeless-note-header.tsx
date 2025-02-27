@@ -69,6 +69,9 @@ const EdgelessNoteToggleButton = ({ note }: { note: NoteBlockModel }) => {
   }, [gfx, note]);
 
   const toggle = useCallback(() => {
+    track.edgeless.pageBlock.headerToolbar.toggle({
+      type: collapsed ? 'expand' : 'collapse',
+    });
     note.doc.transact(() => {
       if (collapsed) {
         note.edgeless.collapse = false;
@@ -111,6 +114,7 @@ const ViewInPageButton = () => {
   const editor = useService(EditorService).editor;
 
   const viewInPage = useCallback(() => {
+    track.edgeless.pageBlock.headerToolbar.switchPageMode();
     editor.setMode('page');
   }, [editor]);
 
@@ -132,7 +136,7 @@ const InfoButton = ({ note }: { note: NoteBlockModel }) => {
   const workspaceDialogService = useService(WorkspaceDialogService);
 
   const onOpenInfoModal = useCallback(() => {
-    track.doc.editor.pageBlockHeader.openDocInfo();
+    track.edgeless.pageBlock.headerToolbar.openDocInfo();
     workspaceDialogService.open('doc-info', { docId: note.doc.id });
   }, [note.doc.id, workspaceDialogService]);
 
@@ -162,6 +166,7 @@ const LinkButton = ({ note }: { note: NoteBlockModel }) => {
   });
 
   const copyLink = useCallback(() => {
+    track.edgeless.pageBlock.headerToolbar.copyBlockToLink();
     onClickCopyLink('edgeless', [note.id]);
   }, [note.id, onClickCopyLink]);
 

@@ -2,10 +2,11 @@ import { EdgelessLegacySlotIdentifier } from '@blocksuite/affine-block-surface';
 import type { DocTitle } from '@blocksuite/affine-components/doc-title';
 import { NoteDisplayMode } from '@blocksuite/affine-model';
 import { EDGELESS_BLOCK_CHILD_PADDING } from '@blocksuite/affine-shared/consts';
+import { TelemetryProvider } from '@blocksuite/affine-shared/services';
 import { stopPropagation } from '@blocksuite/affine-shared/utils';
 import { toGfxBlockComponent } from '@blocksuite/block-std';
 import { Bound } from '@blocksuite/global/utils';
-import { html, nothing } from 'lit';
+import { html, nothing, type PropertyValues } from 'lit';
 import { query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
@@ -170,6 +171,15 @@ export class EdgelessNoteBlockComponent extends toGfxBlockComponent(
     if (this._noteContent) {
       observer.observe(this, { childList: true, subtree: true });
       _disposables.add(() => observer.disconnect());
+    }
+  }
+
+  override updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('_editing') && this._editing) {
+      this.std.getOptional(TelemetryProvider)?.track('EdgelessNoteEditing', {
+        page: 'edgeless',
+        segment: this.model.isPageBlock() ? 'page' : 'note',
+      });
     }
   }
 
