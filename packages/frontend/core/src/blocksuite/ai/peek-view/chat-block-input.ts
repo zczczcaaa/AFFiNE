@@ -239,8 +239,6 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
   @state()
   accessor _focused = false;
 
-  private _lastPromptName: string | null = null;
-
   private get _isNetworkActive() {
     return (
       !!this.networkSearchConfig.visible.value &&
@@ -262,12 +260,9 @@ export class ChatBlockInput extends SignalWatcher(LitElement) {
   }
 
   private async _updatePromptName(promptName: string) {
-    if (this._lastPromptName !== promptName) {
-      const { currentSessionId } = this.chatContext;
-      if (currentSessionId && AIProvider.session) {
-        await AIProvider.session.updateSession(currentSessionId, promptName);
-        this._lastPromptName = promptName;
-      }
+    const { currentSessionId } = this.chatContext;
+    if (currentSessionId && AIProvider.session) {
+      await AIProvider.session.updateSession(currentSessionId, promptName);
     }
   }
 
