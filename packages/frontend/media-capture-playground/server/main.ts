@@ -5,6 +5,7 @@ import {
   type Application,
   type AudioTapStream,
   ShareableContent,
+  type TappableApplication,
 } from '@affine/native';
 import type { FSWatcher } from 'chokidar';
 import chokidar from 'chokidar';
@@ -26,7 +27,7 @@ console.log(`📁 Ensuring recordings directory exists at ${RECORDING_DIR}`);
 
 // Types
 interface Recording {
-  app: Application;
+  app: TappableApplication;
   appGroup: Application | null;
   buffers: Float32Array[];
   stream: AudioTapStream;
@@ -54,12 +55,12 @@ interface RecordingMetadata {
 }
 
 interface AppInfo {
-  app: Application;
+  app?: TappableApplication;
   processId: number;
   processGroupId: number;
   bundleIdentifier: string;
   name: string;
-  running: boolean;
+  isRunning: boolean;
 }
 
 interface TranscriptionMetadata {
@@ -216,7 +217,7 @@ function emitRecordingStatus() {
   io.emit('apps:recording', { recordings: getRecordingStatus() });
 }
 
-async function startRecording(app: Application) {
+async function startRecording(app: TappableApplication) {
   if (recordingMap.has(app.processId)) {
     console.log(
       `⚠️ Recording already in progress for ${app.name} (PID: ${app.processId})`
@@ -224,40 +225,44 @@ async function startRecording(app: Application) {
     return;
   }
 
-  const processGroupId = app.processGroupId;
-  const rootApp = processGroupId
-    ? (shareableContent
-        .applications()
-        .find(a => a.processId === processGroupId) ?? app)
-    : app;
-
-  console.log(
-    `🎙️ Starting recording for ${rootApp.name} (PID: ${rootApp.processId})`
-  );
-
-  const buffers: Float32Array[] = [];
-  const stream = app.tapAudio((err, samples) => {
-    if (err) {
-      console.error(`❌ Audio stream error for ${rootApp.name}:`, err);
+  try {
+    const processGroupId = app.processGroupId;
+    const rootApp = shareableContent.applicationWithProcessId(processGroupId);
+    if (!rootApp) {
+      console.error(`❌ App group not found for ${app.name}`);
       return;
     }
-    const recording = recordingMap.get(app.processId);
-    if (recording && !recording.isWriting) {
-      buffers.push(new Float32Array(samples));
-    }
-  });
 
-  recordingMap.set(app.processId, {
-    app,
-    appGroup: rootApp,
-    buffers,
-    stream,
-    startTime: Date.now(),
-    isWriting: false,
-  });
+    console.log(
+      `🎙️ Starting recording for ${rootApp.name} (PID: ${rootApp.processId})`
+    );
 
-  console.log(`✅ Recording started successfully for ${rootApp.name}`);
-  emitRecordingStatus();
+    const buffers: Float32Array[] = [];
+    const stream = app.tapAudio((err, samples) => {
+      if (err) {
+        console.error(`❌ Audio stream error for ${rootApp.name}:`, err);
+        return;
+      }
+      const recording = recordingMap.get(app.processId);
+      if (recording && !recording.isWriting) {
+        buffers.push(new Float32Array(samples));
+      }
+    });
+
+    recordingMap.set(app.processId, {
+      app,
+      appGroup: rootApp,
+      buffers,
+      stream,
+      startTime: Date.now(),
+      isWriting: false,
+    });
+
+    console.log(`✅ Recording started successfully for ${rootApp.name}`);
+    emitRecordingStatus();
+  } catch (error) {
+    console.error(`❌ Error starting recording for ${app.name}:`, error);
+  }
 }
 
 async function stopRecording(processId: number) {
@@ -432,7 +437,7 @@ async function setupRecordingsWatcher() {
 const shareableContent = new ShareableContent();
 
 async function getAllApps(): Promise<AppInfo[]> {
-  const apps = shareableContent.applications().map(app => {
+  const apps: (AppInfo | null)[] = shareableContent.applications().map(app => {
     try {
       return {
         app,
@@ -440,7 +445,7 @@ async function getAllApps(): Promise<AppInfo[]> {
         processGroupId: app.processGroupId,
         bundleIdentifier: app.bundleIdentifier,
         name: app.name,
-        running: app.isRunning,
+        isRunning: app.isRunning,
       };
     } catch (error) {
       console.error(error);
@@ -453,11 +458,30 @@ async function getAllApps(): Promise<AppInfo[]> {
       v !== null && !v.bundleIdentifier.startsWith('com.apple')
   );
 
+  for (const app of filteredApps) {
+    if (filteredApps.some(a => a.processId === app.processGroupId)) {
+      continue;
+    }
+    const appGroup = shareableContent.applicationWithProcessId(
+      app.processGroupId
+    );
+    if (!appGroup) {
+      continue;
+    }
+    filteredApps.push({
+      processId: appGroup.processId,
+      processGroupId: appGroup.processGroupId,
+      bundleIdentifier: appGroup.bundleIdentifier,
+      name: appGroup.name,
+      isRunning: false,
+    });
+  }
+
   // Stop recording if app is not listed
   await Promise.all(
-    filteredApps.map(async ({ app }) => {
-      if (!filteredApps.some(a => a.processId === app.processId)) {
-        await stopRecording(app.processId);
+    Array.from(recordingMap.keys()).map(async processId => {
+      if (!filteredApps.some(a => a.processId === processId)) {
+        await stopRecording(processId);
       }
     })
   );
@@ -467,24 +491,36 @@ async function getAllApps(): Promise<AppInfo[]> {
 
 function listenToAppStateChanges(apps: AppInfo[]) {
   const subscribers = apps.map(({ app }) => {
-    return ShareableContent.onAppStateChanged(app, () => {
-      setTimeout(() => {
-        console.log(
-          `🔄 Application state changed: ${app.name} (PID: ${app.processId}) is now ${
-            app.isRunning ? '▶️ running' : '⏹️ stopped'
-          }`
-        );
-        io.emit('apps:state-changed', {
-          processId: app.processId,
-          running: app.isRunning,
-        });
-        if (!app.isRunning) {
-          stopRecording(app.processId).catch(error => {
-            console.error('❌ Error stopping recording:', error);
+    try {
+      if (!app) {
+        return { unsubscribe: () => {} };
+      }
+      return ShareableContent.onAppStateChanged(app, () => {
+        setTimeout(() => {
+          console.log(
+            `🔄 Application state changed: ${app.name} (PID: ${app.processId}) is now ${
+              app.isRunning ? '▶️ running' : '⏹️ stopped'
+            }`
+          );
+          io.emit('apps:state-changed', {
+            processId: app.processId,
+            isRunning: app.isRunning,
           });
-        }
-      }, 50);
-    });
+
+          if (!app.isRunning) {
+            stopRecording(app.processId).catch(error => {
+              console.error('❌ Error stopping recording:', error);
+            });
+          }
+        }, 100);
+      });
+    } catch (error) {
+      console.error(
+        `Failed to listen to app state changes for ${app?.name}:`,
+        error
+      );
+      return { unsubscribe: () => {} };
+    }
   });
 
   appsSubscriber();
@@ -505,7 +541,7 @@ io.on('connection', async socket => {
   console.log(`📤 Sending ${files.length} saved recordings to new client`);
   socket.emit('apps:saved', { recordings: files });
 
-  listenToAppStateChanges(initialApps);
+  listenToAppStateChanges(initialApps.map(app => app.app).filter(app => !!app));
 
   socket.on('disconnect', () => {
     console.log('🔌 Client disconnected');
@@ -614,19 +650,33 @@ app.get('/apps/:process_id/icon', (req, res) => {
   const processId = parseInt(req.params.process_id);
   try {
     const app = shareableContent.applicationWithProcessId(processId);
+    if (!app) {
+      res.status(404).json({ error: 'App not found' });
+      return;
+    }
     const icon = app.icon;
     res.set('Content-Type', 'image/png');
     res.send(icon);
-  } catch {
+  } catch (error) {
+    console.error(`Error getting icon for process ${processId}:`, error);
     res.status(404).json({ error: 'App icon not found' });
   }
 });
 
 app.post('/apps/:process_id/record', async (req, res) => {
   const processId = parseInt(req.params.process_id);
-  const app = shareableContent.applicationWithProcessId(processId);
-  await startRecording(app);
-  res.json({ success: true });
+  try {
+    const app = shareableContent.tappableApplicationWithProcessId(processId);
+    if (!app) {
+      res.status(404).json({ error: 'App not found' });
+      return;
+    }
+    await startRecording(app);
+    res.json({ success: true });
+  } catch (error) {
+    console.error(`Error starting recording for process ${processId}:`, error);
+    res.status(500).json({ error: 'Failed to start recording' });
+  }
 });
 
 app.post('/apps/:process_id/stop', async (req, res) => {

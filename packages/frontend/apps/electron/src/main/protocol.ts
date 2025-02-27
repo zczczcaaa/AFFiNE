@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { net, protocol, session } from 'electron';
 import cookieParser from 'set-cookie-parser';
 
+import { resourcesPath } from '../shared/utils';
 import { logger } from './logger';
 
 protocol.registerSchemesAsPrivileged([
@@ -33,7 +34,7 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 const NETWORK_REQUESTS = ['/api', '/ws', '/socket.io', '/graphql'];
-const webStaticDir = join(__dirname, '../resources/web-static');
+const webStaticDir = join(resourcesPath, 'web-static');
 
 function isNetworkResource(pathname: string) {
   return NETWORK_REQUESTS.some(opt => pathname.startsWith(opt));

@@ -380,6 +380,7 @@ module.exports.Mp3Encoder = nativeBinding.Mp3Encoder
 module.exports.RecordingPermissions = nativeBinding.RecordingPermissions
 module.exports.ShareableContent = nativeBinding.ShareableContent
 module.exports.SqliteConnection = nativeBinding.SqliteConnection
+module.exports.TappableApplication = nativeBinding.TappableApplication
 module.exports.Bitrate = nativeBinding.Bitrate
 module.exports.decodeAudio = nativeBinding.decodeAudio
 module.exports.decodeAudioSync = nativeBinding.decodeAudioSync

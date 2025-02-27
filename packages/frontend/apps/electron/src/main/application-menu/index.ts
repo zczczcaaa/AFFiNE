@@ -11,7 +11,7 @@ export const applicationMenuEvents = {
   /**
    * File -> New Doc
    */
-  onNewPageAction: (fn: () => void) => {
+  onNewPageAction: (fn: (type: 'page' | 'edgeless') => void) => {
     const sub = applicationMenuSubjects.newPageAction$.subscribe(fn);
     return () => {
       sub.unsubscribe();
@@ -20,6 +20,12 @@ export const applicationMenuEvents = {
   openAboutPageInSettingModal: (fn: () => void) => {
     const sub =
       applicationMenuSubjects.openAboutPageInSettingModal$.subscribe(fn);
+    return () => {
+      sub.unsubscribe();
+    };
+  },
+  onOpenJournal: (fn: () => void) => {
+    const sub = applicationMenuSubjects.openJournal$.subscribe(fn);
     return () => {
       sub.unsubscribe();
     };

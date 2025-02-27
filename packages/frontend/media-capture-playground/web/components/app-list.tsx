@@ -24,12 +24,13 @@ export function AppList() {
     });
     socket.on('apps:state-changed', data => {
       const index = apps.findIndex(a => a.processId === data.processId);
+      console.log('apps:state-changed', data, index);
       if (index !== -1) {
         next(
           null,
           apps.toSpliced(index, 1, {
             ...apps[index],
-            running: data.running,
+            isRunning: data.isRunning,
           })
         );
       }
@@ -83,10 +84,10 @@ export function AppList() {
   }, [apps]);
 
   const runningApps = (appGroups || []).filter(app =>
-    app.apps.some(a => a.running)
+    app.apps.some(a => a.isRunning)
   );
   const notRunningApps = (appGroups || []).filter(
-    app => !app.apps.some(a => a.running)
+    app => !app.apps.some(a => a.isRunning)
   );
 
   return (

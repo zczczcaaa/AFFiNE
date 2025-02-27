@@ -3,7 +3,7 @@ export interface App {
   processGroupId: number;
   bundleIdentifier: string;
   name: string;
-  running: boolean;
+  isRunning: boolean;
 }
 
 export interface AppGroup {

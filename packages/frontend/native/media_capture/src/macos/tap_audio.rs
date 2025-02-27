@@ -30,7 +30,7 @@ use objc2::{runtime::AnyObject, Encode, Encoding, RefEncode};
 
 use crate::{
   ca_tap_description::CATapDescription, device::get_device_uid, error::CoreAudioError,
-  queue::create_audio_tap_queue, screen_capture_kit::Application,
+  queue::create_audio_tap_queue, screen_capture_kit::TappableApplication,
 };
 
 extern "C" {
@@ -88,10 +88,12 @@ pub struct AggregateDevice {
 }
 
 impl AggregateDevice {
-  pub fn new(app: &Application) -> Result<Self> {
+  pub fn new(app: &TappableApplication) -> Result<Self> {
+    let object_id = app.object_id;
+
+    let tap_description = CATapDescription::init_stereo_mixdown_of_processes(object_id)?;
     let mut tap_id: AudioObjectID = 0;
 
-    let tap_description = CATapDescription::init_stereo_mixdown_of_processes(app.object_id)?;
     let status = unsafe { AudioHardwareCreateProcessTap(tap_description.inner, &mut tap_id) };
 
     if status != 0 {
@@ -109,7 +111,37 @@ impl AggregateDevice {
       )
     };
 
-    // Check the status and return the appropriate result
+    if status != 0 {
+      return Err(CoreAudioError::CreateAggregateDeviceFailed(status).into());
+    }
+
+    Ok(Self {
+      tap_id,
+      id: aggregate_device_id,
+    })
+  }
+
+  pub fn new_from_object_id(object_id: AudioObjectID) -> Result<Self> {
+    let mut tap_id: AudioObjectID = 0;
+
+    let tap_description = CATapDescription::init_stereo_mixdown_of_processes(object_id)?;
+    let status = unsafe { AudioHardwareCreateProcessTap(tap_description.inner, &mut tap_id) };
+
+    if status != 0 {
+      return Err(CoreAudioError::CreateProcessTapFailed(status).into());
+    }
+
+    let description_dict = Self::create_aggregate_description(tap_id, tap_description.get_uuid()?)?;
+
+    let mut aggregate_device_id: AudioObjectID = 0;
+
+    let status = unsafe {
+      AudioHardwareCreateAggregateDevice(
+        description_dict.as_concrete_TypeRef().cast(),
+        &mut aggregate_device_id,
+      )
+    };
+
     if status != 0 {
       return Err(CoreAudioError::CreateAggregateDeviceFailed(status).into());
     }

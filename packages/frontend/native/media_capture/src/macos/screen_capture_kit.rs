@@ -36,7 +36,6 @@ use screencapturekit::shareable_content::SCShareableContent;
 use uuid::Uuid;
 
 use crate::{
-  error::CoreAudioError,
   pid::{audio_process_list, get_process_property},
   tap_audio::{AggregateDevice, AudioTapStream},
 };
@@ -94,133 +93,161 @@ static AVCAPTUREDEVICE_CLASS: LazyLock<Option<&'static AnyClass>> =
 static SCSTREAM_CLASS: LazyLock<Option<&'static AnyClass>> =
   LazyLock::new(|| AnyClass::get(c"SCStream"));
 
-struct TappableApplication {
-  object_id: AudioObjectID,
+#[napi]
+pub struct Application {
+  pub(crate) process_id: i32,
+  pub(crate) name: String,
 }
 
-impl TappableApplication {
-  fn new(object_id: AudioObjectID) -> Self {
-    Self { object_id }
-  }
+#[napi]
+impl Application {
+  #[napi(constructor)]
+  pub fn new(process_id: i32) -> Result<Self> {
+    // Default values for when we can't get information
+    let mut app = Self {
+      process_id,
+      name: String::new(),
+    };
 
-  fn process_id(&self) -> std::result::Result<i32, CoreAudioError> {
-    get_process_property(&self.object_id, kAudioProcessPropertyPID)
-  }
+    // Try to populate fields using NSRunningApplication
+    if process_id > 0 {
+      // Get NSRunningApplication class
+      if let Some(running_app_class) = NSRUNNING_APPLICATION_CLASS.as_ref() {
+        // Get running application with PID
+        let running_app: *mut AnyObject = unsafe {
+          msg_send![
+            *running_app_class,
+            runningApplicationWithProcessIdentifier: process_id
+          ]
+        };
 
-  fn bundle_identifier(&self) -> Result<String> {
-    let bundle_id: CFStringRef =
-      get_process_property(&self.object_id, kAudioProcessPropertyBundleID)?;
-    Ok(unsafe { CFString::wrap_under_get_rule(bundle_id) }.to_string())
-  }
+        if !running_app.is_null() {
+          // Get name
+          unsafe {
+            let name_ptr: *mut NSString = msg_send![running_app, localizedName];
+            if !name_ptr.is_null() {
+              let length: usize = msg_send![name_ptr, length];
+              let utf8_ptr: *const u8 = msg_send![name_ptr, UTF8String];
 
-  fn name(&self) -> Result<String> {
-    // Use catch_unwind to prevent any panics
-    let name_result = std::panic::catch_unwind(|| {
-      // Get process ID with error handling
-      let pid = match self.process_id() {
-        Ok(pid) => pid,
-        Err(_) => {
-          return Ok(String::new());
-        }
-      };
-
-      // Get NSRunningApplication class with error handling
-      let running_app_class = match NSRUNNING_APPLICATION_CLASS.as_ref() {
-        Some(class) => class,
-        None => {
-          return Ok(String::new());
-        }
-      };
-
-      // Get running application with PID
-      let running_app: *mut AnyObject =
-        unsafe { msg_send![*running_app_class, runningApplicationWithProcessIdentifier: pid] };
-
-      if running_app.is_null() {
-        return Ok(String::new());
-      }
-
-      // Instead of using Retained::from_raw which takes ownership,
-      // we'll just copy the string value and let the Objective-C runtime
-      // handle the memory management of the original object
-      unsafe {
-        // Get localized name
-        let name_ptr: *mut NSString = msg_send![running_app, localizedName];
-        if name_ptr.is_null() {
-          return Ok(String::new());
-        }
-
-        // Create a copy of the string without taking ownership of the NSString
-        let length: usize = msg_send![name_ptr, length];
-        let utf8_ptr: *const u8 = msg_send![name_ptr, UTF8String];
-
-        if utf8_ptr.is_null() {
-          return Ok(String::new());
-        }
-
-        let bytes = std::slice::from_raw_parts(utf8_ptr, length);
-        match std::str::from_utf8(bytes) {
-          Ok(s) => Ok(s.to_string()),
-          Err(_) => Ok(String::new()),
+              if !utf8_ptr.is_null() {
+                let bytes = std::slice::from_raw_parts(utf8_ptr, length);
+                if let Ok(s) = std::str::from_utf8(bytes) {
+                  app.name = s.to_string();
+                }
+              }
+            }
+          }
         }
       }
-    });
-
-    // Handle any panics that might have occurred
-    match name_result {
-      Ok(result) => result,
-      Err(_) => Ok(String::new()),
     }
+
+    Ok(app)
   }
 
-  fn icon(&self) -> Result<Vec<u8>> {
+  #[napi(getter)]
+  pub fn process_id(&self) -> i32 {
+    self.process_id
+  }
+
+  #[napi(getter)]
+  pub fn process_group_id(&self) -> i32 {
+    if self.process_id > 0 {
+      let pgid = unsafe { libc::getpgid(self.process_id) };
+      if pgid != -1 {
+        return pgid;
+      }
+      // Fall back to process_id if getpgid fails
+      return self.process_id;
+    }
+    -1
+  }
+
+  #[napi(getter)]
+  pub fn bundle_identifier(&self) -> String {
+    if self.process_id <= 0 {
+      return String::new();
+    }
+
+    // Try to get bundle identifier using NSRunningApplication
+    if let Some(running_app_class) = NSRUNNING_APPLICATION_CLASS.as_ref() {
+      let running_app: *mut AnyObject = unsafe {
+        msg_send![
+          *running_app_class,
+          runningApplicationWithProcessIdentifier: self.process_id
+        ]
+      };
+
+      if !running_app.is_null() {
+        unsafe {
+          let bundle_id_ptr: *mut NSString = msg_send![running_app, bundleIdentifier];
+          if !bundle_id_ptr.is_null() {
+            let length: usize = msg_send![bundle_id_ptr, length];
+            let utf8_ptr: *const u8 = msg_send![bundle_id_ptr, UTF8String];
+
+            if !utf8_ptr.is_null() {
+              let bytes = std::slice::from_raw_parts(utf8_ptr, length);
+              if let Ok(s) = std::str::from_utf8(bytes) {
+                return s.to_string();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    String::new()
+  }
+
+  #[napi(getter)]
+  pub fn name(&self) -> String {
+    self.name.clone()
+  }
+
+  #[napi(getter)]
+  pub fn icon(&self) -> Result<Buffer> {
     // Use catch_unwind to prevent any panics
     let icon_result = std::panic::catch_unwind(|| {
-      // Get process ID with error handling
-      let pid = match self.process_id() {
-        Ok(pid) => pid,
-        Err(_) => {
-          return Ok(Vec::new());
-        }
-      };
-
       // Get NSRunningApplication class with error handling
       let running_app_class = match NSRUNNING_APPLICATION_CLASS.as_ref() {
         Some(class) => class,
         None => {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
       };
 
       // Get running application with PID
-      let running_app: *mut AnyObject =
-        unsafe { msg_send![*running_app_class, runningApplicationWithProcessIdentifier: pid] };
+      let running_app: *mut AnyObject = unsafe {
+        msg_send![
+          *running_app_class,
+          runningApplicationWithProcessIdentifier: self.process_id
+        ]
+      };
       if running_app.is_null() {
-        return Ok(Vec::new());
+        return Ok(Buffer::from(Vec::<u8>::new()));
       }
 
       unsafe {
         // Get original icon
         let icon: *mut AnyObject = msg_send![running_app, icon];
         if icon.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         // Create a new NSImage with 64x64 size
         let nsimage_class = match AnyClass::get(c"NSImage") {
           Some(class) => class,
-          None => return Ok(Vec::new()),
+          None => return Ok(Buffer::from(Vec::<u8>::new())),
         };
 
         let resized_image: *mut AnyObject = msg_send![nsimage_class, alloc];
         if resized_image.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         let resized_image: *mut AnyObject =
           msg_send![resized_image, initWithSize: NSSize { width: 64.0, height: 64.0 }];
         if resized_image.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         let _: () = msg_send![resized_image, lockFocus];
@@ -241,41 +268,41 @@ impl TappableApplication {
         // Get TIFF representation from the downsized image
         let tiff_data: *mut AnyObject = msg_send![resized_image, TIFFRepresentation];
         if tiff_data.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         // Create bitmap image rep from TIFF
         let bitmap_class = match AnyClass::get(c"NSBitmapImageRep") {
           Some(class) => class,
-          None => return Ok(Vec::new()),
+          None => return Ok(Buffer::from(Vec::<u8>::new())),
         };
 
         let bitmap: *mut AnyObject = msg_send![bitmap_class, imageRepWithData: tiff_data];
         if bitmap.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         // Create properties dictionary with compression factor
         let dict_class = match AnyClass::get(c"NSMutableDictionary") {
           Some(class) => class,
-          None => return Ok(Vec::new()),
+          None => return Ok(Buffer::from(Vec::<u8>::new())),
         };
 
         let properties: *mut AnyObject = msg_send![dict_class, dictionary];
         if properties.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         // Add compression properties
         let compression_key = NSString::from_str("NSImageCompressionFactor");
         let number_class = match AnyClass::get(c"NSNumber") {
           Some(class) => class,
-          None => return Ok(Vec::new()),
+          None => return Ok(Buffer::from(Vec::<u8>::new())),
         };
 
         let compression_value: *mut AnyObject = msg_send![number_class, numberWithDouble: 0.8];
         if compression_value.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         let _: () = msg_send![properties, setObject: compression_value, forKey: &*compression_key];
@@ -285,7 +312,7 @@ impl TappableApplication {
           msg_send![bitmap, representationUsingType: 4, properties: properties]; // 4 = PNG
 
         if png_data.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         // Get bytes from NSData
@@ -293,129 +320,101 @@ impl TappableApplication {
         let length: usize = msg_send![png_data, length];
 
         if bytes.is_null() {
-          return Ok(Vec::new());
+          return Ok(Buffer::from(Vec::<u8>::new()));
         }
 
         // Copy bytes into a Vec<u8> instead of using the original memory
         let data = std::slice::from_raw_parts(bytes, length).to_vec();
-        Ok(data)
+        Ok(Buffer::from(data))
       }
     });
 
     // Handle any panics that might have occurred
     match icon_result {
       Ok(result) => result,
-      Err(_) => Ok(Vec::new()),
-    }
-  }
-
-  fn process_group_id(&self) -> Result<i32> {
-    // Use catch_unwind to prevent any panics
-    let pgid_result = std::panic::catch_unwind(|| {
-      // First get the process ID
-      let pid = match self.process_id() {
-        Ok(pid) => pid,
-        Err(_) => {
-          return Ok(-1); // Return -1 for error cases
-        }
-      };
-
-      // Call libc's getpgid function to get the process group ID
-      let pgid = unsafe { libc::getpgid(pid) };
-
-      // getpgid returns -1 on error
-      if pgid == -1 {
-        return Ok(-1);
-      }
-
-      Ok(pgid)
-    });
-
-    // Handle any panics
-    match pgid_result {
-      Ok(result) => result,
-      Err(_) => Ok(-1),
+      Err(_) => Ok(Buffer::from(Vec::<u8>::new())),
     }
   }
 }
 
 #[napi]
-pub struct Application {
-  inner: TappableApplication,
+pub struct TappableApplication {
+  pub(crate) app: Application,
   pub(crate) object_id: AudioObjectID,
-  pub(crate) process_id: i32,
-  pub(crate) process_group_id: i32,
-  pub(crate) bundle_identifier: String,
-  pub(crate) name: String,
 }
 
 #[napi]
-impl Application {
-  fn new(app: TappableApplication) -> Result<Self> {
-    let object_id = app.object_id;
-    let bundle_identifier = app.bundle_identifier()?;
-    let name = app.name()?;
-    let process_id = app.process_id()?;
-    let process_group_id = app.process_group_id()?;
+impl TappableApplication {
+  #[napi(constructor)]
+  pub fn new(object_id: AudioObjectID) -> Result<Self> {
+    // Get process ID from object_id
+    let process_id = match get_process_property(&object_id, kAudioProcessPropertyPID) {
+      Ok(pid) => pid,
+      Err(_) => -1,
+    };
 
-    Ok(Self {
-      inner: app,
-      object_id,
-      process_id,
-      process_group_id,
-      bundle_identifier,
-      name,
-    })
+    // Create base Application
+    let app = Application::new(process_id)?;
+
+    Ok(Self { app, object_id })
   }
 
-  #[napi]
-  pub fn tap_global_audio(
-    excluded_processes: Option<Vec<&Application>>,
-    audio_stream_callback: Arc<ThreadsafeFunction<Float32Array, (), Float32Array, true>>,
-  ) -> Result<AudioTapStream> {
-    let mut device = AggregateDevice::create_global_tap_but_exclude_processes(
-      &excluded_processes
-        .unwrap_or_default()
-        .iter()
-        .map(|app| app.object_id)
-        .collect::<Vec<_>>(),
-    )?;
-    device.start(audio_stream_callback)
+  #[napi(factory)]
+  pub fn from_application(app: &Application, object_id: AudioObjectID) -> Self {
+    Self {
+      app: Application {
+        process_id: app.process_id,
+        name: app.name.clone(),
+      },
+      object_id,
+    }
   }
 
   #[napi(getter)]
   pub fn process_id(&self) -> i32 {
-    self.process_id
+    self.app.process_id
   }
 
   #[napi(getter)]
   pub fn process_group_id(&self) -> i32 {
-    self.process_group_id
+    self.app.process_group_id()
   }
 
   #[napi(getter)]
   pub fn bundle_identifier(&self) -> String {
-    self.bundle_identifier.clone()
+    // First try to get from the Application
+    let app_bundle_id = self.app.bundle_identifier();
+    if !app_bundle_id.is_empty() {
+      return app_bundle_id;
+    }
+
+    // If not available, try to get from the audio process property
+    match get_process_property::<CFStringRef>(&self.object_id, kAudioProcessPropertyBundleID) {
+      Ok(bundle_id) => {
+        // Safely convert CFStringRef to Rust String
+        let cf_string = unsafe { CFString::wrap_under_create_rule(bundle_id) };
+        cf_string.to_string()
+      }
+      Err(_) => {
+        // Return empty string if we couldn't get the bundle ID
+        String::new()
+      }
+    }
   }
 
   #[napi(getter)]
   pub fn name(&self) -> String {
-    self.name.clone()
+    self.app.name.clone()
+  }
+
+  #[napi(getter)]
+  pub fn object_id(&self) -> u32 {
+    self.object_id
   }
 
   #[napi(getter)]
   pub fn icon(&self) -> Result<Buffer> {
-    // Use catch_unwind to prevent any panics
-    let result = std::panic::catch_unwind(|| match self.inner.icon() {
-      Ok(icon) => Ok(Buffer::from(icon)),
-      Err(_) => Ok(Buffer::from(Vec::<u8>::new())),
-    });
-
-    // Handle any panics
-    match result {
-      Ok(result) => result,
-      Err(_) => Ok(Buffer::from(Vec::<u8>::new())),
-    }
+    self.app.icon()
   }
 
   #[napi(getter)]
@@ -424,20 +423,14 @@ impl Application {
     let result = std::panic::catch_unwind(|| {
       match get_process_property(&self.object_id, kAudioProcessPropertyIsRunningInput) {
         Ok(is_running) => Ok(is_running),
-        Err(_) => {
-          // Default to true to avoid potential issues
-          Ok(true)
-        }
+        Err(_) => Ok(false),
       }
     });
 
     // Handle any panics
     match result {
       Ok(result) => result,
-      Err(_) => {
-        // Default to true to avoid potential issues
-        Ok(true)
-      }
+      Err(_) => Ok(false),
     }
   }
 
@@ -446,6 +439,7 @@ impl Application {
     &self,
     audio_stream_callback: Arc<ThreadsafeFunction<Float32Array, (), Float32Array, true>>,
   ) -> Result<AudioTapStream> {
+    // Use the new method that takes a TappableApplication directly
     let mut device = AggregateDevice::new(self)?;
     device.start(audio_stream_callback)
   }
@@ -585,20 +579,22 @@ impl ShareableContent {
 
   #[napi]
   pub fn on_app_state_changed(
-    app: &Application,
+    app: &TappableApplication,
     callback: Arc<ThreadsafeFunction<(), ()>>,
   ) -> Result<ApplicationStateChangedSubscriber> {
     let id = Uuid::new_v4();
+    let object_id = app.object_id;
+
     let mut lock = APPLICATION_STATE_CHANGED_SUBSCRIBERS.write().map_err(|_| {
       Error::new(
         Status::GenericFailure,
         "Poisoned RwLock while writing ApplicationStateChangedSubscribers",
       )
     })?;
-    if let Some(subscribers) = lock.get_mut(&app.object_id) {
+
+    if let Some(subscribers) = lock.get_mut(&object_id) {
       subscribers.insert(id, callback);
     } else {
-      let object_id = app.object_id;
       let list_change: RcBlock<dyn Fn(u32, *mut c_void)> =
         RcBlock::new(move |in_number_addresses, in_addresses: *mut c_void| {
           let addresses = unsafe {
@@ -630,7 +626,7 @@ impl ShareableContent {
       let listener_block = &*list_change as *const Block<dyn Fn(u32, *mut c_void)>;
       let status = unsafe {
         AudioObjectAddPropertyListenerBlock(
-          app.object_id,
+          object_id,
           &address,
           ptr::null_mut(),
           listener_block.cast_mut().cast(),
@@ -647,12 +643,9 @@ impl ShareableContent {
         map.insert(id, callback);
         map
       };
-      lock.insert(app.object_id, subscribers);
+      lock.insert(object_id, subscribers);
     }
-    Ok(ApplicationStateChangedSubscriber {
-      id,
-      object_id: app.object_id,
-    })
+    Ok(ApplicationStateChangedSubscriber { id, object_id })
   }
 
   #[napi(constructor)]
@@ -663,8 +656,8 @@ impl ShareableContent {
   }
 
   #[napi]
-  pub fn applications(&self) -> Result<Vec<Application>> {
-    RUNNING_APPLICATIONS
+  pub fn applications(&self) -> Result<Vec<TappableApplication>> {
+    let app_list = RUNNING_APPLICATIONS
       .read()
       .map_err(|_| {
         Error::new(
@@ -674,46 +667,73 @@ impl ShareableContent {
       })?
       .iter()
       .filter_map(|id| {
-        let app = TappableApplication::new(*id);
-        if !app.bundle_identifier().ok()?.is_empty() {
-          Some(Application::new(app))
+        let tappable_app = match TappableApplication::new(*id) {
+          Ok(app) => app,
+          Err(_) => return None,
+        };
+
+        if !tappable_app.bundle_identifier().is_empty() {
+          Some(tappable_app)
         } else {
           None
         }
       })
-      .collect()
+      .collect::<Vec<_>>();
+
+    Ok(app_list)
   }
 
   #[napi]
-  pub fn application_with_process_id(&self, process_id: u32) -> Result<Application> {
-    // Find the AudioObjectID for the given process ID
-    let audio_object_id = {
-      let running_apps = RUNNING_APPLICATIONS.read().map_err(|_| {
-        Error::new(
-          Status::GenericFailure,
-          "Poisoned RwLock while reading RunningApplications",
-        )
-      })?;
-
-      *running_apps
-        .iter()
-        .find(|&&id| {
-          let app = TappableApplication::new(id);
-          app
-            .process_id()
-            .map(|pid| pid as u32 == process_id)
-            .unwrap_or(false)
-        })
-        .ok_or_else(|| {
-          Error::new(
-            Status::GenericFailure,
-            format!("No application found with process ID {}", process_id),
-          )
-        })?
+  pub fn application_with_process_id(&self, process_id: u32) -> Option<Application> {
+    // Get NSRunningApplication class
+    let running_app_class = match NSRUNNING_APPLICATION_CLASS.as_ref() {
+      Some(class) => class,
+      None => return None,
     };
 
-    let app = TappableApplication::new(audio_object_id);
-    Application::new(app)
+    // Get running application with PID
+    let running_app: *mut AnyObject = unsafe {
+      msg_send![
+        *running_app_class,
+        runningApplicationWithProcessIdentifier: process_id as i32
+      ]
+    };
+
+    if running_app.is_null() {
+      return None;
+    }
+
+    // Create an Application directly
+    match Application::new(process_id as i32) {
+      Ok(app) => Some(app),
+      Err(_) => None,
+    }
+  }
+
+  #[napi]
+  pub fn tappable_application_with_process_id(
+    &self,
+    process_id: u32,
+  ) -> Option<TappableApplication> {
+    // Find the TappableApplication with this process ID in the list of running
+    // applications
+    match self.applications() {
+      Ok(apps) => {
+        for app in apps {
+          if app.process_id() == process_id as i32 {
+            return Some(app);
+          }
+        }
+
+        // If we couldn't find a TappableApplication with this process ID, create a new
+        // one with a default object_id of 0 (which won't be able to tap audio)
+        match Application::new(process_id as i32) {
+          Ok(app) => Some(TappableApplication::from_application(&app, 0)),
+          Err(_) => None,
+        }
+      }
+      Err(_) => None,
+    }
   }
 
   #[napi]
@@ -742,5 +762,20 @@ impl ShareableContent {
       audio: audio_status == 3,
       screen: screen_status,
     })
+  }
+
+  #[napi]
+  pub fn tap_global_audio(
+    excluded_processes: Option<Vec<&TappableApplication>>,
+    audio_stream_callback: Arc<ThreadsafeFunction<Float32Array, (), Float32Array, true>>,
+  ) -> Result<AudioTapStream> {
+    let mut device = AggregateDevice::create_global_tap_but_exclude_processes(
+      &excluded_processes
+        .unwrap_or_default()
+        .iter()
+        .map(|app| app.object_id)
+        .collect::<Vec<_>>(),
+    )?;
+    device.start(audio_stream_callback)
   }
 }

@@ -15,14 +15,14 @@ export function AppItem({ app, recordings }: AppItemProps) {
   const appName = app.rootApp.name || '';
   const bundleId = app.rootApp.bundleIdentifier || '';
   const firstLetter = appName.charAt(0).toUpperCase();
-  const isRunning = app.apps.some(a => a.running);
+  const isRunning = app.apps.some(a => a.isRunning);
 
   const recording = recordings?.find((r: RecordingStatus) =>
     app.apps.some(a => a.processId === r.processId)
   );
 
   const handleRecordClick = React.useCallback(() => {
-    const recordingApp = app.apps.find(a => a.running);
+    const recordingApp = app.apps.find(a => a.isRunning);
     if (!recordingApp) {
       return;
     }
