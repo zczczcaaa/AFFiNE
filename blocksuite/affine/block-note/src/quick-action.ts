@@ -9,6 +9,7 @@ import {
   getSelectedModelsCommand,
 } from '@blocksuite/affine-shared/commands';
 import type { BlockStdScope } from '@blocksuite/block-std';
+import { toDraftModel } from '@blocksuite/store';
 
 export interface QuickActionConfig {
   id: string;
@@ -45,7 +46,9 @@ export const quickActionConfig: QuickActionConfig[] = [
       std.selection.clear();
 
       const doc = std.store;
-      const autofill = getTitleFromSelectedModels(selectedModels);
+      const autofill = getTitleFromSelectedModels(
+        selectedModels.map(toDraftModel)
+      );
       promptDocTitle(std, autofill)
         .then(title => {
           if (title === null) return;

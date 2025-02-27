@@ -17,6 +17,7 @@ import {
   type UIEventHandler,
 } from '@blocksuite/block-std';
 import { IS_MAC, IS_WINDOWS } from '@blocksuite/global/env';
+import { toDraftModel } from '@blocksuite/store';
 
 export class PageKeyboardManager {
   private readonly _handleDelete: UIEventHandler = ctx => {
@@ -143,7 +144,9 @@ export class PageKeyboardManager {
     }
 
     const doc = rootComponent.host.doc;
-    const autofill = getTitleFromSelectedModels(selectedModels);
+    const autofill = getTitleFromSelectedModels(
+      selectedModels.map(toDraftModel)
+    );
     promptDocTitle(rootComponent.std, autofill)
       .then(title => {
         if (title === null) return;

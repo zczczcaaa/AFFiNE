@@ -1,6 +1,11 @@
 import { BlockSuiteError } from '@blocksuite/global/exceptions';
 
-import type { DraftModel, Store } from '../model/index.js';
+import {
+  BlockModel,
+  type DraftModel,
+  type Store,
+  toDraftModel,
+} from '../model/index.js';
 import type { AssetsManager } from '../transformer/assets.js';
 import type { Slice, Transformer } from '../transformer/index.js';
 import type {
@@ -72,9 +77,11 @@ export abstract class BaseAdapter<AdapterTarget = unknown> {
     this.job = job;
   }
 
-  async fromBlock(model: DraftModel) {
+  async fromBlock(model: BlockModel | DraftModel) {
     try {
-      const blockSnapshot = this.job.blockToSnapshot(model);
+      const draftModel =
+        model instanceof BlockModel ? toDraftModel(model) : model;
+      const blockSnapshot = this.job.blockToSnapshot(draftModel);
       if (!blockSnapshot) return;
       return await this.fromBlockSnapshot({
         snapshot: blockSnapshot,

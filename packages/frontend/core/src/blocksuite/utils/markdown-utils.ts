@@ -24,7 +24,7 @@ import type {
   Store,
   TransformerMiddleware,
 } from '@blocksuite/affine/store';
-import { Transformer } from '@blocksuite/affine/store';
+import { toDraftModel, Transformer } from '@blocksuite/affine/store';
 
 const updateSnapshotText = (
   point: TextRangePoint,
@@ -51,10 +51,10 @@ function processSnapshot(
 
   const modelId = model.id;
   if (text.from.blockId === modelId) {
-    updateSnapshotText(text.from, snapshot, model);
+    updateSnapshotText(text.from, snapshot, toDraftModel(model));
   }
   if (text.to && text.to.blockId === modelId) {
-    updateSnapshotText(text.to, snapshot, model);
+    updateSnapshotText(text.to, snapshot, toDraftModel(model));
   }
 
   // If the snapshot has children, handle them recursively

@@ -64,7 +64,7 @@ import type {
 import { tableViewMeta } from '@blocksuite/data-view/view-presets';
 import { assertExists } from '@blocksuite/global/utils';
 import { MoreVerticalIcon } from '@blocksuite/icons/lit';
-import { Slice } from '@blocksuite/store';
+import { Slice, toDraftModel } from '@blocksuite/store';
 import { html, type TemplateResult } from 'lit';
 
 import { FormatBarContext } from './context.js';
@@ -230,7 +230,9 @@ export function toolbarDefaultConfig(toolbar: AffineFormatBarWidget) {
         host.selection.clear();
 
         const doc = host.doc;
-        const autofill = getTitleFromSelectedModels(selectedModels);
+        const autofill = getTitleFromSelectedModels(
+          selectedModels.map(toDraftModel)
+        );
         promptDocTitle(std, autofill)
           .then(async title => {
             if (title === null) return;

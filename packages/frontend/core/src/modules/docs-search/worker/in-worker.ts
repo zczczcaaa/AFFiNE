@@ -147,7 +147,7 @@ function generateMarkdownPreviewBuilder(
       keys: Array.from(yblock.keys())
         .filter(key => key.startsWith('prop:'))
         .map(key => key.substring(5)),
-    };
+    } as DraftModel;
   }
 
   const titleMiddleware: TransformerMiddleware = ({ adapterConfigs }) => {

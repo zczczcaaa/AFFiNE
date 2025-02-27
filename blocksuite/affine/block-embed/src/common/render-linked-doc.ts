@@ -304,11 +304,12 @@ export function getDocContentWithMaxLength(doc: Store, maxlength = 500) {
 
 export function getTitleFromSelectedModels(selectedModels: DraftModel[]) {
   const firstBlock = selectedModels[0];
-  if (
-    matchModels(firstBlock, [ParagraphBlockModel]) &&
-    firstBlock.type.startsWith('h')
-  ) {
-    return firstBlock.text.toString();
+  const isParagraph = (
+    model: DraftModel
+  ): model is DraftModel<ParagraphBlockModel> =>
+    model.flavour === 'affine:paragraph';
+  if (isParagraph(firstBlock) && firstBlock.type.startsWith('h')) {
+    return firstBlock.text?.toString();
   }
   return undefined;
 }
@@ -394,7 +395,7 @@ export async function convertSelectedBlocksToLinkedDoc(
     'before'
   );
   // delete selected elements
-  models.forEach(model => doc.deleteBlock(model));
+  models.forEach(model => doc.deleteBlock(model.id));
   return linkedDoc;
 }
 

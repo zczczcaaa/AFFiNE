@@ -1,19 +1,21 @@
 import { BlockSuiteError, ErrorCode } from '@blocksuite/global/exceptions';
 import { nextTick, Slot } from '@blocksuite/global/utils';
 
-import type {
+import {
   BlockModel,
-  BlockSchemaType,
-  DraftModel,
-  Store,
+  type BlockSchemaType,
+  type DraftModel,
+  type Store,
+  toDraftModel,
 } from '../model/index.js';
 import type { Schema } from '../schema/index.js';
 import { AssetsManager } from './assets.js';
 import { BaseBlockTransformer } from './base.js';
 import type {
+  AfterExportPayload,
+  AfterImportPayload,
   BeforeExportPayload,
   BeforeImportPayload,
-  FinalPayload,
   TransformerMiddleware,
   TransformerSlots,
 } from './middleware.js';
@@ -66,14 +68,19 @@ export class Transformer {
 
   private readonly _slots: TransformerSlots = {
     beforeImport: new Slot<BeforeImportPayload>(),
-    afterImport: new Slot<FinalPayload>(),
+    afterImport: new Slot<AfterImportPayload>(),
     beforeExport: new Slot<BeforeExportPayload>(),
-    afterExport: new Slot<FinalPayload>(),
+    afterExport: new Slot<AfterExportPayload>(),
   };
 
-  blockToSnapshot = (model: DraftModel): BlockSnapshot | undefined => {
+  blockToSnapshot = (
+    model: DraftModel | BlockModel
+  ): BlockSnapshot | undefined => {
     try {
-      const snapshot = this._blockToSnapshot(model);
+      const draftModel =
+        model instanceof BlockModel ? toDraftModel(model) : model;
+
+      const snapshot = this._blockToSnapshot(draftModel);
 
       if (!snapshot) {
         return;
@@ -103,7 +110,7 @@ export class Transformer {
           'Root block not found in doc'
         );
       }
-      const blocks = this.blockToSnapshot(rootModel);
+      const blocks = this.blockToSnapshot(toDraftModel(rootModel));
       if (!blocks) {
         return;
       }
@@ -286,7 +293,8 @@ export class Transformer {
 
       const contentBlocks = blockTree.children
         .map(tree => doc.getBlockById(tree.draft.id))
-        .filter(Boolean) as DraftModel[];
+        .filter((x): x is BlockModel => x !== null)
+        .map(model => toDraftModel(model));
 
       const slice = new Slice({
         content: contentBlocks,

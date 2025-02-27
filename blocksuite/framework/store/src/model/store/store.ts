@@ -16,7 +16,6 @@ import {
   type BlockModel,
   type BlockOptions,
   type BlockProps,
-  type DraftModel,
 } from '../block/index.js';
 import type { Doc } from '../doc.js';
 import { DocCRUD } from './crud.js';
@@ -100,10 +99,10 @@ export class Store {
   };
 
   updateBlock: {
-    <T extends Partial<BlockProps>>(model: BlockModel, props: T): void;
-    (model: BlockModel, callback: () => void): void;
+    <T extends Partial<BlockProps>>(model: BlockModel | string, props: T): void;
+    (model: BlockModel | string, callback: () => void): void;
   } = (
-    model: BlockModel,
+    modelOrId: BlockModel | string,
     callBackOrProps: (() => void) | Partial<BlockProps>
   ) => {
     if (this.readonly) {
@@ -112,6 +111,17 @@ export class Store {
     }
 
     const isCallback = typeof callBackOrProps === 'function';
+
+    const model =
+      typeof modelOrId === 'string'
+        ? this.getBlock(modelOrId)?.model
+        : modelOrId;
+    if (!model) {
+      throw new BlockSuiteError(
+        ErrorCode.ModelCRUDError,
+        `updating block: ${modelOrId} not found`
+      );
+    }
 
     if (!isCallback) {
       const parent = this.getParent(model);
@@ -549,7 +559,7 @@ export class Store {
   }
 
   deleteBlock(
-    model: DraftModel,
+    model: BlockModel | string,
     options: {
       bringChildrenTo?: BlockModel;
       deleteChildren?: boolean;
@@ -575,7 +585,10 @@ export class Store {
     };
 
     this.transact(() => {
-      this._crud.deleteBlock(model.id, opts);
+      this._crud.deleteBlock(
+        typeof model === 'string' ? model : model.id,
+        opts
+      );
     });
   }
 

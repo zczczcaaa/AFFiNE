@@ -1,6 +1,6 @@
 import type { Slot } from '@blocksuite/global/utils';
 
-import type { DraftModel, Store } from '../model/index.js';
+import type { BlockModel, DraftModel, Store } from '../model/index.js';
 import type { AssetsManager } from './assets.js';
 import type { Slice } from './slice.js';
 import type {
@@ -48,7 +48,7 @@ export type BeforeExportPayload =
       type: 'info';
     };
 
-export type FinalPayload =
+export type AfterExportPayload =
   | {
       snapshot: BlockSnapshot;
       type: 'block';
@@ -71,11 +71,34 @@ export type FinalPayload =
       type: 'info';
     };
 
+export type AfterImportPayload =
+  | {
+      snapshot: BlockSnapshot;
+      type: 'block';
+      model: BlockModel;
+      parent?: string;
+      index?: number;
+    }
+  | {
+      snapshot: DocSnapshot;
+      type: 'page';
+      page: Store;
+    }
+  | {
+      snapshot: SliceSnapshot;
+      type: 'slice';
+      slice: Slice;
+    }
+  | {
+      snapshot: CollectionInfoSnapshot;
+      type: 'info';
+    };
+
 export type TransformerSlots = {
   beforeImport: Slot<BeforeImportPayload>;
-  afterImport: Slot<FinalPayload>;
+  afterImport: Slot<AfterImportPayload>;
   beforeExport: Slot<BeforeExportPayload>;
-  afterExport: Slot<FinalPayload>;
+  afterExport: Slot<AfterExportPayload>;
 };
 
 type TransformerMiddlewareOptions = {

@@ -11,7 +11,7 @@ type ModelList<T> =
 export function matchModels<
   const Model extends ConstructorType<BlockModel>[],
   U extends ModelList<Model>[number] = ModelList<Model>[number],
->(model: unknown, expected: Model): model is U {
+>(model: BlockModel | null, expected: Model): model is U {
   return (
     !!model && expected.some(expectedModel => model instanceof expectedModel)
   );

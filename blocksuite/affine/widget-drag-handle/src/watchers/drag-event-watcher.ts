@@ -1139,7 +1139,7 @@ export class DragEventWatcher {
                   block.flavour === 'affine:bookmark' ||
                   block.flavour.startsWith('affine:embed-'))
               ) {
-                store.updateBlock(block as BlockModel, {
+                store.updateBlock(block.id, {
                   xywh: content[idx].props.xywh,
                   style: content[idx].props.style,
                 });
@@ -1164,7 +1164,7 @@ export class DragEventWatcher {
                 block.flavour === 'affine:attachment' ||
                 block.flavour.startsWith('affine:embed-')
               ) {
-                store.updateBlock(block as BlockModel, {
+                store.updateBlock(block.id, {
                   xywh: content[idx].props.xywh,
                   style: content[idx].props.style,
                 });
