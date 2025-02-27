@@ -221,11 +221,12 @@ export class PerplexityProvider implements CopilotTextToTextProvider {
           message: data.detail[0].msg || 'Unexpected perplexity response',
         });
       } else {
-        const parser = new CitationParser();
+        const citationParser = new CitationParser();
         const { content } = data.choices[0].message;
         const { citations } = data;
-        let result = parser.parse(content, citations);
-        result += parser.end();
+        let result = content.replaceAll(/<\/?think>\n/g, '\n---\n');
+        result = citationParser.parse(result, citations);
+        result += citationParser.end();
         return result;
       }
     } catch (e: any) {
@@ -264,7 +265,7 @@ export class PerplexityProvider implements CopilotTextToTextProvider {
         params
       );
       if (response.body) {
-        const parser = new CitationParser();
+        const citationParser = new CitationParser();
         const provider = this.type;
         const eventStream = response.body
           .pipeThrough(new TextDecoderStream())
@@ -289,12 +290,13 @@ export class PerplexityProvider implements CopilotTextToTextProvider {
                   }
                   const { content } = data.choices[0].delta;
                   const { citations } = data;
-                  const result = parser.parse(content, citations);
+                  let result = content.replaceAll(/<\/?think>\n?/g, '\n---\n');
+                  result = citationParser.parse(result, citations);
                   controller.enqueue(result);
                 }
               },
               flush(controller) {
-                controller.enqueue(parser.end());
+                controller.enqueue(citationParser.end());
                 controller.enqueue(null);
               },
             })
