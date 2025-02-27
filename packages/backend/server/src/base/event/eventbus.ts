@@ -19,6 +19,12 @@ import { genRequestId } from '../utils';
 import { type EventName, type EventOptions } from './def';
 import { EventHandlerScanner } from './scanner';
 
+interface EventHandlerErrorPayload {
+  event: string;
+  payload: any;
+  error: Error;
+}
+
 /**
  * We use socket.io system to auto pub/sub on server to server broadcast events
  */
@@ -50,6 +56,9 @@ export class EventBus
 
   async onModuleInit() {
     this.bindEventHandlers();
+    this.emitter.on('error', ({ event, error }: EventHandlerErrorPayload) => {
+      this.logger.error(`Error happened when handling event ${event}`, error);
+    });
   }
 
   async onApplicationBootstrap() {
@@ -78,7 +87,16 @@ export class EventBus
    */
   emit<T extends EventName>(event: T, payload: Events[T]) {
     this.logger.log(`Dispatch event: ${event}`);
-    return this.emitter.emit(event, payload);
+
+    // NOTE(@forehalo):
+    //   Because all event handlers are wrapped in promisified metrics and cls context, they will always run in standalone tick.
+    //   In which way, if handler throws, an unhandled rejection will be triggered and end up with process exiting.
+    //   So we catch it here with `emitAsync`
+    this.emitter.emitAsync(event, payload).catch(e => {
+      this.emitter.emit('error', { event, payload, error: e });
+    });
+
+    return true;
   }
 
   /**
@@ -115,10 +133,11 @@ export class EventBus
             return await listener(payload);
           } catch (e) {
             if (suppressError) {
-              this.logger.error(
-                `Error happened when handling event ${signature}`,
-                e
-              );
+              this.emitter.emit('error', {
+                event,
+                payload,
+                error: e,
+              } as EventHandlerErrorPayload);
             } else {
               throw e;
             }

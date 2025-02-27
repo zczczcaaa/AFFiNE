@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaClient } from '@prisma/client';
 
-import { EventBus, JobQueue, OnEvent, OnJob } from '../../base';
+import { EventBus, JobQueue, OnJob } from '../../base';
 import {
   SubscriptionPlan,
   SubscriptionRecurring,
@@ -126,26 +126,20 @@ export class SubscriptionCronJobs {
     });
 
     for (const subscription of subscriptions) {
+      await this.db.subscription.delete({
+        where: {
+          targetId_plan: {
+            targetId: subscription.targetId,
+            plan: subscription.plan,
+          },
+        },
+      });
+
       this.event.emit('user.subscription.canceled', {
         userId: subscription.targetId,
         plan: subscription.plan as SubscriptionPlan,
         recurring: subscription.variant as SubscriptionRecurring,
       });
     }
-  }
-
-  @OnEvent('user.subscription.canceled')
-  async handleUserSubscriptionCanceled({
-    userId,
-    plan,
-  }: Events['user.subscription.canceled']) {
-    await this.db.subscription.delete({
-      where: {
-        targetId_plan: {
-          targetId: userId,
-          plan,
-        },
-      },
-    });
   }
 }

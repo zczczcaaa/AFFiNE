@@ -8,6 +8,7 @@ declare global {
     '__test__.event': { count: number };
     '__test__.event2': { count: number };
     '__test__.throw': { count: number };
+    '__test__.suppressThrow': {};
     '__test__.requestId': {};
   }
 }
@@ -29,6 +30,11 @@ export class Listeners {
 
   @OnEvent('__test__.throw')
   onThrow() {
+    throw new Error('Error in event handler');
+  }
+
+  @OnEvent('__test__.suppressThrow', { suppressError: true })
+  onSuppressThrow() {
     throw new Error('Error in event handler');
   }
 

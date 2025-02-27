@@ -5,7 +5,7 @@ import { DynamicModule } from '@nestjs/common';
 
 import { Config } from '../../config';
 import { QueueRedis } from '../../redis';
-import { QUEUES } from './def';
+import { Queue, QUEUES } from './def';
 import { JobExecutor } from './executor';
 import { JobQueue } from './queue';
 import { JobHandlerScanner } from './scanner';
@@ -25,7 +25,15 @@ export class JobModule {
           },
           inject: [Config, QueueRedis],
         }),
-        BullModule.registerQueue(...QUEUES.map(name => ({ name }))),
+        BullModule.registerQueue(
+          ...QUEUES.map(name => {
+            if (name === Queue.NIGHTLY_JOB) {
+              // avoid nightly jobs been run multiple times
+              return { name, removeOnComplete: { age: 1000 * 60 * 60 } };
+            }
+            return { name };
+          })
+        ),
       ],
       providers: [JobQueue, JobExecutor, JobHandlerScanner],
       exports: [JobQueue],

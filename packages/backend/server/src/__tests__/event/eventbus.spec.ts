@@ -4,7 +4,7 @@ import { CLS_ID, ClsServiceManager } from 'nestjs-cls';
 import Sinon from 'sinon';
 
 import { EventBus, metrics } from '../../base';
-import { createTestingModule } from '../utils';
+import { createTestingModule, sleep } from '../utils';
 import { Listeners } from './provider';
 
 export const test = ava as TestFn<{
@@ -200,4 +200,56 @@ test('should continuously use the same request id', async t => {
   });
 
   t.true(listeners.onRequestId.lastCall.returned('test-request-id'));
+});
+
+test('should throw when emitting async event with uncaught error', async t => {
+  const { eventbus } = t.context;
+
+  await t.throwsAsync(
+    () => eventbus.emitAsync('__test__.throw', { count: 0 }),
+    {
+      message: 'Error in event handler',
+    }
+  );
+});
+
+test('should suppress thrown error when emitting async event', async t => {
+  const { eventbus } = t.context;
+  const spy = Sinon.spy();
+  // @ts-expect-error internal event
+  const off = eventbus.on('error', spy);
+
+  const promise = eventbus.emitAsync('__test__.suppressThrow', {});
+  await t.notThrowsAsync(promise);
+
+  t.true(spy.calledOnce);
+  const args = spy.firstCall.args[0];
+  t.is(args.event, '__test__.suppressThrow');
+  t.deepEqual(args.payload, {});
+  t.is(args.error.message, 'Error in event handler');
+
+  const returns = await promise;
+  t.deepEqual(returns, [undefined]);
+
+  off();
+});
+
+test('should catch thrown error when emitting sync event', async t => {
+  const { eventbus } = t.context;
+
+  const spy = Sinon.spy();
+  // @ts-expect-error internal event
+  const off = eventbus.on('error', spy);
+  t.notThrows(() => eventbus.emit('__test__.throw', { count: 0 }));
+
+  // wait a tick
+  await sleep(1);
+
+  t.true(spy.calledOnce);
+  const args = spy.firstCall.args[0];
+  t.is(args.event, '__test__.throw');
+  t.deepEqual(args.payload, { count: 0 });
+  t.is(args.error.message, 'Error in event handler');
+
+  off();
 });
