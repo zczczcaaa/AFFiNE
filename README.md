@@ -160,6 +160,7 @@ We would also like to give thanks to open-source projects that make AFFiNE possi
 - [Jotai](https://github.com/pmndrs/jotai) - Primitive and flexible state management for React.
 - [async-call-rpc](https://github.com/Jack-Works/async-call-rpc) - A lightweight JSON RPC client & server.
 - [Vite](https://github.com/vitejs/vite) - Next generation frontend tooling.
+- [lame](https://lame.sourceforge.io/) - High quality MPEG Audio Layer III (MP3) encoder.
 - Other upstream [dependencies](https://github.com/toeverything/AFFiNE/network/dependencies).
 
 Thanks a lot to the community for providing such powerful and simple libraries, so that we can focus more on the implementation of the product logic, and we hope that in the future our projects will also provide a more easy-to-use knowledge base for everyone.

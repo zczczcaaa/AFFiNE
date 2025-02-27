@@ -44,7 +44,7 @@ runs:
         RUSTUP_HOME: ${{ env.DEV_DRIVE }}/.rustup
 
     - name: Set CC
-      if: ${{ contains(inputs.target, 'linux') && inputs.package != '@affine/native' && inputs.no-build != 'true' }}
+      if: ${{ contains(inputs.target, 'linux') && inputs.no-build != 'true' }}
       working-directory: ${{ env.DEV_DRIVE_WORKSPACE || github.workspace }}
       shell: bash
       run: |

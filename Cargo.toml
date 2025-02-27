@@ -26,9 +26,10 @@ file-format      = { version = "0.26", features = ["reader"] }
 homedir          = "0.3"
 libc             = "0.2"
 mimalloc         = "0.1"
-napi             = { version = "3.0.0-alpha.12", features = ["async", "chrono_date", "error_anyhow", "napi9", "serde"] }
+mp3lame-encoder  = "0.2"
+napi             = { version = "3.0.0-alpha.31", features = ["async", "chrono_date", "error_anyhow", "napi9", "serde"] }
 napi-build       = { version = "2" }
-napi-derive      = { version = "3.0.0-alpha.12" }
+napi-derive      = { version = "3.0.0-alpha.28" }
 notify           = { version = "8", features = ["serde"] }
 objc2            = "0.6"
 objc2-foundation = "0.3"
@@ -42,6 +43,7 @@ serde            = "1"
 serde_json       = "1"
 sha3             = "0.10"
 sqlx             = { version = "0.8", default-features = false, features = ["chrono", "macros", "migrate", "runtime-tokio", "sqlite", "tls-rustls"] }
+symphonia        = { version = "0.5", features = ["all", "opt-simd"] }
 thiserror        = "2"
 tiktoken-rs      = "0.6"
 tokio            = "1.37"

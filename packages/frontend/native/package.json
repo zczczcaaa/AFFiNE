@@ -25,7 +25,7 @@
     ]
   },
   "devDependencies": {
-    "@napi-rs/cli": "3.0.0-alpha.70",
+    "@napi-rs/cli": "3.0.0-alpha.72",
     "@napi-rs/whisper": "^0.0.4",
     "@types/node": "^22.0.0",
     "ava": "^6.2.0",
@@ -38,8 +38,8 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "build": "napi build -p affine_native --platform --release --no-const-enum",
-    "build:debug": "napi build -p affine_native --platform",
+    "build": "napi build -p affine_native --platform --release --no-dts-cache",
+    "build:debug": "napi build -p affine_native --platform --no-dts-cache",
     "universal": "napi universal",
     "test": "ava",
     "version": "napi version"

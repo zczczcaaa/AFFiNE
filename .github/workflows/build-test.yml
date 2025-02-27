@@ -387,6 +387,28 @@ jobs:
           path: dist.tar.gz
           if-no-files-found: error
 
+  native-unit-test:
+    name: Native Unit Test
+    runs-on: ubuntu-latest
+    needs:
+      - optimize_ci
+      - build-native
+    if: needs.optimize_ci.outputs.skip == 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+        with:
+          extra-flags: workspaces focus @affine-tools/cli @affine/monorepo @affine/native
+          electron-install: false
+      - name: Download affine.linux-x64-gnu.node
+        uses: actions/download-artifact@v4
+        with:
+          name: affine.linux-x64-gnu.node
+          path: ./packages/frontend/native
+      - name: Unit Test
+        run: yarn affine @affine/native test
+
   server-test:
     name: Server Test
     runs-on: ubuntu-latest
@@ -897,6 +919,7 @@ jobs:
       - build-native
       - build-server-native
       - build-electron-renderer
+      - native-unit-test
       - server-test
       - rust-test
       - copilot-api-test
