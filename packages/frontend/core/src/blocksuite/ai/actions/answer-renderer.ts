@@ -1,7 +1,7 @@
 import type { EditorHost } from '@blocksuite/affine/block-std';
 import type { MindmapElementModel } from '@blocksuite/affine/blocks';
 
-import { createTextRenderer } from '../components/text-renderer';
+import { createAIScrollableTextRenderer } from '../components/ai-scrollable-text-renderer';
 import {
   createMindmapExecuteRenderer,
   createMindmapRenderer,
@@ -52,5 +52,5 @@ export function actionToAnswerRenderer<
     return createImageRenderer(host, { height: 300 });
   }
 
-  return createTextRenderer(host, { maxHeight: 320 });
+  return createAIScrollableTextRenderer(host, {}, 320, true);
 }

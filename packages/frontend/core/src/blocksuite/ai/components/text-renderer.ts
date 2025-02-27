@@ -88,7 +88,6 @@ const customHeadingStyles = css`
 `;
 
 export type TextRendererOptions = {
-  maxHeight?: number;
   customHeading?: boolean;
   extensions?: ExtensionType[];
   additionalMiddlewares?: TransformerMiddleware[];
@@ -284,18 +283,12 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
       return nothing;
     }
 
-    const { maxHeight, customHeading } = this.options;
+    const { customHeading } = this.options;
     const classes = classMap({
       'text-renderer-container': true,
-      'show-scrollbar': !!maxHeight,
       'custom-heading': !!customHeading,
     });
     return html`
-      <style>
-        .text-renderer-container {
-          max-height: ${maxHeight ? Math.max(maxHeight, 200) + 'px' : ''};
-        }
-      </style>
       <div class=${classes}>
         ${keyed(
           this._doc,
@@ -332,7 +325,6 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
         // Apply min-height to prevent shrinking
         this._container.style.minHeight = `${this._maxContainerHeight}px`;
       }
-      this._container.scrollTop = this._container.scrollHeight;
     });
   }
 

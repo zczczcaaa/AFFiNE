@@ -33,7 +33,7 @@ import {
   replaceWithMarkdown,
 } from './actions/page-response';
 import type { AIItemConfig } from './components/ai-item/types';
-import { createTextRenderer } from './components/text-renderer';
+import { createAIScrollableTextRenderer } from './components/ai-scrollable-text-renderer';
 import { AIProvider } from './provider';
 import { reportResponse } from './utils/action-reporter';
 import { getAIPanelWidget } from './utils/ai-widgets';
@@ -293,7 +293,7 @@ export function buildAIPanelConfig(
   const ctx = new AIContext();
   const searchService = framework.get(AINetworkSearchService);
   return {
-    answerRenderer: createTextRenderer(panel.host, { maxHeight: 320 }),
+    answerRenderer: createAIScrollableTextRenderer(panel.host, {}, 320, true),
     finishStateConfig: buildFinishConfig(panel, 'chat', ctx),
     generatingStateConfig: buildGeneratingConfig(),
     errorStateConfig: buildErrorConfig(panel),
