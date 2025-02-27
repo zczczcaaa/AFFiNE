@@ -1,16 +1,16 @@
 import {
-  Counter,
   Gauge,
   Histogram,
   Meter,
   MetricOptions,
+  UpDownCounter,
 } from '@opentelemetry/api';
 
 import { getMeter } from './opentelemetry';
 
 type MetricType = 'counter' | 'gauge' | 'histogram';
 type Metric<T extends MetricType> = T extends 'counter'
-  ? Counter
+  ? UpDownCounter
   : T extends 'gauge'
     ? Gauge
     : T extends 'histogram'
@@ -18,7 +18,7 @@ type Metric<T extends MetricType> = T extends 'counter'
       : never;
 
 export type ScopedMetrics = {
-  counter: (name: string, opts?: MetricOptions) => Counter;
+  counter: (name: string, opts?: MetricOptions) => UpDownCounter;
   gauge: (name: string, opts?: MetricOptions) => Gauge;
   histogram: (name: string, opts?: MetricOptions) => Histogram;
 };
@@ -42,7 +42,7 @@ export type KnownMetricScopes =
   | 'mail'
   | 'ai'
   | 'event'
-  | 'job';
+  | 'queue';
 
 const metricCreators: MetricCreators = {
   counter(meter: Meter, name: string, opts?: MetricOptions) {

@@ -148,22 +148,18 @@ test('should dispatch job handler', async t => {
 });
 
 test('should be able to record job metrics', async t => {
-  const counterStub = Sinon.stub(metrics.job.counter('function_calls'), 'add');
+  const counterStub = Sinon.stub(
+    metrics.queue.counter('function_calls'),
+    'add'
+  );
   const timerStub = Sinon.stub(
-    metrics.job.histogram('function_timer'),
+    metrics.queue.histogram('function_timer'),
     'record'
   );
 
   await executor.run('nightly.__test__job', { name: 'test executor' });
 
-  t.deepEqual(counterStub.firstCall.args[1], {
-    name: 'job_handler',
-    job: 'nightly.__test__job',
-    namespace: 'nightly',
-    handler: 'JobHandlers.handleJob',
-    error: false,
-  });
-
+  t.snapshot(counterStub.args, '[+1 active jobs, job handler, -1 active jobs]');
   t.deepEqual(timerStub.firstCall.args[1], {
     name: 'job_handler',
     job: 'nightly.__test__job',
@@ -177,14 +173,7 @@ test('should be able to record job metrics', async t => {
 
   await executor.run('nightly.__test__job2', { name: 'test executor' });
 
-  t.deepEqual(counterStub.firstCall.args[1], {
-    name: 'job_handler',
-    job: 'nightly.__test__job2',
-    namespace: 'nightly',
-    handler: 'JobHandlers.handleJob',
-    error: false,
-  });
-
+  t.snapshot(counterStub.args, '[+1 active jobs, job handler, -1 active jobs]');
   t.deepEqual(timerStub.firstCall.args[1], {
     name: 'job_handler',
     job: 'nightly.__test__job2',
@@ -203,14 +192,10 @@ test('should be able to record job metrics', async t => {
     }
   );
 
-  t.deepEqual(counterStub.firstCall.args[1], {
-    name: 'job_handler',
-    job: 'nightly.__test__throw',
-    namespace: 'nightly',
-    handler: 'JobHandlers.throwJob',
-    error: true,
-  });
-
+  t.snapshot(
+    counterStub.args,
+    '[+1 active jobs, job handler errored, -1 active jobs]'
+  );
   t.deepEqual(timerStub.firstCall.args[1], {
     name: 'job_handler',
     job: 'nightly.__test__throw',

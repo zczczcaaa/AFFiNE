@@ -77,7 +77,7 @@ export class JobExecutor
           }
         });
       },
-      'job',
+      'queue',
       'job_handler',
       {
         job: name,
@@ -85,12 +85,12 @@ export class JobExecutor
         handler: handler.name,
       }
     );
-    const activeJobs = metrics.job.gauge('queue_active_jobs');
-    activeJobs.record(1, { queue: ns });
+    const activeJobs = metrics.queue.counter('active_jobs');
+    activeJobs.add(1, { queue: ns });
     try {
       return await fn();
     } finally {
-      activeJobs.record(-1, { queue: ns });
+      activeJobs.add(-1, { queue: ns });
     }
   }
 
