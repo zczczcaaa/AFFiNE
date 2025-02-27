@@ -408,12 +408,12 @@ Could you make a new website based on these notes and send back just the html fi
         promptName,
       });
     },
-    getSessionIds: async (
+    getSessions: async (
       workspaceId: string,
       docId?: string,
       options?: { action?: boolean }
     ) => {
-      return client.getSessionIds(workspaceId, docId, options);
+      return client.getSessions(workspaceId, docId, options);
     },
     updateSession: async (sessionId: string, promptName: string) => {
       return client.updateSession({

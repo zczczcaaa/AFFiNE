@@ -275,6 +275,15 @@ class CopilotPromptType {
   messages!: CopilotPromptMessageType[];
 }
 
+@ObjectType()
+class CopilotSessionType {
+  @Field(() => ID)
+  id!: string;
+
+  @Field(() => String)
+  promptName!: string;
+}
+
 // ================== Resolver ==================
 
 @ObjectType('Copilot')
@@ -306,8 +315,9 @@ export class CopilotResolver {
   }
 
   @ResolveField(() => [String], {
-    description: 'Get the session list in the workspace',
+    description: 'Get the session id list in the workspace',
     complexity: 2,
+    deprecationReason: 'Use `sessions` instead',
   })
   async sessionIds(
     @Parent() copilot: CopilotType,
@@ -315,9 +325,22 @@ export class CopilotResolver {
     @Args('docId', { nullable: true }) docId?: string,
     @Args('options', { nullable: true }) options?: QueryChatSessionsInput
   ) {
+    return await this.sessions(copilot, user, docId, options);
+  }
+
+  @ResolveField(() => [CopilotSessionType], {
+    description: 'Get the session list in the workspace',
+    complexity: 2,
+  })
+  async sessions(
+    @Parent() copilot: CopilotType,
+    @CurrentUser() user: CurrentUser,
+    @Args('docId', { nullable: true }) docId?: string,
+    @Args('options', { nullable: true }) options?: QueryChatSessionsInput
+  ) {
     if (!copilot.workspaceId) return [];
     await this.permissions.checkCloudWorkspace(copilot.workspaceId, user.id);
-    return await this.chatSession.listSessionIds(
+    return await this.chatSession.listSessions(
       user.id,
       copilot.workspaceId,
       docId,

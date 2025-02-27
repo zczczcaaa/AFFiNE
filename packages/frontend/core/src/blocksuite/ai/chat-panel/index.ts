@@ -300,12 +300,12 @@ export class ChatPanel extends WithDisposable(ShadowlessElement) {
     const userId = (await AIProvider.userInfo)?.id;
     if (!userId) return;
 
-    const sessionIds = await AIProvider.session?.getSessionIds(
+    const sessions = await AIProvider.session?.getSessions(
       this.doc.workspace.id,
       this.doc.id
     );
-    if (sessionIds?.length) {
-      this._chatSessionId = sessionIds[0];
+    if (sessions?.length) {
+      this._chatSessionId = sessions?.[0].id;
       await this._updateHistory();
     }
     if (this._chatSessionId) {

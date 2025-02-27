@@ -136,7 +136,7 @@ export class CopilotClient {
     }
   }
 
-  async getSessionIds(
+  async getSessions(
     workspaceId: string,
     docId?: string,
     options?: RequestOptions<
@@ -152,7 +152,7 @@ export class CopilotClient {
           options,
         },
       });
-      return res.currentUser?.copilot?.sessionIds;
+      return res.currentUser?.copilot?.sessions;
     } catch (err) {
       throw resolveError(err);
     }

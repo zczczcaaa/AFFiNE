@@ -83,7 +83,7 @@ export interface Copilot {
   /** Get the quota of the user in the workspace */
   quota: CopilotQuota;
   /** Get the session list in the workspace */
-  sessionIds: Array<Scalars['String']['output']>;
+  sessions: Array<CopilotSessionType>;
   workspaceId: Maybe<Scalars['ID']['output']>;
 }
 
@@ -97,7 +97,7 @@ export interface CopilotHistoriesArgs {
   options?: InputMaybe<QueryChatHistoriesInput>;
 }
 
-export interface CopilotSessionIdsArgs {
+export interface CopilotSessionsArgs {
   docId?: InputMaybe<Scalars['String']['input']>;
   options?: InputMaybe<QueryChatSessionsInput>;
 }
@@ -257,6 +257,12 @@ export interface CopilotQuota {
   __typename?: 'CopilotQuota';
   limit: Maybe<Scalars['SafeInt']['output']>;
   used: Scalars['SafeInt']['output'];
+}
+
+export interface CopilotSessionType {
+  __typename?: 'CopilotSessionType';
+  id: Scalars['ID']['output'];
+  promptName: Scalars['String']['output'];
 }
 
 export interface CreateChatMessageInput {
@@ -2236,7 +2242,14 @@ export type GetCopilotSessionsQuery = {
   __typename?: 'Query';
   currentUser: {
     __typename?: 'UserType';
-    copilot: { __typename?: 'Copilot'; sessionIds: Array<string> };
+    copilot: {
+      __typename?: 'Copilot';
+      sessions: Array<{
+        __typename?: 'CopilotSessionType';
+        id: string;
+        promptName: string;
+      }>;
+    };
   } | null;
 };
 

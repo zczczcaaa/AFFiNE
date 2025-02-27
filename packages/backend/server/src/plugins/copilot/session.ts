@@ -396,12 +396,12 @@ export class ChatSessionService {
       .reduce((prev, cost) => prev + cost, 0);
   }
 
-  async listSessionIds(
+  async listSessions(
     userId: string,
     workspaceId: string,
     docId?: string,
     options?: { action?: boolean }
-  ): Promise<string[]> {
+  ): Promise<Array<{ id: string; promptName: string }>> {
     return await this.db.aiSession
       .findMany({
         where: {
@@ -413,9 +413,17 @@ export class ChatSessionService {
           },
           deletedAt: null,
         },
-        select: { id: true },
+        select: {
+          id: true,
+          promptName: true,
+        },
       })
-      .then(sessions => sessions.map(({ id }) => id));
+      .then(sessions =>
+        sessions.map(({ id, promptName }) => ({
+          id,
+          promptName,
+        }))
+      );
   }
 
   async listHistories(

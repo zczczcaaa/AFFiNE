@@ -45,8 +45,11 @@ type Copilot {
   """Get the quota of the user in the workspace"""
   quota: CopilotQuota!
 
+  """Get the session id list in the workspace"""
+  sessionIds(docId: String, options: QueryChatSessionsInput): [String!]! @deprecated(reason: "Use `sessions` instead")
+
   """Get the session list in the workspace"""
-  sessionIds(docId: String, options: QueryChatSessionsInput): [String!]!
+  sessions(docId: String, options: QueryChatSessionsInput): [CopilotSessionType!]!
   workspaceId: ID
 }
 
@@ -190,6 +193,11 @@ type CopilotProviderSideErrorDataType {
 type CopilotQuota {
   limit: SafeInt
   used: SafeInt!
+}
+
+type CopilotSessionType {
+  id: ID!
+  promptName: String!
 }
 
 input CreateChatMessageInput {

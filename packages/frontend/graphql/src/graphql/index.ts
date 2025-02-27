@@ -424,7 +424,10 @@ export const getCopilotSessionsQuery = {
 query getCopilotSessions($workspaceId: String!, $docId: String, $options: QueryChatSessionsInput) {
   currentUser {
     copilot(workspaceId: $workspaceId) {
-      sessionIds(docId: $docId, options: $options)
+      sessions(docId: $docId, options: $options) {
+        id
+        promptName
+      }
     }
   }
 }`,
