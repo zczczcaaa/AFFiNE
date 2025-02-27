@@ -3,6 +3,7 @@
 export declare class Application {
   static tapGlobalAudio(excludedProcesses: Array<Application> | undefined | null, audioStreamCallback: ((err: Error | null, arg: Float32Array) => void)): AudioTapStream
   get processId(): number
+  get processGroupId(): number
   get bundleIdentifier(): string
   get name(): string
   get icon(): Buffer

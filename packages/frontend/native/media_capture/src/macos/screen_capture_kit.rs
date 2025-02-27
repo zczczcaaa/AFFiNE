@@ -20,6 +20,7 @@ use coreaudio::sys::{
   AudioObjectAddPropertyListenerBlock, AudioObjectID, AudioObjectPropertyAddress,
   AudioObjectRemovePropertyListenerBlock,
 };
+use libc;
 use napi::{
   bindgen_prelude::{Buffer, Error, Float32Array, Result, Status},
   threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode},
@@ -27,7 +28,6 @@ use napi::{
 use napi_derive::napi;
 use objc2::{
   msg_send,
-  rc::Retained,
   runtime::{AnyClass, AnyObject},
   Encode, Encoding,
 };
@@ -114,136 +114,227 @@ impl TappableApplication {
   }
 
   fn name(&self) -> Result<String> {
-    let pid = self.process_id()?;
+    // Use catch_unwind to prevent any panics
+    let name_result = std::panic::catch_unwind(|| {
+      // Get process ID with error handling
+      let pid = match self.process_id() {
+        Ok(pid) => pid,
+        Err(_) => {
+          return Ok(String::new());
+        }
+      };
 
-    // Get NSRunningApplication class
-    let running_app_class = NSRUNNING_APPLICATION_CLASS.as_ref().ok_or_else(|| {
-      Error::new(
-        Status::GenericFailure,
-        "NSRunningApplication class not found",
-      )
-    })?;
+      // Get NSRunningApplication class with error handling
+      let running_app_class = match NSRUNNING_APPLICATION_CLASS.as_ref() {
+        Some(class) => class,
+        None => {
+          return Ok(String::new());
+        }
+      };
 
-    // Get running application with PID
-    let running_app: *mut AnyObject =
-      unsafe { msg_send![*running_app_class, runningApplicationWithProcessIdentifier: pid] };
-    if running_app.is_null() {
-      return Ok(String::new());
+      // Get running application with PID
+      let running_app: *mut AnyObject =
+        unsafe { msg_send![*running_app_class, runningApplicationWithProcessIdentifier: pid] };
+
+      if running_app.is_null() {
+        return Ok(String::new());
+      }
+
+      // Instead of using Retained::from_raw which takes ownership,
+      // we'll just copy the string value and let the Objective-C runtime
+      // handle the memory management of the original object
+      unsafe {
+        // Get localized name
+        let name_ptr: *mut NSString = msg_send![running_app, localizedName];
+        if name_ptr.is_null() {
+          return Ok(String::new());
+        }
+
+        // Create a copy of the string without taking ownership of the NSString
+        let length: usize = msg_send![name_ptr, length];
+        let utf8_ptr: *const u8 = msg_send![name_ptr, UTF8String];
+
+        if utf8_ptr.is_null() {
+          return Ok(String::new());
+        }
+
+        let bytes = std::slice::from_raw_parts(utf8_ptr, length);
+        match std::str::from_utf8(bytes) {
+          Ok(s) => Ok(s.to_string()),
+          Err(_) => Ok(String::new()),
+        }
+      }
+    });
+
+    // Handle any panics that might have occurred
+    match name_result {
+      Ok(result) => result,
+      Err(_) => Ok(String::new()),
     }
-
-    // Get localized name
-    let name: *mut NSString = unsafe { msg_send![running_app, localizedName] };
-    if name.is_null() {
-      return Ok(String::new());
-    }
-
-    // Create a safe wrapper and convert to string
-    let name = unsafe {
-      Retained::from_raw(name).ok_or_else(|| {
-        Error::new(
-          Status::GenericFailure,
-          "Failed to create safe wrapper for localizedName",
-        )
-      })?
-    };
-    Ok(name.to_string())
   }
 
   fn icon(&self) -> Result<Vec<u8>> {
-    let pid = self.process_id()?;
-
-    // Get NSRunningApplication class
-    let running_app_class = NSRUNNING_APPLICATION_CLASS.as_ref().ok_or_else(|| {
-      Error::new(
-        Status::GenericFailure,
-        "NSRunningApplication class not found",
-      )
-    })?;
-
-    // Get running application with PID
-    let running_app: *mut AnyObject =
-      unsafe { msg_send![*running_app_class, runningApplicationWithProcessIdentifier: pid] };
-    if running_app.is_null() {
-      return Ok(Vec::new());
-    }
-
-    unsafe {
-      // Get original icon
-      let icon: *mut AnyObject = msg_send![running_app, icon];
-      if icon.is_null() {
-        return Ok(Vec::new());
-      }
-
-      // Create a new NSImage with 64x64 size
-      let nsimage_class = AnyClass::get(c"NSImage")
-        .ok_or_else(|| Error::new(Status::GenericFailure, "NSImage class not found"))?;
-      let resized_image: *mut AnyObject = msg_send![nsimage_class, alloc];
-      let resized_image: *mut AnyObject =
-        msg_send![resized_image, initWithSize: NSSize { width: 64.0, height: 64.0 }];
-      let _: () = msg_send![resized_image, lockFocus];
-
-      // Define drawing rectangle for 64x64 image
-      let draw_rect = NSRect {
-        origin: NSPoint { x: 0.0, y: 0.0 },
-        size: NSSize {
-          width: 64.0,
-          height: 64.0,
-        },
+    // Use catch_unwind to prevent any panics
+    let icon_result = std::panic::catch_unwind(|| {
+      // Get process ID with error handling
+      let pid = match self.process_id() {
+        Ok(pid) => pid,
+        Err(_) => {
+          return Ok(Vec::new());
+        }
       };
 
-      // Draw the original icon into draw_rect (using NSCompositingOperationCopy = 2)
-      let _: () = msg_send![icon, drawInRect: draw_rect, fromRect: NSRect { origin: NSPoint { x: 0.0, y: 0.0 }, size: NSSize { width: 0.0, height: 0.0 } }, operation: 2, fraction: 1.0];
-      let _: () = msg_send![resized_image, unlockFocus];
+      // Get NSRunningApplication class with error handling
+      let running_app_class = match NSRUNNING_APPLICATION_CLASS.as_ref() {
+        Some(class) => class,
+        None => {
+          return Ok(Vec::new());
+        }
+      };
 
-      // Get TIFF representation from the downsized image
-      let tiff_data: *mut AnyObject = msg_send![resized_image, TIFFRepresentation];
-      if tiff_data.is_null() {
+      // Get running application with PID
+      let running_app: *mut AnyObject =
+        unsafe { msg_send![*running_app_class, runningApplicationWithProcessIdentifier: pid] };
+      if running_app.is_null() {
         return Ok(Vec::new());
       }
 
-      // Create bitmap image rep from TIFF
-      let bitmap_class = AnyClass::get(c"NSBitmapImageRep")
-        .ok_or_else(|| Error::new(Status::GenericFailure, "NSBitmapImageRep class not found"))?;
-      let bitmap: *mut AnyObject = msg_send![bitmap_class, imageRepWithData: tiff_data];
-      if bitmap.is_null() {
-        return Ok(Vec::new());
+      unsafe {
+        // Get original icon
+        let icon: *mut AnyObject = msg_send![running_app, icon];
+        if icon.is_null() {
+          return Ok(Vec::new());
+        }
+
+        // Create a new NSImage with 64x64 size
+        let nsimage_class = match AnyClass::get(c"NSImage") {
+          Some(class) => class,
+          None => return Ok(Vec::new()),
+        };
+
+        let resized_image: *mut AnyObject = msg_send![nsimage_class, alloc];
+        if resized_image.is_null() {
+          return Ok(Vec::new());
+        }
+
+        let resized_image: *mut AnyObject =
+          msg_send![resized_image, initWithSize: NSSize { width: 64.0, height: 64.0 }];
+        if resized_image.is_null() {
+          return Ok(Vec::new());
+        }
+
+        let _: () = msg_send![resized_image, lockFocus];
+
+        // Define drawing rectangle for 64x64 image
+        let draw_rect = NSRect {
+          origin: NSPoint { x: 0.0, y: 0.0 },
+          size: NSSize {
+            width: 64.0,
+            height: 64.0,
+          },
+        };
+
+        // Draw the original icon into draw_rect (using NSCompositingOperationCopy = 2)
+        let _: () = msg_send![icon, drawInRect: draw_rect, fromRect: NSRect { origin: NSPoint { x: 0.0, y: 0.0 }, size: NSSize { width: 0.0, height: 0.0 } }, operation: 2, fraction: 1.0];
+        let _: () = msg_send![resized_image, unlockFocus];
+
+        // Get TIFF representation from the downsized image
+        let tiff_data: *mut AnyObject = msg_send![resized_image, TIFFRepresentation];
+        if tiff_data.is_null() {
+          return Ok(Vec::new());
+        }
+
+        // Create bitmap image rep from TIFF
+        let bitmap_class = match AnyClass::get(c"NSBitmapImageRep") {
+          Some(class) => class,
+          None => return Ok(Vec::new()),
+        };
+
+        let bitmap: *mut AnyObject = msg_send![bitmap_class, imageRepWithData: tiff_data];
+        if bitmap.is_null() {
+          return Ok(Vec::new());
+        }
+
+        // Create properties dictionary with compression factor
+        let dict_class = match AnyClass::get(c"NSMutableDictionary") {
+          Some(class) => class,
+          None => return Ok(Vec::new()),
+        };
+
+        let properties: *mut AnyObject = msg_send![dict_class, dictionary];
+        if properties.is_null() {
+          return Ok(Vec::new());
+        }
+
+        // Add compression properties
+        let compression_key = NSString::from_str("NSImageCompressionFactor");
+        let number_class = match AnyClass::get(c"NSNumber") {
+          Some(class) => class,
+          None => return Ok(Vec::new()),
+        };
+
+        let compression_value: *mut AnyObject = msg_send![number_class, numberWithDouble: 0.8];
+        if compression_value.is_null() {
+          return Ok(Vec::new());
+        }
+
+        let _: () = msg_send![properties, setObject: compression_value, forKey: &*compression_key];
+
+        // Get PNG data with properties
+        let png_data: *mut AnyObject =
+          msg_send![bitmap, representationUsingType: 4, properties: properties]; // 4 = PNG
+
+        if png_data.is_null() {
+          return Ok(Vec::new());
+        }
+
+        // Get bytes from NSData
+        let bytes: *const u8 = msg_send![png_data, bytes];
+        let length: usize = msg_send![png_data, length];
+
+        if bytes.is_null() {
+          return Ok(Vec::new());
+        }
+
+        // Copy bytes into a Vec<u8> instead of using the original memory
+        let data = std::slice::from_raw_parts(bytes, length).to_vec();
+        Ok(data)
+      }
+    });
+
+    // Handle any panics that might have occurred
+    match icon_result {
+      Ok(result) => result,
+      Err(_) => Ok(Vec::new()),
+    }
+  }
+
+  fn process_group_id(&self) -> Result<i32> {
+    // Use catch_unwind to prevent any panics
+    let pgid_result = std::panic::catch_unwind(|| {
+      // First get the process ID
+      let pid = match self.process_id() {
+        Ok(pid) => pid,
+        Err(_) => {
+          return Ok(-1); // Return -1 for error cases
+        }
+      };
+
+      // Call libc's getpgid function to get the process group ID
+      let pgid = unsafe { libc::getpgid(pid) };
+
+      // getpgid returns -1 on error
+      if pgid == -1 {
+        return Ok(-1);
       }
 
-      // Create properties dictionary with compression factor
-      let dict_class = AnyClass::get(c"NSMutableDictionary").ok_or_else(|| {
-        Error::new(
-          Status::GenericFailure,
-          "NSMutableDictionary class not found",
-        )
-      })?;
-      let properties: *mut AnyObject = msg_send![dict_class, dictionary];
+      Ok(pgid)
+    });
 
-      // Add compression properties
-      let compression_key = NSString::from_str("NSImageCompressionFactor");
-      let number_class = AnyClass::get(c"NSNumber")
-        .ok_or_else(|| Error::new(Status::GenericFailure, "NSNumber class not found"))?;
-      let compression_value: *mut AnyObject = msg_send![number_class, numberWithDouble: 0.8];
-      let _: () = msg_send![properties, setObject: compression_value, forKey: &*compression_key];
-
-      // Get PNG data with properties
-      let png_data: *mut AnyObject =
-        msg_send![bitmap, representationUsingType: 4, properties: properties]; // 4 = PNG
-
-      if png_data.is_null() {
-        return Ok(Vec::new());
-      }
-
-      // Get bytes from NSData
-      let bytes: *const u8 = msg_send![png_data, bytes];
-      let length: usize = msg_send![png_data, length];
-
-      if bytes.is_null() {
-        return Ok(Vec::new());
-      }
-
-      // Copy bytes into a Vec<u8>
-      let data = std::slice::from_raw_parts(bytes, length).to_vec();
-      Ok(data)
+    // Handle any panics
+    match pgid_result {
+      Ok(result) => result,
+      Err(_) => Ok(-1),
     }
   }
 }
@@ -253,6 +344,7 @@ pub struct Application {
   inner: TappableApplication,
   pub(crate) object_id: AudioObjectID,
   pub(crate) process_id: i32,
+  pub(crate) process_group_id: i32,
   pub(crate) bundle_identifier: String,
   pub(crate) name: String,
 }
@@ -264,11 +356,13 @@ impl Application {
     let bundle_identifier = app.bundle_identifier()?;
     let name = app.name()?;
     let process_id = app.process_id()?;
+    let process_group_id = app.process_group_id()?;
 
     Ok(Self {
       inner: app,
       object_id,
       process_id,
+      process_group_id,
       bundle_identifier,
       name,
     })
@@ -295,6 +389,11 @@ impl Application {
   }
 
   #[napi(getter)]
+  pub fn process_group_id(&self) -> i32 {
+    self.process_group_id
+  }
+
+  #[napi(getter)]
   pub fn bundle_identifier(&self) -> String {
     self.bundle_identifier.clone()
   }
@@ -306,16 +405,40 @@ impl Application {
 
   #[napi(getter)]
   pub fn icon(&self) -> Result<Buffer> {
-    let icon = self.inner.icon()?;
-    Ok(Buffer::from(icon))
+    // Use catch_unwind to prevent any panics
+    let result = std::panic::catch_unwind(|| match self.inner.icon() {
+      Ok(icon) => Ok(Buffer::from(icon)),
+      Err(_) => Ok(Buffer::from(Vec::<u8>::new())),
+    });
+
+    // Handle any panics
+    match result {
+      Ok(result) => result,
+      Err(_) => Ok(Buffer::from(Vec::<u8>::new())),
+    }
   }
 
   #[napi(getter)]
   pub fn get_is_running(&self) -> Result<bool> {
-    Ok(get_process_property(
-      &self.object_id,
-      kAudioProcessPropertyIsRunningInput,
-    )?)
+    // Use catch_unwind to prevent any panics
+    let result = std::panic::catch_unwind(|| {
+      match get_process_property(&self.object_id, kAudioProcessPropertyIsRunningInput) {
+        Ok(is_running) => Ok(is_running),
+        Err(_) => {
+          // Default to true to avoid potential issues
+          Ok(true)
+        }
+      }
+    });
+
+    // Handle any panics
+    match result {
+      Ok(result) => result,
+      Err(_) => {
+        // Default to true to avoid potential issues
+        Ok(true)
+      }
+    }
   }
 
   #[napi]

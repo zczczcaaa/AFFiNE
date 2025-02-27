@@ -69,6 +69,7 @@ dependencies = [
  "core-foundation",
  "coreaudio-rs",
  "dispatch2",
+ "libc",
  "napi",
  "napi-build",
  "napi-derive",

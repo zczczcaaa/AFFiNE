@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { exec } from 'node:child_process';
 import { createServer } from 'node:http';
-import { promisify } from 'node:util';
 
 import {
   type Application,
@@ -58,7 +56,7 @@ interface RecordingMetadata {
 interface AppInfo {
   app: Application;
   processId: number;
-  processGroupId: number | null;
+  processGroupId: number;
   bundleIdentifier: string;
   name: string;
   running: boolean;
@@ -226,8 +224,7 @@ async function startRecording(app: Application) {
     return;
   }
 
-  // Find the root app of the process group
-  const processGroupId = await getProcessGroupId(app.processId);
+  const processGroupId = app.processGroupId;
   const rootApp = processGroupId
     ? (shareableContent
         .applications()
@@ -431,42 +428,25 @@ async function setupRecordingsWatcher() {
   }
 }
 
-// Process management
-async function getProcessGroupId(pid: number): Promise<number | null> {
-  try {
-    const execAsync = promisify(exec);
-    const { stdout } = await execAsync(`ps -o pgid -p ${pid}`);
-    const lines = stdout.trim().split('\n');
-    if (lines.length < 2) return null;
-
-    const pgid = parseInt(lines[1].trim(), 10);
-    return isNaN(pgid) ? null : pgid;
-  } catch {
-    return null;
-  }
-}
-
 // Application management
 const shareableContent = new ShareableContent();
 
 async function getAllApps(): Promise<AppInfo[]> {
-  const apps = await Promise.all(
-    shareableContent.applications().map(async app => {
-      try {
-        return {
-          app,
-          processId: app.processId,
-          processGroupId: await getProcessGroupId(app.processId),
-          bundleIdentifier: app.bundleIdentifier,
-          name: app.name,
-          running: app.isRunning,
-        };
-      } catch (error) {
-        console.error(error);
-        return null;
-      }
-    })
-  );
+  const apps = shareableContent.applications().map(app => {
+    try {
+      return {
+        app,
+        processId: app.processId,
+        processGroupId: app.processGroupId,
+        bundleIdentifier: app.bundleIdentifier,
+        name: app.name,
+        running: app.isRunning,
+      };
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  });
 
   const filteredApps = apps.filter(
     (v): v is AppInfo =>

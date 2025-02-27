@@ -16,6 +16,7 @@ block2           = { workspace = true }
 core-foundation  = { workspace = true, features = ["with-uuid"] }
 coreaudio-rs     = { workspace = true }
 dispatch2        = { workspace = true }
+libc             = { workspace = true }
 objc2            = { workspace = true }
 objc2-foundation = { workspace = true }
 screencapturekit = { workspace = true }
