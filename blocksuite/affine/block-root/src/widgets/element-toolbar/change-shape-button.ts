@@ -338,7 +338,6 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
                 .colors=${colors}
                 .colorType=${type}
                 .theme=${colorScheme}
-                .palettes=${DefaultTheme.Palettes}
               >
               </edgeless-color-picker-button>
             `;
@@ -362,7 +361,6 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
                 aria-label="Fill colors"
                 .value=${selectedFillColor}
                 .theme=${colorScheme}
-                .palettes=${DefaultTheme.Palettes}
                 @select=${this._setShapeFillColor}
               >
               </edgeless-color-panel>
@@ -390,7 +388,6 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
                 .colors=${colors}
                 .colorType=${type}
                 .theme=${colorScheme}
-                .palettes=${DefaultTheme.Palettes}
                 .hollowCircle=${true}
               >
                 <div
@@ -453,8 +450,8 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
               () => html`
                 <editor-icon-button
                   aria-label="Add text"
-                  .tooltip=${'Add text'}
-                  .iconSize=${'20px'}
+                  .tooltip="${'Add text'}"
+                  .iconSize="${'20px'}"
                   @click=${this._addText}
                 >
                   ${AddTextIcon()}
@@ -465,7 +462,7 @@ export class EdgelessChangeShapeButton extends WithDisposable(LitElement) {
               'menu',
               () => html`
                 <edgeless-change-text-menu
-                  .elementType=${'shape'}
+                  .elementType="${'shape'}"
                   .elements=${elements}
                   .edgeless=${this.edgeless}
                 ></edgeless-change-text-menu>

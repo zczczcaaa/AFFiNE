@@ -23,7 +23,7 @@ export const LINE_WIDTHS = [
 ];
 
 /**
- * Use `DefaultTheme.StrokeColorMap` instead.
+ * Use `DefaultTheme.StrokeColorShortMap` instead.
  *
  * @deprecated
  */
@@ -44,7 +44,7 @@ export enum LineColor {
 export const LineColorMap = createEnumMap(LineColor);
 
 /**
- * Use `DefaultTheme.StrokeColorPalettes` instead.
+ * Use `DefaultTheme.StrokeColorShortPalettes` instead.
  *
  * @deprecated
  */

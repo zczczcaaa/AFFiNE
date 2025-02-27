@@ -77,11 +77,11 @@ export abstract class MindmapStyleGetter {
 
 export class StyleOne extends MindmapStyleGetter {
   private readonly _colorOrders = [
-    DefaultTheme.StrokeColorMap.Purple,
-    DefaultTheme.StrokeColorMap.Magenta,
-    DefaultTheme.StrokeColorMap.Orange,
-    DefaultTheme.StrokeColorMap.Yellow,
-    DefaultTheme.StrokeColorMap.Green,
+    DefaultTheme.StrokeColorShortMap.Purple,
+    DefaultTheme.StrokeColorShortMap.Magenta,
+    DefaultTheme.StrokeColorShortMap.Orange,
+    DefaultTheme.StrokeColorShortMap.Yellow,
+    DefaultTheme.StrokeColorShortMap.Green,
     '#7ae2d5',
   ];
 
@@ -188,9 +188,9 @@ export const styleOne = new StyleOne();
 
 export class StyleTwo extends MindmapStyleGetter {
   private readonly _colorOrders = [
-    DefaultTheme.StrokeColorMap.Blue,
+    DefaultTheme.StrokeColorShortMap.Blue,
     '#7ae2d5',
-    DefaultTheme.StrokeColorMap.Yellow,
+    DefaultTheme.StrokeColorShortMap.Yellow,
   ];
 
   readonly root = {
@@ -207,7 +207,7 @@ export class StyleTwo extends MindmapStyleGetter {
     color: DefaultTheme.pureBlack,
 
     filled: true,
-    fillColor: DefaultTheme.StrokeColorMap.Yellow,
+    fillColor: DefaultTheme.StrokeColorShortMap.Yellow,
 
     padding: [11, 22] as [number, number],
 
@@ -298,8 +298,8 @@ export const styleTwo = new StyleTwo();
 
 export class StyleThree extends MindmapStyleGetter {
   private readonly _strokeColor = [
-    DefaultTheme.StrokeColorMap.Yellow,
-    DefaultTheme.StrokeColorMap.Green,
+    DefaultTheme.StrokeColorShortMap.Yellow,
+    DefaultTheme.StrokeColorShortMap.Green,
     '#5cc7ba',
   ];
 
@@ -317,7 +317,7 @@ export class StyleThree extends MindmapStyleGetter {
     color: DefaultTheme.pureBlack,
 
     filled: true,
-    fillColor: DefaultTheme.StrokeColorMap.Yellow,
+    fillColor: DefaultTheme.StrokeColorShortMap.Yellow,
 
     padding: [10, 22] as [number, number],
 
@@ -407,12 +407,12 @@ export const styleThree = new StyleThree();
 
 export class StyleFour extends MindmapStyleGetter {
   private readonly _colors = [
-    DefaultTheme.StrokeColorMap.Purple,
-    DefaultTheme.StrokeColorMap.Magenta,
-    DefaultTheme.StrokeColorMap.Orange,
-    DefaultTheme.StrokeColorMap.Yellow,
-    DefaultTheme.StrokeColorMap.Green,
-    DefaultTheme.StrokeColorMap.Blue,
+    DefaultTheme.StrokeColorShortMap.Purple,
+    DefaultTheme.StrokeColorShortMap.Magenta,
+    DefaultTheme.StrokeColorShortMap.Orange,
+    DefaultTheme.StrokeColorShortMap.Yellow,
+    DefaultTheme.StrokeColorShortMap.Green,
+    DefaultTheme.StrokeColorShortMap.Blue,
   ];
 
   readonly root = {

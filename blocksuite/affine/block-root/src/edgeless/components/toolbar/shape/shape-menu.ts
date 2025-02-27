@@ -75,9 +75,10 @@ export class EdgelessShapeMenu extends SignalWatcher(
     const filled = !isTransparent(value);
     const fillColor = value;
     const strokeColor = filled
-      ? DefaultTheme.StrokeColorPalettes.find(palette => palette.key === key)
-          ?.value
-      : DefaultTheme.StrokeColorMap.Grey;
+      ? DefaultTheme.StrokeColorShortPalettes.find(
+          palette => palette.key === key
+        )?.value
+      : DefaultTheme.StrokeColorShortMap.Grey;
 
     const { shapeName } = this._props$.value;
     this.edgeless.std
@@ -173,7 +174,7 @@ export class EdgelessShapeMenu extends SignalWatcher(
             class="one-way"
             .value=${fillColor}
             .theme=${this._theme$.value}
-            .palettes=${DefaultTheme.FillColorPalettes}
+            .palettes=${DefaultTheme.FillColorShortPalettes}
             .hasTransparent=${!this.edgeless.doc
               .get(FeatureFlagService)
               .getFlag('enable_color_picker')}

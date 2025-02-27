@@ -32,7 +32,7 @@ export const TextSettings = () => {
   const { editorSetting } = framework.get(EditorSettingService);
   const settings = useLiveData(editorSetting.settings$);
   const { palettes, getCurrentColor } = usePalettes(
-    DefaultTheme.StrokeColorPalettes,
+    DefaultTheme.StrokeColorShortPalettes,
     DefaultTheme.textColor
   );
 

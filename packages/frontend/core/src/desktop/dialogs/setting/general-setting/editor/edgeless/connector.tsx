@@ -51,14 +51,14 @@ export const ConnectorSettings = () => {
   const { editorSetting } = framework.get(EditorSettingService);
   const settings = useLiveData(editorSetting.settings$);
   const {
-    palettes: strokeColorPalettes,
+    palettes: StrokeColorShortPalettes,
     getCurrentColor: getCurrentStrokeColor,
   } = usePalettes(
-    DefaultTheme.StrokeColorPalettes,
+    DefaultTheme.StrokeColorShortPalettes,
     DefaultTheme.connectorColor
   );
   const { palettes: textColorPalettes, getCurrentColor: getCurrentTextColor } =
-    usePalettes(DefaultTheme.StrokeColorPalettes, DefaultTheme.black);
+    usePalettes(DefaultTheme.StrokeColorShortPalettes, DefaultTheme.black);
 
   const connecterStyleItems = useMemo<RadioItem[]>(
     () => [
@@ -165,7 +165,7 @@ export const ConnectorSettings = () => {
 
   const colorItems = useMemo(() => {
     const { stroke } = settings.connector;
-    return strokeColorPalettes.map(({ key, value, resolvedValue }) => {
+    return StrokeColorShortPalettes.map(({ key, value, resolvedValue }) => {
       const handler = () => {
         editorSetting.set('connector', { stroke: value });
       };
@@ -181,7 +181,7 @@ export const ConnectorSettings = () => {
         </MenuItem>
       );
     });
-  }, [editorSetting, settings, strokeColorPalettes]);
+  }, [editorSetting, settings, StrokeColorShortPalettes]);
 
   const startEndPointItems = useMemo(() => {
     const { frontEndpointStyle } = settings.connector;

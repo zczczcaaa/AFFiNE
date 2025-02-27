@@ -59,11 +59,19 @@ export const ShapeSettings = () => {
     palettes: strokeColorPalettes,
     getCurrentColor: getCurrentStrokeColor,
   } = usePalettes(
-    DefaultTheme.StrokeColorPalettes,
+    DefaultTheme.StrokeColorShortPalettes,
     DefaultTheme.shapeStrokeColor
   );
   const { palettes: fillColorPalettes, getCurrentColor: getCurrentFillColor } =
-    usePalettes(DefaultTheme.FillColorPalettes, DefaultTheme.shapeFillColor);
+    usePalettes(
+      DefaultTheme.FillColorShortPalettes,
+      DefaultTheme.shapeFillColor
+    );
+  const { palettes: textColorPalettes, getCurrentColor: getCurrentTextColor } =
+    usePalettes(
+      DefaultTheme.ShapeTextColorShortPalettes,
+      DefaultTheme.shapeTextColor
+    );
 
   const [currentShape, setCurrentShape] = useState<ShapeName>(ShapeType.Rect);
 
@@ -317,7 +325,7 @@ export const ShapeSettings = () => {
 
   const textColorItems = useMemo(() => {
     const { color } = settings[`shape:${currentShape}`];
-    return strokeColorPalettes.map(({ key, value, resolvedValue }) => {
+    return textColorPalettes.map(({ key, value, resolvedValue }) => {
       const handler = () => {
         editorSetting.set(`shape:${currentShape}`, { color: value });
       };
@@ -333,7 +341,7 @@ export const ShapeSettings = () => {
         </MenuItem>
       );
     });
-  }, [editorSetting, settings, currentShape, strokeColorPalettes]);
+  }, [editorSetting, settings, currentShape, textColorPalettes]);
 
   const getElements = useCallback(
     (doc: Store) => {
@@ -379,8 +387,8 @@ export const ShapeSettings = () => {
 
   const textColor = useMemo(() => {
     const color = settings[`shape:${currentShape}`].color;
-    return getCurrentStrokeColor(color);
-  }, [currentShape, getCurrentStrokeColor, settings]);
+    return getCurrentTextColor(color);
+  }, [currentShape, getCurrentTextColor, settings]);
 
   const height = currentDoc === 'flow' ? 456 : 180;
   return (

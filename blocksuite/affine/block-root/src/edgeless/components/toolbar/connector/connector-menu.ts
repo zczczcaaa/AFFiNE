@@ -133,7 +133,7 @@ export class EdgelessConnectorMenu extends EdgelessToolbarToolMixin(
             class="one-way"
             .value=${stroke}
             .theme=${this._theme$.value}
-            .palettes=${DefaultTheme.StrokeColorPalettes}
+            .palettes=${DefaultTheme.StrokeColorShortPalettes}
             .hasTransparent=${!this.edgeless.doc
               .get(FeatureFlagService)
               .getFlag('enable_color_picker')}

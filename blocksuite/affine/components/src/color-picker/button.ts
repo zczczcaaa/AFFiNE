@@ -1,5 +1,5 @@
 import type { ColorScheme, Palette } from '@blocksuite/affine-model';
-import { resolveColor } from '@blocksuite/affine-model';
+import { DefaultTheme, resolveColor } from '@blocksuite/affine-model';
 import type { ColorEvent } from '@blocksuite/affine-shared/utils';
 import { WithDisposable } from '@blocksuite/global/utils';
 import { html, LitElement } from 'lit';
@@ -188,7 +188,7 @@ export class EdgelessColorPickerButton extends WithDisposable(LitElement) {
   accessor menuButton!: EditorMenuButton;
 
   @property({ attribute: false })
-  accessor palettes: Palette[] = [];
+  accessor palettes: Palette[] = DefaultTheme.Palettes;
 
   @property({ attribute: false })
   accessor pick!: (event: PickColorEvent) => void;

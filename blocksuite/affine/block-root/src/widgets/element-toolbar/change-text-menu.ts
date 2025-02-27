@@ -344,6 +344,10 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
       matchFontFaces.length === 1 &&
       matchFontFaces[0].style === selectedFontStyle &&
       matchFontFaces[0].weight === selectedFontWeight;
+    const palettes =
+      this.elementType === 'shape'
+        ? DefaultTheme.ShapeTextColorPalettes
+        : DefaultTheme.Palettes;
 
     return join(
       [
@@ -389,14 +393,14 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
             return html`
               <edgeless-color-picker-button
                 class="text-color"
-                .label=${'Text color'}
+                .label="${'Text color'}"
                 .pick=${this.pickColor}
                 .isText=${true}
                 .color=${selectedColor}
                 .colors=${colors}
                 .colorType=${type}
                 .theme=${colorScheme}
-                .palettes=${DefaultTheme.Palettes}
+                .palettes=${palettes}
               >
               </edgeless-color-picker-button>
             `;
@@ -418,7 +422,7 @@ export class EdgelessChangeTextMenu extends WithDisposable(LitElement) {
               <edgeless-color-panel
                 .value=${selectedColor}
                 .theme=${colorScheme}
-                .palettes=${DefaultTheme.Palettes}
+                .palettes=${palettes}
                 @select=${this._setTextColor}
               ></edgeless-color-panel>
             </editor-menu-button>

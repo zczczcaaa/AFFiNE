@@ -22,7 +22,7 @@ export const FrameSettings = () => {
   const { palettes, getCurrentColor } = usePalettes(
     [
       { key: 'Transparent', value: DefaultTheme.transparent },
-      ...DefaultTheme.FillColorPalettes,
+      ...DefaultTheme.FillColorShortPalettes,
     ],
     DefaultTheme.transparent
   );

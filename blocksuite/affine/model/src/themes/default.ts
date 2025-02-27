@@ -72,15 +72,44 @@ const NoteBackgroundColorPalettes: Palette[] = [
   ...buildPalettes(NoteBackgroundColorMap),
 ] as const;
 
-const StrokeColorMap = { ...Medium, Black, White } as const;
+const StrokeColorShortMap = { ...Medium, Black, White } as const;
 
-const StrokeColorPalettes: Palette[] = [
-  ...buildPalettes(StrokeColorMap),
+const StrokeColorShortPalettes: Palette[] = [
+  ...buildPalettes(StrokeColorShortMap),
 ] as const;
 
-const FillColorMap = { ...Medium, Black, White } as const;
+const FillColorShortMap = { ...Medium, Black, White } as const;
 
-const FillColorPalettes: Palette[] = [...buildPalettes(FillColorMap)] as const;
+const FillColorShortPalettes: Palette[] = [
+  ...buildPalettes(FillColorShortMap),
+] as const;
+
+const ShapeTextColorShortMap = {
+  ...Medium,
+  Black: pureBlack,
+  White: pureWhite,
+} as const;
+
+const ShapeTextColorShortPalettes: Palette[] = [
+  ...buildPalettes({ ...ShapeTextColorShortMap }),
+] as const;
+
+const ShapeTextColorPalettes: Palette[] = [
+  // Light
+  ...buildPalettes(Light, 'Light'),
+
+  { key: 'Transparent', value: Transparent },
+
+  // Medium
+  ...buildPalettes(Medium, 'Medium'),
+
+  { key: 'White', value: pureWhite },
+
+  // Heavy
+  ...buildPalettes(Heavy, 'Heavy'),
+
+  { key: 'Black', value: pureBlack },
+] as const;
 
 export const DefaultTheme: Theme = {
   pureBlack,
@@ -89,18 +118,19 @@ export const DefaultTheme: Theme = {
   white: White,
   transparent: Transparent,
   textColor: Medium.Blue,
-  // Custom button should be selected by default,
-  // add transparent `ff` to distinguish `#000000`.
-  shapeTextColor: '#000000ff',
+  shapeTextColor: pureBlack,
   shapeStrokeColor: Medium.Yellow,
   shapeFillColor: Medium.Yellow,
   connectorColor: Medium.Grey,
   noteBackgrounColor: NoteBackgroundColorMap.White,
   Palettes,
-  StrokeColorMap,
-  StrokeColorPalettes,
-  FillColorMap,
-  FillColorPalettes,
+  ShapeTextColorPalettes,
   NoteBackgroundColorMap,
   NoteBackgroundColorPalettes,
+  StrokeColorShortMap,
+  StrokeColorShortPalettes,
+  FillColorShortMap,
+  FillColorShortPalettes,
+  ShapeTextColorShortMap,
+  ShapeTextColorShortPalettes,
 } as const;

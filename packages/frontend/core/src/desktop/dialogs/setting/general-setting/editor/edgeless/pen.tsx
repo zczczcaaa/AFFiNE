@@ -21,7 +21,7 @@ export const PenSettings = () => {
   const { editorSetting } = framework.get(EditorSettingService);
   const settings = useLiveData(editorSetting.settings$);
   const { palettes, getCurrentColor } = usePalettes(
-    DefaultTheme.StrokeColorPalettes,
+    DefaultTheme.StrokeColorShortPalettes,
     DefaultTheme.black
   );
 

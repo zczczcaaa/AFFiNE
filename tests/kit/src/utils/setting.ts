@@ -29,6 +29,10 @@ export async function openAboutPanel(page: Page) {
   await page.getByTestId('about-panel-trigger').click();
 }
 
+export async function openEditorInfoPanel(page: Page) {
+  await page.getByTestId('header-info-button').click();
+}
+
 export async function openExperimentalFeaturesPanel(page: Page) {
   await page.getByTestId('experimental-features-trigger').click();
 }

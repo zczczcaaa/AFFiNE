@@ -134,13 +134,12 @@ export class EdgelessChangeBrushButton extends WithDisposable(LitElement) {
           return html`
             <edgeless-color-picker-button
               class="color"
-              .label=${'Color'}
+              .label="${'Color'}"
               .pick=${this.pickColor}
               .color=${selectedColor}
               .colors=${colors}
               .colorType=${type}
               .theme=${colorScheme}
-              .palettes=${DefaultTheme.Palettes}
             >
             </edgeless-color-picker-button>
           `;
@@ -159,7 +158,6 @@ export class EdgelessChangeBrushButton extends WithDisposable(LitElement) {
             <edgeless-color-panel
               .value=${selectedColor}
               .theme=${colorScheme}
-              .palettes=${DefaultTheme.Palettes}
               @select=${this._setBrushColor}
             >
             </edgeless-color-panel>

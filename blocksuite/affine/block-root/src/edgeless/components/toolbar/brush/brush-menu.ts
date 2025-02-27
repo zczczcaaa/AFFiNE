@@ -65,7 +65,7 @@ export class EdgelessBrushMenu extends EdgelessToolbarToolMixin(
             class="one-way"
             .value=${this._props$.value.color}
             .theme=${this._theme$.value}
-            .palettes=${DefaultTheme.StrokeColorPalettes}
+            .palettes=${DefaultTheme.StrokeColorShortPalettes}
             .hasTransparent=${!this.edgeless.doc
               .get(FeatureFlagService)
               .getFlag('enable_color_picker')}

@@ -1,6 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
+import { openEditorInfoPanel } from './setting';
+
 export function getAllPage(page: Page) {
   const newPageButton = page.getByTestId('new-page-button-trigger');
   const newPageDropdown = newPageButton.locator('svg');
@@ -235,4 +237,14 @@ export const addDatabaseRow = async (page: Page, databaseTitle: string) => {
     has: page.locator(`affine-database-title:has-text("${databaseTitle}")`),
   });
   await db.locator('.data-view-table-group-add-row-button').click();
+};
+
+export const switchEdgelessTheme = async (
+  page: Page,
+  type: 'system' | 'light' | 'dark'
+) => {
+  await openEditorInfoPanel(page);
+  const panel = page.getByTestId('info-modal');
+  await panel.locator(`button[value="${type}"]`).click();
+  await page.keyboard.press('Escape');
 };

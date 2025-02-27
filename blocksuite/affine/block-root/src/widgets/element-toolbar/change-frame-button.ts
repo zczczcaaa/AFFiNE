@@ -13,7 +13,6 @@ import { renderToolbarSeparator } from '@blocksuite/affine-components/toolbar';
 import {
   type ColorScheme,
   DEFAULT_NOTE_HEIGHT,
-  DefaultTheme,
   type FrameBlockModel,
   NoteBlockModel,
   NoteDisplayMode,
@@ -201,13 +200,12 @@ export class EdgelessChangeFrameButton extends WithDisposable(LitElement) {
             return html`
               <edgeless-color-picker-button
                 class="background"
-                .label=${'Background'}
+                .label="${'Background'}"
                 .pick=${this.pickColor}
                 .color=${background}
                 .colors=${colors}
                 .colorType=${type}
                 .theme=${colorScheme}
-                .palettes=${DefaultTheme.Palettes}
               >
               </edgeless-color-picker-button>
             `;
@@ -229,7 +227,6 @@ export class EdgelessChangeFrameButton extends WithDisposable(LitElement) {
               <edgeless-color-panel
                 .value=${background}
                 .theme=${colorScheme}
-                .palettes=${DefaultTheme.Palettes}
                 @select=${this._setFrameBackground}
               >
               </edgeless-color-panel>

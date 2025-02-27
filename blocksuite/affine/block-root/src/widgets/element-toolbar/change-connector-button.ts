@@ -373,13 +373,12 @@ export class EdgelessChangeConnectorButton extends WithDisposable(LitElement) {
             return html`
               <edgeless-color-picker-button
                 class="stroke-color"
-                .label=${'Stroke style'}
+                .label="${'Stroke style'}"
                 .pick=${this.pickColor}
                 .color=${selectedColor}
                 .colors=${colors}
                 .colorType=${type}
                 .theme=${colorScheme}
-                .palettes=${DefaultTheme.Palettes}
                 .hollowCircle=${true}
               >
                 <div

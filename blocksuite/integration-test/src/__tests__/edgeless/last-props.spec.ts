@@ -48,12 +48,12 @@ describe('apply last props', () => {
     const rectShape = service.crud.getElementById(rectId) as ShapeElementModel;
     expect(rectShape.fillColor).toBe(DefaultTheme.shapeFillColor);
     service.crud.updateElement(rectId, {
-      fillColor: DefaultTheme.FillColorMap.Orange,
+      fillColor: DefaultTheme.FillColorShortMap.Orange,
     });
     expect(
       std.get(EditPropsStore).lastProps$.value[`shape:${ShapeType.Rect}`]
         .fillColor
-    ).toBe(DefaultTheme.FillColorMap.Orange);
+    ).toBe(DefaultTheme.FillColorShortMap.Orange);
 
     // diamond shape
     const diamondId = service.crud.addElement('shape', {
@@ -63,14 +63,14 @@ describe('apply last props', () => {
     const diamondShape = service.crud.getElementById(
       diamondId
     ) as ShapeElementModel;
-    expect(diamondShape.fillColor).toBe(DefaultTheme.FillColorMap.Yellow);
+    expect(diamondShape.fillColor).toBe(DefaultTheme.FillColorShortMap.Yellow);
     service.crud.updateElement(diamondId, {
-      fillColor: DefaultTheme.FillColorMap.Blue,
+      fillColor: DefaultTheme.FillColorShortMap.Blue,
     });
     expect(
       std.get(EditPropsStore).lastProps$.value[`shape:${ShapeType.Diamond}`]
         .fillColor
-    ).toBe(DefaultTheme.FillColorMap.Blue);
+    ).toBe(DefaultTheme.FillColorShortMap.Blue);
 
     // rounded rect shape
     const roundedRectId = service.crud.addElement('shape', {
@@ -81,13 +81,15 @@ describe('apply last props', () => {
     const roundedRectShape = service.crud.getElementById(
       roundedRectId
     ) as ShapeElementModel;
-    expect(roundedRectShape.fillColor).toBe(DefaultTheme.FillColorMap.Yellow);
+    expect(roundedRectShape.fillColor).toBe(
+      DefaultTheme.FillColorShortMap.Yellow
+    );
     service.crud.updateElement(roundedRectId, {
-      fillColor: DefaultTheme.FillColorMap.Green,
+      fillColor: DefaultTheme.FillColorShortMap.Green,
     });
     expect(
       std.get(EditPropsStore).lastProps$.value['shape:roundedRect'].fillColor
-    ).toBe(DefaultTheme.FillColorMap.Green);
+    ).toBe(DefaultTheme.FillColorShortMap.Green);
 
     // apply last props
     const rectId2 = service.crud.addElement('shape', {
@@ -97,7 +99,7 @@ describe('apply last props', () => {
     const rectShape2 = service.crud.getElementById(
       rectId2
     ) as ShapeElementModel;
-    expect(rectShape2.fillColor).toBe(DefaultTheme.FillColorMap.Orange);
+    expect(rectShape2.fillColor).toBe(DefaultTheme.FillColorShortMap.Orange);
 
     const diamondId2 = service.crud.addElement('shape', {
       shapeType: ShapeType.Diamond,
@@ -106,7 +108,7 @@ describe('apply last props', () => {
     const diamondShape2 = service.crud.getElementById(
       diamondId2
     ) as ShapeElementModel;
-    expect(diamondShape2.fillColor).toBe(DefaultTheme.FillColorMap.Blue);
+    expect(diamondShape2.fillColor).toBe(DefaultTheme.FillColorShortMap.Blue);
 
     const roundedRectId2 = service.crud.addElement('shape', {
       shapeType: ShapeType.Rect,
@@ -116,7 +118,9 @@ describe('apply last props', () => {
     const roundedRectShape2 = service.crud.getElementById(
       roundedRectId2
     ) as ShapeElementModel;
-    expect(roundedRectShape2.fillColor).toBe(DefaultTheme.FillColorMap.Green);
+    expect(roundedRectShape2.fillColor).toBe(
+      DefaultTheme.FillColorShortMap.Green
+    );
   });
 
   test('connector', () => {
@@ -204,14 +208,14 @@ describe('apply last props', () => {
     expect(text.color).toBe(DefaultTheme.textColor);
     expect(text.fontFamily).toBe(FontFamily.Inter);
     service.crud.updateElement(id, {
-      color: DefaultTheme.StrokeColorMap.Green,
+      color: DefaultTheme.StrokeColorShortMap.Green,
       fontFamily: FontFamily.OrelegaOne,
     });
 
     const id2 = service.crud.addBlock('affine:edgeless-text', {}, surface!.id);
     assertExists(id2);
     const text2 = service.crud.getElementById(id2) as EdgelessTextBlockModel;
-    expect(text2.color).toBe(DefaultTheme.StrokeColorMap.Green);
+    expect(text2.color).toBe(DefaultTheme.StrokeColorShortMap.Green);
     expect(text2.fontFamily).toBe(FontFamily.OrelegaOne);
   });
 
@@ -246,13 +250,13 @@ describe('apply last props', () => {
     const note = service.crud.getElementById(id) as FrameBlockModel;
     expect(note.background).toBe('transparent');
     service.crud.updateElement(id, {
-      background: DefaultTheme.StrokeColorMap.Purple,
+      background: DefaultTheme.StrokeColorShortMap.Purple,
     });
 
     const id2 = service.crud.addBlock('affine:frame', {}, surface!.id);
     assertExists(id2);
     const frame2 = service.crud.getElementById(id2) as FrameBlockModel;
-    expect(frame2.background).toBe(DefaultTheme.StrokeColorMap.Purple);
+    expect(frame2.background).toBe(DefaultTheme.StrokeColorShortMap.Purple);
     service.crud.updateElement(id2, {
       background: { normal: '#def4e740' },
     });
