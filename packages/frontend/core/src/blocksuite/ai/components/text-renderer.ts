@@ -6,16 +6,12 @@ import {
   ShadowlessElement,
 } from '@blocksuite/affine/block-std';
 import {
-  CodeBlockComponent,
   codeBlockWrapMiddleware,
   defaultBlockMarkdownAdapterMatchers,
   defaultImageProxyMiddleware,
-  DividerBlockComponent,
   InlineDeltaToMarkdownAdapterExtensions,
-  ListBlockComponent,
   MarkdownInlineToDeltaAdapterExtensions,
   PageEditorBlockSpecs,
-  ParagraphBlockComponent,
 } from '@blocksuite/affine/blocks';
 import { Container, type ServiceProvider } from '@blocksuite/affine/global/di';
 import { WithDisposable } from '@blocksuite/affine/global/utils';
@@ -38,13 +34,6 @@ import type {
   AffineAIPanelState,
   AffineAIPanelWidgetConfig,
 } from '../widgets/ai-panel/type';
-
-const textBlockStyles = css`
-  ${ParagraphBlockComponent.styles}
-  ${ListBlockComponent.styles}
-  ${DividerBlockComponent.styles}
-  ${CodeBlockComponent.styles}
-`;
 
 const customHeadingStyles = css`
   .custom-heading {
@@ -178,7 +167,6 @@ export class TextRenderer extends WithDisposable(ShadowlessElement) {
       }
     }
 
-    ${textBlockStyles}
     ${customHeadingStyles}
   `;
 

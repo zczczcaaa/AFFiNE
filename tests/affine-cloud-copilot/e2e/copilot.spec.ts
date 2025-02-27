@@ -110,7 +110,9 @@ const collectChat = async (page: Page) => {
     return [];
   }
   // wait ai response
-  await page.waitForSelector('.chat-panel-messages .message chat-copy-more');
+  await page.waitForSelector('.chat-panel-messages .message chat-copy-more', {
+    timeout: ONE_MINUTE,
+  });
   await page.waitForTimeout(200);
   const lastMessage = await chatPanel.$$('.message').then(m => m[m.length - 1]);
   await lastMessage.waitForSelector('chat-copy-more');
