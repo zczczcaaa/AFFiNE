@@ -43,7 +43,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
 
   public readonly canvas: HTMLCanvasElement = document.createElement('canvas');
   private readonly worker: Worker;
-  private layoutCache: ViewportLayout | null = null;
+  private layoutCacheData: ViewportLayout | null = null;
   private tile: Tile | null = null;
   private viewportElement: GfxViewportElement | null = null;
 
@@ -95,6 +95,13 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     return this.std.get(GfxControllerIdentifier).viewport;
   }
 
+  get layoutCache() {
+    if (this.layoutCacheData) return this.layoutCacheData;
+    const layout = getViewportLayout(this.std.host, this.viewport);
+    this.debugLog('Layout cache updated');
+    return (this.layoutCacheData = layout);
+  }
+
   async refresh() {
     if (this.state === 'inactive') return;
 
@@ -110,19 +117,15 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     else if (this.canUseBitmapCache()) {
       this.debugLog('Using cached bitmap');
       this.setState('ready');
-      this.drawCachedBitmap(this.layoutCache!);
+      this.drawCachedBitmap(this.layoutCache);
       this.updateOptimizedBlocks();
     }
     // -> rendering
     else {
-      if (!this.layoutCache) {
-        this.updateLayoutCache();
-      }
-      const layout = this.layoutCache!;
       this.setState('rendering');
       this.toggleOptimization(false);
-      await this.paintLayout(layout);
-      this.drawCachedBitmap(layout);
+      await this.paintLayout(this.layoutCache);
+      this.drawCachedBitmap(this.layoutCache);
       this.updateOptimizedBlocks();
     }
   }
@@ -137,7 +140,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
 
   invalidate() {
     this.layoutVersion++;
-    this.layoutCache = null;
+    this.layoutCacheData = null;
     this.clearTile();
     this.clearCanvas();
     this.clearOptimizedBlocks();
@@ -148,12 +151,6 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   private debugLog(message: string) {
     if (!debug) return;
     debugLog(message, this.state);
-  }
-
-  private updateLayoutCache() {
-    const layout = getViewportLayout(this.std.host, this.viewport);
-    this.layoutCache = layout;
-    this.debugLog('Layout cache updated');
   }
 
   private clearTile() {
@@ -204,9 +201,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   private handlePaintedBitmap(bitmap: ImageBitmap, resolve: () => void) {
-    if (this.tile) {
-      this.tile.bitmap.close();
-    }
+    this.clearTile();
     this.tile = {
       bitmap,
       zoom: this.viewport.zoom,
@@ -281,10 +276,9 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
   }
 
   private clearOptimizedBlocks() {
-    if (this.viewportElement) {
-      this.viewportElement.clearOptimizedBlocks();
-      this.debugLog('Cleared optimized blocks');
-    }
+    if (!this.viewportElement) return;
+    this.viewportElement.clearOptimizedBlocks();
+    this.debugLog('Cleared optimized blocks');
   }
 
   canOptimize(): boolean {

@@ -1,3 +1,4 @@
+import type { EditorHost } from '@blocksuite/block-std';
 import { type Viewport } from '@blocksuite/block-std/gfx';
 import { Pane } from 'tweakpane';
 
@@ -23,7 +24,7 @@ export function syncCanvasSize(canvas: HTMLCanvasElement, host: HTMLElement) {
 }
 
 export function getViewportLayout(
-  host: HTMLElement,
+  host: EditorHost,
   viewport: Viewport
 ): ViewportLayout {
   const paragraphBlocks = host.querySelectorAll(
