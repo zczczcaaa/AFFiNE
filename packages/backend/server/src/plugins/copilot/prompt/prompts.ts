@@ -982,7 +982,7 @@ When referencing information from the provided documents in your response:
   },
   {
     name: 'Search With AFFiNE AI',
-    model: 'sonar',
+    model: 'sonar-reasoning-pro',
     messages: [],
   },
   // use for believer plan

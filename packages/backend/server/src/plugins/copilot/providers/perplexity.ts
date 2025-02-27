@@ -187,7 +187,7 @@ export class PerplexityProvider implements CopilotTextToTextProvider {
 
   async generateText(
     messages: PromptMessage[],
-    model: string = 'llama-3.1-sonar-small-128k-online',
+    model: string = 'sonar',
     options: CopilotChatOptions = {}
   ): Promise<string> {
     await this.checkParams({ messages, model, options });
@@ -237,7 +237,7 @@ export class PerplexityProvider implements CopilotTextToTextProvider {
 
   async *generateTextStream(
     messages: PromptMessage[],
-    model: string = 'llama-3.1-sonar-small-128k-online',
+    model: string = 'sonar',
     options: CopilotChatOptions = {}
   ): AsyncIterable<string> {
     await this.checkParams({ messages, model, options });
