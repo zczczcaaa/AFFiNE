@@ -28,8 +28,8 @@ interface Tile {
   zoom: number;
 }
 
-// With high enough zoom, fallback to DOM rendering
-const zoomThreshold = 1;
+const zoomThreshold = 1; // With high enough zoom, fallback to DOM rendering
+const debounceTime = 1000; // During this period, fallback to DOM
 const debug = false; // Toggle for debug logs
 
 export class ViewportTurboRendererExtension extends LifeCycleWatcher {
@@ -66,6 +66,10 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
       this.viewportElement = element;
       syncCanvasSize(this.canvas, this.std.host);
       this.setState('pending');
+
+      this.disposables.add(
+        this.viewport.sizeUpdated.on(() => this.handleResize())
+      );
       this.disposables.add(
         this.viewport.viewportUpdated.on(() => {
           this.refresh().catch(console.error);
@@ -134,7 +138,7 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     () => {
       this.refresh().catch(console.error);
     },
-    1000, // During this period, fallback to DOM
+    debounceTime,
     { leading: false, trailing: true }
   );
 
@@ -257,6 +261,13 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     this.state = newState;
   }
 
+  canOptimize(): boolean {
+    const isReady = this.state === 'ready';
+    const isBelowZoomThreshold = this.viewport.zoom <= zoomThreshold;
+    const result = isReady && isBelowZoomThreshold;
+    return result;
+  }
+
   private updateOptimizedBlocks() {
     requestAnimationFrame(() => {
       if (!this.viewportElement || !this.layoutCache) return;
@@ -281,13 +292,6 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     this.debugLog('Cleared optimized blocks');
   }
 
-  canOptimize(): boolean {
-    const isReady = this.state === 'ready';
-    const isBelowZoomThreshold = this.viewport.zoom <= zoomThreshold;
-    const result = isReady && isBelowZoomThreshold;
-    return result;
-  }
-
   private toggleOptimization(value: boolean) {
     if (
       this.viewportElement &&
@@ -296,5 +300,12 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
       this.viewportElement.enableOptimization = value;
       this.debugLog(`${value ? 'Enabled' : 'Disabled'} optimization`);
     }
+  }
+
+  private handleResize() {
+    this.debugLog('Container resized, syncing canvas size');
+    syncCanvasSize(this.canvas, this.std.host);
+    this.invalidate();
+    this.debouncedRefresh();
   }
 }
