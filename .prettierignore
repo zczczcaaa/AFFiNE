@@ -1,7 +1,7 @@
 # we will make this file shared by prettier|eslint|oxlint
 **/node_modules
 .yarn
-.github
+.github/helm
 .vscode
 .yarnrc.yml
 .docker
