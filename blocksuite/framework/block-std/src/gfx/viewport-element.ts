@@ -57,27 +57,30 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
     }
   `;
 
+  optimizedBlocks = new Set<string>();
+
   private readonly _hideOutsideBlock = () => {
-    if (this.getModelsInViewport && this.host) {
-      const host = this.host;
-      const modelsInViewport = this.getModelsInViewport();
+    if (!this.host) return;
 
-      modelsInViewport.forEach(model => {
-        const view = host.std.view.getBlock(model.id);
-        setDisplay(view, 'block');
+    const { host, optimizedBlocks, enableOptimization } = this;
+    const modelsInViewport = this.getModelsInViewport();
+    modelsInViewport.forEach(model => {
+      const view = host.std.view.getBlock(model.id);
+      const canOptimize = optimizedBlocks.has(model.id) && enableOptimization;
+      const display = canOptimize ? 'none' : 'block';
+      setDisplay(view, display);
 
-        if (this._lastVisibleModels?.has(model)) {
-          this._lastVisibleModels!.delete(model);
-        }
-      });
+      if (this._lastVisibleModels?.has(model)) {
+        this._lastVisibleModels!.delete(model);
+      }
+    });
 
-      this._lastVisibleModels?.forEach(model => {
-        const view = host.std.view.getBlock(model.id);
-        setDisplay(view, 'none');
-      });
+    this._lastVisibleModels?.forEach(model => {
+      const view = host.std.view.getBlock(model.id);
+      setDisplay(view, 'none');
+    });
 
-      this._lastVisibleModels = modelsInViewport;
-    }
+    this._lastVisibleModels = modelsInViewport;
   };
 
   private _lastVisibleModels?: Set<GfxBlockElementModel>;
@@ -154,7 +157,8 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
   };
 
   @property({ attribute: false })
-  accessor getModelsInViewport: undefined | (() => Set<GfxBlockElementModel>);
+  accessor getModelsInViewport: () => Set<GfxBlockElementModel> = () =>
+    new Set();
 
   @property({ attribute: false })
   accessor host: undefined | EditorHost;
@@ -167,4 +171,29 @@ export class GfxViewportElement extends WithDisposable(ShadowlessElement) {
 
   @property({ attribute: false })
   accessor viewport!: Viewport;
+
+  @property({ attribute: false })
+  accessor enableOptimization: boolean = false;
+
+  updateOptimizedBlocks(blockIds: string[], optimized: boolean): void {
+    let changed = false;
+
+    blockIds.forEach(id => {
+      if (optimized && !this.optimizedBlocks.has(id)) {
+        this.optimizedBlocks.add(id);
+        changed = true;
+      } else if (!optimized && this.optimizedBlocks.has(id)) {
+        this.optimizedBlocks.delete(id);
+        changed = true;
+      }
+    });
+
+    if (changed) this._refreshViewport();
+  }
+
+  clearOptimizedBlocks(): void {
+    if (this.optimizedBlocks.size === 0) return;
+    this.optimizedBlocks.clear();
+    this._refreshViewport();
+  }
 }
