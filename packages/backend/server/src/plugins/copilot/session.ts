@@ -1,10 +1,9 @@
 import { randomUUID } from 'node:crypto';
 
 import { Injectable, Logger } from '@nestjs/common';
-import { AiPromptRole, PrismaClient } from '@prisma/client';
+import { AiPromptRole, Prisma, PrismaClient } from '@prisma/client';
+import { omit } from 'lodash-es';
 
-import { FeatureManagementService } from '../../core/features';
-import { QuotaService } from '../../core/quota';
 import {
   CopilotActionTaken,
   CopilotMessageNotFound,
@@ -12,7 +11,10 @@ import {
   CopilotQuotaExceeded,
   CopilotSessionDeleted,
   CopilotSessionNotFound,
-} from '../../fundamentals';
+  PrismaTransaction,
+} from '../../base';
+import { QuotaService } from '../../core/quota';
+import { Models } from '../../models';
 import { ChatMessageCache } from './message';
 import { PromptService } from './prompt';
 import {
@@ -22,6 +24,7 @@ import {
   ChatMessageSchema,
   ChatSessionForkOptions,
   ChatSessionOptions,
+  ChatSessionPromptUpdateOptions,
   ChatSessionState,
   getTokenEncoder,
   ListHistoriesOptions,
@@ -72,10 +75,11 @@ export class ChatSession implements AsyncDisposable {
     this.stashMessageCount += 1;
   }
 
-  revertLatestMessage() {
+  revertLatestMessage(removeLatestUserMessage: boolean) {
     const messages = this.state.messages;
     messages.splice(
-      messages.findLastIndex(({ role }) => role === AiPromptRole.user) + 1
+      messages.findLastIndex(({ role }) => role === AiPromptRole.user) +
+        (removeLatestUserMessage ? 0 : 1)
     );
   }
 
@@ -149,13 +153,24 @@ export class ChatSession implements AsyncDisposable {
         normalizedParams,
         this.config.sessionId
       );
-      finished[0].attachments = firstMessage.attachments;
+
+      // attachments should be combined with the first user message
+      const firstUserMessage =
+        finished.find(m => m.role === 'user') || finished[0];
+      firstUserMessage.attachments = [
+        finished[0].attachments || [],
+        firstMessage.attachments || [],
+      ]
+        .flat()
+        .filter(v => !!v?.trim());
+
       return finished;
     }
 
+    const lastMessage = messages.at(-1);
     return [
       ...this.state.prompt.finish(
-        Object.keys(params).length ? params : firstMessage?.params || {},
+        Object.keys(params).length ? params : lastMessage?.params || {},
         this.config.sessionId
       ),
       ...messages.filter(m => m.content?.trim() || m.attachments?.length),
@@ -182,11 +197,29 @@ export class ChatSessionService {
 
   constructor(
     private readonly db: PrismaClient,
-    private readonly feature: FeatureManagementService,
     private readonly quota: QuotaService,
     private readonly messageCache: ChatMessageCache,
-    private readonly prompt: PromptService
+    private readonly prompt: PromptService,
+    private readonly models: Models
   ) {}
+
+  private async haveSession(
+    sessionId: string,
+    userId: string,
+    tx?: PrismaTransaction,
+    params?: Prisma.AiSessionCountArgs['where']
+  ) {
+    const executor = tx ?? this.db;
+    return await executor.aiSession
+      .count({
+        where: {
+          id: sessionId,
+          userId,
+          ...params,
+        },
+      })
+      .then(c => c > 0);
+  }
 
   private async setSession(state: ChatSessionState): Promise<string> {
     return await this.db.$transaction(async tx => {
@@ -216,15 +249,7 @@ export class ChatSessionService {
         if (id) sessionId = id;
       }
 
-      const haveSession = await tx.aiSession
-        .count({
-          where: {
-            id: sessionId,
-            userId: state.userId,
-          },
-        })
-        .then(c => c > 0);
-
+      const haveSession = await this.haveSession(sessionId, state.userId, tx);
       if (haveSession) {
         // message will only exists when setSession call by session.save
         if (state.messages.length) {
@@ -232,7 +257,7 @@ export class ChatSessionService {
             data: state.messages.map(m => ({
               ...m,
               attachments: m.attachments || undefined,
-              params: m.params || undefined,
+              params: omit(m.params, ['docs']) || undefined,
               sessionId,
             })),
           });
@@ -317,7 +342,10 @@ export class ChatSessionService {
 
   // revert the latest messages not generate by user
   // after revert, we can retry the action
-  async revertLatestMessage(sessionId: string) {
+  async revertLatestMessage(
+    sessionId: string,
+    removeLatestUserMessage: boolean
+  ) {
     await this.db.$transaction(async tx => {
       const id = await tx.aiSession
         .findUnique({
@@ -337,7 +365,8 @@ export class ChatSessionService {
         .then(roles =>
           roles
             .slice(
-              roles.findLastIndex(({ role }) => role === AiPromptRole.user) + 1
+              roles.findLastIndex(({ role }) => role === AiPromptRole.user) +
+                (removeLatestUserMessage ? 0 : 1)
             )
             .map(({ id }) => id)
         );
@@ -370,30 +399,38 @@ export class ChatSessionService {
   async listSessions(
     userId: string,
     workspaceId: string,
-    options?: { docId?: string; action?: boolean }
-  ): Promise<string[]> {
+    docId?: string,
+    options?: { action?: boolean }
+  ): Promise<Array<{ id: string; promptName: string }>> {
     return await this.db.aiSession
       .findMany({
         where: {
           userId,
           workspaceId,
-          docId: workspaceId === options?.docId ? undefined : options?.docId,
+          docId,
           prompt: {
             action: options?.action ? { not: null } : null,
           },
           deletedAt: null,
         },
-        select: { id: true },
+        select: {
+          id: true,
+          promptName: true,
+        },
       })
-      .then(sessions => sessions.map(({ id }) => id));
+      .then(sessions =>
+        sessions.map(({ id, promptName }) => ({
+          id,
+          promptName,
+        }))
+      );
   }
 
   async listHistories(
     userId: string,
     workspaceId?: string,
     docId?: string,
-    options?: ListHistoriesOptions,
-    withPrompt = false
+    options?: ListHistoriesOptions
   ): Promise<ChatHistory[]> {
     const extraCondition = [];
 
@@ -482,7 +519,7 @@ export class ChatSessionService {
                 const ret = ChatMessageSchema.array().safeParse(messages);
                 if (ret.success) {
                   // render system prompt
-                  const preload = withPrompt
+                  const preload = options?.withPrompt
                     ? prompt
                         .finish(ret.data[0]?.params || {}, id)
                         .filter(({ role }) => role !== 'system')
@@ -522,12 +559,15 @@ export class ChatSessionService {
   }
 
   async getQuota(userId: string) {
-    const isCopilotUser = await this.feature.isCopilotUser(userId);
+    const isCopilotUser = await this.models.userFeature.has(
+      userId,
+      'unlimited_copilot'
+    );
 
     let limit: number | undefined;
     if (!isCopilotUser) {
       const quota = await this.quota.getUserQuota(userId);
-      limit = quota.feature.copilotActionLimit;
+      limit = quota.copilotActionLimit;
     }
 
     const used = await this.countUserMessages(userId);
@@ -549,6 +589,7 @@ export class ChatSessionService {
       this.logger.error(`Prompt not found: ${options.promptName}`);
       throw new CopilotPromptNotFound({ name: options.promptName });
     }
+
     return await this.setSession({
       ...options,
       sessionId,
@@ -556,6 +597,32 @@ export class ChatSessionService {
       messages: [],
       // when client create chat session, we always find root session
       parentSessionId: null,
+    });
+  }
+
+  async updateSessionPrompt(
+    options: ChatSessionPromptUpdateOptions
+  ): Promise<string> {
+    const prompt = await this.prompt.get(options.promptName);
+    if (!prompt) {
+      this.logger.error(`Prompt not found: ${options.promptName}`);
+      throw new CopilotPromptNotFound({ name: options.promptName });
+    }
+    return await this.db.$transaction(async tx => {
+      let sessionId = options.sessionId;
+      const haveSession = await this.haveSession(
+        sessionId,
+        options.userId,
+        tx,
+        { prompt: { action: null } }
+      );
+      if (haveSession) {
+        await tx.aiSession.update({
+          where: { id: sessionId },
+          data: { promptName: prompt.name },
+        });
+      }
+      return sessionId;
     });
   }
 

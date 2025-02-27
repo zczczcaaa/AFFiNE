@@ -19,17 +19,20 @@ import { AiPromptRole } from '@prisma/client';
 import { GraphQLJSON, SafeIntResolver } from 'graphql-scalars';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.mjs';
 
+import {
+  CallMetric,
+  CopilotDocNotFound,
+  CopilotFailedToCreateMessage,
+  CopilotSessionNotFound,
+  type FileUpload,
+  RequestMutex,
+  Throttle,
+  TooManyRequest,
+} from '../../base';
 import { CurrentUser } from '../../core/auth';
 import { Admin } from '../../core/common';
 import { PermissionService } from '../../core/permission';
 import { UserType } from '../../core/user';
-import {
-  CopilotFailedToCreateMessage,
-  FileUpload,
-  RequestMutex,
-  Throttle,
-  TooManyRequest,
-} from '../../fundamentals';
 import { PromptService } from './prompt';
 import { ChatSessionService } from './session';
 import { CopilotStorage } from './storage';
@@ -54,6 +57,17 @@ class CreateChatSessionInput {
 
   @Field(() => String)
   docId!: string;
+
+  @Field(() => String, {
+    description: 'The prompt name to use for the session',
+  })
+  promptName!: string;
+}
+
+@InputType()
+class UpdateChatSessionInput {
+  @Field(() => String)
+  sessionId!: string;
 
   @Field(() => String, {
     description: 'The prompt name to use for the session',
@@ -106,7 +120,7 @@ class CreateChatMessageInput implements Omit<SubmittedMessage, 'content'> {
   blobs!: Promise<FileUpload>[] | undefined;
 
   @Field(() => GraphQLJSON, { nullable: true })
-  params!: Record<string, string> | undefined;
+  params!: Record<string, any> | undefined;
 }
 
 enum ChatHistoryOrder {
@@ -115,6 +129,12 @@ enum ChatHistoryOrder {
 }
 
 registerEnumType(ChatHistoryOrder, { name: 'ChatHistoryOrder' });
+
+@InputType()
+class QueryChatSessionsInput {
+  @Field(() => Boolean, { nullable: true })
+  action: boolean | undefined;
+}
 
 @InputType()
 class QueryChatHistoriesInput implements Partial<ListHistoriesOptions> {
@@ -138,6 +158,9 @@ class QueryChatHistoriesInput implements Partial<ListHistoriesOptions> {
 
   @Field(() => String, { nullable: true })
   sessionId: string | undefined;
+
+  @Field(() => Boolean, { nullable: true })
+  withPrompt: boolean | undefined;
 }
 
 // ================== Return Types ==================
@@ -252,12 +275,24 @@ class CopilotPromptType {
   messages!: CopilotPromptMessageType[];
 }
 
+@ObjectType()
+class CopilotSessionType {
+  @Field(() => ID)
+  id!: string;
+
+  @Field(() => String)
+  promptName!: string;
+}
+
 // ================== Resolver ==================
 
 @ObjectType('Copilot')
 export class CopilotType {
   @Field(() => ID, { nullable: true })
   workspaceId!: string | undefined;
+
+  @Field(() => ID, { nullable: true })
+  docId!: string | undefined;
 }
 
 @Throttle()
@@ -280,34 +315,41 @@ export class CopilotResolver {
   }
 
   @ResolveField(() => [String], {
-    description: 'Get the session list of chats in the workspace',
+    description: 'Get the session id list in the workspace',
     complexity: 2,
+    deprecationReason: 'Use `sessions` instead',
   })
-  async chats(
+  async sessionIds(
     @Parent() copilot: CopilotType,
-    @CurrentUser() user: CurrentUser
+    @CurrentUser() user: CurrentUser,
+    @Args('docId', { nullable: true }) docId?: string,
+    @Args('options', { nullable: true }) options?: QueryChatSessionsInput
   ) {
-    if (!copilot.workspaceId) return [];
-    await this.permissions.checkCloudWorkspace(copilot.workspaceId, user.id);
-    return await this.chatSession.listSessions(user.id, copilot.workspaceId);
+    return await this.sessions(copilot, user, docId, options);
   }
 
-  @ResolveField(() => [String], {
-    description: 'Get the session list of actions in the workspace',
+  @ResolveField(() => [CopilotSessionType], {
+    description: 'Get the session list in the workspace',
     complexity: 2,
   })
-  async actions(
+  async sessions(
     @Parent() copilot: CopilotType,
-    @CurrentUser() user: CurrentUser
+    @CurrentUser() user: CurrentUser,
+    @Args('docId', { nullable: true }) docId?: string,
+    @Args('options', { nullable: true }) options?: QueryChatSessionsInput
   ) {
     if (!copilot.workspaceId) return [];
     await this.permissions.checkCloudWorkspace(copilot.workspaceId, user.id);
-    return await this.chatSession.listSessions(user.id, copilot.workspaceId, {
-      action: true,
-    });
+    return await this.chatSession.listSessions(
+      user.id,
+      copilot.workspaceId,
+      docId,
+      options
+    );
   }
 
   @ResolveField(() => [CopilotHistoriesType], {})
+  @CallMetric('ai', 'histories')
   async histories(
     @Parent() copilot: CopilotType,
     @CurrentUser() user: CurrentUser,
@@ -321,6 +363,7 @@ export class CopilotResolver {
       await this.permissions.checkCloudPagePermission(
         workspaceId,
         docId,
+        'Doc.Read',
         user.id
       );
     } else {
@@ -331,9 +374,9 @@ export class CopilotResolver {
       user.id,
       workspaceId,
       docId,
-      options,
-      true
+      options
     );
+
     return histories.map(h => ({
       ...h,
       // filter out empty messages
@@ -344,6 +387,7 @@ export class CopilotResolver {
   @Mutation(() => String, {
     description: 'Create a chat session',
   })
+  @CallMetric('ai', 'chat_session_create')
   async createCopilotSession(
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => CreateChatSessionInput })
@@ -352,26 +396,65 @@ export class CopilotResolver {
     await this.permissions.checkCloudPagePermission(
       options.workspaceId,
       options.docId,
+      'Doc.Update',
       user.id
     );
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
+    if (!lock) {
+      return new TooManyRequest('Server is busy');
+    }
+
+    if (options.workspaceId === options.docId) {
+      // filter out session create request for root doc
+      throw new CopilotDocNotFound({ docId: options.docId });
+    }
+
+    await this.chatSession.checkQuota(user.id);
+
+    return await this.chatSession.create({
+      ...options,
+      userId: user.id,
+    });
+  }
+
+  @Mutation(() => String, {
+    description: 'Update a chat session',
+  })
+  @CallMetric('ai', 'chat_session_update')
+  async updateCopilotSession(
+    @CurrentUser() user: CurrentUser,
+    @Args({ name: 'options', type: () => UpdateChatSessionInput })
+    options: UpdateChatSessionInput
+  ) {
+    const session = await this.chatSession.get(options.sessionId);
+    if (!session) {
+      throw new CopilotSessionNotFound();
+    }
+    const { workspaceId, docId } = session.config;
+    await this.permissions.checkCloudPagePermission(
+      workspaceId,
+      docId,
+      'Doc.Update',
+      user.id
+    );
+    const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${workspaceId}`;
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
     }
 
     await this.chatSession.checkQuota(user.id);
-
-    const session = await this.chatSession.create({
+    return await this.chatSession.updateSessionPrompt({
       ...options,
       userId: user.id,
     });
-    return session;
   }
 
   @Mutation(() => String, {
     description: 'Create a chat session',
   })
+  @CallMetric('ai', 'chat_session_fork')
   async forkCopilotSession(
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => ForkChatSessionInput })
@@ -380,26 +463,32 @@ export class CopilotResolver {
     await this.permissions.checkCloudPagePermission(
       options.workspaceId,
       options.docId,
+      'Doc.Update',
       user.id
     );
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
     }
 
+    if (options.workspaceId === options.docId) {
+      // filter out session create request for root doc
+      throw new CopilotDocNotFound({ docId: options.docId });
+    }
+
     await this.chatSession.checkQuota(user.id);
 
-    const session = await this.chatSession.fork({
+    return await this.chatSession.fork({
       ...options,
       userId: user.id,
     });
-    return session;
   }
 
   @Mutation(() => [String], {
     description: 'Cleanup sessions',
   })
+  @CallMetric('ai', 'chat_session_cleanup')
   async cleanupCopilotSession(
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => DeleteSessionInput })
@@ -408,13 +497,14 @@ export class CopilotResolver {
     await this.permissions.checkCloudPagePermission(
       options.workspaceId,
       options.docId,
+      'Doc.Update',
       user.id
     );
     if (!options.sessionIds.length) {
       return new NotFoundException('Session not found');
     }
     const lockFlag = `${COPILOT_LOCKER}:session:${user.id}:${options.workspaceId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
     }
@@ -428,13 +518,14 @@ export class CopilotResolver {
   @Mutation(() => String, {
     description: 'Create a chat message',
   })
+  @CallMetric('ai', 'chat_message_create')
   async createCopilotMessage(
     @CurrentUser() user: CurrentUser,
     @Args({ name: 'options', type: () => CreateChatMessageInput })
     options: CreateChatMessageInput
   ) {
     const lockFlag = `${COPILOT_LOCKER}:message:${user?.id}:${options.sessionId}`;
-    await using lock = await this.mutex.lock(lockFlag);
+    await using lock = await this.mutex.acquire(lockFlag);
     if (!lock) {
       return new TooManyRequest('Server is busy');
     }

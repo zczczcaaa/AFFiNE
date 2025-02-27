@@ -6,8 +6,10 @@ import { PermissionModule } from '../permission';
 import { QuotaModule } from '../quota';
 import { PgUserspaceDocStorageAdapter } from './adapters/userspace';
 import { PgWorkspaceDocStorageAdapter } from './adapters/workspace';
+import { DocEventsListener } from './event';
 import { DocStorageCronJob } from './job';
 import { DocStorageOptions } from './options';
+import { DatabaseDocReader, DocReader, DocReaderProvider } from './reader';
 
 @Module({
   imports: [QuotaModule, PermissionModule],
@@ -16,10 +18,24 @@ import { DocStorageOptions } from './options';
     PgWorkspaceDocStorageAdapter,
     PgUserspaceDocStorageAdapter,
     DocStorageCronJob,
+    DocReaderProvider,
+    DatabaseDocReader,
+    DocEventsListener,
   ],
-  exports: [PgWorkspaceDocStorageAdapter, PgUserspaceDocStorageAdapter],
+  exports: [
+    DatabaseDocReader,
+    DocReader,
+    PgWorkspaceDocStorageAdapter,
+    PgUserspaceDocStorageAdapter,
+  ],
 })
 export class DocStorageModule {}
-export { PgUserspaceDocStorageAdapter, PgWorkspaceDocStorageAdapter };
+export {
+  // only for doc-service
+  DatabaseDocReader,
+  DocReader,
+  PgUserspaceDocStorageAdapter,
+  PgWorkspaceDocStorageAdapter,
+};
 
 export { DocStorageAdapter, type Editor } from './storage';

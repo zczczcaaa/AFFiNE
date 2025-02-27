@@ -17,8 +17,6 @@ app:
   # AFFINE_SERVER_HOST
   host: '0.0.0.0'
   https: true
-  doc:
-    mergeInterval: "3000"
   captcha:
     enabled: false
     secretName: captcha

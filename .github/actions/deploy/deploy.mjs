@@ -17,6 +17,7 @@ const {
   METRICS_CUSTOMER_IO_TOKEN,
   COPILOT_OPENAI_API_KEY,
   COPILOT_FAL_API_KEY,
+  COPILOT_PERPLEXITY_API_KEY,
   COPILOT_UNSPLASH_API_KEY,
   MAILER_SENDER,
   MAILER_USER,
@@ -24,6 +25,7 @@ const {
   AFFINE_GOOGLE_CLIENT_ID,
   AFFINE_GOOGLE_CLIENT_SECRET,
   CLOUD_SQL_IAM_ACCOUNT,
+  APP_IAM_ACCOUNT,
   GCLOUD_CONNECTION_NAME,
   GCLOUD_CLOUD_SQL_INTERNAL_ENDPOINT,
   REDIS_HOST,
@@ -39,6 +41,47 @@ const buildType = BUILD_TYPE || 'canary';
 const isProduction = buildType === 'stable';
 const isBeta = buildType === 'beta';
 const isInternal = buildType === 'internal';
+
+const replicaConfig = {
+  stable: {
+    web: 3,
+    graphql: Number(process.env.PRODUCTION_GRAPHQL_REPLICA) || 3,
+    sync: Number(process.env.PRODUCTION_SYNC_REPLICA) || 3,
+    renderer: Number(process.env.PRODUCTION_RENDERER_REPLICA) || 3,
+    doc: Number(process.env.PRODUCTION_DOC_REPLICA) || 3,
+  },
+  beta: {
+    web: 2,
+    graphql: Number(process.env.BETA_GRAPHQL_REPLICA) || 2,
+    sync: Number(process.env.BETA_SYNC_REPLICA) || 2,
+    renderer: Number(process.env.BETA_RENDERER_REPLICA) || 2,
+    doc: Number(process.env.BETA_DOC_REPLICA) || 2,
+  },
+  canary: {
+    web: 2,
+    graphql: 2,
+    sync: 2,
+    renderer: 2,
+    doc: 2,
+  },
+};
+
+const cpuConfig = {
+  beta: {
+    web: '300m',
+    graphql: '1',
+    sync: '1',
+    doc: '1',
+    renderer: '300m',
+  },
+  canary: {
+    web: '300m',
+    graphql: '1',
+    sync: '1',
+    doc: '1',
+    renderer: '300m',
+  },
+};
 
 const createHelmCommand = ({ isDryRun }) => {
   const flag = isDryRun ? '--dry-run' : '--atomic';
@@ -57,27 +100,35 @@ const createHelmCommand = ({ isDryRun }) => {
           `--set-string global.redis.password="${REDIS_PASSWORD}"`,
         ]
       : [];
-  const serviceAnnotations =
+  const serviceAnnotations = [
+    `--set-json   web.serviceAccount.annotations="{ \\"iam.gke.io/gcp-service-account\\": \\"${APP_IAM_ACCOUNT}\\" }"`,
+    `--set-json   graphql.serviceAccount.annotations="{ \\"iam.gke.io/gcp-service-account\\": \\"${APP_IAM_ACCOUNT}\\" }"`,
+    `--set-json   sync.serviceAccount.annotations="{ \\"iam.gke.io/gcp-service-account\\": \\"${APP_IAM_ACCOUNT}\\" }"`,
+    `--set-json   doc.serviceAccount.annotations="{ \\"iam.gke.io/gcp-service-account\\": \\"${APP_IAM_ACCOUNT}\\" }"`,
+  ].concat(
     isProduction || isBeta || isInternal
       ? [
-          `--set-json   web.service.annotations=\"{ \\"cloud.google.com/neg\\": \\"{\\\\\\"ingress\\\\\\": true}\\" }\"`,
-          `--set-json   graphql.service.annotations=\"{ \\"cloud.google.com/neg\\": \\"{\\\\\\"ingress\\\\\\": true}\\" }\"`,
-          `--set-json   sync.service.annotations=\"{ \\"cloud.google.com/neg\\": \\"{\\\\\\"ingress\\\\\\": true}\\" }\"`,
-          `--set-json   cloud-sql-proxy.serviceAccount.annotations=\"{ \\"iam.gke.io/gcp-service-account\\": \\"${CLOUD_SQL_IAM_ACCOUNT}\\" }\"`,
-          `--set-json   cloud-sql-proxy.nodeSelector=\"{ \\"iam.gke.io/gke-metadata-server-enabled\\": \\"true\\" }\"`,
+          `--set-json   web.service.annotations="{ \\"cloud.google.com/neg\\": \\"{\\\\\\"ingress\\\\\\": true}\\" }"`,
+          `--set-json   graphql.service.annotations="{ \\"cloud.google.com/neg\\": \\"{\\\\\\"ingress\\\\\\": true}\\" }"`,
+          `--set-json   sync.service.annotations="{ \\"cloud.google.com/neg\\": \\"{\\\\\\"ingress\\\\\\": true}\\" }"`,
+          `--set-json   cloud-sql-proxy.serviceAccount.annotations="{ \\"iam.gke.io/gcp-service-account\\": \\"${CLOUD_SQL_IAM_ACCOUNT}\\" }"`,
+          `--set-json   cloud-sql-proxy.nodeSelector="{ \\"iam.gke.io/gke-metadata-server-enabled\\": \\"true\\" }"`,
         ]
-      : [];
-  const webReplicaCount = isProduction ? 3 : isBeta ? 2 : 2;
-  const graphqlReplicaCount = isProduction
-    ? Number(process.env.PRODUCTION_GRAPHQL_REPLICA) || 3
-    : isBeta
-      ? Number(process.env.isBeta_GRAPHQL_REPLICA) || 2
-      : 2;
-  const syncReplicaCount = isProduction
-    ? Number(process.env.PRODUCTION_SYNC_REPLICA) || 3
-    : isBeta
-      ? Number(process.env.BETA_SYNC_REPLICA) || 2
-      : 2;
+      : []
+  );
+
+  const cpu = cpuConfig[buildType];
+  const resources = cpu
+    ? [
+        `--set        web.resources.requests.cpu="${cpu.web}"`,
+        `--set        graphql.resources.requests.cpu="${cpu.graphql}"`,
+        `--set        sync.resources.requests.cpu="${cpu.sync}"`,
+        `--set        doc.resources.requests.cpu="${cpu.doc}"`,
+      ]
+    : [];
+
+  const replica = replicaConfig[buildType] || replicaConfig.canary;
+
   const namespace = isProduction
     ? 'production'
     : isBeta
@@ -92,7 +143,7 @@ const createHelmCommand = ({ isDryRun }) => {
     `--namespace  ${namespace}`,
     `--set-string global.app.buildType="${buildType}"`,
     `--set        global.ingress.enabled=true`,
-    `--set-json   global.ingress.annotations=\"{ \\"kubernetes.io/ingress.class\\": \\"gce\\", \\"kubernetes.io/ingress.allow-http\\": \\"true\\", \\"kubernetes.io/ingress.global-static-ip-name\\": \\"${STATIC_IP_NAME}\\" }\"`,
+    `--set-json   global.ingress.annotations="{ \\"kubernetes.io/ingress.class\\": \\"gce\\", \\"kubernetes.io/ingress.allow-http\\": \\"true\\", \\"kubernetes.io/ingress.global-static-ip-name\\": \\"${STATIC_IP_NAME}\\" }"`,
     `--set-string global.ingress.host="${host}"`,
     `--set        global.objectStorage.r2.enabled=true`,
     `--set-string global.objectStorage.r2.accountId="${R2_ACCOUNT_ID}"`,
@@ -100,9 +151,9 @@ const createHelmCommand = ({ isDryRun }) => {
     `--set-string global.objectStorage.r2.secretAccessKey="${R2_SECRET_ACCESS_KEY}"`,
     `--set-string global.version="${APP_VERSION}"`,
     ...redisAndPostgres,
-    `--set        web.replicaCount=${webReplicaCount}`,
+    `--set        web.replicaCount=${replica.web}`,
     `--set-string web.image.tag="${imageTag}"`,
-    `--set        graphql.replicaCount=${graphqlReplicaCount}`,
+    `--set        graphql.replicaCount=${replica.graphql}`,
     `--set-string graphql.image.tag="${imageTag}"`,
     `--set        graphql.app.host=${host}`,
     `--set        graphql.app.captcha.enabled=true`,
@@ -110,6 +161,7 @@ const createHelmCommand = ({ isDryRun }) => {
     `--set        graphql.app.copilot.enabled=true`,
     `--set-string graphql.app.copilot.openai.key="${COPILOT_OPENAI_API_KEY}"`,
     `--set-string graphql.app.copilot.fal.key="${COPILOT_FAL_API_KEY}"`,
+    `--set-string graphql.app.copilot.perplexity.key="${COPILOT_PERPLEXITY_API_KEY}"`,
     `--set-string graphql.app.copilot.unsplash.key="${COPILOT_UNSPLASH_API_KEY}"`,
     `--set-string graphql.app.mailer.sender="${MAILER_SENDER}"`,
     `--set-string graphql.app.mailer.user="${MAILER_USER}"`,
@@ -124,11 +176,16 @@ const createHelmCommand = ({ isDryRun }) => {
     `--set        graphql.app.experimental.enableJwstCodec=${namespace === 'dev'}`,
     `--set        graphql.app.features.earlyAccessPreview=false`,
     `--set        graphql.app.features.syncClientVersionCheck=true`,
-    `--set        sync.replicaCount=${syncReplicaCount}`,
+    `--set        sync.replicaCount=${replica.sync}`,
     `--set-string sync.image.tag="${imageTag}"`,
     `--set-string renderer.image.tag="${imageTag}"`,
     `--set        renderer.app.host=${host}`,
+    `--set        renderer.replicaCount=${replica.renderer}`,
+    `--set-string doc.image.tag="${imageTag}"`,
+    `--set        doc.app.host=${host}`,
+    `--set        doc.replicaCount=${replica.doc}`,
     ...serviceAnnotations,
+    ...resources,
     `--timeout 10m`,
     flag,
   ].join(' ');

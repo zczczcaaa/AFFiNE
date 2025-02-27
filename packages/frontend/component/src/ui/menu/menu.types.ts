@@ -11,6 +11,7 @@ import type { ReactNode } from 'react';
 export interface MenuProps {
   children: ReactNode;
   items: ReactNode;
+  title?: string;
   portalOptions?: Omit<DropdownMenuPortalProps, 'children'>;
   rootOptions?: Omit<DropdownMenuProps, 'children'>;
   contentOptions?: Omit<DropdownMenuContentProps, 'children'>;
@@ -24,6 +25,8 @@ export interface MenuItemProps
   suffix?: ReactNode;
   prefixIcon?: ReactNode;
   suffixIcon?: ReactNode;
+  prefixIconClassName?: string;
+  suffixIconClassName?: string;
   checked?: boolean;
   selected?: boolean;
   block?: boolean;
@@ -36,7 +39,9 @@ export interface MenuItemProps
 export interface MenuSubProps {
   children: ReactNode;
   items: ReactNode;
-  triggerOptions?: Omit<MenuItemProps, 'onSelect' | 'children' | 'suffixIcon'>;
+  triggerOptions?: Omit<MenuItemProps, 'onSelect' | 'children'> & {
+    [key: `data-${string}`]: string;
+  };
   portalOptions?: Omit<DropdownMenuPortalProps, 'children'>;
   subOptions?: Omit<DropdownMenuSubProps, 'children'>;
   subContentOptions?: Omit<DropdownMenuSubContentProps, 'children'>;

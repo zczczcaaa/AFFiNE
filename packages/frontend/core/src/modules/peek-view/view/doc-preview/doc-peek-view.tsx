@@ -1,15 +1,20 @@
 import { Scrollable } from '@affine/component';
 import { PageDetailSkeleton } from '@affine/component/page-detail-skeleton';
-import { AIProvider } from '@affine/core/blocksuite/presets/ai';
+import { AIProvider } from '@affine/core/blocksuite/ai';
+import type { AffineEditorContainer } from '@affine/core/blocksuite/block-suite-editor';
+import { EditorOutlineViewer } from '@affine/core/blocksuite/outline-viewer';
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
-import { BlockSuiteEditor } from '@affine/core/components/blocksuite/block-suite-editor';
-import { EditorOutlineViewer } from '@affine/core/components/blocksuite/outline-viewer';
+import { PageNotFound } from '@affine/core/desktop/pages/404';
 import { EditorService } from '@affine/core/modules/editor';
-import { PageNotFound } from '@affine/core/pages/404';
+import { GuardService } from '@affine/core/modules/permissions';
 import { DebugLogger } from '@affine/debug';
-import type { DocMode, EdgelessRootService } from '@blocksuite/blocks';
-import { Bound, DisposableGroup } from '@blocksuite/global/utils';
-import type { AffineEditorContainer } from '@blocksuite/presets';
+import { GfxControllerIdentifier } from '@blocksuite/affine/block-std/gfx';
+import { RefNodeSlotsProvider } from '@blocksuite/affine/blocks';
+import {
+  Bound,
+  type Disposable,
+  DisposableGroup,
+} from '@blocksuite/affine/global/utils';
 import {
   FrameworkScope,
   useLiveData,
@@ -17,14 +22,22 @@ import {
   useServices,
 } from '@toeverything/infra';
 import clsx from 'clsx';
-import { useCallback, useEffect } from 'react';
+import { lazy, Suspense, useCallback, useEffect } from 'react';
 
 import { WorkbenchService } from '../../../workbench';
+import type { DocReferenceInfo } from '../../entities/peek-view';
 import { PeekViewService } from '../../services/peek-view';
 import { useEditor } from '../utils';
 import * as styles from './doc-peek-view.css';
 
 const logger = new DebugLogger('doc-peek-view');
+
+// Lazy load BlockSuiteEditor to break circular dependency
+const BlockSuiteEditor = lazy(() =>
+  import('@affine/core/blocksuite/block-suite-editor').then(module => ({
+    default: module.BlockSuiteEditor,
+  }))
+);
 
 function fitViewport(
   editor: AffineEditorContainer,
@@ -35,30 +48,24 @@ function fitViewport(
       throw new Error('editor host is not ready');
     }
 
-    const rootService =
-      editor.host.std.getService<EdgelessRootService>('affine:page');
-    if (!rootService) {
-      return;
-    }
-    rootService.viewport.onResize();
+    const gfx = editor.host.std.get(GfxControllerIdentifier);
+    const viewport = gfx.viewport;
+    viewport.onResize();
 
     if (xywh) {
-      const viewport = {
+      const newViewport = {
         xywh: xywh,
         padding: [60, 20, 20, 20] as [number, number, number, number],
       };
-      rootService.viewport.setViewportByBound(
-        Bound.deserialize(viewport.xywh),
-        viewport.padding,
+      viewport.setViewportByBound(
+        Bound.deserialize(newViewport.xywh),
+        newViewport.padding,
         false
       );
     } else {
-      const data = rootService.getFitToScreenData();
-      rootService.viewport.setViewport(
-        data.zoom,
-        [data.centerX, data.centerY],
-        false
-      );
+      gfx.fitToScreen({
+        smooth: false,
+      });
     }
   } catch (e) {
     logger.warn('failed to fitViewPort', e);
@@ -77,38 +84,37 @@ function DocPeekPreviewEditor({
   const doc = editor.doc;
   const workspace = editor.doc.workspace;
   const mode = useLiveData(editor.mode$);
+  const defaultOpenProperty = useLiveData(editor.defaultOpenProperty$);
   const workbench = useService(WorkbenchService).workbench;
   const peekView = useService(PeekViewService).peekView;
+  const guardService = useService(GuardService);
   const editorElement = useLiveData(editor.editorContainer$);
+
+  const isInTrash = useLiveData(doc.record.trash$);
 
   const handleOnEditorReady = useCallback(
     (editorContainer: AffineEditorContainer) => {
-      if (!editorContainer.host) {
-        return;
-      }
       const disposableGroup = new DisposableGroup();
-      const rootService = editorContainer.host.std.getService('affine:page');
-      if (!rootService) {
-        return;
-      }
+      const refNodeSlots =
+        editorContainer.std.getOptional(RefNodeSlotsProvider);
+      if (!refNodeSlots) return;
       // doc change event inside peek view should be handled by peek view
       disposableGroup.add(
-        rootService.slots.docLinkClicked.on(options => {
+        // todo(@pengx17): seems not working
+        refNodeSlots.docLinkClicked.on(options => {
+          if (options.host !== editorContainer.host) {
+            return;
+          }
           peekView
             .open({
-              type: 'doc',
-              docId: options.pageId,
+              docRef: { docId: options.pageId },
               ...options.params,
             })
             .catch(console.error);
         })
       );
 
-      editor.setEditorContainer(editorContainer);
-      const unbind = editor.bindEditorContainer(
-        editorContainer,
-        (editorContainer as any).title
-      );
+      const unbind = editor.bindEditorContainer(editorContainer);
 
       if (mode === 'edgeless') {
         fitViewport(editorContainer, xywh);
@@ -116,7 +122,6 @@ function DocPeekPreviewEditor({
 
       return () => {
         unbind();
-        editor.setEditorContainer(null);
         disposableGroup.dispose();
       };
     },
@@ -124,17 +129,17 @@ function DocPeekPreviewEditor({
   );
 
   useEffect(() => {
-    const disposable = AIProvider.slots.requestOpenWithChat.on(() => {
+    const disposables: Disposable[] = [];
+    const openHandler = () => {
       if (doc) {
         workbench.openDoc(doc.id);
         peekView.close();
         // chat panel open is already handled in <DetailPageImpl />
       }
-    });
-
-    return () => {
-      disposable.dispose();
     };
+    disposables.push(AIProvider.slots.requestOpenWithChat.on(openHandler));
+    disposables.push(AIProvider.slots.requestSendWithChat.on(openHandler));
+    return () => disposables.forEach(d => d.dispose());
   }, [doc, peekView, workbench, workspace.id]);
 
   const openOutlinePanel = useCallback(() => {
@@ -144,48 +149,74 @@ function DocPeekPreviewEditor({
     peekView.close();
   }, [doc, peekView, workbench]);
 
+  const canEdit = useLiveData(guardService.can$('Doc_Update', doc.id));
+
+  const readonly = !canEdit || isInTrash;
+
   return (
     <AffineErrorBoundary>
       <Scrollable.Root>
         <Scrollable.Viewport
           className={clsx('affine-page-viewport', styles.affineDocViewport)}
         >
-          <BlockSuiteEditor
-            className={styles.editor}
-            mode={mode}
-            page={doc.blockSuiteDoc}
-            onEditorReady={handleOnEditorReady}
-          />
-          <EditorOutlineViewer
-            editor={editorElement}
-            show={mode === 'page'}
-            openOutlinePanel={openOutlinePanel}
-          />
+          <Suspense fallback={<PageDetailSkeleton />}>
+            <BlockSuiteEditor
+              className={styles.editor}
+              mode={mode}
+              page={doc.blockSuiteDoc}
+              readonly={readonly}
+              onEditorReady={handleOnEditorReady}
+              defaultOpenProperty={defaultOpenProperty}
+            />
+          </Suspense>
         </Scrollable.Viewport>
-
         <Scrollable.Scrollbar />
       </Scrollable.Root>
+      {!BUILD_CONFIG.isMobileEdition && !BUILD_CONFIG.isMobileWeb ? (
+        <EditorOutlineViewer
+          editor={editorElement?.host ?? null}
+          show={mode === 'page'}
+          openOutlinePanel={openOutlinePanel}
+        />
+      ) : null}
     </AffineErrorBoundary>
   );
 }
 
 export function DocPeekPreview({
-  docId,
-  blockIds,
-  elementIds,
-  mode,
-  xywh,
+  docRef,
+  animating,
 }: {
-  docId: string;
-  blockIds?: string[];
-  elementIds?: string[];
-  mode?: DocMode;
-  xywh?: `[${number},${number},${number},${number}]`;
+  docRef: DocReferenceInfo;
+  animating?: boolean;
 }) {
-  const { doc, editor, loading } = useEditor(docId, mode, {
+  const {
+    docId,
     blockIds,
     elementIds,
-  });
+    mode,
+    xywh,
+    databaseId,
+    databaseDocId,
+    databaseRowId,
+  } = docRef;
+  const { doc, editor, loading } = useEditor(
+    docId,
+    mode,
+    {
+      blockIds,
+      elementIds,
+    },
+    databaseId && databaseRowId && databaseDocId
+      ? {
+          docId: databaseDocId,
+          databaseId,
+          databaseRowId,
+          type: 'database',
+        }
+      : undefined,
+    !animating
+  );
 
   // if sync engine has been synced and the page is null, show 404 page.
   if (!doc || !editor) {

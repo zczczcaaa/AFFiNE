@@ -2,15 +2,17 @@ import {
   backoffRetry,
   effect,
   Entity,
+  exhaustMapWithTrailing,
   fromPromise,
   LiveData,
   onComplete,
   onStart,
 } from '@toeverything/infra';
 import { isEqual } from 'lodash-es';
-import { EMPTY, exhaustMap, mergeMap } from 'rxjs';
+import { EMPTY, mergeMap } from 'rxjs';
 
 import { validateAndReduceImage } from '../../../utils/reduce-image';
+import { BackendError } from '../error';
 import type { AccountProfile, AuthStore } from '../stores/auth';
 
 export interface AuthSessionInfo {
@@ -34,9 +36,12 @@ export interface AuthSessionAuthenticated {
   session: AuthSessionInfo;
 }
 
-export class AuthSession extends Entity {
-  id = 'affine-cloud' as const;
+export type AuthSessionStatus = (
+  | AuthSessionUnauthenticated
+  | AuthSessionAuthenticated
+)['status'];
 
+export class AuthSession extends Entity {
   session$: LiveData<AuthSessionUnauthenticated | AuthSessionAuthenticated> =
     LiveData.from(this.store.watchCachedAuthSession(), null).map(session =>
       session
@@ -68,8 +73,8 @@ export class AuthSession extends Entity {
   }
 
   revalidate = effect(
-    exhaustMap(() =>
-      fromPromise(this.getSession()).pipe(
+    exhaustMapWithTrailing(() =>
+      fromPromise(() => this.getSession()).pipe(
         backoffRetry({
           count: Infinity,
         }),
@@ -90,22 +95,32 @@ export class AuthSession extends Entity {
   );
 
   private async getSession(): Promise<AuthSessionInfo | null> {
-    const session = await this.store.fetchSession();
+    try {
+      const session = await this.store.fetchSession();
 
-    if (session?.user) {
-      const account = {
-        id: session.user.id,
-        email: session.user.email,
-        label: session.user.name,
-        avatar: session.user.avatarUrl,
-        info: session.user,
-      };
-      const result = {
-        account,
-      };
-      return result;
-    } else {
-      return null;
+      if (session?.user) {
+        const account = {
+          id: session.user.id,
+          email: session.user.email,
+          label: session.user.name,
+          avatar: session.user.avatarUrl,
+          info: session.user,
+        };
+        const result = {
+          account,
+        };
+        return result;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      if (
+        e instanceof BackendError &&
+        e.originError.name === 'UNSUPPORTED_CLIENT_VERSION'
+      ) {
+        return null;
+      }
+      throw e;
     }
   }
 

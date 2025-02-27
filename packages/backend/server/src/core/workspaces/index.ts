@@ -8,12 +8,15 @@ import { QuotaModule } from '../quota';
 import { StorageModule } from '../storage';
 import { UserModule } from '../user';
 import { WorkspacesController } from './controller';
-import { WorkspaceManagementResolver } from './management';
+import { WorkspaceEvents } from './event';
 import {
   DocHistoryResolver,
-  PagePermissionResolver,
+  DocResolver,
+  TeamWorkspaceResolver,
   WorkspaceBlobResolver,
+  WorkspaceDocResolver,
   WorkspaceResolver,
+  WorkspaceService,
 } from './resolvers';
 
 @Module({
@@ -29,12 +32,16 @@ import {
   controllers: [WorkspacesController],
   providers: [
     WorkspaceResolver,
-    WorkspaceManagementResolver,
-    PagePermissionResolver,
+    TeamWorkspaceResolver,
+    WorkspaceDocResolver,
+    DocResolver,
     DocHistoryResolver,
     WorkspaceBlobResolver,
+    WorkspaceService,
+    WorkspaceEvents,
   ],
+  exports: [WorkspaceService],
 })
 export class WorkspaceModule {}
 
-export type { InvitationType, WorkspaceType } from './types';
+export { InvitationType, WorkspaceType } from './types';
