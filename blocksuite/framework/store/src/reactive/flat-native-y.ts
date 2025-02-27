@@ -31,6 +31,7 @@ type CreateProxyOptions = {
   transform?: Transform;
   onDispose: Slot;
   shouldByPassSignal: () => boolean;
+  shouldByPassYjs: () => boolean;
   byPassSignalUpdate: (fn: () => void) => void;
   stashed: Set<string | number>;
   initialized: () => boolean;
@@ -58,6 +59,7 @@ function createProxy(
   const {
     onDispose,
     shouldByPassSignal,
+    shouldByPassYjs,
     byPassSignalUpdate,
     basePath,
     onChange,
@@ -141,6 +143,9 @@ function createProxy(
 
         if (isPureObject(value)) {
           const syncYMap = () => {
+            if (shouldByPassYjs()) {
+              return;
+            }
             yMap.forEach((_, key) => {
               if (initialized() && keyWithoutPrefix(key).startsWith(fullPath)) {
                 yMap.delete(key);
@@ -185,7 +190,7 @@ function createProxy(
 
         const yValue = native2Y(value);
         const next = transform(firstKey, value, yValue);
-        if (!isStashed && initialized()) {
+        if (!isStashed && initialized() && !shouldByPassYjs()) {
           yMap.doc?.transact(
             () => {
               yMap.set(keyWithPrefix(fullPath), yValue);
@@ -238,7 +243,7 @@ function createProxy(
           });
         };
 
-        if (!isStashed && initialized()) {
+        if (!isStashed && initialized() && !shouldByPassYjs()) {
           yMap.doc?.transact(
             () => {
               const fullKey = keyWithPrefix(fullPath);
@@ -292,12 +297,17 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
           if (this._stashed.has(firstKey)) {
             return;
           }
-          void keys.reduce((acc, key, index, arr) => {
-            if (index === arr.length - 1) {
-              acc[key] = y2Native(value);
-            }
-            return acc[key] as UnRecord;
-          }, proxy as UnRecord);
+          this._updateWithYjsSkip(() => {
+            void keys.reduce((acc, key, index, arr) => {
+              if (!acc[key] && index !== arr.length - 1) {
+                acc[key] = {};
+              }
+              if (index === arr.length - 1) {
+                acc[key] = y2Native(value);
+              }
+              return acc[key] as UnRecord;
+            }, proxy as UnRecord);
+          });
           return;
         }
         if (type.action === 'delete') {
@@ -307,12 +317,26 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
           if (this._stashed.has(firstKey)) {
             return;
           }
-          void keys.reduce((acc, key, index, arr) => {
-            if (index === arr.length - 1) {
-              delete acc[key];
-            }
-            return acc[key] as UnRecord;
-          }, proxy as UnRecord);
+          this._updateWithYjsSkip(() => {
+            void keys.reduce((acc, key, index, arr) => {
+              if (index === arr.length - 1) {
+                delete acc[key];
+                let i = index - 1;
+                let curr = acc;
+                while (i > 0) {
+                  const parentPath = keys.slice(0, i);
+                  const parentKey = keys[i];
+                  const parent = parentPath.reduce((acc, key) => {
+                    return acc[key] as UnRecord;
+                  }, proxy as UnRecord);
+                  deleteEmptyObject(curr, parentKey, parent);
+                  curr = parent;
+                  i--;
+                }
+              }
+              return acc[key] as UnRecord;
+            }, proxy as UnRecord);
+          });
           return;
         }
       });
@@ -393,6 +417,8 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
     return root;
   };
 
+  private _byPassYjs = false;
+
   private readonly _getProxy = (
     source: UnRecord,
     root: UnRecord,
@@ -402,12 +428,19 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
       onDispose: this._onDispose,
       shouldByPassSignal: () => this._skipNext,
       byPassSignalUpdate: this._updateWithSkip,
+      shouldByPassYjs: () => this._byPassYjs,
       basePath: path,
       onChange: this._onChange,
       transform: this._transform,
       stashed: this._stashed,
       initialized: () => this._initialized,
     });
+  };
+
+  private readonly _updateWithYjsSkip = (fn: () => void) => {
+    this._byPassYjs = true;
+    fn();
+    this._byPassYjs = false;
   };
 
   constructor(
@@ -452,4 +485,10 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
   stash = (prop: string): void => {
     this._stashed.add(prop);
   };
+}
+
+function deleteEmptyObject(obj: UnRecord, key: string, parent: UnRecord): void {
+  if (Object.keys(obj).length === 0) {
+    delete parent[key];
+  }
 }
