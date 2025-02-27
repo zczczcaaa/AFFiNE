@@ -15,10 +15,14 @@ export function toDraftModel<Model extends BlockModel = BlockModel>(
   origin: Model
 ): DraftModel<Model> {
   const { id, version, flavour, role, keys, text, children } = origin;
+
+  const isFlatData = origin.schema.model.isFlatData;
   const props = origin.keys.reduce((acc, key) => {
+    const target = isFlatData ? origin.props : origin;
+    const value = target[key as keyof typeof target];
     return {
       ...acc,
-      [key]: origin[key as keyof Model],
+      [key]: value,
     };
   }, {} as ModelProps<Model>);
 
