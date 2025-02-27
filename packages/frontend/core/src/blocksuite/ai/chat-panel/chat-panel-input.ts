@@ -303,9 +303,11 @@ export class ChatPanelInput extends SignalWatcher(WithDisposable(LitElement)) {
       <div
         class="chat-panel-input"
         @pointerdown=${(e: MouseEvent) => {
-          // by default the div will be focused and will blur the textarea
-          e.preventDefault();
-          this.textarea.focus();
+          if (e.target !== this.textarea) {
+            // by default the div will be focused and will blur the textarea
+            e.preventDefault();
+            this.textarea.focus();
+          }
         }}
       >
         ${hasImages
