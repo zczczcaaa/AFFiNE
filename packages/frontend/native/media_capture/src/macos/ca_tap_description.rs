@@ -54,9 +54,9 @@ impl CATapDescription {
         .as_slice(),
     );
     let obj: *mut AnyObject =
-      unsafe { msg_send![obj, initStereoMixdownOfProcesses: &*processes_array] };
+      unsafe { msg_send![obj, initStereoGlobalTapButExcludeProcesses: &*processes_array] };
     if obj.is_null() {
-      return Err(CoreAudioError::InitStereoMixdownOfProcessesFailed);
+      return Err(CoreAudioError::InitStereoGlobalTapButExcludeProcessesFailed);
     }
 
     Ok(Self { inner: obj })

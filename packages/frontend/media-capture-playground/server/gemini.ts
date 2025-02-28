@@ -98,8 +98,8 @@ export async function gemini(
     try {
       // Upload the audio file
       uploadResult = await fileManager.uploadFile(audioFilePath, {
-        mimeType: 'audio/wav',
-        displayName: 'audio_transcription.wav',
+        mimeType: 'audio/mp3',
+        displayName: 'audio_transcription.mp3',
       });
       console.log('File uploaded:', uploadResult.file.uri);
 

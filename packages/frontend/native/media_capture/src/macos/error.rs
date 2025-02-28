@@ -24,6 +24,8 @@ pub enum CoreAudioError {
   AllocCATapDescriptionFailed,
   #[error("Call initStereoMixdownOfProcesses on CATapDescription failed")]
   InitStereoMixdownOfProcessesFailed,
+  #[error("Call initStereoGlobalTapButExcludeProcesses on CATapDescription failed")]
+  InitStereoGlobalTapButExcludeProcessesFailed,
   #[error("Get UUID on CATapDescription failed")]
   GetCATapDescriptionUUIDFailed,
   #[error("Get mute behavior on CATapDescription failed")]

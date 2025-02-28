@@ -19,6 +19,8 @@ export declare class ApplicationStateChangedSubscriber {
 
 export declare class AudioTapStream {
   stop(): void
+  get sampleRate(): number
+  get channels(): number
 }
 
 export declare class DocStorage {

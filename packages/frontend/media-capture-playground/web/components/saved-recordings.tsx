@@ -34,7 +34,7 @@ export function SavedRecordings(): React.ReactElement {
   return (
     <div className="space-y-1">
       {recordings.map(recording => (
-        <SavedRecordingItem key={recording.wav} recording={recording} />
+        <SavedRecordingItem key={recording.mp3} recording={recording} />
       ))}
     </div>
   );

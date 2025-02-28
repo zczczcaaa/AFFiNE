@@ -29,6 +29,7 @@ use napi_derive::napi;
 use objc2::{runtime::AnyObject, Encode, Encoding, RefEncode};
 
 use crate::{
+  audio_stream_basic_desc::read_audio_stream_basic_description,
   ca_tap_description::CATapDescription, device::get_device_uid, error::CoreAudioError,
   queue::create_audio_tap_queue, screen_capture_kit::TappableApplication,
 };
@@ -82,9 +83,17 @@ unsafe impl RefEncode for AudioBufferList {
   const ENCODING_REF: Encoding = Encoding::Pointer(&Self::ENCODING);
 }
 
+// Audio statistics structure to track audio format information
+#[derive(Clone, Copy, Debug)]
+pub struct AudioStats {
+  pub sample_rate: f64,
+  pub channels: u32,
+}
+
 pub struct AggregateDevice {
   pub tap_id: AudioObjectID,
   pub id: AudioObjectID,
+  pub audio_stats: Option<AudioStats>,
 }
 
 impl AggregateDevice {
@@ -118,6 +127,7 @@ impl AggregateDevice {
     Ok(Self {
       tap_id,
       id: aggregate_device_id,
+      audio_stats: None,
     })
   }
 
@@ -149,6 +159,7 @@ impl AggregateDevice {
     Ok(Self {
       tap_id,
       id: aggregate_device_id,
+      audio_stats: None,
     })
   }
 
@@ -181,6 +192,7 @@ impl AggregateDevice {
     Ok(Self {
       tap_id,
       id: aggregate_device_id,
+      audio_stats: None,
     })
   }
 
@@ -188,6 +200,22 @@ impl AggregateDevice {
     &mut self,
     audio_stream_callback: Arc<ThreadsafeFunction<Float32Array, (), Float32Array, true>>,
   ) -> Result<AudioTapStream> {
+    // Read and log the audio format before starting the device
+    let mut audio_stats = AudioStats {
+      sample_rate: 44100.0,
+      channels: 1, // Always set to 1 channel (mono)
+    };
+
+    if let Ok(audio_format) = read_audio_stream_basic_description(self.tap_id) {
+      // Store the audio format information
+      audio_stats.sample_rate = audio_format.0.mSampleRate;
+      // Always use 1 channel regardless of what the system reports
+      audio_stats.channels = 1;
+    }
+
+    self.audio_stats = Some(audio_stats);
+    let audio_stats_clone = audio_stats;
+
     let queue = create_audio_tap_queue();
     let mut in_proc_id: AudioDeviceIOProcID = None;
 
@@ -221,18 +249,33 @@ impl AggregateDevice {
           let samples: &[f32] =
             unsafe { std::slice::from_raw_parts(mData.cast::<f32>(), total_samples) };
 
-          // Convert to mono if needed
-          let mono_samples: Vec<f32> = if *mNumberChannels > 1 {
-            samples
-              .chunks(*mNumberChannels as usize)
-              .map(|chunk| chunk.iter().sum::<f32>() / *mNumberChannels as f32)
-              .collect()
-          } else {
-            samples.to_vec()
-          };
+          // Check the channel count and data format
+          let channel_count = *mNumberChannels as usize;
 
+          // Process the audio based on channel count
+          let mut processed_samples: Vec<f32>;
+
+          if channel_count > 1 {
+            // For stereo, samples are interleaved: [L, R, L, R, ...]
+            // We need to average each pair to get mono
+            let frame_count = total_samples / channel_count;
+            processed_samples = Vec::with_capacity(frame_count);
+
+            for i in 0..frame_count {
+              let mut frame_sum = 0.0;
+              for c in 0..channel_count {
+                frame_sum += samples[i * channel_count + c];
+              }
+              processed_samples.push(frame_sum / (channel_count as f32));
+            }
+          } else {
+            // Already mono, just copy the samples
+            processed_samples = samples.to_vec();
+          }
+
+          // Pass the processed samples to the callback
           audio_stream_callback.call(
-            Ok(mono_samples.into()),
+            Ok(processed_samples.into()),
             ThreadsafeFunctionCallMode::NonBlocking,
           );
         }
@@ -266,6 +309,7 @@ impl AggregateDevice {
       device_id: self.id,
       in_proc_id,
       stop_called: false,
+      audio_stats: audio_stats_clone,
     })
   }
 
@@ -353,6 +397,7 @@ pub struct AudioTapStream {
   device_id: AudioObjectID,
   in_proc_id: AudioDeviceIOProcID,
   stop_called: bool,
+  audio_stats: AudioStats,
 }
 
 #[napi]
@@ -380,6 +425,16 @@ impl AudioTapStream {
       return Err(CoreAudioError::AudioHardwareDestroyProcessTapFailed(status).into());
     }
     Ok(())
+  }
+
+  #[napi(getter)]
+  pub fn get_sample_rate(&self) -> f64 {
+    self.audio_stats.sample_rate
+  }
+
+  #[napi(getter)]
+  pub fn get_channels(&self) -> u32 {
+    self.audio_stats.channels
   }
 }
 

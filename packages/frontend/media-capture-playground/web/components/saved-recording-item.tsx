@@ -584,7 +584,8 @@ export function SavedRecordingItem({
   >(null);
 
   const metadata = recording.metadata;
-  const fileName = recording.wav;
+  // Ensure we have a valid filename, fallback to an empty string if undefined
+  const fileName = recording.mp3 || '';
   const recordingDate = metadata
     ? new Date(metadata.recordingStartTime).toLocaleString()
     : 'Unknown date';
@@ -626,7 +627,12 @@ export function SavedRecordingItem({
 
   const processAudioData = React.useCallback(async () => {
     try {
-      const response = await fetch(`/api/recordings/${fileName}/recording.wav`);
+      // Check if fileName is empty
+      if (!fileName) {
+        throw new Error('Invalid recording filename');
+      }
+
+      const response = await fetch(`/api/recordings/${fileName}/recording.mp3`);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch audio file (${response.status}): ${response.statusText}`
@@ -741,7 +747,12 @@ export function SavedRecordingItem({
     setError(null); // Clear any previous errors
 
     try {
-      const response = await fetch(`/api/recordings/${recording.wav}`, {
+      // Check if filename is valid
+      if (!recording.mp3) {
+        throw new Error('Invalid recording filename');
+      }
+
+      const response = await fetch(`/api/recordings/${recording.mp3}`, {
         method: 'DELETE',
       });
 
@@ -765,7 +776,7 @@ export function SavedRecordingItem({
     } finally {
       setIsDeleting(false);
     }
-  }, [recording.wav]);
+  }, [recording.mp3]);
 
   const handleDeleteClick = React.useCallback(() => {
     void handleDelete().catch(err => {
@@ -779,7 +790,7 @@ export function SavedRecordingItem({
     socket.on(
       'apps:recording-transcription-start',
       (data: { filename: string }) => {
-        if (data.filename === recording.wav) {
+        if (recording.mp3 && data.filename === recording.mp3) {
           setTranscriptionError(null);
         }
       }
@@ -793,7 +804,7 @@ export function SavedRecordingItem({
         transcription?: string;
         error?: string;
       }) => {
-        if (data.filename === recording.wav && !data.success) {
+        if (recording.mp3 && data.filename === recording.mp3 && !data.success) {
           setTranscriptionError(data.error || 'Transcription failed');
         }
       }
@@ -803,12 +814,17 @@ export function SavedRecordingItem({
       socket.off('apps:recording-transcription-start');
       socket.off('apps:recording-transcription-end');
     };
-  }, [recording.wav]);
+  }, [recording.mp3]);
 
   const handleTranscribe = React.useCallback(async () => {
     try {
+      // Check if filename is valid
+      if (!recording.mp3) {
+        throw new Error('Invalid recording filename');
+      }
+
       const response = await fetch(
-        `/api/recordings/${recording.wav}/transcribe`,
+        `/api/recordings/${recording.mp3}/transcribe`,
         {
           method: 'POST',
         }
@@ -823,7 +839,7 @@ export function SavedRecordingItem({
         err instanceof Error ? err.message : 'Failed to start transcription'
       );
     }
-  }, [recording.wav]);
+  }, [recording.mp3]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden mb-3 border border-gray-100 hover:border-gray-200">
@@ -854,7 +870,7 @@ export function SavedRecordingItem({
       />
       <audio
         ref={audioRef}
-        src={`/api/recordings/${fileName}/recording.wav`}
+        src={fileName ? `/api/recordings/${fileName}/recording.mp3` : ''}
         preload="metadata"
         className="hidden"
       />

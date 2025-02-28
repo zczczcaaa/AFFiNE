@@ -27,8 +27,10 @@ export interface RecordingMetadata {
   recordingEndTime: number;
   recordingDuration: number;
   sampleRate: number;
+  channels: number;
   totalSamples: number;
   icon?: Uint8Array;
+  mp3: string;
 }
 
 export interface TranscriptionMetadata {
@@ -49,7 +51,7 @@ export interface TranscriptionMetadata {
 }
 
 export interface SavedRecording {
-  wav: string;
+  mp3: string;
   metadata?: RecordingMetadata;
   transcription?: TranscriptionMetadata;
 }
