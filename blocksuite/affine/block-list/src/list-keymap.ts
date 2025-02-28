@@ -105,7 +105,7 @@ export const ListKeymapExtension = KeymapExtension(
         const isStart = isCollapsed && text.from.index === 0;
         if (!isStart) return false;
 
-        ctx.get('keyboardState').raw.preventDefault();
+        ctx.get('defaultState').event.preventDefault();
         std.command
           .chain()
           .pipe(listToParagraphCommand, {

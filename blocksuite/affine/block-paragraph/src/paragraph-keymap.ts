@@ -42,7 +42,7 @@ export const ParagraphKeymapExtension = KeymapExtension(
         const model = store.getBlock(text.from.blockId)?.model;
         if (!model || !matchModels(model, [ParagraphBlockModel])) return;
 
-        const event = ctx.get('keyboardState').raw;
+        const event = ctx.get('defaultState').event;
         event.preventDefault();
 
         // When deleting at line start of a paragraph block,

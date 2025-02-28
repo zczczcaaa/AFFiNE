@@ -182,17 +182,17 @@ export class CodeBlockComponent extends CaptionedBlockComponent<
     // TODO: move to service for better performance
     this.bindHotKey({
       Backspace: ctx => {
-        const state = ctx.get('keyboardState');
+        const event = ctx.get('defaultState').event;
         const textSelection = selectionManager.find(TextSelection);
         if (!textSelection) {
-          state.raw.preventDefault();
+          event.preventDefault();
           return;
         }
 
         const from = textSelection.from;
 
         if (from.index === 0 && from.length === 0) {
-          state.raw.preventDefault();
+          event.preventDefault();
           selectionManager.setGroup('note', [
             selectionManager.create(BlockSelection, { blockId: this.blockId }),
           ]);
@@ -215,7 +215,7 @@ export class CodeBlockComponent extends CaptionedBlockComponent<
             index: index,
             length: 0,
           });
-          state.raw.preventDefault();
+          event.preventDefault();
           return true;
         }
 

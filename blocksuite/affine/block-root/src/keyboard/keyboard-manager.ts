@@ -21,7 +21,7 @@ import { toDraftModel } from '@blocksuite/store';
 
 export class PageKeyboardManager {
   private readonly _handleDelete: UIEventHandler = ctx => {
-    const event = ctx.get('keyboardState').raw;
+    const event = ctx.get('defaultState').event;
     const blockSelections = this._currentSelection.filter(sel =>
       sel.is(BlockSelection)
     );
