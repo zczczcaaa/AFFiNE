@@ -318,20 +318,26 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
             return;
           }
           this._updateWithYjsSkip(() => {
-            void keys.reduce((acc, key, index, arr) => {
-              if (index === arr.length - 1) {
+            void keys.reduce((acc, key, index) => {
+              if (index === keys.length - 1) {
                 delete acc[key];
-                let i = index - 1;
                 let curr = acc;
-                while (i > 0) {
-                  const parentPath = keys.slice(0, i);
-                  const parentKey = keys[i];
-                  const parent = parentPath.reduce((acc, key) => {
-                    return acc[key] as UnRecord;
-                  }, proxy as UnRecord);
+                let parentKey = keys[index - 1];
+                let parent = proxy as UnRecord;
+                let path = keys.slice(0, -2);
+
+                for (let i = keys.length - 2; i > 0; i--) {
+                  for (const pathKey of path) {
+                    parent = parent[pathKey] as UnRecord;
+                  }
+                  if (!isEmptyObject(curr)) {
+                    break;
+                  }
                   deleteEmptyObject(curr, parentKey, parent);
                   curr = parent;
-                  i--;
+                  parentKey = keys[i - 1];
+                  path = path.slice(0, -1);
+                  parent = proxy as UnRecord;
                 }
               }
               return acc[key] as UnRecord;
@@ -487,8 +493,12 @@ export class ReactiveFlatYMap extends BaseReactiveYData<
   };
 }
 
+function isEmptyObject(obj: UnRecord): boolean {
+  return Object.keys(obj).length === 0;
+}
+
 function deleteEmptyObject(obj: UnRecord, key: string, parent: UnRecord): void {
-  if (Object.keys(obj).length === 0) {
+  if (isEmptyObject(obj)) {
     delete parent[key];
   }
 }
