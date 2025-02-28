@@ -2,6 +2,7 @@ import { AffineContext } from '@affine/core/components/context';
 import { AppFallback } from '@affine/core/mobile/components/app-fallback';
 import { configureMobileModules } from '@affine/core/mobile/modules';
 import { HapticProvider } from '@affine/core/mobile/modules/haptics';
+import { VirtualKeyboardProvider } from '@affine/core/mobile/modules/virtual-keyboard';
 import { router } from '@affine/core/mobile/router';
 import { configureCommonModules } from '@affine/core/modules';
 import { I18nProvider } from '@affine/core/modules/i18n';
@@ -98,6 +99,44 @@ framework.impl(HapticProvider, {
   selectionStart: () => Promise.reject('Not supported'),
   selectionChanged: () => Promise.reject('Not supported'),
   selectionEnd: () => Promise.reject('Not supported'),
+});
+framework.impl(VirtualKeyboardProvider, {
+  onChange: callback => {
+    if (!visualViewport) {
+      console.warn('visualViewport is not supported');
+      return () => {};
+    }
+
+    const listener = () => {
+      if (!visualViewport) return;
+      const windowHeight = window.innerHeight;
+
+      /**
+       * ┌───────────────┐ - window top
+       * │               │
+       * │               │
+       * │               │
+       * │               │
+       * │               │
+       * └───────────────┘ - keyboard top        --
+       * │               │                       │ keyboard height in layout viewport
+       * └───────────────┘ - page(html) bottom   --
+       * │               │                       │ visualViewport.offsetTop
+       * └───────────────┘ - window bottom       --
+       */
+      callback({
+        visible: window.innerHeight - visualViewport.height > 0,
+        height: windowHeight - visualViewport.height - visualViewport.offsetTop,
+      });
+    };
+
+    visualViewport.addEventListener('resize', listener);
+    visualViewport.addEventListener('scroll', listener);
+    return () => {
+      visualViewport?.removeEventListener('resize', listener);
+      visualViewport?.removeEventListener('scroll', listener);
+    };
+  },
 });
 const frameworkProvider = framework.provider();
 

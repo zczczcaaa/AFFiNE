@@ -1,8 +1,5 @@
-import {
-  VirtualKeyboardController,
-  type VirtualKeyboardControllerConfig,
-} from '@blocksuite/affine-components/virtual-keyboard';
 import { getSelectedModelsCommand } from '@blocksuite/affine-shared/commands';
+import { VirtualKeyboardProvider } from '@blocksuite/affine-shared/services';
 import {
   PropTypes,
   requiredProperties,
@@ -17,20 +14,21 @@ import { repeat } from 'lit/directives/repeat.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
 
-import { PageRootBlockComponent } from '../../page/page-root-block.js';
+import { PageRootBlockComponent } from '../../page/page-root-block';
 import type {
   KeyboardIconType,
   KeyboardToolbarConfig,
   KeyboardToolbarContext,
   KeyboardToolbarItem,
   KeyboardToolPanelConfig,
-} from './config.js';
-import { keyboardToolbarStyles, TOOLBAR_HEIGHT } from './styles.js';
+} from './config';
+import { PositionController } from './position-controller';
+import { keyboardToolbarStyles } from './styles';
 import {
   isKeyboardSubToolBarConfig,
   isKeyboardToolBarActionItem,
   isKeyboardToolPanelConfig,
-} from './utils.js';
+} from './utils';
 
 export const AFFINE_KEYBOARD_TOOLBAR = 'affine-keyboard-toolbar';
 
@@ -43,11 +41,28 @@ export class AffineKeyboardToolbar extends SignalWatcher(
 ) {
   static override styles = keyboardToolbarStyles;
 
+  /** This field records the panel static height same as the virtual keyboard height */
+  panelHeight$ = signal(0);
+
+  positionController = new PositionController(this);
+
+  get std() {
+    return this.rootComponent.std;
+  }
+
+  get keyboard() {
+    return this._context.std.get(VirtualKeyboardProvider);
+  }
+
+  get panelOpened() {
+    return this._currentPanelIndex$.value !== -1;
+  }
+
   private readonly _closeToolPanel = () => {
-    if (!this._isPanelOpened) return;
+    if (!this.panelOpened) return;
 
     this._currentPanelIndex$.value = -1;
-    this._keyboardController.show();
+    this.keyboard.show();
   };
 
   private readonly _currentPanelIndex$ = signal(-1);
@@ -55,7 +70,7 @@ export class AffineKeyboardToolbar extends SignalWatcher(
   private readonly _goPrevToolbar = () => {
     if (!this._isSubToolbarOpened) return;
 
-    if (this._isPanelOpened) this._closeToolPanel();
+    if (this.panelOpened) this._closeToolPanel();
 
     this._path$.value = this._path$.value.slice(0, -1);
   };
@@ -75,31 +90,25 @@ export class AffineKeyboardToolbar extends SignalWatcher(
         this._closeToolPanel();
       } else {
         this._currentPanelIndex$.value = index;
-        this._keyboardController.hide();
-        this.scrollCurrentBlockIntoView();
+        this.keyboard.hide();
+        this._scrollCurrentBlockIntoView();
       }
     }
     this._lastActiveItem$.value = item;
   };
 
-  private readonly _keyboardController = new VirtualKeyboardController(this);
-
   private readonly _lastActiveItem$ = signal<KeyboardToolbarItem | null>(null);
-
-  /** This field records the panel static height, which dose not aim to control the panel opening */
-  private readonly _panelHeight$ = signal(0);
 
   private readonly _path$ = signal<number[]>([]);
 
-  private readonly scrollCurrentBlockIntoView = () => {
-    const { std } = this.rootComponent;
-    std.command
+  private readonly _scrollCurrentBlockIntoView = () => {
+    this.std.command
       .chain()
       .pipe(getSelectedModelsCommand)
       .pipe(({ selectedModels }) => {
         if (!selectedModels?.length) return;
 
-        const block = std.view.getBlock(selectedModels[0].id);
+        const block = this.std.view.getBlock(selectedModels[0].id);
         if (!block) return;
 
         const { y: y1 } = this.getBoundingClientRect();
@@ -118,7 +127,7 @@ export class AffineKeyboardToolbar extends SignalWatcher(
 
   private get _context(): KeyboardToolbarContext {
     return {
-      std: this.rootComponent.std,
+      std: this.std,
       rootComponent: this.rootComponent,
       closeToolbar: (blur = false) => {
         this.close(blur);
@@ -130,7 +139,7 @@ export class AffineKeyboardToolbar extends SignalWatcher(
   }
 
   private get _currentPanelConfig(): KeyboardToolPanelConfig | null {
-    if (!this._isPanelOpened) return null;
+    if (!this.panelOpened) return null;
 
     const result = this._currentToolbarItems[this._currentPanelIndex$.value];
 
@@ -139,9 +148,7 @@ export class AffineKeyboardToolbar extends SignalWatcher(
 
   private get _currentToolbarItems(): KeyboardToolbarItem[] {
     let items = this.config.items;
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    for (let i = 0; i < this._path$.value.length; i++) {
-      const index = this._path$.value[i];
+    for (const index of this._path$.value) {
       if (isKeyboardSubToolBarConfig(items[index])) {
         items = items[index].items;
       } else {
@@ -156,19 +163,8 @@ export class AffineKeyboardToolbar extends SignalWatcher(
     );
   }
 
-  private get _isPanelOpened() {
-    return this._currentPanelIndex$.value !== -1;
-  }
-
   private get _isSubToolbarOpened() {
     return this._path$.value.length > 0;
-  }
-
-  get virtualKeyboardControllerConfig(): VirtualKeyboardControllerConfig {
-    return {
-      useScreenHeight: this.config.useScreenHeight ?? false,
-      inputElement: this.rootComponent,
-    };
   }
 
   private _renderIcon(icon: KeyboardIconType) {
@@ -254,33 +250,11 @@ export class AffineKeyboardToolbar extends SignalWatcher(
 
     this.disposables.add(
       effect(() => {
-        if (this._keyboardController.opened) {
-          this._panelHeight$.value = this._keyboardController.keyboardHeight;
-        } else if (this._isPanelOpened && this._panelHeight$.peek() === 0) {
-          this._panelHeight$.value = 260;
-        }
-      })
-    );
-
-    this.disposables.add(
-      effect(() => {
-        if (this._keyboardController.opened && !this.config.useScreenHeight) {
-          document.body.style.paddingBottom = `${this._keyboardController.keyboardHeight + TOOLBAR_HEIGHT}px`;
-        } else if (this._isPanelOpened) {
-          document.body.style.paddingBottom = `${this._panelHeight$.value + TOOLBAR_HEIGHT}px`;
-        } else {
-          document.body.style.paddingBottom = '';
-        }
-      })
-    );
-
-    this.disposables.add(
-      effect(() => {
         const std = this.rootComponent.std;
         std.selection.value;
         // wait cursor updated
         requestAnimationFrame(() => {
-          this.scrollCurrentBlockIntoView();
+          this._scrollCurrentBlockIntoView();
         });
       })
     );
@@ -328,24 +302,14 @@ export class AffineKeyboardToolbar extends SignalWatcher(
     );
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    document.body.style.paddingBottom = '';
-  }
-
   override firstUpdated() {
     // workaround for the virtual keyboard showing transition animation
     setTimeout(() => {
-      this.scrollCurrentBlockIntoView();
+      this._scrollCurrentBlockIntoView();
     }, 700);
   }
 
   override render() {
-    this.style.bottom =
-      this.config.useScreenHeight && this._keyboardController.opened
-        ? `${-this._panelHeight$.value}px`
-        : '0px';
-
     return html`
       <div class="keyboard-toolbar">
         ${this._renderItems()}
@@ -355,7 +319,7 @@ export class AffineKeyboardToolbar extends SignalWatcher(
       <affine-keyboard-tool-panel
         .config=${this._currentPanelConfig}
         .context=${this._context}
-        height=${this._panelHeight$.value}
+        height=${this.panelHeight$.value}
       ></affine-keyboard-tool-panel>
     `;
   }

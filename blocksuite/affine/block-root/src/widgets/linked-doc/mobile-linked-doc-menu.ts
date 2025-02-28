@@ -2,10 +2,7 @@ import {
   cleanSpecifiedTail,
   getTextContentFromInlineRange,
 } from '@blocksuite/affine-components/rich-text';
-import {
-  VirtualKeyboardController,
-  type VirtualKeyboardControllerConfig,
-} from '@blocksuite/affine-components/virtual-keyboard';
+import { VirtualKeyboardProvider } from '@blocksuite/affine-shared/services';
 import {
   createKeydownObserver,
   getViewportElement,
@@ -42,8 +39,6 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
   private readonly _expand = new Set<string>();
 
   private _firstActionItem: LinkedMenuItem | null = null;
-
-  private readonly _keyboardController = new VirtualKeyboardController(this);
 
   private readonly _linkedDocGroup$ = signal<LinkedMenuGroup[]>([]);
 
@@ -159,11 +154,8 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
     );
   }
 
-  get virtualKeyboardControllerConfig(): VirtualKeyboardControllerConfig {
-    return {
-      useScreenHeight: this.context.config.mobile.useScreenHeight ?? false,
-      inputElement: this.rootComponent,
-    };
+  get keyboard() {
+    return this.context.std.get(VirtualKeyboardProvider);
   }
 
   override connectedCallback() {
@@ -230,8 +222,8 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
   }
 
   override firstUpdated() {
-    if (!this._keyboardController.opened) {
-      this._keyboardController.show();
+    if (!this.keyboard.visible$.value) {
+      this.keyboard.show();
     }
     this._scrollInputToTop();
   }
@@ -244,11 +236,7 @@ export class AffineMobileLinkedDocMenu extends SignalWatcher(
 
     this._firstActionItem = resolveSignal(groups[0].items)[0];
 
-    this.style.bottom =
-      this.context.config.mobile.useScreenHeight &&
-      this._keyboardController.opened
-        ? '0px'
-        : `max(0px, ${this._keyboardController.keyboardHeight}px)`;
+    this.style.bottom = `${this.keyboard.height$.value}px`;
 
     return html`
       ${join(groups.map(this._renderGroup), html`<div class="divider"></div>`)}

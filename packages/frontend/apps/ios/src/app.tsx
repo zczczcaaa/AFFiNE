@@ -106,15 +106,40 @@ framework.impl(ValidatorProvider, {
   },
 });
 framework.impl(VirtualKeyboardProvider, {
-  addEventListener: (event, callback) => {
-    Keyboard.addListener(event as any, callback as any).catch(e => {
-      console.error(e);
-    });
-  },
-  removeAllListeners: () => {
-    Keyboard.removeAllListeners().catch(e => {
-      console.error(e);
-    });
+  // We dose not provide show and hide because:
+  // - Keyboard.show() is not implemented
+  // - Keyboard.hide() will blur the current editor
+  onChange: callback => {
+    let disposeRef = {
+      dispose: () => {},
+    };
+
+    Promise.all([
+      Keyboard.addListener('keyboardDidShow', info => {
+        callback({
+          visible: true,
+          height: info.keyboardHeight,
+        });
+      }),
+      Keyboard.addListener('keyboardWillHide', () => {
+        callback({
+          visible: false,
+          height: 0,
+        });
+      }),
+    ])
+      .then(handlers => {
+        disposeRef.dispose = () => {
+          Promise.all(handlers.map(handler => handler.remove())).catch(
+            console.error
+          );
+        };
+      })
+      .catch(console.error);
+
+    return () => {
+      disposeRef.dispose();
+    };
   },
 });
 framework.impl(NavigationGestureProvider, {

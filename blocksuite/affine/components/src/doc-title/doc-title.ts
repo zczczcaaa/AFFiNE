@@ -153,6 +153,10 @@ export class DocTitle extends WithDisposable(ShadowlessElement) {
     return this._richTextElement.inlineEditor;
   }
 
+  get inlineEditorContainer() {
+    return this._richTextElement.inlineEditorContainer;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 

@@ -113,12 +113,6 @@ import {
 
 export type KeyboardToolbarConfig = {
   items: KeyboardToolbarItem[];
-  /**
-   * @description Whether to use the screen height as the keyboard height when the virtual keyboard API is not supported.
-   * It is useful when the app is running in a webview and the keyboard is not overlaid on the content.
-   * @default false
-   */
-  useScreenHeight?: boolean;
 };
 
 export type KeyboardToolbarItem =
@@ -1106,5 +1100,4 @@ export const defaultKeyboardToolbarConfig: KeyboardToolbarConfig = {
       },
     },
   ],
-  useScreenHeight: false,
 };

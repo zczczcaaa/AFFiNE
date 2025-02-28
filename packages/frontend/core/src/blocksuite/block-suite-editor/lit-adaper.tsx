@@ -151,7 +151,7 @@ const usePatchSpecs = (mode: DocMode) => {
       builder.extend([patchForAttachmentEmbedViews(reactToLit)]);
     }
     if (BUILD_CONFIG.isMobileEdition) {
-      enableMobileExtension(builder);
+      enableMobileExtension(builder, framework);
     }
     if (BUILD_CONFIG.isElectron) {
       builder.extend([patchForClipboardInElectron(framework)].flat());

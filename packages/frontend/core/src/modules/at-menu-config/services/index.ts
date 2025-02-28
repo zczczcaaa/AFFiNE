@@ -322,7 +322,6 @@ export class AtMenuConfigService extends Service {
 
   private getMobileConfig(): Partial<LinkedWidgetConfig['mobile']> {
     return {
-      useScreenHeight: BUILD_CONFIG.isIOS,
       scrollContainer: window,
       scrollTopOffset: () => {
         const header = document.querySelector('header');

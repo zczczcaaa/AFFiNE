@@ -1,29 +1,36 @@
-import { createKeyboardToolbarConfig } from '@affine/core/blocksuite/extensions/keyboard-toolbar-config';
+import { VirtualKeyboardProvider } from '@affine/core/mobile/modules/virtual-keyboard';
 import {
   type BlockStdScope,
   ConfigIdentifier,
   LifeCycleWatcher,
+  LifeCycleWatcherIdentifier,
 } from '@blocksuite/affine/block-std';
 import type {
   CodeBlockConfig,
   ReferenceNodeConfig,
-  RootBlockConfig,
   SpecBuilder,
 } from '@blocksuite/affine/blocks';
 import {
   codeToolbarWidget,
+  DocModeProvider,
   embedCardToolbarWidget,
   FeatureFlagService,
   formatBarWidget,
   imageToolbarWidget,
   ParagraphBlockService,
   ReferenceNodeConfigIdentifier,
-  RootBlockConfigExtension,
   slashMenuWidget,
   surfaceRefToolbarWidget,
+  VirtualKeyboardProvider as BSVirtualKeyboardProvider,
 } from '@blocksuite/affine/blocks';
-import type { Container } from '@blocksuite/affine/global/di';
+import type {
+  Container,
+  ServiceIdentifier,
+} from '@blocksuite/affine/global/di';
+import { DisposableGroup } from '@blocksuite/affine/global/utils';
 import type { ExtensionType } from '@blocksuite/affine/store';
+import { batch, signal } from '@preact/signals-core';
+import type { FrameworkProvider } from '@toeverything/infra';
 
 class MobileSpecsPatches extends LifeCycleWatcher {
   static override key = 'mobile-patches';
@@ -86,28 +93,85 @@ class MobileSpecsPatches extends LifeCycleWatcher {
   }
 }
 
-const mobileExtensions: ExtensionType[] = [
+function KeyboardToolbarExtension(framework: FrameworkProvider): ExtensionType {
+  const affineVirtualKeyboardProvider = framework.get(VirtualKeyboardProvider);
+
+  class BSVirtualKeyboardService
+    extends LifeCycleWatcher
+    implements BSVirtualKeyboardProvider
   {
-    setup: di => {
-      const prev = di.getFactory(RootBlockConfigExtension.identifier);
+    static override key = BSVirtualKeyboardProvider.identifierName;
 
-      di.override(RootBlockConfigExtension.identifier, provider => {
-        return {
-          ...prev?.(provider),
-          keyboardToolbar: createKeyboardToolbarConfig(),
-        } satisfies RootBlockConfig;
+    private readonly _disposables = new DisposableGroup();
+
+    private get _rootContentEditable() {
+      const editorMode = this.std.get(DocModeProvider).getEditorMode();
+      if (editorMode !== 'page') return null;
+
+      if (!this.std.host.doc.root) return;
+      return this.std.view.getBlock(this.std.host.doc.root.id);
+    }
+
+    // eslint-disable-next-line rxjs/finnish
+    readonly visible$ = signal(false);
+
+    // eslint-disable-next-line rxjs/finnish
+    readonly height$ = signal(0);
+
+    show() {
+      if ('show' in affineVirtualKeyboardProvider) {
+        affineVirtualKeyboardProvider.show();
+      } else if (this._rootContentEditable) {
+        this._rootContentEditable.inputMode = '';
+      }
+    }
+    hide() {
+      if ('hide' in affineVirtualKeyboardProvider) {
+        affineVirtualKeyboardProvider.hide();
+      } else if (this._rootContentEditable) {
+        this._rootContentEditable.inputMode = 'none';
+      }
+    }
+
+    static override setup(di: Container) {
+      super.setup(di);
+      di.addImpl(BSVirtualKeyboardProvider, provider => {
+        return provider.get(
+          LifeCycleWatcherIdentifier(
+            this.key
+          ) as ServiceIdentifier<BSVirtualKeyboardService>
+        );
       });
-    },
-  },
-  MobileSpecsPatches,
-];
+    }
 
-export function enableMobileExtension(specBuilder: SpecBuilder): void {
+    override mounted() {
+      this._disposables.add(
+        affineVirtualKeyboardProvider.onChange(({ visible, height }) => {
+          batch(() => {
+            this.visible$.value = visible;
+            this.height$.value = height;
+          });
+        })
+      );
+    }
+
+    override unmounted() {
+      this._disposables.dispose();
+    }
+  }
+
+  return BSVirtualKeyboardService;
+}
+
+export function enableMobileExtension(
+  specBuilder: SpecBuilder,
+  framework: FrameworkProvider
+): void {
   specBuilder.omit(formatBarWidget);
   specBuilder.omit(embedCardToolbarWidget);
   specBuilder.omit(slashMenuWidget);
   specBuilder.omit(codeToolbarWidget);
   specBuilder.omit(imageToolbarWidget);
   specBuilder.omit(surfaceRefToolbarWidget);
-  specBuilder.extend(mobileExtensions);
+  specBuilder.extend([MobileSpecsPatches, KeyboardToolbarExtension(framework)]);
 }

@@ -64,7 +64,6 @@ export interface LinkedWidgetConfig {
   ) => string | null;
 
   mobile: {
-    useScreenHeight?: boolean;
     /**
      * The linked doc menu widget will scroll the container to make sure the input cursor is visible in viewport.
      * It accepts a selector string, HTMLElement or Window

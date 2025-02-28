@@ -3,32 +3,23 @@ import { LiveData, Service } from '@toeverything/infra';
 import type { VirtualKeyboardProvider } from '../providers/virtual-keyboard';
 
 export class VirtualKeyboardService extends Service {
-  show$ = new LiveData(false);
-  height$ = new LiveData(0);
+  readonly visible$ = new LiveData(false);
+
+  readonly height$ = new LiveData(0);
 
   constructor(
-    private readonly virtualKeyboardProvider?: VirtualKeyboardProvider
+    private readonly virtualKeyboardProvider: VirtualKeyboardProvider
   ) {
     super();
     this._observe();
   }
 
-  override dispose() {
-    super.dispose();
-    this.virtualKeyboardProvider?.removeAllListeners();
-  }
-
   private _observe() {
-    this.virtualKeyboardProvider?.addEventListener(
-      'keyboardWillShow',
-      ({ keyboardHeight }) => {
-        this.show$.next(true);
-        this.height$.next(keyboardHeight);
-      }
+    this.disposables.push(
+      this.virtualKeyboardProvider.onChange(info => {
+        this.visible$.next(info.visible);
+        this.height$.next(info.height);
+      })
     );
-    this.virtualKeyboardProvider?.addEventListener('keyboardWillHide', () => {
-      this.show$.next(false);
-      this.height$.next(0);
-    });
   }
 }

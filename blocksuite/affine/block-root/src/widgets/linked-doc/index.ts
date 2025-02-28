@@ -214,7 +214,6 @@ export class AffineLinkedDocWidget extends WidgetComponent<
       convertTriggerKey: true,
       getMenus,
       mobile: {
-        useScreenHeight: false,
         scrollContainer: getViewportElement(this.std.host) ?? window,
         scrollTopOffset: 46,
       },

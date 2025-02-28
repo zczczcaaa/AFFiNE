@@ -97,15 +97,48 @@ framework.impl(ClientSchemeProvider, {
 });
 
 framework.impl(VirtualKeyboardProvider, {
-  addEventListener: (event, callback) => {
-    Keyboard.addListener(event as any, callback as any).catch(e => {
-      console.error(e);
+  show: () => {
+    Keyboard.show().catch(console.error);
+  },
+  hide: () => {
+    // In some cases, the keyboard will show again. for example, it will show again
+    // when this function is called in click event of button. It may be a bug of
+    // android webview or capacitor.
+    setTimeout(() => {
+      Keyboard.hide().catch(console.error);
     });
   },
-  removeAllListeners: () => {
-    Keyboard.removeAllListeners().catch(e => {
-      console.error(e);
-    });
+  onChange: callback => {
+    let disposeRef = {
+      dispose: () => {},
+    };
+
+    Promise.all([
+      Keyboard.addListener('keyboardWillShow', info => {
+        callback({
+          visible: true,
+          height: info.keyboardHeight,
+        });
+      }),
+      Keyboard.addListener('keyboardWillHide', () => {
+        callback({
+          visible: false,
+          height: 0,
+        });
+      }),
+    ])
+      .then(handlers => {
+        disposeRef.dispose = () => {
+          Promise.all(handlers.map(handler => handler.remove())).catch(
+            console.error
+          );
+        };
+      })
+      .catch(console.error);
+
+    return () => {
+      disposeRef.dispose();
+    };
   },
 });
 

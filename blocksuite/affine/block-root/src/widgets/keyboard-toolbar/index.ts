@@ -1,8 +1,8 @@
+import { getDocTitleByEditorHost } from '@blocksuite/affine-components/doc-title';
 import type { RootBlockModel } from '@blocksuite/affine-model';
 import { FeatureFlagService } from '@blocksuite/affine-shared/services';
 import { WidgetComponent } from '@blocksuite/block-std';
 import { IS_MOBILE } from '@blocksuite/global/env';
-import { assertType } from '@blocksuite/global/utils';
 import { signal } from '@preact/signals-core';
 import { html, nothing } from 'lit';
 
@@ -20,10 +20,10 @@ export class AffineKeyboardToolbarWidget extends WidgetComponent<
 > {
   private readonly _close = (blur: boolean) => {
     if (blur) {
-      if (document.activeElement === this._docTitle) {
-        this._docTitle?.blur();
+      if (document.activeElement === this._docTitle?.inlineEditorContainer) {
+        this._docTitle?.inlineEditor?.setInlineRange(null);
       } else if (document.activeElement === this.block.rootComponent) {
-        this.block.rootComponent?.blur();
+        this.std.selection.clear();
       }
     }
     this._show$.value = false;
@@ -31,12 +31,8 @@ export class AffineKeyboardToolbarWidget extends WidgetComponent<
 
   private readonly _show$ = signal(false);
 
-  private get _docTitle(): HTMLDivElement | null {
-    const docTitle = this.std.host
-      .closest('.affine-page-viewport')
-      ?.querySelector('doc-title rich-text .inline-editor');
-    assertType<HTMLDivElement | null>(docTitle);
-    return docTitle;
+  private get _docTitle() {
+    return getDocTitleByEditorHost(this.std.host);
   }
 
   get config() {
@@ -61,10 +57,11 @@ export class AffineKeyboardToolbarWidget extends WidgetComponent<
     }
 
     if (this._docTitle) {
-      this.disposables.addFromEvent(this._docTitle, 'focus', () => {
+      const { inlineEditorContainer } = this._docTitle;
+      this.disposables.addFromEvent(inlineEditorContainer, 'focus', () => {
         this._show$.value = true;
       });
-      this.disposables.addFromEvent(this._docTitle, 'blur', () => {
+      this.disposables.addFromEvent(inlineEditorContainer, 'blur', () => {
         this._show$.value = false;
       });
     }

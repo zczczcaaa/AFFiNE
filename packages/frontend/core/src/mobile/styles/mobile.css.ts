@@ -23,9 +23,6 @@ globalStyle('body', {
 globalStyle('body:has(> #app-tabs)', {
   paddingBottom: globalVars.appTabSafeArea,
 });
-globalStyle('body:has(#app-tabs) affine-keyboard-toolbar[data-shrink="true"]', {
-  paddingBottom: globalVars.appTabSafeArea,
-});
 globalStyle('body:has(#app-tabs) affine-keyboard-tool-panel', {
   paddingBottom: `calc(${globalVars.appTabHeight} + env(safe-area-inset-bottom) + 8px)`,
 });
