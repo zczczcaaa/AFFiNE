@@ -6,6 +6,7 @@ import {
   LitEdgelessEditor,
   type PageEditor,
 } from '@affine/core/blocksuite/editors';
+import { useEnableAI } from '@affine/core/components/hooks/affine/use-enable-ai';
 import type { DocCustomPropertyInfo } from '@affine/core/modules/db';
 import { DocService, DocsService } from '@affine/core/modules/doc';
 import type {
@@ -129,8 +130,10 @@ const usePatchSpecs = (mode: DocMode) => {
 
   const confirmModal = useConfirmModal();
 
+  const enableAI = useEnableAI();
+
   const patchedSpecs = useMemo(() => {
-    const builder = enableEditorExtension(framework, mode);
+    const builder = enableEditorExtension(framework, mode, enableAI);
 
     builder.extend(
       [
@@ -169,6 +172,7 @@ const usePatchSpecs = (mode: DocMode) => {
     reactToLit,
     referenceRenderer,
     featureFlagService,
+    enableAI,
   ]);
 
   return [

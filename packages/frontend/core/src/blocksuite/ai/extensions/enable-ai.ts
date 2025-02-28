@@ -1,4 +1,3 @@
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import {
   CodeBlockSpec,
   EdgelessRootBlockSpec,
@@ -18,10 +17,9 @@ import { AIParagraphBlockSpec } from './ai-paragraph';
 
 export function enableAIExtension(
   specBuilder: SpecBuilder,
-  framework: FrameworkProvider
+  framework: FrameworkProvider,
+  enableAI: boolean
 ) {
-  const featureFlagService = framework.get(FeatureFlagService);
-  const enableAI = featureFlagService.flags.enable_ai.value;
   if (!enableAI) {
     return;
   }

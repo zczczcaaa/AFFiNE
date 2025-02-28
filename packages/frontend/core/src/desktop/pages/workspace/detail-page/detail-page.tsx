@@ -7,9 +7,9 @@ import { EditorOutlineViewer } from '@affine/core/blocksuite/outline-viewer';
 import { PageAIOnboarding } from '@affine/core/components/affine/ai-onboarding';
 import { DocPropertySidebar } from '@affine/core/components/doc-properties/sidebar';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
+import { useEnableAI } from '@affine/core/components/hooks/affine/use-enable-ai';
 import { DocService } from '@affine/core/modules/doc';
 import { EditorService } from '@affine/core/modules/editor';
-import { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { GlobalContextService } from '@affine/core/modules/global-context';
 import { PeekViewService } from '@affine/core/modules/peek-view';
 import { GuardService } from '@affine/core/modules/permissions';
@@ -72,7 +72,6 @@ const DetailPageImpl = memo(function DetailPageImpl() {
     docService,
     workspaceService,
     globalContextService,
-    featureFlagService,
     guardService,
   } = useServices({
     WorkbenchService,
@@ -81,7 +80,6 @@ const DetailPageImpl = memo(function DetailPageImpl() {
     DocService,
     WorkspaceService,
     GlobalContextService,
-    FeatureFlagService,
     GuardService,
   });
   const workbench = workbenchService.workbench;
@@ -107,7 +105,7 @@ const DetailPageImpl = memo(function DetailPageImpl() {
   // TODO(@eyhn): remove jotai here
   const [_, setActiveBlockSuiteEditor] = useActiveBlocksuiteEditor();
 
-  const enableAI = featureFlagService.flags.enable_ai.value;
+  const enableAI = useEnableAI();
 
   useEffect(() => {
     if (isActiveView) {

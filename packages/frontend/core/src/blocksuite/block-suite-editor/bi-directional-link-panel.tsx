@@ -1,4 +1,5 @@
 import { Button, Divider, useLitPortalFactory } from '@affine/component';
+import { useEnableAI } from '@affine/core/components/hooks/affine/use-enable-ai';
 import { DocService } from '@affine/core/modules/doc';
 import {
   type Backlink,
@@ -143,11 +144,13 @@ const usePreviewExtensions = () => {
     };
   }, [workspaceService]);
 
+  const enableAI = useEnableAI();
+
   const extensions = useMemo(() => {
-    const specs = enableEditorExtension(framework, 'page');
+    const specs = enableEditorExtension(framework, 'page', enableAI);
     specs.extend([patchReferenceRenderer(reactToLit, referenceRenderer)]);
     return specs.value;
-  }, [reactToLit, referenceRenderer, framework]);
+  }, [reactToLit, referenceRenderer, framework, enableAI]);
 
   return [extensions, portals] as const;
 };

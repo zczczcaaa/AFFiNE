@@ -6,11 +6,12 @@ import { type FrameworkProvider } from '@toeverything/infra';
 
 export function enableEditorExtension(
   framework: FrameworkProvider,
-  mode: 'edgeless' | 'page'
+  mode: 'edgeless' | 'page',
+  enableAI: boolean
 ): SpecBuilder {
   const spec = SpecProvider._.getSpec(mode);
   enableAffineExtension(spec, framework);
-  enableAIExtension(spec, framework);
+  enableAIExtension(spec, framework, enableAI);
 
   return spec;
 }
