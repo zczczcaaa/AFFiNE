@@ -12,18 +12,26 @@ import {
   Config,
   CryptoHelper,
   getOrGenRequestId,
+  URLHelper,
   UserFriendlyError,
 } from '../../base';
+import { WorkspaceBlobStorage } from '../storage';
 import {
   type PageDocContent,
   parsePageDoc,
   parseWorkspaceDoc,
-  type WorkspaceDocContent,
 } from '../utils/blocksuite';
 import { PgWorkspaceDocStorageAdapter } from './adapters/workspace';
 import { type DocDiff, type DocRecord } from './storage';
 
 const DOC_CONTENT_CACHE_7_DAYS = 7 * 24 * 60 * 60 * 1000;
+
+export interface WorkspaceDocInfo {
+  id: string;
+  name: string;
+  avatarKey?: string;
+  avatarUrl?: string;
+}
 
 export abstract class DocReader {
   constructor(protected readonly cache: Cache) {}
@@ -60,9 +68,9 @@ export abstract class DocReader {
 
   async getWorkspaceContent(
     workspaceId: string
-  ): Promise<WorkspaceDocContent | null> {
+  ): Promise<WorkspaceDocInfo | null> {
     const cacheKey = this.cacheKey(workspaceId, workspaceId);
-    const cachedResult = await this.cache.get<WorkspaceDocContent>(cacheKey);
+    const cachedResult = await this.cache.get<WorkspaceDocInfo>(cacheKey);
     if (cachedResult) {
       return cachedResult;
     }
@@ -91,7 +99,7 @@ export abstract class DocReader {
 
   protected abstract getWorkspaceContentWithoutCache(
     workspaceId: string
-  ): Promise<WorkspaceDocContent | null>;
+  ): Promise<WorkspaceDocInfo | null>;
 
   protected docDiff(update: Uint8Array, stateVector?: Uint8Array) {
     const missing = stateVector ? diffUpdate(update, stateVector) : update;
@@ -107,7 +115,9 @@ export abstract class DocReader {
 export class DatabaseDocReader extends DocReader {
   constructor(
     protected override readonly cache: Cache,
-    protected readonly workspace: PgWorkspaceDocStorageAdapter
+    protected readonly workspace: PgWorkspaceDocStorageAdapter,
+    protected readonly blobStorage: WorkspaceBlobStorage,
+    protected readonly url: URLHelper
   ) {
     super(cache);
   }
@@ -146,13 +156,32 @@ export class DatabaseDocReader extends DocReader {
 
   protected override async getWorkspaceContentWithoutCache(
     workspaceId: string
-  ): Promise<WorkspaceDocContent | null> {
+  ): Promise<WorkspaceDocInfo | null> {
     const docRecord = await this.workspace.getDoc(workspaceId, workspaceId);
     if (!docRecord) {
       return null;
     }
+    const content = this.parseWorkspaceContent(docRecord.bin);
+    if (!content) {
+      return null;
+    }
+    let avatarUrl: string | undefined;
+    if (content.avatarKey) {
+      avatarUrl = this.url.link(
+        `/api/workspaces/${workspaceId}/blobs/${content.avatarKey}`
+      );
+    }
+    return {
+      id: workspaceId,
+      name: content.name,
+      avatarKey: content.avatarKey,
+      avatarUrl,
+    };
+  }
+
+  private parseWorkspaceContent(bin: Uint8Array) {
     const doc = new YDoc();
-    applyUpdate(doc, docRecord.bin);
+    applyUpdate(doc, bin);
     return parseWorkspaceDoc(doc);
   }
 }
@@ -165,9 +194,11 @@ export class RpcDocReader extends DatabaseDocReader {
     private readonly config: Config,
     private readonly crypto: CryptoHelper,
     protected override readonly cache: Cache,
-    protected override readonly workspace: PgWorkspaceDocStorageAdapter
+    protected override readonly workspace: PgWorkspaceDocStorageAdapter,
+    protected override readonly blobStorage: WorkspaceBlobStorage,
+    protected override readonly url: URLHelper
   ) {
-    super(cache, workspace);
+    super(cache, workspace, blobStorage, url);
   }
 
   private async fetch(
@@ -305,7 +336,7 @@ export class RpcDocReader extends DatabaseDocReader {
 
   protected override async getWorkspaceContentWithoutCache(
     workspaceId: string
-  ): Promise<WorkspaceDocContent | null> {
+  ): Promise<WorkspaceDocInfo | null> {
     const url = `${this.config.docService.endpoint}/rpc/workspaces/${workspaceId}/content`;
     const accessToken = this.crypto.sign(workspaceId);
     try {
@@ -313,7 +344,7 @@ export class RpcDocReader extends DatabaseDocReader {
       if (!res) {
         return null;
       }
-      return (await res.json()) as WorkspaceDocContent;
+      return (await res.json()) as WorkspaceDocInfo;
     } catch (e) {
       if (e instanceof UserFriendlyError) {
         throw e;

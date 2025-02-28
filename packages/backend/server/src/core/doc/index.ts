@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 
 import { PermissionModule } from '../permission';
 import { QuotaModule } from '../quota';
+import { StorageModule } from '../storage';
 import { PgUserspaceDocStorageAdapter } from './adapters/userspace';
 import { PgWorkspaceDocStorageAdapter } from './adapters/workspace';
 import { DocEventsListener } from './event';
@@ -12,7 +13,7 @@ import { DocStorageOptions } from './options';
 import { DatabaseDocReader, DocReader, DocReaderProvider } from './reader';
 
 @Module({
-  imports: [QuotaModule, PermissionModule],
+  imports: [QuotaModule, PermissionModule, StorageModule],
   providers: [
     DocStorageOptions,
     PgWorkspaceDocStorageAdapter,

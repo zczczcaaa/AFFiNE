@@ -5,7 +5,7 @@ import { Controller, Get, Logger, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import isMobile from 'is-mobile';
 
-import { Config, metrics, URLHelper } from '../../base';
+import { Config, metrics } from '../../base';
 import { htmlSanitize } from '../../native';
 import { Public } from '../auth';
 import { DocReader } from '../doc';
@@ -52,8 +52,7 @@ export class DocRendererController {
   constructor(
     private readonly doc: DocReader,
     private readonly permission: PermissionService,
-    private readonly config: Config,
-    private readonly url: URLHelper
+    private readonly config: Config
   ) {
     this.webAssets = this.readHtmlAssets(
       join(this.config.projectRoot, 'static')
@@ -132,11 +131,7 @@ export class DocRendererController {
         return {
           title: workspaceContent.name,
           summary: '',
-          avatar: workspaceContent.avatarKey
-            ? this.url.link(
-                `/api/workspaces/${workspaceId}/blobs/${workspaceContent.avatarKey}`
-              )
-            : undefined,
+          avatar: workspaceContent.avatarUrl,
         };
       }
     }

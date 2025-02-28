@@ -302,17 +302,24 @@ test('should return null when doc content not exists', async t => {
 
 test('should get workspace content from doc service rpc', async t => {
   const { docReader, databaseDocReader } = t.context;
-  mock.method(databaseDocReader, 'getWorkspaceContent', async () => {
-    return {
-      name: 'test name',
-      avatarKey: 'avatar key',
-    };
-  });
+  const track = mock.method(
+    databaseDocReader,
+    'getWorkspaceContent',
+    async () => {
+      return {
+        id: workspace.id,
+        name: 'test name',
+        avatarKey: '',
+      };
+    }
+  );
 
   const workspaceContent = await docReader.getWorkspaceContent(workspace.id);
+  t.is(track.mock.callCount(), 1);
   t.deepEqual(workspaceContent, {
+    id: workspace.id,
     name: 'test name',
-    avatarKey: 'avatar key',
+    avatarKey: '',
   });
 });
 

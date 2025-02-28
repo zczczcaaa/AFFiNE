@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { mock } from 'node:test';
 
 import { User, Workspace } from '@prisma/client';
 import ava, { TestFn } from 'ava';
@@ -8,6 +9,7 @@ import { createTestingApp, type TestingApp } from '../../../__tests__/utils';
 import { AppModule } from '../../../app.module';
 import { ConfigModule } from '../../../base/config';
 import { Models } from '../../../models';
+import { WorkspaceBlobStorage } from '../../storage/wrappers/blob';
 import { DocReader, PgWorkspaceDocStorageAdapter } from '..';
 import { DatabaseDocReader } from '../reader';
 
@@ -16,6 +18,7 @@ const test = ava as TestFn<{
   app: TestingApp;
   docReader: DocReader;
   adapter: PgWorkspaceDocStorageAdapter;
+  blobStorage: WorkspaceBlobStorage;
 }>;
 
 test.before(async t => {
@@ -26,6 +29,7 @@ test.before(async t => {
   t.context.models = app.get(Models);
   t.context.docReader = app.get(DocReader);
   t.context.adapter = app.get(PgWorkspaceDocStorageAdapter);
+  t.context.blobStorage = app.get(WorkspaceBlobStorage);
   t.context.app = app;
 });
 
@@ -38,6 +42,10 @@ test.beforeEach(async t => {
     email: 'test@affine.pro',
   });
   workspace = await t.context.models.workspace.create(user.id);
+});
+
+test.afterEach.always(() => {
+  mock.reset();
 });
 
 test.after.always(async t => {
@@ -162,8 +170,9 @@ test('should get doc content', async t => {
   t.is(docContent, null);
 });
 
-test('should get workspace content', async t => {
+test('should get workspace content with default avatar', async t => {
   const { docReader } = t.context;
+  t.true(docReader instanceof DatabaseDocReader);
 
   const doc = new YDoc();
   const text = doc.getText('content');
@@ -184,7 +193,66 @@ test('should get workspace content', async t => {
     user.id
   );
 
+  // @ts-expect-error parseWorkspaceContent is private
+  const track = mock.method(docReader, 'parseWorkspaceContent', () => ({
+    name: 'Test Workspace',
+    avatarKey: '',
+  }));
+
   const workspaceContent = await docReader.getWorkspaceContent(workspace.id);
-  // TODO(@fengmk2): should create a test ydoc with blocks
-  t.is(workspaceContent, null);
+  t.truthy(workspaceContent);
+  t.deepEqual(workspaceContent, {
+    id: workspace.id,
+    name: 'Test Workspace',
+    avatarKey: '',
+    avatarUrl: undefined,
+  });
+  t.is(track.mock.callCount(), 1);
+});
+
+test('should get workspace content with custom avatar', async t => {
+  const { docReader, blobStorage } = t.context;
+  t.true(docReader instanceof DatabaseDocReader);
+
+  const doc = new YDoc();
+  const text = doc.getText('content');
+  const updates: Buffer[] = [];
+
+  doc.on('update', update => {
+    updates.push(Buffer.from(update));
+  });
+
+  text.insert(0, 'hello');
+  text.insert(5, 'world');
+  text.insert(5, ' ');
+
+  await t.context.adapter.pushDocUpdates(
+    workspace.id,
+    workspace.id,
+    updates,
+    user.id
+  );
+
+  const avatarKey = randomUUID();
+  await blobStorage.put(
+    workspace.id,
+    avatarKey,
+    Buffer.from('mock avatar image data here')
+  );
+
+  // @ts-expect-error parseWorkspaceContent is private
+  const track = mock.method(docReader, 'parseWorkspaceContent', () => ({
+    name: 'Test Workspace',
+    avatarKey,
+  }));
+
+  const workspaceContent = await docReader.getWorkspaceContent(workspace.id);
+  t.truthy(workspaceContent);
+  t.deepEqual(workspaceContent, {
+    id: workspace.id,
+    name: 'Test Workspace',
+    avatarKey,
+    avatarUrl: `http://localhost:3010/api/workspaces/${workspace.id}/blobs/${avatarKey}`,
+  });
+  t.is(track.mock.callCount(), 1);
 });
