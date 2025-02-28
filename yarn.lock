@@ -660,7 +660,7 @@ __metadata:
     openai: "npm:^4.85.1"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
-    react-markdown: "npm:^9.0.3"
+    react-markdown: "npm:^10.0.0"
     rxjs: "npm:^7.8.1"
     socket.io: "npm:^4.7.4"
     socket.io-client: "npm:^4.7.4"
@@ -28655,9 +28655,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-markdown@npm:^9.0.3":
-  version: 9.1.0
-  resolution: "react-markdown@npm:9.1.0"
+"react-markdown@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "react-markdown@npm:10.0.0"
   dependencies:
     "@types/hast": "npm:^3.0.0"
     "@types/mdast": "npm:^4.0.0"
@@ -28673,7 +28673,7 @@ __metadata:
   peerDependencies:
     "@types/react": ">=18"
     react: ">=18"
-  checksum: 10/07045797b926afafc6aff692c9ee7d1cb9b12bc0e2d2b9f22ab17f2d1036dd807034a58565d67cfcfe94fe43961452a977496a175cbc9028ed51f2eec823c2f4
+  checksum: 10/513d9119587b561ac1195e3b2fa30b2bd9149b4dea658c189e2417fda600fbf9d5067967f098ea8e2d525b5fc7db00e3e4176ba2662a6eb503bc09d9b8bd5b5a
   languageName: node
   linkType: hard
 
