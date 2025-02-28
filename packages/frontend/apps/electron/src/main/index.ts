@@ -14,8 +14,6 @@ import { registerEvents } from './events';
 import { registerHandlers } from './handlers';
 import { logger } from './logger';
 import { registerProtocol } from './protocol';
-import { getShareableContent } from './recording';
-import { getTrayState } from './tray';
 import { isOnline } from './ui';
 import { launch } from './windows-manager/launcher';
 import { launchStage } from './windows-manager/stage';
@@ -87,9 +85,7 @@ app
   .then(registerHandlers)
   .then(registerEvents)
   .then(launch)
-  .then(getShareableContent)
   .then(createApplicationMenu)
-  .then(getTrayState)
   .catch(e => console.error('Failed create window:', e));
 
 if (process.env.SENTRY_RELEASE) {
