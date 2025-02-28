@@ -370,8 +370,6 @@ __metadata:
     "@affine/track": "workspace:*"
     "@blocksuite/affine": "workspace:*"
     "@blocksuite/icons": "npm:2.2.3"
-    "@capacitor/app": "npm:^7.0.0"
-    "@capacitor/browser": "npm:^7.0.0"
     "@dotlottie/player-component": "npm:^2.7.12"
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
