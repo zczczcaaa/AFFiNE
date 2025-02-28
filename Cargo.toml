@@ -22,7 +22,7 @@ block2           = "0.6"
 chrono           = "0.4"
 core-foundation  = "0.10"
 coreaudio-rs     = "0.12"
-criterion2       = { version = "2", default-features = false }
+criterion2       = { version = "3", default-features = false }
 dispatch2        = "0.2"
 dotenvy          = "0.15"
 file-format      = { version = "0.26", features = ["reader"] }
