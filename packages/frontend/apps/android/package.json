@@ -21,7 +21,7 @@
     "@capacitor/status-bar": "^7.0.0",
     "@capawesome/capacitor-android-edge-to-edge-support": "^7.0.0",
     "@capgo/inappbrowser": "^7.1.0",
-    "@sentry/react": "^8.44.0",
+    "@sentry/react": "^9.2.0",
     "@toeverything/infra": "workspace:*",
     "next-themes": "^0.4.4",
     "react": "^19.0.0",
