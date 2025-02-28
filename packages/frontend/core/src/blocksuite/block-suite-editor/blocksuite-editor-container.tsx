@@ -151,6 +151,7 @@ export const BlocksuiteEditorContainer = forwardRef<
         const focusBlock = std.view.getBlock(lastBlock.id) ?? undefined;
         std.command.exec(focusBlockEnd, {
           focusBlock,
+          force: true,
         });
         return;
       }

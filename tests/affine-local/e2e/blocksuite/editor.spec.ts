@@ -1,4 +1,5 @@
 import { test } from '@affine-test/kit/playwright';
+import { locateEditorContainer } from '@affine-test/kit/utils/editor';
 import { openHomePage } from '@affine-test/kit/utils/load-page';
 import {
   addDatabase,
@@ -82,7 +83,15 @@ test('append paragraph when click editor gap', async ({ page }) => {
   await page.locator('[data-testid=page-editor-blank]').click();
   expect(await paragraph.count()).toBe(numParagraphs + 1);
 
-  // click the gap again, should not append another paragraph
   await page.locator('[data-testid=page-editor-blank]').click();
-  expect(await paragraph.count()).toBe(numParagraphs + 1);
+  expect(
+    await paragraph.count(),
+    'click the gap again, should not append another paragraph'
+  ).toBe(numParagraphs + 1);
+
+  const editorContainer = locateEditorContainer(page);
+  expect(
+    await editorContainer.evaluate(el => el.contains(document.activeElement)),
+    'editor should should keep being focused'
+  ).toBe(true);
 });
