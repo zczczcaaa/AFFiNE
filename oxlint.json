@@ -8,7 +8,7 @@
   "ignorePatterns": [
     "**/node_modules",
     ".yarn",
-    ".github",
+    ".github/helm",
     ".vscode",
     ".yarnrc.yml",
     ".docker",

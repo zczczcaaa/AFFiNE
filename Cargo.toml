@@ -8,7 +8,10 @@ members = [
   "./packages/frontend/native/schema",
   "./packages/frontend/native/sqlite_v1",
 ]
-resolver = "2"
+resolver = "3"
+
+[workspace.package]
+edition  = "2024"
 
 [workspace.dependencies]
 affine_common    = { path = "./packages/common/native" }

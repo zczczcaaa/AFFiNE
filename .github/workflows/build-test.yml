@@ -309,6 +309,10 @@ jobs:
         with:
           workspace-copy: true
           drive-size: 8GB
+          drive-format: NTFS
+          env-mapping: |
+            CARGO_HOME,{{ DEV_DRIVE }}/.cargo
+            RUSTUP_HOME,{{ DEV_DRIVE }}/.rustup
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
         with:

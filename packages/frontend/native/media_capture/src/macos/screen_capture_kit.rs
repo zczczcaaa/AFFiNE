@@ -76,8 +76,11 @@ unsafe impl Encode for NSRect {
 static RUNNING_APPLICATIONS: LazyLock<RwLock<Vec<AudioObjectID>>> =
   LazyLock::new(|| RwLock::new(audio_process_list().expect("Failed to get running applications")));
 
+type ApplicationStateChangedSubscriberMap =
+  HashMap<AudioObjectID, HashMap<Uuid, Arc<ThreadsafeFunction<(), ()>>>>;
+
 static APPLICATION_STATE_CHANGED_SUBSCRIBERS: LazyLock<
-  RwLock<HashMap<AudioObjectID, HashMap<Uuid, Arc<ThreadsafeFunction<(), ()>>>>>,
+  RwLock<ApplicationStateChangedSubscriberMap>,
 > = LazyLock::new(|| RwLock::new(HashMap::new()));
 
 static APPLICATION_STATE_CHANGED_LISTENER_BLOCKS: LazyLock<
@@ -348,10 +351,7 @@ impl TappableApplication {
   #[napi(constructor)]
   pub fn new(object_id: AudioObjectID) -> Result<Self> {
     // Get process ID from object_id
-    let process_id = match get_process_property(&object_id, kAudioProcessPropertyPID) {
-      Ok(pid) => pid,
-      Err(_) => -1,
-    };
+    let process_id = get_process_property(&object_id, kAudioProcessPropertyPID).unwrap_or(-1);
 
     // Create base Application
     let app = Application::new(process_id)?;
@@ -686,10 +686,7 @@ impl ShareableContent {
   #[napi]
   pub fn application_with_process_id(&self, process_id: u32) -> Option<Application> {
     // Get NSRunningApplication class
-    let running_app_class = match NSRUNNING_APPLICATION_CLASS.as_ref() {
-      Some(class) => class,
-      None => return None,
-    };
+    let running_app_class = NSRUNNING_APPLICATION_CLASS.as_ref()?;
 
     // Get running application with PID
     let running_app: *mut AnyObject = unsafe {
