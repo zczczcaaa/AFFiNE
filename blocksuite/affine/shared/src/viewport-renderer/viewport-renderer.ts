@@ -78,10 +78,10 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     });
 
     this.disposables.add(
-      this.std.store.slots.blockUpdated.on(() => {
-        this.invalidate();
-        this.debouncedRefresh();
-      })
+      this.selection.slots.updated.on(() => this.invalidate())
+    );
+    this.disposables.add(
+      this.std.store.slots.blockUpdated.on(() => this.invalidate())
     );
   }
 
@@ -95,8 +95,16 @@ export class ViewportTurboRendererExtension extends LifeCycleWatcher {
     this.setState('inactive');
   }
 
+  get gfx() {
+    return this.std.get(GfxControllerIdentifier);
+  }
+
   get viewport() {
-    return this.std.get(GfxControllerIdentifier).viewport;
+    return this.gfx.viewport;
+  }
+
+  get selection() {
+    return this.gfx.selection;
   }
 
   get layoutCache() {

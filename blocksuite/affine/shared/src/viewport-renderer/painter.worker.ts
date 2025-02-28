@@ -27,6 +27,8 @@ const font = new FontFace(
 // @ts-expect-error worker env
 self.fonts && self.fonts.add(font);
 
+const debugSentenceBoarder = false;
+
 function getBaseline() {
   const fontSize = 15;
   const lineHeight = 1.2 * fontSize;
@@ -60,8 +62,6 @@ class LayoutPainter {
   private clearBackground() {
     if (!this.canvas || !this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = 'white';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   paint(layout: ViewportLayout, version: number) {
@@ -94,7 +94,9 @@ class LayoutPainter {
           // Only render if we haven't rendered at this position before
           if (renderedPositions.has(posKey)) return;
 
-          ctx.strokeRect(x, y, textRect.rect.w, textRect.rect.h);
+          if (debugSentenceBoarder) {
+            ctx.strokeRect(x, y, textRect.rect.w, textRect.rect.h);
+          }
           ctx.fillStyle = 'black';
           ctx.fillText(textRect.text, x, y + baselineY);
 
