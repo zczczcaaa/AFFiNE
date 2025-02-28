@@ -11,7 +11,7 @@ import { Service } from '@toeverything/infra';
 import { cssVarV2 } from '@toeverything/theme/v2';
 import { html } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { map } from 'rxjs';
+import { map, takeWhile } from 'rxjs';
 
 import type { DocDisplayMetaService } from '../../doc-display-meta';
 import type { DocsSearchService } from '../../docs-search';
@@ -105,7 +105,8 @@ export class DocSearchMenuService extends Service {
     const { signal: isIndexerLoading, cleanup: cleanupIndexerLoading } =
       createSignalFromObservable(
         this.docsSearch.indexer.status$.pipe(
-          map(status => status.remaining !== undefined && status.remaining > 0)
+          map(status => status.remaining !== undefined && status.remaining > 0),
+          takeWhile(isLoading => isLoading, true)
         ),
         false
       );
@@ -127,7 +128,6 @@ export class DocSearchMenuService extends Service {
         query,
       }),
       loading: isIndexerLoading,
-      loadingText: I18n.t('com.affine.editor.at-menu.loading'),
       items: docsSignal,
       maxDisplay: MAX_DOCS,
       overflowText,

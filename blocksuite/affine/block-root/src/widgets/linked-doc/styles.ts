@@ -51,6 +51,18 @@ export const linkedDocPopoverStyles = css`
     align-items: center;
     flex-shrink: 0;
     font-weight: 500;
+    justify-content: space-between;
+  }
+
+  .linked-doc-popover .group-title .loading-icon {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+  }
+
+  .linked-doc-popover .group-title .loading-icon svg {
+    width: 20px;
+    height: 20px;
   }
 
   .linked-doc-popover .divider {

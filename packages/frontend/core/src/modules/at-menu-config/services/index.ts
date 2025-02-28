@@ -32,6 +32,12 @@ function resolveSignal<T>(data: T | Signal<T>): T {
   return data instanceof Signal ? data.value : data;
 }
 
+const RESERVED_ITEM_KEYS = {
+  createPage: 'create:page',
+  createEdgeless: 'create:edgeless',
+  datePicker: 'date-picker',
+};
+
 export class AtMenuConfigService extends Service {
   constructor(
     private readonly journalService: JournalService,
@@ -50,7 +56,7 @@ export class AtMenuConfigService extends Service {
     return {
       getMenus: this.getMenusFn(),
       mobile: this.getMobileConfig(),
-      autoFocusedItem: this.autoFocusedItem,
+      autoFocusedItemKey: this.autoFocusedItemKey,
     };
   }
 
@@ -61,18 +67,27 @@ export class AtMenuConfigService extends Service {
     });
   }
 
-  private readonly autoFocusedItem = (
+  private readonly autoFocusedItemKey = (
     menus: LinkedMenuGroup[],
-    query: string
-  ): LinkedMenuItem | null => {
+    query: string,
+    currentActiveKey: string | null
+  ): string | null => {
     if (query.trim().length === 0) {
       return null;
     }
+
+    if (
+      currentActiveKey === RESERVED_ITEM_KEYS.createPage ||
+      currentActiveKey === RESERVED_ITEM_KEYS.createEdgeless
+    ) {
+      return currentActiveKey;
+    }
+
     // if the second group (linkToDocGroup) is EMPTY,
     // if the query is NOT empty && the second group (linkToDocGroup) is EMPTY,
     // we will focus on the first item of the third group (create), which is the "New Doc" item.
     if (resolveSignal(menus[1].items).length === 0) {
-      return resolveSignal(menus[2].items)[0];
+      return resolveSignal(menus[2].items)[0]?.key;
     }
     return null;
   };
@@ -95,11 +110,9 @@ export class AtMenuConfigService extends Service {
       ? originalNewDocMenuGroup.items
       : originalNewDocMenuGroup.items.value;
 
-    const newDocItem = items.find(item => item.key === 'create');
     const importItem = items.find(item => item.key === 'import');
 
-    // should have both new doc and import item
-    if (!newDocItem || !importItem) {
+    if (!importItem) {
       return originalNewDocMenuGroup;
     }
 
@@ -117,7 +130,7 @@ export class AtMenuConfigService extends Service {
 
     const customNewDocItems: LinkedMenuItem[] = [
       {
-        key: 'create-page',
+        key: RESERVED_ITEM_KEYS.createPage,
         icon: NewXxxPageIcon(),
         name: I18n.t('com.affine.editor.at-menu.create-page', {
           name: query || I18n.t('Untitled'),
@@ -132,7 +145,7 @@ export class AtMenuConfigService extends Service {
         },
       },
       {
-        key: 'create-edgeless',
+        key: RESERVED_ITEM_KEYS.createEdgeless,
         icon: NewXxxEdgelessIcon(),
         name: I18n.t('com.affine.editor.at-menu.create-edgeless', {
           name: query || I18n.t('Untitled'),
@@ -190,7 +203,7 @@ export class AtMenuConfigService extends Service {
     const items: LinkedMenuItem[] = [
       {
         icon: DateTimeIcon(),
-        key: 'date-picker',
+        key: RESERVED_ITEM_KEYS.datePicker,
         name: I18n.t('com.affine.editor.at-menu.date-picker'),
         action: () => {
           close();
@@ -245,7 +258,7 @@ export class AtMenuConfigService extends Service {
 
       items.unshift({
         icon: icon(),
-        key: dateString,
+        key: RESERVED_ITEM_KEYS.datePicker + ':' + dateString,
         name: alias
           ? html`${alias},
               <span style="color: ${cssVarV2('text/secondary')}"

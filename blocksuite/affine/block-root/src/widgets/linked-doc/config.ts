@@ -55,12 +55,13 @@ export interface LinkedWidgetConfig {
    *
    * If the return value is not null, no action will be taken.
    */
-  autoFocusedItem?: (
+  autoFocusedItemKey?: (
     menus: LinkedMenuGroup[],
     query: string,
+    currentActiveKey: string | null,
     editorHost: EditorHost,
     inlineEditor: AffineInlineEditor
-  ) => LinkedMenuItem | null;
+  ) => string | null;
 
   mobile: {
     useScreenHeight?: boolean;
@@ -101,8 +102,6 @@ export type LinkedMenuGroup = {
   loading?: boolean | Signal<boolean>;
   // copywriting when display quantity exceeds
   overflowText?: string | Signal<string>;
-  // loading text
-  loadingText?: string | Signal<string>;
 };
 
 export type LinkedDocContext = {

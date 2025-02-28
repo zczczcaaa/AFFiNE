@@ -483,7 +483,7 @@ test('@ popover can auto focus on the "New Doc" item when query returns no items
   await expect(page.locator('.linked-doc-popover')).toBeVisible();
   const newDocMenuItem = page
     .locator('.linked-doc-popover')
-    .locator('[data-id="create-page"]');
+    .locator('[data-id="create:page"]');
   await expect(newDocMenuItem).toBeVisible();
   await expect(newDocMenuItem).toHaveAttribute('hover', 'true');
 });

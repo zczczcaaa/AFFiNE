@@ -75,23 +75,33 @@ export class LinkedDocPopover extends SignalWatcher(
     // need to rebind the effect because this._linkedDocGroup has changed.
     this._menusItemsEffectCleanup = effect(() => {
       this._updateAutoFocusedItem();
+
+      // wait for the next tick to ensure the items are rendered to DOM
+      setTimeout(() => {
+        this.scrollToFocusedItem();
+      });
     });
   };
 
   private readonly _updateAutoFocusedItem = () => {
-    if (!this._query) {
-      return;
-    }
-    const autoFocusedItem = this.context.config.autoFocusedItem?.(
+    // Get the auto-focused item key from the config
+    const autoFocusedItemKey = this.context.config.autoFocusedItemKey?.(
       this._linkedDocGroup,
-      this._query,
+      this._query || '',
+      this._activatedItemKey,
       this.context.std.host,
       this.context.inlineEditor
     );
-    if (autoFocusedItem) {
-      this._activatedItemIndex = this._flattenActionList.findIndex(
-        item => item.key === autoFocusedItem.key
-      );
+
+    if (autoFocusedItemKey) {
+      this._activatedItemKey = autoFocusedItemKey;
+      return;
+    }
+
+    // If no auto-focused item key is returned from the config and no item is currently focused,
+    // focus the first item in the flattened action list
+    if (!this._activatedItemKey && this._flattenActionList.length > 0) {
+      this._activatedItemKey = this._flattenActionList[0].key;
     }
   };
 
@@ -126,18 +136,8 @@ export class LinkedDocPopover extends SignalWatcher(
     let items = resolveSignal(group.items);
 
     const isOverflow = !!group.maxDisplay && items.length > group.maxDisplay;
-    const isLoading = resolveSignal(group.loading);
 
     items = isExpanded ? items : items.slice(0, group.maxDisplay);
-
-    if (isLoading) {
-      items = items.concat({
-        key: 'loading',
-        name: resolveSignal(group.loadingText) || 'loading',
-        icon: LoadingIcon,
-        action: () => {},
-      });
-    }
 
     if (isOverflow && !isExpanded && group.maxDisplay) {
       items = items.concat({
@@ -183,7 +183,6 @@ export class LinkedDocPopover extends SignalWatcher(
       target: eventSource,
       signal: keydownObserverAbortController.signal,
       onInput: isComposition => {
-        this._activatedItemIndex = 0;
         if (isComposition) {
           this._updateLinkedDocGroup().catch(console.error);
         } else {
@@ -193,7 +192,6 @@ export class LinkedDocPopover extends SignalWatcher(
         }
       },
       onPaste: () => {
-        this._activatedItemIndex = 0;
         setTimeout(() => {
           this._updateLinkedDocGroup().catch(console.error);
         }, 50);
@@ -206,33 +204,18 @@ export class LinkedDocPopover extends SignalWatcher(
         if (curRange.index < this.context.startRange.index) {
           this.context.close();
         }
-        this._activatedItemIndex = 0;
         this.context.inlineEditor.slots.renderComplete.once(
           this._updateLinkedDocGroup
         );
       },
       onMove: step => {
         const itemLen = this._flattenActionList.length;
-        this._activatedItemIndex =
-          (itemLen + this._activatedItemIndex + step) % itemLen;
-
-        // Scroll to the active item
-        const item = this._flattenActionList[this._activatedItemIndex];
-        const shadowRoot = this.shadowRoot;
-        if (!shadowRoot) {
-          console.warn('Failed to find the shadow root!', this);
-          return;
+        const nextIndex = (itemLen + this._activatedItemIndex + step) % itemLen;
+        const item = this._flattenActionList[nextIndex];
+        if (item) {
+          this._activatedItemKey = item.key;
         }
-        const ele = shadowRoot.querySelector(
-          `icon-button[data-id="${item.key}"]`
-        );
-        if (!ele) {
-          console.warn('Failed to find the active item!', item);
-          return;
-        }
-        ele.scrollIntoView({
-          block: 'nearest',
-        });
+        this.scrollToFocusedItem();
       },
       onConfirm: () => {
         this._flattenActionList[this._activatedItemIndex]
@@ -261,19 +244,29 @@ export class LinkedDocPopover extends SignalWatcher(
           visibility: 'hidden',
         });
 
-    // XXX This is a side effect
-    let accIdx = 0;
+    const actionGroups = this._actionGroup.map(group => {
+      // Check if the group is loading
+      const isLoading = resolveSignal(group.loading);
+      return {
+        ...group,
+        isLoading,
+      };
+    });
+
     return html`<div class="linked-doc-popover" style="${style}">
-      ${this._actionGroup
-        .filter(group => group.items.length)
+      ${actionGroups
+        .filter(group => group.items.length || group.isLoading)
         .map((group, idx) => {
           return html`
             <div class="divider" ?hidden=${idx === 0}></div>
-            <div class="group-title">${group.name}</div>
+            <div class="group-title">
+              ${group.name}
+              ${group.isLoading
+                ? html`<span class="loading-icon">${LoadingIcon}</span>`
+                : nothing}
+            </div>
             <div class="group" style=${group.styles ?? ''}>
               ${group.items.map(({ key, name, icon, action }) => {
-                accIdx++;
-                const curIdx = accIdx - 1;
                 const tooltip = this._showTooltip
                   ? html`<affine-tooltip
                       tip-position=${'right'}
@@ -290,13 +283,13 @@ export class LinkedDocPopover extends SignalWatcher(
                   height="30px"
                   data-id=${key}
                   .text=${name}
-                  hover=${this._activatedItemIndex === curIdx}
+                  hover=${this._activatedItemKey === key}
                   @click=${() => {
                     action()?.catch(console.error);
                   }}
                   @mousemove=${() => {
                     // Use `mousemove` instead of `mouseover` to avoid navigate conflict with keyboard
-                    this._activatedItemIndex = curIdx;
+                    this._activatedItemKey = key;
                     // show tooltip whether text length overflows
                     for (const button of this.iconButtons.values()) {
                       if (button.dataset.id == key && button.textElement) {
@@ -348,8 +341,40 @@ export class LinkedDocPopover extends SignalWatcher(
     }
   }
 
+  private scrollToFocusedItem() {
+    const shadowRoot = this.shadowRoot;
+    if (!shadowRoot) {
+      return;
+    }
+
+    // If there's no active item key, don't try to scroll
+    if (!this._activatedItemKey) {
+      return;
+    }
+
+    const ele = shadowRoot.querySelector(
+      `icon-button[data-id="${this._activatedItemKey}"]`
+    );
+
+    // If the element doesn't exist, don't log a warning
+    if (!ele) {
+      return;
+    }
+
+    ele.scrollIntoView({
+      block: 'nearest',
+    });
+  }
+
+  get _activatedItemIndex() {
+    const index = this._flattenActionList.findIndex(
+      item => item.key === this._activatedItemKey
+    );
+    return index === -1 ? 0 : index;
+  }
+
   @state()
-  private accessor _activatedItemIndex = 0;
+  private accessor _activatedItemKey: string | null = null;
 
   @state()
   private accessor _linkedDocGroup: LinkedMenuGroup[] = [];
