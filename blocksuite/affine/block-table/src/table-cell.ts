@@ -454,6 +454,7 @@ export class TableCell extends SignalWatcher(
     };
     return html`<div class=${columnOptionsCellStyle}>
       <div
+        data-testid="drag-column-handle"
         data-drag-column-id=${column.columnId}
         class=${classMap({
           [columnOptionsStyle]: true,
@@ -478,6 +479,7 @@ export class TableCell extends SignalWatcher(
     };
     return html`<div class=${rowOptionsCellStyle}>
       <div
+        data-testid="drag-row-handle"
         data-drag-row-id=${row.rowId}
         class=${classMap({
           [rowOptionsStyle]: true,

@@ -7,7 +7,8 @@
     "./electron": "./src/electron.ts",
     "./mobile": "./src/mobile.ts",
     "./playwright": "./src/playwright.ts",
-    "./utils/*": "./src/utils/*.ts"
+    "./utils/*": "./src/utils/*.ts",
+    "./bs/*": "./src/bs/*.ts"
   },
   "devDependencies": {
     "@affine-tools/utils": "workspace:*",
