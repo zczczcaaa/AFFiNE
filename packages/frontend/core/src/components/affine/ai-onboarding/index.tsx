@@ -1,8 +1,7 @@
-import { FeatureFlagService, useService } from '@toeverything/infra';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 
+import { useEnableAI } from '../../hooks/affine/use-enable-ai';
 import { AIOnboardingEdgeless } from './edgeless.dialog';
-import { AIOnboardingGeneral } from './general.dialog';
 import { AIOnboardingLocal } from './local.dialog';
 import { AIOnboardingType } from './type';
 
@@ -27,14 +26,11 @@ const useDismiss = (key: AIOnboardingType) => {
 };
 
 export const WorkspaceAIOnboarding = () => {
-  const [dismissGeneral] = useDismiss(AIOnboardingType.GENERAL);
   const [dismissLocal] = useDismiss(AIOnboardingType.LOCAL);
-  const featureFlagService = useService(FeatureFlagService);
-  const enableAI = featureFlagService.flags.enable_ai.value;
+  const enableAI = useEnableAI();
 
   return (
     <Suspense>
-      {!enableAI || dismissGeneral ? null : <AIOnboardingGeneral />}
       {!enableAI || dismissLocal ? null : <AIOnboardingLocal />}
     </Suspense>
   );
@@ -42,8 +38,7 @@ export const WorkspaceAIOnboarding = () => {
 
 export const PageAIOnboarding = () => {
   const [dismissEdgeless] = useDismiss(AIOnboardingType.EDGELESS);
-  const featureFlagService = useService(FeatureFlagService);
-  const enableAI = featureFlagService.flags.enable_ai.value;
+  const enableAI = useEnableAI();
 
   return (
     <Suspense>

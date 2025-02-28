@@ -1,11 +1,12 @@
 import { toReactNode } from '@affine/component';
-import { AIChatBlockPeekViewTemplate } from '@affine/core/blocksuite/presets/ai';
-import { BlockComponent } from '@blocksuite/block-std';
+import { BlockComponent } from '@blocksuite/affine/block-std';
 import { useLiveData, useService } from '@toeverything/infra';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { ActivePeekView } from '../entities/peek-view';
 import { PeekViewService } from '../services/peek-view';
+import { AIChatBlockPeekView } from './ai-chat-block-peek-view';
+import { AttachmentPreviewPeekView } from './attachment-preview';
 import { DocPeekPreview } from './doc-preview';
 import { ImagePreviewPeekView } from './image-preview';
 import {
@@ -13,35 +14,39 @@ import {
   type PeekViewModalContainerProps,
 } from './modal-container';
 import {
+  AttachmentPeekViewControls,
   DefaultPeekViewControls,
   DocPeekViewControls,
 } from './peek-view-controls';
 
-function renderPeekView({ info }: ActivePeekView) {
+function renderPeekView({ info }: ActivePeekView, animating?: boolean) {
   if (info.type === 'template') {
     return toReactNode(info.template);
   }
   if (info.type === 'doc') {
+    return <DocPeekPreview docRef={info.docRef} animating={animating} />;
+  }
+
+  if (info.type === 'attachment' && info.docRef.blockIds?.[0]) {
     return (
-      <DocPeekPreview
-        mode={info.mode}
-        xywh={info.xywh}
-        docId={info.docId}
-        blockIds={info.blockIds}
-        elementIds={info.elementIds}
+      <AttachmentPreviewPeekView
+        docId={info.docRef.docId}
+        blockId={info.docRef.blockIds?.[0]}
       />
     );
   }
 
-  if (info.type === 'image') {
+  if (info.type === 'image' && info.docRef.blockIds?.[0]) {
     return (
-      <ImagePreviewPeekView docId={info.docId} blockId={info.blockIds[0]} />
+      <ImagePreviewPeekView
+        docId={info.docRef.docId}
+        blockId={info.docRef.blockIds?.[0]}
+      />
     );
   }
 
   if (info.type === 'ai-chat-block') {
-    const template = AIChatBlockPeekViewTemplate(info.model, info.host);
-    return toReactNode(template);
+    return <AIChatBlockPeekView model={info.model} host={info.host} />;
   }
 
   return null; // unreachable
@@ -49,14 +54,11 @@ function renderPeekView({ info }: ActivePeekView) {
 
 const renderControls = ({ info }: ActivePeekView) => {
   if (info.type === 'doc') {
-    return (
-      <DocPeekViewControls
-        mode={info.mode}
-        docId={info.docId}
-        blockIds={info.blockIds}
-        elementIds={info.elementIds}
-      />
-    );
+    return <DocPeekViewControls docRef={info.docRef} />;
+  }
+
+  if (info.type === 'attachment') {
+    return <AttachmentPeekViewControls docRef={info.docRef} />;
   }
 
   if (info.type === 'image') {
@@ -66,23 +68,32 @@ const renderControls = ({ info }: ActivePeekView) => {
   return <DefaultPeekViewControls />;
 };
 
+const getMode = (info: ActivePeekView['info']) => {
+  if (info.type === 'image') {
+    return 'full';
+  }
+  return 'fit';
+};
+
 const getRendererProps = (
-  activePeekView?: ActivePeekView
+  activePeekView?: ActivePeekView,
+  animating?: boolean
 ): Partial<PeekViewModalContainerProps> | undefined => {
   if (!activePeekView) {
     return;
   }
 
-  const preview = renderPeekView(activePeekView);
+  const preview = renderPeekView(activePeekView, animating);
   const controls = renderControls(activePeekView);
   return {
     children: preview,
     controls,
     target:
-      activePeekView?.target instanceof HTMLElement
-        ? activePeekView.target
+      activePeekView?.target.element instanceof HTMLElement
+        ? activePeekView.target.element
         : undefined,
-    padding: activePeekView.info.type !== 'image',
+    mode: getMode(activePeekView.info),
+    animation: 'fadeBottom',
     dialogFrame: activePeekView.info.type !== 'image',
   };
 };
@@ -92,17 +103,29 @@ export const PeekViewManagerModal = () => {
   const activePeekView = useLiveData(peekViewEntity.active$);
   const show = useLiveData(peekViewEntity.show$);
 
+  const [animating, setAnimating] = useState(false);
+
+  const onAnimationStart = useCallback(() => {
+    console.log('onAnimationStart');
+    setAnimating(true);
+  }, []);
+
+  const onAnimationEnd = useCallback(() => {
+    console.log('onAnimationEnd');
+    setAnimating(false);
+  }, []);
+
   const renderProps = useMemo(() => {
     if (!activePeekView) {
       return;
     }
-    return getRendererProps(activePeekView);
-  }, [activePeekView]);
+    return getRendererProps(activePeekView, animating);
+  }, [activePeekView, animating]);
 
   useEffect(() => {
     const subscription = peekViewEntity.show$.subscribe(() => {
-      if (activePeekView?.target instanceof BlockComponent) {
-        activePeekView.target.requestUpdate();
+      if (activePeekView?.target.element instanceof BlockComponent) {
+        activePeekView.target.element.requestUpdate();
       }
     });
 
@@ -114,13 +137,15 @@ export const PeekViewManagerModal = () => {
   return (
     <PeekViewModalContainer
       {...renderProps}
+      animation={show?.animation ? renderProps?.animation : 'none'}
       open={!!show?.value && !!renderProps}
-      animation={show?.animation || 'none'}
       onOpenChange={open => {
         if (!open) {
           peekViewEntity.close();
         }
       }}
+      onAnimationStart={onAnimationStart}
+      onAnimationEnd={onAnimationEnd}
     >
       {renderProps?.children}
     </PeekViewModalContainer>

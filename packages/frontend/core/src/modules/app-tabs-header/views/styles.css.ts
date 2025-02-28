@@ -4,6 +4,7 @@ import { createVar, style } from '@vanilla-extract/css';
 
 export const tabOverlayWidth = createVar('0px');
 export const tabButtonWidth = createVar('16px');
+export const tabMaxWidth = createVar('200px');
 
 export const root = style({
   width: '100%',
@@ -79,7 +80,8 @@ export const tabWrapper = style({
 export const tab = style({
   height: 32,
   minWidth: 32,
-  maxWidth: 200,
+  maxWidth: tabMaxWidth,
+  width: 200,
   overflow: 'clip',
   background: cssVarV2('tab/tabBackground/default'),
   display: 'flex',
@@ -95,10 +97,7 @@ export const tab = style({
       marginRight: 8,
     },
     '&[data-active="true"]': {
-      boxShadow: cssVar('buttonShadow'),
-    },
-    '&[data-pinned="true"]': {
-      flexShrink: 0,
+      boxShadow: `0 0 0 1px ${cssVarV2('button/innerBlackBorder')}`,
     },
     [`${tabWrapper}[data-dragging="true"] &`]: {
       boxShadow: `0 0 0 1px ${cssVar('primaryColor')}`,
@@ -107,7 +106,7 @@ export const tab = style({
 });
 
 export const splitViewLabel = style({
-  minWidth: 32,
+  minWidth: 48,
   padding: '0 8px',
   height: '100%',
   display: 'flex',
@@ -115,6 +114,7 @@ export const splitViewLabel = style({
   fontWeight: 500,
   alignItems: 'center',
   cursor: 'default',
+  flex: 1,
   selectors: {
     '&[data-active="true"]': {
       background: cssVarV2('tab/tabBackground/active'),
@@ -240,6 +240,12 @@ export const spacer = style({
       background: cssVar('primaryColor'),
     },
   },
+});
+
+export const windowsAppControlsPlaceholder = style({
+  width: '160px',
+  height: '100%',
+  flexShrink: 0,
 });
 
 export const dropIndicator = style({

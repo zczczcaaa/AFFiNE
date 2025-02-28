@@ -3,12 +3,14 @@ import {
   updateUserProfileMutation,
   uploadAvatarMutation,
 } from '@affine/graphql';
-import type { GlobalState } from '@toeverything/infra';
 import { Store } from '@toeverything/infra';
 
+import type { GlobalState } from '../../storage';
 import type { AuthSessionInfo } from '../entities/session';
+import type { AuthProvider } from '../provider/auth';
 import type { FetchService } from '../services/fetch';
 import type { GraphQLService } from '../services/graphql';
+import type { ServerService } from '../services/server';
 
 export interface AccountProfile {
   id: string;
@@ -23,21 +25,27 @@ export class AuthStore extends Store {
   constructor(
     private readonly fetchService: FetchService,
     private readonly gqlService: GraphQLService,
-    private readonly globalState: GlobalState
+    private readonly globalState: GlobalState,
+    private readonly serverService: ServerService,
+    private readonly authProvider: AuthProvider
   ) {
     super();
   }
 
   watchCachedAuthSession() {
-    return this.globalState.watch<AuthSessionInfo>('affine-cloud-auth');
+    return this.globalState.watch<AuthSessionInfo>(
+      `${this.serverService.server.id}-auth`
+    );
   }
 
   getCachedAuthSession() {
-    return this.globalState.get<AuthSessionInfo>('affine-cloud-auth');
+    return this.globalState.get<AuthSessionInfo>(
+      `${this.serverService.server.id}-auth`
+    );
   }
 
   setCachedAuthSession(session: AuthSessionInfo | null) {
-    this.globalState.set('affine-cloud-auth', session);
+    this.globalState.set(`${this.serverService.server.id}-auth`, session);
   }
 
   async fetchSession() {
@@ -55,6 +63,27 @@ export class AuthStore extends Store {
     if (!res.ok)
       throw new Error('Get session fetch error: ' + JSON.stringify(data));
     return data; // Return null if data empty
+  }
+
+  async signInMagicLink(email: string, token: string) {
+    await this.authProvider.signInMagicLink(email, token);
+  }
+
+  async signInOauth(code: string, state: string, provider: string) {
+    return await this.authProvider.signInOauth(code, state, provider);
+  }
+
+  async signInPassword(credential: {
+    email: string;
+    password: string;
+    verifyToken?: string;
+    challenge?: string;
+  }) {
+    await this.authProvider.signInPassword(credential);
+  }
+
+  async signOut() {
+    await this.authProvider.signOut();
   }
 
   async uploadAvatar(file: File) {
@@ -99,6 +128,7 @@ export class AuthStore extends Store {
     const data = (await res.json()) as {
       registered: boolean;
       hasPassword: boolean;
+      magicLink: boolean;
     };
 
     return data;
