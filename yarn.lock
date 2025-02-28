@@ -113,7 +113,7 @@ __metadata:
     "@vanilla-extract/webpack-plugin": "npm:^2.3.15"
     autoprefixer: "npm:^10.4.20"
     clipanion: "npm:^3.2.1"
-    copy-webpack-plugin: "npm:^12.0.2"
+    copy-webpack-plugin: "npm:^13.0.0"
     css-loader: "npm:^7.1.2"
     cssnano: "npm:^7.0.6"
     html-webpack-plugin: "npm:^5.6.3"
@@ -17937,19 +17937,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"copy-webpack-plugin@npm:^12.0.2":
-  version: 12.0.2
-  resolution: "copy-webpack-plugin@npm:12.0.2"
+"copy-webpack-plugin@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "copy-webpack-plugin@npm:13.0.0"
   dependencies:
-    fast-glob: "npm:^3.3.2"
     glob-parent: "npm:^6.0.1"
-    globby: "npm:^14.0.0"
     normalize-path: "npm:^3.0.0"
     schema-utils: "npm:^4.2.0"
     serialize-javascript: "npm:^6.0.2"
+    tinyglobby: "npm:^0.2.12"
   peerDependencies:
     webpack: ^5.1.0
-  checksum: 10/674725d4d9556b7b9a32bb85393532ef2bb75ffce785d942681b3575a86d900751f67cebbb089ddd050757f58c84edc18732e17880f12c45c9775ca94328526c
+  checksum: 10/209051dd3c0bc7ab97170309cdb1826e642044d2d53e0adc35bb227123c89ae1296a504409325e9b955d7b2d1a505b063f0023e924151d382dbcc92cb9325e6a
   languageName: node
   linkType: hard
 
@@ -21428,7 +21427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:^14.0.0, globby@npm:^14.0.2":
+"globby@npm:^14.0.2":
   version: 14.1.0
   resolution: "globby@npm:14.1.0"
   dependencies:
