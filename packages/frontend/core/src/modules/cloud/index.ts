@@ -39,7 +39,8 @@ import { type Framework } from '@toeverything/infra';
 
 import { DocScope } from '../doc/scopes/doc';
 import { DocService } from '../doc/services/doc';
-import { GlobalCache, GlobalState, GlobalStateService } from '../storage';
+import { GlobalCache, GlobalState } from '../storage/providers/global';
+import { GlobalStateService } from '../storage/services/global';
 import { UrlService } from '../url';
 import { WorkspaceScope, WorkspaceService } from '../workspace';
 import { CloudDocMeta } from './entities/cloud-doc-meta';

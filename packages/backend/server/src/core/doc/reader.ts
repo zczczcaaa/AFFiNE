@@ -183,11 +183,14 @@ export class RpcDocReader extends DatabaseDocReader {
     if (body) {
       headers['content-type'] = 'application/octet-stream';
     }
-    const res = await fetch(url, {
+    const requestInit: RequestInit = {
       method,
       headers,
-      body,
-    });
+    };
+    if (body) {
+      requestInit.body = body;
+    }
+    const res = await fetch(url, requestInit);
     if (!res.ok) {
       if (res.status === 404) {
         return null;
