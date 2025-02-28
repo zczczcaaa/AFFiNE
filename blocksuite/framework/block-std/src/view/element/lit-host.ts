@@ -58,7 +58,7 @@ export class EditorHost extends SignalWatcher(
     }
 
     const widgetViews = this.std.provider.getAll(WidgetViewIdentifier);
-    const widgets = widgetViews.entries().reduce(
+    const widgets = Array.from(widgetViews.entries()).reduce(
       (mapping, [key, tag]) => {
         const [widgetFlavour, id] = key.split('|');
         if (widgetFlavour === flavour) {
